@@ -420,3 +420,34 @@ Still open after interactive proof:
 - Manual Agent Mode/browser-judgment smoke remains open.
 - Release/live verification remains withheld until explicit operator approval.
 - `REQ-20260618-101` remains blocked on the external audit package/output.
+
+2026-06-19 Agent Control manual browser judgment proof:
+
+- Completed the manual Agent Mode/browser-judgment smoke with the in-app
+  browser against a fake local Operations server.
+- The browser opened the Super Admin Platform Agent Run portal, claimed the
+  run, posted progress, attached evidence, submitted/sealed a
+  `needs_operator` result, reloaded the portal, and read back `STATUS Blocked`.
+- The local route created exactly one linked Decision:
+  `DEC-MANUAL-001`.
+- Evidence generated under
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/`:
+  `manual-browser-report.md`, `manual-browser-report.json`, and
+  `manual-browser-dom-snapshot.txt`.
+- Moved `REQ-20260618-121` and `REQ-20260618-123` to `done` because their
+  local verification/manual Agent Mode proof gates are now satisfied.
+- Kept live-required Agent Control rows in `needs_verification` because
+  deployment/live proof is still withheld until explicit operator approval.
+- Focused Agent Control/active-run suite passed 12/12 after the status change.
+- `npm run bna:run:validate` passed with status counts
+  `needs_verification: 11`, `blocked: 2`, `done: 18`.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
+Still open after manual browser proof:
+
+- Live-required rows need explicit release approval before deploy/live smoke:
+  `REQ-20260618-102`, `REQ-20260618-112` through `REQ-20260618-118`,
+  `REQ-20260618-120`, `REQ-20260618-122`, and `REQ-20260619-206`.
+- `REQ-20260618-101` remains blocked on the external audit package/output.
+- `REQ-20260619-207` remains blocked on external owner/credential actions.

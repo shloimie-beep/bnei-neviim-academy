@@ -24133,6 +24133,47 @@ Remaining:
   takeover is available.
 - Release/live verification still requires explicit operator approval.
 
+## 2026-06-19T08:25:38+03:00 - Agent Control Manual Browser Judgment Closed Locally
+
+Completed the manual Agent Mode/browser-judgment gate with the in-app browser
+against a fake local Operations server.
+
+- Used `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` as the
+  checklist.
+- Opened the Super Admin Platform Agent Run portal for
+  `run_agent_control_smoke`.
+- Claimed the run, posted progress, attached evidence, submitted/sealed a
+  `needs_operator` result, reloaded the portal, and read back `STATUS Blocked`.
+- Verified exactly one linked Decision: `DEC-MANUAL-001`.
+- Added durable evidence under
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/`.
+- Moved `REQ-20260618-121` and `REQ-20260618-123` to `done`.
+- Kept live-required Agent Control rows in `needs_verification` because
+  deployment/live verification still requires explicit operator approval.
+
+Verification:
+
+- PASS manual in-app browser smoke against fake local data.
+- PASS manual browser report JSON parse.
+- PASS focused Agent Control/active-run suite 12/12.
+- PASS `npm run bna:run:validate` with status counts
+  `needs_verification: 11`, `blocked: 2`, `done: 18`.
+
+Guardrails:
+
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No broad UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- Live-required rows need explicit release approval before deploy/live smoke.
+- `REQ-20260618-101` still needs the audit package/output.
+- `REQ-20260619-207` still needs owner/credential actions.
+
 ## 2026-06-19T08:11:57+03:00 - Agent Control Interactive Browser Proof
 
 Added interactive local browser proof for the Agent Control closed loop while

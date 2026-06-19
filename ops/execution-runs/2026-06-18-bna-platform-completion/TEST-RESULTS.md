@@ -447,6 +447,36 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Agent Control manual browser judgment:
+
+- PASS manual in-app browser smoke against a fake local Operations server:
+  opened `/operations/agents/runs/run_agent_control_smoke`, claimed the run,
+  posted progress, attached evidence, submitted/sealed `needs_operator`,
+  reloaded the portal, read back `STATUS Blocked`, and verified exactly one
+  linked Decision `DEC-MANUAL-001`.
+- PASS JSON parse for
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json`.
+- PASS focused Agent Control/active-run suite 12/12:
+  `node --test tests\active-run-acceptance-coverage.test.js
+  tests\agent-control-center.test.js tests\agent-control-api-readback.test.js
+  tests\agent-control-browser-smoke.test.js
+  tests\agent-control-manual-smoke-prompt.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `needs_verification: 11`, `blocked: 2`, `done: 18`.
+- The smoke produced:
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md`
+  and
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt`.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
+Not run for this batch:
+
+- No production DB write/readback.
+- No deployment or live smoke.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control manual-smoke prompt:
 
 - PASS `node --check tests/agent-control-manual-smoke-prompt.test.js`.

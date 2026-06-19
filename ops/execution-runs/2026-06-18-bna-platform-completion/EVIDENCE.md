@@ -676,3 +676,23 @@ Not run for this batch:
 - No deployment.
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
+
+2026-06-19 Agent Control manual browser judgment evidence:
+
+- Manual browser judgment report:
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md`.
+- Manual browser JSON report:
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json`.
+- Manual browser DOM/readback snapshot:
+  `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt`.
+- Prompt used:
+  `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`.
+- The in-app browser used a fake local Operations server and proved:
+  Super Admin/Platform identity, Agent Run portal readback, claim/progress/
+  evidence actions, `needs_operator` submit/seal, final `Blocked` status, one
+  linked Decision `DEC-MANUAL-001`, and no secret-shaped text.
+- Screenshot capture timed out in the in-app browser, so the durable evidence
+  is the browser DOM/readback report plus the Agent Run evidence entry for the
+  manual report path.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.

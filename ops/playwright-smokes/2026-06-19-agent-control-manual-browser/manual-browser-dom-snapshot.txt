@@ -1,0 +1,46 @@
+  - generic: Platform Operations
+    - generic "Workspace Directory Platform Operations Super Admin / Super Admin Switch":
+      - strong: Platform Operations
+      - generic: Super Admin / Super Admin
+  - generic: Platform Operations / Agents / Ready
+    - generic "Super Admin": Platform Operations / Super Admin
+    - button "DE Decisions":
+      - generic: Decisions
+  - generic: Agent Run run_agent_control_smoke
+  - paragraph: Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout.
+  - button "Copy Agent Prompt"
+  - heading "Run Summary" [level=3]
+  - generic: Status
+  - generic: Blocked
+  - generic: Evidence
+  - heading "Agent Prompt" [level=3]
+  - textbox: "Agent Run: run_agent_control_smoke Task: #901 - Verify Agent Control manual browser judgment flow Open the Agent Run URL and use safe local data only. Do not include credentials, cookies, API keys, or passwords. Submit blocked or needs-operator if release/manual approval remains required."
+  - heading "Progress" [level=3]
+  - textbox "Progress update, finding, or checkpoint..."
+  - button "Post Progress"
+  - paragraph: Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. / In-app browser manual smoke / 19 Jun, 15:26
+  - paragraph: Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. / In-app browser manual smoke / 19 Jun, 15:25
+  - paragraph: Manual in-app browser smoke evidence / In-app browser manual smoke / 19 Jun, 15:24
+  - paragraph: Manual in-app browser smoke inspected the Super Admin Agent Run portal with fake local data only; no production, secrets, deployment, or external writes used. / In-app browser manual smoke / 19 Jun, 15:23
+  - paragraph: Prompt generated without credentials. / Super Admin / 19 Jun, 15:10
+  - paragraph: Agent run created for manual browser smoke. / Super Admin / 19 Jun, 15:10
+  - heading "Evidence" [level=3]
+    - /placeholder: Evidence title
+  - button "Attach Evidence"
+  - strong: Manual in-app browser smoke evidence
+  - heading "Submit / Seal" [level=3]
+    - text: Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout.
+  - textbox "Evidence or note for this criterion..."
+  - generic: Agent Run portal renders prompt, progress, evidence, submit, seal, and blocker controls.
+  - textbox "Evidence or note for this criterion..."
+  - generic: Blocked or needs-operator outcome creates exactly one linked Decision.
+  - textbox "Evidence or note for this criterion..."
+  - button "Submit Result"
+  - button "Seal Run"
+  - heading "Blocker / Operator Decision" [level=3]
+  - button "Mark Blocked / Needs Operator"
+- dialog "Super Admin's BNA Helper":
+  - generic: Super Admin's BNA Helper
+  - generic: Super Admin / Agents
+  - button "Close Super Admin's BNA Helper": x
+  - textbox "Ask Super Admin's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."

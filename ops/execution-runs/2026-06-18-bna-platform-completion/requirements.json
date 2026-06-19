@@ -374,7 +374,10 @@
         "tests/agent-control-manual-smoke-prompt.test.js",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -390,9 +393,11 @@
         "node --test tests/agent-control-manual-smoke-prompt.test.js",
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js",
         "node --test tests/agent-control-browser-smoke.test.js",
-        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js"
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
-      "notes": "Backend, Operations UI, action registry, focused contract test, local VM-backed DB/API lifecycle smoke, focused Super Admin browser smoke, private in-app notification/audit-history hooks, safe test data coverage, and copy-ready manual Agent Mode smoke prompt are implemented. The API smoke creates a run for a safe demo task, claims it, posts progress, attaches evidence, submits a blocked result, seals it, and proves one linked operator Decision plus task comment/activity/notification side effects. The browser smoke proves the Agent Control list and Agent Run portal at 1440x900, 768x1024, 390x844, and 360x800 with fake local data. Actual manual Agent Mode/browser-judgment execution and deployment approval remain open verification gates.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
+      "notes": "Backend, Operations UI, action registry, focused contract test, local VM-backed DB/API lifecycle smoke, focused Super Admin browser smoke, private in-app notification/audit-history hooks, safe test data coverage, and copy-ready manual Agent Mode smoke prompt are implemented. The API smoke creates a run for a safe demo task, claims it, posts progress, attaches evidence, submits a blocked result, seals it, and proves one linked operator Decision plus task comment/activity/notification side effects. The browser smoke proves the Agent Control list and Agent Run portal at 1440x900, 768x1024, 390x844, and 360x800 with fake local data. Actual manual Agent Mode/browser-judgment execution and deployment approval remain open verification gates.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only.\n2026-06-19 manual in-app browser smoke completed against fake local data: Super Admin Platform Agent Run was claimed, progress posted, manual report evidence attached, needs_operator result sealed, blocked readback shown, and exactly one linked Decision DEC-MANUAL-001 was created. No production, deployment, external write, broad crawl, watch loop, agent-fleet loop, or secret exposure occurred."
     },
     {
       "id": "REQ-20260618-113",
@@ -417,7 +422,7 @@
         "node --check src/lib/bna/agent-control.js",
         "node --test tests/agent-control-center.test.js"
       ],
-      "notes": "Local schema seed for Codex Builder, Browser QA, Playwright Verifier, Research Agent, and Operator exists. Needs local DB migration/API smoke before live closeout."
+      "notes": "Local schema seed for Codex Builder, Browser QA, Playwright Verifier, Research Agent, and Operator exists. Needs local DB migration/API smoke before live closeout.\nLocal schema seed and Agent profile route proof exist for Codex Builder, Browser QA, Playwright Verifier, Research Agent, and Operator through the focused Agent Control API/readback suite. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-114",
@@ -442,7 +447,7 @@
         "node --check src/lib/bna/agent-control.js",
         "node --test tests/agent-control-center.test.js"
       ],
-      "notes": "Local SQL and server lifecycle are implemented, including idempotent run creation, events, artifacts, and cancel. Needs DB-backed route smoke before live closeout."
+      "notes": "Local SQL and server lifecycle are implemented, including idempotent run creation, events, artifacts, and cancel. Needs DB-backed route smoke before live closeout.\nLocal SQL, server lifecycle, idempotent run creation, events, artifacts, cancel, blocked seal, and one linked Decision are covered by the focused Agent Control API/readback suite. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-115",
@@ -462,7 +467,10 @@
         "ops/action-registry.json",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -470,7 +478,9 @@
         "node --check src/lib/bna/agent-control.js",
         "node --test tests/agent-control-center.test.js",
         "node --test tests/agent-control-browser-smoke.test.js",
-        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js"
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
       "notes": "Operations Agents module and task-detail Agent Verification panel are wired locally. Needs browser smoke screenshots before live closeout.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
     },
@@ -497,7 +507,7 @@
         "node --check src/lib/bna/agent-control.js",
         "node --test tests/agent-control-center.test.js"
       ],
-      "notes": "Versioned Browser QA prompt generation is implemented and unit-tested. Needs DB smoke to confirm seeded template path."
+      "notes": "Versioned Browser QA prompt generation is implemented and unit-tested. Needs DB smoke to confirm seeded template path.\nVersioned Browser QA prompt generation is implemented and covered by static/contract tests plus local Agent Run prompt/browser evidence. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-117",
@@ -520,7 +530,10 @@
         "ops/action-registry.json",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -532,9 +545,11 @@
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js",
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js",
         "node --test tests/agent-control-browser-smoke.test.js",
-        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js"
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
-      "notes": "Agent Run portal supports claim, progress, evidence, submit, seal, block, resume, reopen, and cancel controls. Local API smoke verifies claim, progress, evidence attach, blocked submit, blocked seal, and one operator Decision through real server route handlers with an in-memory DB. Focused local browser smoke verifies the Super Admin Agent Control list and Agent Run portal render the prompt, progress, evidence, submit/seal, and blocker controls across desktop/tablet/mobile viewports. Manual Agent Mode smoke remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
+      "notes": "Agent Run portal supports claim, progress, evidence, submit, seal, block, resume, reopen, and cancel controls. Local API smoke verifies claim, progress, evidence attach, blocked submit, blocked seal, and one operator Decision through real server route handlers with an in-memory DB. Focused local browser smoke verifies the Super Admin Agent Control list and Agent Run portal render the prompt, progress, evidence, submit/seal, and blocker controls across desktop/tablet/mobile viewports. Manual Agent Mode smoke remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only.\n2026-06-19 manual in-app browser smoke completed against fake local data: Super Admin Platform Agent Run was claimed, progress posted, manual report evidence attached, needs_operator result sealed, blocked readback shown, and exactly one linked Decision DEC-MANUAL-001 was created. No production, deployment, external write, broad crawl, watch loop, agent-fleet loop, or secret exposure occurred."
     },
     {
       "id": "REQ-20260618-118",
@@ -557,7 +572,10 @@
         "ops/action-registry.json",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -569,9 +587,11 @@
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js",
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js",
         "node --test tests/agent-control-browser-smoke.test.js",
-        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js"
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
-      "notes": "Seal validation and task update paths are implemented and unit-tested for evidence requirement. Local API smoke with a safe demo task verifies evidence attachment, blocked result submission, Seal Run, task comment/activity updates, and linked operator Decision creation. Browser smoke verifies Evidence and Submit / Seal controls render in the Agent Run portal. Manual Agent Mode proof remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
+      "notes": "Seal validation and task update paths are implemented and unit-tested for evidence requirement. Local API smoke with a safe demo task verifies evidence attachment, blocked result submission, Seal Run, task comment/activity updates, and linked operator Decision creation. Browser smoke verifies Evidence and Submit / Seal controls render in the Agent Run portal. Manual Agent Mode proof remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only.\n2026-06-19 manual in-app browser smoke completed against fake local data: Super Admin Platform Agent Run was claimed, progress posted, manual report evidence attached, needs_operator result sealed, blocked readback shown, and exactly one linked Decision DEC-MANUAL-001 was created. No production, deployment, external write, broad crawl, watch loop, agent-fleet loop, or secret exposure occurred."
     },
     {
       "id": "REQ-20260618-119",
@@ -634,7 +654,7 @@
       "id": "REQ-20260618-121",
       "title": "Verification policy and Playwright integration",
       "area": "tests",
-      "status": "needs_verification",
+      "status": "done",
       "expected_result": "Tasks store verification mode and route user-visible work through automated checks plus Browser QA where needed, without starting broad crawls or watch loops.",
       "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
       "depends_on_audit_output": false,
@@ -651,7 +671,10 @@
         "ops/action-registry.json",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -664,9 +687,11 @@
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js",
         "npm run bna:run:validate",
         "node --test tests/agent-control-browser-smoke.test.js",
-        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js"
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
-      "notes": "Task verification mode fields and local policy hooks exist. Safe local DB/API demo fixture now verifies create/claim/progress/evidence/submit/seal/Decision side effects through real route handlers. Focused Super Admin browser smoke verifies the Agent Control list and Agent Run portal across 1440x900, 768x1024, 390x844, and 360x800 without a broad crawl. Manual Agent Mode smoke remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
+      "notes": "Task verification mode fields and local policy hooks exist. Safe local DB/API demo fixture now verifies create/claim/progress/evidence/submit/seal/Decision side effects through real route handlers. Focused Super Admin browser smoke verifies the Agent Control list and Agent Run portal across 1440x900, 768x1024, 390x844, and 360x800 without a broad crawl. Manual Agent Mode smoke remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only.\n2026-06-19 manual in-app browser smoke completed against fake local data: Super Admin Platform Agent Run was claimed, progress posted, manual report evidence attached, needs_operator result sealed, blocked readback shown, and exactly one linked Decision DEC-MANUAL-001 was created. No production, deployment, external write, broad crawl, watch loop, agent-fleet loop, or secret exposure occurred."
     },
     {
       "id": "REQ-20260618-122",
@@ -701,7 +726,7 @@
       "id": "REQ-20260618-123",
       "title": "End-to-end tests, safe demo data, and manual Agent Mode smoke prompt",
       "area": "tests",
-      "status": "needs_verification",
+      "status": "done",
       "expected_result": "Safe test data, unit/API/UI/E2E coverage, and a canonical manual Agent Mode smoke prompt prove the closed loop locally before release approval.",
       "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
       "depends_on_audit_output": false,
@@ -722,7 +747,10 @@
         "tests/agent-control-manual-smoke-prompt.test.js",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -735,9 +763,11 @@
         "node --check tests/agent-control-manual-smoke-prompt.test.js",
         "node --test tests/agent-control-manual-smoke-prompt.test.js",
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
-        "node --test tests/agent-control-browser-smoke.test.js"
+        "node --test tests/agent-control-browser-smoke.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
-      "notes": "Focused contract coverage, safe local API/browser demo fixtures, safe test data artifacts, active-run acceptance coverage, private notification/no-spam behavior, and a copy-ready manual Agent Mode smoke prompt now prove the core closed-loop path without production data. Actual manual Agent Mode/browser-judgment execution remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
+      "notes": "Focused contract coverage, safe local API/browser demo fixtures, safe test data artifacts, active-run acceptance coverage, private notification/no-spam behavior, and a copy-ready manual Agent Mode smoke prompt now prove the core closed-loop path without production data. Actual manual Agent Mode/browser-judgment execution remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only.\n2026-06-19 manual in-app browser smoke completed against fake local data: Super Admin Platform Agent Run was claimed, progress posted, manual report evidence attached, needs_operator result sealed, blocked readback shown, and exactly one linked Decision DEC-MANUAL-001 was created. No production, deployment, external write, broad crawl, watch loop, agent-fleet loop, or secret exposure occurred."
     },
     {
       "id": "REQ-20260619-201",
@@ -944,7 +974,10 @@
         "tests/agent-control-manual-smoke-prompt.test.js",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md",
         "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json",
-        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png"
+        "ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json",
+        "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -958,14 +991,16 @@
         "node --test tests/agent-control-manual-smoke-prompt.test.js",
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js",
         "node --test tests/agent-control-browser-smoke.test.js",
-        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js"
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js tests/agent-control-manual-smoke-prompt.test.js tests/active-run-acceptance-coverage.test.js",
+        "Manual in-app browser Agent Mode smoke against fake local Operations server PASS: claim -> progress -> evidence -> submit -> seal needs_operator -> one linked Decision; see ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+        "node -e \"JSON.parse(require('fs').readFileSync('ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.json','utf8'))\""
       ],
       "acceptance_criteria": [
         "No parallel agent queue is created.",
         "Agent results are stored in BNA/task system routes.",
         "Blocked outcomes create one linked Decision."
       ],
-      "notes": "Prior local batch implemented the core. Local VM-backed DB/API route smoke now proves create run, claim, progress, evidence, blocked submit, blocked seal, task comment/activity side effects, one linked operator Decision, private in-app notification hooks without progress-spam, and scoped non-Super Admin denial without production data. Focused Super Admin browser smoke now proves the Agent Control list and Agent Run portal with prompt/progress/evidence/submit/seal/blocker controls across 1440x900, 768x1024, 390x844, and 360x800. Copy-ready manual Agent Mode smoke prompt is recorded. Actual manual Agent Mode/browser-judgment execution remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only."
+      "notes": "Prior local batch implemented the core. Local VM-backed DB/API route smoke now proves create run, claim, progress, evidence, blocked submit, blocked seal, task comment/activity side effects, one linked operator Decision, private in-app notification hooks without progress-spam, and scoped non-Super Admin denial without production data. Focused Super Admin browser smoke now proves the Agent Control list and Agent Run portal with prompt/progress/evidence/submit/seal/blocker controls across 1440x900, 768x1024, 390x844, and 360x800. Copy-ready manual Agent Mode smoke prompt is recorded. Actual manual Agent Mode/browser-judgment execution remains open.\n2026-06-19 interactive local Agent Control browser smoke exercised Claim Run, Post Progress, Attach Evidence, Submit Result, Seal Run, and persisted Sealed Pass readback with fake local data only.\n2026-06-19 manual in-app browser smoke completed against fake local data: Super Admin Platform Agent Run was claimed, progress posted, manual report evidence attached, needs_operator result sealed, blocked readback shown, and exactly one linked Decision DEC-MANUAL-001 was created. No production, deployment, external write, broad crawl, watch loop, agent-fleet loop, or secret exposure occurred."
     },
     {
       "id": "REQ-20260619-207",
