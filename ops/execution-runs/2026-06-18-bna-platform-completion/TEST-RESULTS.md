@@ -767,3 +767,14 @@ Student workspace isolation browser proof (2026-06-19T08:45:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-152 now has browser proof that after switching to One Time workspace and reloading, Students requests `project=one_time_mishnah_class` for student, device, device-rule, Torah, accountability, and group-goal data; renders the One Time student card/profile/goal/device details; clears the previous BNA detail route; and excludes BNA student, parent, access-code, and goal text. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, duplicate-student merge, or student mutation was performed.
+
+
+Goal Board language browser proof (2026-06-19T08:55:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 16/16.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-153 now has browser proof that the selected One Time Goal Board renders plain product labels for missed-goal and checkoff settings, Add Goal, progress/review/board toolbars, Open Tablet/Keep Closed/Open Temporarily review actions, and Tablet Access controls such as Pause Access, Checkoff Only, Open 60m, Open Temporarily, and End Access. The proof excludes old labels such as Create Goal Board Item, Approve/Deny Device State, Manual Override, Auto after checkoff, mock tablet, and Provider-style device wording. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or tablet/device mutation was performed.

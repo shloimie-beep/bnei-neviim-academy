@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T08:45:30+03:00",
+  "updated_at": "2026-06-19T08:55:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -314,11 +314,13 @@
       "live_required": true,
       "blocker": null,
       "evidence": [
-        "REQ-20260618-152 now has browser proof that selected-workspace Students requests and renders One Time student/detail/goal/device data while clearing and excluding the old BNA student detail."
+        "REQ-20260618-152 now has browser proof that selected-workspace Students requests and renders One Time student/detail/goal/device data while clearing and excluding the old BNA student detail.",
+        "REQ-20260618-153 now has browser proof that the selected One Time Goal Board and Tablet Access views use plain product language and exclude old internal/mock/provider labels."
       ],
       "deployment_evidence": [],
       "verification": [
-        "node --test tests/student-detail-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 13/13"
+        "node --test tests/student-detail-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 13/13",
+        "node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 16/16"
       ],
       "notes": "Parent remains in_progress until Goal Board, Hebrew/RTL, and duplicate-student cleanup children have terminal statuses or exact blockers.",
       "files_changed": [
@@ -2477,7 +2479,7 @@
       "title": "Goal Board controls use plain product language",
       "area": "students",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Goal Board controls are organized into horizontal toolbars and unclear implementation labels are removed.",
       "acceptance_criteria": [
@@ -2495,17 +2497,24 @@
         "Goal cards translate stored access states through deviceAccessChangeLabel so badges show After checkoff: Open for 60m and If missed: Checkoff Only instead of stored slugs.",
         "Goal Board card actions are split into purpose-specific horizontal toolbars for Progress, Review, Board, Tablet setup, and Tablet access actions.",
         "Tablet record copy no longer exposes mock-provider wording in visible card controls; it describes record-only mode until the classroom device connector is approved.",
-        "tests/goal-board-language.test.js guards against reintroducing unclear visible labels such as Create Goal Board Item, Approve Device State, Deny Device State, Manual Override, Auto after checkoff, and mock tablet phrasing."
+        "tests/goal-board-language.test.js guards against reintroducing unclear visible labels such as Create Goal Board Item, Approve Device State, Deny Device State, Manual Override, Auto after checkoff, and mock tablet phrasing.",
+        "tests/browser-acceptance.test.js now proves the selected One Time Goal Board renders plain product labels for missed-goal and checkoff settings, Add Goal, progress/review/board toolbars, Open Tablet/Keep Closed/Open Temporarily review actions, and Tablet Access controls such as Pause Access, Checkoff Only, Open 60m, Open Temporarily, and End Access while excluding old internal labels and mock/provider wording."
       ],
       "deployment_evidence": [],
       "verification": [
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --check tests/goal-board-language.test.js PASS",
         "node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-mobile-controls.test.js tests/operations-design-system.test.js PASS 15/15",
-        "npm test PASS 164/164"
+        "npm test PASS 164/164",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 16/16",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: clarify goal board controls"
+        "current batch commit: fix: clarify goal board controls",
+        "current batch commit: test: verify goal board language in browser"
       ],
       "files_changed": [
         "public/operations.html",
@@ -2514,9 +2523,10 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests passed. Status remains needs_verification because this item is live_required and still needs final acceptance sweep, release approval, deployment, and live smoke before closure. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local implementation, static tests, full suite, and browser DOM proof passed. Status remains needs_verification because this item is live_required and still needs release approval, deployment, and live smoke before closure. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-154",

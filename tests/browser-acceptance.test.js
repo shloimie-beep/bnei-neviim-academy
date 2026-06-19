@@ -98,6 +98,13 @@ function fixtureGoal(projectKey = 'bna') {
       consequence: {
         success_device_access_state: 'approved_access',
         success_duration_minutes: 60,
+        ...(isOneTime ? {
+          device_access_state: 'accountability_only',
+          duration_minutes: 30,
+          approval_required: true,
+          status: 'pending_review',
+          recovery_path: 'Review the missed Mishnah goal with the provider before tablet access opens.',
+        } : {}),
       },
     },
   };
@@ -1530,6 +1537,53 @@ async function assertOperationsStudentWorkspaceScope(page, calls) {
   assert.equal(await studentsFrame.locator('.student-profile-hero').filter({ hasText: TEST_STUDENT_NAME }).count(), 0);
 }
 
+async function assertOperationsGoalBoardPlainLanguage(page) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Students' }).click();
+  const studentsFrame = page.locator('.ops-view-frame[data-current-view="students"]');
+  await studentsFrame.waitFor();
+  await studentsFrame.locator('.section-tab').filter({ hasText: 'Goal Board' }).click();
+  await studentsFrame.locator('.goal-board-card').first().waitFor();
+  const goalBoardState = await studentsFrame.locator('.container').first().evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  for (const expected of [
+    /If Goal Is Missed/,
+    /When Student Checks Off/,
+    /Open For Minutes/,
+    /Missed-Goal Duration Minutes/,
+    /Review before applying a consequence/,
+    /Add Goal/,
+    /After checkoff:\s*Open for 60m/,
+    /If missed:\s*Checkoff Only/,
+    /Waiting for review/,
+    /Progress\s*Not Yet\s*Half\s*Done/,
+    /Review\s*Open Tablet\s*Keep Closed\s*Open Temporarily/,
+    /Board\s*Wait\s*Archive/,
+  ]) {
+    assert.match(goalBoardState.text, expected);
+  }
+  assert.doesNotMatch(goalBoardState.text, /Create Goal Board Item|Approve Device State|Deny Device State|Manual Override|Auto after checkoff|Add Mock Tablet|No mock tablet|Provider:/i);
+
+  await studentsFrame.locator('.section-tab').filter({ hasText: 'Tablet Access' }).click();
+  await studentsFrame.getByText('Pause Access').waitFor();
+  const tabletState = await studentsFrame.locator('.container').first().evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  for (const expected of [
+    /Tablet Record/,
+    /Mode:\s*BNA record only/,
+    /Pause Access/,
+    /Checkoff Only/,
+    /Open 60m/,
+    /Open Temporarily/,
+    /End Access/,
+    /Review\s*Open Tablet\s*Keep Closed\s*Open Temporarily/,
+  ]) {
+    assert.match(tabletState.text, expected);
+  }
+  assert.doesNotMatch(tabletState.text, /Add Mock Tablet|No mock tablet|Provider:/i);
+}
+
 async function assertOperationsAccountingWorkspaceScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Accounting' }).click();
   await page.locator('.ops-view-frame[data-current-view="accounting"]').waitFor();
@@ -1845,6 +1899,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
       await assertOperationsStudentWorkspaceScope(page, calls);
+      await assertOperationsGoalBoardPlainLanguage(page);
       await assertOperationsLiveClassesWorkspaceScope(page, calls);
       await assertOperationsAutomationsWorkspaceStatus(page, calls);
       await assertOperationsIntegrationsWorkspaceStatus(page, calls);
