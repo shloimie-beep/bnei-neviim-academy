@@ -5185,3 +5185,20 @@ Verification:
 - PASS `gh pr create --draft`: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4.
 
 Status: local acceptance passed; release approval, deployment, and live smoke remain blocked. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Terminal status repair
+
+Requirement: active recovery run terminal-status closeout
+
+Changed:
+
+- Converted local-complete release-gated requirements from `in_progress`/`needs_verification` into terminal `blocked` statuses with explicit release approval/deploy/live-smoke blockers.
+- Marked the Students/Goal Board parent as `needs_operator_decision` because duplicate-student cleanup still requires operator approval before any production/student data merge.
+- Updated STATUS, EVIDENCE, TEST-RESULTS, NEXT-SESSION, latest.json, task ledger, and changelog so the run no longer shows non-blocked local implementation work as open.
+
+Verification:
+
+- PASS `npm run bna:run:validate` after terminal status repair.
+- PASS `npm run bna:run:status` after terminal status repair.
+
+Status: local implementation is terminalized; release approval, deployment/live smoke, audit package output, and duplicate-student cleanup decision remain external/operator gates. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

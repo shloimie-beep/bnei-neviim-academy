@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T11:25:30+03:00
+Updated: 2026-06-19T11:35:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -79,8 +79,9 @@ Final local acceptance/status sweep has passed and draft PR #4 is open: https://
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
+- No non-blocked local implementation requirements remain open.
+- Release-gated requirements are blocked on explicit operator release approval, deployment, and live smoke.
+- REQ-20260618-156 remains needs_operator_decision for duplicate-student cleanup approval before any production/student data merge.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

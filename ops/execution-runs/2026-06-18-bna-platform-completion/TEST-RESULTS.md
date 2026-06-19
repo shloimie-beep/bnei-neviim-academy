@@ -930,3 +930,10 @@ Final local acceptance gate (2026-06-19T11:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-172 now has local acceptance proof. Release approval, deployment, live smoke, and any post-deploy evidence remain blocked until Shloimie explicitly approves release. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Terminal status repair (2026-06-19T11:35:30+03:00):
+
+- PASS `npm run bna:run:validate` after terminal status repair.
+- PASS `npm run bna:run:status` after terminal status repair.
+
+No code changed in this batch. The active run now uses terminal statuses for local-complete release-gated work instead of leaving it in in_progress/needs_verification. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
