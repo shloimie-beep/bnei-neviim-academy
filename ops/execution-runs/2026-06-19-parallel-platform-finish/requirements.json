@@ -1,0 +1,88 @@
+{
+  "run_id": "2026-06-19-parallel-platform-finish",
+  "title": "Parallel Platform Finish",
+  "updated_at": "2026-06-19T15:40:21+03:00",
+  "linked_prior_run": "ops/execution-runs/2026-06-18-bna-platform-completion/",
+  "parallel_run_id": "PARALLEL-20260619-001",
+  "checkpoint": {
+    "branch": "checkpoint/20260619-platform-completion",
+    "commit": "b2fd5039990ee1cb370a49d4475a7763fb8548b7",
+    "tag": "checkpoint-parallel-20260619-001"
+  },
+  "git_refs": {
+    "branch": "checkpoint/20260619-platform-completion",
+    "checkpoint_commit": "b2fd5039990ee1cb370a49d4475a7763fb8548b7",
+    "checkpoint_tag": "checkpoint-parallel-20260619-001"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260619-900",
+      "source_path": "C:\\Users\\User\\.codex\\attachments\\26d908ae-b058-4929-bc3d-31092d67ea8b\\pasted-text.txt",
+      "captured_at": "2026-06-19T15:40:21+03:00",
+      "content_fingerprint": "prompt-00-coordinator-local-checkpoint-contracts-worktrees",
+      "privacy_classification": "internal_coordination",
+      "workspace": "BNA",
+      "project": "parallel-platform-finish",
+      "source_type": "codex_attachment"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260619-400",
+      "title": "Create coordinator checkpoint, contracts, ownership map, runtime state, and worker worktrees",
+      "expected_result": "Prompt 00 ends with a local checkpoint commit/tag, linked run, coordination folder, contracts, file ownership map, external gates, runtime status files, and four isolated worker worktrees created from the checkpoint commit.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/README.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/COORDINATION.json",
+        "ops/parallel-runs/PARALLEL-20260619-001/CONTRACTS.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/FILE-OWNERSHIP.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/MERGE-ORDER.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/DECISIONS-AND-EXTERNAL-GATES.md",
+        "ops/execution-runs/2026-06-19-parallel-platform-finish/TEST-RESULTS.md"
+      ],
+      "notes": "Checkpoint commit b2fd5039990ee1cb370a49d4475a7763fb8548b7 and tag checkpoint-parallel-20260619-001 preserve the local platform completion state. Worktrees start from that checkpoint and use outside-Git runtime status files."
+    },
+    {
+      "id": "REQ-20260619-401",
+      "title": "W1 core platform backend and data",
+      "expected_result": "W1 completes tenancy/workspace/RBAC, domain models, services/migrations, and negative isolation tests in owned paths, with shared-entrypoint needs recorded in W1 INTEGRATION.md.",
+      "status": "not_started",
+      "live_required": false,
+      "evidence": []
+    },
+    {
+      "id": "REQ-20260619-402",
+      "title": "W2 SaaS UI and product experience",
+      "expected_result": "W2 completes a polished responsive role/module-aware UI shell and product screens in owned paths, with mobile/accessibility/browser tests and shared-entrypoint needs recorded in W2 INTEGRATION.md.",
+      "status": "not_started",
+      "live_required": false,
+      "evidence": []
+    },
+    {
+      "id": "REQ-20260619-403",
+      "title": "W3 ramble queue, parser, agent loop, content prompt",
+      "expected_result": "W3 completes Drive/local intake contracts, parent prompt queue visibility, deduping parser, Decisions/task routing, agent-run verification loop, and WhatsApp prompt flow in owned paths.",
+      "status": "not_started",
+      "live_required": false,
+      "evidence": []
+    },
+    {
+      "id": "REQ-20260619-404",
+      "title": "W4 One Time partner instance and integrations",
+      "expected_result": "W4 completes One Time split-ready configuration, branding, duplicate-repo audit, and Vimeo/Zoom/Resend local adapters/readiness docs/mocks without external mutations.",
+      "status": "not_started",
+      "live_required": false,
+      "evidence": []
+    },
+    {
+      "id": "REQ-20260619-405",
+      "title": "Prompt 05 final shared-file integration",
+      "expected_result": "Prompt 05 merges worker branches in order, applies shared-file requests once, runs full validation, and keeps external gates blocked until approved.",
+      "status": "not_started",
+      "live_required": false,
+      "evidence": []
+    }
+  ]
+}
