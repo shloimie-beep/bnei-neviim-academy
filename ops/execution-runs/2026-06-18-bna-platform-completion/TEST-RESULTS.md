@@ -690,3 +690,14 @@ Content metadata/provenance browser proof (2026-06-19T07:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-145 now has browser proof that the expanded selected-workspace Content card displays workspace, Drive/source, transcript, parse, output count, approval state, created/updated/latest-output dates, Drive file/folder IDs, Telegram source IDs, media URL, and local capture metadata. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Content Drive routing browser proof (2026-06-19T07:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-146 now has browser proof that the selected One Time Content module requests content jobs and content bundles with `project=one_time_mishnah_class`, renders One Time Drive folder/file provenance, and excludes the BNA Drive folder from the selected workspace view. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, Drive setup route, or live Drive mutation was performed.

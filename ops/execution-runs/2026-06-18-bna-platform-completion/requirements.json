@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T07:35:30+03:00",
+  "updated_at": "2026-06-19T07:45:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -251,7 +251,8 @@
         "Content Drive intake/routing now resolves workspace-specific folders, rejects known folder/workspace mismatches, scopes bundles by workspace, and blocks mixed-workspace combined outputs.",
         "Live/class sessions now support direct workspace project filtering and the Calendar class-session feed stays selected-workspace scoped.",
         "REQ-20260618-144 now has browser proof that the selected workspace Content view renders teaching/research material while filtering task, accountability, progress, timer, and parser-review phrases.",
-        "REQ-20260618-145 now has browser proof that expanded Content cards expose selected-workspace metadata, Drive/source provenance, transcript/parse state, output counts, approval state, dates, and capture identifiers."
+        "REQ-20260618-145 now has browser proof that expanded Content cards expose selected-workspace metadata, Drive/source provenance, transcript/parse state, output counts, approval state, dates, and capture identifiers.",
+        "REQ-20260618-146 now has browser proof that the selected One Time Content view requests jobs and bundles with the selected project and exposes One Time Drive folder provenance without BNA Drive folder leakage."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -269,10 +270,11 @@
         "npm test PASS 210/210",
         "npm run bna:run:validate PASS",
         "npm run bna:run:status PASS",
-        "node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js PASS 8/8"
+        "node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js PASS 8/8",
+        "node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/browser-acceptance.test.js PASS 9/9"
       ],
       "notes": "Scoped modules parent remains in_progress until Automations, Integrations, Users, Accounting, and remaining module children have terminal statuses.",
-      "updated_at": "2026-06-19T07:35:30+03:00",
+      "updated_at": "2026-06-19T07:45:30+03:00",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -2060,7 +2062,7 @@
       "title": "Workspace-specific Drive intake/routing",
       "area": "modules",
       "priority": "P1",
-      "current_verdict": "local_implemented_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Each workspace uses its correct Drive intake folder and does not show another workspace material.",
       "acceptance_criteria": [
@@ -2077,7 +2079,8 @@
         "Google Drive setup now emits workspaceFolders/workspaces config for BNA and One Time Mishnah Class, including a distinct One Time intake/routing folder set without running the setup in this session.",
         "Content job creation/edit paths resolve workspace Drive routing before writes, and direct content job/output actions use row-level workspace access checks.",
         "Content bundles are now project-filterable in the API/UI, visible bundle cards show workspace labels, and bundle/bulk generation rejects mixed-workspace content jobs.",
-        "tests/content-drive-routing.test.js covers per-workspace Drive config, content job routing, scoped bundles, mixed-workspace combine guards, and env documentation."
+        "tests/content-drive-routing.test.js covers per-workspace Drive config, content job routing, scoped bundles, mixed-workspace combine guards, and env documentation.",
+        "tests/browser-acceptance.test.js now proves the selected One Time Content module requests content jobs and content bundles with project=one_time_mishnah_class, renders One Time Drive folder/file provenance, and does not expose the BNA Drive folder in the selected workspace view."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -2085,19 +2088,26 @@
         "node --check tests/content-drive-routing.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/community-workspace-scope.test.js tests/workspace-schema.test.js PASS 13/13",
-        "npm test PASS 138/138"
+        "npm test PASS 138/138",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/browser-acceptance.test.js PASS 9/9",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: route content drive by workspace"
+        "current batch commit: feat: route content drive by workspace",
+        "current batch commit: test: verify content drive routing in browser"
       ],
       "files_changed": [
         "server.js",
         "public/operations.html",
         ".env.example",
-        "tests/content-drive-routing.test.js"
+        "tests/content-drive-routing.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation complete. No Drive setup route was run, no live Drive folders were mutated, and live-required item remains needs_verification until release approval, deploy, and live smoke.",
-      "updated_at": "2026-06-18T23:08:45+03:00"
+      "notes": "Local implementation, static/API checks, and browser DOM proof are complete. No Drive setup route was run, no live Drive folders were mutated, and live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-19T07:45:30+03:00"
     },
     {
       "id": "REQ-20260618-147",

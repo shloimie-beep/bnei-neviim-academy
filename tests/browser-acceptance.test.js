@@ -1178,6 +1178,41 @@ async function assertOperationsContentMetadataProvenance(page, calls) {
   assert.match(metadataState.provenanceText, /Local capture\s*media\/content\/TEST-BNA-SEED-801\.mp4/);
 }
 
+async function assertOperationsContentDriveWorkspaceRouting(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Content' }).click();
+  await page.locator('.ops-view-frame[data-current-view="content"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/content-jobs' && call.project === 'one_time_mishnah_class',
+    'Content jobs Drive routing request scoped to One Time workspace',
+  );
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/content-bundles' && call.project === 'one_time_mishnah_class',
+    'Content bundle request scoped to One Time workspace',
+  );
+  const contentCard = page.locator('.content-library-card').filter({ hasText: 'TEST-BNA-SEED Mishnah teaching clip' }).first();
+  await contentCard.waitFor();
+  const expanded = await contentCard.evaluate((node) => node.classList.contains('expanded'));
+  if (!expanded) {
+    await contentCard.locator('.content-card-compact').click();
+  }
+  await contentCard.locator('[aria-label="Content provenance"]').waitFor();
+  const routingState = await page.evaluate(() => {
+    const frame = document.querySelector('.ops-view-frame[data-current-view="content"]');
+    const provenance = frame?.querySelector('[aria-label="Content provenance"]');
+    return {
+      pageText: frame?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      provenanceText: provenance?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(routingState.provenanceText, /Workspace\s*One Time/);
+  assert.match(routingState.provenanceText, /Drive folder\s*drive-folder-one-time/);
+  assert.match(routingState.provenanceText, /Drive file\s*drive-file-801/);
+  assert.doesNotMatch(routingState.pageText, /drive-folder-bna/);
+  assert.doesNotMatch(routingState.pageText, /Workspace\s*BNA/);
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -1315,6 +1350,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
       await assertOperationsContentMetadataProvenance(page, calls);
+      await assertOperationsContentDriveWorkspaceRouting(page, calls);
     } finally {
       await context.close();
       await browser.close();
