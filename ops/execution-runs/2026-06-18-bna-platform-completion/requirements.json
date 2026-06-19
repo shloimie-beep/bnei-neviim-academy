@@ -432,7 +432,8 @@
         "REQ-20260618-163 now has browser proof that the served public homepage primary navigation remains prospect/family-facing and does not expose private Operations login routes while private Operations routes stay intact.",
         "REQ-20260618-164 now has browser proof that the served public homepage shows the provider free-listing CTA and scope without private Operations links.",
         "REQ-20260618-165 now has browser proof for English signup, Hebrew signup, and signup thank-you parent-app offer surfaces with six-month/free/self-governance copy and no one-year or Operations drift.",
-        "REQ-20260618-166 now has rendered header identity proof across public, signup, Hebrew signup, Operations login, Operations shell, and Student Portal surfaces while preserving manifest separation."
+        "REQ-20260618-166 now has rendered header identity proof across public, signup, Hebrew signup, Operations login, Operations shell, and Student Portal surfaces while preserving manifest separation.",
+        "REQ-20260618-167 now has browser route proof that homepage signup CTA, /signup, /blog, and /faq stay in the public shell with canonical public routes and no Operations drift."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -453,9 +454,11 @@
         "node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js PASS 27/27",
         "npm test PASS 213/213",
         "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js PASS 28/28",
-        "npm test PASS 214/214"
+        "npm test PASS 214/214",
+        "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js PASS 34/34",
+        "npm test PASS 215/215"
       ],
-      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete. REQ-20260618-163 through REQ-20260618-166 now have rendered public/header proof.",
+      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete. REQ-20260618-163 through REQ-20260618-167 now have refreshed static and browser proof.",
       "files_changed": [
         "tests/public-navigation.test.js",
         "public/index.html",
@@ -3293,7 +3296,7 @@
       "title": "Public/blog/FAQ/signup/portal route and CTA integrity",
       "area": "public",
       "priority": "P1",
-      "current_verdict": "local_implemented_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Public routes and CTAs resolve to intended pages and do not route into wrong app shell.",
       "acceptance_criteria": [
@@ -3310,7 +3313,8 @@
         "Homepage nav/hero/final signup CTAs and shared blog CTA data now use /signup instead of /signup.html and do not route into Operations.",
         "Parent PWA start_url /signup is backed by the server route, signup language links use /signup and /signup-he, and signup success redirects use /signup-thank-you.",
         "Signup-link email generation uses clean absolute signup URLs, and generated student portal links use /student?code=... while student APIs remain data-only.",
-        "Sitemap advertises the canonical /signup clean public route and avoids Operations/student private portal URLs."
+        "Sitemap advertises the canonical /signup clean public route and avoids Operations/student private portal URLs.",
+        "Playwright now clicks the homepage /signup CTA and serves /signup, /blog, and /faq to prove clean public aliases render in the public shell with /manifest.json, canonical /signup CTAs, no Operations shell text, and no mobile overflow."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -3318,10 +3322,16 @@
         "node --check tests/public-route-cta-integrity.test.js PASS",
         "Public route inline script parse PASS 10 script blocks across public/signup/blog/FAQ/student/Operations pages",
         "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 26/26",
-        "npm test PASS 202/202"
+        "npm test PASS 202/202",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js PASS 34/34",
+        "npm test PASS 215/215",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: align public route ctas"
+        "current batch commit: fix: align public route ctas",
+        "current batch commit: test: verify public route CTAs in browser"
       ],
       "files_changed": [
         "server.js",
@@ -3337,9 +3347,13 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
       ],
-      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local static and browser proof is complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-168",

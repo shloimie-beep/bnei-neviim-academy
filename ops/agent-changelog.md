@@ -5132,3 +5132,24 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Public route and CTA browser proof
+
+Requirement: `REQ-20260618-167`
+
+Changed:
+
+- Added browser acceptance coverage for clean public /signup, /blog, and /faq route aliases plus homepage signup CTA navigation.
+- Verified public manifest use, canonical /signup CTAs, no private Operations shell text, and mobile overflow safety.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-route-cta-integrity.test.js`.
+- PASS `node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js` 34/34.
+- PASS `npm test` 215/215.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

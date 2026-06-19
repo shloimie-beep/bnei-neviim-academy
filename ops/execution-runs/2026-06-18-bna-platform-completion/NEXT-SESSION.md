@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T10:55:30+03:00
+Updated: 2026-06-19T11:05:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -60,7 +60,7 @@ Latest completed local batches:
 
 Exact next requirement:
 
-- REQ-20260618-167 / BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity.
+- REQ-20260618-172 / BNA-TEST-005: Final local and live acceptance gates.
 
 Blocked requirement intentionally skipped:
 
@@ -71,15 +71,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js
+npm test
+npm run bna:run:validate
 ```
 
-Then inspect whether `REQ-20260618-167` needs refreshed rendered-route evidence beyond the existing public route/CTA integrity tests so signup/blog/FAQ/student aliases and CTAs stay canonical and out of the private Operations shell. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
+Then run a final local acceptance/status sweep and prepare release approval. Do not deploy or run live smoke until Shloimie explicitly approves release; live-required items must remain open or blocked until deploy/live-smoke proof exists.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-166 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-167 remains `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

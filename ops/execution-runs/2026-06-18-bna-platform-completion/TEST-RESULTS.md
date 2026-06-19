@@ -910,3 +910,15 @@ Portal header identity browser proof (2026-06-19T10:55:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-166 now has rendered header proof that public homepage, signup, Hebrew signup, Operations login, Operations shell, and Student Portal preserve approved BNA logo/header identity, correct public/Operations manifest separation, language/RTL controls, and no private Operations drift in public/provider/signup headers. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Public route and CTA browser proof (2026-06-19T11:05:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-route-cta-integrity.test.js`.
+- PASS `node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js` 34/34.
+- PASS `npm test` 215/215.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-167 now has rendered route proof that clicking the homepage signup CTA lands on /signup, and /signup, /blog, and /faq all render with the public manifest, public shell copy, canonical /signup CTAs, no private Operations shell text, and no mobile overflow. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

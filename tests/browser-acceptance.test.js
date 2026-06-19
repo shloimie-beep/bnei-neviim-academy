@@ -2099,6 +2099,68 @@ test('Playwright public and login headers keep approved portal identities', asyn
   });
 });
 
+test('Playwright public route aliases and CTAs stay in the public shell', async () => {
+  await withServer(async (baseUrl) => {
+    const browser = await chromium.launch();
+    const context = await browser.newContext({
+      baseURL: baseUrl,
+      serviceWorkers: 'block',
+      viewport: { width: 390, height: 844 },
+    });
+
+    try {
+      const page = await context.newPage();
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.locator('.hero-btn-signup').click();
+      await page.waitForURL(/\/signup(?:$|\?)/);
+      await page.locator('#signupForm').waitFor();
+      const signupRoute = await page.evaluate(() => ({
+        pathname: window.location.pathname,
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        text: document.body.textContent?.replace(/\s+/g, ' ').trim() || '',
+      }));
+      assert.equal(signupRoute.pathname, '/signup');
+      assert.equal(signupRoute.manifest, '/manifest.json');
+      assert.match(signupRoute.text, /Bnei Nevi'im Academy Registration/);
+      assert.doesNotMatch(signupRoute.text, /Operations portal|BNA Operations|Loading BNA Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/blog', { waitUntil: 'domcontentloaded' });
+      await page.locator('#blogTitle').waitFor();
+      const blogRoute = await page.evaluate(() => ({
+        pathname: window.location.pathname,
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        text: document.body.textContent?.replace(/\s+/g, ' ').trim() || '',
+        signupHref: document.querySelector('a[href="/signup"]')?.getAttribute('href') || '',
+      }));
+      assert.equal(blogRoute.pathname, '/blog');
+      assert.equal(blogRoute.manifest, '/manifest.json');
+      assert.match(blogRoute.text, /Bnei Neviim Blog/);
+      assert.equal(blogRoute.signupHref, '/signup');
+      assert.doesNotMatch(blogRoute.text, /Operations portal|BNA Operations|Loading BNA Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/faq', { waitUntil: 'domcontentloaded' });
+      await page.locator('#faqTitle').waitFor();
+      const faqRoute = await page.evaluate(() => ({
+        pathname: window.location.pathname,
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        text: document.body.textContent?.replace(/\s+/g, ' ').trim() || '',
+        signupHref: document.querySelector('a[href="/signup"]')?.getAttribute('href') || '',
+      }));
+      assert.equal(faqRoute.pathname, '/faq');
+      assert.equal(faqRoute.manifest, '/manifest.json');
+      assert.match(faqRoute.text, /Frequently Asked Questions/);
+      assert.equal(faqRoute.signupHref, '/signup');
+      assert.doesNotMatch(faqRoute.text, /Operations portal|BNA Operations|Loading BNA Operations/i);
+      await noHorizontalOverflow(page);
+    } finally {
+      await context.close();
+      await browser.close();
+    }
+  });
+});
+
 test('Playwright Operations acceptance covers routes, history, responsive layout, workspace, helper, and student detail', async () => {
   await withServer(async (baseUrl) => {
     const calls = [];
