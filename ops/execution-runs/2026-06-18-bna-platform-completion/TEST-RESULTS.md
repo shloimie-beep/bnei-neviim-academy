@@ -658,3 +658,13 @@ Mixed parser idempotency refreshed proof (2026-06-19T07:05:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-142 refreshed focused backend/parser proof for deterministic parser item keys, scoped student matching, task update instead of duplicate insert, and non-task lane upserts by parser item key. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Community Contacts browser proof (2026-06-19T07:15:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-143 now has browser proof that after switching to One Time workspace, the Contacts module requests signups with `project=one_time_mishnah_class`, shows the selected service-provider workspace in the header, displays One Time workspace labels on the contact card/detail, and excludes the BNA contact fixture. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

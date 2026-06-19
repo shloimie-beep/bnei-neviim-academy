@@ -307,7 +307,43 @@ function operationsFixture(pathname, url, options = {}) {
     '/api/bna/integrations/status': { integrations: [] },
     '/api/bna/users': { users: [] },
     '/api/bna/invitations': { invitations: [] },
-    '/api/bna/signups': { signups: [] },
+    '/api/bna/signups': {
+      signups: [
+        project === 'one_time_mishnah_class'
+          ? {
+              id: 701,
+              parent_name: 'One Time Parent',
+              student_name: 'One Time Learner',
+              parent_email: 'one-time-parent@example.invalid',
+              parent_phone: '0500000001',
+              status: 'new',
+              payment_status: 'paid',
+              project_key: 'one_time_mishnah_class',
+              project_name: 'One Time Mishnah Class',
+              project_short_name: 'One Time',
+              workspace_key: 'one_time_mishnah_class',
+              workspace_name: 'One Time Mishnah Class',
+              workspace_type: 'service_provider',
+              tags: ['service-provider'],
+            }
+          : {
+              id: 700,
+              parent_name: 'BNA Parent',
+              student_name: 'BNA Learner',
+              parent_email: 'bna-parent@example.invalid',
+              parent_phone: '0500000000',
+              status: 'new',
+              payment_status: 'open',
+              project_key: 'bna',
+              project_name: 'BNA',
+              project_short_name: 'BNA',
+              workspace_key: 'bna',
+              workspace_name: 'BNA',
+              workspace_type: 'school',
+              tags: ['school'],
+            },
+      ],
+    },
     '/api/bna/payments': { payments: [] },
     '/api/bna/payment-intake': { intake: [] },
     '/api/bna/payment-reminders/due': { found: 0, due: [] },
@@ -985,6 +1021,33 @@ async function assertOperationsCalendarModule(page) {
   assert.doesNotMatch(calendarState.pageText, /google calendar|sync calendar|connect calendar/i);
 }
 
+async function assertOperationsContactsCommunityScope(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Contacts' }).click();
+  await page.locator('.ops-view-frame[data-current-view="contacts"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/signups' && call.project === 'one_time_mishnah_class',
+    'Contacts signups request scoped to One Time workspace',
+  );
+  await page.locator('.contact-card').filter({ hasText: 'One Time Parent' }).waitFor();
+  const contactsState = await page.evaluate(() => {
+    const frame = document.querySelector('.ops-view-frame[data-current-view="contacts"]');
+    return {
+      detailText: frame?.querySelector('.contact-detail-panel')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      headerText: frame?.querySelector('.page-heading')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      listText: frame?.querySelector('.contact-list')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(contactsState.headerText, /Workspace:\s*Service provider:\s*One Time Mishnah Class/);
+  assert.match(contactsState.headerText, /1 visible/);
+  assert.match(contactsState.listText, /One Time Parent/);
+  assert.match(contactsState.listText, /One Time Learner/);
+  assert.match(contactsState.listText, /One Time/);
+  assert.match(contactsState.detailText, /Workspace\s*One Time/);
+  assert.match(contactsState.detailText, /one-time-parent@example\.invalid/);
+  assert.doesNotMatch(contactsState.listText, /BNA Parent/);
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -1119,6 +1182,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
+      await assertOperationsContactsCommunityScope(page, calls);
     } finally {
       await context.close();
       await browser.close();

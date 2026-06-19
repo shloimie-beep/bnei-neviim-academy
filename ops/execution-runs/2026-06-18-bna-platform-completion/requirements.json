@@ -1911,7 +1911,9 @@
         "The signups query now joins bna_workspaces and the workspace project record, so super-admin cross-workspace views can be explicitly filtered and labeled.",
         "Operations Contacts now passes selectedProjectFilter into api.getSignups and shows the active workspace context in the Contacts header.",
         "Contact cards and detail panels now display the signup workspace label returned by the scoped API.",
-        "tests/community-workspace-scope.test.js covers the server workspace filter/metadata and the Operations Contacts workspace request/display behavior."
+        "tests/community-workspace-scope.test.js covers the server workspace filter/metadata and the Operations Contacts workspace request/display behavior.",
+        "Browser acceptance now verifies the rendered Contacts module requests signups with the selected One Time workspace project filter after a workspace switch.",
+        "Browser acceptance now verifies the Contacts header shows the selected service-provider workspace and the contact card/detail display the One Time workspace label while excluding the BNA contact fixture."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1919,18 +1921,25 @@
         "node --check tests/community-workspace-scope.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js PASS 13/13",
-        "npm test PASS 129/129"
+        "npm test PASS 129/129",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: scope community contacts"
+        "current batch commit: feat: scope community contacts",
+        "current batch commit: test: verify community contacts in browser"
       ],
       "files_changed": [
         "server.js",
         "public/operations.html",
-        "tests/community-workspace-scope.test.js"
+        "tests/community-workspace-scope.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
-      "updated_at": "2026-06-18T22:35:15+03:00"
+      "notes": "Local workspace-scoped community/Contacts behavior now has static/API and browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible/server-visible changes.",
+      "updated_at": "2026-06-19T07:15:30+03:00"
     },
     {
       "id": "REQ-20260618-144",

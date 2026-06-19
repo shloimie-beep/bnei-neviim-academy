@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T07:05:30+03:00
+Updated: 2026-06-19T07:15:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-142 refreshed parser/backend proof that deterministic parser item keys, scoped student matching, and idempotent task/accountability/group/timer routing prevent duplicate work across repeated parser runs. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-143.
+Current verification batch: REQ-20260618-143 now has static/API and browser DOM proof that Contacts/Community uses the selected workspace filter and renders workspace labels for scoped community records. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-144.
 
 No deployment or production-data mutation is approved in this run.

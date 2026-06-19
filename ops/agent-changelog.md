@@ -4308,6 +4308,29 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Community Contacts browser proof
+
+Requirement: `REQ-20260618-143`
+
+Changed:
+
+- Added scoped signup fixtures to the Operations browser acceptance flow.
+- Verified Contacts requests signups with the selected One Time workspace
+  project after a workspace switch.
+- Verified the Contacts header/card/detail render the selected service-provider
+  workspace labels and exclude the BNA contact fixture.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Mixed parser idempotency refreshed proof
 
 Requirement: `REQ-20260618-142`
