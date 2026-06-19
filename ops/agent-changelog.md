@@ -23614,3 +23614,40 @@ Remaining:
   Mode smoke continuation.
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
+
+## 2026-06-19T07:55:00+03:00 - Agent Control DB/API Readback
+
+Closed the local DB/API route-smoke portion of `REQ-20260619-206`.
+
+- Added `tests/agent-control-api-readback.test.js`, which VM-loads the real
+  `server.js` Agent Control routes with fake Express and in-memory Postgres.
+- Verified a safe demo task can create an Agent Run, claim it, post progress,
+  attach evidence, submit a blocked result, seal the run, update the parent
+  task, add task comment/activity, and create exactly one linked operator
+  Decision.
+- Verified scoped non-Super Admin One Time identities cannot create or list
+  Agent Control runs and no run/event rows are written before rejection.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/agent-control-api-readback.test.js`.
+- PASS `node --test tests/agent-control-api-readback.test.js` 2/2.
+- PASS focused Agent Control suite 7/7.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No full UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260619-206` still needs focused Super Admin browser smoke and manual
+  Agent Mode/browser-judgment smoke.
+- `REQ-20260619-207` remains blocked on secure external provider credentials,
+  owner-only account actions, and explicit release approval.

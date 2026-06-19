@@ -90,6 +90,22 @@ remain open.
   integration write, Drive write, Telegram send, or broad UI crawl was
   performed.
 
+2026-06-19 Agent Control DB/API readback continuation:
+
+- Added `tests/agent-control-api-readback.test.js`, a VM route smoke that
+  loads the real `server.js` handlers with fake Express and in-memory
+  Postgres.
+- Proved a safe demo task can create an Agent Run, generate a credential-free
+  prompt, claim the run, post progress, attach evidence, submit a blocked
+  result, seal the run, update the parent task, add a task comment/activity,
+  and create exactly one linked operator Decision.
+- Proved scoped non-Super Admin One Time identities cannot create or list
+  Agent Control runs and no run/event rows are written before rejection.
+- Focused Agent Control tests passed 7/7; `npm run bna:run:validate` passed.
+- No deployment, production DB mutation, external account write, Drive write,
+  Telegram send, broad UI crawl, watch loop, or agent-fleet loop was
+  performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -98,8 +114,9 @@ Still open after this batch:
   withheld until explicit release approval.
 - `REQ-20260619-205` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
-- `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
-  Mode smoke continuation.
+- `REQ-20260619-206` has local DB/API route smoke coverage now; it still needs
+  focused Super Admin browser smoke and manual Agent Mode/browser-judgment
+  smoke before local closeout.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
 
@@ -135,12 +152,14 @@ Protocol/tooling items completed in this run:
   Verification panel in `public/operations.html`.
 - Added compact action-registry rows for the new visible actions.
 - Added `tests/agent-control-center.test.js`; targeted test passes 5/5.
+- Added `tests/agent-control-api-readback.test.js`; focused Agent Control
+  suite now passes 7/7 and covers DB/API lifecycle plus negative scoped
+  identity denial.
 
 Still open:
 
 - No deployment or production mutation was performed.
-- Local DB/API smoke, browser smoke screenshots, negative scoped-identity
-  tests, Playwright/demo data, notification hooks, and manual Agent Mode smoke
+- Browser smoke screenshots, notification hooks, and manual Agent Mode smoke
   remain open.
 - Audit-dependent `REQ-20260618-101` through `REQ-20260618-111` remain blocked
   on the external audit package only.

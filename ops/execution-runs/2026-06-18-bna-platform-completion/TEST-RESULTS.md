@@ -23,11 +23,8 @@ Verified on 2026-06-19:
 
 Still required before local completion:
 
-- DB-backed route smoke for the new `bna_agent_*` tables and APIs.
-- Negative scoped-identity API tests.
 - Super Admin Agent Control Center browser smoke for `/operations?view=agents`
   and `/operations/agents/runs/:runKey`.
-- Safe demo task/run fixture.
 - Manual Agent Mode smoke using the generated prompt.
 - Full-suite regression after DB/API/browser smoke changes.
 
@@ -123,3 +120,29 @@ Not run for this batch:
 - No production DB write/readback.
 - No deployment.
 - No external Zoom/Vimeo/Resend/DNS/Stripe/Drive/Telegram write.
+
+Verified on 2026-06-19 for Agent Control DB/API readback:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/agent-control-api-readback.test.js`.
+- PASS `node --test tests/agent-control-api-readback.test.js` 2/2.
+- PASS focused Agent Control suite 7/7:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `not_started: 1`, `in_progress: 14`,
+  `needs_verification: 7`, `blocked: 2`, `done: 7`.
+- The API smoke used fake Express and in-memory Postgres only. It verified a
+  safe demo task run lifecycle: create run, claim, progress, evidence attach,
+  blocked submit, blocked seal, task comment/activity updates, one linked
+  operator Decision, and scoped non-Super Admin denial before writes.
+
+Not run for this batch:
+
+- No Super Admin browser screenshot smoke yet.
+- No manual Agent Mode/browser-judgment smoke yet.
+- No full `npm test`.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.

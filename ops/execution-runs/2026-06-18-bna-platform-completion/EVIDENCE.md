@@ -200,6 +200,28 @@ Protocol/tooling verification evidence:
   Students/Accounting, clicks the no-write Drive Brief preview, and passes
   mobile overflow checks with fake local data only.
 
+2026-06-19 Agent Control DB/API readback evidence:
+
+- API/lifecycle implementation:
+  `src/lib/bna/agent-control.js` and `server.js`.
+- Operations UI/control surface:
+  `public/operations.html`.
+- VM API readback smoke:
+  `tests/agent-control-api-readback.test.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests/agent-control-api-readback.test.js`.
+- PASS focused Agent Control suite 7/7:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js`.
+- PASS `npm run bna:run:validate`; active run remains valid and partial.
+- The VM smoke proves the existing Agent Control routes, without starting the
+  server or touching production data, create a safe demo Agent Run, claim it,
+  post progress, attach evidence, submit a blocked result, seal it, update the
+  parent task, add task comment/activity, and create exactly one linked
+  operator Decision.
+- The same smoke proves scoped non-Super Admin One Time identities receive 403
+  for Agent Control lifecycle/list routes before any run/event row is written.
+
 Not run:
 
 - No full baseline UI crawl.

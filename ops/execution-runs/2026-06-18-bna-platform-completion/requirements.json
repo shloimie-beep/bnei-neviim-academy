@@ -183,15 +183,19 @@
         "server.js",
         "public/operations.html",
         "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js",
         "ops/action-registry.json"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js",
         "node --check src/lib/bna/agent-control.js",
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js",
+        "npm run bna:run:validate"
       ],
-      "notes": "Backend, Operations UI, action registry, and focused contract test are implemented locally. Open until local browser/API smoke, manual Agent Mode smoke, deployment approval path, and remaining notification/Playwright/demo-data work are complete."
+      "notes": "Backend, Operations UI, action registry, focused contract test, and local VM-backed DB/API lifecycle smoke are implemented. The API smoke creates a run for a safe demo task, claims it, posts progress, attaches evidence, submits a blocked result, seals it, and proves one linked operator Decision plus task comment/activity side effects. Open until Super Admin browser smoke, manual Agent Mode smoke, deployment approval path, and remaining notification/demo-data work are complete."
     },
     {
       "id": "REQ-20260618-113",
@@ -308,15 +312,18 @@
         "server.js",
         "public/operations.html",
         "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js",
         "ops/action-registry.json"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js",
         "node --check src/lib/bna/agent-control.js",
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js"
       ],
-      "notes": "Agent Run portal supports claim, progress, evidence, submit, seal, block, resume, reopen, and cancel controls. Needs authenticated browser/API smoke."
+      "notes": "Agent Run portal supports claim, progress, evidence, submit, seal, block, resume, reopen, and cancel controls. Local API smoke verifies claim, progress, evidence attach, blocked submit, blocked seal, and one operator Decision through real server route handlers with an in-memory DB. Authenticated browser smoke remains open."
     },
     {
       "id": "REQ-20260618-118",
@@ -333,15 +340,18 @@
         "server.js",
         "public/operations.html",
         "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js",
         "ops/action-registry.json"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js",
         "node --check src/lib/bna/agent-control.js",
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js"
       ],
-      "notes": "Seal validation and task update paths are implemented and unit-tested for evidence requirement. Needs API smoke with a demo task/run."
+      "notes": "Seal validation and task update paths are implemented and unit-tested for evidence requirement. Local API smoke with a safe demo task verifies evidence attachment, blocked result submission, Seal Run, task comment/activity updates, and linked operator Decision creation. Browser smoke/manual Agent Mode proof remains open."
     },
     {
       "id": "REQ-20260618-119",
@@ -383,15 +393,18 @@
         "server.js",
         "public/operations.html",
         "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js",
         "ops/action-registry.json"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js",
         "node --check src/lib/bna/agent-control.js",
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js"
       ],
-      "notes": "Super Admin and project-scope checks are implemented in routes. Needs negative API tests with scoped identities."
+      "notes": "Super Admin and project-scope checks are implemented in routes. Local negative API smoke proves a scoped One Time owner cannot create or list Agent Control runs and no run/event rows are written before rejection."
     },
     {
       "id": "REQ-20260618-121",
@@ -408,15 +421,19 @@
         "server.js",
         "public/operations.html",
         "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js",
         "ops/action-registry.json"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js",
         "node --check src/lib/bna/agent-control.js",
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js",
+        "npm run bna:run:validate"
       ],
-      "notes": "Task verification mode fields and local policy hooks exist. Playwright/API integration and safe demo fixtures remain open."
+      "notes": "Task verification mode fields and local policy hooks exist. Safe local DB/API demo fixture now verifies create/claim/progress/evidence/submit/seal/Decision side effects through real route handlers. Focused Super Admin browser smoke and manual Agent Mode smoke remain open."
     },
     {
       "id": "REQ-20260618-122",
@@ -658,18 +675,22 @@
         "src/lib/bna/agent-control.js",
         "server.js",
         "public/operations.html",
-        "tests/agent-control-center.test.js"
+        "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js"
       ],
       "deployment_evidence": [],
       "verification": [
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js",
+        "npm run bna:run:validate"
       ],
       "acceptance_criteria": [
         "No parallel agent queue is created.",
         "Agent results are stored in BNA/task system routes.",
         "Blocked outcomes create one linked Decision."
       ],
-      "notes": "Prior local batch implemented the core. DB/API/browser/manual Agent Mode smokes remain open."
+      "notes": "Prior local batch implemented the core. Local VM-backed DB/API route smoke now proves create run, claim, progress, evidence, blocked submit, blocked seal, task comment/activity side effects, one linked operator Decision, and scoped non-Super Admin denial without production data. Super Admin browser smoke and manual Agent Mode smoke remain open."
     },
     {
       "id": "REQ-20260619-207",
