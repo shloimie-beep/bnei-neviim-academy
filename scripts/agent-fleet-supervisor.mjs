@@ -799,6 +799,15 @@ function verificationCommands(config, { noSmoke }) {
     'node --check scripts/telegram-kimi-bridge.mjs',
     'node --check scripts/agent-fleet-supervisor.mjs',
     'npm test',
+    'npm run watchdog:audit',
+    'npm run watchdog:links',
+    'npm run watchdog:actions',
+    'npm run watchdog:security',
+    'npm run watchdog:raw',
+    'npm run watchdog:content',
+    'npm run watchdog:communications',
+    'npm run watchdog:ui',
+    'npm run watchdog:visual',
   ];
   if (!noSmoke && config.openAiSmoke) commands.push('npm run openai:smoke');
   return commands;

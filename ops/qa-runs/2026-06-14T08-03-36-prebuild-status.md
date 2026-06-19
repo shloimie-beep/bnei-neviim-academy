@@ -7,7 +7,7 @@ Timestamp: 2026-06-14T08:03:36+03:00
 - Initial dirty worktree was preserved before this buildout.
 - Safety branch pushed earlier: `safety/pre-next-superprompt-20260614-072250`
 - Safety commit pushed earlier: `30bddbd chore: preserve no-ghl cleanup work before workspace buildout`
-- Current checkout during this report: `cleanup/workspace-task-dialogue-rabbi-scheller`
+- Current checkout during this report: `cleanup/workspace-ta[REDACTED_KEY_SHAPED_STRING]`
 - Current HEAD: `75d2b36 chore: safety snapshot before workspace task cleanup`
 - Also contains safety branch: `safety/pre-workspace-task-system-20260614`
 

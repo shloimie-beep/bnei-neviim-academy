@@ -64,12 +64,15 @@ test('server creates canonical identity schema, parent auth, and scoped parent A
     "app.post('/api/bna/identity/backfill'",
     "app.get('/api/bna/identity/merge-reviews'",
     "app.post('/api/bna/parent-accounts/access-code'",
+    "app.post('/api/bna/students/:id/household-link'",
   ].forEach((needle) => assert.ok(server.includes(needle), needle));
 
   assert.match(server, /req\.parentSession = \{[\s\S]*household_id: context\.household\.id/);
   assert.match(server, /Child not found in this household/);
   assert.match(server, /WHERE id = \$\$\{values\.length - 1\}\s+AND household_id = \$\$\{values\.length\}/);
   assert.match(server, /COALESCE\(metadata->>'parent_visible', 'true'\) <> 'false'/);
+  assert.match(server, /preserve_school_membership: body\.preserve_school_membership !== false/);
+  assert.match(server, /school\/BNA student membership was not changed/);
 });
 
 test('backfill and seed rules preserve Dratler roles without Esty school linking', () => {
@@ -85,10 +88,24 @@ test('backfill and seed rules preserve Dratler roles without Esty school linking
   assert.match(server, /identity_backfilled_at = COALESCE\(identity_backfilled_at, NOW\(\)\)/);
 });
 
+test('student identity payloads expose canonical workspace keys', () => {
+  assert.match(server, /function visibleIdentityWorkspaceKey/);
+  assert.match(server, /if \(key === 'family_app'\) return 'dratler_family'/);
+  assert.match(server, /if \(key === 'bna_school'\) return 'bna'/);
+  assert.match(server, /workspace_key: workspaceKey/);
+});
+
 test('parent and operations UI expose access-code login and identity review actions', () => {
   assert.match(parentLoginHtml, /\/api\/parent\/auth\/login/);
   assert.match(parentLoginHtml, /\/api\/parent\/me/);
   assert.match(parentLoginHtml, /Email or phone/);
+  assert.match(parentLoginHtml, /id="continuePanel"/);
+  assert.match(parentLoginHtml, /Continue to parent portal/);
+  assert.match(parentLoginHtml, /Request parent access \/ Family setup/);
+  assert.match(parentLoginHtml, /switchParentButton/);
+  assert.match(parentLoginHtml, /continuePanel\.classList\.remove\('hidden'\)/);
+  assert.match(parentLoginHtml, /form\.classList\.add\('hidden'\)/);
+  assert.doesNotMatch(parentLoginHtml, /Start Accountability Intake/);
   assert.match(parentHtml, /\/api\/parent\/assistant/);
   assert.match(parentHtml, /\/api\/parent\/provider-questions/);
   assert.match(operationsHtml, /Generate Access Code/);

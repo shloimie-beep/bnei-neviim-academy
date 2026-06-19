@@ -35,6 +35,307 @@ Last updated: 2026-06-19
 - The existing Operations UI audit harness from PR #2 is not replaced by this
   protocol setup.
 
+2026-06-17 universal agentic goal-memory/watchdog hardening closeout:
+- Completed `RAW-20260617-005` / `GOAL-20260617-005`, the downloaded
+  universal agentic goal memory and watchdog hardening prompt.
+- Future rambles, GPT/Codex output packets, helper messages, class recordings,
+  communications, contact/provider/accounting items, student observations, and
+  research notes now have a raw-first intake and goal-memory path with stable
+  IDs, parsed lanes, goal candidates, action/route registry coverage, watchdog
+  checks, repair-task hooks, and evidence-required closeout.
+- Added durable source-of-truth files: `QUALITY-GOALS.md`, `GOAL-MODE.md`,
+  `AGENTIC-MEMORY.md`, `memory-topics/`, `ops/action-registry.json`,
+  `ops/route-registry.json`, goal/watchdog audit READMEs, raw fallback docs,
+  and the dated install register
+  `tasks-pending/2026-06-17-universal-agentic-goal-memory-watchdog-hardening.md`.
+- Added runtime/parser/watchdog layer:
+  `railway-migration-2026-06-17-agentic-goal-memory.sql`,
+  `src/lib/bna/intake-schema.js`, `src/lib/bna/goal-registry.js`,
+  `src/lib/bna/goal-memory.js`, `src/lib/bna/ramble-protocol.js`, hardened
+  `src/lib/bna/intake-parser.js`, helper tools `capture_raw_intake`,
+  `show_goal_status`, `run_watchdog_audit`, and package watchdog scripts.
+- Verification passed: focused hardening tests 11/11, full `npm test`
+  713/713, `npm run watchdog:all`, OpenAI/Kimi sidekick smoke
+  `ops/openai-smokes/2026-06-17T12-00-36-308Z-openai-sidekick-smoke.md`,
+  Railway deployment `a2a5bf56-4661-4063-8ead-e1c66010ac9e`, Railway doctor
+  `SUCCESS`, live app smoke
+  `ops/live-smokes/2026-06-17T12-03-49-136Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T12-04-00-461Z-public-route-privacy-smoke.md`,
+  and Operations helper smoke
+  `ops/live-smokes/2026-06-17T12-03-48-493Z-operations-helper-live-smoke.md`.
+- New targeted watchdog reports had zero findings after fixes. The general
+  watchdog report `ops/watchdog-audits/2026-06-17T12-09-watchdog-audit.md`
+  still lists seven older queue/proof hygiene findings that pre-date this
+  install.
+- Closeout audits:
+  `ops/goal-audits/2026-06-17-goal-memory-install-audit.md`,
+  `ops/watchdog-audits/2026-06-17-watchdog-install-audit.md`, and
+  `ops/raw-intake-audits/2026-06-17-raw-intake-backfill-plan.md`.
+- Commit was not performed because the worktree contains extensive
+  pre-existing mixed-scope dirty changes; no files were staged.
+
+2026-06-17 final website correction register closeout:
+- Completed the remaining pending rows: `REQ-20260616-003`,
+  `REQ-20260616-004`, `REQ-20260616-061`, `REQ-20260616-062`, and
+  `REQ-20260616-065` through `REQ-20260616-069`.
+- Final register status is 69 Done, 1 Blocked, 0 Pending. The only blocked
+  item is `REQ-20260616-030`, live Rabbi payment-link creation, pending
+  explicit Stripe or Green Invoice choice plus credentials/payment links.
+- Recording-intake and content-backed mixed recording parsing now share the
+  canonical raw-first intake path with rambles. Stale content job `27` was
+  reprocessed live into `RAW-20260617-004` / parse run `4`; the rerun audit
+  found zero older open raw rows, zero pending uploads, and zero unparsed
+  transcript jobs.
+- Public provider flow now connects homepage provider CTA, provider index,
+  join route, provider portal, first-party classroom setup, and provider plans.
+- Final desktop/mobile Browser audit passed for homepage, provider, and
+  Operations final surfaces after fixing homepage slide-in media overflow.
+- BNA internal calendar/classroom is the working source of truth. Google
+  Calendar/Classroom remain guarded coming-soon connectors.
+- Provider/workspace API-key settings now expose encrypted-storage copy,
+  secret references, rotation reminders, and helper save/rotate controls
+  without exposing secrets.
+- BNA Helper now plans guarded `create_automation` and `update_automation`
+  actions for local automation and billing workflow metadata only, with no
+  external sends, syncs, charges, or publishing.
+- Verification passed: syntax checks, full `npm test` 702/702, local Browser
+  proof `ops/playwright-smokes/2026-06-17-final-register-surfaces-local/report.md`,
+  Railway deployment `b3b7e0f6-1f07-4ec1-8ff4-f65c701ff58d`, Railway doctor
+  `SUCCESS`, final live app smoke
+  `ops/live-smokes/2026-06-17T11-22-42-701Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T11-23-39-214Z-public-route-privacy-smoke.md`,
+  and final register-surface smoke
+  `ops/live-smokes/2026-06-17T11-24-18-485Z-final-register-surfaces-live-smoke.md`.
+- Proof bundle: `ops/system-audits/2026-06-17-final-register-surfaces-audit.md`.
+- Final watchdog proof: `ops/watchdog-audits/2026-06-17T11-28-watchdog-audit.md`;
+  it reported zero ramble-protocol findings, no UI issues, and no
+  repo/source-of-truth drift for this closeout while preserving older
+  queue/proof hygiene findings.
+
+2026-06-17 Content/research scope closeout:
+- Completed `REQ-20260616-047` through `REQ-20260616-052`.
+- Content jobs and class sessions now accept explicit `project_key` / `project`
+  filters. Operations Content loads jobs, class sessions, and meetings through
+  the active workspace project key so BNA and One Time content do not bleed
+  into each other.
+- BNA admin Prompt Library reads API `prompt_text`, lazily refreshes slow prompt
+  loads, and shows 11 prompt previews in readable light-theme cards.
+- Operations Content Research is direct-linkable/mobile-safe and backed by
+  scoped class-session data, with source-sheet and public-bibliography task
+  actions remaining first-party review tasks only.
+- Student portal keeps an anonymous-safe shell while authenticated student
+  payloads use portal-safe question views with source/follow-up enrichment.
+- Audit/proof: `ops/system-audits/2026-06-17-content-research-scope-audit.md`.
+- Verification passed: focused content/portal tests 37/37, full `npm test`
+  692/692, local targeted smoke
+  `ops/live-smokes/2026-06-17T10-04-36-603Z-content-research-scope-live-smoke.md`,
+  local browser proof
+  `ops/playwright-smokes/2026-06-17-content-research-scope-local/report.md`,
+  Railway deployment `b695d66b-da92-4d00-8a9b-e8a0035334d5`, live app smoke
+  `ops/live-smokes/2026-06-17T10-08-41-988Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T10-08-54-466Z-public-route-privacy-smoke.md`,
+  and targeted live content/research smoke
+  `ops/live-smokes/2026-06-17T10-08-41-217Z-content-research-scope-live-smoke.md`.
+- Post-closeout watchdog proof:
+  `ops/watchdog-audits/2026-06-17T10-16-watchdog-audit.md`; it reported zero
+  ramble-protocol findings, no UI issues, and no repo/source-of-truth drift
+  while preserving older queue/proof hygiene findings.
+
+2026-06-17 Provider classroom/settings closeout:
+- Completed `REQ-20260616-043` through `REQ-20260616-046`.
+- Service-provider classroom/community setup can now be drafted from natural
+  language through `create_provider_classroom_draft`, exposed in the shared
+  action registry, BNA Helper planner, Telegram routing, and provider portal.
+- Classroom drafts are first-party BNA task/setup records only. The path records
+  class count, dialogue style, student access, display rules, message
+  permissions, private student-to-teacher replies, moderation requirement, and
+  public-display intent, while explicitly avoiding Google Classroom writes,
+  payments, access grants, live sends, and external writes.
+- Operations Provider Onboarding and One Time classroom settings expose
+  classroom/community setup controls, class/member lists, teacher posts,
+  questions/replies, private student replies, no student-student chat by
+  default, and display/publish controls.
+- Provider Index settings are reorganized into Public Provider Index, Provider
+  Plans, Provider Entitlements, Provider Onboarding, and Commercial Models with
+  `Free for now` visible.
+- Verification passed: focused action/helper/provider tests 46/46, full
+  `npm test` 689/689, local targeted smoke
+  `ops/live-smokes/2026-06-17T09-26-25-520Z-provider-classroom-settings-live-smoke.md`,
+  local desktop/mobile browser proof
+  `ops/playwright-smokes/2026-06-17-provider-classroom-settings-local/report.md`,
+  Railway deployment `b0fa9953-9529-45d8-a56d-c74d428154ff`, live app smoke
+  `ops/live-smokes/2026-06-17T09-31-13-642Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T09-31-23-384Z-public-route-privacy-smoke.md`,
+  and targeted live provider/classroom smoke
+  `ops/live-smokes/2026-06-17T09-31-12-926Z-provider-classroom-settings-live-smoke.md`.
+
+2026-06-17 Operations settings/dashboard/integrations/automations closeout:
+- Completed `REQ-20260616-032` through `REQ-20260616-042`.
+- Dashboard overview now has one compact context strip for workspace, role,
+  view, and filter state; alert metric cards render on the Alerts subview
+  instead of duplicating on overview.
+- Settings category pages now use compact leaf tabs/pills. Users & Roles,
+  Learning Portal Access, Bots & AI usage limits, Billing & Payments, real
+  Integrations, Google Calendar/Classroom, and Automation Center each expose a
+  clearer operator-facing settings surface.
+- Real integrations are separated into Resend Email Provider, Buffer Social
+  Scheduler, WAPI/WhatsApp, Payment Provider, Google Calendar, and Google
+  Classroom cards. Secret/token copy uses provider-scoped secret-reference
+  wording; the live smoke confirmed no `BUFFER_API_KEY` or `RESEND_API_KEY`
+  strings are exposed in Operations UI.
+- Google Calendar and Google Classroom remain `Coming soon / internal-first`;
+  BNA internal calendar/classroom are the current source of truth until Google
+  sync is explicitly approved.
+- Automation Center rows now surface name, purpose, trigger, action,
+  workspace, enabled/disabled status, last-run evidence, and Edit/Details, plus
+  a `Create automation with helper` entry that opens the helper without running
+  external writes.
+- Verification passed: focused Operations/settings tests, full `npm test`
+  684/684, local desktop/mobile browser proof
+  `ops/playwright-smokes/2026-06-17-operations-settings-dashboard-local/report.md`,
+  Railway deployment `5bd23d08-d44b-41ea-b8f1-5fca56edad80`, Railway doctor
+  `SUCCESS`, live app smoke
+  `ops/live-smokes/2026-06-17T08-58-38-007Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T08-58-23-715Z-public-route-privacy-smoke.md`,
+  and targeted Operations smoke
+  `ops/live-smokes/2026-06-17T08-58-37-286Z-operations-settings-dashboard-live-smoke.md`.
+- Post-closeout watchdog proof:
+  `ops/watchdog-audits/2026-06-17T09-04-watchdog-audit.md`; it reported zero
+  ramble-protocol findings, no UI issues, and no repo/source-of-truth drift.
+
+2026-06-17 safe OpenAI keyholder / Kimi fallback closeout:
+- Completed `REQ-20260616-031`.
+- OpenAI loading now supports the outside-repo BNA keyholder alias
+  `openaiv2.txt` across `server.js`, the Telegram bridge, the OpenAI smoke,
+  keyholder diagnostics, and OpenAI diagnostics. The key was not copied into
+  the repo, `.secrets`, Railway, screenshots, logs, or chat.
+- Diagnostics now redact key/token/secret-looking error text and report only
+  source metadata, fingerprints, and OpenAI request IDs. Existing key-shaped QA
+  artifact fragments were redacted; the QA artifact scan now finds no remaining
+  long `sk-...` strings outside secret storage.
+- Verification passed: syntax checks, focused AI/keyholder tests 23/23, full
+  `npm test` 676/676, keyholder diagnostics
+  `ops/qa-runs/2026-06-17T08-07-21-079Z-keyholder-diagnostics.md`, OpenAI
+  diagnostics `ops/qa-runs/2026-06-17T08-07-32-779Z-openai-diagnostics.md`,
+  OpenAI primary smoke
+  `ops/openai-smokes/2026-06-17T08-12-06-839Z-openai-sidekick-smoke.md`, Kimi
+  fallback/temporary-primary smoke
+  `ops/openai-smokes/2026-06-17T08-13-22-082Z-openai-sidekick-smoke.md`,
+  Railway deployment `4381af8c-e48c-4d86-9997-1fe319a5acfa`, live app smoke
+  `ops/live-smokes/2026-06-17T08-11-48-107Z-live-app-smoke.md`, and public
+  privacy smoke
+  `ops/live-smokes/2026-06-17T08-11-58-671Z-public-route-privacy-smoke.md`.
+- Post-closeout watchdog proof:
+  `ops/watchdog-audits/2026-06-17T08-22-watchdog-audit.md`; it reported zero
+  ramble-protocol findings, no UI issues, and no repo/source-of-truth drift
+  while preserving older queue/proof hygiene findings.
+- Production/Railway still has the old OpenAI env fingerprint and should only
+  be rotated after explicit operator approval. Until then,
+  `BNA_AI_PRIMARY_PROVIDER=kimi` remains valid for production hosted chat.
+
+2026-06-18 academy Telegram OpenAI-primary / Kimi-fallback closeout:
+- The academy Telegram worker now runs OpenAI primary with Kimi fallback.
+- OpenAI diagnostics passed locally through the keyholder `openaiv2.txt`
+  source; the raw key was not printed, copied, or committed.
+- Telegram text-generation paths that were previously OpenAI-only now use the
+  shared OpenAI/Kimi provider chain: WhatsApp drafts, Facebook drafts, weekly
+  reports, transcript topic inventories, content titles, content draft
+  revisions, and image descriptions. OpenAI remains required for audio/video
+  transcription.
+- Worker code deployment `d4df557d-c041-4293-add1-e8ccd8f0bc79` reached
+  `SUCCESS`.
+- Worker provider-order deployment `ae652bb9-572d-4a22-b2e9-ecc9dae5cb9a`
+  reached `SUCCESS`; startup log showed
+  `ApiPath=OpenAI API (gpt-4.1-mini) -> Kimi API (kimi-k2.6)`,
+  `OpenAIKey=yes`, and `KimiKey=yes`.
+- Verification passed: focused Telegram/provider tests 24/24, full
+  `npm test` 784/784, OpenAI diagnostics PASS, Kimi API health check status
+  200, Telegram status API configured with no blockers, and Telegram webhook
+  pending updates 0.
+
+2026-06-17 Rabbi Scheller / OneTime landing closeout:
+- Completed `REQ-20260616-028` and `REQ-20260616-029`.
+- `REQ-20260616-030` is terminal `Blocked` for live payment-link creation:
+  $67/$149 pricing and UI/config placeholders are implemented, but no local
+  Stripe or Green Invoice key/link was configured for creating live payment
+  links.
+- `/rabbi`, `/rabbi-preview`, and `/one-time-mishnayos` serve the BNA-owned
+  OneTimeOneTime service-provider landing preview. The page is noindex,
+  preview-only, black/white/bright-yellow, uses the existing OneTime preview
+  image, and does not replace the BNA homepage.
+- Public tier API and UI now expose `$67` and `$149`; Stripe and Green Invoice
+  checkout buttons stay disabled with explicit setup-blocked copy until a
+  provider link/key is configured. No live charge, access grant, email,
+  WhatsApp, social post, DNS write, upload, or external connector write was
+  performed.
+- Verification passed: focused Rabbi/provider/privacy tests 28/28, full
+  `npm test` 675/675, local Browser proof
+  `ops/playwright-smokes/2026-06-17-rabbi-onetime-landing-local/browser-smoke.json`,
+  local scripted smoke
+  `ops/playwright-smokes/2026-06-17-rabbi-onetime-landing-local/2026-06-17T07-47-55-000Z-rabbi-onetime-landing-smoke.md`,
+  Railway deployment `9c24a5ba-320e-4e39-bc33-8228d51e72b4`, live app smoke
+  `ops/live-smokes/2026-06-17T07-50-32-133Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T07-50-42-044Z-public-route-privacy-smoke.md`,
+  Rabbi landing smoke
+  `ops/live-smokes/2026-06-17T07-50-31-511Z-rabbi-onetime-landing-smoke.md`,
+  and live Browser proof
+  `ops/playwright-smokes/2026-06-17-rabbi-onetime-landing-live/browser-smoke.json`.
+- Post-closeout watchdog proof:
+  `ops/watchdog-audits/2026-06-17T07-56-watchdog-audit.md`; it reported zero
+  ramble-protocol findings, no UI issues, and no repo/source-of-truth drift
+  while preserving older broad queue hygiene findings.
+
+2026-06-17 public/portal navigation and positioning closeout:
+- Completed `REQ-20260616-020`, `REQ-20260616-021`, `REQ-20260616-025`,
+  `REQ-20260616-026`, and `REQ-20260616-064`.
+- The current public top nav is grouped as `Explore` for School, Families, and
+  Service Providers, plus `Portal Login` for Parent Login, Student Login,
+  Provider Portal, and Operations Login. Public portal links route to safe
+  entry points only: `/parent/login`, `/student/login`, `/provider`, and
+  `/operations-login.html`.
+- Parent, student, provider, and parent-login portal pages now include
+  consistent topbar links back to the public site and related safe entry pages.
+- Homepage positioning now separates Schools / AI Microschool, Families /
+  Parent App, and Service Provider Network, and includes one-man Jewish AI
+  microschool, natural-language school management, AI overhead reduction, and
+  better rabbi pay messaging.
+- Verification passed: focused public/portal tests 34/34, full `npm test`
+  675/675, local Browser proof
+  `ops/playwright-smokes/2026-06-17-public-navigation-positioning-local/report.md`,
+  Railway deployment `f0bfc896-88ae-4752-b331-7a02c06566b3`, live app smoke
+  `ops/live-smokes/2026-06-17T07-20-54-869Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-17T07-21-05-219Z-public-route-privacy-smoke.md`,
+  and public-navigation smoke
+  `ops/live-smokes/2026-06-17T07-20-54-368Z-public-navigation-positioning-smoke.md`.
+
+2026-06-16 on-page scoped helper / tool parity local update:
+- Added the page-native scoped helper foundation requested in
+  `C:\Users\User\Downloads\2026-06-16-codex-on-page-scoped-helper-tool-parity-prompt (1).md`.
+- New helper modules cover scope resolution, safety policy, profile and
+  questionnaire storage, scoped knowledge, confirmation gates, and planner
+  compatibility under `src/lib/bna/helper/`.
+- Helper registry/client metadata now includes side-effect level, allowed
+  scopes, required role, confirmation policy, and audit metadata; scoped
+  permissions prevent provider, parent/family, and student helpers from using
+  global admin or cross-scope tools.
+- Startup SQL and `railway-migration-2026-06-16-helper-profile-knowledge.sql`
+  add `bna_helper_action_log`, `bna_helper_profiles`, and
+  `bna_helper_knowledge_items`; the canonical tool audit log remains in place.
+- Operations now exposes a scoped helper card with helper name, access summary,
+  tool count, safety level, suggested actions, and `Teach helper`.
+- Generated helper parity artifacts:
+  `ops/helper-tool-parity-map.md` and `ops/helper-tool-parity-map.json` with
+  254 records across Operations, parent, provider, Rabbi, and student surfaces.
+- Local proof passed: `npm run helper:parity`, `node --check server.js`,
+  `node --check scripts/telegram-kimi-bridge.mjs`,
+  `node --check scripts/agent-fleet-supervisor.mjs`, focused helper tests
+  14/14, desktop/mobile Playwright Operations launcher smoke with screenshots
+  under `screenshots/helper-parity-operations-*.png`, and full `npm test`
+  666/666.
+- This update did not deploy, apply live migrations, send email/WhatsApp/social
+  posts, upload video, change DNS, charge payments, grant accounts, copy
+  credentials, publish public/member content, or perform external writes.
+
 2026-06-16 ramble watchdog / self-healing operating-system update:
 - Added the repo watchdog rules at `ops/watchdog-rules.md`.
 - Added `npm run watchdog:audit` through `scripts/watchdog-audit.mjs`; reports
@@ -45,10 +346,11 @@ Last updated: 2026-06-19
   goal IDs, linked decision/pending arrays, and linked proof path aliases.
 - Added and deployed the Operations `Watchdog` module and allowed-view
   defaults for the control center.
-- Current watchdog report:
-  `ops/watchdog-audits/2026-06-16T15-26-watchdog-audit.md`; severity is high,
-  with stale ledger starts, local-verified prompt groups, proof wording gaps,
-  and external/human blocker cleanup still open.
+- Current watchdog cleanup report:
+  `ops/watchdog-audits/2026-06-17T13-26-watchdog-audit.md`; severity is ok with
+  zero findings. The prompt register now has zero unmapped sources and zero
+  prompt sources without a durable path. Remaining choice: whether audits stay
+  explicit commands or become an automatic Downloads/attachments monitor.
 - Deployed commit `3b34755` to Railway production deployment
   `fac52051-3b45-4f41-ab7e-22df8789f32d`; Railway doctor reached `SUCCESS`.
 - Live proof passed: `npm run app:smoke`,
@@ -110,7 +412,7 @@ Last updated: 2026-06-19
   plus paste-URL fallback is available.
 - Created the evidence audit
   `ops/audits/2026-06-16-agent-work-gap-audit.md`. Finding: the main failure
-  pattern was local-verified work piling up behind dirty-tree release
+  pattern was formerly local-only work piling up behind dirty-tree release
   coordination and external blockers, not Codex being unable to see the prompt
   material.
 - Added the first canonical prompt intake register pass:
@@ -158,11 +460,11 @@ Last updated: 2026-06-19
   footer across homepage, blog, FAQ, article, signup, provider, registration,
   and new audience pages. `BNAPages` delegates to the shared shell when the
   shared mounts are present.
-- Public audience taxonomy is `School`, `Parents / Families / Parent App`, and
-  `Service Providers`. Routes `/school`, `/parents`, `/families`,
-  `/parent-app`, and Hebrew aliases are served from static public pages, while
-  `/service-providers` remains the public provider directory. Public, parent,
-  and Operations PWA manifest identities remain separate.
+- Public audience routes `/school`, `/parents`, `/families`, `/parent-app`,
+  and Hebrew aliases are served from static public pages, while
+  `/service-providers` remains the public provider directory. The visible top
+  nav was later regrouped on 2026-06-17 under `Explore` and `Portal Login`.
+  Public, parent, and Operations PWA manifest identities remain separate.
 - Operations top shell now prioritizes actionable status chips for decisions,
   agent work, student accountability, and alerts. The redundant context strip
   and dead scoped-search input were removed.
@@ -448,17 +750,21 @@ Last updated: 2026-06-19
   live classroom smoke
   `ops/playwright-smokes/2026-06-15-local-classroom-buffer-draft-live/report.md`.
 
-2026-06-15 WS08 workspace directory model implemented locally:
+2026-06-15 WS08 workspace directory model implemented locally; superseded by the 2026-06-17 deployed taxonomy closeout:
 - Operations now has a protected `/api/bna/workspace-directory` read endpoint
   that builds the visible workspace directory from existing project/workspace
   data, filters it by the logged-in Operations scope, and returns only the
-  approved display categories: `Super Admin`, `School`, `Service Providers`,
-  and `Family App / Home Accountability`.
+  approved display categories: `Super Admin`, `School`, `Service Provider`,
+  and `Family`.
 - The Operations sidebar and Admin > Workspaces directory consume that display
   model while preserving existing workspace keys and project routing. `BNA`
-  maps to `School`; `One Time Mishnah Class` maps to `Service Providers`;
-  family and household-accountability items collapse under
-  `Family App / Home Accountability`.
+  maps to `School`; `One Time Mishnah Class` maps to `Service Provider`;
+  family and household items collapse under `Family`.
+- 2026-06-17 deployed Railway `d5ee8e25-d777-4f76-bc38-fcfee8db4874`:
+  Operations now shows explicit `Workspace type` and `Specific workspace`
+  selector steps, API directory items include `role_label` and `scope_label`,
+  and old visible Family/Home Accountability labels are removed from workspace
+  UI/API output.
 - `SDDraftler` is not categorized by name. It remains a review item until
   runtime project/person/family/household data confirms its identity.
 
@@ -4029,3 +4335,68 @@ Last updated: 2026-06-19
   through local static server `http://127.0.0.1:43891` across provider
   directory, provider join, provider profile, signup thank-you, registration
   document, blog, and One Time preview. The local smoke server was stopped.
+
+## 2026-06-17 Communications Screening / Imports Closeout
+
+- `REQ-20260616-053` through `REQ-20260616-060` are implemented and deployed in
+  Railway production `3991f132-9207-4386-a9fd-b6148db5944f`.
+- Operations Communications now has readable cards, Top News, Screening
+  Pipeline, Contact Imports preview, email lane subject/status card support,
+  WAPI live-pull diagnostics, and local Phonebook Workspace/no-send copy.
+- Manual communications and WAPI webhooks share first-party screening metadata.
+  Important inbound parent/accountability messages create local in-app/follow-up
+  artifacts only. Parent coaching parsing is non-clinical and creates no
+  diagnosis labels.
+- Contact import preview is dry-run only for this batch: CSV/vCard/email export
+  rows are mapped, classified, deduped, and commit-blocked until a future
+  explicit approval path exists.
+- Proof: `ops/system-audits/2026-06-17-communications-screening-imports-audit.md`,
+  `ops/playwright-smokes/2026-06-17-communications-screening-local/report.md`,
+  `ops/live-smokes/2026-06-17T10-46-34-893Z-communications-screening-live-smoke.md`,
+  `ops/live-smokes/2026-06-17T10-45-20-615Z-live-app-smoke.md`, and
+  `ops/live-smokes/2026-06-17T10-46-28-607Z-public-route-privacy-smoke.md`.
+
+## 2026-06-18 Mobile Operations Workspace Audit Local Closeout
+
+- Source packet:
+  `C:\Users\User\Downloads\CODEX_SUPER_PROMPT_BNA_2026-06-18.md`.
+- Raw intake: `RAW-20260618-001`, preserved at
+  `raw-input/RAW-20260618-001-codex-super-prompt-mobile-workspace-audit.md`.
+- Requirement register:
+  `tasks-pending/2026-06-18-mobile-operations-workspace-audit.md`.
+- Current state: all packet requirements have terminal register statuses.
+  `REQ-20260618-001`, `REQ-20260618-002`, and `REQ-20260618-006` are done;
+  `REQ-20260618-024` is already satisfied; app-visible/local slices
+  `REQ-20260618-003` through `REQ-20260618-005` and
+  `REQ-20260618-007` through `REQ-20260618-023` are blocked only at the
+  deploy/live-proof or approved live-DB apply step.
+- Local proof is complete for the implemented packet slices: public/PWA
+  identity and cache guardrails; workspace taxonomy and first server-side
+  isolation guards; Operations shell/card/task/intake/calendar cleanup;
+  Community, Content, Live Classes, Admin/Communications/Integrations/
+  Automations scoping; student detail/accountability/Goal Board identity
+  scoping; Hebrew/RTL portal behavior; scoped helper/action-audit hardening;
+  and dry-run safe seed/cleanup generation.
+- Latest local verification: full `npm test` passed `764/764`, action watchdog
+  passed with finding count `0`, security watchdog passed with finding count
+  `0`, REQ-022 seed and cleanup dry-runs passed, and `npm run railway:doctor`
+  passed again on 2026-06-18T12:03:40+03:00 for Railway production deployment
+  `ca0075c2-5ce1-4a70-b6c8-e8d2c116adae`.
+- Final source-of-truth watchdog after closeout cleanup:
+  `npm run watchdog:audit` passed with severity `ok`, finding count `0`, and
+  report `ops/watchdog-audits/2026-06-18T09-11-watchdog-audit.md`.
+- Production deploy/live smoke was not run. `scripts/railway-redeploy.ps1`
+  packages the current local tree, and this worktree contains extensive mixed
+  dirty and untracked changes from multiple workstreams. A scope-safe release
+  bundle, clean deploy branch, or explicit operator deploy decision is required
+  before uploading.
+- Live DB seed apply/readback/cleanup was not run. `npm run seed:req022`
+  intentionally defaults to dry-run and requires an explicit safe target
+  database plus `APPLY_REQ022_TEST_SEED` or `CLEANUP_REQ022_TEST_SEED` before
+  real writes.
+- Rollback note: because no deploy/upload or live DB write occurred for this
+  closeout, no production rollback was needed. The next release turn should
+  preserve the current register status, create a scope-safe deploy bundle or
+  commit set, run Railway doctor, deploy, run live health/auth/PWA/workspace/
+  mobile/API-isolation smokes, and only then upgrade blocked app-visible items
+  from local-only blocked status to done.

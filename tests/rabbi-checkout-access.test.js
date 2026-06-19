@@ -4,6 +4,7 @@ const fs = require('node:fs');
 
 const {
   RABBI_PROJECT_KEY,
+  RABBI_TIER_DEFINITIONS,
   RABBI_TIER_KEYS,
   accessScopesForTier,
   normalizeRabbiTierKey,
@@ -22,7 +23,10 @@ const {
   publicMemberView,
 } = require('../src/lib/bna/rabbi-access');
 const {
+  RABBI_DEFAULT_TITLE,
   RABBI_PAGE_KEY,
+  defaultRabbiLandingContent,
+  normalizeRabbiLandingContent,
   publicReplacementAllowed,
   rabbiPageView,
 } = require('../src/lib/bna/rabbi-site');
@@ -45,6 +49,10 @@ test('Rabbi product, payment, access, and page helpers use the One Time contract
   assert.equal(normalizeRabbiTierKey('Live Plus Library'), RABBI_TIER_KEYS.LIVE_LIBRARY);
   assert.deepEqual(accessScopesForTier('library_only'), ['library']);
   assert.deepEqual(accessScopesForTier('live_library'), ['library', 'live']);
+  assert.equal(RABBI_TIER_DEFINITIONS.library_only.price_amount_cents, 6700);
+  assert.equal(RABBI_TIER_DEFINITIONS.live_library.price_amount_cents, 14900);
+  assert.equal(tierPublicView({ tier_key: 'library_only' }).price_amount_cents, 6700);
+  assert.equal(tierPublicView({ tier_key: 'live_library' }).price_amount_cents, 14900);
 
   const tier = tierPublicView({
     tier_key: 'live_library',
@@ -90,6 +98,16 @@ test('Rabbi product, payment, access, and page helpers use the One Time contract
     true,
   );
   assert.equal(rabbiPageView({}).route_path, '/rabbi');
+  assert.equal(rabbiPageView({}).title, RABBI_DEFAULT_TITLE);
+  assert.equal(defaultRabbiLandingContent().hero_title, 'OneTimeOneTime');
+  assert.equal(
+    normalizeRabbiLandingContent({ hero_title: 'One Time Mishnayos' }).hero_title,
+    'OneTimeOneTime',
+  );
+  assert.equal(
+    rabbiPageView({ title: 'One Time Mishnayos Preview', content: { hero_title: 'One Time Mishnayos' } }).content.hero_title,
+    'OneTimeOneTime',
+  );
 });
 
 test('migration creates the Rabbi checkout, payment, access, login, content, and page tables', () => {
@@ -120,8 +138,9 @@ test('migration creates the Rabbi checkout, payment, access, login, content, and
   });
 
   assert.match(migration, /project_key = 'one_time_mishnah_class'/);
-  assert.match(migration, /SELECT id, 'library_only'.*ARRAY\['library'\]/s);
-  assert.match(migration, /SELECT id, 'live_library'.*ARRAY\['library','live'\]/s);
+  assert.match(migration, /SELECT id, 'library_only'.*6700.*ARRAY\['library'\]/s);
+  assert.match(migration, /SELECT id, 'live_library'.*14900.*ARRAY\['library','live'\]/s);
+  assert.match(migration, /payment_link_status/);
   assert.match(migration, /\('stripe', 'test'\)/);
   assert.match(migration, /\('green_invoice', 'test'\)/);
   assert.match(migration, /SELECT id, 'rabbi_landing', '\/rabbi'.*'preview', FALSE/s);
@@ -183,11 +202,19 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.match(server, /res\.sendFile\(path\.join\(__dirname, 'public', 'rabbi\.html'\)\)/);
   assert.doesNotMatch(server, /app\.get\(\s*\['\/'[\s\S]*rabbi\.html/);
   assert.doesNotMatch(server, /app\.get\(\s*'\/'[\s\S]*rabbi\.html/);
+  assert.match(server, /defaults\.price_amount_cents/);
 
   assert.match(publicRabbiHtml, /Preview mode only\. The BNA homepage is not replaced\./);
+  assert.match(publicRabbiHtml, /OneTimeOneTime - Rabbi Eli Scheller/);
+  assert.match(publicRabbiHtml, /--yellow: #ffd400/);
+  assert.match(publicRabbiHtml, /The public prices stay at \$67 and \$149/);
+  assert.match(publicRabbiHtml, /Payment setup/);
   assert.match(publicRabbiHtml, /\/js\/rabbi-launch\.js/);
   assert.match(publicRabbiJs, /\/api\/rabbi\/tiers/);
   assert.match(publicRabbiJs, /\/api\/rabbi\/checkout/);
+  assert.match(publicRabbiJs, /Payment setup blocked: add a Stripe or Green Invoice link in Operations/);
+  assert.match(publicRabbiJs, /stripeReady/);
+  assert.match(publicRabbiJs, /greenReady/);
   assert.match(publicRabbiMemberHtml, /Library and live class access are shown only when an active grant exists\./);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/request-login/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/library/);

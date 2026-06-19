@@ -28,24 +28,278 @@ Use these files consistently:
 
 Do not dump transient rambles into `AGENTS.md`.
 
-## How To Handle Rambles
+## Ramble Protocol - Required For All Operator Dumps
+
+Rambles are first-class source input. Do not ask Shloimie to speak in a
+structured format; the agent/system must structure the ramble for him.
+
+A single ramble can contain:
+
+- website correction
+- bug report
+- product requirement
+- implementation task
+- decision
+- open question
+- durable memory
+- student/accountability note
+- content idea
+- payment/accounting note
+- contact item, including operator language that says GHL/contact; route this
+  to first-party BNA Operations, not a new active GHL runtime
+- frustration/complaint that signals missed or incomplete work
+
+Raw wording must be preserved. Visible task titles must be rewritten cleanly.
+Every extracted item must get a stable ID. Broad correction sessions must
+create a dated requirement register under `tasks-pending/`. No broad correction
+coding should start until that register exists. Completion requires evidence,
+not just a claim.
+
+## Goal-Mode Ramble Execution Trigger
+
+When Shloimie gives a GPT/ChatGPT/Codex-generated correction output, prompt
+packet, long checklist, or broad ramble and says any version of `goal mode`,
+`set it as a goal`, `finish everything`, `do all those things`, `work through
+the whole prompt/output/list`, `keep going until done`, or `build everything`,
+Codex must treat it as goal-led execution permission, not planning only.
+
+Required behavior:
+
+1. Create or continue an active goal when the Codex goal tool is available.
+   The goal objective should cover both protocol hardening and completing the
+   named correction/register work through terminal statuses.
+2. Create/update the raw intake record and dated requirement register first.
+   Use `tasks-pending/_template-ramble-intake.md` and, for GPT-generated
+   correction packets, the output contract at
+   `tasks-pending/_template-goal-mode-correction-output.md`.
+3. After the register exists, start implementation immediately in practical
+   batches. Do not ask Shloimie to choose the order unless a real product,
+   money, access, credential, privacy, legal, or external-account decision is
+   required.
+4. Keep working across Codex turns until every requirement in the active
+   register has a terminal status: `Done`, `Already satisfied`, `Blocked`,
+   `Needs operator decision`, `Failed`, or `Archived`.
+5. `Done` requires inspected files/routes/workflows, implementation evidence,
+   relevant verification, final-audit evidence, ledger/changelog records, and
+   deploy/live-smoke proof for app-visible or server-visible changes. If deploy
+   or live smoke cannot run, leave the item open or explicitly blocked with the
+   blocker and next action.
+6. When context, time, deploy access, credentials, or human decisions interrupt
+   the work, leave a continuation register/status note that names the next
+   requirement IDs and proof/blockers. Do not mark the goal complete merely
+   because the local batch ended.
+
+GPT/ChatGPT outputs meant for Codex should include a clear
+`BNA_GOAL_MODE_EXECUTION_PACKET` section with raw source, requirement IDs,
+expected results, suggested batches, verification expectations, blockers, and
+the instruction to create/continue the Codex goal and execute until terminal
+statuses. If the packet is missing but Shloimie's natural language asks for
+goal mode or to finish everything, infer the same execution policy.
+
+Stable ID formats:
+
+- `RAW-YYYYMMDD-###` for raw input records
+- `REQ-YYYYMMDD-###` for requirements
+- `TASK-YYYYMMDD-###` for tasks
+- `DEC-YYYYMMDD-###` for decisions
+- `Q-YYYYMMDD-###` for open questions
+- `MEM-YYYYMMDD-###` for durable memory candidates
+
+A parsed item is complete only when:
+
+1. The relevant files/routes/components/workflows were inspected.
+2. The implementation matches the item.
+3. Verification was run, or the blocker is documented.
+4. The final audit table contains evidence.
+5. Shloimie can see the item ID and status.
 
 When the operator rambles:
 
-1. Capture the raw ramble in today's file under `memory/YYYY-MM-DD.md`.
-2. Distill it into:
+1. First create or update a Raw Input Queue record.
+2. Capture the raw ramble in today's file under `memory/YYYY-MM-DD.md` when
+   working from Codex/manual sessions or when repo fallback is needed.
+3. Distill it into:
    - durable facts for `MEMORY.md`
    - concrete next actions for `TASKS.md`
-   - current-session internal implementation briefs for `tasks-pending/*.md` when a
-     future coding session should pick up the work without re-explaining
+   - a dated requirement register under `tasks-pending/` for broad correction
+     sessions
+   - current-session internal implementation briefs for `tasks-pending/*.md`
+     when a future coding session should pick up the work without re-explaining
    - repo/process rules for `AGENTS.md` only if they are stable
-3. Keep the raw wording only when it helps preserve intent or phrasing.
-4. When Telegram or Codex creates or updates a task, append a structured record to
-   `ops/agent-task-ledger.jsonl`.
-5. When an agent task is completed, verified, deployed, or otherwise finished,
-   append a concise record to `ops/agent-changelog.md`.
-6. Do not show raw ramble language as task titles. Store raw wording as
+4. Do not show raw ramble language as task titles. Store raw wording as
    provenance only; visible tasks should be concise, rephrased, and actionable.
+5. When Telegram or Codex creates or updates a task, append a structured record
+   to `ops/agent-task-ledger.jsonl`.
+6. When an agent task is completed, verified, deployed, or otherwise finished,
+   append a concise record to `ops/agent-changelog.md`.
+7. For any ramble that creates Codex/system work, use the hardened ramble
+   intake closeout:
+   - raw capture stays in `memory/YYYY-MM-DD.md` or `bna_raw_intake`
+   - visible tasks use distilled titles only
+   - future coding handoffs use `tasks-pending/_template-ramble-intake.md`
+   - corrections to a prior misfiled ramble get a dated correction/audit
+     handoff under `tasks-pending/`
+   - completion requires `ops/agent-task-ledger.jsonl`,
+     `ops/agent-changelog.md`, and proof or an explicit blocker
+8. Telegram capture confirmations should name the raw ID, where the raw ramble
+   was saved, how many requirements/tasks/decisions/open questions were parsed,
+   the visible lane updated, and whether proof/blocker closeout remains; they
+   should not say vague background-queue language for ordinary chat.
+
+## Raw Input Queue
+
+The Raw Input Queue is the intake layer before tasks, requirements, decisions,
+content, students, contacts, or accounting. Every ramble/correction dump must
+first become a raw input record.
+
+The live database table `bna_raw_intake` is canonical for live intake. Repo
+files under `raw-input/` are allowed for Codex/manual sessions or migration
+fallback. Raw input is never deleted just because it was parsed. It remains
+provenance.
+
+Raw input records must track:
+
+- stable raw ID
+- source channel: `telegram`, `website_bot`, `codex_chat`, `operations_ui`,
+  `drive`, `class_recording`, `website_helper`, `operations_helper`, `email`,
+  `whatsapp`, `wapi`, `manual`, `other`
+- raw text
+- transcript text, if voice/audio/video
+- source media/file/message metadata
+- parse status: `raw`, `parsed`, `needs_review`, `registered`, `implemented`,
+  `archived`, `failed`
+- parsed payload
+- created requirement IDs
+- created task IDs
+- created decision IDs
+- open question IDs
+- requirement register path, when applicable
+- created_at, parsed_at, updated_at, archived_at
+
+## Universal Natural Language Intake Protocol
+
+Natural language from every channel is intake, not chatter to discard. This
+includes Telegram, Codex chat, website helper, Operations helper, Drive files,
+class recordings, email, WhatsApp/WAPI, uploads, forms, and manual operator
+notes.
+
+For each natural-language input:
+
+1. Preserve raw wording/transcript/file metadata first in `bna_raw_intake`, or
+   repo fallback `raw-input/` plus `memory/YYYY-MM-DD.md`.
+2. Parse into every relevant lane: requirements, tasks, decisions, questions,
+   memory, goal candidates, student notes/questions/observations, class notes,
+   research, content, communications, contacts, accounting, integrations,
+   service-provider/classroom items, workspace routing, alerts, and errors.
+3. Assign stable IDs to every extracted item and keep source quotes as
+   provenance.
+4. Link parsed items to raw IDs, scope/workspace/project, affected standing
+   goals, and evidence paths when available.
+5. Create repair tasks or blockers when the parser loses a lane, drops raw
+   provenance, or cannot decide scope safely.
+
+## Agentic Goal Memory
+
+Durable goals live in the goal-memory layer, not only in one prompt. Use:
+
+- `QUALITY-GOALS.md` for standing quality goals
+- `GOAL-MODE.md` for execution rules and terminal statuses
+- `AGENTIC-MEMORY.md` for memory-layer definitions
+- `memory-topics/*.md` for topic-scoped durable rules
+- `bna_goal_memory`, `bna_goal_links`, `bna_goal_check_results`, and
+  `bna_agent_events` when the live migration is applied
+- `ops/goal-ledger.jsonl` and `ops/goal-audits/` for repo fallback/evidence
+
+Every agentic goal should have a stable ID, plain-English goal, why it matters,
+scope, surfaces, invariants, watchdog checks, evidence required, failure
+behavior, and a repair-task template.
+
+## Goal Promotion Rules
+
+Create a goal candidate when Shloimie says any durable phrase such as `always`,
+`never`, `every time`, `from now on`, `set this as a goal`, `make this a goal`,
+`system should`, `agents must`, `goal mode`, or when the item affects privacy,
+security, workspace scope, parser reliability, watchdogs, proof, or done-state
+quality.
+
+Promote a goal candidate when it is explicitly durable, repeated, safety or
+privacy related, required by a standing goal, or accepted by Shloimie. Do not
+promote one-off task instructions into permanent memory unless they define a
+future operating rule.
+
+## Goal Maintenance / Watchdog Rules
+
+Watchdogs protect goals after implementation. A watchdog may be static, local,
+browser-based, live, or database-backed, but it must be explicit about what it
+checked and what it skipped.
+
+When a watchdog finds a violation:
+
+1. Create a `WATCH-YYYYMMDD-###` finding.
+2. Link it to the relevant goal ID, route/action/parser lane/source channel,
+   evidence path, severity, and expected behavior.
+3. Create an actionable `REQ-*` or `TASK-*` repair item when Codex can act
+   safely.
+4. Mark external, credential, account-owner, send/publish/charge/DNS/upload, or
+   privacy decisions as blocked or needs-operator-decision.
+5. Do not mark the original work done until the watchdog passes, is superseded,
+   or has a precise blocker.
+
+## Action Registry Requirement
+
+Every visible action, button, helper action, automation draft, form submit,
+navigation control, and coming-soon/disabled control must have a row in
+`ops/action-registry.json` or the existing detailed registry under
+`ops/action-registry/`.
+
+Registry rows must state route/view, selector or action key, label, intended
+behavior, handler/API/helper tool, scope, status, disabled/coming-soon reason,
+mobile expectation, tests, and evidence. If UI adds an action without registry
+coverage, `npm run watchdog:actions` should fail or create a repair finding.
+
+## Route Registry Requirement
+
+Every public, portal, Operations, API, alias, and install/manifest route must be
+declared in `ops/route-registry.json` with access level, scope, expected
+logged-out behavior, privacy notes, canonical target, and smoke/security
+expectations. Private routes must reject anonymous or wrong-scope access.
+Public routes must not expose parent/student/provider/private Operations data.
+
+## Privacy and Workspace-Scope Invariants
+
+- Public pages and public helper context are anonymous-safe.
+- Parent scope sees only that parent/family/student data.
+- Student scope is student-safe and does not expose adult/private notes.
+- Provider/rabbi scope cannot read unrelated BNA/private/provider/family data.
+- BNA, One Time, provider, family legacy, and public content must not bleed
+  across workspace/project boundaries.
+- Raw private message bodies, contact exports, secrets, passwords, API keys,
+  student-sensitive details, and screenshots with private data must not be
+  committed to tracked files; use redacted summaries and stable IDs.
+
+## Definition of Done
+
+An item is done only when:
+
+1. It has a stable ID and linked raw/source provenance.
+2. Relevant files, routes, components, workflows, schema, and registries were
+   inspected.
+3. Implementation matches the expected result and scope.
+4. Relevant action/route/parser/watchdog checks ran, or a blocker is explicit.
+5. Evidence is recorded in the requirement register or audit file.
+6. `ops/agent-task-ledger.jsonl` and `ops/agent-changelog.md` include the
+   completed/verified/deployed/blocked record.
+7. App-visible or server-visible changes have deploy/live-smoke proof, unless
+   deployment is explicitly blocked and the item remains open/blocked.
+
+## Stale Document Warning
+
+Older docs, archived code, previous prompt packets, and historical setup files
+are not automatically current source of truth. Before following any stale file,
+check `AGENTS.md`, `MEMORY.md`, `SYSTEM-STATE.md`, `TASKS.md`, the newest
+`tasks-pending/*.md`, `QUALITY-GOALS.md`, `GOAL-MODE.md`, `AGENTIC-MEMORY.md`,
+and the live Express app/schema. If a stale doc conflicts with current source
+of truth, create a cleanup or archive task instead of reviving old assumptions.
 
 ## Memory Promotion Rules
 
@@ -116,6 +370,13 @@ Keep `MEMORY.md` compact and curated.
   use archived family-accountability docs, old Supabase setup files, or old
   launch/onboarding surfaces as current BNA product, database, school-model, or
   workflow guidance.
+- Legacy Family Accountability docs are not current BNA source of truth unless
+  the current task explicitly says to clean/archive them. If legacy docs mention
+  Menachem/Esther, family checkoffs, kid PINs, family Supabase schema, Resend
+  daily family emails, or a Next.js family scaffold, treat them as stale and
+  follow BNA source-of-truth instead: `AGENTS.md`, `MEMORY.md`,
+  `SYSTEM-STATE.md`, `TASKS.md`, latest `tasks-pending/*.md`, the live Express
+  app in `server.js`, `public/*`, and live database schema/migrations.
 - BNA does not use GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as active
   runtime. Do not add new GHL MCP tools, env vars, API clients, smoke checks,
   dashboard controls, Telegram actions, tags, workflows, docs, routes, prompts,

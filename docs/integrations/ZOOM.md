@@ -18,6 +18,9 @@ Scope: One Time class meetings, setup-session planning, recording metadata, and 
   - required credential-name reporting
   - scope-presence check
   - no-write meeting preview
+  - no-write session automation preview for `REQ-20260619-307`
+  - no-write webhook attendance event preview
+  - no-write attendance correction draft
   - explicit meeting-create approval guard that currently throws instead of writing
 
 ## Configuration Names
@@ -51,4 +54,8 @@ Needed before writes:
 ## Local Acceptance
 
 - Meeting previews are safe and no-write.
-- Creating live Zoom meetings, granting roles, or changing users remains blocked until explicit approval.
+- Session creation, registrant staging, join redirect, webhook attendance, and
+  attendance correction previews are safe and no-write.
+- Creating live Zoom meetings, registrants, webhook listeners, attendance
+  writes, granting roles, or changing users remains blocked until explicit
+  approval, release, and live smoke proof.

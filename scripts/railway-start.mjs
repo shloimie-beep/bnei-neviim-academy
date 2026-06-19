@@ -13,6 +13,9 @@ const processName = rawProcessName.replace(/_/g, '-');
 const processMap = new Map([
   ['web', { command: 'node', args: ['server.js'] }],
   ['server', { command: 'node', args: ['server.js'] }],
+  ['telegram-academy', { command: 'npm', args: ['run', 'telegram:kimi'] }],
+  ['academy-telegram', { command: 'npm', args: ['run', 'telegram:kimi'] }],
+  ['academy-telegram-worker', { command: 'npm', args: ['run', 'telegram:kimi'] }],
   ['telegram-rabbi', { command: 'npm', args: ['run', 'telegram:rabbi'] }],
   ['rabbi-telegram', { command: 'npm', args: ['run', 'telegram:rabbi'] }],
   ['rabbi-telegram-worker', { command: 'npm', args: ['run', 'telegram:rabbi'] }],

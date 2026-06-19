@@ -655,3 +655,626 @@ Not run for this batch:
 - No deployment.
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
+
+## 2026-06-19T12:05:00+03:00 - One Time Master Recovery Batch 0 Verification
+
+- PASS `npm run bna:run:status` before registration.
+- PASS `npm run bna:run:validate` before registration.
+- PASS `node scripts/audit-secrets.mjs` with 0 tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+- PASS `powershell -ExecutionPolicy Bypass -File scripts/railway-doctor.ps1` for deployment `f9921a2d-d614-44df-88c0-392d810ddebd`.
+- PASS `npm run app:smoke`; report `ops/live-smokes/2026-06-19T08-59-31-448Z-live-app-smoke.md`.
+
+## 2026-06-19T12:45:00+03:00 - One Time Master Recovery Batch 1 Verification
+
+- PASS `node --check scripts/bna-execution-run.mjs`.
+- PASS `node --check tests/bna-execution-run.test.js`.
+- PASS schema JSON parse for `ops/execution-runs/requirements.schema.json`.
+- PASS `node --test tests/bna-execution-run.test.js` 17/17.
+- PASS `npm run bna:run:validate` after source metadata, matrix mapping, git
+  ref, blocker, evidence, deployment-proof, active-run, and
+  `NEXT-SESSION.md` hardening.
+- PASS ledger JSONL parse for `ops/agent-task-ledger.jsonl`.
+- PASS `node scripts/audit-secrets.mjs`: 2581 tracked paths checked, 0 tracked
+  secret-risk files found.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Not run for this batch:
+
+- No deployment or live smoke, because `REQ-20260619-301` is protocol tooling
+  and not app-visible.
+- No production DB write/readback.
+- No external account, Drive, Telegram, WhatsApp, email, Zoom, Vimeo, Resend,
+  DNS, payment, or social write.
+
+## 2026-06-19T12:58:00+03:00 - One Time Master Recovery Batch 2 Verification
+
+- PASS `node --check scripts/task-decision-census.mjs`.
+- PASS `node --check tests/task-decision-census.test.js`.
+- PASS `node --test tests/task-decision-census.test.js
+  tests/ops-02-workflow-correctness.test.js
+  tests/workspace-task-no-stale-agent.test.js
+  tests/decision-lifecycle-reprocessing.test.js` 16/16.
+- PASS `node scripts/task-decision-census.mjs`: read-only
+  `live_api:/api/bna/tasks`, tasks seen 792, duplicate groups 57, findings 64,
+  cleanup plan actions 121, warnings 0.
+- PASS privacy scan:
+  `rg -n "household_|family_|student_|parent_|person_"
+  ops/task-decision-census/2026-06-19T09-29-03-110Z-task-decision-census.md
+  ops/task-decision-census/2026-06-19T09-29-03-110Z-task-decision-census.json
+  ops/task-decision-census/latest.json` returned no matches.
+
+Not run for this batch:
+
+- No task or Decision cleanup apply.
+- No production DB write.
+- No deployment or live smoke.
+- No external account, Drive, Telegram, WhatsApp, email, Zoom, Vimeo, Resend,
+  DNS, payment, or social write.
+
+## 2026-06-19T13:08:00+03:00 - One Time Master Recovery Batch 3 Verification
+
+- PASS `node --check src/lib/bna/one-time-role-model.js`.
+- PASS `node --check tests/one-time-role-auth-model.test.js`.
+- PASS `node --check server.js`.
+- PASS focused role/RBAC suite 27/27:
+  `node --test tests/one-time-role-auth-model.test.js
+  tests/one-time-rbac-negative-isolation.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/one-time-intake-api-readback.test.js
+  tests/workspace-person-household-provider-contract.test.js`.
+- PASS local browser/UI smoke 1/1:
+  `node --test tests/one-time-operations-ui-smoke.test.js`.
+- PASS `npm run bna:run:validate`; status counts after Batch 3 are
+  `not_started: 10`, `blocked: 1`, `needs_operator_decision: 4`, `done: 34`.
+- PASS ledger JSONL parse for `ops/agent-task-ledger.jsonl`.
+- PASS `node scripts/audit-secrets.mjs`: 2581 tracked paths checked, 0 tracked
+  secret-risk files found.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Canonical One Time role metadata is available without changing legacy route
+  roles.
+- Cross-workspace user reads are denied for scoped One Time identities.
+- Workspace-owner role changes/deactivation are protected.
+- Permanent removal is Platform Super Admin only.
+- Parent and student scoped access is limited to linked children / own
+  enrollments.
+- Existing Operations Users/Access UI prefers canonical labels and the One
+  Time UI smoke remains green.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write or external-access persistence write.
+- No external account, Drive, Telegram, WhatsApp, email, Zoom, Vimeo, Resend,
+  DNS, payment, or social write.
+
+## 2026-06-19 - One Time Master Recovery Batch 4 Verification
+
+- PASS `node --check scripts/one-time-ui-design-delta-audit.mjs`.
+- PASS `node --check tests/one-time-ui-design-delta-audit.test.js`.
+- PASS focused UI/design suite 24/24:
+  `node --test tests/one-time-ui-design-delta-audit.test.js
+  tests/operations-ws01-layout-readability.test.js
+  tests/bna-brand-shell.test.js
+  tests/operations-activity-queue-health-ui.test.js
+  tests/operations-shell-navigation-contract.test.js
+  tests/operations-filter-dropdown.test.js
+  tests/one-time-operations-ui-smoke.test.js`.
+- PASS `node scripts/one-time-ui-design-delta-audit.mjs`; generated
+  `ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md` and
+  `audit.json` with `status=needs_operator_decision`, blockers `1`, warnings
+  `1`, `external_write_performed=false`, `production_mutation_performed=false`,
+  `authenticated_crawl_performed=false`, and `broad_crawl_performed=false`.
+- PASS `npm run bna:run:validate`; status counts after Batch 4 are
+  `not_started: 9`, `blocked: 1`, `needs_operator_decision: 5`, `done: 34`.
+- PASS ledger JSONL parse for `ops/agent-task-ledger.jsonl`.
+- PASS `node scripts/audit-secrets.mjs`: 2581 tracked paths checked, 0 tracked
+  secret-risk files found.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Required One Time and Operations surfaces have current source/evidence
+  coverage in the no-write delta audit.
+- Operations retains branded topbar/workspace context, stable module toolbar,
+  mobile-safe horizontal module scrolling, tappable/wrapping action controls,
+  fixed-position filter dropdowns, shared card/list/loading/error/empty states,
+  and page-level horizontal overflow guard.
+- Parent, student, and provider portals use the shared BNA shell classes.
+
+Not run for this batch:
+
+- No authenticated `npm run ops:audit`, because local Operations storage state
+  has not been created with `npm run ops:audit:auth`.
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write, external write, broad crawl, external account, Drive,
+  Telegram, WhatsApp, email, Zoom, Vimeo, Resend, DNS, payment, or social write.
+
+## 2026-06-19 - One Time Master Recovery Batch 5 Verification
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/integrations/resend-client.js`.
+- PASS `node --check tests/one-time-communications-workspace.test.js`.
+- PASS focused communications suite 26/26:
+  `node --test tests/one-time-communications-workspace.test.js
+  tests/communications-screening-import-ui.test.js
+  tests/communications-integrations-contract.test.js
+  tests/assistant-portal-communications-contract.test.js
+  tests/intake-parser-communications.test.js tests/resend-client.test.js`.
+- PASS local Operations smoke/layout suite 16/16:
+  `node --test tests/one-time-operations-ui-smoke.test.js
+  tests/operations-ws01-layout-readability.test.js
+  tests/operations-filter-dropdown.test.js tests/bna-brand-shell.test.js`.
+- PASS `npm run bna:run:validate`; status counts after Batch 5 are
+  `not_started: 8`, `blocked: 1`, `needs_operator_decision: 6`, `done: 34`.
+- PASS ledger JSONL parse for `ops/agent-task-ledger.jsonl`.
+- PASS `node scripts/audit-secrets.mjs`: 2581 tracked paths checked, 0 tracked
+  secret-risk files found.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Communications > WhatsApp preserves a first-party WAPI/Whapi readback and
+  correction workspace with list, conversation, details, mobile jumps, and
+  no-send local actions.
+- Communications > Email exposes first-party draft/readiness gates and locks
+  sends behind reviewed readiness plus exact `SEND_RESEND_EMAIL`.
+- Resend drafts preserve reply-to metadata and approved send payloads include
+  `reply_to` only through the existing external-action approval gate.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No email send, WhatsApp send, Resend domain/DNS/Railway propagation, WAPI
+  outbound use, production DB mutation, external account, Drive, Telegram,
+  Buffer publish/schedule, Zoom, Vimeo, payment, GHL, or social write.
+
+## 2026-06-19 - One Time Master Recovery Batch 6 Verification
+
+- PASS `node --check src\lib\bna\one-time-product-system.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\one-time-product-system.test.js`.
+- PASS product readiness suite 7/7:
+  `node --test tests\one-time-product-system.test.js`.
+- PASS adjacent checkout/classroom/portal suite 68/68:
+  `node --test tests\rabbi-checkout-access.test.js
+  tests\one-time-classroom-calendar-community-bot.test.js
+  tests\one-time-external-user-portal.test.js
+  tests\parent-student-portal-contract.test.js`.
+- PASS local Operations smoke/layout suite 16/16:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-ws01-layout-readability.test.js
+  tests\operations-filter-dropdown.test.js tests\bna-brand-shell.test.js`.
+
+Verified behavior:
+
+- The product readiness helper maps product, schedule, booking, parent portal,
+  student portal, provider portal, and billing/access checks to
+  `REQ-20260619-306`.
+- Product-system API payload exposes `product_readiness` without enabling
+  checkout, charges, invoices, payment links, subscriptions, access automation,
+  Zoom writes, sends, or portal publishing.
+- Operations renders the readiness panel under the existing Rabbi / One Time
+  surfaces and keeps explicit no-write guardrail copy.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No checkout, card charge, invoice, payment link, subscription, Zoom/calendar
+  write, portal publish, email/WhatsApp/Telegram send, DNS/Railway propagation,
+  billing provider write, GHL, or external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 7 Verification
+
+- PASS `node --check src\lib\integrations\zoom.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\one-time-zoom-attendance-automation.test.js`.
+- PASS route registry JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8')); console.log('route registry json ok')"`.
+- PASS focused Zoom automation suite 6/6:
+  `node --test tests\one-time-zoom-attendance-automation.test.js`.
+- PASS integration/live-class suite 18/18:
+  `node --test tests\int05-integrations-closeout.test.js
+  tests\live-class-infrastructure.test.js tests\live-access.test.js`.
+- PASS Operations scoping/UI suite 7/7:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-module-scoping.test.js`.
+- PASS final active-run validation:
+  `npm run bna:run:validate` with counts `not_started: 3`,
+  `blocked: 1`, `needs_operator_decision: 11`, and `done: 34`.
+- PASS JSON parse:
+  active run JSON files, route registry, and `ops/agent-task-ledger.jsonl`
+  lines `1269`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+- PASS adjacent checkout/classroom/portal suite 68/68:
+  `node --test tests\rabbi-checkout-access.test.js
+  tests\one-time-classroom-calendar-community-bot.test.js
+  tests\one-time-external-user-portal.test.js
+  tests\parent-student-portal-contract.test.js`.
+- PASS product/Drive suite 11/11:
+  `node --test tests\one-time-product-system.test.js
+  tests\one-time-drive-brief-ingestion.test.js`.
+- PASS final active-run validation:
+  `npm run bna:run:validate` with counts `not_started: 6`,
+  `blocked: 1`, `needs_operator_decision: 8`, and `done: 34`.
+- PASS ledger JSONL parse:
+  `ops/agent-task-ledger.jsonl` lines `1266`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Zoom automation helpers expose session automation preview, webhook attendance
+  preview, and attendance correction draft behavior under `REQ-20260619-307`.
+- All live/external gates stay false: no real meeting, registrant, join
+  redirect, live webhook, attendance write, external notification, or portal
+  publish is enabled.
+- Protected server routes are present and the live meeting creation route
+  remains blocked.
+- Operations renders a no-write Zoom Attendance Automation panel for One Time
+  Live Classes.
+- Route registry rows declare the new preview routes as private and no-write.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No Zoom meeting creation, registrant write, live webhook acceptance,
+  attendance mutation, join redirect exposure, portal publish, external send,
+  billing, DNS/Railway propagation, Vimeo, GHL, or external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 8 Verification
+
+- PASS `node --check src\lib\integrations\video-hosting.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\one-time-recording-vimeo-pipeline.test.js`.
+- PASS route registry JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8')); console.log('route registry json ok')"`.
+- PASS focused recording/Vimeo pipeline suite 5/5:
+  `node --test tests\one-time-recording-vimeo-pipeline.test.js`.
+- PASS integration/provider/live-class suite 23/23:
+  `node --test tests\int05-integrations-closeout.test.js
+  tests\provider-integrations-secret-storage.test.js
+  tests\live-class-infrastructure.test.js tests\live-access.test.js`.
+- PASS Operations content/UI suite 11/11:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-content-library-taxonomy.test.js
+  tests\operations-content-research-section.test.js`.
+- PASS adjacent product/Drive/classroom suite 17/17:
+  `node --test tests\one-time-product-system.test.js
+  tests\one-time-drive-brief-ingestion.test.js
+  tests\one-time-classroom-calendar-community-bot.test.js`.
+- PASS final active-run validation:
+  `npm run bna:run:validate` with counts `not_started: 5`,
+  `blocked: 1`, `needs_operator_decision: 9`, and `done: 34`.
+- PASS JSON parse:
+  active run JSON files, route registry, and `ops/agent-task-ledger.jsonl`
+  lines `1267`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Recording/Vimeo helpers expose recording pipeline preview, publication
+  preview, and retention preview behavior under `REQ-20260619-308`.
+- All live/external gates stay false: no provider webhook, recording fetch,
+  Vimeo upload, publish, unpublish, delete, member visibility, watch-progress
+  write, notification send, or portal publish is enabled.
+- Protected server routes are present and the live upload route remains
+  blocked.
+- Operations renders a no-write Recording / Vimeo Pipeline panel for One Time
+  Library.
+- Route registry rows declare the new preview routes as private and no-write.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No provider webhook acceptance, recording fetch, Vimeo upload, publish,
+  unpublish, delete, member visibility, watch-progress write, notification
+  send, portal publish, billing, DNS/Railway propagation, GHL, or external
+  connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 9 Verification
+
+- PASS `node --check src\lib\bna\transcript-privacy.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\one-time-transcript-privacy.test.js`.
+- PASS route registry JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8')); console.log('route registry ok')"`.
+- PASS focused transcript privacy suite 6/6:
+  `node --test tests\one-time-transcript-privacy.test.js`.
+- PASS public helper/privacy suite 19/19:
+  `node --test tests\public-helper-retrieval.test.js
+  tests\public-content-contamination-guard.test.js
+  tests\universal-assistant-contract.test.js`.
+- PASS classroom/portal/content suite 37/37:
+  `node --test tests\one-time-classroom-calendar-community-bot.test.js
+  tests\parent-student-portal-contract.test.js
+  tests\operations-content-research-section.test.js`.
+- PASS Operations scoping/UI suite 7/7:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-module-scoping.test.js`.
+- PASS Zoom/Vimeo regression suite 11/11:
+  `node --test tests\one-time-recording-vimeo-pipeline.test.js
+  tests\one-time-zoom-attendance-automation.test.js`.
+- PASS final active-run validation:
+  `npm run bna:run:validate` with counts `not_started: 4`,
+  `blocked: 1`, `needs_operator_decision: 10`, and `done: 34`.
+- PASS JSON parse:
+  active run JSON files, route registry, and `ops/agent-task-ledger.jsonl`
+  lines `1268`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Transcript privacy helper exposes version metadata, segment/speaker
+  confidence metadata, privacy classes, review states, student matching, and
+  audience-scoped retrieval previews under `REQ-20260619-309`.
+- All live/external gates stay false: no raw transcript dump, unreviewed
+  retrieval, cross-student private retrieval, public-helper raw transcript RAG,
+  production mutation, or external write is enabled.
+- Protected server route is present and explicitly returns
+  `raw_transcript_text_returned: false`; member-safe classroom data still blanks
+  transcript text and notes.
+- Operations renders a no-write Transcript Privacy / Knowledge Scope panel for
+  One Time Library.
+- Route registry row declares the new readiness route as private and no-write.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No raw transcript import, transcript publication, vector/public-helper corpus
+  mutation, cross-student retrieval enablement, portal publish, billing,
+  DNS/Railway propagation, GHL, or external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 10 Verification
+
+- PASS `node --check src\lib\bna\gamification.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\gamification-events.test.js`.
+- PASS `node --check tests\one-time-gamification-badge-audit.test.js`.
+- PASS route registry JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8')); console.log('route registry ok')"`.
+- PASS focused gamification/badge suite 13/13:
+  `node --test tests\gamification-events.test.js
+  tests\one-time-gamification-badge-audit.test.js`.
+- PASS WS11/parent/forum suite 15/15:
+  `node --test tests\ws11-community-model-contract.test.js
+  tests\parent-progress-privacy.test.js
+  tests\one-time-forum-gamification-plan.test.js`.
+- PASS classroom policy suite 11/11:
+  `node --test tests\one-time-classroom-calendar-community-bot.test.js
+  tests\local-classroom-buffer-draft-policy.test.js`.
+- PASS Operations scoping/UI suite 7/7:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-module-scoping.test.js`.
+- PASS final active-run validation:
+  `npm run bna:run:validate` with counts `not_started: 1`,
+  `blocked: 1`, `needs_operator_decision: 13`, and `done: 34`.
+- PASS JSON parse:
+  active run JSON files, route registry, and `ops/agent-task-ledger.jsonl`
+  lines `1272`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Gamification helper exposes automatic and Rabbi-awarded badge catalogs,
+  thresholds, idempotency, source evidence, parent-safe explanation, reversal,
+  audit readiness, and no-public-leaderboard gates under `REQ-20260619-310`.
+- Server declares badge audit schema/readiness route and seeds the badge
+  catalog from the shared helper.
+- Operations renders a no-write Gamification / Badge Audit panel.
+- Public One Time classroom no longer renders a ranked points leaderboard.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No live badge award, Rabbi-awarded badge write, badge reversal,
+  parent/student notification, automatic access grant, prize/coupon/credit,
+  public individual leaderboard, billing, DNS/Railway propagation, GHL, or
+  external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 11 Verification
+
+- PASS `node --check src\lib\bna\community-moderation.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\one-time-community-moderation-workflow.test.js`.
+- PASS route registry JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8')); console.log('route registry ok')"`.
+- PASS focused community/moderation workflow suite 8/8:
+  `node --test tests\one-time-community-moderation-workflow.test.js`.
+- PASS classroom/community neighbor suite 18/18:
+  `node --test tests\one-time-classroom-calendar-community-bot.test.js
+  tests\community-weekly-updates-contract.test.js
+  tests\one-time-forum-gamification-plan.test.js`.
+- PASS Operations scoping/UI suite 7/7:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-module-scoping.test.js`.
+- PASS WS11/parent/badge suite 16/16:
+  `node --test tests\ws11-community-model-contract.test.js
+  tests\parent-progress-privacy.test.js
+  tests\one-time-gamification-badge-audit.test.js`.
+- PASS final active-run validation:
+  `npm run bna:run:validate` with counts `not_started: 2`,
+  `blocked: 1`, `needs_operator_decision: 12`, and `done: 34`.
+- PASS JSON parse:
+  active run JSON files, route registry, and `ops/agent-task-ledger.jsonl`
+  lines `1270`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Community moderation helper exposes private question drafts, report flags,
+  temporary hold recommendations, private-to-public anonymization previews,
+  readiness sections, no-write gates, and no-unrestricted-student-messaging
+  blockers under `REQ-20260619-311`.
+- Server declares additive community moderation schema/audit fields and the
+  protected readiness route.
+- Existing public classroom response flow remains private-first and submits to
+  `/api/one-time-classroom/threads/:id/responses` for review.
+- Operations renders a no-write Community / Moderation Workflow panel for the
+  One Time Library workspace.
+- Route registry row declares the new readiness route as private/no-write.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No public/member community publication, external notification, deletion
+  purge, unrestricted student messaging enablement, billing,
+  DNS/Railway propagation, GHL, or external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 12 Verification
+
+- PASS `node --check src\lib\bna\study-assistant-readiness.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests\one-time-study-assistant-readiness.test.js`.
+- PASS route registry JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/route-registry.json','utf8')); console.log('route registry ok')"`.
+- PASS focused study-assistant readiness suite 6/6:
+  `node --test tests\one-time-study-assistant-readiness.test.js`.
+- PASS parent/public-helper/transcript privacy suite 34/34:
+  `node --test tests\parent-student-portal-contract.test.js
+  tests\public-helper-retrieval.test.js
+  tests\one-time-transcript-privacy.test.js`.
+- PASS classroom/community suite 14/14:
+  `node --test tests\one-time-classroom-calendar-community-bot.test.js
+  tests\one-time-community-moderation-workflow.test.js`.
+- PASS Operations scoping/UI suite 7/7:
+  `node --test tests\one-time-operations-ui-smoke.test.js
+  tests\operations-module-scoping.test.js`.
+
+Verified behavior:
+
+- Study-assistant helper exposes source-version metadata, content hashing,
+  scoped retrieval previews, restricted/raw/cross-student blockers, disabled
+  feature-flag gates, and no body return under `REQ-20260619-312`.
+- Server declares additive source-version/audit schema and the protected
+  readiness route.
+- Operations renders a no-write Sefaria / Study Assistant Readiness panel for
+  the One Time Library workspace.
+- Route registry row declares the new readiness route as private/no-write.
+- The One Time classroom bot endpoint remains approval-blocked.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No production DB write/readback.
+- No Sefaria/API ingestion, arbitrary translation merge, source corpus
+  mutation, assistant answer generation, portal publication, raw transcript
+  retrieval, cross-student retrieval enablement, billing,
+  DNS/Railway propagation, GHL, or external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 13 Verification
+
+- PASS `node --check tests\one-time-deployment-readiness.test.js`.
+- PASS deployment readiness JSON parse:
+  `node -e "JSON.parse(require('fs').readFileSync('ops/one-time-mishnah/option-b-deployment-readiness.json','utf8')); console.log('deployment readiness json ok')"`.
+- PASS focused deployment readiness suite 6/6:
+  `node --test tests\one-time-deployment-readiness.test.js`.
+
+Verified behavior:
+
+- Option B readiness profile and runbook are local-only and operator-gated.
+- Target architecture requires separate One Time deployment, variables, domain,
+  database when approved, staging/production environments, and no BNA
+  production credential reuse.
+- Required artifacts are present: decision record, deployment profile, identity
+  map, database identity guard, schema-vs-seed separation, database bootstrap,
+  Railway runbook, cost worksheet, asset register, DNS checklist, rollback,
+  backup, staging smoke, and production launch plan.
+- Existing Railway/local runtime inventory is declared without executing live
+  deployment.
+
+Not run for this batch:
+
+- No deployment or live smoke, pending explicit release approval.
+- No Railway project/service creation, database create/attach, Railway variable
+  write, DNS/domain change, production data mutation, external send, billing,
+  GHL, or external connector write.
+
+## 2026-06-19 - One Time Master Recovery Batch 14 Verification
+
+- PASS syntax checks:
+  `node --check server.js`;
+  `node --check scripts\telegram-kimi-bridge.mjs`;
+  `node --check scripts\agent-fleet-supervisor.mjs`;
+  `node --check src\lib\bna\helper\permissions.js`.
+- PASS final-surface and RBAC focused suite 12/12:
+  `node --test tests\final-register-surfaces-closeout.test.js
+  tests\one-time-rbac-negative-isolation.test.js
+  tests\workspace-rbac-negative-isolation.test.js`.
+- PASS Agents/auth contract focused suite 14/14:
+  `node --test tests\google-workspace-settings-contract.test.js
+  tests\operations-saas-crm-redesign.test.js
+  tests\operations-shell-navigation-contract.test.js`.
+- PASS full local suite:
+  `npm test` passed 901/901.
+- PASS active execution-run validation before closeout:
+  `npm run bna:run:validate` with counts `not_started: 1`,
+  `blocked: 1`, `needs_operator_decision: 13`, and `done: 34`.
+- PASS JSON/ledger parse before closeout:
+  active run JSON files, route registry, Option B readiness JSON, and
+  `ops/agent-task-ledger.jsonl` lines `1273`.
+- PASS tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS `git diff --check` with LF/CRLF warnings only.
+- BLOCKED local smoke:
+  `npm run smoke:local -- --skip-tests --no-env-file` stopped before server
+  start because `DATABASE_URL`, `OPS_USERNAME`, and `OPS_PASSWORD` were not
+  present with env-file loading disabled.
+- PASS watchdog audit:
+  `npm run watchdog:audit` produced
+  `ops/watchdog-audits/2026-06-19T12-00-watchdog-audit.md` with severity `ok`
+  and finding_count `0`.
+- PASS post-closeout active execution-run validation:
+  `npm run bna:run:validate` with counts `blocked: 1`,
+  `needs_operator_decision: 14`, and `done: 34`.
+- PASS post-closeout JSON/ledger parse:
+  active run JSON files, route registry, Option B readiness JSON, and
+  `ops/agent-task-ledger.jsonl` lines `1274`.
+- PASS post-closeout tracked secret audit:
+  `node scripts\audit-secrets.mjs` checked `2581` tracked paths with `0`
+  tracked secret-risk files.
+- PASS post-closeout `git diff --check` with LF/CRLF warnings only.
+
+Verified behavior:
+
+- Provider secret helper tools remain admin-only for scoped project/provider
+  helpers while staying visible in the helper permission contract.
+- Operations default allowedViews and contract tests include the first-class
+  Agents module.
+- The website ramble correction source-of-truth chain has a 2026-06-19
+  continuation marker and watchdog proof.
+
+Not run for this batch:
+
+- No commit, push, PR update, deployment, Railway doctor, production smoke,
+  authenticated live role smoke, final screenshots, production DB mutation,
+  domain/DNS action, billing, Zoom/Vimeo/Buffer/Sefaria action, source corpus
+  mutation, portal publication, external send, or live data-isolation proof,
+  pending explicit operator approval.

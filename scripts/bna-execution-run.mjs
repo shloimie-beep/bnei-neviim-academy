@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 export const VALID_STATUSES = new Set([
@@ -29,6 +30,8 @@ const CLOSED_STATUSES = new Set([
 
 const LIVE_CLOSED_STATUSES = new Set(['done', 'already_satisfied', 'verified']);
 
+const BLOCKER_STATUSES = new Set(['blocked', 'needs_operator_decision']);
+
 const WORK_REMAINS_STATUSES = new Set([
   'not_started',
   'in_progress',
@@ -54,6 +57,44 @@ const REQUIRED_RUN_FILES = [
 const DEFAULT_BLOCKER =
   'Waiting for user to upload agent-review-package.zip or audit output path';
 
+const SOURCE_EXCLUSION_CLASSIFICATIONS = new Set([
+  'excluded',
+  'unrelated',
+  'non_requirement',
+  'context_only',
+  'duplicate',
+  'archived'
+]);
+
+const DEPLOYMENT_PLACEHOLDER_PATTERN =
+  /\b(not deployed|deployment withheld|intentionally withheld|operator rule|no deployment|deployment skipped|dry-run only|not run)\b/i;
+
+const DEPLOYMENT_PROOF_PATTERN =
+  /\b(railway deployment|deployment .*success|reached success|live smoke|live-smoke|smoke .*pass|ops\/live-smokes\/|production .*verified|https?:\/\/)\b/i;
+
+const REPO_EVIDENCE_PREFIXES = [
+  'AGENTS.md',
+  'BNA-START-HERE.md',
+  'MEMORY.md',
+  'PROJECT-NOTES.md',
+  'README.md',
+  'SYSTEM-STATE.md',
+  'TASKS.md',
+  'docs/',
+  'memory/',
+  'ops/',
+  'package.json',
+  'public/',
+  'railway',
+  'raw-input/',
+  'scripts/',
+  'server.js',
+  'src/',
+  'tasks-pending/',
+  'templates/',
+  'tests/'
+];
+
 function readJson(filePath, errors, label) {
   try {
     return JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -67,12 +108,368 @@ function nonEmptyArray(value) {
   return Array.isArray(value) && value.some((item) => String(item || '').trim());
 }
 
+function nonEmptyText(value) {
+  return String(value || '').trim().length > 0;
+}
+
+function textArray(value) {
+  return Array.isArray(value)
+    ? value.map((item) => String(item || '').trim()).filter(Boolean)
+    : [];
+}
+
 function isNonEmptyFile(filePath) {
   return fs.existsSync(filePath) && fs.readFileSync(filePath, 'utf8').trim().length > 0;
 }
 
 function relativeTo(root, target) {
   return path.relative(root, target).replaceAll(path.sep, '/');
+}
+
+function runGit(root, args) {
+  try {
+    return execFileSync('git', args, {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore']
+    }).trim();
+  } catch {
+    return null;
+  }
+}
+
+function extractRepoEvidencePath(root, value) {
+  const text = String(value || '').trim().replace(/^`|`$/g, '');
+  if (!text || /^https?:\/\//i.test(text) || text.startsWith('.secrets/')) {
+    return null;
+  }
+
+  const match = text.match(/^([A-Za-z]:[\\/][^\s]+|[A-Za-z0-9_.\-\\/]+)(?:\s|$)/);
+  if (!match) {
+    return null;
+  }
+
+  const rawCandidate = match[1].replace(/[;:,.>)]+$/g, '').replaceAll('\\', '/');
+  if (!rawCandidate || rawCandidate.includes('*') || rawCandidate.includes('..')) {
+    return null;
+  }
+
+  if (/^[A-Za-z]:\//.test(rawCandidate)) {
+    const absolute = path.resolve(rawCandidate);
+    const relative = path.relative(root, absolute);
+    if (relative.startsWith('..') || path.isAbsolute(relative)) {
+      return null;
+    }
+    return { display: rawCandidate, absolute };
+  }
+
+  const isKnownRepoPath = REPO_EVIDENCE_PREFIXES.some(
+    (prefix) => rawCandidate === prefix || rawCandidate.startsWith(prefix)
+  );
+  if (!isKnownRepoPath) {
+    return null;
+  }
+
+  return {
+    display: rawCandidate,
+    absolute: path.resolve(root, rawCandidate)
+  };
+}
+
+function validateEvidencePaths(requirement, root, errors) {
+  const entries = textArray(requirement.evidence);
+  if (requirement.live_required && LIVE_CLOSED_STATUSES.has(requirement.status)) {
+    entries.push(...textArray(requirement.deployment_evidence));
+  }
+
+  for (const entry of entries) {
+    const candidate = extractRepoEvidencePath(root, entry);
+    if (candidate && !fs.existsSync(candidate.absolute)) {
+      errors.push(`${requirement.id}: evidence path does not exist: ${candidate.display}`);
+    }
+  }
+}
+
+function validateDeploymentEvidence(requirement, errors) {
+  if (!requirement.live_required || !LIVE_CLOSED_STATUSES.has(requirement.status)) {
+    return;
+  }
+
+  const deploymentEntries = textArray(requirement.deployment_evidence);
+  if (!deploymentEntries.length) {
+    errors.push(`${requirement.id}: live-required closed requirement requires deployment/live evidence.`);
+    return;
+  }
+
+  const positiveEntries = deploymentEntries.filter((entry) => DEPLOYMENT_PROOF_PATTERN.test(entry));
+  const onlyPlaceholders = deploymentEntries.every((entry) =>
+    DEPLOYMENT_PLACEHOLDER_PATTERN.test(entry)
+  );
+
+  if (!positiveEntries.length || onlyPlaceholders) {
+    errors.push(
+      `${requirement.id}: deployment/live evidence must include positive deploy or live-smoke proof, not only withheld/not-deployed text.`
+    );
+  }
+}
+
+function validateActiveRunUniqueness(root, selectedRunDir, errors) {
+  const runsDir = path.join(root, 'ops', 'execution-runs');
+  if (!fs.existsSync(runsDir)) {
+    return;
+  }
+
+  const activeRuns = [];
+  for (const entry of fs.readdirSync(runsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const runJsonPath = path.join(runsDir, entry.name, 'run.json');
+    if (!fs.existsSync(runJsonPath)) {
+      continue;
+    }
+    const localErrors = [];
+    const runJson = readJson(runJsonPath, localErrors, 'run.json');
+    if (runJson?.active) {
+      activeRuns.push(path.join(runsDir, entry.name));
+    }
+  }
+
+  if (activeRuns.length > 1) {
+    errors.push(
+      `Multiple active execution runs found: ${activeRuns
+        .map((runDir) => relativeTo(root, runDir))
+        .join(', ')}.`
+    );
+  }
+
+  if (selectedRunDir && activeRuns.length === 1 && path.resolve(activeRuns[0]) !== path.resolve(selectedRunDir)) {
+    errors.push(
+      `latest.json selected ${relativeTo(root, selectedRunDir)}, but active run is ${relativeTo(
+        root,
+        activeRuns[0]
+      )}.`
+    );
+  }
+}
+
+function validateGitRefs(root, requirementsDoc, runJson, errors, warnings) {
+  const refs = requirementsDoc?.git_refs || runJson?.git_refs;
+  if (!refs || typeof refs !== 'object' || Array.isArray(refs)) {
+    return;
+  }
+
+  const expectedBranch = refs.expected_branch || refs.branch || refs.current_branch || null;
+  const expectedHead = refs.expected_head || refs.head || refs.current_head || null;
+  const expectedRemoteHead =
+    refs.expected_remote_head || refs.remote_head || refs.current_remote_head || null;
+
+  if (refs.expected_branch && refs.current_branch && refs.expected_branch !== refs.current_branch) {
+    errors.push(`git_refs: stale branch reference ${refs.current_branch}; expected ${refs.expected_branch}.`);
+  }
+  if (refs.expected_head && refs.current_head && refs.expected_head !== refs.current_head) {
+    errors.push(`git_refs: stale head reference ${refs.current_head}; expected ${refs.expected_head}.`);
+  }
+  if (
+    refs.expected_remote_head &&
+    refs.current_remote_head &&
+    refs.expected_remote_head !== refs.current_remote_head
+  ) {
+    errors.push(
+      `git_refs: stale remote head reference ${refs.current_remote_head}; expected ${refs.expected_remote_head}.`
+    );
+  }
+
+  const actualBranch = runGit(root, ['rev-parse', '--abbrev-ref', 'HEAD']);
+  if (expectedBranch && actualBranch && actualBranch !== expectedBranch) {
+    errors.push(`git_refs: branch ${expectedBranch} is stale; current branch is ${actualBranch}.`);
+  } else if (expectedBranch && !actualBranch) {
+    warnings.push('git_refs: could not verify current branch because git is unavailable.');
+  }
+
+  const actualHead = runGit(root, ['rev-parse', 'HEAD']);
+  if (expectedHead && actualHead && actualHead !== expectedHead) {
+    errors.push(`git_refs: head ${expectedHead} is stale; current head is ${actualHead}.`);
+  } else if (expectedHead && !actualHead) {
+    warnings.push('git_refs: could not verify current HEAD because git is unavailable.');
+  }
+
+  const actualRemoteHead = runGit(root, ['rev-parse', '@{u}']);
+  if (expectedRemoteHead && actualRemoteHead && actualRemoteHead !== expectedRemoteHead) {
+    errors.push(
+      `git_refs: remote head ${expectedRemoteHead} is stale; upstream head is ${actualRemoteHead}.`
+    );
+  } else if (expectedRemoteHead && !actualRemoteHead) {
+    warnings.push('git_refs: could not verify upstream HEAD because no upstream is configured.');
+  }
+
+  if (refs.pr_number && refs.pr_url && !new RegExp(`/pull/${refs.pr_number}(?:\\b|$)`).test(refs.pr_url)) {
+    errors.push(`git_refs: PR URL does not match pr_number ${refs.pr_number}.`);
+  }
+
+  if (refs.pr_branch && actualBranch && refs.pr_branch !== actualBranch) {
+    errors.push(`git_refs: PR branch ${refs.pr_branch} is stale; current branch is ${actualBranch}.`);
+  }
+}
+
+function matrixDefinitions(requirementsDoc) {
+  const definitions = [];
+  if (requirementsDoc?.source_statement_matrix) {
+    definitions.push(requirementsDoc.source_statement_matrix);
+  }
+  if (Array.isArray(requirementsDoc?.source_statement_matrices)) {
+    definitions.push(...requirementsDoc.source_statement_matrices);
+  }
+  return definitions.map((definition) =>
+    typeof definition === 'string' ? { path: definition } : definition
+  );
+}
+
+function validateSourceRegistry(root, requirementsDoc, sourceMetadataRequired, errors) {
+  const sourceIds = new Set();
+  if (requirementsDoc?.sources !== undefined && !Array.isArray(requirementsDoc.sources)) {
+    errors.push('requirements.json sources must be an array when present.');
+    return sourceIds;
+  }
+
+  const sources = Array.isArray(requirementsDoc?.sources) ? requirementsDoc.sources : [];
+  if (sourceMetadataRequired && !sources.length) {
+    errors.push('requirements.json sources must define metadata for captured source statements.');
+  }
+
+  for (const [index, source] of sources.entries()) {
+    const label = source?.source_id || `sources[${index}]`;
+    if (!source || typeof source !== 'object' || Array.isArray(source)) {
+      errors.push(`sources[${index}] must be an object.`);
+      continue;
+    }
+
+    if (!nonEmptyText(source.source_id)) {
+      errors.push(`${label}: source_id is required.`);
+    } else if (sourceIds.has(source.source_id)) {
+      errors.push(`${label}: duplicate source_id.`);
+    } else {
+      sourceIds.add(source.source_id);
+    }
+
+    if (!nonEmptyText(source.source_path) && !nonEmptyText(source.connector_id)) {
+      errors.push(`${label}: source_path or connector_id is required.`);
+    }
+    for (const field of [
+      'captured_at',
+      'content_fingerprint',
+      'privacy_classification',
+      'workspace',
+      'project',
+      'source_type'
+    ]) {
+      if (!nonEmptyText(source[field])) {
+        errors.push(`${label}: ${field} is required.`);
+      }
+    }
+
+    if (nonEmptyText(source.source_path)) {
+      const sourcePath = extractRepoEvidencePath(root, source.source_path);
+      if (sourcePath && !fs.existsSync(sourcePath.absolute)) {
+        errors.push(`${label}: source_path does not exist: ${sourcePath.display}`);
+      }
+    }
+  }
+
+  return sourceIds;
+}
+
+function normalizeSourceStatement(row, fallbackSourceId = '') {
+  return {
+    statement_id: row?.statement_id || row?.id || '',
+    source_id: row?.source_id || fallbackSourceId || '',
+    source_statement: row?.source_statement || row?.statement || row?.text || '',
+    requirement_id: row?.requirement_id || row?.mapped_requirement_id || '',
+    existing_requirement_id: row?.existing_requirement_id || '',
+    classification: row?.classification || row?.mapping_classification || '',
+    raw: row
+  };
+}
+
+function validateSourceStatements(root, requirementsDoc, requirementIds, sourceIds, errors) {
+  const statements = [];
+  const definitions = matrixDefinitions(requirementsDoc);
+
+  if (
+    requirementsDoc?.source_statements !== undefined &&
+    !Array.isArray(requirementsDoc.source_statements)
+  ) {
+    errors.push('requirements.json source_statements must be an array when present.');
+  } else if (Array.isArray(requirementsDoc?.source_statements)) {
+    statements.push(...requirementsDoc.source_statements.map((row) => normalizeSourceStatement(row)));
+  }
+
+  for (const definition of definitions) {
+    const matrixPath = definition?.path || definition?.file || '';
+    if (!nonEmptyText(matrixPath)) {
+      errors.push('source statement matrix definition requires path.');
+      continue;
+    }
+
+    const absoluteMatrixPath = path.resolve(root, matrixPath);
+    if (!fs.existsSync(absoluteMatrixPath)) {
+      errors.push(`source statement matrix is missing: ${matrixPath}`);
+      continue;
+    }
+
+    const matrixDoc = readJson(absoluteMatrixPath, errors, `source statement matrix ${matrixPath}`);
+    if (!matrixDoc) {
+      continue;
+    }
+
+    const rows = Array.isArray(matrixDoc.matrix)
+      ? matrixDoc.matrix
+      : Array.isArray(matrixDoc.rows)
+        ? matrixDoc.rows
+        : Array.isArray(matrixDoc.source_statements)
+          ? matrixDoc.source_statements
+          : null;
+
+    if (!rows) {
+      errors.push(`source statement matrix ${matrixPath} must include matrix, rows, or source_statements array.`);
+      continue;
+    }
+
+    const fallbackSourceId = definition.source_id || matrixDoc.raw_id || '';
+    statements.push(...rows.map((row) => normalizeSourceStatement(row, fallbackSourceId)));
+  }
+
+  const seenStatements = new Set();
+  for (const [index, statement] of statements.entries()) {
+    const label = statement.statement_id || `source_statements[${index}]`;
+    if (!nonEmptyText(statement.statement_id)) {
+      errors.push(`${label}: statement_id is required.`);
+    } else if (seenStatements.has(statement.statement_id)) {
+      errors.push(`${label}: duplicate source statement id.`);
+    } else {
+      seenStatements.add(statement.statement_id);
+    }
+
+    if (!nonEmptyText(statement.source_statement)) {
+      errors.push(`${label}: source_statement is required.`);
+    }
+
+    if (sourceIds.size && !sourceIds.has(statement.source_id)) {
+      errors.push(`${label}: source_id ${statement.source_id || '(missing)'} is not registered in sources.`);
+    }
+
+    const mappedRequirementId = statement.requirement_id || statement.existing_requirement_id;
+    const classification = String(statement.classification || '').trim().toLowerCase();
+    const excluded = SOURCE_EXCLUSION_CLASSIFICATIONS.has(classification);
+
+    if (!mappedRequirementId && !excluded) {
+      errors.push(`${label}: captured source statement is unmapped.`);
+    }
+
+    if (mappedRequirementId && !requirementIds.has(mappedRequirementId)) {
+      errors.push(`${label}: maps to unknown requirement id ${mappedRequirementId}.`);
+    }
+  }
 }
 
 function parseArgs(argv) {
@@ -140,7 +537,7 @@ function resolveRunContext(rootInput, runInput = null) {
   return { root, latestPath, latest, runDir, errors };
 }
 
-function validateRequirement(requirement, index, seenIds, errors) {
+function validateRequirement(requirement, index, seenIds, errors, root) {
   const label = requirement?.id || `requirements[${index}]`;
 
   if (!requirement || typeof requirement !== 'object' || Array.isArray(requirement)) {
@@ -171,8 +568,16 @@ function validateRequirement(requirement, index, seenIds, errors) {
     return;
   }
 
-  if (requirement.status === 'blocked' && !String(requirement.blocker || '').trim()) {
-    errors.push(`${label}: blocked requirements require blocker.`);
+  if (BLOCKER_STATUSES.has(requirement.status)) {
+    if (!String(requirement.blocker || '').trim()) {
+      errors.push(`${label}: ${requirement.status} requirements require blocker.`);
+    }
+    if (!String(requirement.blocker_owner || '').trim()) {
+      errors.push(`${label}: ${requirement.status} requirements require blocker_owner.`);
+    }
+    if (!String(requirement.blocker_next_action || '').trim()) {
+      errors.push(`${label}: ${requirement.status} requirements require blocker_next_action.`);
+    }
   }
 
   if (requirement.depends_on_audit_output && requirement.status === 'blocked') {
@@ -186,13 +591,11 @@ function validateRequirement(requirement, index, seenIds, errors) {
     errors.push(`${label}: closed requirement requires evidence.`);
   }
 
-  if (
-    requirement.live_required &&
-    LIVE_CLOSED_STATUSES.has(requirement.status) &&
-    !nonEmptyArray(requirement.deployment_evidence)
-  ) {
-    errors.push(`${label}: live-required closed requirement requires deployment/live evidence.`);
+  if (root && CLOSED_STATUSES.has(requirement.status)) {
+    validateEvidencePaths(requirement, root, errors);
   }
+
+  validateDeploymentEvidence(requirement, errors);
 }
 
 export function validateExecutionRun(rootInput = process.cwd(), runInput = null) {
@@ -203,6 +606,8 @@ export function validateExecutionRun(rootInput = process.cwd(), runInput = null)
   if (!context.runDir || errors.length) {
     return { ...context, errors, warnings, requirements: [], counts: {}, workRemains: false };
   }
+
+  validateActiveRunUniqueness(context.root, context.runDir, errors);
 
   for (const fileName of REQUIRED_RUN_FILES) {
     const filePath = path.join(context.runDir, fileName);
@@ -226,6 +631,8 @@ export function validateExecutionRun(rootInput = process.cwd(), runInput = null)
     errors.push(`latest.json run_id does not match requirements.json run_id.`);
   }
 
+  validateGitRefs(context.root, requirementsDoc, runJson, errors, warnings);
+
   const requirements = Array.isArray(requirementsDoc?.requirements)
     ? requirementsDoc.requirements
     : [];
@@ -246,8 +653,22 @@ export function validateExecutionRun(rootInput = process.cwd(), runInput = null)
 
   const seenIds = new Set();
   requirements.forEach((requirement, index) => {
-    validateRequirement(requirement, index, seenIds, errors);
+    validateRequirement(requirement, index, seenIds, errors, context.root);
   });
+
+  const sourceMetadataRequired =
+    Boolean(requirementsDoc) &&
+    (Array.isArray(requirementsDoc.source_statements) ||
+      matrixDefinitions(requirementsDoc).length > 0);
+  const sourceIds = validateSourceRegistry(
+    context.root,
+    requirementsDoc,
+    sourceMetadataRequired,
+    errors
+  );
+  if (requirementsDoc) {
+    validateSourceStatements(context.root, requirementsDoc, seenIds, sourceIds, errors);
+  }
 
   const workRemains = requirements.some((requirement) =>
     WORK_REMAINS_STATUSES.has(requirement.status)
@@ -255,6 +676,18 @@ export function validateExecutionRun(rootInput = process.cwd(), runInput = null)
   const nextSessionPath = path.join(context.runDir, 'NEXT-SESSION.md');
   if (workRemains && !isNonEmptyFile(nextSessionPath)) {
     errors.push('NEXT-SESSION.md is required and must be non-empty while work remains.');
+  } else if (workRemains) {
+    const nextSessionText = fs.readFileSync(nextSessionPath, 'utf8');
+    const openRequirementIds = requirements
+      .filter((requirement) => WORK_REMAINS_STATUSES.has(requirement.status))
+      .map((requirement) => requirement.id)
+      .filter(Boolean);
+    if (
+      openRequirementIds.length &&
+      !openRequirementIds.some((requirementId) => nextSessionText.includes(requirementId))
+    ) {
+      errors.push('NEXT-SESSION.md is stale: it must name at least one open requirement ID.');
+    }
   }
 
   const counts = {};

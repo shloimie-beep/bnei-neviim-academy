@@ -1,5 +1,60 @@
 # Next Session
 
+## One Time Master Recovery Batch 10 Checkpoint - 2026-06-19
+
+Current active goal work:
+
+- `REQ-20260619-310` is terminal as `needs_operator_decision`.
+- Local implementation added a no-write gamification/badge audit contract
+  covering automatic badge definitions, Rabbi-awarded badge definitions,
+  configurable thresholds, stable idempotency keys, source event/class
+  evidence, parent-safe explanations, review-only reversal drafts, badge audit
+  schema, readiness blockers, and no-public-leaderboard gates.
+- A protected readiness-only admin API route was added for badge readiness. It
+  returns policy metadata and does not award, reverse, notify, grant access, or
+  publish anything.
+- Operations renders a Gamification / Badge Audit panel under Community >
+  Ledger with explicit no-award, no-reversal, no-notification, no-access-grant,
+  no-prize/credit, and no-public-individual-leaderboard copy.
+- Public One Time classroom now renders Approved Participation from
+  `participation_summary`; the member-safe `leaderboard` payload remains empty.
+- Focused verification passed:
+  syntax checks, focused gamification/badge suite 13/13, WS11/parent/forum
+  suite 15/15, classroom policy suite 11/11, and Operations scoping/UI suite
+  7/7.
+- No deployment, live smoke, production DB mutation, provider webhook
+  acceptance, live badge award, Rabbi-awarded badge write, badge reversal,
+  parent/student notification, automatic access grant, prize/coupon/credit,
+  public individual leaderboard, billing, DNS/Railway propagation, GHL, or
+  external connector write was performed.
+- Blocking decision: operator must approve release/live smoke for the
+  app-visible/API gamification changes and explicitly approve production badge
+  award/reversal smoke plus parent/student readback before any real badge
+  award, Rabbi-awarded badge write, reversal, notification, access grant,
+  prize/credit, or public/member display change.
+
+Exact next requirement:
+
+- `REQ-20260619-311`: community and moderation workflow.
+
+Suggested safe first command:
+
+```powershell
+npm run bna:run:status
+```
+
+Do not deploy, mutate production data, change DNS, create Zoom meetings or
+registrants, accept live Zoom/provider recording webhooks, expose live join
+redirects, mutate attendance from Zoom events, fetch provider recordings,
+upload Vimeo videos, publish/unpublish/delete recordings, expose member
+visibility, write watch progress, import/publish raw transcripts, mutate a
+vector/public-helper transcript corpus, enable cross-student retrieval, publish
+portal transcript access, award or reverse badges, send badge notifications,
+grant access, issue prizes/coupons/credits, expose public/member leaderboards,
+send email/WhatsApp, run broad crawls, start watch loops, or write live
+invite/remove/deactivate/role-change records without explicit action-specific
+operator approval.
+
 ## Release Closeout Checkpoint - 2026-06-19
 
 This supersedes the earlier stop checkpoint that said the latest
@@ -349,3 +404,168 @@ current-state comparison, tests, evidence updates, ledger/changelog updates,
 and NEXT-SESSION.md handoff. Do not deploy or mutate production data unless I
 explicitly approve that in this session.
 ```
+
+## One Time Master Recovery Continuation - 2026-06-19T12:05:00+03:00
+
+The operator explicitly requested goal-mode execution of the One Time master recovery packet. Batch 0 is registered and locally verified.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then start `REQ-20260619-301` (protocol/validator hardening) and `REQ-20260619-302` (read-only task/Decision census) in small batches. Do not run production cleanup, external sends, billing, DNS, Zoom, Vimeo, or new Railway resource actions without explicit action-specific approval.
+
+## One Time Master Recovery Continuation - 2026-06-19T12:45:00+03:00
+
+`REQ-20260619-301` protocol/validator hardening is done locally. The active run
+now validates source metadata, the One Time statement matrix, blocker
+owner/next action, positive deployment evidence, repo evidence paths, git refs,
+single-active-run state, and a non-stale handoff.
+
+Exact next requirement:
+
+- `REQ-20260619-302`: read-only task and Decision production census and
+  reversible cleanup workflow.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then inspect task/Decision data sources in read-only mode and produce the census
+report/dry-run plan before any cleanup apply step. Do not run production
+cleanup, external sends, billing, DNS, Zoom, Vimeo, new Railway resource
+actions, deploys, watch loops, broad UI crawls, or agent-fleet loops without
+explicit action-specific approval.
+
+## One Time Master Recovery Continuation - 2026-06-19T14:55:00+03:00
+
+`REQ-20260619-311` community and moderation workflow is complete locally and
+terminal as `needs_operator_decision`. The batch added the local no-write
+community moderation helper, additive audit/history schema fields, moderation
+event table, protected readiness route, route registry row, Operations
+readiness panel, and focused regression tests. Existing member responses remain
+hidden/review-only with no unrestricted student-to-student messaging.
+
+Exact next requirement:
+
+- `REQ-20260619-312`: Sefaria and scoped study assistant readiness.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then inspect current Sefaria/source/study-assistant/helper retrieval code and
+tests before editing. Do not deploy, run live smoke, ingest licensed/Sefaria
+content into production, mutate vector/helper corpora, publish portal study
+assistant access, run external sends, enable unrestricted community/student
+messaging, purge/delete community records, or mutate production data without
+explicit action-specific approval.
+
+## One Time Master Recovery Continuation - 2026-06-19T15:10:00+03:00
+
+`REQ-20260619-312` Sefaria and scoped study assistant readiness is complete
+locally and terminal as `needs_operator_decision`. The batch added the local
+no-write study-assistant readiness helper, additive source-version/audit schema,
+protected readiness route, route registry row, Operations readiness panel, and
+focused regression tests. The assistant feature flag remains disabled; no
+source body, raw transcript, answer generation, or corpus mutation was enabled.
+
+Exact next requirement:
+
+- `REQ-20260619-313`: One Time deployment, domain, and Option B readiness.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then inspect current deployment/domain/Option B docs, route registry, Railway
+runbooks, backup/rollback notes, and live-smoke scripts before editing. Do not
+deploy, create Railway resources, change DNS/domain settings, mutate production
+data, ingest Sefaria/licensed source content, publish portal assistant access,
+enable assistant answer generation, run live smokes, run external sends, or
+start broad agent/watch loops without explicit action-specific approval.
+
+## One Time Master Recovery Continuation - 2026-06-19T15:25:00+03:00
+
+`REQ-20260619-313` One Time deployment, domain, and Option B readiness is
+complete locally and terminal as `needs_operator_decision`. The batch added the
+machine-readable Option B readiness profile, human deployment/domain runbook,
+and focused tests that verify architecture, deployment profile, identity map,
+database guard, schema-vs-seed separation, Railway runbook, cost worksheet,
+asset register, DNS checklist, rollback, backup, staging smoke, and production
+launch planning. No Railway, database, DNS, deploy, live smoke, or production
+mutation action was run.
+
+Exact next requirement:
+
+- `REQ-20260619-314`: final verification, commit, push, deploy, and live smoke
+  loop.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then run the maximum safe local verification set and mark any deploy, live
+smoke, push/PR, production cleanup, Railway, DNS, billing, source ingestion,
+or external-send step as `needs_operator_decision` unless Shloimie explicitly
+approves that exact action.
+
+## One Time Master Recovery Continuation - 2026-06-19T15:45:00+03:00
+
+`REQ-20260619-314` final verification, commit, push, deploy, and live smoke
+loop is terminal as `needs_operator_decision`. Safe local verification passed:
+syntax checks, focused RBAC/final-surface suites, Agents/auth contract suite,
+full `npm test` 901/901, active run validation, JSON/ledger parse, tracked
+secret audit, diff check, and watchdog audit. The local smoke command with
+env-file loading disabled stopped before server start because
+`DATABASE_URL`, `OPS_USERNAME`, and `OPS_PASSWORD` were unavailable.
+
+Exact next requirement:
+
+- None in the active One Time master recovery register. All `REQ-20260619-300`
+  through `REQ-20260619-314` have terminal statuses.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then wait for explicit operator approval before staging/committing/pushing,
+updating the PR, deploying, running Railway doctor, running live health/privacy/
+Operations/One Time owner/admin/platform/parent/student/provider smokes,
+capturing live screenshots, or proving live BNA-vs-One-Time data isolation.
+Keep `REQ-20260618-101` blocked until the audit package/upload is provided.
+
+## One Time Master Recovery Continuation - 2026-06-19T12:58:00+03:00
+
+`REQ-20260619-302` read-only task/Decision census is complete and terminal as
+`needs_operator_decision`. The dry-run cleanup plan is approval-gated because
+any archive, quarantine, lane repair, proof-link, or title-cleanup apply would
+mutate live task records.
+
+Exact next requirement:
+
+- `REQ-20260619-303`: One Time workspace users, roles, and authorization model.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
+Then inspect current workspace, role, auth, and RBAC code/tests before editing.
+Do not apply task cleanup, create production users, reset credentials, grant
+live access, create external accounts, mutate billing/DNS/Zoom/Vimeo/Resend,
+deploy, run broad crawls, or start watch/agent-fleet loops without explicit
+action-specific approval.

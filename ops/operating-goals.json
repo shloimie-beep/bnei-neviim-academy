@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-06-16",
+  "last_updated": "2026-06-17",
   "goals": [
     {
       "goal_id": "GOAL-001",
@@ -226,7 +226,7 @@
       "title": "Ramble watchdog and goal-led work until done",
       "scope": "Long rambles, prompt packets, Downloads files, Codex attachments, Telegram captures, Operations status, prompt register, agent ledger, changelog, tasks-pending handoffs, and live-proof requirements.",
       "definition_of_done": "Each ramble/prompt source is captured, deduped, mapped to durable goals, decisions, pending blockers, Codex work, proof requirements, and terminal statuses; watchdog audits catch stale starts, duplicate work, prompt-without-proof gaps, local-only work marked done, UI drift, helper architecture gaps, secret risks, and unresolved Thursday blockers.",
-      "current_status": "watchdog_rules_audit_script_and_operations_control_center_deployed_live_smoked_queue_hygiene_pending",
+      "current_status": "watchdog_rules_goal_mode_contract_parser_telegram_metadata_deployed_live_smoked_queue_hygiene_pending",
       "open_decisions": [
         "Explicit command versus automatic Downloads/attachments watcher",
         "Safe auto-fix authority for docs, queue cleanup, and UI/code fixes",
@@ -250,11 +250,13 @@
         "Operations inline-script parse",
         "Source-of-truth updates",
         "Audit report under ops/watchdog-audits/",
-        "Railway doctor SUCCESS for fac52051-3b45-4f41-ab7e-22df8789f32d",
+        "Railway doctor SUCCESS for ff95e44f-f1f5-4eeb-a83d-fc8f9456674b",
+        "Goal-mode/helper live smoke ops/live-smokes/2026-06-17T04-53-04-502Z-goal-mode-helper-live-smoke.md",
         "Live Watchdog browser smoke ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md",
-        "Direct authenticated allowedViews readback includes watchdog"
+        "Direct authenticated allowedViews readback includes watchdog",
+        "Focused tests proving BNA_GOAL_MODE_EXECUTION_PACKET and should_create_or_continue_goal parser metadata"
       ],
-      "last_updated": "2026-06-16"
+      "last_updated": "2026-06-17"
     }
   ]
 }

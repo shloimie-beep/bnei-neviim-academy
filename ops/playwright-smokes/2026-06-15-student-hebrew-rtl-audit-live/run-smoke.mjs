@@ -5,7 +5,9 @@ import { chromium } from 'playwright';
 
 const baseUrl = (process.argv[2] || process.env.BNA_APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org').replace(/\/$/, '');
 const studentPath = process.env.BNA_STUDENT_PATH || '/student/login';
-const outDir = path.dirname(fileURLToPath(import.meta.url));
+const outDir = process.env.BNA_SMOKE_OUT_DIR
+  ? path.resolve(process.env.BNA_SMOKE_OUT_DIR)
+  : path.dirname(fileURLToPath(import.meta.url));
 fs.mkdirSync(outDir, { recursive: true });
 
 const fixtureCode = 'fixture-student-hebrew-rtl-audit';
@@ -261,7 +263,7 @@ async function checkNoOverflow(page, label) {
     clientWidth: document.documentElement.clientWidth,
     innerWidth: window.innerWidth,
   }));
-  const limit = metrics.clientWidth + 6;
+  const limit = metrics.clientWidth;
   assert(metrics.htmlScrollWidth <= limit, `${label}: html does not overflow horizontally (${metrics.htmlScrollWidth}/${metrics.clientWidth})`);
   assert(metrics.bodyScrollWidth <= limit, `${label}: body does not overflow horizontally (${metrics.bodyScrollWidth}/${metrics.clientWidth})`);
 }

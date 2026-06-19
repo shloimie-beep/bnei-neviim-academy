@@ -20,10 +20,17 @@ checklist is complete and an exact approval phrase is provided.
 
 - `GET /api/bna/integrations/zoom/status` is readiness only.
 - `POST /api/bna/integrations/zoom/meeting-preview` builds a local preview.
+- `POST /api/bna/integrations/zoom/session-automation-preview` previews the
+  One Time live-session automation contract only.
+- `POST /api/bna/integrations/zoom/webhook-attendance-preview` maps sample
+  Zoom participant events to attendance drafts only.
+- `POST /api/bna/integrations/zoom/attendance-correction-preview` drafts
+  operator-reviewed correction payloads only.
 - `POST /api/bna/integrations/zoom/meetings` remains blocked in INT-05 even
   when a confirmation phrase is typed.
-- No account grants, role changes, user management, or Zoom settings changes are
-  in scope.
+- No meeting creation, registrant creation, live webhook acceptance, attendance
+  write, account grant, role change, user management, or Zoom settings change is
+  in scope until explicit operator approval and live smoke.
 
 ## Current Sources
 

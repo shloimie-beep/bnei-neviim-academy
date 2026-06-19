@@ -1,0 +1,155 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const test = require('node:test');
+const vm = require('node:vm');
+
+const {
+  buildTelegramRuntimeReadiness,
+} = require('../src/lib/bna/telegram-runtime-status');
+
+test('Telegram runtime readiness prefers fresh hosted academy worker heartbeat', () => {
+  const readiness = buildTelegramRuntimeReadiness({
+    tokenConfigured: true,
+    allowedChatIdsConfigured: true,
+    localLock: { present: false, updated_at: null, age_minutes: null },
+    localLog: { present: false, updated_at: null, age_minutes: null },
+    hostedRuntime: {
+      agent_key: 'telegram-academy-bridge',
+      status: 'running',
+      stale: false,
+      last_seen_at: '2026-06-17T14:30:00.000Z',
+      host: 'academy-worker',
+      pid: 4242,
+      mode: 'academy-polling',
+      details: { process_selector: 'telegram-academy' },
+    },
+  });
+
+  assert.equal(readiness.configured, true);
+  assert.equal(readiness.status, 'configured');
+  assert.deepEqual(readiness.blockers, []);
+  assert.equal(readiness.details.runtime_source, 'agent_runtime_status');
+  assert.equal(readiness.details.bridge_runtime_healthy, true);
+  assert.equal(readiness.details.bridge_runtime_status, 'running');
+  assert.equal(readiness.details.bridge_runtime_host, 'academy-worker');
+});
+
+test('Telegram runtime readiness marks stale hosted worker as blocked', () => {
+  const readiness = buildTelegramRuntimeReadiness({
+    tokenConfigured: true,
+    allowedChatIdsConfigured: true,
+    localLock: { present: false, updated_at: null, age_minutes: null },
+    localLog: { present: false, updated_at: null, age_minutes: null },
+    hostedRuntime: {
+      agent_key: 'telegram-academy-bridge',
+      status: 'running',
+      stale: true,
+      last_seen_at: '2026-06-17T12:00:00.000Z',
+      host: 'academy-worker',
+    },
+  });
+
+  assert.equal(readiness.status, 'blocked_runtime_stale');
+  assert.equal(readiness.details.bridge_runtime_stale, true);
+  assert.match(readiness.blockers.join('\n'), /heartbeat is stale/i);
+});
+
+test('Telegram runtime readiness falls back to local lock when no hosted worker heartbeat exists', () => {
+  const readiness = buildTelegramRuntimeReadiness({
+    tokenConfigured: true,
+    allowedChatIdsConfigured: true,
+    localLock: { present: true, updated_at: '2026-06-17T14:31:00.000Z', age_minutes: 5 },
+    localLog: { present: true, updated_at: '2026-06-17T14:31:00.000Z', age_minutes: 5 },
+    hostedRuntime: null,
+  });
+
+  assert.equal(readiness.status, 'configured');
+  assert.equal(readiness.details.runtime_source, 'local_runtime_files');
+  assert.equal(readiness.details.bridge_runtime_status, 'running_local');
+});
+
+test('academy bridge source files wire hosted heartbeat reporting and status readback', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const server = fs.readFileSync('server.js', 'utf8');
+
+  assert.match(bridge, /runtimeAgentKey: isRabbiElieProfile \? '' : 'telegram-academy-bridge'/);
+  assert.match(bridge, /\/api\/bna\/agent-fleet\/status/);
+  assert.match(bridge, /process_selector: process\.env\.BNA_RAILWAY_PROCESS/);
+  assert.match(server, /async function buildTelegramStatusCard\(/);
+  assert.match(server, /loadAgentRuntimeStatus\('telegram-academy-bridge'\)/);
+  assert.match(server, /await buildTelegramStatusCard\(\)/);
+});
+
+test('academy bridge can use env-based Google Drive auth on hosted worker', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const workerRunbook = fs.readFileSync('ops/academy-telegram-worker.md', 'utf8');
+
+  assert.match(bridge, /function loadBridgeEnv\(\)/);
+  assert.match(bridge, /env\.GOOGLE_CLIENT_ID/);
+  assert.match(bridge, /env\.GOOGLE_CLIENT_SECRET/);
+  assert.match(bridge, /env\.GOOGLE_REFRESH_TOKEN/);
+  assert.match(bridge, /GOOGLE_DRIVE_PIPELINE_CONFIG/);
+  assert.match(bridge, /Google Drive pipeline root ID is configured, but Telegram Drive intake needs GOOGLE_DRIVE_PIPELINE_CONFIG/);
+  assert.match(workerRunbook, /GOOGLE_CLIENT_ID=\$\{\{skillful-motivation\.GOOGLE_CLIENT_ID\}\}/);
+  assert.match(workerRunbook, /GOOGLE_DRIVE_PIPELINE_CONFIG=\$\{\{skillful-motivation\.GOOGLE_DRIVE_PIPELINE_CONFIG\}\}/);
+  assert.match(workerRunbook, /GOOGLE_DRIVE_PIPELINE_FOLDER_ID=\$\{\{skillful-motivation\.GOOGLE_DRIVE_PIPELINE_FOLDER_ID\}\}/);
+});
+
+test('academy Drive auto-watch prompt does not trigger platform draft generation', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const start = bridge.indexOf('const DEFAULT_DRIVE_INGEST_CAPTION');
+  const end = bridge.indexOf('async function handleDriveIngestCommand', start);
+  const autoDrivePrompt = start >= 0 && end > start ? bridge.slice(start, end) : '';
+
+  assert.match(autoDrivePrompt, /platform action buttons/);
+  assert.doesNotMatch(autoDrivePrompt, /WhatsApp and Facebook buttons/);
+  assert.doesNotMatch(autoDrivePrompt, /make this into a parent WhatsApp summary/);
+  assert.ok(bridge.includes('text: `/ingest_drive ${DEFAULT_DRIVE_INGEST_CAPTION}`'));
+  assert.match(bridge, /Processing notes:\\n/);
+});
+
+test('academy bridge has a targeted Drive content job reprocess command', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+
+  assert.match(bridge, /async function reprocessDriveContentJob/);
+  assert.match(bridge, /function parseRepairDriveJobIds/);
+  assert.match(bridge, /command === 'reprocess-drive-job'/);
+  assert.match(bridge, /transcribe_and_patch_existing_job/);
+  assert.match(bridge, /already_has_transcript/);
+  assert.match(bridge, /status: 'blocked'/);
+  assert.match(bridge, /Drive file moved to stage: 03 Transcribed/);
+  assert.match(bridge, /Content job stage marked 04 Parsed after successful parse/);
+});
+
+test('academy bridge recognizes Erev Shabbos Parsha WhatsApp requests as weekly reports', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+  const start = bridge.indexOf('function detectWeeklyReportIntent');
+  const end = bridge.indexOf('function parseRequestedContentJobId', start);
+  assert.ok(start > 0 && end > start, 'weekly report detector should be found');
+  const sandbox = {};
+
+  vm.runInNewContext(`${bridge.slice(start, end)}
+result = { detectWeeklyReportIntent };`, sandbox);
+
+  assert.equal(
+    sandbox.result.detectWeeklyReportIntent(
+      "I want the last little video message, the Erev Shabbos message for this week's Parsha, what we learned last week, give me a little WhatsApp message."
+    ),
+    true
+  );
+  assert.equal(
+    sandbox.result.detectWeeklyReportIntent(
+      'Arab Shabbos message for this week Parsha with the last video and what we learned'
+    ),
+    true
+  );
+});
+
+test('academy bridge syncs visible content-job stage after auto mixed parse', () => {
+  const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+
+  assert.match(bridge, /async function markContentJobParsedAfterMixedParse/);
+  assert.match(bridge, /drive_stage: '04 Parsed'/);
+  assert.match(bridge, /Auto-parse stage sync/);
+  assert.ok((bridge.match(/markContentJobParsedAfterMixedParse\(config, contentJobId/g) || []).length >= 3);
+});

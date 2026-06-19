@@ -19,16 +19,20 @@ const RABBI_TIER_DEFINITIONS = Object.freeze({
   library_only: {
     tier_key: RABBI_TIER_KEYS.LIBRARY_ONLY,
     display_name: 'Video Library',
-    description: 'Recorded Mishnayos library access.',
+    description: 'Recorded OneTime Mishnayos library access.',
+    price_amount_cents: 6700,
     access_scopes: ['library'],
     sort_order: 10,
+    price_status: 'configured_placeholder',
   },
   live_library: {
     tier_key: RABBI_TIER_KEYS.LIVE_LIBRARY,
     display_name: 'Live + Library',
-    description: 'Live Zoom classes plus recorded Mishnayos library access.',
+    description: 'Live class access plus the recorded OneTime Mishnayos library.',
+    price_amount_cents: 14900,
     access_scopes: ['library', 'live'],
     sort_order: 20,
+    price_status: 'configured_placeholder',
   },
   library_live_low_touch: {
     ...ONE_TIME_PRODUCT_TIER_DEFINITIONS.library_live_low_touch,
@@ -87,7 +91,7 @@ function tierPublicView(row = {}) {
     display_name: row.display_name || RABBI_TIER_DEFINITIONS[tierKey]?.display_name || tierKey,
     description: row.description || RABBI_TIER_DEFINITIONS[tierKey]?.description || '',
     price_amount_cents: row.price_amount_cents === null || row.price_amount_cents === undefined
-      ? null
+      ? (RABBI_TIER_DEFINITIONS[tierKey]?.price_amount_cents ?? null)
       : Number(row.price_amount_cents),
     currency: row.currency || 'USD',
     billing_interval: row.billing_interval || 'month',

@@ -167,6 +167,58 @@ function extractWorkspaceKey(text = '') {
   return match?.[1] ? compact(match[1]).toLowerCase().replace(/[\s-]+/g, '_') : '';
 }
 
+function extractClassCount(text = '') {
+  const value = compact(text);
+  const numeric = value.match(/\b(\d{1,2})[\s-]*(?:classes|class sessions|class|sessions|weeks|meetings|shiurim|lessons)\b/i);
+  if (numeric) return Math.max(1, Math.min(Number(numeric[1]), 52));
+  const words = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+    twelve: 12,
+  };
+  const word = value.match(/\b(one|two|three|four|five|six|seven|eight|nine|ten|twelve)[\s-]*(?:classes|class sessions|class|sessions|weeks|meetings|shiurim|lessons)\b/i)?.[1];
+  return word ? words[word.toLowerCase()] : undefined;
+}
+
+function providerClassroomInputs(text = '') {
+  const value = normalized(text);
+  const privateReplies = /\b(private|privately|directly to (?:rabbi|teacher|provider))\b/.test(value);
+  const publicDisplay = /\b(public|community display|publish(?:es|ed|ing)?|featured|show selected)\b/.test(value);
+  const noStudentChat = /\b(no student[-\s]?student|no open chat|no group chat|private only)\b/.test(value);
+  return {
+    title: titleAfterKeyword(text, /\b(?:start|open|create|make|set up|setup|launch)\b\s*(?:a\s*)?(?:provider\s*)?(?:classroom|learning community|community|course)\s*(?:for|:|-)?\s*([\s\S]+)$/i, 'Provider classroom setup draft'),
+    raw_prompt: text,
+    class_count: extractClassCount(text),
+    community_dialogue_style: privateReplies
+      ? 'Rabbi/teacher-led Q&A with private student replies'
+      : /\bdiscussion|dialogue|community\b/.test(value)
+        ? 'Moderated community dialogue'
+        : 'Guided classroom Q&A',
+    student_access: /\b(member|membership|participants?)\b/.test(value)
+      ? 'Provider members/participants after BNA admin review'
+      : 'Provider-managed students/members after BNA admin review',
+    display_rules: publicDisplay
+      ? 'Only teacher-approved replies/questions may be published to the public/community display'
+      : 'Internal classroom first; public/community display remains off until approved',
+    message_permissions: noStudentChat || privateReplies
+      ? 'Students may reply privately to the teacher; no student-to-student chat unless explicitly enabled'
+      : 'Teacher-moderated replies; student-to-student chat disabled by default',
+    student_to_teacher_replies: true,
+    student_to_student_chat_enabled: false,
+    teacher_moderation_required: true,
+    public_display_enabled: publicDisplay,
+    workspace_key: extractWorkspaceKey(text) || 'one_time_mishnah_class',
+  };
+}
+
 function extractRabbiContentTitle(text = '') {
   const value = compact(text);
   const match = value.match(/\b(?:shiur idea|shiur topic|class idea|topic idea|source[-\s]?sheet(?:\s+task)?|source task)\b\s*(?:about|for|on|:|-)?\s*(.+)$/i);
@@ -369,6 +421,20 @@ function classifyTelegramActionRequest(input = {}) {
         reason: text,
       },
       reason: extractDecisionOptionLabel(text) ? 'decision_option_preview' : 'decision_option_needs_label',
+    };
+  }
+
+  if (
+    /\b(start|open|create|make|set up|setup|launch)\b.{0,90}\b(classroom|learning community|community|course)\b/.test(value)
+    && /\b(provider|service provider|rabbi|sheller|scheller|one time|mishnah|mishna|member|student|class)\b/.test(value)
+  ) {
+    return {
+      kind: 'typed_action',
+      action_id: 'create_provider_classroom_draft',
+      confidence: 0.86,
+      dry_run: true,
+      inputs: providerClassroomInputs(text),
+      reason: 'provider_classroom_setup_preview',
     };
   }
 

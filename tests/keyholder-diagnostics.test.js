@@ -55,6 +55,29 @@ test('keyholder diagnostics inspect expected files and never include secret cont
   assert.equal(openai.keyholder.present, true);
   assert.equal(openai.keyholder.fingerprint, fingerprintSecret(secret));
   assert.equal(openai.matches_repo_secret, true);
+  assert.deepEqual(openai.aliases, ['openaiv2.txt']);
+  assert.doesNotMatch(JSON.stringify(report), new RegExp(secret));
+
+  fs.rmSync(tempRoot, { recursive: true, force: true });
+});
+
+test('keyholder diagnostics can select the legacy openaiv2 alias without exposing it', async () => {
+  const { fingerprintSecret, inspectKeyholder } = await loadDiagnostics();
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bna-keyholder-alias-test-'));
+  const keyholderDir = path.join(tempRoot, 'BNA-Keyholder');
+  const repoRoot = path.join(tempRoot, 'repo');
+  fs.mkdirSync(keyholderDir, { recursive: true });
+  fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
+
+  const secret = 'sk-proj-alias-secret-never-print';
+  fs.writeFileSync(path.join(keyholderDir, 'openai-api-key.txt'), '');
+  fs.writeFileSync(path.join(keyholderDir, 'openaiv2.txt'), `${secret}\n`);
+
+  const report = inspectKeyholder({ keyholderDir, repoRoot });
+  const openai = report.files.find((file) => file.name === 'openai-api-key.txt');
+  assert.equal(openai.keyholder.name, 'openaiv2.txt');
+  assert.equal(openai.keyholder.present, true);
+  assert.equal(openai.keyholder.fingerprint, fingerprintSecret(secret));
   assert.doesNotMatch(JSON.stringify(report), new RegExp(secret));
 
   fs.rmSync(tempRoot, { recursive: true, force: true });

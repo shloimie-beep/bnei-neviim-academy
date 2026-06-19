@@ -15,8 +15,13 @@ const PAGE_ROUTES = [
   '/signup.html',
   '/signup-he',
   '/providers',
+  '/provider',
+  '/provider/login',
   '/service-providers',
   '/become-service-provider',
+  '/member',
+  '/member-portal',
+  '/rabbi-member',
 ];
 
 const PROTECTED_ROUTES = [
@@ -28,14 +33,42 @@ const PROTECTED_ROUTES = [
   {
     path: '/api/parent-portal',
     expectedStatuses: [401],
+    expectedCacheControlPattern: /no-store/i,
   },
   {
     path: '/api/parent-portal/session',
     expectedStatuses: [400],
+    expectedCacheControlPattern: /no-store/i,
+  },
+  {
+    path: '/api/parent/me',
+    expectedStatuses: [401],
+    expectedCacheControlPattern: /no-store/i,
   },
   {
     path: '/api/student-portal',
     expectedStatuses: [401],
+    expectedCacheControlPattern: /no-store/i,
+  },
+  {
+    path: '/api/student-portal/session',
+    expectedStatuses: [401],
+    expectedCacheControlPattern: /no-store/i,
+  },
+  {
+    path: '/api/provider-portal/session',
+    expectedStatuses: [401],
+    expectedCacheControlPattern: /no-store/i,
+  },
+  {
+    path: '/api/member-portal',
+    expectedStatuses: [400],
+    expectedCacheControlPattern: /no-store/i,
+  },
+  {
+    path: '/api/rabbi/member/session',
+    expectedStatuses: [400, 401],
+    expectedCacheControlPattern: /no-store/i,
   },
 ];
 
@@ -142,6 +175,13 @@ async function main() {
         assert(
           route.expectedLocationPattern.test(location),
           `${route.path} redirected to unexpected location ${location}`
+        );
+      }
+      if (route.expectedCacheControlPattern) {
+        const cacheControl = response.headers.get('cache-control') || '';
+        assert(
+          route.expectedCacheControlPattern.test(cacheControl),
+          `${route.path} missing expected Cache-Control header: ${cacheControl || '(empty)'}`
         );
       }
       assertNoForbiddenContent(route.path, text);

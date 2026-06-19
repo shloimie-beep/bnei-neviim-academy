@@ -6,6 +6,7 @@ const {
   ONE_TIME_PRODUCT_PROGRAM_KEY,
   ONE_TIME_CONTENT_ALIAS,
   ONE_TIME_PRODUCT_TIER_KEYS,
+  ONE_TIME_PRODUCT_READINESS_SECTIONS,
   calendarRangeForView,
   normalizeCandidatePricing,
   normalizeOneTimeRegion,
@@ -13,6 +14,7 @@ const {
   validateOneTimeLead,
   fixtureSefariaLookup,
   buildSourcePrepDraft,
+  oneTimeProductReadinessView,
 } = require('../src/lib/bna/one-time-product-system');
 
 const {
@@ -76,6 +78,76 @@ test('OneTime product helper normalizes tiers, regions, leads, calendar views, a
   assert.equal(draft.visibility, 'admin_only');
   assert.equal(draft.approval_status, 'needs_review');
   assert.equal(draft.source_sheet_draft.refs.length, 1);
+});
+
+test('OneTime product readiness maps product, schedule, booking, portal, and billing gates without writes', () => {
+  const readiness = oneTimeProductReadinessView({
+    providers: [{ provider: 'stripe', enabled: true, secret_configured: false, configured: false }],
+    schedules: [{ id: 1, timezone: 'Asia/Jerusalem' }],
+    calendar: { events: [{ id: 10, title: 'Class 1' }] },
+    tiers: [{ tier_key: 'library_live_low_touch', checkout_enabled: false }],
+  });
+
+  assert.equal(readiness.requirement_id, 'REQ-20260619-306');
+  assert.equal(readiness.status, 'needs_operator_decision');
+  assert.equal(readiness.safe_local_only, true);
+  assert.equal(readiness.no_external_write_performed, true);
+  assert.equal(readiness.gates.checkout_enabled, false);
+  assert.equal(readiness.gates.charges_enabled, false);
+  assert.equal(readiness.gates.invoices_enabled, false);
+  assert.equal(readiness.gates.payment_links_enabled, false);
+  assert.equal(readiness.gates.zoom_meeting_write_enabled, false);
+  assert.equal(readiness.gates.email_send_enabled, false);
+  assert.equal(readiness.gates.whatsapp_send_enabled, false);
+  assert.equal(readiness.gates.portal_publish_enabled, false);
+  assert.equal(readiness.observed_state.provider_settings_loaded, 1);
+  assert.equal(readiness.observed_state.schedule_rows_loaded, 1);
+  assert.equal(readiness.observed_state.calendar_events_loaded, 1);
+
+  const sectionKeys = readiness.sections.map((section) => section.section_key);
+  assert.deepEqual(sectionKeys, ONE_TIME_PRODUCT_READINESS_SECTIONS.map((section) => section.section_key));
+  [
+    'product_model',
+    'schedule',
+    'consultation_booking',
+    'parent_portal',
+    'student_portal',
+    'provider_portal',
+    'billing_readiness',
+  ].forEach((key) => assert.ok(sectionKeys.includes(key), `missing ${key}`));
+
+  const itemKeys = readiness.sections.flatMap((section) => section.items.map((item) => item.key));
+  [
+    'membership_67_monthly',
+    'premium_fixed_duration_masechta_intensive',
+    'optional_weekly_installments',
+    'entitlements_grace_failed_cancel_refund_access',
+    'legacy_price_preservation',
+    'rabbi_recurring_availability',
+    'exceptions_blackouts_date_windows',
+    'masechta_availability_cohort_dates',
+    'session_generation_duration_timezone_capacity',
+    'reschedule_cancel_makeup_prep_followup',
+    'appointment_types',
+    'availability_duration_buffers_cutoff',
+    'no_show_reminders_parent_confirmation',
+    'student_relationship_private_notes_parent_summary',
+    'future_zoom_relation',
+    'parent_next_class_calendar',
+    'parent_billing_invoice_payment_links_cancellation_access',
+    'student_next_class_secure_join_calendar',
+    'student_watched_progress_badges_community_questions_review',
+    'provider_schedule_availability_classes',
+    'provider_parent_communication_approvals',
+    'provider_of_record',
+    'no_charge_cards_or_invoices',
+    'refund_cancellation_policy',
+    'release_live_smoke',
+  ].forEach((key) => assert.ok(itemKeys.includes(key), `missing ${key}`));
+
+  assert.ok(readiness.summary.total_checks >= 30);
+  assert.match(readiness.blockers.join('\n'), /billing_provider_of_record_required_before_checkout/);
+  assert.match(readiness.blockers.join('\n'), /zoom_calendar_email_whatsapp_and_portal_publish_writes_require_explicit_approval/);
 });
 
 test('Rabbi tier helper preserves existing tiers and accepts draft OneTime planning tiers', () => {
@@ -153,15 +225,16 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /no_checkout: true/);
   assert.match(server, /no_access_granted: true/);
   assert.match(server, /external_write_performed: false/);
-  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest', '\/one-time\/member-login'\]/);
+  assert.match(server, /product_readiness: oneTimeProductReadinessView/);
+  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest', '\/one-time\/member-login'\]/);
 });
 
 test('public OneTime draft page is noindex, interest-only, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="noindex, nofollow">/);
   assert.match(oneTimeHtml, /OneTime Mishnayos/);
   assert.match(oneTimeHtml, /Draft \/ noindex/);
-  assert.match(oneTimeHtml, /Pricing pending/);
-  assert.match(oneTimeHtml, /7:00 PM Israel/);
+  assert.match(oneTimeHtml, /\$67 planned/);
+  assert.match(oneTimeHtml, /billing cadence still needs confirmation/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.match(oneTimeHtml, /No payment or external send is approved by this form/);
   assert.doesNotMatch(oneTimeHtml, /\/api\/rabbi\/checkout/);
@@ -176,6 +249,7 @@ test('Operations provider workspace reads OneTime product system and labels pric
     'getOneTimeProductLeads',
     'createOneTimeSourcePrepJob',
     'renderOneTimeProductDecisionPanel',
+    'renderOneTimeProductReadinessPanel',
     'renderOneTimeProductTiersPanel',
     'renderOneTimeFunnelPanel',
     'renderOneTimeLeadPanel',
@@ -183,6 +257,9 @@ test('Operations provider workspace reads OneTime product system and labels pric
   ].forEach((needle) => assert.match(operationsHtml, new RegExp(needle)));
 
   assert.match(operationsHtml, /RABBI-04 is draft\/decision-ready only/);
+  assert.match(operationsHtml, /data-one-time-product-readiness/);
+  assert.match(operationsHtml, /REQ-20260619-306/);
+  assert.match(operationsHtml, /No checkout, invoice, payment link, Zoom, external calendar, email, WhatsApp, Telegram, portal publish, or access automation is enabled/);
   assert.match(operationsHtml, /Candidate prices are review data only/);
   assert.match(operationsHtml, /Checkout disabled/);
   assert.match(operationsHtml, /fixture source-prep draft/i);

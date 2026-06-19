@@ -39,9 +39,12 @@ const {
 } = require('./src/lib/bna/goal-board');
 const {
   GAMIFICATION_EVENT_TYPES,
+  badgeAwardIdempotencyKey,
+  buildGamificationBadgeReadiness,
   courseEnrollmentSummary,
   gamificationIdempotencyKey,
   normalizeGamificationEventType,
+  oneTimeBadgeDefinitions,
   pointsForGamificationEventType,
   summarizeGamificationEvents,
 } = require('./src/lib/bna/gamification');
@@ -85,6 +88,10 @@ const {
   oneTimeOwnerAssignments,
 } = require('./src/lib/bna/one-time-drive-brief');
 const {
+  decorateOneTimeIdentity,
+  oneTimeCanonicalOwnerAssignments,
+} = require('./src/lib/bna/one-time-role-model');
+const {
   hasContactLeadPipelineBuildIntent,
   hasInterestedParentLeadCaptureIntent,
 } = require('./src/lib/bna/telegram-contact-lead-capture');
@@ -116,6 +123,16 @@ const externalActions = require('./src/lib/integrations/external-actions');
 const {
   buildPublicHelperRetrievalContext,
 } = require('./src/lib/bna/public-helper-retrieval');
+const {
+  buildTranscriptPrivacyReadiness,
+} = require('./src/lib/bna/transcript-privacy');
+const {
+  buildCommunityModerationReadiness,
+  buildModerationHistoryEvent,
+} = require('./src/lib/bna/community-moderation');
+const {
+  buildStudyAssistantReadiness,
+} = require('./src/lib/bna/study-assistant-readiness');
 const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
@@ -227,6 +244,7 @@ const {
   calendarRangeForView,
   validateOneTimeLead,
   buildSourcePrepDraft,
+  oneTimeProductReadinessView,
 } = require('./src/lib/bna/one-time-product-system');
 const {
   LIVE_ACCESS_TIERS,
@@ -368,8 +386,30 @@ const ONE_TIME_MEMBER_TIERS = new Set(['library_only', 'live_class', 'admin_prev
 const ONE_TIME_MEMBER_ACCESS_STATUSES = new Set(['pending', 'active', 'revoked', 'archived']);
 const ONE_TIME_PUBLISH_STATUSES = new Set(['draft', 'review', 'approved', 'published', 'archived']);
 const ONE_TIME_PUBLISH_ACTIONS = new Set(['preview', 'approve', 'publish', 'rollback', 'archive', 'smoke']);
-const ONE_TIME_CLASSROOM_MODERATION_STATUSES = new Set(['needs_review', 'approved', 'held_for_parent_review', 'rejected_private', 'archived']);
-const ONE_TIME_CLASSROOM_THREAD_TYPES = new Set(['announcement', 'video_thread', 'top_question', 'daily_video', 'source_discussion']);
+const ONE_TIME_CLASSROOM_MODERATION_STATUSES = new Set([
+  'needs_review',
+  'approved',
+  'edited_private',
+  'approved_parent_visible',
+  'approved_cohort_visible',
+  'approved_anonymized_public',
+  'held_for_parent_review',
+  'temporary_hold_pending_admin',
+  'rejected_private',
+  'deleted_with_history',
+  'archived',
+]);
+const ONE_TIME_CLASSROOM_THREAD_TYPES = new Set([
+  'announcement',
+  'cohort_discussion',
+  'private_question',
+  'parent_update',
+  'staff_note',
+  'video_thread',
+  'top_question',
+  'daily_video',
+  'source_discussion',
+]);
 const ONE_TIME_CLASSROOM_EVENT_TYPES = new Set(['approved_question', 'approved_response', 'rabbi_featured', 'assignment_participation']);
 const ONE_TIME_CURRICULUM_SEDARIM = [
   { key: 'zeraim', title: 'Zeraim', description: 'Seeds, berachos, agriculture, and daily avodah.', sequence: 1 },
@@ -8253,12 +8293,12 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return {
+    return decorateOneTimeIdentity({
       username: OPS_USERNAME,
       role: 'super_admin',
       scope: { type: 'all', projectKey: null },
       allowedViews: platformAllowedViews,
-    };
+    });
   }
 
   // Two-login architecture: owner (Rabbi Elie Scheller) vs manager (Shloimie)
@@ -8268,13 +8308,13 @@ function identifyOpsUser(username, password = null) {
     normalizedUser === ONE_TIME_OWNER_USERNAME.toLowerCase()
   ) {
     if (pass !== null && pass !== ONE_TIME_OWNER_PASSWORD) return null;
-    return {
+    return decorateOneTimeIdentity({
       username: user,
       role: 'project_owner',
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: ownerAllowedViews,
       displayName: 'Rabbi Elie Scheller',
-    };
+    });
   }
 
   if (
@@ -8283,13 +8323,13 @@ function identifyOpsUser(username, password = null) {
     normalizedUser === ONE_TIME_MANAGER_USERNAME.toLowerCase()
   ) {
     if (pass !== null && pass !== ONE_TIME_MANAGER_PASSWORD) return null;
-    return {
+    return decorateOneTimeIdentity({
       username: user,
       role: 'project_manager',
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: managerAllowedViews,
       displayName: 'Shloimie',
-    };
+    });
   }
 
   // Backward compatibility: old ONE_TIME_OPS_USERNAME maps to manager role
@@ -8299,13 +8339,13 @@ function identifyOpsUser(username, password = null) {
     normalizedUser === ONE_TIME_OPS_USERNAME.toLowerCase()
   ) {
     if (pass !== null && pass !== ONE_TIME_OPS_PASSWORD) return null;
-    return {
+    return decorateOneTimeIdentity({
       username: user,
       role: 'project_manager',
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: managerAllowedViews,
       displayName: 'Shloimie',
-    };
+    });
   }
 
   return null;
@@ -8348,6 +8388,9 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/app-access-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/question-moderation' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/product-system' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/calendar' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/source-prep-jobs' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/product-leads' && ['GET', 'POST'].includes(method)) return true;
@@ -8492,6 +8535,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/course-questions\/\d+\/responses$/.test(routePath) && method === 'GET') return true;
   if (routePath === '/api/bna/gamification-events' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/gamification-events/backfill' && method === 'POST') return true;
+  if (routePath === '/api/bna/gamification/badge-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/shoutouts' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/shoutouts\/\d+\/approve$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/parent-student-links' && ['GET', 'POST'].includes(method)) return true;
@@ -14573,7 +14617,28 @@ CREATE TABLE IF NOT EXISTS bna_student_badges (
   metadata JSONB DEFAULT '{}',
   UNIQUE (student_id, badge_id)
 );
+ALTER TABLE bna_student_badges ADD COLUMN IF NOT EXISTS awarded_by TEXT;
+ALTER TABLE bna_student_badges ADD COLUMN IF NOT EXISTS revoked_at TIMESTAMP;
+ALTER TABLE bna_student_badges ADD COLUMN IF NOT EXISTS revoked_by TEXT;
+ALTER TABLE bna_student_badges ADD COLUMN IF NOT EXISTS reversal_reason TEXT;
+ALTER TABLE bna_student_badges ADD COLUMN IF NOT EXISTS audit_json JSONB DEFAULT '[]';
 CREATE INDEX IF NOT EXISTS idx_bna_student_badges_student ON bna_student_badges(student_id, status);
+
+CREATE TABLE IF NOT EXISTS bna_badge_audit_events (
+  id SERIAL PRIMARY KEY,
+  student_id INTEGER NOT NULL REFERENCES bna_students(id) ON DELETE CASCADE,
+  badge_id INTEGER REFERENCES bna_badges(id) ON DELETE SET NULL,
+  student_badge_id INTEGER REFERENCES bna_student_badges(id) ON DELETE SET NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('award_preview', 'awarded', 'revocation_preview', 'revoked', 'restored')),
+  source_event_id INTEGER REFERENCES bna_gamification_events(id) ON DELETE SET NULL,
+  idempotency_key TEXT NOT NULL UNIQUE,
+  reason TEXT,
+  parent_safe_explanation TEXT,
+  actor_label TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_badge_audit_events_student ON bna_badge_audit_events(student_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS bna_student_references (
   id SERIAL PRIMARY KEY,
@@ -14723,6 +14788,10 @@ ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS thread_type TEXT NOT 
 ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS moderation_status TEXT NOT NULL DEFAULT 'approved';
 ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS leaderboard_eligible BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS featured_rank INTEGER;
+ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS visibility_scope TEXT NOT NULL DEFAULT 'members';
+ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS edit_history_json JSONB DEFAULT '[]';
+ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS delete_history_json JSONB DEFAULT '[]';
+ALTER TABLE bna_community_threads ADD COLUMN IF NOT EXISTS moderation_audit_json JSONB DEFAULT '{}';
 ALTER TABLE bna_learning_community_members DROP CONSTRAINT IF EXISTS bna_learning_community_members_actor_type_check;
 ALTER TABLE bna_learning_community_members
   ADD CONSTRAINT bna_learning_community_members_actor_type_check CHECK (actor_type IN ('admin', 'rabbi', 'parent', 'student', 'service_provider', 'member'));
@@ -14731,10 +14800,13 @@ ALTER TABLE bna_community_threads
   ADD CONSTRAINT bna_community_threads_created_by_type_check CHECK (created_by_type IN ('admin', 'rabbi', 'parent', 'student', 'service_provider', 'member'));
 ALTER TABLE bna_community_threads DROP CONSTRAINT IF EXISTS bna_community_threads_thread_type_check;
 ALTER TABLE bna_community_threads
-  ADD CONSTRAINT bna_community_threads_thread_type_check CHECK (thread_type IN ('announcement', 'video_thread', 'top_question', 'daily_video', 'source_discussion'));
+  ADD CONSTRAINT bna_community_threads_thread_type_check CHECK (thread_type IN ('announcement', 'cohort_discussion', 'private_question', 'parent_update', 'staff_note', 'video_thread', 'top_question', 'daily_video', 'source_discussion'));
 ALTER TABLE bna_community_threads DROP CONSTRAINT IF EXISTS bna_community_threads_moderation_status_check;
 ALTER TABLE bna_community_threads
-  ADD CONSTRAINT bna_community_threads_moderation_status_check CHECK (moderation_status IN ('needs_review', 'approved', 'held_for_parent_review', 'rejected_private', 'archived'));
+  ADD CONSTRAINT bna_community_threads_moderation_status_check CHECK (moderation_status IN ('needs_review', 'approved', 'edited_private', 'approved_parent_visible', 'approved_cohort_visible', 'approved_anonymized_public', 'held_for_parent_review', 'temporary_hold_pending_admin', 'rejected_private', 'deleted_with_history', 'archived'));
+ALTER TABLE bna_community_threads DROP CONSTRAINT IF EXISTS bna_community_threads_visibility_scope_check;
+ALTER TABLE bna_community_threads
+  ADD CONSTRAINT bna_community_threads_visibility_scope_check CHECK (visibility_scope IN ('private', 'staff_only', 'parent_visible', 'cohort_visible', 'members', 'public_anonymized', 'archived'));
 
 ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS parent_message_id INTEGER REFERENCES bna_community_messages(id) ON DELETE SET NULL;
 ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS moderation_status TEXT NOT NULL DEFAULT 'approved';
@@ -14745,19 +14817,124 @@ ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS leaderboard_eligible
 ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS featured_rank INTEGER;
 ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS approved_by TEXT;
 ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS approved_at TIMESTAMP;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS original_body TEXT;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS edited_body TEXT;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS published_body TEXT;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS anonymized_body TEXT;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS visibility_decision TEXT NOT NULL DEFAULT 'private';
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS private_to_public_state TEXT NOT NULL DEFAULT 'submitted_private';
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS edit_history_json JSONB DEFAULT '[]';
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS delete_history_json JSONB DEFAULT '[]';
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS report_flags_json JSONB DEFAULT '[]';
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS staff_only BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS public_promoted BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_community_messages ADD COLUMN IF NOT EXISTS temporary_hold_recommended BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE bna_community_messages DROP CONSTRAINT IF EXISTS bna_community_messages_author_type_check;
 ALTER TABLE bna_community_messages
   ADD CONSTRAINT bna_community_messages_author_type_check CHECK (author_type IN ('admin', 'rabbi', 'parent', 'student', 'service_provider', 'member'));
 ALTER TABLE bna_community_messages DROP CONSTRAINT IF EXISTS bna_community_messages_moderation_status_check;
 ALTER TABLE bna_community_messages
-  ADD CONSTRAINT bna_community_messages_moderation_status_check CHECK (moderation_status IN ('needs_review', 'approved', 'held_for_parent_review', 'rejected_private', 'archived'));
+  ADD CONSTRAINT bna_community_messages_moderation_status_check CHECK (moderation_status IN ('needs_review', 'approved', 'edited_private', 'approved_parent_visible', 'approved_cohort_visible', 'approved_anonymized_public', 'held_for_parent_review', 'temporary_hold_pending_admin', 'rejected_private', 'deleted_with_history', 'archived'));
 ALTER TABLE bna_community_messages DROP CONSTRAINT IF EXISTS bna_community_messages_parent_escalation_status_check;
 ALTER TABLE bna_community_messages
   ADD CONSTRAINT bna_community_messages_parent_escalation_status_check CHECK (parent_escalation_status IN ('none', 'flagged', 'parent_visible', 'resolved'));
+ALTER TABLE bna_community_messages DROP CONSTRAINT IF EXISTS bna_community_messages_visibility_decision_check;
+ALTER TABLE bna_community_messages
+  ADD CONSTRAINT bna_community_messages_visibility_decision_check CHECK (visibility_decision IN ('private', 'staff_only', 'parent_visible', 'cohort_visible', 'public_anonymized', 'archived'));
+ALTER TABLE bna_community_messages DROP CONSTRAINT IF EXISTS bna_community_messages_private_to_public_state_check;
+ALTER TABLE bna_community_messages
+  ADD CONSTRAINT bna_community_messages_private_to_public_state_check CHECK (private_to_public_state IN ('submitted_private', 'needs_human_review', 'edited_private', 'approved_parent_visible', 'approved_cohort_visible', 'approved_anonymized_public', 'held_for_safety_review', 'temporary_hold_pending_admin', 'rejected_private', 'deleted_with_history', 'archived_private'));
 
 ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS community_thread_id INTEGER REFERENCES bna_community_threads(id) ON DELETE SET NULL;
 ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS community_message_id INTEGER REFERENCES bna_community_messages(id) ON DELETE SET NULL;
 ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS leaderboard_eligible BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS original_body TEXT;
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS edited_body TEXT;
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS published_body TEXT;
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS anonymized_body TEXT;
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS visibility_decision TEXT DEFAULT 'private';
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS edit_history_json JSONB DEFAULT '[]';
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS delete_history_json JSONB DEFAULT '[]';
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS report_flags_json JSONB DEFAULT '[]';
+ALTER TABLE bna_one_time_question_reviews ADD COLUMN IF NOT EXISTS temporary_hold_recommended BOOLEAN NOT NULL DEFAULT FALSE;
+
+CREATE TABLE IF NOT EXISTS bna_community_moderation_events (
+  id BIGSERIAL PRIMARY KEY,
+  workspace_key TEXT NOT NULL DEFAULT 'rabbi_sheller_provider',
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  community_thread_id INTEGER REFERENCES bna_community_threads(id) ON DELETE SET NULL,
+  community_message_id INTEGER REFERENCES bna_community_messages(id) ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  actor_type TEXT NOT NULL DEFAULT 'admin' CHECK (actor_type IN ('admin', 'rabbi', 'parent', 'student', 'service_provider', 'member', 'system')),
+  actor_label TEXT,
+  visibility_before TEXT,
+  visibility_after TEXT,
+  moderation_status_before TEXT,
+  moderation_status_after TEXT,
+  original_body_present BOOLEAN NOT NULL DEFAULT FALSE,
+  published_body_present BOOLEAN NOT NULL DEFAULT FALSE,
+  anonymized_body_present BOOLEAN NOT NULL DEFAULT FALSE,
+  report_flags_json JSONB DEFAULT '[]',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_source_versions (
+  id BIGSERIAL PRIMARY KEY,
+  workspace_key TEXT NOT NULL DEFAULT 'rabbi_sheller_provider',
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  class_session_id INTEGER REFERENCES bna_class_sessions(id) ON DELETE SET NULL,
+  curriculum_unit_id INTEGER REFERENCES bna_curriculum_units(id) ON DELETE SET NULL,
+  canonical_reference TEXT NOT NULL,
+  title TEXT NOT NULL,
+  index_title TEXT NOT NULL,
+  version_title TEXT NOT NULL,
+  language TEXT NOT NULL,
+  license TEXT NOT NULL,
+  attribution TEXT NOT NULL,
+  source_url TEXT NOT NULL,
+  retrieved_at TIMESTAMP,
+  content_hash TEXT NOT NULL,
+  rabbi_approval_status TEXT NOT NULL DEFAULT 'needs_review' CHECK (rabbi_approval_status IN ('draft', 'source_checked', 'citation_verified', 'license_reviewed', 'rabbi_approved', 'rejected', 'needs_review')),
+  quote_permission TEXT NOT NULL DEFAULT 'needs_review' CHECK (quote_permission IN ('allowed', 'needs_review', 'blocked')),
+  summary_permission TEXT NOT NULL DEFAULT 'needs_review' CHECK (summary_permission IN ('allowed', 'needs_review', 'blocked')),
+  index_permission TEXT NOT NULL DEFAULT 'needs_review' CHECK (index_permission IN ('allowed', 'needs_review', 'blocked')),
+  retrieval_scope TEXT NOT NULL DEFAULT 'restricted' CHECK (retrieval_scope IN ('provider_wide', 'cohort', 'student_private', 'restricted')),
+  cohort_key TEXT,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
+  citation_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  license_reviewed BOOLEAN NOT NULL DEFAULT FALSE,
+  source_text_present BOOLEAN NOT NULL DEFAULT FALSE,
+  source_text_returned BOOLEAN NOT NULL DEFAULT FALSE,
+  raw_or_unreviewed BOOLEAN NOT NULL DEFAULT TRUE,
+  staff_only BOOLEAN NOT NULL DEFAULT FALSE,
+  moderation_metadata BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}',
+  status TEXT NOT NULL DEFAULT 'needs_review' CHECK (status IN ('needs_review', 'ready_for_review', 'approved', 'rejected', 'archived')),
+  created_by TEXT DEFAULT 'system',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_study_assistant_audit_events (
+  id BIGSERIAL PRIMARY KEY,
+  workspace_key TEXT NOT NULL DEFAULT 'rabbi_sheller_provider',
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  source_version_id BIGINT REFERENCES bna_one_time_source_versions(id) ON DELETE SET NULL,
+  class_session_id INTEGER REFERENCES bna_class_sessions(id) ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  actor_type TEXT NOT NULL DEFAULT 'system' CHECK (actor_type IN ('admin', 'rabbi', 'parent', 'student', 'service_provider', 'member', 'system')),
+  actor_label TEXT,
+  retrieval_scope TEXT,
+  rabbi_approval_status TEXT,
+  citation_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  license_reviewed BOOLEAN NOT NULL DEFAULT FALSE,
+  source_text_returned BOOLEAN NOT NULL DEFAULT FALSE,
+  answer_generation_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS bna_classroom_participation_events (
   id BIGSERIAL PRIMARY KEY,
@@ -14790,6 +14967,10 @@ CREATE INDEX IF NOT EXISTS idx_bna_assignments_classroom ON bna_assignments(proj
 CREATE INDEX IF NOT EXISTS idx_bna_schedule_items_classroom ON bna_schedule_items(class_session_id, curriculum_unit_id, start_at);
 CREATE INDEX IF NOT EXISTS idx_bna_community_threads_classroom ON bna_community_threads(project_id, class_session_id, curriculum_unit_id, status, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_community_messages_moderation ON bna_community_messages(moderation_status, parent_visible_safety, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_community_moderation_events_project ON bna_community_moderation_events(project_id, community_message_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_source_versions_project ON bna_one_time_source_versions(project_id, retrieval_scope, rabbi_approval_status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_source_versions_student ON bna_one_time_source_versions(project_id, student_id, retrieval_scope, rabbi_approval_status);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_study_assistant_events_project ON bna_one_time_study_assistant_audit_events(project_id, source_version_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_classroom_participation_project ON bna_classroom_participation_events(project_id, status, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_classroom_participation_message ON bna_classroom_participation_events(community_message_id, status);
 CREATE INDEX IF NOT EXISTS idx_bna_classroom_participation_actor ON bna_classroom_participation_events(project_id, actor_type, actor_id, status);
@@ -25178,7 +25359,7 @@ function oneTimeClassroomAssignmentView(row = {}) {
   };
 }
 
-function oneTimeClassroomLeaderboard(events = []) {
+function oneTimeClassroomParticipationSummary(events = []) {
   const map = new Map();
   for (const event of events.map(oneTimeParticipationEventView)) {
     if (event.status !== 'approved' || event.visibility !== 'classroom') continue;
@@ -25187,14 +25368,12 @@ function oneTimeClassroomLeaderboard(events = []) {
       actor_type: event.actor_type,
       actor_id: event.actor_id,
       actor_label: event.actor_label || 'Participant',
-      points: 0,
       approved_questions: 0,
       approved_responses: 0,
       rabbi_featured: 0,
       assignment_participation: 0,
       latest_at: event.created_at,
     };
-    current.points += Number(event.points || 0);
     if (event.event_type === 'approved_question') current.approved_questions += 1;
     if (event.event_type === 'approved_response') current.approved_responses += 1;
     if (event.event_type === 'rabbi_featured') current.rabbi_featured += 1;
@@ -25203,9 +25382,9 @@ function oneTimeClassroomLeaderboard(events = []) {
     map.set(key, current);
   }
   return [...map.values()]
-    .sort((a, b) => b.points - a.points || String(b.latest_at || '').localeCompare(String(a.latest_at || '')))
+    .sort((a, b) => String(b.latest_at || '').localeCompare(String(a.latest_at || '')))
     .slice(0, 12)
-    .map((entry, index) => ({ rank: index + 1, ...entry }));
+    .map((entry) => ({ ...entry, public_rank: null, public_points: null }));
 }
 
 function oneTimeClassroomScreenResponse(text = '') {
@@ -25358,7 +25537,8 @@ async function getOneTimeClassroomParticipation(projectId, db = pool, { memberSa
   const events = rows.map(oneTimeParticipationEventView);
   return {
     events: memberSafe ? events.slice(0, 40) : events,
-    leaderboard: oneTimeClassroomLeaderboard(events),
+    participation_summary: oneTimeClassroomParticipationSummary(events),
+    leaderboard: [],
   };
 }
 
@@ -25432,7 +25612,8 @@ async function getOneTimeClassroomData({ db = pool, memberLibrary = null, member
     }))).sort((a, b) => String(a.start_at || '').localeCompare(String(b.start_at || ''))),
     threads,
     top_questions: oneTimeClassroomTopQa(threads, participation),
-    leaderboard: participation.leaderboard,
+    participation_summary: participation.participation_summary,
+    leaderboard: [],
     participation_events: memberSafe ? [] : participation.events,
     bot_policy: {
       source_grounded_only: true,
@@ -29739,12 +29920,19 @@ async function ensureDefaultProjects(db = pool) {
 
   await ensureProjectMember(bna, 'Shloimie', { role: 'operator', access_level: 'owner' }, db);
   const oneTimeAssignments = oneTimeOwnerAssignments();
+  const oneTimeCanonicalAssignments = oneTimeCanonicalOwnerAssignments();
   const oneTimeOwnerAssignment = oneTimeAssignments.find((assignment) => assignment.access_level === 'owner')
     || oneTimeAssignments[0]
     || { person_name: 'Rabbi Elie Scheller', role: 'project owner', access_level: 'owner' };
   const oneTimeManagerAssignment = oneTimeAssignments.find((assignment) => assignment.person_name === 'Shloimie')
     || oneTimeAssignments.find((assignment) => assignment.access_level === 'manager')
     || { person_name: 'Shloimie', role: 'project admin', access_level: 'manager' };
+  const oneTimeOwnerCanonical = oneTimeCanonicalAssignments.find((assignment) => assignment.person_name === oneTimeOwnerAssignment.person_name)
+    || oneTimeCanonicalAssignments[0]
+    || {};
+  const oneTimeManagerCanonical = oneTimeCanonicalAssignments.find((assignment) => assignment.person_name === oneTimeManagerAssignment.person_name)
+    || oneTimeCanonicalAssignments[1]
+    || {};
   await ensureProjectMember(oneTime, oneTimeOwnerAssignment.person_name, {
     role: oneTimeOwnerAssignment.role,
     access_level: oneTimeOwnerAssignment.access_level,
@@ -29752,6 +29940,11 @@ async function ensureDefaultProjects(db = pool) {
     metadata: {
       account_type: 'external_user',
       project_scope: ONE_TIME_PROJECT_KEY,
+      workspace_scope: 'rabbi_sheller_provider',
+      canonical_role: oneTimeOwnerCanonical.canonical_role || 'workspace_owner',
+      canonical_role_label: oneTimeOwnerCanonical.canonical_role_label || 'Workspace Owner',
+      compatibility_role: oneTimeOwnerCanonical.compatibility_role || oneTimeOwnerAssignment.role,
+      role_contract: 'one-time-role-model-v1',
       account_owner: true,
       allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
     },
@@ -29763,6 +29956,13 @@ async function ensureDefaultProjects(db = pool) {
     metadata: {
       account_type: 'internal_admin',
       project_scope: ONE_TIME_PROJECT_KEY,
+      workspace_scope: 'rabbi_sheller_provider',
+      canonical_role: oneTimeManagerCanonical.canonical_role || 'workspace_manager',
+      canonical_role_label: oneTimeManagerCanonical.canonical_role_label || 'Workspace Manager',
+      platform_role: oneTimeManagerCanonical.platform_role || 'platform_super_admin',
+      platform_role_label: oneTimeManagerCanonical.platform_role_label || 'Platform Super Admin',
+      compatibility_role: oneTimeManagerCanonical.compatibility_role || oneTimeManagerAssignment.role,
+      role_contract: 'one-time-role-model-v1',
       admin_for_owner: 'Rabbi Elie Scheller',
       admin_for_owner_source: oneTimeOwnerAssignment.person_name,
     },
@@ -29837,6 +30037,7 @@ function workspaceProjectView(row = {}) {
 
 function workspaceMembershipView(row = {}) {
   if (!row) return null;
+  const metadata = parseJsonMaybe(row.metadata);
   return {
     id: row.id,
     workspace_id: row.workspace_id,
@@ -29847,11 +30048,16 @@ function workspaceMembershipView(row = {}) {
     person_id: row.person_id,
     person_name: row.person_name || row.preferred_name,
     role: row.role,
+    canonical_role: row.canonical_role || metadata.canonical_role || metadata.workspace_role || '',
+    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || metadata.workspace_role_label || '',
+    platform_role: row.platform_role || metadata.platform_role || '',
+    platform_role_label: row.platform_role_label || metadata.platform_role_label || '',
+    role_contract: row.role_contract || metadata.role_contract || '',
     access_level: row.access_level,
     relationship_to_owner: row.relationship_to_owner,
     tags: Array.isArray(row.tags) ? row.tags : [],
     active: row.active !== false,
-    metadata: parseJsonMaybe(row.metadata),
+    metadata,
   };
 }
 
@@ -31909,16 +32115,11 @@ async function ensureWs11CommunityFoundation(db = pool) {
     ]
   )).rows[0];
 
-  const badgeSeeds = [
-    ['question-asker', 'Question Asker', 'Asked a thoughtful Mishnah question.', 'ask_question', 5, '?'],
-    ['worksheet-starter', 'Worksheet Starter', 'Submitted a worksheet for review.', 'worksheet_submitted', 10, 'W'],
-    ['worksheet-finisher', 'Worksheet Finisher', 'Completed a worksheet.', 'worksheet_completed', 15, 'OK'],
-    ['source-reviewer', 'Source Reviewer', 'Reviewed a source or source sheet.', 'source_reviewed', 7, 'S'],
-    ['class-participant', 'Class Participant', 'Attended or participated in class.', 'class_attended', 6, 'C'],
-    ['shoutout-winner', 'Shoutout Winner', 'Received an approved Rabbi/admin shoutout.', 'shoutout_received', 10, '*'],
-    ['milestone-maker', 'Milestone Maker', 'Reached a parent-visible progress milestone.', 'parent_visible_milestone', 12, 'M'],
-  ];
-  for (const [slug, title, description, eventType, pointsRequired, icon] of badgeSeeds) {
+  const badgeSeeds = oneTimeBadgeDefinitions().map((badge) => ({
+    ...badge,
+    icon: badge.icon || String(badge.title || badge.slug || 'B').slice(0, 2).toUpperCase(),
+  }));
+  for (const badge of badgeSeeds) {
     await db.query(
       `INSERT INTO bna_badges (
          slug, title, description, event_type, points_required, icon, status, metadata
@@ -31932,7 +32133,22 @@ async function ensureWs11CommunityFoundation(db = pool) {
          status = 'active',
          metadata = COALESCE(bna_badges.metadata, '{}'::jsonb) || EXCLUDED.metadata,
          updated_at = NOW()`,
-      [slug, title, description, eventType, pointsRequired, icon, JSON.stringify({ source: 'ws11_seed' })]
+      [
+        badge.slug,
+        badge.title,
+        badge.description,
+        badge.event_type,
+        badge.points_required,
+        badge.icon,
+        JSON.stringify({
+          source: 'ws11_seed',
+          requirement_id: 'REQ-20260619-310',
+          award_mode: badge.award_mode,
+          threshold_key: badge.threshold_key,
+          parent_safe_explanation: badge.parent_safe_explanation,
+          no_public_individual_leaderboard: true,
+        }),
+      ]
     );
   }
 
@@ -32165,13 +32381,45 @@ async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
     [event.event_type, total]
   )).rows;
   for (const badge of badges) {
-    await db.query(
+    const awarded = (await db.query(
       `INSERT INTO bna_student_badges (
-         student_id, badge_id, awarded_event_id, status, metadata
-       ) VALUES ($1, $2, $3, 'active', $4::jsonb)
-       ON CONFLICT (student_id, badge_id) DO NOTHING`,
-      [studentId, badge.id, event.id, JSON.stringify({ source: 'ws11_auto_award', total_points: total })]
-    );
+         student_id, badge_id, awarded_event_id, status, awarded_by, metadata, audit_json
+       ) VALUES ($1, $2, $3, 'active', 'system', $4::jsonb, $5::jsonb)
+       ON CONFLICT (student_id, badge_id) DO NOTHING
+       RETURNING *`,
+      [
+        studentId,
+        badge.id,
+        event.id,
+        JSON.stringify({ source: 'ws11_auto_award', total_points: total, requirement_id: 'REQ-20260619-310' }),
+        JSON.stringify([{
+          action: 'awarded',
+          source: 'ws11_auto_award',
+          event_id: event.id,
+          awarded_by: 'system',
+          parent_safe_explanation: badge.description || badge.title,
+        }]),
+      ]
+    )).rows[0];
+    if (awarded) {
+      await db.query(
+        `INSERT INTO bna_badge_audit_events (
+           student_id, badge_id, student_badge_id, event_type, source_event_id,
+           idempotency_key, reason, parent_safe_explanation, actor_label, metadata
+         ) VALUES ($1, $2, $3, 'awarded', $4, $5, $6, $7, 'system', $8::jsonb)
+         ON CONFLICT (idempotency_key) DO NOTHING`,
+        [
+          studentId,
+          badge.id,
+          awarded.id,
+          event.id,
+          badgeAwardIdempotencyKey({ student_id: studentId, badge_slug: badge.slug, source_event_ref: event.id }),
+          badge.title,
+          badge.description || badge.title,
+          JSON.stringify({ source: 'ws11_auto_award', requirement_id: 'REQ-20260619-310', total_points: total }),
+        ]
+      );
+    }
   }
 }
 
@@ -33168,12 +33416,24 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     username: identity?.username || null,
     role,
     legacy_role: role === 'super_admin' ? 'admin' : role,
+    displayName: identity?.displayName || identity?.display_name || person?.preferred_name || null,
+    display_name: identity?.displayName || identity?.display_name || person?.preferred_name || null,
+    canonical_role: identity?.canonical_role || '',
+    canonical_role_label: identity?.canonical_role_label || '',
+    canonical_roles: Array.isArray(identity?.canonical_roles) ? identity.canonical_roles : [],
+    workspace_role: identity?.workspace_role || '',
+    workspace_role_label: identity?.workspace_role_label || '',
+    platform_role: identity?.platform_role || '',
+    platform_role_label: identity?.platform_role_label || '',
+    role_contract: identity?.role_contract || '',
+    workspace_key: identity?.workspace_key || activeKey,
+    project_key: identity?.project_key || activeWorkspace?.project_key || null,
     scope: identity?.scope || { type: 'all', projectKey: null },
     person: person ? canonicalPersonView(person) : null,
     activeWorkspace: workspaceProjectView(activeWorkspace),
     active_workspace: workspaceProjectView(activeWorkspace),
     memberships: memberships.map(workspaceMembershipView),
-    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
+    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
   };
 }
 
@@ -39157,12 +39417,14 @@ function socialPostView(row = {}) {
 }
 
 function emailDraftView(row = {}) {
+  const metadata = sanitizeIntegrationMetadata(row.metadata);
   return {
     id: Number(row.id),
     provider: row.provider,
     provider_account: row.provider_account || null,
     account_owner: row.account_owner || null,
     from_email: row.from_email || null,
+    reply_to: row.reply_to || metadata.reply_to || null,
     to_emails: Array.isArray(row.to_emails) ? row.to_emails : parseJsonMaybe(row.to_emails) || [],
     cc_emails: Array.isArray(row.cc_emails) ? row.cc_emails : parseJsonMaybe(row.cc_emails) || [],
     bcc_emails: Array.isArray(row.bcc_emails) ? row.bcc_emails : parseJsonMaybe(row.bcc_emails) || [],
@@ -39174,7 +39436,7 @@ function emailDraftView(row = {}) {
     send_blocker: row.send_blocker || null,
     source: row.source || null,
     source_id: row.source_id || null,
-    metadata: sanitizeIntegrationMetadata(row.metadata),
+    metadata,
     reviewed_by: row.reviewed_by || null,
     reviewed_at: row.reviewed_at || null,
     sent_at: row.sent_at || null,
@@ -39694,11 +39956,27 @@ app.post('/api/bna/integrations/stripe/checkout-create', requireAdmin, async (re
 });
 
 app.get('/api/bna/integrations/zoom/status', requireAdmin, (req, res) => {
-  res.json({ success: true, card: zoomIntegration.getZoomReadiness({ config: zoomRuntimeConfig }) });
+  res.json({
+    success: true,
+    card: zoomIntegration.getZoomReadiness({ config: zoomRuntimeConfig }),
+    automation_readiness: zoomIntegration.buildZoomSessionAutomationPreview({}, { config: zoomRuntimeConfig }),
+  });
 });
 
 app.post('/api/bna/integrations/zoom/meeting-preview', requireAdmin, (req, res) => {
   res.json({ success: true, ...zoomIntegration.buildZoomMeetingPreview(req.body || {}, { config: zoomRuntimeConfig }) });
+});
+
+app.post('/api/bna/integrations/zoom/session-automation-preview', requireAdmin, (req, res) => {
+  res.json({ success: true, ...zoomIntegration.buildZoomSessionAutomationPreview(req.body || {}, { config: zoomRuntimeConfig }) });
+});
+
+app.post('/api/bna/integrations/zoom/webhook-attendance-preview', requireAdmin, (req, res) => {
+  res.json({ success: true, ...zoomIntegration.buildZoomWebhookAttendancePreview(req.body || {}, { config: zoomRuntimeConfig }) });
+});
+
+app.post('/api/bna/integrations/zoom/attendance-correction-preview', requireAdmin, (req, res) => {
+  res.json({ success: true, ...zoomIntegration.buildZoomAttendanceCorrectionDraft(req.body || {}) });
 });
 
 app.post('/api/bna/integrations/zoom/meetings', requireAdmin, async (req, res) => {
@@ -39722,15 +40000,27 @@ app.post('/api/bna/integrations/zoom/meetings', requireAdmin, async (req, res) =
 });
 
 app.get('/api/bna/integrations/video-hosting/status', requireAdmin, (req, res) => {
-  res.json({ success: true, card: videoHostingIntegration.getVideoHostingReadiness({ config: videoHostingRuntimeConfig }) });
+  res.json({
+    success: true,
+    card: videoHostingIntegration.getVideoHostingReadiness({ config: videoHostingRuntimeConfig }),
+    recording_pipeline: videoHostingIntegration.buildRecordingPipelinePreview({}, { config: videoHostingRuntimeConfig }),
+  });
 });
 
 app.get('/api/bna/integrations/vimeo/status', requireAdmin, (req, res) => {
-  res.json({ success: true, card: videoHostingIntegration.getVideoHostingReadiness({ config: videoHostingRuntimeConfig }) });
+  res.json({
+    success: true,
+    card: videoHostingIntegration.getVideoHostingReadiness({ config: videoHostingRuntimeConfig }),
+    recording_pipeline: videoHostingIntegration.buildRecordingPipelinePreview({}, { config: videoHostingRuntimeConfig }),
+  });
 });
 
 app.post('/api/bna/video-library/drafts', requireAdmin, (req, res) => {
   res.json({ success: true, ...videoHostingIntegration.buildVideoLibraryDraft(req.body || {}, { config: videoHostingRuntimeConfig }) });
+});
+
+app.post('/api/bna/video-library/recording-pipeline-preview', requireAdmin, (req, res) => {
+  res.json({ success: true, ...videoHostingIntegration.buildRecordingPipelinePreview(req.body || {}, { config: videoHostingRuntimeConfig }) });
 });
 
 app.post('/api/bna/video-library/:id/worksheet-preview', requireAdmin, (req, res) => {
@@ -39756,6 +40046,23 @@ app.post('/api/bna/video-library/:id/upload-preview', requireAdmin, (req, res) =
     external_write_performed: false,
     video_library_id: req.params.id,
     readiness: videoHostingIntegration.getVideoHostingReadiness({ config: videoHostingRuntimeConfig }),
+    recording_pipeline: videoHostingIntegration.buildRecordingPipelinePreview(req.body || {}, { config: videoHostingRuntimeConfig }),
+  });
+});
+
+app.post('/api/bna/video-library/:id/publication-preview', requireAdmin, (req, res) => {
+  res.json({
+    success: true,
+    video_library_id: req.params.id,
+    ...videoHostingIntegration.buildVimeoPublicationPreview(req.body || {}, { config: videoHostingRuntimeConfig }),
+  });
+});
+
+app.post('/api/bna/video-library/:id/retention-preview', requireAdmin, (req, res) => {
+  res.json({
+    success: true,
+    video_library_id: req.params.id,
+    ...videoHostingIntegration.buildRecordingRetentionPreview(req.body || {}),
   });
 });
 
@@ -40182,6 +40489,7 @@ async function createResendEmailDraft(req, res) {
   const subject = String(body.subject || '').trim();
   const text = String(body.text || body.text_body || body.textBody || '').trim();
   const html = String(body.html || body.html_body || body.htmlBody || '').trim();
+  const replyTo = normalizeEmail(body.reply_to || body.replyTo || body.metadata?.reply_to || '');
   if (!to.length) return res.status(400).json({ error: 'At least one recipient is required' });
   if (!subject || (!text && !html)) return res.status(400).json({ error: 'subject and text/html are required' });
   const readiness = await getResendReadinessForResponse();
@@ -40208,6 +40516,7 @@ async function createResendEmailDraft(req, res) {
       body.source_id || body.sourceId || null,
       JSON.stringify(sanitizeIntegrationMetadata({
         ...(body.metadata || {}),
+        ...(replyTo ? { reply_to: replyTo } : {}),
         project_key: draftContext.projectKey || DEFAULT_PROJECT_KEY,
         workspace_key: draftContext.workspaceKey || workspaceKeyForProject(draftContext.projectKey || DEFAULT_PROJECT_KEY),
       })),
@@ -40241,6 +40550,8 @@ async function sendResendEmailDraft(req, res) {
     html_body: String(body.html || body.html_body || '').trim(),
     metadata: sanitizeIntegrationMetadata(body.metadata || {}),
   };
+  const payloadMetadata = sanitizeIntegrationMetadata(payload.metadata || {});
+  const replyTo = normalizeEmail(body.reply_to || body.replyTo || payload.reply_to || payloadMetadata.reply_to || '');
   const resendRuntimeConfig = resendServerRuntimeConfig();
   const resendConfirm = body.confirm || body.confirmation_phrase || body.confirmationPhrase || body.approval_phrase;
   try {
@@ -40249,6 +40560,7 @@ async function sendResendEmailDraft(req, res) {
       to: payload.to_emails,
       cc: payload.cc_emails,
       bcc: payload.bcc_emails,
+      replyTo,
       subject: payload.subject,
       text: payload.text_body,
       html: payload.html_body,
@@ -59982,6 +60294,50 @@ app.get('/api/bna/gamification-events', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/gamification/badge-readiness', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [`g.approval_status <> 'archived'`];
+    appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
+    if (req.query.student_id) {
+      params.push(Number(req.query.student_id));
+      conditions.push(`g.student_id = $${params.length}`);
+    }
+    const events = (await pool.query(
+      `SELECT g.*, s.name AS student_name
+       FROM bna_gamification_events g
+       LEFT JOIN bna_students s ON s.id = g.student_id
+       WHERE ${conditions.join(' AND ')}
+       ORDER BY g.occurred_at DESC, g.id DESC
+       LIMIT 300`,
+      params
+    )).rows.map(ws11GamificationEventView);
+    const badges = req.query.student_id ? (await pool.query(
+      `SELECT sb.*, b.slug, b.title, b.description, b.icon, b.event_type, b.points_required
+       FROM bna_student_badges sb
+       JOIN bna_badges b ON b.id = sb.badge_id
+       WHERE sb.student_id = $1
+       ORDER BY sb.awarded_at DESC, sb.id DESC
+       LIMIT 200`,
+      [Number(req.query.student_id)]
+    )).rows : [];
+    res.json({
+      success: true,
+      project_key: req.query.project_key || ONE_TIME_PROJECT_KEY,
+      badge_readiness: buildGamificationBadgeReadiness({
+        events,
+        existing_badges: badges,
+        student_id: req.query.student_id || null,
+      }),
+      external_write_performed: false,
+      production_mutation_performed: false,
+      public_individual_leaderboard_enabled: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.post('/api/bna/gamification-events', requireAdmin, async (req, res) => {
   try {
     const event = await createGamificationEvent({
@@ -67139,16 +67495,20 @@ app.post('/api/bna/one-time/classroom/threads', requireAdmin, async (req, res) =
       ]
     )).rows[0];
     const message = (await client.query(
-      `INSERT INTO bna_community_messages (
-         thread_id, author_type, author_id, author_email, author_name,
-         body, visibility, status, moderation_status, leaderboard_eligible,
-         featured_rank, approved_by, approved_at, metadata_json
-       ) VALUES (
-         $1, 'rabbi', NULL, NULL, $2,
-         $3, 'members', 'visible', 'approved', $4,
-         $5, $6, NOW(), $7::jsonb
-       )
-       RETURNING *`,
+       `INSERT INTO bna_community_messages (
+          thread_id, author_type, author_id, author_email, author_name,
+          body, visibility, status, moderation_status, leaderboard_eligible,
+          featured_rank, approved_by, approved_at, metadata_json,
+          original_body, published_body, visibility_decision, private_to_public_state,
+          report_flags_json
+        ) VALUES (
+          $1, 'rabbi', NULL, NULL, $2,
+          $3, 'members', 'visible', 'approved', $4,
+          $5, $6, NOW(), $7::jsonb,
+          $3, $3, 'cohort_visible', 'approved_cohort_visible',
+          '[]'::jsonb
+        )
+        RETURNING *`,
       [
         thread.id,
         limitText(body.author_name || oneTimeActor(req, body) || 'Rabbi Elie Scheller', 180),
@@ -67196,6 +67556,13 @@ app.post('/api/bna/one-time/classroom/messages/:id/review', requireAdmin, async 
     const visible = moderationStatus === 'approved';
     const featured = visibilityFlag(body.featured, false);
     const leaderboardEligible = visible && visibilityFlag(body.leaderboard_eligible, featured || existing.leaderboard_eligible);
+    const reviewer = oneTimeActor(req, body);
+    const moderationHistory = buildModerationHistoryEvent({
+      action: moderationStatus,
+      actor_type: 'rabbi',
+      actor_label: reviewer,
+      reason: body.review_notes || body.notes || '',
+    });
     const updated = (await client.query(
       `UPDATE bna_community_messages
        SET moderation_status = $2,
@@ -67206,6 +67573,23 @@ app.post('/api/bna/one-time/classroom/messages/:id/review', requireAdmin, async 
            approved_at = CASE WHEN $2 = 'approved' THEN COALESCE(approved_at, NOW()) ELSE approved_at END,
            parent_visible_safety = CASE WHEN $2 = 'held_for_parent_review' THEN TRUE ELSE parent_visible_safety END,
            parent_escalation_status = CASE WHEN $2 = 'held_for_parent_review' THEN 'flagged' ELSE parent_escalation_status END,
+           original_body = COALESCE(original_body, body),
+           published_body = CASE WHEN $2 = 'approved' THEN COALESCE(edited_body, body) ELSE published_body END,
+           visibility_decision = CASE
+             WHEN $2 = 'approved' THEN 'cohort_visible'
+             WHEN $2 = 'held_for_parent_review' THEN 'parent_visible'
+             WHEN $2 = 'approved_anonymized_public' THEN 'public_anonymized'
+             WHEN $2 = 'rejected_private' THEN 'private'
+             ELSE visibility_decision
+           END,
+           private_to_public_state = CASE
+             WHEN $2 = 'approved' THEN 'approved_cohort_visible'
+             WHEN $2 = 'held_for_parent_review' THEN 'approved_parent_visible'
+             WHEN $2 = 'approved_anonymized_public' THEN 'approved_anonymized_public'
+             WHEN $2 = 'rejected_private' THEN 'rejected_private'
+             ELSE private_to_public_state
+           END,
+           edit_history_json = COALESCE(edit_history_json, '[]'::jsonb) || jsonb_build_array($8::jsonb),
            metadata_json = COALESCE(metadata_json, '{}'::jsonb) || $7::jsonb
        WHERE id = $1
        RETURNING *`,
@@ -67215,10 +67599,44 @@ app.post('/api/bna/one-time/classroom/messages/:id/review', requireAdmin, async 
         visible ? 'visible' : 'hidden',
         leaderboardEligible,
         body.featured_rank ? Number(body.featured_rank) : (featured ? 1 : null),
-        oneTimeActor(req, body),
+        reviewer,
         JSON.stringify({ review_notes: body.review_notes || body.notes || '', reviewed_from: 'operations_one_time_classroom' }),
+        JSON.stringify(moderationHistory),
       ]
     )).rows[0];
+    await client.query(
+      `INSERT INTO bna_community_moderation_events (
+         workspace_key, project_id, community_thread_id, community_message_id,
+         action, actor_type, actor_label,
+         visibility_before, visibility_after,
+         moderation_status_before, moderation_status_after,
+         original_body_present, published_body_present, anonymized_body_present,
+         report_flags_json, metadata
+       ) VALUES (
+         'rabbi_sheller_provider', $1, $2, $3,
+         $4, 'rabbi', $5,
+         $6, $7,
+         $8, $9,
+         $10, $11, $12,
+         $13::jsonb, $14::jsonb
+       )`,
+      [
+        project.id,
+        existing.thread_id,
+        existing.id,
+        moderationStatus,
+        reviewer,
+        existing.visibility_decision || existing.visibility || 'private',
+        updated.visibility_decision || updated.visibility || 'private',
+        existing.moderation_status || 'needs_review',
+        updated.moderation_status || moderationStatus,
+        Boolean(existing.body || existing.original_body),
+        Boolean(updated.published_body),
+        Boolean(updated.anonymized_body),
+        JSON.stringify(parseJsonMaybe(updated.report_flags_json) || []),
+        JSON.stringify(moderationHistory),
+      ]
+    );
     if (visible && leaderboardEligible) {
       await client.query(
         `INSERT INTO bna_classroom_participation_events (
@@ -67315,17 +67733,20 @@ app.post('/api/one-time-classroom/threads/:id/responses', async (req, res) => {
       return res.status(404).json({ error: 'Classroom thread was not found' });
     }
     const screen = oneTimeClassroomScreenResponse(responseBody);
+    const privateToPublicState = screen.parent_visible_safety ? 'held_for_safety_review' : 'needs_human_review';
     const inserted = (await client.query(
       `INSERT INTO bna_community_messages (
          thread_id, parent_message_id, author_type, author_id, author_email, author_name,
          body, visibility, status, moderation_status, ai_moderation_json,
          parent_visible_safety, parent_escalation_status, leaderboard_eligible,
-         metadata_json
+         metadata_json, original_body, visibility_decision, private_to_public_state,
+         report_flags_json, temporary_hold_recommended
        ) VALUES (
          $1, $2, 'member', NULL, NULL, $3,
          $4, 'members', 'hidden', $5, $6::jsonb,
          $7, $8, FALSE,
-         $9::jsonb
+         $9::jsonb, $4, 'private', $10,
+         $11::jsonb, $12
        )
        RETURNING *`,
       [
@@ -67343,8 +67764,39 @@ app.post('/api/one-time-classroom/threads/:id/responses', async (req, res) => {
           no_student_to_student_chat: true,
           visible_after_review_only: true,
         }),
+        privateToPublicState,
+        JSON.stringify(screen.flags || []),
+        Boolean(screen.parent_visible_safety),
       ]
     )).rows[0];
+    await client.query(
+      `INSERT INTO bna_community_moderation_events (
+         workspace_key, project_id, community_thread_id, community_message_id,
+         action, actor_type, actor_label,
+         visibility_after, moderation_status_after,
+         original_body_present, published_body_present, anonymized_body_present,
+         report_flags_json, metadata
+       ) VALUES (
+         'rabbi_sheller_provider', $1, $2, $3,
+         'submitted_private', 'member', $4,
+         'private', $5,
+         TRUE, FALSE, FALSE,
+         $6::jsonb, $7::jsonb
+       )`,
+      [
+        project.id,
+        thread.id,
+        inserted.id,
+        limitText(classroom.access.member_label || 'One Time member', 180),
+        screen.status,
+        JSON.stringify(screen.flags || []),
+        JSON.stringify({
+          requirement_id: 'REQ-20260619-311',
+          safe_for_auto_publish: false,
+          no_student_to_student_chat: true,
+        }),
+      ]
+    );
     await client.query('UPDATE bna_community_threads SET updated_at = NOW() WHERE id = $1', [thread.id]);
     await client.query('COMMIT');
     res.json({
@@ -68537,25 +68989,34 @@ async function oneTimeProductSystemPayload(req) {
     ),
     getRabbiProviderSettings(project.id),
   ]);
+  const planningTiers = Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView);
+  const scheduleViews = schedules.rows.map(oneTimeScheduleView);
+  const providerReadiness = providers.map((provider) => ({
+    provider: provider.provider,
+    mode: provider.mode,
+    enabled: provider.enabled === true,
+    configured: provider.enabled === true && provider.secret_configured === true,
+    secret_configured: provider.secret_configured === true,
+  }));
   return {
     success: true,
     project_key: ONE_TIME_PROJECT_KEY,
     program,
-    planning_tiers: Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView),
+    planning_tiers: planningTiers,
     tiers,
     funnels: funnels.rows.map(oneTimeProductFunnelView),
     decisions: decisions.rows.map(oneTimeProductDecisionView),
     leads: leads.rows.map(oneTimeProductLeadView),
-    schedules: schedules.rows.map(oneTimeScheduleView),
+    schedules: scheduleViews,
     calendar,
     source_prep_jobs: sourcePrepJobs.rows.map(oneTimeSourcePrepJobView),
-    provider_readiness: providers.map((provider) => ({
-      provider: provider.provider,
-      mode: provider.mode,
-      enabled: provider.enabled === true,
-      configured: provider.enabled === true && provider.secret_configured === true,
-      secret_configured: provider.secret_configured === true,
-    })),
+    provider_readiness: providerReadiness,
+    product_readiness: oneTimeProductReadinessView({
+      providers: providerReadiness,
+      schedules: scheduleViews,
+      calendar,
+      tiers,
+    }),
     guardrails: {
       no_final_pricing: true,
       checkout_enabled: false,
@@ -68569,6 +69030,80 @@ async function oneTimeProductSystemPayload(req) {
 app.get('/api/bna/one-time/product-system', requireAdmin, async (req, res) => {
   try {
     res.json(await oneTimeProductSystemPayload(req));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/transcript-privacy', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const classroom = await getOneTimeClassroomData({ db: pool, memberSafe: false });
+    const readiness = buildTranscriptPrivacyReadiness({
+      classes: classroom.classes || [],
+      example_student_id: req.query.student_id || req.query.studentId || null,
+    });
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      transcript_privacy: readiness,
+      raw_transcript_text_returned: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/community-moderation-readiness', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const classroom = await getOneTimeClassroomData({ db: pool, memberSafe: false });
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      community_moderation: buildCommunityModerationReadiness({
+        threads: classroom.threads || [],
+      }),
+      raw_private_message_text_returned: false,
+      external_write_performed: false,
+      production_mutation_performed: false,
+      unrestricted_student_messaging_enabled: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/study-assistant-readiness', requireAdmin, async (req, res) => {
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const classroom = await getOneTimeClassroomData({ db: pool, memberSafe: false });
+    const sourceRows = (await pool.query(
+      `SELECT *
+       FROM bna_one_time_source_versions
+       WHERE project_id = $1
+       ORDER BY updated_at DESC NULLS LAST, created_at DESC NULLS LAST
+       LIMIT 200`,
+      [project.id]
+    )).rows;
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      study_assistant: buildStudyAssistantReadiness({
+        sources: sourceRows,
+        classes: classroom.classes || [],
+        example_student_id: req.query.student_id || req.query.studentId || null,
+        feature_flag_enabled: false,
+      }),
+      study_assistant_feature_flag_enabled: false,
+      unrestricted_ai_chat_enabled: false,
+      raw_source_text_returned: false,
+      external_write_performed: false,
+      production_mutation_performed: false,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }

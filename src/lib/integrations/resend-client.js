@@ -274,7 +274,7 @@ async function getResendReadiness(runtime = {}) {
   }
 }
 
-async function sendResendEmail({ from, to, cc = [], bcc = [], subject, html, text, metadata = {} } = {}, runtime = {}) {
+async function sendResendEmail({ from, to, cc = [], bcc = [], replyTo = null, subject, html, text, metadata = {} } = {}, runtime = {}) {
   const config = runtime.config || getResendConfig(runtime);
   const readiness = await getResendReadiness({ ...runtime, config });
   if (!readiness.send_allowed) {
@@ -307,6 +307,7 @@ async function sendResendEmail({ from, to, cc = [], bcc = [], subject, html, tex
       to: recipients,
       ...(cc.length ? { cc } : {}),
       ...(bcc.length ? { bcc } : {}),
+      ...(replyTo ? { reply_to: replyTo } : {}),
       subject,
       ...(text ? { text } : {}),
       ...(html ? { html } : {}),

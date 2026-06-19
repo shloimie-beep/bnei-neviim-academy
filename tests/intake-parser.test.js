@@ -4,6 +4,9 @@ const test = require('node:test');
 
 const {
   CANONICAL_ARRAY_KEYS,
+  GOAL_MODE_CORRECTION_OUTPUT_TEMPLATE_PATH,
+  RAMBLE_INTAKE_TEMPLATE_PATH,
+  RAMBLE_PROTOCOL_VERSION,
   parseIntakeText,
 } = require('../src/lib/bna/intake-parser');
 const { taskHasRequiredShape } = require('../src/lib/bna/task-shaping');
@@ -18,9 +21,28 @@ function assertCanonicalShape(parsed) {
   assert.ok(parsed.source);
   assert.ok(parsed.language);
   assert.equal(typeof parsed.summary, 'string');
+  assert.equal(parsed.ramble_protocol?.protocol_version, RAMBLE_PROTOCOL_VERSION);
+  assert.equal(parsed.ramble_protocol?.internal_handoff_template, RAMBLE_INTAKE_TEMPLATE_PATH);
   for (const key of CANONICAL_ARRAY_KEYS) {
     assert.ok(Array.isArray(parsed[key]), `${key} should be an array`);
   }
+  [
+    ['requirements', 'REQ-'],
+    ['tasks', 'TASK-'],
+    ['decisions', 'DEC-'],
+    ['open_questions', 'Q-'],
+    ['memory_candidates', 'MEM-'],
+    ['student_notes', 'NOTE-'],
+    ['content_items', 'CONTENT-'],
+    ['accounting_items', 'ACCT-'],
+    ['contact_items', 'CONTACT-'],
+  ].forEach(([key, prefix]) => {
+    for (const item of parsed[key] || []) {
+      assert.ok(String(item.stable_id || '').startsWith(prefix), `${key} item should have ${prefix} stable ID`);
+      assert.ok(item.source_quote, `${key} item should preserve a source quote`);
+      assert.ok(item.verification_method, `${key} item should include verification guidance`);
+    }
+  });
   for (const task of parsed.tasks) {
     assert.ok(taskHasRequiredShape(task), `task is missing canonical fields: ${JSON.stringify(task)}`);
     assert.notEqual(task.title, parsed.raw_input);
@@ -114,6 +136,109 @@ test('Google Classroom requests become backlog tickets only', () => {
   assert.match(parsed.tickets[0].next_action, /future Classroom capabilities/i);
 });
 
+test('ramble protocol metadata preserves raw capture, distilled filing, and correction audits', () => {
+  const parsed = parseIntakeText({
+    raw_input: "No dude, that website note was not what I meant. Do not file the raw ramble; make a correction audit and then fix the parser confirmation.",
+    source_type: 'telegram_ramble',
+    source_date: '2026-06-16',
+  });
+
+  assertCanonicalShape(parsed);
+  assert.equal(parsed.ramble_protocol.source_date, '2026-06-16');
+  assert.equal(parsed.ramble_protocol.raw_queue_table, 'bna_raw_intake');
+  assert.equal(parsed.ramble_protocol.raw_capture_path, 'memory/2026-06-16.md');
+  assert.equal(parsed.ramble_protocol.visible_task_title_policy, 'distilled_action_titles_only');
+  assert.equal(parsed.ramble_protocol.correction_audit_required, true);
+  assert.equal(parsed.ramble_protocol.requirement_register_required, true);
+  assert.equal(parsed.ramble_protocol.requirement_register_path, 'tasks-pending/2026-06-16-website-ramble-correction-audit.md');
+  assert.ok(parsed.ramble_protocol.confirmations.some((line) => line.includes('Raw saved: memory/2026-06-16.md')));
+  assert.ok(parsed.ramble_protocol.confirmations.some((line) => line.includes('Raw queue: bna_raw_intake')));
+  assert.ok(parsed.ramble_protocol.confirmations.some((line) => line.includes('Future Codex handoff template')));
+  assert.ok(parsed.ramble_protocol.required_closeout.some((line) => line.includes('ops/agent-task-ledger.jsonl')));
+});
+
+test('goal-mode GPT correction packets request durable Codex goal execution', () => {
+  const parsed = parseIntakeText({
+    raw_input: [
+      'ChatGPT made this correction output for Codex.',
+      'Set it as a goal and work through the whole prompt until everything is done.',
+      'Website correction: fix the parent portal and activity page.',
+    ].join(' '),
+    source_type: 'codex_chat',
+    source_date: '2026-06-17',
+  });
+
+  assertCanonicalShape(parsed);
+  assert.equal(parsed.ramble_protocol.goal_mode_execution_requested, true);
+  assert.equal(parsed.ramble_protocol.gpt_correction_packet_detected, true);
+  assert.equal(parsed.ramble_protocol.goal_mode_required, true);
+  assert.equal(parsed.ramble_protocol.should_create_or_continue_goal, true);
+  assert.equal(parsed.ramble_protocol.goal_mode_output_contract_path, GOAL_MODE_CORRECTION_OUTPUT_TEMPLATE_PATH);
+  assert.ok(parsed.ramble_protocol.terminal_requirement_statuses.includes('Done'));
+  assert.ok(parsed.ramble_protocol.confirmations.some((line) => line.includes('Goal mode: create/continue')));
+  assert.ok(parsed.ramble_protocol.required_closeout.some((line) => line.includes('active Codex goal status')));
+  assert.equal(parsed.ramble_protocol.raw_input_queue.goal_mode_execution_requested, true);
+});
+
+test('AI-provided ramble protocol cannot suppress deterministic goal-mode metadata', () => {
+  const rawInput = [
+    '# BNA_GOAL_MODE_EXECUTION_PACKET',
+    'Execution directive: set it as a goal and keep working through the whole correction register until done.',
+    'Requirement: finish parent login fixes.',
+  ].join('\n');
+  const parsed = parseIntakeText({
+    raw_input: rawInput,
+    source_type: 'codex_chat',
+    source_date: '2026-06-17',
+    aiStructuredJson: {
+      raw_input: rawInput,
+      source_type: 'codex_chat',
+      summary: 'Goal packet',
+      tasks: [],
+      ramble_protocol: {
+        protocol_version: 'ai-stale',
+        goal_mode_execution_requested: false,
+        should_create_or_continue_goal: false,
+        raw_input_queue: {
+          goal_mode_execution_requested: false,
+        },
+      },
+    },
+  });
+
+  assertCanonicalShape(parsed);
+  assert.notEqual(parsed.ramble_protocol.protocol_version, 'ai-stale');
+  assert.equal(parsed.ramble_protocol.goal_mode_execution_requested, true);
+  assert.equal(parsed.ramble_protocol.gpt_correction_packet_detected, true);
+  assert.equal(parsed.ramble_protocol.goal_mode_required, true);
+  assert.equal(parsed.ramble_protocol.should_create_or_continue_goal, true);
+  assert.equal(parsed.ramble_protocol.raw_input_queue.goal_mode_execution_requested, true);
+  assert.equal(parsed.ramble_protocol.goal_mode_output_contract_path, GOAL_MODE_CORRECTION_OUTPUT_TEMPLATE_PATH);
+});
+
+test('broad website correction produces requirements, questions, memory, contact, content, and accounting lanes', () => {
+  const parsed = parseIntakeText({
+    raw_input: [
+      'Website correction: the homepage must show the school model clearly.',
+      'Question: should parents see the new section before launch?',
+      'Remember from now on broad rambles need a register.',
+      'Contact item: if I say GHL, route it to first-party contact records.',
+      'Content idea: make this into a newsletter note.',
+      'Payment note: parent paid tuition by invoice.',
+    ].join(' '),
+    source_type: 'telegram_ramble',
+    source_date: '2026-06-16',
+  });
+  assertCanonicalShape(parsed);
+  assert.ok(parsed.requirements.length >= 1);
+  assert.ok(parsed.open_questions.length >= 1);
+  assert.ok(parsed.memory_candidates.length >= 1);
+  assert.ok(parsed.contact_items.length >= 1);
+  assert.ok(parsed.content_items.length >= 1);
+  assert.ok(parsed.accounting_items.length >= 1);
+  assert.equal(parsed.contact_items[0].metadata.ghl_runtime_policy, 'first_party_bna_operations_only');
+});
+
 test('parser item keys are stable for idempotent parse item upsert', () => {
   const input = 'Task: Codex should verify the intake parser route. Custom section: morning checklist.';
   const first = parseIntakeText({ raw_input: input, source_type: 'manual' });
@@ -124,11 +249,16 @@ test('parser item keys are stable for idempotent parse item upsert', () => {
   );
   assert.match(server, /UNIQUE \(parse_run_id, item_key\)/);
   assert.match(server, /ON CONFLICT \(parse_run_id, item_key\)/);
+  assert.ok(
+    (server.match(/ON CONFLICT \(parse_item_id, review_type\) WHERE parse_item_id IS NOT NULL DO NOTHING/g) || []).length >= 2,
+    'review queue inserts must be idempotent against duplicate parse-item review types'
+  );
 });
 
 test('server, Operations UI, and Telegram bridge expose canonical intake workflow', () => {
   [
     'const createIntakeParserSQL',
+    'CREATE TABLE IF NOT EXISTS bna_raw_intake',
     'CREATE TABLE IF NOT EXISTS bna_intake_parse_runs',
     'CREATE TABLE IF NOT EXISTS bna_intake_parse_items',
     'CREATE TABLE IF NOT EXISTS bna_section_definitions',
@@ -145,11 +275,22 @@ test('server, Operations UI, and Telegram bridge expose canonical intake workflo
     "app.patch('/api/bna/sections/:id'",
     'mixedRecordingParsedFromCanonical',
     "action === 'tasks_from_recording'",
+    'createRawIntakeRecord',
+    'updateRawIntakeRecordAfterParse',
+    'raw_intake: intake.raw_intake',
+    'raw_intake_stable_id: intake.raw_intake?.stable_id',
+    "source_table: contentBacked && job.id ? 'bna_content_jobs' : null",
   ].forEach((needle) => assert.ok(server.includes(needle), needle));
   assert.ok(parserSource.includes('hasGoogleClassroomRequest'));
+  assert.ok(parserSource.includes('RAMBLE_PROTOCOL_VERSION'));
+  assert.ok(parserSource.includes('buildRambleProtocol'));
+  assert.ok(parserSource.includes('requirements'));
+  assert.ok(parserSource.includes('open_questions'));
 
   [
     'Intake Review',
+    "intake: 'tasks'",
+    "review_queue: 'tasks'",
     "parseIntake(payload = {})",
     "getIntakeParseRuns(filters = {})",
     'function renderIntakeReview()',
@@ -157,7 +298,15 @@ test('server, Operations UI, and Telegram bridge expose canonical intake workflo
     'function renderIntakeSections()',
     "case 'intake': content = renderIntakeReview(); break;",
   ].forEach((needle) => assert.ok(operations.includes(needle), needle));
+  const workspaceNavBlock = operations.slice(
+    operations.indexOf('function workspaceNavViewIds'),
+    operations.indexOf('function workspaceNavItems')
+  );
+  assert.doesNotMatch(workspaceNavBlock, /'intake'/);
+  assert.match(operations, /low-confidence items should be handled as Decisions/);
 
   assert.ok(telegramBridge.includes("'/api/bna/intake/parse'"));
   assert.ok(telegramBridge.includes('parseCanonicalIntakeToApp'));
+  assert.ok(telegramBridge.includes('buildRambleCaptureConfirmationLines'));
+  assert.ok(telegramBridge.includes('Raw ID:'));
 });

@@ -1,0 +1,151 @@
+{
+  "requirement_id": "REQ-20260619-313",
+  "status": "needs_operator_decision",
+  "updated_at": "2026-06-19T15:25:00+03:00",
+  "source_id": "RAW-20260619-005",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "mode": "local_readiness_only",
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "deploy_performed": false,
+  "live_smoke_performed": false,
+  "target_architecture": [
+    "shared_bna_my_academy_codebase",
+    "separate_one_time_client_deployment",
+    "separate_one_time_production_variables",
+    "separate_one_time_domain",
+    "separate_one_time_production_database_when_approved",
+    "separate_staging_and_production_environments",
+    "no_reliance_on_bna_production_credentials"
+  ],
+  "required_operator_decisions": [
+    {
+      "id": "DEC-20260619-300",
+      "decision": "Approve or revise Option B boundaries for One Time deployment/database/domain ownership.",
+      "blocks": [
+        "new_paid_railway_project",
+        "new_database",
+        "domain_dns_records",
+        "production_launch"
+      ]
+    },
+    {
+      "id": "Q-20260619-300",
+      "decision": "Confirm whether Option B is formally approved for One Time production architecture.",
+      "blocks": [
+        "asset_ownership_record",
+        "railway_cost_acceptance",
+        "production_environment_creation"
+      ]
+    }
+  ],
+  "readiness_artifacts": [
+    {
+      "key": "option_b_architecture_decision_record",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "one_time_deployment_profile",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "one_time_identity_map",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "database_installation_identity_guard",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "schema_vs_client_seed_separation",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "one_time_database_bootstrap_procedure",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "railway_runbook",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "railway_cost_worksheet",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "asset_ownership_register",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "domain_dns_launch_checklist",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "rollback_plan",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "backup_plan",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "staging_smoke_plan",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    },
+    {
+      "key": "production_launch_plan",
+      "status": "draft_ready_needs_operator_approval",
+      "path": "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md"
+    }
+  ],
+  "blocked_live_actions": [
+    "create_new_paid_railway_project",
+    "create_or_attach_production_database",
+    "write_railway_variables",
+    "change_dns_records",
+    "change_domain_ownership",
+    "deploy_final_safe_app_bundle",
+    "run_railway_doctor_against_new_one_time_service",
+    "run_live_smoke_against_new_one_time_domain",
+    "mutate_production_data",
+    "send_external_notifications"
+  ],
+  "allowed_local_checks": [
+    "inspect_railway_json",
+    "inspect_package_scripts",
+    "inspect_railway_start_process_map",
+    "inspect_smoke_script_inventory",
+    "run_syntax_checks",
+    "run_focused_tests",
+    "run_execution_run_validator",
+    "run_secret_audit",
+    "run_git_diff_check"
+  ],
+  "required_launch_sequence_after_approval": [
+    "record_operator_approval_for_option_b_asset_ownership_budget_and_domain",
+    "create_or_select_one_time_railway_service_and_database",
+    "install_one_time_production_variables_without_reusing_bna_private_credentials",
+    "run_database_bootstrap_with_installation_identity_guard",
+    "run_staging_smoke_plan",
+    "verify_backup_export_and_restore_readiness",
+    "verify_rollback_to_previous_railway_deployment_or_previous_domain_target",
+    "change_domain_dns_only_after_smoke_and_owner_confirmation",
+    "run_production_health_privacy_operations_owner_parent_student_smokes",
+    "record_deployment_id_domain_target_smoke_report_and_blockers"
+  ],
+  "blocker": "Operator must approve Option B ownership, Railway cost/budget, database/domain/DNS ownership, production variable boundaries, and launch window before any live deployment or domain action."
+}

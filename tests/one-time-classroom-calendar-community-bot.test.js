@@ -71,21 +71,13 @@ test('Classroom APIs expose admin readback, natural-language scheduling, moderat
   assert.match(threadRead, /memberSafe/);
 });
 
-test('Source-grounded classroom bot refuses unsupported Torah answers and cites only approved classroom context', () => {
-  const bot = sliceBetween(server, 'async function buildOneTimeClassroomBotReply', 'function requireOneTimeLibraryApprovalFlag');
-  assert.match(bot, /getOneTimeClassroomForAccessCode/);
-  assert.match(bot, /member_library_items/);
-  assert.match(bot, /classroom\.classes/);
-  assert.match(bot, /classroom\.assignments/);
-  assert.match(bot, /calendar_items/);
-  assert.match(bot, /live_plus_library/);
-  assert.match(bot, /I can answer only from approved One Time classroom sources/);
-  assert.match(bot, /I do not have an approved One Time source/);
-  assert.match(bot, /should not invent a Torah answer/);
-  assert.match(bot, /route_to: 'rabbi_moderation'/);
-  assert.match(server, /source_grounded_only: true/);
-  assert.match(server, /invented_sources_allowed: false/);
-  assert.match(server, /unsupported_answer: 'route_to_rabbi_or_moderation'/);
+test('One Time classroom bot endpoint is approval-blocked while private replies remain active', () => {
+  const route = sliceBetween(server, "app.post('/api/one-time-classroom/bot'", 'function rabbiJson');
+  assert.match(route, /res\.status\(403\)\.json/);
+  assert.match(route, /OneTime classroom bot is disabled pending explicit operator approval/);
+  assert.match(route, /approval_required: true/);
+  assert.match(route, /Students can respond privately to Rabbi\/admin threads for review/);
+  assert.doesNotMatch(route, /buildOneTimeClassroomBotReply/);
 });
 
 test('Operations One Time console wires schedule preview, internal calendar creation, Rabbi threads, and moderation review', () => {
@@ -109,7 +101,7 @@ test('Operations One Time console wires schedule preview, internal calendar crea
   assert.doesNotThrow(() => new Function(scripts));
 });
 
-test('Member library and classroom pages expose classroom navigation, six Sedarim, moderated threads, and source bot', () => {
+test('Member library and classroom pages expose classroom navigation, six Sedarim, and moderated private replies', () => {
   assert.match(memberLibraryHtml, /classroomStrip/);
   assert.match(memberLibraryHtml, /payload\.classroom/);
   assert.match(memberLibraryHtml, /\/one-time-classroom\?code=/);
@@ -118,29 +110,38 @@ test('Member library and classroom pages expose classroom navigation, six Sedari
   [
     'One Time Mishnah Classroom',
     'Six Sedarim',
-    'Source Bot',
+    'Reply Queue',
     'Rabbi Threads',
     'Responses are reviewed before visibility',
     '/api/one-time-classroom?code=',
-    '/api/one-time-classroom/bot',
     'Submit For Review',
     'new URLSearchParams(window.location.search).get',
   ].forEach((needle) => assert.match(classroomHtml, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
+  [
+    'Source Bot',
+    'Source-grounded bot',
+    '/api/one-time-classroom/bot',
+    'botQuestion',
+    'askBot',
+  ].forEach((needle) => assert.doesNotMatch(classroomHtml, new RegExp(needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
 
   const scripts = [...classroomHtml.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]).join('\n');
   assert.doesNotThrow(() => new Function(scripts));
 });
 
-test('Parent-scoped payload and portal surface held classroom bot safety context', () => {
+test('Parent-scoped payload and portal surface held classroom reply safety context', () => {
   assert.match(server, /function getParentClassroomSafetyContextForStudents/);
   assert.match(server, /payload\.classroom_safety = await getParentClassroomSafetyContextForStudents/);
   assert.match(server, /m\.parent_visible_safety = TRUE/);
   assert.match(server, /m\.author_type = 'student' AND m\.author_id = ANY\(\$2::int\[\]\)/);
   assert.match(server, /metadata_json->>'parent_email'/);
   assert.match(server, /source_grounded_bot_policy/);
+  assert.match(server, /enabled: false/);
+  assert.match(server, /current_student_path: 'private_replies_to_rabbi_admin_threads'/);
   assert.match(parentHtml, /function renderParentClassroomSafety/);
   assert.match(parentHtml, /classroom_safety\?\.held_responses/);
   assert.match(parentHtml, /classroomBotPolicy/);
+  assert.match(parentHtml, /One Time classroom bot is off for students until explicitly approved/);
 
   const scripts = [...parentHtml.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map((match) => match[1]).join('\n');
   assert.doesNotThrow(() => new Function(scripts));

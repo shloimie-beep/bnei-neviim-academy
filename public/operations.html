@@ -1568,12 +1568,46 @@
             align-items: start;
         }
 
+        .wapi-mobile-stepper {
+            display: none;
+            gap: 8px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+        }
+
+        .wapi-workspace-jump {
+            border: 1px solid #334155;
+            border-radius: 999px;
+            background: #1e293b;
+            color: #e2e8f0;
+            cursor: pointer;
+            min-height: 38px;
+            padding: 8px 12px;
+            white-space: nowrap;
+        }
+
         .wapi-workspace-pane {
             border: 1px solid #334155;
             border-radius: 16px;
             background: rgba(15, 23, 42, 0.42);
             min-width: 0;
             padding: 12px;
+        }
+
+        .wapi-sticky-action-area {
+            position: sticky;
+            top: 76px;
+            z-index: 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+            background: rgba(15, 23, 42, 0.82);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            padding: 8px;
         }
 
         .wapi-phonebook-list {
@@ -1708,6 +1742,32 @@
         .communications-card .contact-card-subtitle,
         .communications-card .contact-communication-body {
             color: #52657c;
+        }
+
+        .email-operator-grid {
+            display: grid;
+            grid-template-columns: minmax(260px, 0.95fr) minmax(0, 1.35fr);
+            gap: 12px;
+            align-items: start;
+        }
+
+        .email-draft-card {
+            border: 1px solid #d8e0ed;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #132238;
+            padding: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .email-draft-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            color: #52657c;
+            font-size: 12px;
+            line-height: 1.4;
         }
 
         .communication-detail-grid {
@@ -5698,9 +5758,28 @@
                 grid-template-columns: 1fr;
             }
 
+            .wapi-mobile-stepper {
+                display: flex;
+            }
+
+            .wapi-sticky-action-area {
+                position: sticky;
+                bottom: calc(env(safe-area-inset-bottom) + 8px);
+                top: auto;
+                justify-content: stretch;
+            }
+
+            .wapi-sticky-action-area .task-action {
+                flex: 1 1 140px;
+            }
+
             .wapi-phonebook-list,
             .wapi-timeline-list {
                 max-height: none;
+            }
+
+            .email-operator-grid {
+                grid-template-columns: 1fr;
             }
 
             .saas-topbar {
@@ -7866,6 +7945,8 @@
             },
             getOneTimeClassroom() { return this.request('GET', '/one-time/classroom'); },
             getOneTimeProductSystem() { return this.request('GET', '/one-time/product-system'); },
+            getOneTimeCommunityModerationReadiness() { return this.request('GET', '/one-time/community-moderation-readiness'); },
+            getOneTimeStudyAssistantReadiness() { return this.request('GET', '/one-time/study-assistant-readiness'); },
             getOneTimeProductCalendar(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.view) params.set('view', filters.view);
@@ -8144,6 +8225,12 @@
                 if (filters.student_id) params.set('student_id', filters.student_id);
                 if (filters.event_type) params.set('event_type', filters.event_type);
                 return this.request('GET', '/gamification-events' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            getWs11BadgeReadiness(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.student_id) params.set('student_id', filters.student_id);
+                return this.request('GET', '/gamification/badge-readiness' + (params.toString() ? '?' + params.toString() : ''));
             },
             createWs11GamificationEvent(payload = {}) { return this.request('POST', '/gamification-events', payload); },
             backfillWs11Gamification(payload = {}) { return this.request('POST', '/gamification-events/backfill', payload); },
@@ -15894,6 +15981,62 @@
             `;
         }
 
+        function oneTimeProductReadiness() {
+            return oneTimeProductSystem().product_readiness || {};
+        }
+
+        function oneTimeReadinessStatusLabel(status) {
+            return String(status || 'needs_operator_decision').replace(/_/g, ' ');
+        }
+
+        function renderOneTimeReadinessItem(item = {}) {
+            return `
+                <li>
+                    <strong>${escapeHtml(item.label || item.key || 'Readiness check')}</strong>
+                    <span class="tag">${escapeHtml(oneTimeReadinessStatusLabel(item.status))}</span>
+                    ${item.note ? `<div class="event-meta">${escapeHtml(item.note)}</div>` : ''}
+                </li>
+            `;
+        }
+
+        function renderOneTimeProductReadinessPanel() {
+            const readiness = oneTimeProductReadiness();
+            const summary = readiness.summary || {};
+            const sections = Array.isArray(readiness.sections) ? readiness.sections : [];
+            const gates = readiness.gates || {};
+            const blockers = Array.isArray(readiness.blockers) ? readiness.blockers : [];
+            const blockedGateLabels = Object.entries(gates)
+                .filter(([key, value]) => key !== 'deploy_live_smoke_required' && value === false)
+                .map(([key]) => key.replace(/_/g, ' '));
+            return `
+                <section class="focus-panel" data-one-time-product-readiness data-requirement-id="${escapeHtml(readiness.requirement_id || 'REQ-20260619-306')}">
+                    <div class="task-section-header"><h3>Product Readiness</h3><span>${escapeHtml(oneTimeReadinessStatusLabel(readiness.status))}</span></div>
+                    <p class="settings-disabled-note">Local readiness only for product, schedule, consultation booking, parent/student/provider portals, and billing. No checkout, invoice, payment link, Zoom, external calendar, email, WhatsApp, Telegram, portal publish, or access automation is enabled by this panel.</p>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Checks', summary.total_checks || sections.reduce((count, section) => count + (section.items || []).length, 0), 'Product/schedule/portal/billing checks mapped to REQ-20260619-306.', '')}
+                        ${renderMetricButton('Local Contracts', summary.local_contract_present || 0, 'Represented locally without external writes.', '')}
+                        ${renderMetricButton('Operator Decisions', summary.needs_operator_decision || 0, 'Policies or product choices still need approval.', '')}
+                        ${renderMetricButton('External Gates', summary.blocked_external_approval || 0, 'Billing, Zoom, send, publish, and live-smoke gates remain blocked.', '')}
+                    </div>
+                    <div class="content-section-grid" style="margin-top:14px;">
+                        ${sections.map(section => `
+                            <article class="content-card">
+                                <div class="content-card-title">${escapeHtml(section.title || section.section_key || 'Readiness section')}</div>
+                                <div class="content-card-meta">${escapeHtml(section.section_key || '')} / ${escapeHtml(oneTimeReadinessStatusLabel(section.status))}</div>
+                                <ul class="content-card-summary">
+                                    ${(section.items || []).map(renderOneTimeReadinessItem).join('')}
+                                </ul>
+                            </article>
+                        `).join('') || '<div class="task-empty">Readiness checks have not loaded yet.</div>'}
+                    </div>
+                    <div class="tag-list" style="margin-top:12px;">
+                        ${blockedGateLabels.slice(0, 8).map(label => `<span class="tag">${escapeHtml(label)}</span>`).join('')}
+                    </div>
+                    ${blockers.length ? `<p class="settings-disabled-note" style="margin-top:12px;">Blockers: ${escapeHtml(blockers.join(' / '))}</p>` : ''}
+                </section>
+            `;
+        }
+
         function renderOneTimeFunnelPanel() {
             const funnels = oneTimeProductSystem().funnels || [];
             return `
@@ -15975,7 +16118,7 @@
                         </section>
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
-                    ${section === 'tiers' ? `${renderOneTimeProductTiersPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}` : ''}
+                    ${section === 'tiers' ? `${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}` : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}
@@ -16053,6 +16196,7 @@
                     </div>
                 </section>
                 ${renderOneTimeProductDecisionPanel()}
+                ${renderOneTimeProductReadinessPanel()}
 
                 <section class="focus-panel">
                     <div class="task-section-header"><h3>Launch Preview</h3><span>${publicReplacement.allowed ? 'Replacement allowed' : 'Preview only'}</span></div>
@@ -17477,7 +17621,8 @@
                         ${renderContactImportPreviewPanel()}
                     ` : ''}
                     ${section === 'whatsapp' ? renderWhatsappSyncPanel(filtered) : ''}
-                    ${['overview', 'parents', 'students', 'providers', 'email'].includes(section) ? `
+                    ${section === 'email' ? renderEmailOperatorWorkspace(filtered) : ''}
+                    ${['overview', 'parents', 'students', 'providers'].includes(section) ? `
                         <section class="focus-panel">
                             <div class="task-section-header"><h3>${escapeHtml(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Messages')}</h3><span>${filtered.length} records</span></div>
                             ${filtered.length ? `<div class="contact-list">${filtered.map(renderCommunicationCard).join('')}</div>` : '<div class="empty-state">No messages match this lane.</div>'}
@@ -17754,31 +17899,41 @@
                         <h3>Phonebook Workspace</h3>
                         <span>${groups.length} contacts / no-send</span>
                     </div>
-                    <div class="wapi-conversation-workspace">
-                        <div class="wapi-workspace-pane" aria-label="WhatsApp phonebook contacts">
+                    <div class="wapi-mobile-stepper" data-wapi-mobile-back-navigation>
+                        <button class="wapi-workspace-jump" type="button" onclick="jumpToWapiWorkspacePane('wapiPhonebookPane')">List</button>
+                        <button class="wapi-workspace-jump" type="button" onclick="jumpToWapiWorkspacePane('wapiConversationPane')">Conversation</button>
+                        <button class="wapi-workspace-jump" type="button" onclick="jumpToWapiWorkspacePane('wapiDetailsPane')">Details</button>
+                    </div>
+                    <div class="wapi-conversation-workspace" data-wapi-three-pane-workspace>
+                        <div class="wapi-workspace-pane" id="wapiPhonebookPane" aria-label="WhatsApp phonebook contacts">
                             <div class="task-section-header"><h3>Phonebook</h3><span>${groups.length}</span></div>
                             <div class="wapi-phonebook-list">
                                 ${groups.map(renderWapiPhonebookListItem).join('')}
                             </div>
                         </div>
-                        <div class="wapi-workspace-pane" aria-label="Selected WhatsApp conversation">
+                        <div class="wapi-workspace-pane" id="wapiConversationPane" aria-label="Selected WhatsApp conversation">
                             <div class="task-section-header">
                                 <div>
                                     <h3>${escapeHtml(selected.display_name || 'WhatsApp contact')}</h3>
                                     <p class="settings-disabled-note">${escapeHtml([selected.phone_digits ? `+${selected.phone_digits}` : '', selected.chat_id || '', selected.applied_type || selected.recommended_type || 'general contact'].filter(Boolean).join(' / '))}</p>
                                 </div>
-                                <button class="task-action primary" onclick="addWapiPhonebookNote(event)">Add note</button>
+                                <div class="wapi-sticky-action-area" data-wapi-sticky-action-area>
+                                    <button class="task-action" type="button" onclick="jumpToWapiWorkspacePane('wapiPhonebookPane')">Back to list</button>
+                                    <button class="task-action primary" onclick="addWapiPhonebookNote(event)">Add note</button>
+                                </div>
                             </div>
                             <div class="wapi-timeline-list">
                                 ${timeline.length ? timeline.map(renderWapiTimelineItem).join('') : '<div class="empty-state">No linked messages, notes, tasks, or tickets are loaded for this phonebook record yet.</div>'}
                             </div>
                         </div>
-                        <aside class="wapi-workspace-pane" aria-label="WhatsApp contact details">
+                        <aside class="wapi-workspace-pane" id="wapiDetailsPane" aria-label="WhatsApp contact details">
                             <div class="task-section-header"><h3>Details</h3><span>${escapeHtml(selected.confidence_label || 'medium')}</span></div>
                             <div class="contact-detail-grid">
                                 ${renderContactDetailItem('Type', String(selected.applied_type || selected.recommended_type || 'general_contact').replace(/_/g, ' '))}
+                                ${renderContactDetailItem('Workspace', currentWorkspaceRecord()?.name || currentWorkspaceKey())}
                                 ${renderContactDetailItem('Messages', `${Number(selected.message_count || 0)} total / ${Number(selected.inbound_count || 0)} in / ${Number(selected.outbound_count || 0)} out`)}
                                 ${renderContactDetailItem('Latest', selected.latest_at ? formatDateTime(selected.latest_at) : 'No timestamp')}
+                                ${renderContactDetailItem('Linked parent/student/provider/contact', selected.linked_records?.length ? `${selected.linked_records.length} first-party record(s)` : 'None linked yet')}
                                 ${renderContactDetailItem('Members', selected.member_count || selected.participant_count || selected.linked_records?.length || 'Unknown')}
                                 ${renderContactDetailItem('Pipeline Stage', String(selected.applied_type || selected.recommended_type || 'general_contact').replace(/_/g, ' '))}
                                 ${renderContactDetailItem('Bot Screening', selected.manual_correction_applied ? 'Corrected locally' : selected.review_flags?.length ? 'Needs review' : 'Screened')}
@@ -17801,7 +17956,7 @@
                             <div class="contact-detail-section">
                                 <h3>Local Actions</h3>
                                 ${selected.applied_correction ? `<div class="contact-detail-note">Applied as ${escapeHtml(selected.applied_correction.correction_type || selected.applied_type)} by ${escapeHtml(selected.applied_correction.applied_by || 'admin')}.</div>` : `
-                                    <div class="task-actions">
+                                    <div class="task-actions" data-whatsapp-no-send-actions>
                                         <button class="task-action primary" data-phonebook-key="${escapeHtml(selected.key || '')}" data-correction-type="${escapeHtml(selected.recommended_type || 'general_contact')}" onclick="applyWapiPhonebookCorrection(event)">Apply recommended</button>
                                         <button class="task-action" data-phonebook-key="${escapeHtml(selected.key || '')}" data-correction-type="friend_non_lead" onclick="applyWapiPhonebookCorrection(event)">Friend/non-lead</button>
                                         <button class="task-action" data-phonebook-key="${escapeHtml(selected.key || '')}" data-correction-type="school_interest" onclick="applyWapiPhonebookCorrection(event)">School interest</button>
@@ -17927,6 +18082,134 @@
                         </div>
                     `}
                 </article>
+            `;
+        }
+
+        function emailDraftMetadata(draft = {}) {
+            return parseObjectMaybe(draft.metadata);
+        }
+
+        function emailDraftRecipients(draft = {}) {
+            return [
+                ...(Array.isArray(draft.to_emails) ? draft.to_emails : []),
+                ...(Array.isArray(draft.cc_emails) ? draft.cc_emails : []),
+                ...(Array.isArray(draft.bcc_emails) ? draft.bcc_emails.map(email => `bcc:${email}`) : []),
+            ].filter(Boolean);
+        }
+
+        function emailDraftCanRequestSend(draft = {}, resend = {}) {
+            return Boolean(
+                resend.send_allowed &&
+                !draft.send_blocker &&
+                String(draft.status || '').toLowerCase() === 'ready' &&
+                emailDraftRecipients(draft).length
+            );
+        }
+
+        function renderEmailDraftCard(draft = {}, resend = {}) {
+            const metadata = emailDraftMetadata(draft);
+            const recipients = emailDraftRecipients(draft);
+            const canSend = emailDraftCanRequestSend(draft, resend);
+            const workspace = metadata.workspace_key || currentWorkspaceKey();
+            const project = metadata.project_key || projectKeyForWorkspaceKey(workspace) || 'unscoped';
+            const preview = draft.text_body || draft.html_body || draft.send_blocker || '';
+            return `
+                <article class="email-draft-card" data-email-draft-card>
+                    <div class="task-section-header">
+                        <div>
+                            <h3>${escapeHtml(draft.subject || 'Email draft')}</h3>
+                            <p class="settings-disabled-note">${escapeHtml(limitTextClient(preview, 180) || 'No body preview loaded.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(draft.status || 'draft')}</span>
+                    </div>
+                    <div class="email-draft-meta">
+                        <span><strong>From</strong><br>${escapeHtml(draft.from_email || 'Sender not configured')}</span>
+                        <span><strong>Reply-to</strong><br>${escapeHtml(metadata.reply_to || 'Default identity')}</span>
+                        <span><strong>Recipients</strong><br>${escapeHtml(recipients.join(', ') || 'No recipients')}</span>
+                        <span><strong>Date</strong><br>${escapeHtml(formatDateTime(draft.updated_at || draft.created_at) || 'No date')}</span>
+                        <span><strong>Workspace</strong><br>${escapeHtml(workspace)}</span>
+                        <span><strong>Project</strong><br>${escapeHtml(project)}</span>
+                        <span><strong>Related record</strong><br>${escapeHtml(metadata.related_record || draft.source_id || 'None linked')}</span>
+                        <span><strong>Template</strong><br>${escapeHtml(metadata.template_key || draft.source || 'manual')}</span>
+                    </div>
+                    ${draft.send_blocker ? `<div class="settings-disabled-note">${escapeHtml(draft.send_blocker)}</div>` : ''}
+                    <div class="task-actions" data-email-send-gates>
+                        <button class="task-action" type="button" ${canSend ? '' : 'disabled'} onclick="sendCommunicationEmailDraft(${Number(draft.id)})">${canSend ? 'Type SEND_RESEND_EMAIL' : 'Send locked'}</button>
+                        <span class="settings-disabled-note">Requires reviewed draft, sender, verified domain or approved fallback, validated workspace recipients, and exact confirmation.</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderLoggedEmailCard(item = {}) {
+            return `
+                <article class="email-draft-card" data-email-log-card>
+                    <div class="task-section-header">
+                        <div>
+                            <h3>${escapeHtml(communicationSubject(item) || 'Logged email')}</h3>
+                            <p class="settings-disabled-note">${escapeHtml(limitTextClient(item.body || item.summary || '', 180) || 'No preview loaded.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(communicationStatusLine(item) || 'logged')}</span>
+                    </div>
+                    <div class="email-draft-meta">
+                        <span><strong>Sender</strong><br>${escapeHtml(item.from_address || item.created_by || 'Logged by Operations')}</span>
+                        <span><strong>Recipients</strong><br>${escapeHtml(item.contact_email || communicationAddressLine(item) || 'No recipient loaded')}</span>
+                        <span><strong>Date</strong><br>${escapeHtml(formatDateTime(item.occurred_at || item.created_at) || 'No date')}</span>
+                        <span><strong>Workspace</strong><br>${escapeHtml(communicationAssociatedContext(item))}</span>
+                        <span><strong>Linked contact</strong><br>${escapeHtml(communicationContactName(item))}</span>
+                        <span><strong>Provider/project</strong><br>${escapeHtml(item.source || 'first-party log')}</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderEmailOperatorWorkspace(emailRecords = []) {
+            const state = communicationsIntegrationState || {};
+            const resend = state.resendHealth || {};
+            const drafts = (state.emailDrafts || []).slice(0, 8);
+            const workspaceFilters = workspaceDataProjectFilters();
+            const sendGate = resend.send_allowed ? 'Ready after review + SEND_RESEND_EMAIL' : 'Locked until sender/domain readiness';
+            return `
+                <section class="focus-panel" data-email-operator-workspace>
+                    <div class="task-section-header">
+                        <div>
+                            <h3>Email Workspace</h3>
+                            <p class="settings-disabled-note">Drafts, logged emails, sender readiness, DNS tasks, and approval gates stay first-party. No email is sent from this lane without the exact SEND_RESEND_EMAIL phrase.</p>
+                        </div>
+                        <span>${escapeHtml(sendGate)}</span>
+                    </div>
+                    <div class="settings-control-grid compact" data-email-readiness-gates>
+                        ${renderSettingsControlRow('From identity', resend.from_email || resend.domain || 'Not finalized', 'Sender name/email must be explicitly configured for this workspace before send.', resend.from_email || resend.domain ? 'Configured' : 'Blocked')}
+                        ${renderSettingsControlRow('Domain readiness', resend.domain_verified ? 'Verified' : (resend.domain || 'No domain'), 'Verified domain or explicit fallback approval is required before send.', resend.domain_verified || resend.fallback_approved ? 'Allowed' : 'Blocked')}
+                        ${renderSettingsControlRow('Recipients', workspaceFilters.project_key || 'All workspaces', 'Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.', 'Scoped')}
+                        ${renderSettingsControlRow('Send confirmation', 'SEND_RESEND_EMAIL', 'The send endpoint rejects requests without the exact approval phrase.', 'Required')}
+                    </div>
+                    <div class="email-operator-grid">
+                        <div class="email-draft-card">
+                            <div class="task-section-header"><h3>Draft Editor</h3><span>Preview only</span></div>
+                            <form class="task-form-grid" onsubmit="createCommunicationEmailDraft(event)" data-email-draft-editor>
+                                <input id="commEmailFrom" type="email" placeholder="From identity">
+                                <input id="commEmailReplyTo" type="email" placeholder="Reply-to">
+                                <input id="commEmailTo" type="email" placeholder="Recipient email">
+                                <input id="commEmailSubject" placeholder="Subject">
+                                <select id="commEmailTemplate">
+                                    <option value="manual">Manual template</option>
+                                    <option value="one_time_launch">One Time launch</option>
+                                    <option value="class_reminder">Class reminder</option>
+                                    <option value="support_follow_up">Support follow-up</option>
+                                </select>
+                                <input id="commEmailRelatedRecord" placeholder="Related record or contact ID">
+                                <textarea id="commEmailText" class="settings-wide" rows="4" placeholder="Body preview"></textarea>
+                                <button class="task-action primary" type="submit">Create draft</button>
+                            </form>
+                            <div class="settings-disabled-note">Draft creation stores a local review item and readiness blocker only. It does not send email.</div>
+                        </div>
+                        <div class="contact-list">
+                            ${drafts.map(draft => renderEmailDraftCard(draft, resend)).join('') || '<div class="empty-state">No email drafts loaded.</div>'}
+                            ${emailRecords.slice(0, 6).map(renderLoggedEmailCard).join('')}
+                        </div>
+                    </div>
+                </section>
             `;
         }
 
@@ -18354,13 +18637,23 @@
             return row.project_short_name || row.project_name || row.project_key || row.workspace_key || 'Workspace';
         }
 
+        function adminUserRoleLabel(row) {
+            const metadata = adminUserMetadata(row);
+            return row.canonical_role_label
+                || metadata.canonical_role_label
+                || metadata.workspace_role_label
+                || row.workspace_role_label
+                || row.role
+                || 'external user';
+        }
+
         function adminExternalUserRows() {
             return people.filter(row => {
                 const metadata = adminUserMetadata(row);
-                const text = `${row.person_name || row.name || ''} ${row.role || ''} ${row.project_key || ''} ${row.login_username || ''} ${metadata.account_type || ''}`.toLowerCase();
+                const text = `${row.person_name || row.name || ''} ${row.role || ''} ${metadata.canonical_role || ''} ${row.project_key || ''} ${row.login_username || ''} ${metadata.account_type || ''}`.toLowerCase();
                 return metadata.account_type === 'external_user'
                     || Boolean(row.login_username)
-                    || /external account admin|one_time_admin|rabbi elie|rabbi sheller|rabbi scheller|one_time_mishnah_class/.test(text);
+                    || /external account admin|one_time_admin|workspace_owner|workspace_admin|workspace_manager|rabbi elie|rabbi sheller|rabbi scheller|one_time_mishnah_class/.test(text);
             });
         }
 
@@ -18380,7 +18673,7 @@
             return `
                 <article class="content-card" data-external-user-account>
                     <div class="content-card-title">${escapeHtml(row.person_name || row.name || loginUsername || 'External user')}</div>
-                    <div class="content-card-meta">${escapeHtml(adminUserWorkspaceLabel(row))} / ${escapeHtml(row.role || 'external user')} / ${escapeHtml(row.access_level || 'viewer')}</div>
+                    <div class="content-card-meta">${escapeHtml(adminUserWorkspaceLabel(row))} / ${escapeHtml(adminUserRoleLabel(row))} / ${escapeHtml(row.access_level || 'viewer')}</div>
                     <p class="event-meta">${escapeHtml(loginUsername ? `Operations login username: ${loginUsername}` : 'Operations login username is not configured yet.')}</p>
                     <p class="settings-disabled-note">External project user. This is not a parent account, student account, billing user, member-library credential, or live Rabbi-owned app login.</p>
                     <div class="task-actions">
@@ -18397,7 +18690,7 @@
                 <article class="contact-card">
                     <div class="contact-card-body">
                         <div class="contact-card-title">${escapeHtml(row.person_name || row.name || row.email || 'User')}</div>
-                        <div class="contact-card-subtitle">${escapeHtml([adminUserWorkspaceLabel(row), row.role, row.access_level, contact].filter(Boolean).join(' / '))}</div>
+                        <div class="contact-card-subtitle">${escapeHtml([adminUserWorkspaceLabel(row), adminUserRoleLabel(row), row.access_level, contact].filter(Boolean).join(' / '))}</div>
                     </div>
                 </article>
             `;
@@ -19052,13 +19345,23 @@
             event?.preventDefault?.();
             try {
                 const filters = workspaceDataProjectFilters();
+                const replyTo = document.getElementById('commEmailReplyTo')?.value || '';
+                const templateKey = document.getElementById('commEmailTemplate')?.value || 'manual';
+                const relatedRecord = document.getElementById('commEmailRelatedRecord')?.value || '';
                 const result = await api.createEmailDraft({
                     ...filters,
                     provider: 'resend',
+                    from: document.getElementById('commEmailFrom')?.value || '',
                     to: [document.getElementById('commEmailTo')?.value || ''],
                     subject: document.getElementById('commEmailSubject')?.value || '',
                     text: document.getElementById('commEmailText')?.value || '',
-                    source: 'operations'
+                    source: templateKey,
+                    source_id: relatedRecord,
+                    metadata: {
+                        reply_to: replyTo,
+                        template_key: templateKey,
+                        related_record: relatedRecord
+                    }
                 });
                 communicationsIntegrationState.notice = result.blocker || 'Email draft saved.';
                 event.target?.reset?.();
@@ -19069,9 +19372,10 @@
         }
 
         async function sendCommunicationEmailDraft(id) {
-            if (!confirm('Send this Resend email draft if the readiness gate allows it?')) return;
+            const phrase = prompt('Type SEND_RESEND_EMAIL to request this Resend send. The server still checks readiness, review state, recipients, and domain gates.');
+            if (phrase !== 'SEND_RESEND_EMAIL') return;
             try {
-                const result = await api.sendEmailDraft({ ...workspaceDataProjectFilters(), draft_id: id });
+                const result = await api.sendEmailDraft({ ...workspaceDataProjectFilters(), draft_id: id, confirm: phrase });
                 communicationsIntegrationState.notice = result.blocker || 'Email send completed.';
                 await refreshCommunicationsIntegrations();
             } catch (error) {
@@ -20886,6 +21190,12 @@
             render();
         }
 
+        function jumpToWapiWorkspacePane(id) {
+            const node = document.getElementById(id);
+            if (!node) return;
+            node.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+        }
+
         async function addWapiPhonebookNote(event) {
             event?.preventDefault?.();
             const group = selectedWapiPhonebookGroup();
@@ -22258,6 +22568,59 @@
             `;
         }
 
+        function oneTimeBadgeReadinessState(events = []) {
+            const eventList = Array.isArray(events) ? events : [];
+            const approvedEvents = eventList.filter(item => String(item.approval_status || '').toLowerCase() === 'approved');
+            const eventTypes = new Set(approvedEvents.map(item => String(item.event_type || '').toLowerCase()));
+            const automaticBadges = ['First Class', 'On Time', 'Five On-Time Classes', 'Full Shiur', 'Three-Week Consistency', 'First Review', 'Chazarah Streak', 'Perek Completed', 'Masechta Completed', 'Watched the Missed Class', 'Comeback'];
+            const rabbiBadges = ['Thoughtful Question', 'Clear Explanation', 'Strong Source Work', 'Excellent Preparation', 'Helped the Class', 'Exceptional Improvement'];
+            return {
+                requirementId: 'REQ-20260619-310',
+                summary: {
+                    loadedEvents: eventList.length,
+                    approvedEvents: approvedEvents.length,
+                    eventTypes: eventTypes.size,
+                    automaticBadges: automaticBadges.length,
+                    rabbiBadges: rabbiBadges.length,
+                },
+                sections: [
+                    ['Automatic badges', 'Local contract', automaticBadges.join(', ')],
+                    ['Rabbi-awarded badges', 'Human review', rabbiBadges.join(', ')],
+                    ['Thresholds', 'Configurable', 'Five on-time classes, three-week consistency, and chazarah streak counts are threshold-driven.'],
+                    ['Idempotency', 'Guarded', 'Badge award and reversal keys are stable per student, badge, and source event/reversal reference.'],
+                    ['Source evidence', 'Required', 'Awards require source event, reason, class/session evidence when relevant, and parent-safe explanation.'],
+                    ['Manual reversal', 'Review only', 'Reversal requires reason and audit trail before any badge status changes.'],
+                    ['Public leaderboard', 'Blocked', 'No public individual leaderboard, negative points, prize/coupon/credit, access grant, or external notification is enabled.'],
+                ],
+            };
+        }
+
+        function renderCommunityBadgeReadinessPanel(events = []) {
+            const state = oneTimeBadgeReadinessState(events);
+            return `
+                <section class="one-time-approval-packet" data-one-time-badge-audit-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time gamification badge readiness">
+                    <strong>Gamification / Badge Audit</strong>
+                    <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
+                    <p>No badge award, badge reversal, parent/student notification, automatic access grant, prize/coupon/credit, negative-point action, or public individual leaderboard runs from this panel.</p>
+                    <div class="classroom-board-metrics">
+                        ${renderClassroomMetric(state.summary.loadedEvents, 'Events')}
+                        ${renderClassroomMetric(state.summary.approvedEvents, 'Approved')}
+                        ${renderClassroomMetric(state.summary.automaticBadges, 'Auto badges')}
+                        ${renderClassroomMetric(state.summary.rabbiBadges, 'Rabbi badges')}
+                    </div>
+                    <div class="one-time-output-grid">
+                        ${state.sections.map(([title, status, body]) => `
+                            <article class="one-time-output-state ${status === 'Blocked' ? 'blocked' : ''}">
+                                <strong>${escapeHtml(title)}</strong>
+                                <span>${escapeHtml(status)}</span>
+                                <p>${escapeHtml(body)}</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
         function renderCommunityLedger() {
             const rows = ws11GamificationEvents.length ? ws11GamificationEvents.slice(0, 120).map(event => `
                 <article class="content-card">
@@ -22278,6 +22641,7 @@
             return `
                 <section class="focus-panel" aria-label="Gamification ledger">
                     <div class="task-section-header"><h3>Gamification Ledger</h3><span>${ws11GamificationEvents.length}</span></div>
+                    ${renderCommunityBadgeReadinessPanel(ws11GamificationEvents)}
                     <div class="content-list">${rows}</div>
                 </section>
             `;
@@ -23674,6 +24038,308 @@
             `;
         }
 
+        function oneTimeRecordingVimeoPipelineState(jobs = [], classes = []) {
+            const classList = Array.isArray(classes) ? classes : [];
+            const jobList = Array.isArray(jobs) ? jobs : [];
+            const transcriptReady = classList.filter(item => String(item.transcript_status || '').toLowerCase() === 'approved' || String(item.transcript_text || '').trim()).length
+                + jobList.filter(job => String(job.transcript_text || '').trim()).length;
+            const summaryReady = classList.filter(item => String(item.summary || '').trim()).length
+                + jobList.filter(job => String(job.summary || '').trim()).length;
+            const vimeoReady = classList.filter(item => String(item.vimeo_id || item.media_url || '').match(/vimeo|^\d{5,}$/i)).length;
+            const publicationReady = classList.filter(item => ['approved', 'published'].includes(String(item.package_status || '').toLowerCase())).length;
+            return {
+                requirementId: 'REQ-20260619-308',
+                summary: {
+                    classPackages: classList.length,
+                    contentJobs: jobList.length,
+                    transcriptReady,
+                    summaryReady,
+                    vimeoReady,
+                    publicationReady,
+                },
+                sections: [
+                    ['Recording webhook handling', 'Local contract', 'Provider recording events can be normalized only as previews; no live webhook is accepted.'],
+                    ['Recording file selection', 'Preview ready', 'Multiple recording files, preferred layout selection, and audio-only fallback are modeled locally.'],
+                    ['Transcript and summary', transcriptReady && summaryReady ? 'Review ready' : 'Needs source text', 'Transcript and summary must be saved before publication approval.'],
+                    ['Retry and dead letter', 'Local contract', 'Retry, dead-letter, and idempotency keys are defined without mutating provider or member-library state.'],
+                    ['Review and correction', 'Local contract', 'Rabbi/operator correction, approval, and rejection states are internal review states only.'],
+                    ['Manual/API Vimeo modes', 'Needs decision', 'Manual Vimeo ID review is supported; API upload remains disabled pending owner token, plan, and approval.'],
+                    ['Publish, unpublish, delete', 'Blocked', 'Never publish directly from a webhook; publish, unpublish, and deletion need explicit approval and smoke proof.'],
+                    ['Entitlement and watch progress', 'Local contract', 'Member visibility and watch-progress writes stay disabled until publication is approved and smoked.'],
+                ],
+            };
+        }
+
+        function renderOneTimeRecordingVimeoReadinessPanel(jobs = [], classes = []) {
+            const state = oneTimeRecordingVimeoPipelineState(jobs, classes);
+            return `
+                <section class="one-time-approval-packet" data-one-time-recording-vimeo-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time recording Vimeo readiness">
+                    <strong>Recording / Vimeo Pipeline</strong>
+                    <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
+                    <p>No provider webhook, recording fetch, Vimeo upload, publish, unpublish, delete, member visibility, watch-progress write, notification send, or portal publish runs from this panel.</p>
+                    <div class="classroom-board-metrics">
+                        ${renderClassroomMetric(state.summary.classPackages, 'Class packages')}
+                        ${renderClassroomMetric(state.summary.transcriptReady, 'Transcripts')}
+                        ${renderClassroomMetric(state.summary.summaryReady, 'Summaries')}
+                        ${renderClassroomMetric(state.summary.vimeoReady, 'Vimeo refs')}
+                    </div>
+                    <div class="one-time-output-grid">
+                        ${state.sections.map(([title, status, body]) => `
+                            <article class="one-time-output-state ${status === 'Blocked' ? 'blocked' : ''}">
+                                <strong>${escapeHtml(title)}</strong>
+                                <span>${escapeHtml(status)}</span>
+                                <p>${escapeHtml(body)}</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function oneTimeTranscriptPrivacyReadinessState(jobs = [], classes = []) {
+            const classList = Array.isArray(classes) ? classes : [];
+            const jobList = Array.isArray(jobs) ? jobs : [];
+            const sources = [...classList, ...jobList];
+            const normalizeState = value => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            const privacyClasses = ['provider_general', 'cohort_general', 'student_private', 'parent_visible', 'staff_private', 'excluded', 'needs_review'];
+            const approvedStates = ['approved', 'rabbi_approved', 'published'];
+            const transcriptSources = sources.filter(item => String(item.transcript_text || item.transcript || '').trim());
+            const normalizedSources = sources.filter(item => String(item.transcript_notes || item.summary || item.normalized_text || '').trim());
+            const approvedSources = sources.filter(item => approvedStates.includes(normalizeState(item.transcript_status || item.package_status || item.review_state)));
+            const privacyCounts = privacyClasses.reduce((acc, key) => {
+                acc[key] = sources.filter(item => normalizeState(item.privacy_class || item.transcript_privacy_class || '') === key).length;
+                return acc;
+            }, {});
+            const reviewNeeded = sources.filter(item => {
+                const reviewState = normalizeState(item.transcript_status || item.package_status || item.review_state);
+                const privacyClass = normalizeState(item.privacy_class || item.transcript_privacy_class || 'needs_review');
+                return !approvedStates.includes(reviewState) || privacyClass === 'needs_review';
+            }).length;
+            return {
+                requirementId: 'REQ-20260619-309',
+                summary: {
+                    sources: sources.length,
+                    rawTranscriptSignals: transcriptSources.length,
+                    normalizedSignals: normalizedSources.length,
+                    approvedSignals: approvedSources.length,
+                    reviewNeeded,
+                    privacyCounts,
+                },
+                sections: [
+                    ['Transcript versions', 'Local contract', 'Raw, normalized, corrected, and Rabbi-approved versions are tracked as states; raw bodies are not rendered here.'],
+                    ['Segments, speakers, confidence', 'Local contract', 'Timestamped segment, speaker label, speaker confidence, student match, and match confidence fields are modeled for review.'],
+                    ['Privacy classes', 'Local contract', 'provider_general, cohort_general, student_private, parent_visible, staff_private, excluded, and needs_review are explicit classes.'],
+                    ['Student matching and review', reviewNeeded ? 'Needs review' : 'Review ready', 'Uncertain student matches require enrollment context, confidence thresholds, and manual review before retrieval.'],
+                    ['Retrieval boundaries', 'Preview ready', 'Student and parent views can only resolve their own approved private segments; cross-student retrieval stays blocked.'],
+                    ['Public helper guardrails', 'Preview ready', 'Public helper context can use only reviewed safe snippets, never raw unreviewed transcript dumps.'],
+                    ['Audit and release', 'Blocked', 'Deploy, production public privacy smoke, and live retrieval readback require explicit operator approval.'],
+                ],
+            };
+        }
+
+        function renderOneTimeTranscriptPrivacyReadinessPanel(jobs = [], classes = []) {
+            const state = oneTimeTranscriptPrivacyReadinessState(jobs, classes);
+            return `
+                <section class="one-time-approval-packet" data-one-time-transcript-privacy-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time transcript privacy readiness">
+                    <strong>Transcript Privacy / Knowledge Scope</strong>
+                    <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
+                    <p>No raw unreviewed transcript, staff-private note, student-private segment, cross-student question/feedback, or public helper raw transcript dump is exposed by this panel.</p>
+                    <div class="classroom-board-metrics">
+                        ${renderClassroomMetric(state.summary.sources, 'Sources')}
+                        ${renderClassroomMetric(state.summary.rawTranscriptSignals, 'Transcript refs')}
+                        ${renderClassroomMetric(state.summary.approvedSignals, 'Approved')}
+                        ${renderClassroomMetric(state.summary.reviewNeeded, 'Need review')}
+                    </div>
+                    <div class="content-topic-row" aria-label="Transcript privacy classes">
+                        ${Object.entries(state.summary.privacyCounts).map(([key, value]) => `
+                            <span class="content-topic-chip">${escapeHtml(key)}: ${escapeHtml(value)}</span>
+                        `).join('')}
+                    </div>
+                    <div class="one-time-output-grid">
+                        ${state.sections.map(([title, status, body]) => `
+                            <article class="one-time-output-state ${status === 'Blocked' ? 'blocked' : ''}">
+                                <strong>${escapeHtml(title)}</strong>
+                                <span>${escapeHtml(status)}</span>
+                                <p>${escapeHtml(body)}</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function oneTimeCommunityModerationReadinessState(classroom = oneTimeClassroomPanelData()) {
+            const threads = Array.isArray(classroom.threads) ? classroom.threads : [];
+            const messages = threads.flatMap(thread => (thread.messages || []).map(message => ({ ...message, thread_type: thread.thread_type, thread_title: thread.title })));
+            const normalizeState = value => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            const pending = messages.filter(message => ['needs_review', 'held_for_parent_review', 'temporary_hold_pending_admin', 'held_for_safety_review'].includes(normalizeState(message.moderation_status || message.private_to_public_state)));
+            const parentHolds = messages.filter(message => message.parent_visible_safety || normalizeState(message.parent_escalation_status) === 'flagged');
+            const reportFlags = messages.filter(message => {
+                const flags = message.ai_moderation?.flags || message.report_flags || message.metadata?.report_flags || [];
+                return Array.isArray(flags) ? flags.length : Boolean(flags);
+            });
+            const staffOnly = messages.filter(message => normalizeState(message.visibility_decision || message.visibility) === 'staff_only');
+            const publicAnonymized = messages.filter(message => normalizeState(message.visibility_decision || message.private_to_public_state) === 'public_anonymized' || normalizeState(message.private_to_public_state) === 'approved_anonymized_public');
+            return {
+                requirementId: 'REQ-20260619-311',
+                summary: {
+                    threads: threads.length,
+                    announcements: threads.filter(thread => normalizeState(thread.thread_type) === 'announcement').length,
+                    cohortDiscussions: threads.filter(thread => ['cohort_discussion', 'source_discussion', 'video_thread', 'daily_video', 'top_question'].includes(normalizeState(thread.thread_type))).length,
+                    privateQuestions: pending.length,
+                    parentHolds: parentHolds.length,
+                    staffOnly: staffOnly.length,
+                    reportFlags: reportFlags.length,
+                    publicAnonymized: publicAnonymized.length,
+                },
+                sections: [
+                    ['Rabbi announcements', 'Teacher controlled', 'Rabbi/admin announcements stay as teacher-led threads, not participant broadcasts.'],
+                    ['Cohort discussions', 'Moderated', 'Approved discussion is cohort/member scoped and still requires review before visibility changes.'],
+                    ['Private questions', pending.length ? 'Needs review' : 'Private first', 'Student/member questions submit privately and remain hidden until Rabbi/admin review.'],
+                    ['Parent-visible communication', parentHolds.length ? 'Safety holds present' : 'Guarded', 'Safety flags can move an item to parent hold without exposing it to the cohort.'],
+                    ['Staff-only notes', 'Guarded', 'Staff-only visibility is modeled separately from parent, cohort, and public surfaces.'],
+                    ['Moderated posting', 'Guarded', 'Unreviewed posts, temporary holds, and flagged items cannot auto-publish.'],
+                    ['Edit and deletion history', 'Local contract', 'Original, edited, published, anonymized, edit-history, and deletion-history fields are required for review traceability.'],
+                    ['Report / flag flow', reportFlags.length ? 'Flags present' : 'Preview ready', 'Contact info, direct-chat requests, unsafe language, and private identifiers stay in the moderation queue.'],
+                    ['Private-to-public anonymization', publicAnonymized.length ? 'Reviewed previews' : 'Blocked until review', 'Public promotion requires an edited anonymized version and stores original/published versions.'],
+                    ['No unrestricted messaging', 'Policy', 'No unrestricted student-to-student private messaging is enabled.'],
+                    ['Audit and release', 'Blocked', 'Public/member publication changes, notifications, deletion purge, and production smoke require explicit operator approval.'],
+                ],
+            };
+        }
+
+        function renderOneTimeCommunityModerationReadinessPanel(classroom = oneTimeClassroomPanelData()) {
+            const state = oneTimeCommunityModerationReadinessState(classroom);
+            return `
+                <section class="one-time-approval-packet" data-one-time-community-moderation-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time community moderation readiness">
+                    <strong>Community / Moderation Workflow</strong>
+                    <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
+                    <p>No unrestricted student-to-student messaging, public/member-visible post publication, external notification, temporary-hold enforcement, delete purge, or anonymized public promotion runs from this panel.</p>
+                    <div class="classroom-board-metrics">
+                        ${renderClassroomMetric(state.summary.threads, 'Threads')}
+                        ${renderClassroomMetric(state.summary.privateQuestions, 'Private queue')}
+                        ${renderClassroomMetric(state.summary.parentHolds, 'Parent holds')}
+                        ${renderClassroomMetric(state.summary.reportFlags, 'Flags')}
+                    </div>
+                    <div class="content-topic-row" aria-label="Community moderation counts">
+                        <span class="content-topic-chip">Announcements: ${escapeHtml(state.summary.announcements)}</span>
+                        <span class="content-topic-chip">Cohort discussions: ${escapeHtml(state.summary.cohortDiscussions)}</span>
+                        <span class="content-topic-chip">Staff-only: ${escapeHtml(state.summary.staffOnly)}</span>
+                        <span class="content-topic-chip">Public anonymized: ${escapeHtml(state.summary.publicAnonymized)}</span>
+                    </div>
+                    <div class="one-time-output-grid">
+                        ${state.sections.map(([title, status, body]) => `
+                            <article class="one-time-output-state ${status === 'Blocked' ? 'blocked' : ''}">
+                                <strong>${escapeHtml(title)}</strong>
+                                <span>${escapeHtml(status)}</span>
+                                <p>${escapeHtml(body)}</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function oneTimeStudyAssistantReadinessState(jobs = [], classes = []) {
+            const normalizeState = value => String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+            const classSources = (Array.isArray(classes) ? classes : []).flatMap(cls => (Array.isArray(cls.sources) ? cls.sources : []).map(source => ({
+                ...source,
+                source_bucket: 'class',
+                retrieval_scope: source.retrieval_scope || source.scope || 'cohort',
+                review_state: source.review_state || cls.package_status || 'needs_review',
+            })));
+            const jobSources = (Array.isArray(jobs) ? jobs : []).flatMap(job => {
+                const links = Array.isArray(job.source_links) ? job.source_links : (Array.isArray(job.sources) ? job.sources : []);
+                return links.map(source => ({
+                    ...source,
+                    source_bucket: 'content_job',
+                    retrieval_scope: source.retrieval_scope || source.scope || 'provider_wide',
+                    review_state: source.review_state || job.status || 'needs_review',
+                }));
+            });
+            const sources = [...classSources, ...jobSources];
+            const missingMetadata = sources.filter(source => {
+                const required = [
+                    source.canonical_reference || source.ref || source.reference,
+                    source.title,
+                    source.index_title || source.indexTitle || source.index || source.book,
+                    source.version_title || source.versionTitle || source.version,
+                    source.language || source.lang,
+                    source.license,
+                    source.attribution,
+                    source.source_url || source.sourceUrl || source.url,
+                    source.retrieved_at || source.retrievedAt,
+                    source.content_hash || source.contentHash || source.hash,
+                    source.rabbi_approval_status || source.review_state || source.reviewState,
+                    source.quote_permission || source.quotePermission,
+                    source.summary_permission || source.summaryPermission,
+                    source.index_permission || source.indexPermission,
+                ];
+                return required.some(item => !String(item || '').trim());
+            });
+            const approved = sources.filter(source => ['rabbi_approved', 'approved', 'published'].includes(normalizeState(source.rabbi_approval_status || source.review_state || source.status)));
+            const licenseReviewed = sources.filter(source => source.license_reviewed || normalizeState(source.rabbi_approval_status || source.review_state) === 'license_reviewed' || normalizeState(source.rabbi_approval_status || source.review_state) === 'rabbi_approved');
+            const citationVerified = sources.filter(source => source.citation_verified || normalizeState(source.rabbi_approval_status || source.review_state) === 'citation_verified' || normalizeState(source.rabbi_approval_status || source.review_state) === 'rabbi_approved');
+            const scopeCount = scope => sources.filter(source => normalizeState(source.retrieval_scope || source.scope) === scope).length;
+            return {
+                requirementId: 'REQ-20260619-312',
+                summary: {
+                    sources: sources.length,
+                    missingMetadata: missingMetadata.length,
+                    approved: approved.length,
+                    licenseReviewed: licenseReviewed.length,
+                    citationVerified: citationVerified.length,
+                    providerWide: scopeCount('provider_wide'),
+                    cohort: scopeCount('cohort'),
+                    studentPrivate: scopeCount('student_private'),
+                    restricted: scopeCount('restricted'),
+                },
+                sections: [
+                    ['Source-version model', 'Local contract', 'Canonical reference, version, language, license, attribution, source URL, retrieved timestamp, content hash, Rabbi approval, and quote/summary/index permissions are required.'],
+                    ['Provider-wide retrieval', 'Preview ready', 'Approved recordings, transcripts, summaries, handouts, and Sefaria source metadata can be scoped provider-wide after review.'],
+                    ['Cohort retrieval', 'Guarded', 'Class curriculum, recordings, summaries, discussions, and sources require matching cohort context.'],
+                    ['Student-private retrieval', 'Guarded', 'Student questions, feedback, assignments, progress, attendance, badges, and approved student transcript segments stay scoped to the matching student.'],
+                    ['Restricted sources', 'Blocked', 'Another student information, raw transcripts, staff notes, moderation metadata, and family-private material are blocked.'],
+                    ['Licensing and citation review', 'Blocked', 'Licensing, citation verification, scoped retrieval tests, transcript review, privacy tests, and Rabbi approval must pass before launch.'],
+                    ['Disabled feature flag', 'Blocked', 'The study assistant and unrestricted AI chat remain off; this panel does not generate answers.'],
+                    ['Audit and release', 'Blocked', 'Deploy, live smoke, Sefaria/API ingestion, citation readback, and privacy checks require explicit operator approval.'],
+                ],
+            };
+        }
+
+        function renderOneTimeStudyAssistantReadinessPanel(jobs = [], classes = []) {
+            const state = oneTimeStudyAssistantReadinessState(jobs, classes);
+            return `
+                <section class="one-time-approval-packet" data-one-time-study-assistant-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time Sefaria and study assistant readiness">
+                    <strong>Sefaria / Study Assistant Readiness</strong>
+                    <span>${escapeHtml(state.requirementId)} / disabled feature flag</span>
+                    <p>No unrestricted AI chat, Sefaria/API ingestion, arbitrary translation merge, source corpus mutation, raw transcript retrieval, cross-student retrieval, portal publish, or answer generation runs from this panel.</p>
+                    <div class="classroom-board-metrics">
+                        ${renderClassroomMetric(state.summary.sources, 'Sources')}
+                        ${renderClassroomMetric(state.summary.missingMetadata, 'Need metadata')}
+                        ${renderClassroomMetric(state.summary.approved, 'Rabbi approved')}
+                        ${renderClassroomMetric(state.summary.citationVerified, 'Citations')}
+                    </div>
+                    <div class="content-topic-row" aria-label="Study assistant source scopes">
+                        <span class="content-topic-chip">Provider-wide: ${escapeHtml(state.summary.providerWide)}</span>
+                        <span class="content-topic-chip">Cohort: ${escapeHtml(state.summary.cohort)}</span>
+                        <span class="content-topic-chip">Student-private: ${escapeHtml(state.summary.studentPrivate)}</span>
+                        <span class="content-topic-chip">Restricted: ${escapeHtml(state.summary.restricted)}</span>
+                        <span class="content-topic-chip">License reviewed: ${escapeHtml(state.summary.licenseReviewed)}</span>
+                    </div>
+                    <div class="one-time-output-grid">
+                        ${state.sections.map(([title, status, body]) => `
+                            <article class="one-time-output-state ${status === 'Blocked' ? 'blocked' : ''}">
+                                <strong>${escapeHtml(title)}</strong>
+                                <span>${escapeHtml(status)}</span>
+                                <p>${escapeHtml(body)}</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
         function renderOneTimeContentLibraryPanel(jobs = [], allJobs = [], questionQueue = [], classes = []) {
             const reportJobs = allJobs.length ? allJobs : jobs;
             return `
@@ -23681,6 +24347,10 @@
                     ${renderOneTimeLibraryReport(reportJobs)}
                     <div class="settings-disabled-note">One Time library items stay scoped to <code>one_time_mishnah_class</code>. Hosted URLs, Vimeo/manual media URLs, transcripts, worksheet/source-sheet drafts, social plans, and newsletter plans stay first-party BNA records.</div>
                     <div class="settings-disabled-note">No email, WhatsApp, social post, checkout, external CRM, Drive/video-host write, or member-library publish happens from this screen without the Class Package Manager and exact approval phrase. Approval here records internal review state only for the legacy output review lanes.</div>
+                    ${renderOneTimeRecordingVimeoReadinessPanel(reportJobs, classes)}
+                    ${renderOneTimeTranscriptPrivacyReadinessPanel(reportJobs, classes)}
+                    ${renderOneTimeCommunityModerationReadinessPanel(oneTimeClassroomPanelData())}
+                    ${renderOneTimeStudyAssistantReadinessPanel(reportJobs, classes)}
                     ${renderOneTimeClassroomAdminPanel(oneTimeClassroomPanelData())}
                     ${renderOneTimeClassroomHandoffPanel(classes)}
                     ${renderOneTimeClassManagerPanel(classes)}
@@ -29137,6 +29807,8 @@
             const type = workspaceTypeForKey(key);
             if (['platform', 'super_admin'].includes(type) || key === 'platform') return 'Super Admin';
             if (type === 'service_provider') {
+                if (opsMe?.workspace_role_label) return opsMe.workspace_role_label;
+                if (opsMe?.canonical_role_label && opsMe?.workspace_role) return opsMe.canonical_role_label;
                 if (opsMe?.role === 'project_owner') return 'Workspace Owner';
                 if (opsMe?.role === 'project_manager') return 'Workspace Manager';
                 return opsMe?.role === 'one_time_admin' ? 'Provider Admin' : 'Provider Workspace Admin';
@@ -30194,7 +30866,7 @@
                 return {
                     kicker: 'One Time / Member Access',
                     title: 'Live Classes',
-                    description: 'Manual Zoom links, member tiers, attendance, and Vimeo recording publishing for live class operations.',
+                    description: 'Manual Zoom links, member tiers, attendance, Zoom automation previews, and Vimeo recording publishing for live class operations.',
                     memberPortal: true,
                 };
             }
@@ -30204,6 +30876,62 @@
                 description: 'This workspace only shows its own live classes. If none are offered yet, the list stays empty.',
                 memberPortal: false,
             };
+        }
+
+        function oneTimeZoomAutomationPreviewState() {
+            const liveEligibleMembers = members.filter(member => member.access_tier === 'live_plus_library' && ['active', 'trial'].includes(member.access_status) && member.access_enabled !== false);
+            const scheduledSessions = liveSessions.filter(session => ['scheduled', 'live'].includes(String(session.status || '').toLowerCase()));
+            const sessionsWithZoomLink = scheduledSessions.filter(session => Boolean(session.zoom_meeting_url || session.zoom_meeting_id));
+            return {
+                requirementId: 'REQ-20260619-307',
+                summary: {
+                    scheduledSessions: scheduledSessions.length,
+                    sessionsWithZoomLink: sessionsWithZoomLink.length,
+                    liveEligibleMembers: liveEligibleMembers.length,
+                    stagedRegistrantPreviews: liveEligibleMembers.filter(member => Boolean(member.email)).length,
+                },
+                gates: {
+                    meetingCreate: false,
+                    registrantWrite: false,
+                    joinRedirect: false,
+                    webhookAttendanceWrite: false,
+                    correctionWrite: false,
+                },
+                sections: [
+                    ['Session creation preview', 'Preview ready', 'Meeting payloads can be staged locally; no Zoom meeting is created.'],
+                    ['Registrant staging', 'Local contract', 'Eligible live_plus_library members can be counted for preview; no Zoom registrant is created.'],
+                    ['Join redirect', 'Local contract', 'Member portal access rules are documented; no live redirect is enabled here.'],
+                    ['Webhook attendance preview', 'Preview ready', 'Participant events can be mapped to attendance drafts; no live webhook is accepted.'],
+                    ['Correction pipeline', 'Local contract', 'Operations can draft review corrections; no attendance row is changed by this readiness panel.'],
+                    ['Release and live smoke', 'Blocked', 'Real Zoom writes require operator approval, DEC-20260619-304, release, and live smoke proof.'],
+                ],
+            };
+        }
+
+        function renderOneTimeZoomAutomationReadinessPanel() {
+            if (!currentWorkspaceIsOneTime()) return '';
+            const state = oneTimeZoomAutomationPreviewState();
+            return `
+                    <section class="focus-panel" data-one-time-zoom-automation-readiness aria-label="Zoom attendance automation readiness">
+                        <div class="task-section-header"><h3>Zoom Attendance Automation</h3><span>${escapeHtml(state.requirementId)}</span></div>
+                        <div class="settings-disabled-note">Local preview only. No Zoom meeting, registrant, webhook attendance write, join redirect, external send, portal publish, or attendance correction is enabled by this panel.</div>
+                        <div class="task-overview-grid">
+                            ${renderMetricButton('Scheduled', state.summary.scheduledSessions, 'Scheduled or live sessions available for local preview.', '')}
+                            ${renderMetricButton('Zoom links', state.summary.sessionsWithZoomLink, 'Sessions with a manually stored Zoom link or meeting ID.', '')}
+                            ${renderMetricButton('Live members', state.summary.liveEligibleMembers, 'Active or trial live_plus_library members.', '')}
+                            ${renderMetricButton('Registrant previews', state.summary.stagedRegistrantPreviews, 'Eligible members with an email available for local registrant staging.', '')}
+                        </div>
+                        <div class="content-section-grid">
+                            ${state.sections.map(([title, status, detail]) => `
+                                <article class="content-card">
+                                    <div class="content-card-title">${escapeHtml(title)}</div>
+                                    <div class="content-card-meta">${escapeHtml(status)}</div>
+                                    <p>${escapeHtml(detail)}</p>
+                                </article>
+                            `).join('')}
+                        </div>
+                    </section>
+            `;
         }
 
         function renderLiveClasses() {
@@ -30230,6 +30958,7 @@
                             ${renderMetricButton('Library members', counts.libraryMembers, 'Library-only members can see published recordings.', "switchView('live_classes')")}
                         </div>
                     </section>
+                    ${renderOneTimeZoomAutomationReadinessPanel()}
                     <section class="focus-panel" aria-label="Create live class session">
                         <div class="task-section-header"><h3>Create Session</h3><span>Manual Zoom URL</span></div>
                         <form class="settings-control-grid" onsubmit="createLiveSessionFromForm(event)">

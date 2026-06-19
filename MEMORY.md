@@ -4,6 +4,9 @@
 
 - **BNA** = **Bnei Neviim Academy** = **Whole Child Torah Learning Community**
 - A family-based Torah learning community in Beit Shemesh, Israel
+- For BNA calendar, Parsha, Erev Shabbos, zmanim, and school-context
+  assumptions, default to Beit Shemesh / Israel unless the operator explicitly
+  asks for a Diaspora audience.
 - NOT a traditional school - a return to family-centered Torah education
 - Current practical academy model: home-based integrative Torah learning,
   currently framed around a 10:00 to 1:00 learning window, with private
@@ -35,6 +38,60 @@
   Closed requirement statuses require evidence; live-required closed items
   require deploy/live evidence; blocked audit-output work should stay blocked
   until the audit ZIP or output path exists.
+- As of 2026-06-17, BNA uses a universal raw-first, goal-aware intake model
+  for natural-language operator rambles, GPT/Codex prompt outputs, helper
+  messages, Telegram/website/Operations helper inputs, class recordings,
+  research notes, student/accountability observations, communications, contact
+  items, provider/accounting notes, and integration/workspace routing.
+- Future broad correction dumps should become a raw record first, then a
+  parsed register with stable IDs, goal candidates, tasks/requirements/
+  decisions/questions, proof expectations, and watchdog coverage before broad
+  coding starts.
+- `QUALITY-GOALS.md`, `GOAL-MODE.md`, `AGENTIC-MEMORY.md`,
+  `memory-topics/`, `ops/action-registry.json`, `ops/route-registry.json`,
+  `ops/goal-ledger.jsonl`, and `tasks-pending/_template-ramble-intake.md` are
+  the durable references for this behavior.
+- BNA Helper now has safe intake/goal/watchdog tools:
+  `capture_raw_intake`, `show_goal_status`, and `run_watchdog_audit`.
+- The universal watchdog suite is expected before claiming agentic ramble or
+  goal-mode work done: goal/general audit, links, actions, security routes,
+  raw intake drift, content routing, communications alerts, UI smoke, and
+  visual baseline where applicable.
+- Install proof for this layer is `RAW-20260617-005` /
+  `GOAL-20260617-005`, with audits under
+  `ops/goal-audits/2026-06-17-goal-memory-install-audit.md`,
+  `ops/watchdog-audits/2026-06-17-watchdog-install-audit.md`, and
+  `ops/raw-intake-audits/2026-06-17-raw-intake-backfill-plan.md`.
+- As of 2026-06-18, public, parent, and Operations PWA identities must remain
+  separate: `/manifest.json`, `/parent-manifest.json`, and
+  `/operations-manifest.json` need distinct app IDs/start URLs/scopes/icons and
+  cache behavior. Public navigation should not expose Operations login. Public
+  provider CTA copy is "Advertise your program for free"; the parent app CTA is
+  "Sign up and start using the app".
+- BNA's target workspace product model is exactly three tenant types:
+  `school`, `service_provider`, and `family`. `super_admin` is a role/global
+  context, not a tenant type. Historical values such as `household`,
+  `provider`, `project`, `community`, and `platform` may exist as compatibility
+  aliases during migration, but active UI/API display should normalize them to
+  the approved model or route them to review.
+- Operations Community, Content/Research, and Live Classes must default to the
+  selected workspace/project. BNA workspace views must not show or load One
+  Time/Rabbi provider community, content, or live-class surfaces unless the
+  operator is in explicit global or provider workspace context.
+- Operations Admin/Users, Communications, Integrations, and Automations must
+  default to the selected workspace/project. Global Integration Readiness and
+  technical connector controls are Platform/Super Admin context only; scoped
+  users must not enumerate global people, drafts, DNS tasks, communications, or
+  automation rows.
+- Student detail, accountability, assignments, devices, and Goal Board views
+  must default to the selected workspace/project and selected student when the
+  operator is inside a student detail view. Linked `student_id` values outrank
+  name or Hebrew alias matching; name fallback is only for unlinked legacy
+  events.
+- Student/accountability Hebrew mode must keep RTL active and translate portal
+  topbar labels, goal filters/statuses, device access states, daily weekday
+  labels, question/assignment/helper controls, and dates. English should appear
+  there only for brand/product names, URLs, and user/source content.
 
 ## Tooling Preferences
 
@@ -42,9 +99,11 @@
 - **OpenAI API**: Normal preferred Telegram/content hosted AI provider for
   ordinary conversation, content/tone refinement, brainstorming, and normal
   system running when configured and healthy
-- **Kimi**: Normally fallback-only for provider failures or legacy records; as
-  of 2026-06-14, approved as temporary primary hosted AI provider via
-  `BNA_AI_PRIMARY_PROVIDER=kimi` while the OpenAI key issue is unresolved
+- **Kimi**: Normally fallback-only for provider failures or legacy records.
+  As of 2026-06-18, the hosted academy Telegram worker is explicitly
+  OpenAI-primary with Kimi fallback (`OpenAI -> Kimi`). Kimi-primary mode should
+  only be re-enabled for a scoped temporary incident or an explicit operator
+  decision.
 - **Telegram**: Front-end channel for operator communication
 - **Buffer**: Active social posting provider for Facebook, LinkedIn, and
   YouTube. Buffer API credentials live in Railway and local `.secrets`; never
@@ -61,12 +120,23 @@
 - Current email posture: keep low-volume/manual Gmail-style email paths for
   now. Resend readiness can remain visible, but do not build warm email
   campaigns or mass email automation unless explicitly requested later.
+- One Time/Rabbi email-list imports belong only in the One Time project
+  (`one_time_mishnah_class`) and Rabbi provider workspace
+  (`rabbi_sheller_provider`). Imported subscriber/contact rows should be stored
+  as first-party contact/lead records with exact source-status/source-plan tags,
+  no-send metadata, and `one-time-no-send-until-approved` until Shloimie
+  explicitly approves campaign copy, sender, suppressions, and test recipients.
 - Provider-owned integrations are the default for BNA, Rabbi Scheller / One
   Time, and future service-provider workspaces. Resend, Buffer, WAPI/WhatsApp,
   Vimeo, Zoom, Stripe, GoDaddy/DNS, Google Drive, and similar accounts should
   be stored as workspace/provider-scoped integration records and secret
   references. Do not silently reuse Shloimie's/BNA credentials for Rabbi or a
   service provider unless a managed-service exception is explicitly approved.
+- Operations Settings should stay compact and operator-scannable: category
+  pages use leaf tabs/pills, dashboard context uses one compact strip, real
+  integrations are separate cards (Resend, Buffer, WAPI/WhatsApp, payment,
+  Google Calendar/Classroom), Google connectors stay internal-first/coming-soon
+  until approved, and visible UI must not expose raw API-key env var names.
 - Vimeo remains the default researched video-host candidate until account plan,
   primary-owner access, API app/token, upload access, private/domain embed
   behavior, and filtered-device playback prove it cannot support the workflow.
@@ -77,6 +147,15 @@
   copied into `.secrets` or Railway, and live billing/checkout remains blocked
   until the exact target, account owner, product/price setup, webhook, rollback,
   and approval phrase are explicit.
+- OpenAI: the valid local OpenAI key is stored outside the repo in the BNA
+  keyholder as `openaiv2.txt` as of 2026-06-17. BNA loaders and diagnostics
+  may read it by alias and report metadata/fingerprints/request IDs only. Do
+  not paste, print, commit, screenshot, or copy the key into `.secrets` or
+  Railway without an explicit operator request.
+- Telegram AI provider reality as of 2026-06-18: the hosted academy Telegram
+  worker has both OpenAI and Kimi configured, runs OpenAI primary, and keeps
+  Kimi as fallback. Do not show provider names in ordinary user-facing chat
+  unless the operator asks for diagnostics.
 - Rabbi Elie Scheller / One Time should use the same first-party classroom and
   content parsing/review pipeline as BNA, scoped to the One Time workspace.
 - One Time Mishnayos community/course progress belongs in first-party WS11/BNA
@@ -85,6 +164,56 @@
   scoped through explicit parent-student access and approved parent-visible
   rows only; shoutouts, references, question responses, and public-facing
   recognition stay hidden until approved.
+- Scoped helper access must stay child-safe and cannot expose admin, parent,
+  provider, adult, or cross-student private data.
+- The page-native helper is intended to become a main interface, not just a
+  chat bubble: each person/workspace gets a scoped helper with role-aware
+  permissions, knowledge sources, tone/profile memory, safety policy, visible
+  data filters, tool registry access, confirmation gates, audit logs, and safe
+  result links.
+- Helper actions should be driven by button/API parity. External sends,
+  scheduling/publishing, financial changes, DNS changes, account/member access
+  grants, production archive/delete actions, and exposing private data across
+  scopes require explicit confirmation and audit evidence.
+- Scoped helper actions must carry the authorized workspace/project/role
+  context through planning, permission checks, execution, and audit rows.
+  Project-scoped helpers may not switch workspace or project through helper
+  arguments; high-risk actions remain confirmation-gated and audited.
+- Repeatable seed/test data must be TEST-prefixed, metadata-tagged, dry-run by
+  default, paired with cleanup SQL, no-secret/no-external-write, and refuse
+  real database writes unless an explicit confirmation phrase and safe target
+  database are provided.
+- Helper automation controls are local-first: `create_automation` and
+  `update_automation` may create/edit first-party `bna_automations` metadata,
+  including billing workflow drafts, but must not send, sync, publish, charge,
+  or run external automation handlers without a separate explicit approval.
+- Parent-managed student login reset must stay child-specific: the parent page
+  should show the child's name when setting or resetting a student's username
+  and password, and the backend must keep using parent-session scoped student
+  lookup before changing any student login.
+- Content/research data must stay project-scoped: Operations content jobs,
+  class sessions, project meetings, research views, and prompt-library data
+  should load through the active workspace/project key. The BNA admin Prompt
+  Library must show actual prompt text previews, not only empty prompt shells.
+- Uploaded class/recording parsing and freeform rambles share the canonical
+  raw-first intake architecture: recording-intake and content-backed mixed
+  recording parses must create `bna_raw_intake` provenance and
+  `bna_intake_parse_runs`, and content parse JSON should store
+  `raw_intake_stable_id`.
+- Public parent-login entry must stay explicit: `/parent/login` should present
+  a public login/continue screen, and an already-authenticated browser should
+  ask the parent to continue or switch accounts rather than silently opening
+  private parent portal data.
+- Goal-mode ramble language from Shloimie means execution, not just planning:
+  when he says goal mode, set it as a goal, build everything, finish
+  everything, do all those things, work through the whole prompt/output/list,
+  or keep working until done, Codex should create/continue an active goal,
+  preserve raw intake, create/update the dated register, then work requirements
+  in batches until terminal statuses with proof or blockers.
+- As of 2026-06-17, the large website correction register is terminal: 69
+  requirements are Done, 1 is Blocked, and 0 remain Pending. The only blocker
+  is `REQ-20260616-030`, live Rabbi/One Time payment-link creation pending
+  explicit Stripe or Green Invoice choice plus credentials/payment links.
 - **No-GHL policy**: BNA does not use GHL, GoHighLevel, LeadConnector, or
   LeadConnectorHQ as active runtime. Do not add new GHL code, MCP tools, env
   vars, smoke checks, dashboard promises, docs, routes, prompts, or Telegram
@@ -95,6 +224,12 @@
   logs use WAPI/Whapi credentials; Operations also has an explicit admin-only
   Whapi log sync that imports recent sent/received message history into
   `bna_contact_communications` with sync-run audit records.
+- Communications screening is first-party and no-send by default: manual,
+  email, and WAPI/WhatsApp communication intake should store pipeline tags,
+  priority, parent-coaching/self-regulation categories, source context, and
+  local attention artifacts in BNA only. It must not send email/WhatsApp,
+  diagnose children, or write external connectors without an explicit later
+  approval path.
 - Zoom Server-to-Server OAuth and GoDaddy Delegate/DNS access are Thursday
   owner-access blockers for One Time. Do not substitute a Zoom Webhook Only app
   or guess DNS record values from screenshots.
@@ -159,10 +294,13 @@
   nested left subnav, top bar/breadcrumbs, and a main content region. Primary
   horizontal section tabs should not be reintroduced as the main IA.
 - Public BNA website pages should use the shared `bna-site-nav` shell for
-  header, hamburger, active nav, and footer. The current top public taxonomy is
-  `School`, `Parents / Families / Parent App`, and `Service Providers`; `/school`,
-  `/parents`, `/families`, `/parent-app`, and `/service-providers` should stay
-  aligned with that taxonomy unless Shloimie changes the site model.
+  header, hamburger, active nav, and footer. The current top public nav is
+  grouped as `Explore` (School, Families, Service Providers) plus
+  `Portal Login` (Parent Login, Student Login, Provider Portal, Operations
+  Login); `/school`, `/parents`, `/families`, `/parent-app`,
+  `/service-providers`, `/parent/login`, `/student/login`, `/provider`, and
+  `/operations-login.html` should stay aligned with that model unless Shloimie
+  changes the site model.
 - Operations should not mount the public `bna-bot-widget.js` launcher. The
   private Operations helper entry belongs in the topbar/mobile header and opens
   the scoped Operations helper drawer. Super Admin platform navigation includes
@@ -212,9 +350,12 @@
   BNA students unless they are actually enrolled in BNA.
 - Operations should present workspaces as an official multi-workspace directory,
   not as a hard-coded single Rabbi Sheller workspace. Super Admin should see
-  school, service-provider, family/home-accountability, parent-household,
-  community/project, and platform workspaces through a switcher/filter pattern
-  that can scale as real people and households are added.
+  exactly these top-level workspace categories in visible UI and API output:
+  `Super Admin`, `School`, `Service Provider`, and `Family`. Older stored
+  labels such as Family App/Home Accountability may remain as normalization
+  aliases only, not as visible workspace names or categories. The Operations
+  switcher should first choose workspace type, then the specific workspace, and
+  each option should expose the current role/scope.
 - Provider public signup is free-listing-only. The data model may keep
   admin-only/future commercial fields, but the public UI must not advertise paid
   plans, paid placement, checkout, paid automation, or approval guarantees.
@@ -683,7 +824,8 @@
   action.
 - Telegram should keep persistent bottom buttons for `Assistant` and `Codex`.
   `Assistant` means provider-neutral hosted chat mode for normal users: OpenAI
-  when healthy, or Kimi during approved temporary Kimi-primary mode/fallback.
+  when healthy, or Kimi during fallback or an explicitly approved temporary
+  Kimi-primary incident.
   Clear repo/code/database/bridge/deploy/test/programming requests still route
   to Codex automatically. Pressing `Codex` forces Codex replies until Assistant
   chat mode is selected again.
@@ -1115,7 +1257,8 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 - Plain Telegram messages to the academy bot should use hosted API chat first
   for ordinary conversation, tone/content refinement, and brainstorming:
-  OpenAI normally, Kimi temporarily when `BNA_AI_PRIMARY_PROVIDER=kimi`.
+  OpenAI normally, Kimi as fallback when OpenAI is missing/failing. The hosted
+  academy worker should default to OpenAI primary.
 - For dashboard/system questions, OpenAI must receive and use the live Operations
   snapshot first: sections, subtabs, visible actions/buttons, task lanes,
   task records/comments, students/accountability, content/prompts/bundles,
@@ -1128,8 +1271,8 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Codex may inspect, edit, test, and summarize work when the operator asks for
   repo, code, database, bridge, deploy, or dashboard changes.
 - Kimi remains fallback only for API/model-provider failures or legacy records
-  unless `BNA_AI_PRIMARY_PROVIDER=kimi` is explicitly set as the current
-  temporary primary-provider override.
+  unless an explicit current operator decision sets
+  `BNA_AI_PRIMARY_PROVIDER=kimi` as a temporary primary-provider override.
 - Operations Decisions must only contain real human choices, ideally with
   explicit options and a clear owner. Actionable requests that Codex can execute
   should become Tasks with an agent job; human/external blockers should become
@@ -1213,6 +1356,9 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 - Menachem Mendel Dratler is an internal BNA school student/accountability
   record.
+- As of 2026-06-17, Menachem's personal student WhatsApp number ending `0425`
+  is stored on his live person/student metadata and is separate from Ahuva's
+  parent-portal contact phone.
 - Ahuva Dratler is Menachem's mother and parent-portal contact. As of
   2026-06-15, the corrected live Ahuva parent portal email is
   `ahuvadratler@gmail.com`. The older `hahuvadratler@gmail.com` spelling was
@@ -1289,6 +1435,13 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   offer copy, pricing, checkout/payment links, and public replacement require
   Shloimie approval before going live. The video library supports the live
   Mishnayos/community offer but should not replace the main membership CTA.
+- As of 2026-06-17, `/rabbi`, `/rabbi-preview`, and `/one-time-mishnayos`
+  serve the BNA-owned OneTimeOneTime service-provider landing preview in the
+  OneTime black/white/bright-yellow visual direction. Public tier pricing is
+  displayed as `$67` and `$149`, but Stripe/Green Invoice checkout buttons
+  stay disabled with setup-blocked copy until explicit provider credentials or
+  payment links are configured. Do not claim live payment links exist until
+  that blocker is resolved.
 - One Time billing must use exactly one provider of record per live product/
   plan. As of 2026-06-15 the provider is still undecided, with Green Invoice,
   Stripe, and a short manual bridge documented as options in
@@ -1516,15 +1669,32 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   threads, but AI screening and Rabbi/admin approval must happen before any
   response becomes classroom-visible. Held or inappropriate responses should
   create staff/parent safety context where appropriate.
+- Provider/service-provider classroom setup should use BNA first-party
+  classroom/community draft records first. Natural-language setup language
+  should route to `create_provider_classroom_draft`, collect class count,
+  dialogue style, student access, display rules, and message permissions, and
+  must not create Google Classroom records, charge, grant access, send live
+  messages, or perform external writes without a separate approval path.
+- Rabbi Scheller / One Time classroom defaults are private-reply and
+  moderation-first: students may reply privately to Rabbi/admin threads,
+  student-to-student chat stays off unless explicitly enabled, and Rabbi/admin
+  chooses which questions or replies publish to public/community display.
+- As of the 2026-06-17 Rabbi Scheller / OneTime Mishnayos packet, the
+  immediate OneTime public focus is the live Mishnayos class/shir, not a full
+  OneTime Academy & Hotline rebuild.
+- The initial OneTime child/member experience should not include a
+  child-facing AI bot. Student questions and replies should use private
+  Rabbi/admin review until Shloimie and Rabbi explicitly approve a bot.
 - One Time participation leaderboard is approved-participation only: approved
   questions, approved responses, Rabbi-featured items, and assignment
   participation may count. Raw private discussion, unreviewed student text, and
   student-to-student chat must not be exposed.
-- One Time student/member bot answers must be source-grounded only: approved
-  class transcripts, source sheets/assets, assignments, calendar/live-session
-  records, access records, Zoom-link eligibility, and critical-thinking
-  questions. If no approved source supports an answer, the bot should refuse or
-  route to Rabbi/moderation rather than invent Torah content or citations.
+- If a One Time student/member bot is explicitly approved later, answers must
+  be source-grounded only: approved class transcripts, source sheets/assets,
+  assignments, calendar/live-session records, access records, Zoom-link
+  eligibility, and critical-thinking questions. If no approved source supports
+  an answer, the bot should refuse or route to Rabbi/moderation rather than
+  invent Torah content or citations.
 
 ## Operations Decisions
 
@@ -1587,3 +1757,7 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   pricing, checkout buttons, unverified claims, account grants, billing actions,
   sends, Google/Drive writes, Zoom writes, Buffer publishing, and external CRM
   writes until the relevant human decisions are approved.
+- Provider Index settings should stay organized as Public Provider Index,
+  Provider Plans, Provider Entitlements, Provider Onboarding, and Commercial
+  Models; launch copy should keep `Free for now` visible until Shloimie changes
+  the provider commercial policy.

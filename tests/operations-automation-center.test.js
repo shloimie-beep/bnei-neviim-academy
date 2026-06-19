@@ -33,7 +33,7 @@ test('Automation Center is a first-class Operations view with compact registry U
   assert.match(operations, /const AUTOMATION_SUBTABS = \[/);
   assert.match(operations, /automations: \{ tabs: AUTOMATION_SUBTABS/);
   assert.match(operations, /case 'automations': content = renderAutomationCenter\(\); break;/);
-  assert.match(operations, /needsAutomationData \? api\.getAutomations\(\)/);
+  assert.match(operations, /needsAutomationData \? api\.getAutomations\(workspaceDataFilters\)/);
   assert.match(operations, /function renderAutomationCenter\(\)/);
   assert.match(operations, /class="automation-row-head"/);
   assert.match(operations, /class="automation-filter-row"/);

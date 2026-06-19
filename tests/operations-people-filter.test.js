@@ -6,7 +6,9 @@ const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 
 test('Operations Contacts exposes a unified People tab with internal/external filtering', () => {
-  assert.match(operationsHtml, /getPeople\(\) \{ return this\.request\('GET', '\/people'\); \}/);
+  assert.match(operationsHtml, /getPeople\(filters = \{\}\)/);
+  assert.match(operationsHtml, /if \(filters\.project_key\) params\.set\('project_key', filters\.project_key\)/);
+  assert.match(operationsHtml, /needsPeopleData \? api\.getPeople\(workspaceDataFilters\)/);
   assert.match(operationsHtml, /createPerson\(person\) \{ return this\.request\('POST', '\/people', person\); \}/);
   assert.match(operationsHtml, /\{ id: 'people', label: 'People' \}/);
   assert.match(operationsHtml, /function renderPeopleSection/);
@@ -33,8 +35,8 @@ test('People roster keeps student and parent records linked before applying filt
 test('Parent contact detail can resolve and open the linked student record', () => {
   assert.match(operationsHtml, /\{ id: 'linked', label: 'Linked Records' \}/);
   assert.match(operationsHtml, /const needsLocalClassroomData = activeView === 'students' \|\| \(activeView === 'content' && activeContentSection === 'one_time_library'\)/);
-  assert.match(operationsHtml, /const needsStudentRosterData = needsDashboardData \|\| needsLocalClassroomData \|\| needsCommunityData \|\| \['contacts', 'api_usage', 'calendar'\]\.includes\(activeView\) \|\| \(activeView === 'settings' && \['parent_portal', 'student_portal'\]\.includes\(activeSettingsSection\)\)/);
-  assert.match(operationsHtml, /needsStudentRosterData \? api\.getStudents\(\) : Promise\.resolve\(\{ students: \[\] \}\)/);
+  assert.match(operationsHtml, /const needsStudentRosterData = needsDashboardData \|\| needsLocalClassroomData \|\| needsCommunityData \|\| \['contacts', 'api_usage', 'calendar'\]\.includes\(activeView\) \|\| \(activeView === 'settings' && \['learning_portals', 'parent_portal', 'student_portal'\]\.includes\(activeSettingsSection\)\)/);
+  assert.match(operationsHtml, /needsStudentRosterData \? api\.getStudents\(workspaceDataFilters\) : Promise\.resolve\(\{ students: \[\] \}\)/);
   assert.match(operationsHtml, /const linkedStudent = linkedStudentForSignup\(signup\)/);
   assert.match(operationsHtml, /Open linked student/);
   assert.match(operationsHtml, /Student Record/);

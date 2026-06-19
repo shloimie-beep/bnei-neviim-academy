@@ -1,6 +1,6 @@
 # BNA Operating Goals
 
-Last updated: 2026-06-16
+Last updated: 2026-06-17
 
 This register is the durable map for the broad product/operating-system goals
 that should survive across Telegram rambles, Codex sessions, prompt packets,
@@ -159,8 +159,11 @@ proof and keeps human/external blockers visible.
   architecture gaps, secret risks, and unresolved Thursday blockers.
 - Current status: watchdog rules, `npm run watchdog:audit`, prompt-register
   schema aliases, and the Operations Watchdog control-center module are
-  deployed in Railway `fac52051-3b45-4f41-ab7e-22df8789f32d`; automatic watcher
-  mode and stale-queue cleanup are not yet performed.
+  deployed; the goal-mode correction output contract, parser metadata, and
+  Telegram prompts are deployed in Railway
+  `ff95e44f-f1f5-4eeb-a83d-fc8f9456674b` and live-smoked with
+  `ops/live-smokes/2026-06-17T04-53-04-502Z-goal-mode-helper-live-smoke.md`;
+  automatic watcher mode and stale-queue cleanup are not yet performed.
 - Open decisions: whether the watchdog remains an explicit command or becomes
   an automatic Downloads/attachments monitor; how much safe auto-fix authority
   it should get; when staged watchdog helper tools become live helper actions.
@@ -169,8 +172,8 @@ proof and keeps human/external blockers visible.
   app preservation.
 - Codex workstreams: WATCHDOG, PROMPT-INTAKE, OPS-02, HELPER-03, UI-01,
   THURSDAY-ACCESS.
-- Proof required: `node --check scripts/watchdog-audit.mjs`,
-  `npm run watchdog:audit`, `npm run prompts:audit`, Operations inline-script
-  parse, source-of-truth updates, watchdog audit report under
-  `ops/watchdog-audits/`, Railway doctor, live Operations Watchdog browser
-  smoke, and direct allowed-view readback.
+- Proof required: keep running `npm run watchdog:audit`, `npm run prompts:audit`,
+  source-of-truth updates, watchdog audit reports under `ops/watchdog-audits/`,
+  Railway doctor/live smokes after app-visible changes, and focused tests for
+  `BNA_GOAL_MODE_EXECUTION_PACKET` plus parser `should_create_or_continue_goal`
+  metadata.

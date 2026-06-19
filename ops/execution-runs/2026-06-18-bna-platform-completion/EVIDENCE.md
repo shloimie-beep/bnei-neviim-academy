@@ -823,3 +823,578 @@ Guardrails:
 - No Railway variable was changed in this batch.
 - No deployment, production database mutation, broad crawl, watch loop, or
   agent-fleet loop was run.
+
+## 2026-06-19T12:05:00+03:00 - One Time Master Recovery Batch 0
+
+- Raw packet preserved as `raw-input/RAW-20260619-005-one-time-master-recovery-backlog-ui-launch.md`.
+- Register created as `tasks-pending/2026-06-19-one-time-master-recovery-register.md`.
+- Master reconciliation matrix created as `ops/one-time-mishnah/master-backlog-reconciliation.md` and `ops/one-time-mishnah/master-backlog-reconciliation.json`.
+- Preflight verified branch `codex/agent-control-center-20260619` at `cae87855f1e140668741cb2eeba90dc9dd68abf9`, PR #5 open/draft, Railway deployment `f9921a2d-d614-44df-88c0-392d810ddebd`, active run validation, secret audit, diff check, and production live app smoke.
+- No application runtime, production data, external account, DNS, email, WhatsApp, Zoom, Vimeo, billing, or deploy write was performed in this Batch 0 artifact pass.
+
+## 2026-06-19T12:45:00+03:00 - One Time Master Recovery Batch 1 Evidence
+
+- Validator implementation: `scripts/bna-execution-run.mjs`.
+- Focused tests: `tests/bna-execution-run.test.js`.
+- Schema update: `ops/execution-runs/requirements.schema.json`.
+- Protocol docs: `docs/BNA-RAMBLE-TO-DONE.md`, `BNA-START-HERE.md`,
+  `ops/execution-runs/README.md`.
+- Codex handoff templates:
+  `templates/BNA-CODEX-IMPLEMENTATION-PROMPT.md` and
+  `templates/BNA-CODEX-VERIFICATION-PROMPT.md`.
+- Active-run source metadata and matrix pointer:
+  `ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json`.
+- Statement matrix validated by the active run:
+  `ops/one-time-mishnah/master-backlog-reconciliation.json`.
+- Register status updated:
+  `tasks-pending/2026-06-19-one-time-master-recovery-register.md`.
+
+Guardrails:
+
+- No app runtime route/UI/schema behavior was changed in this batch.
+- No production data mutation, deploy, live smoke, external send, billing, DNS,
+  Zoom, Vimeo, or new Railway resource action was performed.
+
+## 2026-06-19T12:58:00+03:00 - One Time Master Recovery Batch 2 Evidence
+
+- Read-only census script: `scripts/task-decision-census.mjs`.
+- Focused tests: `tests/task-decision-census.test.js`.
+- Existing task/Decision lane tests:
+  `tests/ops-02-workflow-correctness.test.js`,
+  `tests/workspace-task-no-stale-agent.test.js`, and
+  `tests/decision-lifecycle-reprocessing.test.js`.
+- Redacted live/API census report:
+  `ops/task-decision-census/2026-06-19T09-29-03-110Z-task-decision-census.md`.
+- Redacted machine-readable census:
+  `ops/task-decision-census/2026-06-19T09-29-03-110Z-task-decision-census.json`
+  and `ops/task-decision-census/latest.json`.
+- Existing Operations lane/default-view source inspected:
+  `public/operations.html`.
+
+Read-only census result:
+
+- Source: `live_api:/api/bna/tasks`.
+- Tasks seen: 792.
+- Lane counts: Decisions 18, Tasks 336, Codex Queue 6, Pending 153, Calendar
+  19, Done / Activity 260.
+- Dry-run cleanup plan: 57 duplicate groups, 64 findings, 121 reversible
+  approval-gated actions.
+
+Guardrails:
+
+- No task or Decision cleanup apply was run.
+- No production task mutation, deploy, live smoke, external send, billing, DNS,
+  Zoom, Vimeo, or Railway resource action was performed.
+
+## 2026-06-19T13:08:00+03:00 - One Time Master Recovery Batch 3 Evidence
+
+- Canonical role contract helper:
+  `src/lib/bna/one-time-role-model.js`.
+- Server identity/seed/payload integration: `server.js`.
+- Operations Users/Access role-label integration: `public/operations.html`.
+- Architecture role map:
+  `docs/architecture/workspace-community-provider-role-map.md`.
+- Focused role/auth tests:
+  `tests/one-time-role-auth-model.test.js`,
+  `tests/one-time-rbac-negative-isolation.test.js`,
+  `tests/one-time-drive-brief-ingestion.test.js`,
+  `tests/one-time-intake-api-readback.test.js`, and
+  `tests/workspace-person-household-provider-contract.test.js`.
+- Local One Time Operations browser smoke:
+  `tests/one-time-operations-ui-smoke.test.js`.
+- Browser smoke artifacts:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`,
+  `report.json`, `desktop.png`, and `mobile-agents.png`.
+
+Implemented local contract:
+
+- Rabbi Elie Scheller maps to canonical `workspace_owner` for
+  `rabbi_sheller_provider` / `one_time_mishnah_class`.
+- Shloimie retains platform-super-admin metadata and maps to scoped One Time
+  `workspace_manager` compatibility for the project login.
+- Existing route roles remain `project_owner` and `project_manager`.
+- One Time user filtering excludes unrelated BNA/family records.
+- Role-change audit evidence is no-write preview only.
+- Permanent removal remains Platform Super Admin only; real invite,
+  deactivate, remove, and role-change persistence is not enabled.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible batch.
+- No production DB mutation or external-access persistence write was performed.
+- No email, WhatsApp, billing, DNS, Zoom, Vimeo, Railway variable/resource, or
+  external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 4 Evidence
+
+- UI/design delta audit generator:
+  `scripts/one-time-ui-design-delta-audit.mjs`.
+- Focused audit tests:
+  `tests/one-time-ui-design-delta-audit.test.js`.
+- Generated current audit report:
+  `ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md`.
+- Generated current machine-readable audit:
+  `ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.json`.
+- Prior UI closeout proof reused as historical evidence:
+  `ops/ui-audits/2026-06-16-ui-closeout.md` and `ops/ui-audits/2026-06-16/`.
+- Current One Time Operations smoke proof reused:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`
+  and `report.json`.
+- Inspected UI/design-system surfaces:
+  `public/operations.html`, `public/css/bna-app-shell.css`,
+  `public/parent.html`, `public/student.html`, `public/provider.html`,
+  `public/one-time`, and `public/one-time-classroom.html`.
+
+Audit result:
+
+- Status: `needs_operator_decision`.
+- External write performed: no.
+- Production mutation performed: no.
+- Full authenticated crawl performed: no.
+- Broad crawl performed: no.
+- Blocker: authenticated Operations audit storage state is missing at
+  `.runtime/auth/operations-storage-state.json`.
+- Warning: admin/debug-adjacent raw JSON presentations remain in advanced
+  panels and should be reviewed in a future UI polish pass.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible batch.
+- No production DB mutation, external write, broad crawl, authenticated crawl,
+  external send, billing, DNS, Zoom, Vimeo, Railway variable/resource, or
+  external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 5 Evidence
+
+- Operations communications UI:
+  `public/operations.html`.
+- Resend email draft/reply-to and approval-gated send server path:
+  `server.js`.
+- Resend client payload support:
+  `src/lib/integrations/resend-client.js`.
+- Existing approval phrase source:
+  `src/lib/integrations/external-actions.js`.
+- New focused contract tests:
+  `tests/one-time-communications-workspace.test.js`.
+- Existing communications tests:
+  `tests/communications-screening-import-ui.test.js`,
+  `tests/communications-integrations-contract.test.js`,
+  `tests/assistant-portal-communications-contract.test.js`,
+  `tests/intake-parser-communications.test.js`, and
+  `tests/resend-client.test.js`.
+- Local Operations browser smoke:
+  `tests/one-time-operations-ui-smoke.test.js`.
+- Prior communications browser proof:
+  `ops/playwright-smokes/2026-06-17-communications-screening-local/report.md`.
+
+Implemented local contract:
+
+- WhatsApp/WAPI remains first-party and no-send by default.
+- WhatsApp operator workspace exposes list, selected conversation, and details
+  panes, plus mobile list/conversation/details jumps and back-to-list
+  navigation.
+- WhatsApp local actions are correction/note actions only; sending still
+  requires the explicit `SEND_WHATSAPP` endpoint confirmation.
+- Email workspace exposes sender, domain, recipient, workspace/project, and
+  confirmation readiness gates.
+- Email draft editor supports from identity, reply-to, recipients, subject,
+  template, related record, workspace/project, approval status, and body
+  preview.
+- Email send controls stay locked unless the draft is reviewed/ready, Resend
+  readiness passes, recipients are present, and `SEND_RESEND_EMAIL` is supplied.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible batch.
+- No production DB mutation, email send, WhatsApp send, DNS/Railway
+  propagation, WAPI outbound use, Buffer publish/schedule, billing, Zoom,
+  Vimeo, GHL, external-account write, or external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 6 Evidence
+
+- Product readiness helper:
+  `src/lib/bna/one-time-product-system.js`.
+- Product-system API payload:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Focused product readiness contract tests:
+  `tests/one-time-product-system.test.js`.
+- Existing adjacent verification:
+  `tests/rabbi-checkout-access.test.js`,
+  `tests/one-time-classroom-calendar-community-bot.test.js`,
+  `tests/one-time-external-user-portal.test.js`,
+  `tests/parent-student-portal-contract.test.js`,
+  `tests/one-time-operations-ui-smoke.test.js`,
+  `tests/operations-ws01-layout-readability.test.js`,
+  `tests/operations-filter-dropdown.test.js`, and
+  `tests/bna-brand-shell.test.js`.
+
+Implemented local contract:
+
+- Product readiness includes sections for product model, schedule/cohorts,
+  consultation booking, parent portal, student portal, provider portal, and
+  billing/access readiness.
+- The contract explicitly tracks $67 membership review, premium fixed-duration
+  Masechta intensive review, upfront/weekly payment options, entitlements,
+  grace/failed-payment/cancellation/refund/access-expiration policy, Rabbi
+  recurring availability, blackout/date windows, cohort dates, session
+  generation, consultation appointment types, reminders, parent confirmation,
+  parent/student/provider portal expectations, provider of record, refund
+  policy, and release/live-smoke gates.
+- `/api/bna/one-time/product-system` now returns `product_readiness` with
+  observed provider/schedule/calendar/tier counts and all external gates set
+  false.
+- Operations renders the readiness panel in the existing Rabbi / One Time
+  launch and tiers surfaces with no-write copy and blocker tags.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, checkout, card charge, invoice, payment link,
+  subscription, access automation, Zoom/calendar write, portal publish, email,
+  WhatsApp, Telegram, billing provider write, DNS/Railway propagation, GHL, or
+  external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 7 Evidence
+
+- Zoom automation helper:
+  `src/lib/integrations/zoom.js`.
+- Protected preview-only API routes:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Integration documentation:
+  `docs/integrations/ZOOM.md` and `docs/integrations/zoom-setup.md`.
+- Route registry coverage:
+  `ops/route-registry.json`.
+- Focused Zoom automation contract tests:
+  `tests/one-time-zoom-attendance-automation.test.js`.
+
+Implemented local contract:
+
+- Session automation preview returns `REQ-20260619-307`, preview-only state,
+  external-write gates all set false, meeting payload preview, staged/skipped
+  registrant previews, join redirect guardrails, webhook attendance mapping,
+  and attendance correction draft metadata.
+- Webhook attendance preview maps participant join/leave style events into
+  local attendance statuses while requiring signature verification and keeping
+  live webhook acceptance disabled.
+- Attendance correction drafts sanitize unsupported statuses and require
+  operator review without mutating attendance rows.
+- Operations renders a One Time Live Classes `Zoom Attendance Automation` panel
+  with explicit no-write copy and local summary counts.
+- Docs and route registry state that the new endpoints are preview-only and
+  private.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, Zoom meeting creation, Zoom registrant write, live
+  webhook acceptance, join redirect exposure, attendance mutation, external
+  send, portal publish, billing, DNS/Railway propagation, Vimeo, GHL, or
+  external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 8 Evidence
+
+- Recording/Vimeo pipeline helper:
+  `src/lib/integrations/video-hosting.js`.
+- Protected preview-only API routes:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Integration documentation:
+  `docs/integrations/VIMEO.md`.
+- Route registry coverage:
+  `ops/route-registry.json`.
+- Focused recording/Vimeo pipeline tests:
+  `tests/one-time-recording-vimeo-pipeline.test.js`.
+
+Implemented local contract:
+
+- Recording pipeline preview returns `REQ-20260619-308`, preview-only state,
+  all provider/member/publish/delete/send gates set false, recording file
+  ranking, preferred layout selection, audio-only fallback, transcript/summary
+  readiness, retry/dead-letter/idempotency metadata, review flow, publication
+  preview, retention preview, entitlement handoff, and watch-progress handoff.
+- Publication preview supports manual Vimeo ID review and API upload preview
+  states while keeping publish, unpublish, delete, member visibility, and
+  provider writes disabled.
+- Retention preview keeps source deletion disabled until retention, backup,
+  playback smoke, and operator approval are recorded.
+- Operations renders the Recording / Vimeo Pipeline panel in One Time Library
+  with explicit no-write copy.
+- Docs and route registry state that the new endpoints are preview-only and
+  private.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, provider webhook acceptance, recording fetch,
+  Vimeo upload, publish, unpublish, delete, member visibility, watch-progress
+  write, notification send, portal publish, billing, DNS/Railway propagation,
+  GHL, or external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 9 Evidence
+
+- Transcript privacy helper:
+  `src/lib/bna/transcript-privacy.js`.
+- Protected readiness-only API route:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Route registry coverage:
+  `ops/route-registry.json`.
+- Existing public-helper retrieval guardrails inspected:
+  `src/lib/bna/public-helper-retrieval.js`.
+- Focused transcript privacy contract tests:
+  `tests/one-time-transcript-privacy.test.js`.
+
+Implemented local contract:
+
+- Transcript privacy helper returns `REQ-20260619-309`, preview-only state,
+  all production/external mutation gates set false, transcript version
+  metadata, timestamped segment and speaker confidence metadata, student match
+  method/confidence metadata, review states, and privacy classes.
+- Audience-scoped retrieval previews block raw/unreviewed retrieval, public
+  raw transcript dumps, cross-student student-private retrieval, parent scope
+  mismatches, staff-private leakage, and excluded segments.
+- Protected admin route returns readiness metadata with
+  `raw_transcript_text_returned: false`; member-safe classroom payloads already
+  blank transcript text and notes.
+- Operations renders a Transcript Privacy / Knowledge Scope panel in One Time
+  Library with explicit no-raw, no-staff-private, no-student-private,
+  no-cross-student, and no-public-helper-raw-dump copy.
+- Route registry declares the readiness route as private/no-write and public
+  helper retrieval remains bounded to reviewed safe transcript snippets.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, raw transcript import, transcript publication,
+  vector/public-helper corpus mutation, cross-student retrieval enablement,
+  portal publish, external send, billing, DNS/Railway propagation, GHL, or
+  external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 10 Evidence
+
+- Gamification/badge helper:
+  `src/lib/bna/gamification.js`.
+- Badge schema, seed, audit event, and readiness API:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Public classroom participation display:
+  `public/one-time-classroom.html`.
+- Route registry coverage:
+  `ops/route-registry.json`.
+- Focused gamification/badge tests:
+  `tests/gamification-events.test.js` and
+  `tests/one-time-gamification-badge-audit.test.js`.
+
+Implemented local contract:
+
+- Badge helper defines the required automatic badges: First Class, On Time,
+  Five On-Time Classes, Full Shiur, Three-Week Consistency, First Review,
+  Chazarah Streak, Perek Completed, Masechta Completed, Watched the Missed
+  Class, and Comeback.
+- Badge helper defines Rabbi-awarded badges: Thoughtful Question, Clear
+  Explanation, Strong Source Work, Excellent Preparation, Helped the Class, and
+  Exceptional Improvement.
+- Readiness logic models configurable thresholds, stable award/reversal
+  idempotency keys, source event evidence, class/session evidence,
+  parent-safe explanations, manual reversal reason requirements, and no-write
+  gates.
+- Server seed uses the shared badge catalog and the existing automatic-award
+  path records a badge audit event when it writes through an approved existing
+  admin/server path.
+- New readiness endpoint returns policy metadata only; it does not award,
+  reverse, notify, grant access, or publish anything.
+- Operations renders a Gamification / Badge Audit panel with explicit no-write
+  copy.
+- Public One Time classroom now renders Approved Participation from
+  `participation_summary`; the old ranked points leaderboard payload is kept
+  empty for member-safe output.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, live badge award, Rabbi-awarded badge write,
+  badge reversal, parent/student notification, automatic access grant,
+  prize/coupon/credit, public individual leaderboard, billing,
+  DNS/Railway propagation, GHL, or external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 11 Evidence
+
+- Community/moderation helper:
+  `src/lib/bna/community-moderation.js`.
+- Community moderation schema, audit events, and readiness API:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Public classroom private-response surface inspected:
+  `public/one-time-classroom.html`.
+- Route registry coverage:
+  `ops/route-registry.json`.
+- Focused community/moderation tests:
+  `tests/one-time-community-moderation-workflow.test.js`.
+
+Implemented local contract:
+
+- Helper returns `REQ-20260619-311`, preview-only state, all production/
+  external mutation gates false, private question moderation drafts without raw
+  body return, report flags, temporary hold recommendations, and no student-to-
+  student messaging.
+- Private-to-public promotion preview stores original/edited/anonymized version
+  metadata and returns only anonymized public text with private identifiers
+  redacted.
+- Server schema now declares explicit community moderation audit fields for
+  original, edited, published, and anonymized bodies; visibility decisions;
+  private-to-public state; edit/delete history; report flags; temporary holds;
+  and `bna_community_moderation_events`.
+- Existing member response route remains private-first: responses are hidden,
+  screened, marked review-only, and return `visible_to_classroom: false`.
+- Protected admin route returns readiness metadata with
+  `raw_private_message_text_returned: false` and
+  `unrestricted_student_messaging_enabled: false`.
+- Operations renders a Community / Moderation Workflow no-write readiness panel
+  in the One Time Library workspace.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, public/member community publication, external
+  notification, deletion purge, unrestricted student messaging enablement,
+  billing, DNS/Railway propagation, GHL, or external connector write was
+  performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 12 Evidence
+
+- Study-assistant readiness helper:
+  `src/lib/bna/study-assistant-readiness.js`.
+- Source-version schema, study assistant audit events, and readiness API:
+  `server.js`.
+- Operations readiness UI:
+  `public/operations.html`.
+- Route registry coverage:
+  `ops/route-registry.json`.
+- Focused study-assistant tests:
+  `tests/one-time-study-assistant-readiness.test.js`.
+
+Implemented local contract:
+
+- Helper returns `REQ-20260619-312`, preview-only state, all production/
+  external mutation gates false, approved source-version metadata, source
+  content hashes, and `content_returned: false`.
+- Source-version model includes canonical reference, title/index, version
+  title, language, license, attribution, source URL/reference, retrieved
+  timestamp, content hash, Rabbi approval status, quote permission, summary
+  permission, and index permission.
+- Scoped retrieval preview supports provider-wide, cohort, student-private,
+  and restricted scopes while blocking restricted sources, raw/unreviewed
+  sources, moderation/staff-only metadata, and cross-student retrieval.
+- Server schema now declares `bna_one_time_source_versions` and
+  `bna_one_time_study_assistant_audit_events`, with source text return and
+  answer generation flags disabled by default.
+- Protected admin route returns readiness metadata with
+  `study_assistant_feature_flag_enabled: false`,
+  `unrestricted_ai_chat_enabled: false`, and `raw_source_text_returned: false`.
+- Operations renders a Sefaria / Study Assistant Readiness no-write panel in
+  the One Time Library workspace.
+- Existing `/api/one-time-classroom/bot` remains disabled pending explicit
+  operator approval.
+
+Guardrails:
+
+- No deployment or live smoke was run for this app-visible/server-visible
+  batch.
+- No production DB mutation, Sefaria/API ingestion, arbitrary translation
+  merge, source corpus mutation, assistant answer generation, portal
+  publication, raw transcript retrieval, cross-student retrieval enablement,
+  billing, DNS/Railway propagation, GHL, or external connector write was
+  performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 13 Evidence
+
+- Machine-readable Option B deployment readiness profile:
+  `ops/one-time-mishnah/option-b-deployment-readiness.json`.
+- Human deployment/domain readiness runbook:
+  `ops/one-time-mishnah/one-time-option-b-deployment-readiness.md`.
+- Current-state deployment audit:
+  `docs/audits/one-time-one-time/2026-06-18-current-state-and-deployment-audit.md`.
+- Railway/local runtime inventory:
+  `railway.json`, `package.json`, `scripts/railway-start.mjs`, and
+  `scripts/smoke-live-app.mjs`.
+- Focused deployment readiness tests:
+  `tests/one-time-deployment-readiness.test.js`.
+
+Implemented local contract:
+
+- Readiness profile returns `REQ-20260619-313`, `needs_operator_decision`,
+  local-readiness-only state, and all deploy/live/external mutation flags
+  false.
+- Target architecture is explicit: shared BNA/My Academy codebase, separate
+  One Time deployment, separate One Time production variables, separate One
+  Time domain, separate One Time production database when approved, separate
+  staging/production environments, and no reliance on BNA production
+  credentials.
+- Runbook includes deployment profile, identity map, database installation
+  identity guard, schema-vs-client-seed separation, Railway runbook, cost
+  worksheet, asset ownership register, domain/DNS checklist, backup plan,
+  rollback plan, staging smoke plan, and production launch plan.
+- Test coverage verifies the existing Railway builder/start/smoke inventory
+  without running deploys or live smokes.
+
+Guardrails:
+
+- No deployment or live smoke was run for this deployment/domain batch.
+- No Railway project/service creation, database creation/attach, Railway
+  variable write, DNS/domain change, production data mutation, external send,
+  billing, GHL, or external connector write was performed.
+
+## 2026-06-19 - One Time Master Recovery Batch 14 Evidence
+
+- Final verification requirement:
+  `ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json`.
+- Provider helper permission repair:
+  `src/lib/bna/helper/permissions.js`.
+- Agents default allowedViews fallback repair:
+  `server.js`.
+- Current-contract test alignment:
+  `tests/google-workspace-settings-contract.test.js` and
+  `tests/operations-saas-crm-redesign.test.js`.
+- Final RBAC/final-surface proof:
+  `tests/final-register-surfaces-closeout.test.js`,
+  `tests/one-time-rbac-negative-isolation.test.js`, and
+  `tests/workspace-rbac-negative-isolation.test.js`.
+- Website ramble correction continuation restored:
+  `tasks-pending/2026-06-19-website-ramble-correction-audit.md`.
+- Watchdog closeout proof:
+  `ops/watchdog-audits/2026-06-19T12-00-watchdog-audit.md`.
+
+Implemented local contract:
+
+- Provider API key helper tools remain in the helper permission contract for
+  admin-visible setup/rotation, but project/provider scoped helpers are denied
+  those secret-bearing tools.
+- The Operations auth fallback includes the current first-class Agents module.
+- Stale tests now match the current Agents toolbar/auth contract instead of
+  the pre-Agents shell.
+- The daily website-correction source-of-truth chain includes the 2026-06-19
+  continuation marker required by watchdog audit.
+
+Guardrails:
+
+- No commit, push, PR update, deployment, Railway doctor, production smoke,
+  authenticated live role smoke, screenshot capture, production DB mutation,
+  domain/DNS action, external send, billing, Zoom/Vimeo/Buffer/Sefaria action,
+  source corpus mutation, portal publication, or live data-isolation readback
+  was performed.
+- Local smoke with env-file loading disabled stopped before server start
+  because `DATABASE_URL`, `OPS_USERNAME`, and `OPS_PASSWORD` were not present.

@@ -11,10 +11,17 @@ Do not run watch loops, full UI crawls, deploys, or production-data mutations.
 
 Verify:
 - requirement IDs are stable and unique;
+- source metadata exists for broad packets;
+- every captured source statement maps to a requirement or explicit exclusion;
 - statuses are valid;
 - closed requirements have evidence;
-- live-required closed requirements have deployment/live evidence;
-- NEXT-SESSION.md exists while work remains;
+- repo evidence paths exist;
+- live-required closed requirements have positive deployment/live-smoke
+  evidence, not only withheld/not-deployed text;
+- blocker rows include owner and next action;
+- git branch/HEAD/PR refs are current when recorded;
+- only one execution run is active;
+- NEXT-SESSION.md exists and names an open requirement ID while work remains;
 - audit harness, audit output, and implementation claims are kept separate;
 - ledger/changelog entries match the run.
 

@@ -17,6 +17,11 @@ const paths = {
   promptRegister: path.join(repoRoot, 'ops', 'prompt-intake-register.jsonl'),
   promptSummary: path.join(repoRoot, 'ops', 'prompt-intake-summary.md'),
   watchdogRules: path.join(repoRoot, 'ops', 'watchdog-rules.md'),
+  rambleTemplate: path.join(repoRoot, 'tasks-pending', '_template-ramble-intake.md'),
+  goalModeTemplate: path.join(repoRoot, 'tasks-pending', '_template-goal-mode-correction-output.md'),
+  websiteRambleCorrectionAudit: path.join(repoRoot, 'tasks-pending', `${today}-website-ramble-correction-audit.md`),
+  rawInputReadme: path.join(repoRoot, 'raw-input', 'README.md'),
+  rawIntakeMigration: path.join(repoRoot, 'railway-migration-2026-06-16-raw-intake-queue.sql'),
   thursdayChecklist: path.join(repoRoot, 'ops', 'thursday-access-checklist.md'),
   ledger: path.join(repoRoot, 'ops', 'agent-task-ledger.jsonl'),
   changelog: path.join(repoRoot, 'ops', 'agent-changelog.md'),
@@ -24,6 +29,8 @@ const paths = {
   systemState: path.join(repoRoot, 'SYSTEM-STATE.md'),
   memory: path.join(repoRoot, 'MEMORY.md'),
   agents: path.join(repoRoot, 'AGENTS.md'),
+  intakeParser: path.join(repoRoot, 'src', 'lib', 'bna', 'intake-parser.js'),
+  telegramBridge: path.join(repoRoot, 'scripts', 'telegram-kimi-bridge.mjs'),
   operations: path.join(repoRoot, 'public', 'operations.html'),
   helperRegistry: path.join(repoRoot, 'src', 'lib', 'bna', 'helper', 'tool-registry.js'),
   helperPlanner: path.join(repoRoot, 'src', 'lib', 'bna', 'helper', 'planner.js'),
@@ -94,7 +101,7 @@ function readJsonl(filePath) {
     .filter(Boolean)
     .map((line, index) => {
       try {
-        return JSON.parse(line);
+        return { ...JSON.parse(line), _line: index + 1 };
       } catch {
         return { _parse_error: true, _line: index + 1 };
       }
@@ -191,10 +198,27 @@ function markdownGoalIds(text = '') {
 }
 
 function parseMarkdownTasks(text = '') {
-  return String(text || '')
-    .split(/\r?\n/)
-    .map((line, index) => ({ line, lineNumber: index + 1 }))
-    .filter((item) => /^\s*-\s+\[[ xX]\]\s+/.test(item.line));
+  const lines = String(text || '').split(/\r?\n/);
+  const tasks = [];
+  let current = null;
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    if (/^\s*-\s+\[[ xX]\]\s+/.test(line)) {
+      if (current) tasks.push(current);
+      current = { line, lineNumber: index + 1, text: line };
+      continue;
+    }
+    if (current && (line.trim() === '' || /^\s{2,}\S/.test(line))) {
+      current.text = `${current.text}\n${line}`;
+      continue;
+    }
+    if (current) {
+      tasks.push(current);
+      current = null;
+    }
+  }
+  if (current) tasks.push(current);
+  return tasks;
 }
 
 function isUncheckedTaskLine(line = '') {
@@ -206,7 +230,7 @@ function isCheckedTaskLine(line = '') {
 }
 
 function taskLineHasProof(line = '') {
-  return /\b(proof|verified|tests?|smoke|screenshot|deployment|railway|doctor|ops\/|screenshots\/|tasks-pending\/|audit|report|handoff)\b/i.test(line);
+  return /\b(proof|verified|tests?|smokes?|screenshot|deployment|railway|doctor|ops\/|screenshots\/|tasks-pending\/|audit|report|handoff)\b/i.test(line);
 }
 
 function promptProofs(record = {}) {
@@ -226,18 +250,26 @@ function promptTaskLinks(record = {}) {
 }
 
 function terminalLedgerStage(row = {}) {
-  const raw = String(row.stage || row.status || row.event || '').toLowerCase();
+  const raw = `${row.stage || ''} ${row.status || ''} ${row.event || ''} ${row.notes || ''}`.toLowerCase();
   if (/deployed|live.*verified|completed_deployed/.test(raw)) return 'deployed_verified';
   if (/done|completed|workstream_done/.test(raw) && /local|followup|required|pending/i.test(`${row.stage || ''} ${row.notes || ''}`)) return 'local_verified';
   if (/done|completed/.test(raw)) return 'done_verified';
   if (/blocked/.test(raw)) return 'blocked';
+  if (/superseded|closed|stale_ledger_closed/.test(raw)) return 'superseded';
+  if (/implemented_verified|progress_verified|task_verified|research_verified|local_artifact|local_fix|planning_brief_completed/.test(raw)) return 'local_verified';
+  if (/task_implemented|metadata_cleaned|task_clarified|live_data_updated|source_sheet_followup_sent|ramble_captured/.test(raw)) return 'done_verified';
   if (/started|running|progress|in_progress/.test(raw)) return 'in_progress';
   return raw || 'unknown';
 }
 
 function latestLedgerRows(rows = []) {
+  const closedLines = new Set(rows.flatMap((row) => [
+    ...(Array.isArray(row.closes_ledger_lines) ? row.closes_ledger_lines : []),
+    row.closes_ledger_line,
+  ]).map(Number).filter(Number.isFinite));
   const map = new Map();
   for (const row of rows) {
+    if (closedLines.has(Number(row._line))) continue;
     const key = `${row.cycle_id || ''}|${row.workstream_id || row.title || row.event || ''}`;
     if (!key.replace(/\|/g, '').trim()) continue;
     const stamp = Date.parse(row.recorded_at || row.timestamp || '');
@@ -292,8 +324,16 @@ function buildAudit() {
   const tasksText = readText(paths.tasks);
   const systemText = readText(paths.systemState);
   const memoryText = readText(paths.memory);
+  const agentsText = readText(paths.agents);
+  const intakeParserText = readText(paths.intakeParser);
+  const telegramBridgeText = readText(paths.telegramBridge);
   const operationsText = readText(paths.operations);
   const watchdogRulesText = readText(paths.watchdogRules);
+  const rambleTemplateText = readText(paths.rambleTemplate);
+  const goalModeTemplateText = readText(paths.goalModeTemplate);
+  const websiteCorrectionText = readText(paths.websiteRambleCorrectionAudit);
+  const rawInputReadmeText = readText(paths.rawInputReadme);
+  const rawIntakeMigrationText = readText(paths.rawIntakeMigration);
   const thursdayText = readText(paths.thursdayChecklist);
   const helperFiles = [
     paths.helperRegistry,
@@ -317,6 +357,9 @@ function buildAudit() {
     'operating goals md': paths.goalsMd,
     'prompt intake register': paths.promptRegister,
     'watchdog rules': paths.watchdogRules,
+    'ramble intake template': paths.rambleTemplate,
+    'goal-mode correction output template': paths.goalModeTemplate,
+    'website ramble correction audit': paths.websiteRambleCorrectionAudit,
     'Thursday access checklist': paths.thursdayChecklist,
     'agent ledger': paths.ledger,
     'agent changelog': paths.changelog,
@@ -404,7 +447,7 @@ function buildAudit() {
   const taskLines = parseMarkdownTasks(tasksText);
   const uncheckedWithoutSource = taskLines
     .filter((item) => isUncheckedTaskLine(item.line))
-    .filter((item) => !taskLineHasProof(item.line))
+    .filter((item) => !taskLineHasProof(item.text || item.line))
     .slice(0, 40);
   if (uncheckedWithoutSource.length) {
     addFinding(findings, 'low', 'repo/source-of-truth drift', 'Open TASKS.md rows lack obvious source/proof pointers', `${uncheckedWithoutSource.length} open rows do not point to a prompt, handoff, audit, proof, or blocker path.`, uncheckedWithoutSource.slice(0, 8).map((item) => `TASKS.md:${item.lineNumber} ${compact(item.line, 180)}`), 'Add a handoff/proof/source path or clarify the blocker.');
@@ -412,8 +455,8 @@ function buildAudit() {
 
   const doneWithoutProof = taskLines
     .filter((item) => isCheckedTaskLine(item.line))
-    .filter((item) => /done|complete|deploy|verify|close/i.test(item.line))
-    .filter((item) => !taskLineHasProof(item.line))
+    .filter((item) => /done|complete|deploy|verify|close/i.test(item.text || item.line))
+    .filter((item) => !taskLineHasProof(item.text || item.line))
     .slice(0, 30);
   if (doneWithoutProof.length) {
     addFinding(findings, 'medium', 'missing proof', 'Done-looking TASKS.md rows lack proof language', `${doneWithoutProof.length} checked rows look complete but do not mention proof, tests, deployment, smoke, audit, or handoff.`, doneWithoutProof.slice(0, 8).map((item) => `TASKS.md:${item.lineNumber} ${compact(item.line, 180)}`), 'Add proof paths or downgrade to local/staged/blocked.');
@@ -430,8 +473,8 @@ function buildAudit() {
 
   const externalAsCodex = taskLines
     .filter((item) => isUncheckedTaskLine(item.line))
-    .filter((item) => /\b(zoom|godaddy|dns|vimeo|resend|buffer|wapi|whatsapp|stripe|oauth|credential|api key|billing|legal)\b/i.test(item.line))
-    .filter((item) => !/\b(pending|decision|checklist|blocked|approval|external|owner)\b/i.test(item.line))
+    .filter((item) => /\b(zoom|godaddy|dns|vimeo|resend|buffer|wapi|whatsapp|stripe|oauth|credential|api key|billing|legal)\b/i.test(item.text || item.line))
+    .filter((item) => !/\b(pending|decision|checklist|blocked|approval|external|owner)\b/i.test(item.text || item.line))
     .slice(0, 20);
   if (externalAsCodex.length) {
     addFinding(findings, 'medium', 'blocked external actions', 'External blocker may be represented as generic task', `${externalAsCodex.length} open rows mention external/account work without pending/decision/blocker language.`, externalAsCodex.slice(0, 8).map((item) => `TASKS.md:${item.lineNumber} ${compact(item.line, 180)}`), 'Move access/account work into Pending or Decision wording.');
@@ -487,6 +530,40 @@ function buildAudit() {
     addFinding(findings, 'critical', 'integration/secret rules', 'Secret-like values found in source-of-truth files', `${secretFindings.length} source-of-truth files contain secret-like patterns. Values are not printed by this audit.`, secretFindings.map((item) => `${item.file}: ${item.labels.join(', ')}`), 'Move secrets to the BNA keyholder/Railway env and replace tracked text with redacted metadata/fingerprints.');
   }
 
+  if (!/## Raw Input Queue/.test(agentsText) || !/tasks-pending\/_template-ramble-intake\.md/.test(agentsText) || !/Telegram capture confirmations should name the raw ID/i.test(agentsText)) {
+    addFinding(findings, 'high', 'ramble protocol', 'AGENTS.md is missing hardened ramble protocol rules', 'AGENTS.md must explicitly require the ramble template, raw memory capture, distilled titles, and confirmation wording.', ['AGENTS.md'], 'Add stable ramble protocol rules to AGENTS.md.');
+  }
+
+  if (!/## Goal-Mode Ramble Execution Trigger/.test(agentsText) || !/BNA_GOAL_MODE_EXECUTION_PACKET/.test(agentsText) || !/tasks-pending\/_template-goal-mode-correction-output\.md/.test(agentsText)) {
+    addFinding(findings, 'high', 'ramble protocol', 'Goal-mode ramble execution protocol is missing from AGENTS.md', 'Goal-mode correction packets must force create/continue-goal behavior and execution to terminal statuses.', ['AGENTS.md'], 'Add the goal-mode trigger, GPT output contract path, and terminal-status execution rules.');
+  }
+
+  const requiredTemplateHeadings = ['Raw intake', 'Raw queue record', 'Parsed requirements', 'Parsed tasks', 'Decisions', 'Open questions', 'Durable memory candidates', 'Implementation map', 'Final audit'];
+  const missingTemplateHeadings = requiredTemplateHeadings.filter((heading) => !new RegExp(`##\\s+${heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i').test(rambleTemplateText));
+  if (!rambleTemplateText || missingTemplateHeadings.length) {
+    addFinding(findings, 'high', 'ramble protocol', 'Ramble intake template is missing required sections', `Missing sections: ${missingTemplateHeadings.join(', ') || 'template file missing'}`, ['tasks-pending/_template-ramble-intake.md'], 'Restore the ramble intake template with raw queue, parsed item, implementation map, and final audit sections.');
+  }
+
+  if (!/BNA_GOAL_MODE_EXECUTION_PACKET/.test(goalModeTemplateText) || !/Create or continue an active Codex goal/i.test(goalModeTemplateText) || !/terminal status/i.test(goalModeTemplateText)) {
+    addFinding(findings, 'high', 'ramble protocol', 'Goal-mode correction output template is missing execution rules', 'GPT-generated correction outputs must explicitly tell Codex to create/continue a goal and work requirements to terminal statuses.', ['tasks-pending/_template-goal-mode-correction-output.md'], 'Restore the goal-mode output contract template.');
+  }
+
+  if (!/single source of truth for Shloimie's current website correction ramble/i.test(websiteCorrectionText) || !/REQ-20260616-001/i.test(websiteCorrectionText)) {
+    addFinding(findings, 'medium', 'ramble protocol', 'Website ramble correction audit register is missing or incomplete', 'The website correction session should have a dated requirement register before coding starts.', [`tasks-pending/${today}-website-ramble-correction-audit.md`], 'Create the website ramble correction register with raw queue, parsed item, implementation map, and final audit sections.');
+  }
+
+  if (!/bna_raw_intake/.test(rawInputReadmeText) || !/CREATE TABLE IF NOT EXISTS bna_raw_intake/.test(rawIntakeMigrationText)) {
+    addFinding(findings, 'high', 'ramble protocol', 'Raw Input Queue storage docs or migration are missing', 'The final ramble protocol requires canonical bna_raw_intake storage plus repo fallback docs.', ['raw-input/README.md', 'railway-migration-2026-06-16-raw-intake-queue.sql'], 'Add the raw input README and durable raw intake migration.');
+  }
+
+  if (!/RAMBLE_PROTOCOL_VERSION/.test(intakeParserText) || !/ramble_protocol/.test(intakeParserText) || !/buildRambleProtocol/.test(intakeParserText) || !/requirements/.test(intakeParserText) || !/open_questions/.test(intakeParserText) || !/goalModeExecutionRequested/.test(intakeParserText) || !/should_create_or_continue_goal/.test(intakeParserText)) {
+    addFinding(findings, 'high', 'ramble protocol', 'Canonical intake parser lacks ramble protocol metadata', 'Parser output must name raw capture path, visible filing targets, handoff template, and proof/blocker closeout guidance.', ['src/lib/bna/intake-parser.js'], 'Add ramble_protocol metadata to canonical parse output.');
+  }
+
+  if (!/buildRambleCaptureConfirmationLines/.test(telegramBridgeText) || !/Raw ID: \${rawId}/.test(telegramBridgeText) || !/Parsed counts: \${countParts\.join/.test(telegramBridgeText) || !/Done requires ledger\/changelog/.test(telegramBridgeText) || !/BNA_GOAL_MODE_EXECUTION_PACKET/.test(telegramBridgeText) || !/Goal mode: create\/continue the Codex goal/.test(telegramBridgeText)) {
+    addFinding(findings, 'medium', 'ramble protocol', 'Telegram capture confirmations lack ramble protocol wording', 'Telegram confirmations should say raw ID, where raw wording was saved, parsed counts, register path, and proof/blocker closeout remains.', ['scripts/telegram-kimi-bridge.mjs'], 'Add concise ramble protocol lines to captureSummaryText.');
+  }
+
   if (/GoHighLevel|LeadConnector|GHL/i.test(`${readText(path.join(repoRoot, 'README.md'))}\n${tasksText}\n${systemText}`) && !/no-GHL|legacy|archive|historical/i.test(`${tasksText}\n${systemText}`)) {
     addFinding(findings, 'medium', 'repo/source-of-truth drift', 'Possible active GHL wording outside legacy context', 'Current BNA runtime should not add active GHL/LeadConnector assumptions.', ['README.md', 'TASKS.md', 'SYSTEM-STATE.md'], 'Move historical GHL references under archive/legacy language or remove active runtime wording.');
   }
@@ -511,6 +588,7 @@ function buildAudit() {
       blocked_external_action_findings: findings.filter((finding) => finding.category === 'blocked external actions').length,
       ui_issue_findings: findings.filter((finding) => finding.category === 'UI issues found').length,
       source_drift_findings: findings.filter((finding) => finding.category === 'repo/source-of-truth drift' || finding.category === 'source-of-truth drift').length,
+      ramble_protocol_findings: findings.filter((finding) => finding.category === 'ramble protocol').length,
       findings_total: findings.length,
     },
     goals,
@@ -569,6 +647,7 @@ function writeMarkdownReport(audit) {
     `- Tasks-pending files reviewed: ${audit.counts.tasks_pending_files_reviewed}`,
     `- Daily memory files reviewed: ${audit.counts.daily_memory_files_reviewed}`,
     `- Ledger rows reviewed: ${audit.counts.ledger_rows_reviewed}`,
+    `- Ramble protocol findings: ${audit.counts.ramble_protocol_findings}`,
     `- Findings total: ${audit.counts.findings_total}`,
     '',
     '## Goals Reviewed',
@@ -604,6 +683,10 @@ function writeMarkdownReport(audit) {
     '',
     ...findingLines(audit.findings, 'source-of-truth drift'),
     ...findingLines(audit.findings, 'repo/source-of-truth drift'),
+    '',
+    '## Ramble Protocol',
+    '',
+    ...findingLines(audit.findings, 'ramble protocol'),
     '',
     '## Prompt Sources Without Path',
     '',

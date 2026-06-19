@@ -36,8 +36,19 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /One Time Mishnah Class/);
   assert.match(operations, /\{ id: 'super_admin', label: 'Super Admin'/);
   assert.match(operations, /\{ id: 'school', label: 'School'/);
-  assert.match(operations, /\{ id: 'service_providers', label: 'Service Providers'/);
-  assert.match(operations, /\{ id: 'family_home_accountability', label: 'Family App \/ Home Accountability'/);
+  assert.match(operations, /\{ id: 'service_provider', label: 'Service Provider'/);
+  assert.match(operations, /\{ id: 'family', label: 'Family'/);
+  assert.match(operations, /const WORKSPACE_CANONICAL_TYPES = \['school', 'service_provider', 'family'\]/);
+  assert.match(operations, /const WORKSPACE_CONTEXTS = \['super_admin'\]/);
+  assert.match(operations, /Workspace type selector/);
+  assert.match(operations, /Specific workspace/);
+  assert.match(operations, /const WORKSPACE_DIRECTORY_FILTERS = WORKSPACE_DIRECTORY_GROUPS/);
+  assert.doesNotMatch(operations, /const WORKSPACE_DIRECTORY_FILTERS = \[[\s\S]*\{ id: 'all', label: 'All'/);
+  assert.doesNotMatch(operations, /workspaces loaded/);
+  assert.match(operations, /const showWorkspaceSearch = options\.length > 8/);
+  assert.doesNotMatch(operations, /Family App \/ Home Accountability/);
+  assert.doesNotMatch(operations, /Family Accountability/);
+  assert.doesNotMatch(operations, /Family Directory/);
   assert.doesNotMatch(operations, /\{ id: 'household', label: 'Parent Households'/);
   assert.doesNotMatch(operations, /\{ id: 'community', label: 'Community \/ Projects'/);
   assert.match(operations, /data-workspace-kind-filter="\$\{escapeHtml\(filter\.id\)\}"/);
@@ -45,6 +56,11 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /function currentSubnavConfig/);
   assert.match(operations, /class="ops-sidebar-drilldown ops-nested-subnav"/);
   assert.match(operations, /class="ops-brand-topbar saas-topbar"/);
+  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
+  assert.match(operations, /function renderModuleToolbar/);
+  assert.match(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"/);
+  assert.match(operations, /openCommandTarget\('tasks', 'decisions'\)/);
+  assert.match(operations, /data-module-toolbar-id="\$\{escapeHtml\(item\.id\)\}"/);
   assert.match(operations, /function renderSectionNav\(tabs, activeId, handlerName\) \{\s*return '';/);
   assert.match(operations, /\.ops-app-shell\.drawer-open \.ops-main\s*{[\s\S]*display:\s*none/);
 });
@@ -151,7 +167,8 @@ test('Operations task and student details are query-addressable routed views', (
 });
 
 test('Parent, student, and provider portals use the new workspace section models with RTL support', () => {
-  assert.match(parent, /let activeParentSection = 'home'/);
+  assert.match(parent, /let activeParentSection = initialParentSection\(\)/);
+  assert.match(parent, /PARENT_SECTION_STORAGE_KEY/);
   assert.match(parent, /\{ id: 'home', label: t\('home'\)/);
   assert.match(parent, /const childLabel = counts\.children === 1 \? t\('myChild'\) : t\('myChildren'\)/);
   assert.match(parent, /\{ id: 'children', label: childLabel/);
