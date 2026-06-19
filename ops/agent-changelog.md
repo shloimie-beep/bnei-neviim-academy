@@ -4937,3 +4937,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or student mutation was performed. REQ-20260618-156 remains blocked on operator approval, so resume unblocked local work at REQ-20260618-157.
+
+## 2026-06-19 - Assistant shell browser proof
+
+Requirement: `REQ-20260618-157`
+
+Changed:
+
+- Added rendered browser proof for the Operations Assistant shell.
+- Verified exactly one Assistant module and one BNA Assistant shell, connected AI readiness, scoped memory/action registry context, and absence of duplicate Codex/Kimi/helper persona labels.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

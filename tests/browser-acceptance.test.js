@@ -1345,6 +1345,45 @@ async function assertOperationsTaskDiagnosticsClean(page) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsAssistantShell(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
+  await page.locator('.ops-view-frame[data-current-view="assistant"]').waitFor();
+  assert.match(page.url(), /view=assistant/);
+  for (const pathname of ['/api/bna/assistant/status', '/api/bna/assistant/memory', '/api/bna/assistant/actions']) {
+    await waitForCall(
+      calls,
+      (call) => call.pathname === pathname,
+      `Assistant shell loaded ${pathname}`,
+    );
+  }
+
+  const assistantFrame = page.locator('.ops-view-frame[data-current-view="assistant"]');
+  await assistantFrame.getByText('Memory Scope').waitFor();
+  await assistantFrame.getByText('test_seed_context').waitFor();
+  assert.equal(await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).count(), 1);
+  assert.equal(await assistantFrame.locator('[aria-label="BNA Assistant shell"]').count(), 1);
+  const assistantState = await assistantFrame.locator('.container').first().evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  for (const expected of [
+    /BNA Assistant/,
+    /Identity\s*BNA Assistant/,
+    /Connection\s*(OpenAI|Connected AI)/,
+    /Setup\s*Ready/,
+    /Memory Scope/,
+    /assistant\s*\/\s*workspace/,
+    /Session\s*current_user/,
+    /Action Registry/,
+    /Read calendar context/,
+    /One assistant identity/,
+    /Visible identity\s*BNA Assistant/,
+    /Assistant actions\s*audited/,
+  ]) {
+    assert.match(assistantState.text, expected);
+  }
+  assert.doesNotMatch(assistantState.text, /\bCodex\b|\bKimi\b|OpenAI Telegram sidekick|No duplicate helper personas|single visible helper/i);
+}
+
 async function assertOperationsCalendarModule(page) {
   await page.locator('.ops-module-button').filter({ hasText: 'Calendar' }).click();
   await page.locator('.ops-view-frame[data-current-view="calendar"]').waitFor();
@@ -1857,11 +1896,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsCalendarModule(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
-      await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
-      await page.locator('.ops-view-frame[data-current-view="assistant"]').waitFor();
-      assert.match(page.url(), /view=assistant/);
-      await page.getByText('Memory Scope').waitFor();
-      await page.getByText('test_seed_context').waitFor();
+      await assertOperationsAssistantShell(page, calls);
       await assertOperationsShellStable(page, 'assistant module operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Students' }).click();

@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T09:15:30+03:00
+Updated: 2026-06-19T09:25:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-155 now has static and browser DOM proof that Student Portal Hebrew mode renders RTL layout, Hebrew dynamic labels/actions/details, LTR access-code entry, and no English fallback labels. It remains needs_verification only because release approval, deployment, and live smoke are pending. REQ-20260618-156 remains an operator-decision blocker, so the next unblocked local verification target is REQ-20260618-157.
+Current verification batch: REQ-20260618-157 now has static/API and browser DOM proof that Operations exposes exactly one BNA Assistant shell with connected AI readiness, scoped memory/action registry context, and no duplicate Codex/Kimi/helper persona labels. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-158.
 
 No deployment or production-data mutation is approved in this run.

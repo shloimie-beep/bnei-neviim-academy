@@ -800,3 +800,14 @@ Student Portal Hebrew RTL browser proof (2026-06-19T09:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-155 now has browser proof that switching the Student Portal to HE sets `lang=he` and `dir=rtl`, keeps the body RTL and access-code input LTR, renders Hebrew command-card/action/detail labels, omits English fallback labels from dynamic cards, keeps mobile layout free of horizontal overflow, and requests only the private student-portal API. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or student mutation was performed.
+
+
+Assistant shell browser proof (2026-06-19T09:25:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-157 now has browser proof that Operations renders exactly one Assistant module and one BNA Assistant shell, loads assistant status/memory/actions routes, shows connected AI readiness, Setup Ready, scoped Memory Scope, Action Registry, Read calendar context, and one-assistant guardrails, and excludes Codex, Kimi, OpenAI Telegram sidekick, and duplicate-helper labels. No OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
