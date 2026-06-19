@@ -23769,6 +23769,42 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+## 2026-06-19T07:35:29+03:00 - Students Goal Board Hebrew Local Proof
+
+Moved `REQ-20260618-108` to local `done`.
+
+- Preserved focused parent/student portal work for child-specific student
+  login copy, Hebrew student-login/device/access labels, safe portal-topbar
+  navigation, RTL-friendly link/card wrapping, and localized weekday/device
+  labels.
+- Verified Operations student detail and server routes use selected workspace
+  and student filters, with Goal Board matching preferring linked student IDs
+  over aliases and group goals isolated from provider workspaces.
+- Verified Goal Board buckets, review gates, parent-visible/student-hidden
+  metadata, device-linked accountability behavior, scoped parent-managed
+  student auth, and Telegram Goal Board field preservation.
+
+Verification:
+
+- PASS focused student/portal suite 60/60.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-109` unified OpenAI/helper is the next broad unblocked
+  requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T09:05:00+03:00 - PWA Separation Local Proof
 
 Moved `REQ-20260618-102` to local `needs_verification`.

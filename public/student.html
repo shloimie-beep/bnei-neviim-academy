@@ -106,6 +106,26 @@
             white-space: nowrap;
         }
 
+        .portal-topbar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .portal-topbar-link {
+            border: 1px solid rgba(47, 100, 141, 0.14);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            color: #173f64;
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
         body::before {
             content: "";
             position: fixed;
@@ -808,6 +828,8 @@
         .question-card {
             display: grid;
             gap: 10px;
+            min-width: 0;
+            max-width: 100%;
             border: 1px solid var(--line);
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.72);
@@ -826,6 +848,7 @@
         .question-card-body {
             display: grid;
             gap: 10px;
+            min-width: 0;
             padding-top: 10px;
         }
 
@@ -833,14 +856,20 @@
         .assignment-list,
         .response-list {
             margin: 0;
-            padding-left: 18px;
+            padding-left: 0;
+            padding-inline-start: 18px;
             color: var(--muted);
             font: 700 13px/1.45 "Trebuchet MS", Verdana, sans-serif;
         }
 
-        .source-list a {
+        .source-list a,
+        .assignment-list a,
+        .response-list a,
+        .goal-meta a {
             color: var(--forest);
             font-weight: 900;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .section-title {
@@ -955,6 +984,8 @@
         .goal-card {
             display: grid;
             gap: 14px;
+            min-width: 0;
+            max-width: 100%;
             padding: 18px;
             border: 1px solid var(--line);
             border-radius: 24px;
@@ -1118,9 +1149,21 @@
                 padding: 10px 14px;
             }
 
-            .brand-chip {
-                display: none;
+            .brand-topbar {
+                align-items: flex-start;
             }
+
+            .portal-topbar-actions {
+                max-width: 48%;
+                gap: 6px;
+            }
+
+            .portal-topbar-link {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .brand-chip { display: none; }
 
             .shell {
                 width: min(100% - 18px, 980px);
@@ -1262,7 +1305,12 @@
                 <span>Student goal board</span>
             </div>
         </div>
-        <span class="brand-chip">Daily accountability</span>
+        <div class="portal-topbar-actions" aria-label="Safe portal navigation">
+            <a class="portal-topbar-link" href="/" data-student-topbar-public>Public site</a>
+            <a class="portal-topbar-link" href="/parents" data-student-topbar-families>Families</a>
+            <a class="portal-topbar-link" href="/parent/login" data-student-topbar-parent-login>Parent login</a>
+            <span class="brand-chip" data-student-topbar-accountability>Daily accountability</span>
+        </div>
     </header>
     <main class="shell">
         <header class="hero">
@@ -1524,19 +1572,23 @@
                 title: 'Student Goal Board',
                 student: 'Student',
                 brandSubtitle: 'Student workspace',
+                publicSite: 'Public site',
+                families: 'Families',
+                parentLoginNav: 'Parent login',
+                dailyAccountability: 'Daily accountability',
                 intro: 'Open your private link, review your Torah progress, and work through your goals honestly.',
                 portalIntro: 'Your Torah progress is read-only. Your own goals are below it.',
                 privateAccess: 'Private Access',
-                enterCode: 'Student login',
-                accessHelp: 'Sign in with the username and password your parent set for you.',
-                studentUsername: 'Username',
-                studentPassword: 'Password',
-                studentLogin: 'Sign in',
-                accessFallback: 'During rollout, your private access-code link still works.',
+                enterCode: 'כניסת תלמיד',
+                accessHelp: 'היכנס עם שם המשתמש והסיסמה שההורה הגדיר עבורך.',
+                studentUsername: 'שם משתמש',
+                studentPassword: 'סיסמה',
+                studentLogin: 'כניסה',
+                accessFallback: 'בתקופת המעבר, גם קישור קוד הגישה הפרטי עדיין עובד.',
                 accessCode: 'Access code',
                 codePlaceholder: 'Paste code here',
                 openGoals: 'Open My Board',
-                clearCode: 'Log out',
+                clearCode: 'יציאה',
                 menu: 'Menu',
                 opening: 'Opening your board...',
                 torahTitle: 'Torah Trip Progress',
@@ -1584,6 +1636,11 @@
                 goals: 'goals',
                 goalSingular: 'goal',
                 tabletAccess: 'Tablet access',
+                deviceNotConfigured: 'Not configured',
+                deviceLocked: 'Locked',
+                deviceAccountabilityOnly: 'Accountability only',
+                deviceApprovedAccess: 'Approved access',
+                deviceExpired: 'Expired',
                 accessUntil: 'until',
                 assignedOnly: 'Goals, consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin. This page is only for honest checkoff, a short note, and read-only progress/status.',
                 historyTitle: 'Progress history',
@@ -1632,7 +1689,7 @@
                 internalSource: 'Internal',
                 studentCalendarSource: 'BNA student calendar',
                 googleCalendarSource: 'Google Calendar',
-                classroomSource: 'Classroom',
+                classroomSource: 'כיתה',
                 manualSource: 'Manual',
                 source: 'Source',
                 visibility: 'Visibility',
@@ -1738,16 +1795,16 @@
                 intro: 'פתח את הקישור הפרטי שלך, בדוק את התקדמות התורה, ועבוד על המטרות שלך ביושר.',
                 portalIntro: 'התקדמות התורה לקריאה בלבד. המטרות שלך נמצאות למטה.',
                 privateAccess: 'גישה פרטית',
-                enterCode: 'Student login',
-                accessHelp: 'Sign in with the username and password your parent set for you.',
-                studentUsername: 'Username',
-                studentPassword: 'Password',
-                studentLogin: 'Sign in',
-                accessFallback: 'During rollout, your private access-code link still works.',
+                enterCode: 'כניסת תלמיד',
+                accessHelp: 'היכנס עם שם המשתמש והסיסמה שההורה הגדיר עבורך.',
+                studentUsername: 'שם משתמש',
+                studentPassword: 'סיסמה',
+                studentLogin: 'כניסה',
+                accessFallback: 'בתקופת המעבר, גם קישור קוד הגישה הפרטי עדיין עובד.',
                 accessCode: 'קוד גישה',
                 codePlaceholder: 'הדבק קוד כאן',
                 openGoals: 'פתח את הלוח שלי',
-                clearCode: 'Log out',
+                clearCode: 'יציאה',
                 menu: 'תפריט',
                 opening: 'פותח את הלוח...',
                 torahTitle: 'התקדמות מסע התורה',
@@ -1820,7 +1877,7 @@
                 internalSource: 'פנימי',
                 studentCalendarSource: 'לוח שנה של BNA לתלמיד',
                 googleCalendarSource: 'Google Calendar',
-                classroomSource: 'Classroom',
+                classroomSource: 'כיתה',
                 manualSource: 'ידני',
                 source: 'מקור',
                 visibility: 'הרשאה',
@@ -1929,22 +1986,34 @@
         labels.he.answerSaved = '\u05d4\u05ea\u05e9\u05d5\u05d1\u05d4 \u05e0\u05e9\u05de\u05e8\u05d4.';
         labels.he.answerPlaceholder = '\u05db\u05ea\u05d5\u05d1 \u05d0\u05ea \u05d4\u05ea\u05e9\u05d5\u05d1\u05d4 \u05e9\u05dc\u05da';
         Object.assign(labels.he, {
+            publicSite: '\u05d0\u05ea\u05e8 \u05e6\u05d9\u05d1\u05d5\u05e8\u05d9',
+            families: '\u05de\u05e9\u05e4\u05d7\u05d5\u05ea',
+            parentLoginNav: '\u05db\u05e0\u05d9\u05e1\u05ea \u05d4\u05d5\u05e8\u05d9\u05dd',
+            dailyAccountability: '\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d9\u05d5\u05de\u05d9\u05ea',
+            deviceNotConfigured: '\u05dc\u05d0 \u05de\u05d5\u05d2\u05d3\u05e8',
+            deviceLocked: '\u05e0\u05e2\u05d5\u05dc',
+            deviceAccountabilityOnly: '\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d1\u05dc\u05d1\u05d3',
+            deviceApprovedAccess: '\u05d2\u05d9\u05e9\u05d4 \u05de\u05d0\u05d5\u05e9\u05e8\u05ea',
+            deviceExpired: '\u05e4\u05d2 \u05ea\u05d5\u05e7\u05e3',
+            askQuestion: '\u05e9\u05dc\u05d7 \u05e9\u05d0\u05dc\u05d4',
+            assistantTitle: '\u05e2\u05d5\u05d6\u05e8 \u05ea\u05dc\u05de\u05d9\u05d3',
+            sendAssistant: '\u05e9\u05dc\u05d7 \u05dc\u05e2\u05d5\u05d6\u05e8',
             title: 'לוח מטרות תלמיד',
             student: 'תלמיד',
             brandSubtitle: 'מרחב תלמיד',
             intro: 'פתח את הקישור הפרטי שלך, בדוק את ההתקדמות בתורה, ועבוד על המטרות שלך ביושר.',
             portalIntro: 'התקדמות התורה היא לקריאה בלבד. המטרות האישיות שלך נמצאות למטה.',
             privateAccess: 'גישה אישית',
-            enterCode: 'Student login',
-            accessHelp: 'Sign in with the username and password your parent set for you.',
-            studentUsername: 'Username',
-            studentPassword: 'Password',
-            studentLogin: 'Sign in',
-            accessFallback: 'During rollout, your private access-code link still works.',
+            enterCode: 'כניסת תלמיד',
+            accessHelp: 'היכנס עם שם המשתמש והסיסמה שההורה הגדיר עבורך.',
+            studentUsername: 'שם משתמש',
+            studentPassword: 'סיסמה',
+            studentLogin: 'כניסה',
+            accessFallback: 'בתקופת המעבר, גם קישור קוד הגישה הפרטי עדיין עובד.',
             accessCode: 'קוד גישה',
             codePlaceholder: 'הדבק קוד כאן',
             openGoals: 'פתח את הלוח שלי',
-            clearCode: 'Log out',
+            clearCode: 'יציאה',
             menu: 'תפריט',
             opening: 'פותח את הלוח...',
             torahTitle: 'התקדמות ליעד הטיול',
@@ -2287,6 +2356,16 @@
             if (thisWeekLabel) thisWeekLabel.textContent = t('thisWeek');
             const brandSubtitle = document.querySelector('.brand-lockup div span');
             if (brandSubtitle) brandSubtitle.textContent = t('brandSubtitle');
+            const studentTopbarLabels = [
+                ['[data-student-topbar-public]', 'publicSite'],
+                ['[data-student-topbar-families]', 'families'],
+                ['[data-student-topbar-parent-login]', 'parentLoginNav'],
+                ['[data-student-topbar-accountability]', 'dailyAccountability'],
+            ];
+            studentTopbarLabels.forEach(([selector, key]) => {
+                const element = document.querySelector(selector);
+                if (element) element.textContent = t(key);
+            });
             els.clearCodeButton.textContent = t('clearCode');
             document.querySelector('#loginPanel .eyebrow').textContent = t('privateAccess');
             document.querySelector('#loginPanel h2').textContent = t('enterCode');
@@ -2432,6 +2511,31 @@
                 not_generated: 'notGenerated',
             };
             return t(labelsByStatus[normalized] || 'assigned');
+        }
+
+        function deviceAccessStateLabel(status = '', fallbackLabel = '') {
+            const normalized = String(status || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+            const labelKey = ({
+                not_configured: 'deviceNotConfigured',
+                locked: 'deviceLocked',
+                accountability: 'deviceAccountabilityOnly',
+                accountability_only: 'deviceAccountabilityOnly',
+                approved: 'deviceApprovedAccess',
+                approved_access: 'deviceApprovedAccess',
+                expired: 'deviceExpired',
+            })[normalized];
+            if (labelKey) return t(labelKey);
+            const fallback = String(fallbackLabel || '').trim();
+            if (language === 'he') return /[\u0590-\u05ff]/.test(fallback) ? fallback : t('tabletAccessLabel');
+            return fallback || String(status || '').replace(/_/g, ' ') || t('tabletAccessLabel');
+        }
+
+        function localizedWeekdayLabel(value, fallback = '') {
+            const date = parsePortalDate(value);
+            if (language === 'he' && date && Number.isFinite(date.getTime())) {
+                return new Intl.DateTimeFormat('he-IL', { weekday: 'short' }).format(date);
+            }
+            return fallback || formatDateShort(value);
         }
 
         function urgencyLabel(urgency) {
@@ -2635,7 +2739,7 @@
                 .forEach(item => {
                     items.push({
                         title: item.title || t('assignmentsTitle'),
-                        detail: formatDue(item.scheduled_start_at || item.due_at) || item.status || '',
+                        detail: formatDue(item.scheduled_start_at || item.due_at) || assignmentStatusLabel(item.status),
                     });
                 });
             return items.slice(0, 6);
@@ -2696,7 +2800,9 @@
         function renderNextMeeting(value, meeting = {}, rabbiContact = {}) {
             const date = formatDateShort(value);
             const time = meeting?.time_label || (meeting?.start_time ? `${meeting.start_time}${meeting.end_time ? `-${meeting.end_time}` : ''}` : '');
-            const weekday = meeting?.weekday_label || '';
+            const weekday = language === 'he'
+                ? localizedWeekdayLabel(value, meeting?.weekday_label || '')
+                : (meeting?.weekday_label || '');
             const meetingText = date
                 ? `${date}${time ? `, ${time}` : ''}${weekday ? ` (${weekday})` : ''}`
                 : (meeting?.label || t('noMeeting'));
@@ -3274,7 +3380,7 @@
                                         data-day-date="${escapeHtml(day.date)}"
                                         data-day-completed="${day.completed ? 'true' : 'false'}"
                                         title="${escapeHtml(day.note || '')}">
-                                        <span>${escapeHtml(day.label)}</span>
+                                        <span>${escapeHtml(localizedWeekdayLabel(day.date, day.label || ''))}</span>
                                         <strong>${Number(day.day_number || 0)}</strong>
                                     </button>
                                 `).join('')}
@@ -3379,7 +3485,7 @@
                 els.deviceAccessStrip.classList.add('hidden');
                 return;
             }
-            const statusLabel = access.status_label || String(access.status || '').replace(/_/g, ' ');
+            const statusLabel = deviceAccessStateLabel(access.status, access.status_label);
             const expires = formatAccessTime(access.expires_at);
             els.deviceAccessState.textContent = statusLabel;
             els.deviceAccessText.textContent = `${t('tabletAccess')}: ${statusLabel}${expires ? ` ${t('accessUntil')} ${expires}` : ''}.`;
@@ -3404,7 +3510,9 @@
             const todayPercent = roundedPercent(data?.torah?.daily_completion_percentage);
             const due = formatDue(activeGoal?.due_at);
             const status = activeGoal ? statusLabel(activeGoal) : t('noGoalYet');
-            const accessLabel = access?.status_label || String(access?.status || t('tabletAccess')).replace(/_/g, ' ');
+            const accessLabel = access?.status || access?.status_label
+                ? deviceAccessStateLabel(access?.status, access?.status_label)
+                : t('tabletAccessLabel');
             const accessMinutes = consequence?.success_duration_minutes ? `${Number(consequence.success_duration_minutes)} ${t('minutes')}` : t('setByYourRule');
             const agreementText = agreement.bedtime_time || agreement.wake_time
                 ? `${t('inBedBy')} ${agreement.bedtime_time || '--'} / ${t('outOfBedBy')} ${agreement.wake_time || '--'}`

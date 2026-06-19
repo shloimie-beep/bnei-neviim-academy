@@ -49,6 +49,11 @@ test('parent can create/reset a student login only for students in that parent s
   assert.doesNotMatch(endpoint, /password_hash/);
 
   assert.match(parentHtml, /data-student-login-form/);
+  assert.match(parentHtml, /data-student-name/);
+  assert.match(parentHtml, /studentLoginFor/);
+  assert.match(parentHtml, /studentLoginChildCopy/);
+  assert.match(parentHtml, /saveStudentLoginFor/);
+  assert.match(parentHtml, /studentLoginSavedFor/);
   assert.match(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/login-account/);
   assert.match(parentHtml, /studentPasswordNeverShown/);
   assert.match(parentHtml, /studentAccessFallback/);

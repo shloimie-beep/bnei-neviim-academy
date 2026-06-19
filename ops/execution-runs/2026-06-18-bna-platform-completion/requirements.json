@@ -192,16 +192,35 @@
       "id": "REQ-20260618-108",
       "title": "Students, Goal Board, and Hebrew",
       "area": "students",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Student detail, accountability, Goal Board, devices, assignments, and Hebrew/RTL states are scoped, readable, and child-safe.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "public/operations.html",
+        "public/parent.html",
+        "public/student.html",
+        "server.js",
+        "tests/operations-student-detail-scope.test.js",
+        "tests/goal-board.test.js",
+        "tests/hebrew-rtl-ui-labels.test.js",
+        "tests/student-portal-auth-policy.test.js",
+        "tests/telegram-goal-board-api-coverage.test.js",
+        "tests/parent-student-polish-contract.test.js",
+        "tests/parent-student-portal-contract.test.js",
+        "tests/operations-student-navigation.test.js",
+        "tests/portal-toolbar-overview-ux.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local student/Goal Board/Hebrew contracts verify the current Operations and portal runtime without production mutation."
+      ],
+      "verification": [
+        "node --test tests/operations-student-detail-scope.test.js tests/goal-board.test.js tests/hebrew-rtl-ui-labels.test.js tests/student-portal-auth-policy.test.js tests/telegram-goal-board-api-coverage.test.js tests/parent-student-polish-contract.test.js tests/parent-student-portal-contract.test.js tests/operations-student-navigation.test.js tests/portal-toolbar-overview-ux.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local student/Goal Board/Hebrew proof is now recorded: Operations student detail uses selected workspace/student filters; student events and Goal Board matching prefer linked student IDs over aliases; student/accountability and group-goal routes enforce workspace scope; Goal Board visibility/review gates are child-safe; parent-managed student username/password auth remains scoped and audited without secret leakage; parent and student Hebrew/RTL labels are localized; student cards and long links wrap safely. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-109",

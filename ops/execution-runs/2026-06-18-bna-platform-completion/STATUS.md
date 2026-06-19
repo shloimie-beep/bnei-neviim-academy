@@ -235,6 +235,25 @@ remain open.
   DB mutation, external write, broad crawl, watch loop, or agent-fleet loop was
   performed.
 
+2026-06-19 students/Goal Board/Hebrew local closeout:
+
+- Moved `REQ-20260618-108` to local `done`.
+- Preserved the student/parent portal work already present in the recovery
+  worktree: scoped parent-managed student logins, child-specific login copy,
+  Hebrew translations for student login and device/access states, safe
+  portal-topbar navigation, RTL-friendly wrapping for long links/cards, and
+  localized weekday/device labels.
+- Verified Operations student detail and server routes use selected workspace
+  and selected student filters; student event and Goal Board matching prefer
+  linked student IDs over name aliases; Torah/group goal routes do not leak BNA
+  goal data into provider workspaces.
+- Verified Goal Board buckets, review gates, parent-visible/student-hidden
+  metadata, device-linked accountability behavior, and Telegram Goal Board API
+  field preservation.
+- Focused student/portal suite passed 60/60; no deployment, production DB
+  mutation, external write, broad crawl, watch loop, or agent-fleet loop was
+  performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains

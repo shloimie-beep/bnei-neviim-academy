@@ -49,6 +49,12 @@ Current 2026-06-19 checkpoint:
   unclear workspace intake creates one routing Decision without task fan-out;
   scoped One Time intake readback is idempotent and blocks BNA overrides; and
   the internal task calendar remains canonical while external sync is gated.
+- `REQ-20260618-108` is locally done: Operations student detail uses selected
+  workspace/student scope, Goal Board matching prefers linked student IDs over
+  aliases, group goals do not leak into provider workspaces, Goal Board review
+  and device-accountability gates are child-safe, parent-managed student
+  username/password login is scoped and audited, and parent/student Hebrew/RTL
+  labels plus long-link/card wrapping are covered by focused tests.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -56,30 +62,29 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-108` students, Goal Board, Hebrew, and RTL continuation, while
+`REQ-20260618-109` unified OpenAI/helper continuation, while
 preserving the already closed `REQ-20260618-103` workspace/RBAC,
 `REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
 system, `REQ-20260618-106` task/intake/calendar, and
-`REQ-20260618-107` module-scoping proof.
+`REQ-20260618-108` student/Goal Board/Hebrew proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\operations-student-detail-scope.test.js tests\goal-board.test.js tests\hebrew-rtl-ui-labels.test.js tests\student-portal-auth-policy.test.js tests\telegram-goal-board-api-coverage.test.js
+node --test tests\bna-helper-tools.test.js tests\helper-scope-profile-knowledge.test.js tests\universal-assistant-contract.test.js tests\universal-assistant-mvp.test.js tests\ai-provider-selection.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-108`: inspect student isolation, duplicate-student
-cleanup, Goal Board visibility/review gates, parent/student portal Hebrew/RTL
-labels, and Operations student detail scoping; add only missing focused proof
-or small fixes, and avoid broad UI crawls or production data writes.
+Then continue `REQ-20260618-109`: inspect the unified helper/OpenAI provider
+path, scoped memory, helper profile/knowledge, tool registry, permissions,
+confirmation gates, and helper audit logs; add only missing focused proof or
+small fixes, and avoid live sends, secret logging, or production writes.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-108` students, Goal Board, and Hebrew
 - `REQ-20260618-109` unified OpenAI helper
 - `REQ-20260618-110` public copy and portal headers
 - `REQ-20260618-111` test data and acceptance tests

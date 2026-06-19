@@ -279,6 +279,34 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for students, Goal Board, Hebrew, and RTL:
+
+- PASS focused student/portal suite 60/60:
+  `node --test tests/operations-student-detail-scope.test.js
+  tests/goal-board.test.js tests/hebrew-rtl-ui-labels.test.js
+  tests/student-portal-auth-policy.test.js
+  tests/telegram-goal-board-api-coverage.test.js
+  tests/parent-student-polish-contract.test.js
+  tests/parent-student-portal-contract.test.js
+  tests/operations-student-navigation.test.js
+  tests/portal-toolbar-overview-ux.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 7`, `needs_verification: 9`, `blocked: 2`,
+  `done: 13`.
+- The suite verifies Operations student-detail workspace/student scoping,
+  linked-ID preference for duplicate student matching, route-level scope
+  enforcement, child-safe Goal Board gates, parent-managed student login,
+  password redaction, Hebrew/RTL labels, localized source/device labels, and
+  overview-first student layout.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.

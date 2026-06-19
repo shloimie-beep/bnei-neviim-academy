@@ -432,6 +432,49 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 students/Goal Board/Hebrew local closeout evidence:
+
+- Operations student detail and Goal Board admin:
+  `public/operations.html`.
+- Parent and student portal surfaces:
+  `public/parent.html` and `public/student.html`.
+- Student/accountability/Goal Board routes:
+  `server.js`.
+- Student detail scope contract:
+  `tests/operations-student-detail-scope.test.js`.
+- Goal Board behavior contract:
+  `tests/goal-board.test.js`.
+- Hebrew/RTL label audit:
+  `tests/hebrew-rtl-ui-labels.test.js`.
+- Student portal auth contract:
+  `tests/student-portal-auth-policy.test.js`.
+- Telegram Goal Board API coverage:
+  `tests/telegram-goal-board-api-coverage.test.js`.
+- Adjacent portal regressions:
+  `tests/parent-student-polish-contract.test.js`,
+  `tests/parent-student-portal-contract.test.js`,
+  `tests/operations-student-navigation.test.js`, and
+  `tests/portal-toolbar-overview-ux.test.js`.
+- PASS focused student/portal suite 60/60:
+  `node --test tests/operations-student-detail-scope.test.js
+  tests/goal-board.test.js tests/hebrew-rtl-ui-labels.test.js
+  tests/student-portal-auth-policy.test.js
+  tests/telegram-goal-board-api-coverage.test.js
+  tests/parent-student-polish-contract.test.js
+  tests/parent-student-portal-contract.test.js
+  tests/operations-student-navigation.test.js
+  tests/portal-toolbar-overview-ux.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 7`, `needs_verification: 9`, `blocked: 2`,
+  `done: 13`.
+- The suite proves selected workspace/student scoping, duplicate-student
+  preference for linked IDs over name aliases, group-goal/provider isolation,
+  Goal Board buckets/review gates/device-accountability behavior,
+  parent-managed student login scope, password audit redaction, localized
+  Hebrew/RTL portal labels, and safe student overview layout.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

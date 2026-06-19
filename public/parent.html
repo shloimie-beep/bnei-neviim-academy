@@ -117,6 +117,26 @@
             white-space: nowrap;
         }
 
+        .portal-topbar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .portal-topbar-link {
+            border: 1px solid rgba(47, 100, 141, 0.14);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.72);
+            color: #173f64;
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
         .shell {
             width: min(1080px, calc(100% - 28px));
             margin: 0 auto;
@@ -1023,7 +1043,18 @@
             }
 
             .brand-topbar {
+                align-items: flex-start;
                 padding: 10px 14px;
+            }
+
+            .portal-topbar-actions {
+                max-width: 48%;
+                gap: 6px;
+            }
+
+            .portal-topbar-link {
+                padding: 6px 8px;
+                font-size: 10px;
             }
 
             .brand-chip {
@@ -1154,7 +1185,12 @@
                 <span>Parent portal</span>
             </div>
         </div>
-        <span class="brand-chip">Secure family dashboard</span>
+        <div class="portal-topbar-actions" aria-label="Safe portal navigation">
+            <a class="portal-topbar-link" href="/">Public site</a>
+            <a class="portal-topbar-link" href="/parents">Families</a>
+            <a class="portal-topbar-link" href="/student/login">Student login</a>
+            <span class="brand-chip">Secure family dashboard</span>
+        </div>
     </header>
     <main class="shell">
         <header class="hero">
@@ -1278,6 +1314,8 @@
         let portalData = null;
         let language = 'en';
         let manualLanguage = false;
+        const PARENT_SECTION_STORAGE_KEY = 'bna.parent.activeSection';
+        let deferredParentInstallPrompt = null;
         const parentOnboardingAnswers = {};
         let parentOnboardingStepIndex = 0;
         let parentOnboardingStarted = false;
@@ -1291,7 +1329,7 @@
             capacity: '',
             class_time: '',
         };
-        let activeParentSection = 'home';
+        let activeParentSection = initialParentSection();
         let calendarWeekOffset = 0;
         let calendarViewMode = window.matchMedia && window.matchMedia('(max-width: 760px)').matches ? 'list' : 'week';
         let calendarStudentFilter = 'all';
@@ -1422,7 +1460,7 @@
             googleSetupChecklist: 'Google setup can be connected later from admin settings.',
             parentVisible: 'Parent-visible',
             internalSource: 'Internal',
-            classroomSource: 'Classroom',
+            classroomSource: 'כיתה',
             googleCalendarSource: 'Google Calendar',
             manualSource: 'Manual',
             source: 'Source',
@@ -1561,12 +1599,19 @@
             childAccess: 'Child access',
             studentLoginSettings: 'Student login settings',
             studentLoginStatus: 'Student login',
+            studentLoginFor: 'Student portal login for',
+            studentLoginChildCopy: 'Set or reset the username and password for this child only.',
             studentUsername: 'Student username',
+            studentUsernameFor: 'Student username for',
             studentPassword: 'New student password',
+            studentPasswordFor: 'New student password for',
+            confirmStudentPasswordFor: 'Confirm password for',
             saveStudentLogin: 'Save student login',
+            saveStudentLoginFor: 'Save login for',
             studentLoginNotSet: 'No username/password login is set yet.',
             studentLoginReady: 'Username/password login is active.',
             studentLoginSaved: 'Student login saved.',
+            studentLoginSavedFor: 'Student login saved for',
             studentLoginPasswordMismatch: 'Passwords do not match.',
             studentPasswordNeverShown: 'Saved passwords are never displayed after set/reset.',
             studentAccessFallback: 'Access-code fallback',
@@ -1633,7 +1678,7 @@
             parentAssistantScope: 'Uses only child overview, parent-visible calendar, assignments, questions, documents, messages, provider index, and account help.',
             classroomSafety: 'Classroom safety',
             classroomSafetyEmpty: 'No classroom responses are held for parent review.',
-            classroomBotPolicy: 'One Time bot answers only from approved classroom sources.',
+            classroomBotPolicy: 'One Time classroom bot is off for students until explicitly approved.',
             setup: 'Setup',
             assistant: 'Assistant',
             familyGoals: 'Family goals',
@@ -1644,6 +1689,12 @@
             setupTitle: 'Tablet and filter setup',
             setupCopy: 'Install the parent app on the tablet, follow your approved filter setup, then paste the setup code or status here.',
             installOnTablet: 'Install on tablet',
+            installParentApp: 'Install parent app',
+            installParentAppReady: 'Install prompt is ready on this browser.',
+            installParentAppFallback: 'If no install prompt appears, use the browser menu and choose Install app or Add to home screen.',
+            installParentAppStandalone: 'This parent portal is already open as an installed app.',
+            installParentAppDismissed: 'Install was not completed. You can try again from the browser menu.',
+            installParentAppDone: 'Parent app install flow completed.',
             setupStatus: 'Setup status',
             setupCode: 'Setup code or status',
             startSetup: 'Start setup',
@@ -1677,6 +1728,12 @@
             setupTitle: 'התקנת טאבלט וסינון',
             setupCopy: 'התקינו את אפליקציית ההורים בטאבלט, בצעו את הגדרת הסינון המאושרת, ואז הדביקו כאן קוד או סטטוס.',
             installOnTablet: 'התקנה בטאבלט',
+            installParentApp: 'התקנת אפליקציית הורים',
+            installParentAppReady: 'אפשרות ההתקנה מוכנה בדפדפן הזה.',
+            installParentAppFallback: 'אם לא מופיעה הודעת התקנה, פתחו את תפריט הדפדפן ובחרו התקנת אפליקציה או הוספה למסך הבית.',
+            installParentAppStandalone: 'פורטל ההורים כבר פתוח כאפליקציה מותקנת.',
+            installParentAppDismissed: 'ההתקנה לא הושלמה. אפשר לנסות שוב מתפריט הדפדפן.',
+            installParentAppDone: 'תהליך התקנת אפליקציית ההורים הושלם.',
             setupStatus: 'סטטוס התקנה',
             setupCode: 'קוד או סטטוס התקנה',
             startSetup: 'התחלת התקנה',
@@ -1716,7 +1773,7 @@
             googleSetupChecklist: 'אפשר לחבר את Google בהמשך מהגדרות המנהל.',
             parentVisible: 'גלוי להורה',
             internalSource: 'פנימי',
-            classroomSource: 'Classroom',
+            classroomSource: 'כיתה',
             googleCalendarSource: 'Google Calendar',
             manualSource: 'ידני',
             source: 'מקור',
@@ -1950,17 +2007,24 @@
         });
 
         Object.assign(strings.he, {
-            studentLoginSettings: 'Student login settings',
-            studentLoginStatus: 'Student login',
-            studentUsername: 'Student username',
-            studentPassword: 'New student password',
-            saveStudentLogin: 'Save student login',
-            studentLoginNotSet: 'No username/password login is set yet.',
-            studentLoginReady: 'Username/password login is active.',
-            studentLoginSaved: 'Student login saved.',
-            studentLoginPasswordMismatch: 'Passwords do not match.',
-            studentPasswordNeverShown: 'Saved passwords are never displayed after set/reset.',
-            studentAccessFallback: 'Access-code fallback',
+            studentLoginSettings: 'הגדרות כניסת תלמיד',
+            studentLoginStatus: 'כניסת תלמיד',
+            studentLoginFor: 'כניסה לפורטל תלמיד עבור',
+            studentLoginChildCopy: 'כאן אפשר להגדיר או לאפס שם משתמש וסיסמה עבור הילד הזה בלבד.',
+            studentUsername: 'שם משתמש לתלמיד',
+            studentUsernameFor: 'שם משתמש לתלמיד עבור',
+            studentPassword: 'סיסמת תלמיד חדשה',
+            studentPasswordFor: 'סיסמה חדשה לתלמיד עבור',
+            confirmStudentPasswordFor: 'אישור סיסמה עבור',
+            saveStudentLogin: 'שמירת כניסת תלמיד',
+            saveStudentLoginFor: 'שמירת כניסה עבור',
+            studentLoginNotSet: 'עדיין לא הוגדרה כניסה עם שם משתמש וסיסמה.',
+            studentLoginReady: 'כניסה עם שם משתמש וסיסמה פעילה.',
+            studentLoginSaved: 'כניסת תלמיד נשמרה.',
+            studentLoginSavedFor: 'כניסת תלמיד נשמרה עבור',
+            studentLoginPasswordMismatch: 'הסיסמאות אינן תואמות.',
+            studentPasswordNeverShown: 'סיסמאות שמורות אינן מוצגות לאחר הגדרה או איפוס.',
+            studentAccessFallback: 'גיבוי קוד גישה',
         });
 
         function t(key) {
@@ -2308,6 +2372,84 @@
             if (!active || active === document.body) return false;
             if (active.isContentEditable) return true;
             return ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName);
+        }
+
+        function safeStorageGet(key) {
+            try {
+                return window.localStorage?.getItem(key) || '';
+            } catch {
+                return '';
+            }
+        }
+
+        function safeStorageSet(key, value) {
+            try {
+                window.localStorage?.setItem(key, value);
+            } catch {
+                // Storage can be unavailable in private or locked-down browsers.
+            }
+        }
+
+        function initialParentSection() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('section') || safeStorageGet(PARENT_SECTION_STORAGE_KEY) || 'home';
+        }
+
+        function persistParentSection(section, { updateUrl = true } = {}) {
+            safeStorageSet(PARENT_SECTION_STORAGE_KEY, section);
+            if (!updateUrl || isParentAccountabilityOnboarding() || !window.history?.replaceState) return;
+            const url = new URL(window.location.href);
+            if (section && section !== 'home') url.searchParams.set('section', section);
+            else url.searchParams.delete('section');
+            window.history.replaceState(null, '', url);
+        }
+
+        function isStandaloneParentApp() {
+            return Boolean(
+                window.matchMedia?.('(display-mode: standalone)')?.matches ||
+                window.navigator?.standalone === true
+            );
+        }
+
+        function updateParentInstallState(message = '') {
+            const button = els.portalPanel.querySelector('[data-parent-install-app]');
+            const status = els.portalPanel.querySelector('[data-parent-install-status]');
+            if (!button || !status) return;
+            button.disabled = false;
+            if (isStandaloneParentApp()) {
+                status.textContent = message || t('installParentAppStandalone');
+                button.disabled = true;
+            } else if (deferredParentInstallPrompt) {
+                status.textContent = message || t('installParentAppReady');
+            } else {
+                status.textContent = message || t('installParentAppFallback');
+            }
+        }
+
+        async function promptParentInstall(button) {
+            const status = els.portalPanel.querySelector('[data-parent-install-status]');
+            if (isStandaloneParentApp()) {
+                updateParentInstallState(t('installParentAppStandalone'));
+                return;
+            }
+            if (!deferredParentInstallPrompt) {
+                updateParentInstallState(t('installParentAppFallback'));
+                return;
+            }
+            const promptEvent = deferredParentInstallPrompt;
+            deferredParentInstallPrompt = null;
+            if (button) button.disabled = true;
+            try {
+                await promptEvent.prompt();
+                const choice = await promptEvent.userChoice.catch(() => null);
+                updateParentInstallState(choice?.outcome === 'accepted'
+                    ? t('installParentAppDone')
+                    : t('installParentAppDismissed'));
+            } catch (error) {
+                if (status) status.textContent = error.message || t('installParentAppFallback');
+            } finally {
+                if (button) button.disabled = false;
+            }
         }
 
         function focusParentOnboardingInput() {
@@ -2826,9 +2968,10 @@
             if (select) select.value = activeParentSection;
         }
 
-        function setParentSection(section, { scroll = true } = {}) {
+        function setParentSection(section, { scroll = true, updateUrl = true } = {}) {
             const valid = parentSections().some(item => item.id === section);
             activeParentSection = valid ? section : 'home';
+            persistParentSection(activeParentSection, { updateUrl });
             applyParentSectionVisibility();
             closeParentMenu();
             if (scroll) scrollParentElementIntoView(els.portalPanel);
@@ -4082,36 +4225,38 @@
             const student = studentPayload.student || {};
             const login = studentPayload.student_login || {};
             const studentId = Number(student.id);
+            const studentName = parentStudentDisplayName(student);
             const hasAccount = Boolean(login.has_account);
             const username = login.username || '';
             const loginStatus = hasAccount ? t('studentLoginReady') : t('studentLoginNotSet');
             return `
-                <div class="subsection stack" data-student-login-settings="${studentId}">
+                <div class="subsection stack" data-student-login-settings="${studentId}" data-student-name="${escapeHtml(studentName)}">
                     <div>
-                        <h3>${escapeHtml(parentStudentDisplayName(student))}</h3>
+                        <h3>${escapeHtml(t('studentLoginFor'))} ${escapeHtml(studentName)}</h3>
                         <p class="small">
                             <strong>${escapeHtml(t('studentLoginStatus'))}:</strong>
                             ${escapeHtml(username || loginStatus)}
                         </p>
+                        <p class="small">${escapeHtml(t('studentLoginChildCopy'))} <strong>${escapeHtml(studentName)}</strong>.</p>
                     </div>
                     <form class="grid" data-student-login-form data-student-id="${studentId}">
                         <label>
-                            ${escapeHtml(t('studentUsername'))}
+                            ${escapeHtml(t('studentUsernameFor'))} ${escapeHtml(studentName)}
                             <input name="username" autocomplete="username" value="${escapeHtml(username)}" required maxlength="80">
                         </label>
                         <label>
-                            ${escapeHtml(t('studentPassword'))}
+                            ${escapeHtml(t('studentPasswordFor'))} ${escapeHtml(studentName)}
                             <input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="200">
                         </label>
                         <label>
-                            ${escapeHtml(t('confirmPassword'))}
+                            ${escapeHtml(t('confirmStudentPasswordFor'))} ${escapeHtml(studentName)}
                             <input name="confirm_password" type="password" autocomplete="new-password" required minlength="8" maxlength="200">
                         </label>
                         <div class="button-row">
-                            <button class="btn primary" type="submit">${escapeHtml(t('saveStudentLogin'))}</button>
+                            <button class="btn primary" type="submit">${escapeHtml(t('saveStudentLoginFor'))} ${escapeHtml(studentName)}</button>
                             <button class="btn" type="button" data-student-open="${studentId}">${escapeHtml(t('openChildPortal'))}</button>
                             <button class="btn" type="button" data-student-reset="${studentId}">${escapeHtml(t('resetStudentAccess'))}</button>
-                            <span class="small" data-student-login-status></span>
+                            <span class="small" data-student-login-status aria-live="polite"></span>
                         </div>
                     </form>
                     <p class="small">${escapeHtml(t('studentPasswordNeverShown'))}</p>
@@ -4154,7 +4299,7 @@
                     <div>
                         <p class="eyebrow">${escapeHtml(t('settings'))}</p>
                         <h2>${escapeHtml(t('settings'))}</h2>
-                        <p class="small">${escapeHtml(t('languageLabel'))}: ${escapeHtml(language === 'he' ? 'Hebrew / RTL' : 'English / LTR')}</p>
+                        <p class="small">${escapeHtml(t('languageLabel'))}: ${escapeHtml(language === 'he' ? 'עברית / RTL' : 'English / LTR')}</p>
                     </div>
                     <div class="subsection">
                         <h3>${escapeHtml(t('providerIndex'))}</h3>
@@ -4212,6 +4357,8 @@
                         <div class="subsection">
                             <h3>${escapeHtml(t('installOnTablet'))}</h3>
                             <p class="small">${escapeHtml((setup.install?.pwa_manifest || '/parent-manifest.json'))}</p>
+                            <button class="btn" type="button" data-parent-install-app>${escapeHtml(t('installParentApp'))}</button>
+                            <p class="small" data-parent-install-status>${escapeHtml(t('installParentAppFallback'))}</p>
                             <div class="notice">${escapeHtml(t('internalCalendarReady'))}</div>
                         </div>
                         <div class="subsection">
@@ -4380,6 +4527,8 @@
                 </div>
             `;
             applyParentSectionVisibility();
+            persistParentSection(activeParentSection, { updateUrl: false });
+            updateParentInstallState();
         }
 
         async function loadPortal() {
@@ -4558,6 +4707,8 @@
             const studentId = form.dataset.studentId;
             const status = form.querySelector('[data-student-login-status]');
             const button = form.querySelector('button[type="submit"]');
+            const settings = form.closest('[data-student-login-settings]');
+            const studentName = settings?.getAttribute('data-student-name') || t('student');
             const username = String(form.querySelector('[name="username"]')?.value || '').trim();
             const passwordInput = form.querySelector('[name="password"]');
             const confirmInput = form.querySelector('[name="confirm_password"]');
@@ -4576,7 +4727,7 @@
             }
             if (button) button.disabled = true;
             try {
-                await api(`/api/parent-portal/students/${encodeURIComponent(studentId)}/login-account`, {
+                const result = await api(`/api/parent-portal/students/${encodeURIComponent(studentId)}/login-account`, {
                     method: 'POST',
                     body: JSON.stringify({ username, password }),
                 });
@@ -4587,7 +4738,7 @@
                 window.requestAnimationFrame(() => {
                     const nextStatus = document.querySelector(`[data-student-login-settings="${Number(studentId)}"] [data-student-login-status]`);
                     if (nextStatus) {
-                        nextStatus.textContent = t('studentLoginSaved');
+                        nextStatus.textContent = `${t('studentLoginSavedFor')} ${result?.student_name || studentName}.`;
                         nextStatus.classList.remove('error');
                     }
                 });
@@ -4941,6 +5092,17 @@
             button.addEventListener('click', () => setLanguage(button.dataset.language, { manual: true }));
         });
 
+        window.addEventListener('beforeinstallprompt', (event) => {
+            event.preventDefault();
+            deferredParentInstallPrompt = event;
+            updateParentInstallState(t('installParentAppReady'));
+        });
+
+        window.addEventListener('appinstalled', () => {
+            deferredParentInstallPrompt = null;
+            updateParentInstallState(t('installParentAppDone'));
+        });
+
         els.portalMenuToggle.addEventListener('click', toggleParentMenu);
         els.portalMenuBackdrop.addEventListener('click', closeParentMenu);
 
@@ -5025,6 +5187,12 @@
             const providerCtaButton = event.target.closest('[data-provider-cta]');
             if (providerCtaButton) {
                 openProviderRequest(providerCtaButton);
+                return;
+            }
+
+            const parentInstallButton = event.target.closest('[data-parent-install-app]');
+            if (parentInstallButton) {
+                promptParentInstall(parentInstallButton);
                 return;
             }
 
