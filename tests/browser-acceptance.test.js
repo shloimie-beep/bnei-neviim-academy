@@ -204,6 +204,20 @@ function operationsFixture(pathname, url, options = {}) {
             ],
           },
         },
+        {
+          id: 204,
+          workspace_id: project === 'one_time_mishnah_class' ? 2 : 1,
+          project_key: project === 'one_time_mishnah_class' ? 'one_time_mishnah_class' : 'bna',
+          title: 'TEST-BNA-SEED blocked task',
+          notes: 'Cannot continue until the provider portal access is restored.',
+          stage: 'blocked',
+          category: 'operations',
+          urgency: 'today',
+          assigned_to: 'Shloimie',
+          blocker_reason: 'Needs access to provider portal',
+          created_at: '2026-06-18T11:00:00+03:00',
+          ai_parsed: { seed_marker: 'TEST-BNA-SEED', blocker_reason: 'Needs access to provider portal' },
+        },
       ],
     },
     '/api/bna/calendar': {
@@ -877,6 +891,37 @@ async function assertOperationsIntakeRoutingDecisions(page, calls) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsLiveCountsBlockers(page) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Tasks' }).click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+  const overviewState = await page.evaluate(() => {
+    const metrics = Object.fromEntries(Array.from(document.querySelectorAll('.metric-button')).map((button) => {
+      const label = button.querySelector('.metric-label')?.textContent?.trim() || '';
+      return [label, {
+        note: button.querySelector('.metric-note')?.textContent?.trim() || '',
+        value: button.querySelector('.metric-value')?.textContent?.trim() || '',
+      }];
+    }));
+    const blockedSection = document.querySelector('#blockedTasksSection');
+    return {
+      blockedText: blockedSection?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      metrics,
+      statusPills: Array.from(document.querySelectorAll('.page-status-pill')).map((node) => node.textContent.trim()),
+    };
+  });
+  assert.equal(overviewState.metrics['Urgent / Today'].value, '3');
+  assert.equal(overviewState.metrics.Decisions.value, '3');
+  assert.equal(overviewState.metrics.Blocked.value, '1');
+  assert.equal(overviewState.metrics.Blocked.note, 'Open blocked records with blocker notes.');
+  assert.ok(overviewState.statusPills.includes('1 blocked'), JSON.stringify(overviewState.statusPills));
+  assert.match(overviewState.blockedText, /Blocked Work/);
+  assert.match(overviewState.blockedText, /TEST-BNA-SEED blocked task/);
+  assert.match(overviewState.blockedText, /Blocker:\s*Needs access to provider portal/);
+
+  await page.locator('.metric-button').filter({ hasText: 'Blocked' }).click();
+  await page.locator('#blockedTasksSection .task-row').filter({ hasText: 'TEST-BNA-SEED blocked task' }).waitFor();
+}
+
 async function assertOperationsTaskDiagnosticsClean(page) {
   await page.locator('.ops-module-button').filter({ hasText: 'Tasks' }).click();
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
@@ -1024,6 +1069,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsTaskStateModel(page);
       await assertOperationsTaskMetadataProvenance(page);
       await assertOperationsIntakeRoutingDecisions(page, calls);
+      await assertOperationsLiveCountsBlockers(page);
       await assertOperationsTaskDiagnosticsClean(page);
       await assertOperationsCalendarModule(page);
       await assertOperationsShellStable(page, 'desktop operations shell');

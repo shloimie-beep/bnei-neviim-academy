@@ -1808,24 +1808,33 @@
         "public/operations.html taskViewState now derives urgent, blocked, decision, my-task, and changelog counts from the scoped task buckets returned by /api/bna/tasks.",
         "Tasks overview now shows a blocked count pill and a Blocked metric linked to a Blocked Work section rendered from the same live scoped task records.",
         "Blocked cards reuse taskBlockerLabel and blocker_reason/source_context metadata so blocker explanations are visible on the linked records.",
-        "tests/operations-live-counts-blockers.test.js covers live scoped count derivation and blocked-record linkage."
+        "tests/operations-live-counts-blockers.test.js covers live scoped count derivation and blocked-record linkage.",
+        "Browser acceptance now verifies rendered task overview counts derive from scoped fixture buckets: 3 urgent/today, 3 decisions, and 1 blocked record.",
+        "Browser acceptance now verifies the blocked metric/status pill link to the Blocked Work section where the blocked task title and Blocker: Needs access to provider portal explanation are visible."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-live-counts-blockers.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-live-counts-blockers.test.js tests/task-metadata-provenance.test.js tests/operations-task-diagnostics.test.js PASS 7/7",
-        "npm test PASS 123/123"
+        "npm test PASS 123/123",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-live-counts-blockers.test.js tests/operations-task-diagnostics.test.js tests/browser-acceptance.test.js PASS 7/7",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: surface blocked task explanations"
+        "current batch commit: feat: surface blocked task explanations",
+        "current batch commit: test: verify task live counts in browser"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-live-counts-blockers.test.js"
+        "tests/operations-live-counts-blockers.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
-      "updated_at": "2026-06-18T22:02:30+03:00"
+      "notes": "Local live scoped counts and blocker explanation behavior now has static and browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes.",
+      "updated_at": "2026-06-19T06:55:30+03:00"
     },
     {
       "id": "REQ-20260618-142",

@@ -4308,6 +4308,29 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Task live counts/blockers browser proof
+
+Requirement: `REQ-20260618-141`
+
+Changed:
+
+- Added a blocked task fixture to the Operations browser acceptance flow.
+- Verified the rendered task overview shows live scoped counts for urgent/today,
+  Decisions, and blocked task buckets.
+- Verified the blocked metric/status pill link to a visible Blocked Work record
+  with the blocker explanation shown.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-live-counts-blockers.test.js tests/operations-task-diagnostics.test.js tests/browser-acceptance.test.js` 7/7.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Task diagnostics cleanup browser proof
 
 Requirement: `REQ-20260618-140`
