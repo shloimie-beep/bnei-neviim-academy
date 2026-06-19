@@ -23442,3 +23442,50 @@ Remaining:
 - Continue `REQ-20260619-206` Agent Control Center DB/API/browser/manual smoke.
 - `REQ-20260619-207` remains genuinely blocked on external owner
   credentials/actions and explicit approval for any live provider setup.
+
+## 2026-06-19T06:35:00+03:00 - Canonical Intake Scope Hardening Continuation
+
+Preserved the completed canonical intake parser hardening from the recovery
+worktree and added the missing One Time scope inheritance guard for future
+Telegram, Drive, transcript, and ramble ingestion.
+
+- Added/committed canonical intake schema defaults, ramble protocol helpers,
+  standing-goal links, goal-memory helpers, stable parsed item IDs, and focused
+  parser lanes for class recordings, student questions, research/content,
+  communications/alerts, integrations, and service-provider items.
+- Fixed parser scope inference so Rabbi Elie / Scheller / Sheller / One Time /
+  Mishnah / Mishna / Mishnayos intake inherits
+  `workspace_key: rabbi_sheller_provider` and
+  `project_key: one_time_mishnah_class` across split fragments.
+- Added regression coverage proving future One Time intake stays scoped to the
+  One Time provider workspace, while generic BNA source-sheet intake does not
+  inherit One Time scope.
+- Updated the active execution-run requirements, status, evidence, test results,
+  and next-session checkpoint.
+
+Verification:
+
+- PASS `node --check src/lib/bna/intake-parser.js`.
+- PASS `node --check src/lib/bna/intake-schema.js`.
+- PASS `node --check src/lib/bna/ramble-protocol.js`.
+- PASS `node --check src/lib/bna/goal-registry.js`.
+- PASS `node --check src/lib/bna/goal-memory.js`.
+- PASS focused parser/routing suite 37/37.
+- PASS `git diff --cached --check`.
+- PASS staged secret-word scan; only harmless evidence/stable-ID literals
+  matched.
+
+Guardrails:
+
+- No deployment, production DB mutation, external integration write, Drive
+  write, Telegram send, social post, payment, DNS write, broad UI crawl, watch
+  loop, or agent-fleet loop was run.
+- No API keys, passwords, tokens, client secrets, webhook secrets, or DNS
+  secret values were stored in tracked files.
+
+Remaining:
+
+- `REQ-20260619-203` remains open for the remaining low-confidence unclear-scope
+  single Decision/review behavior and local raw queue/API readback.
+- `REQ-20260619-204` still needs negative One Time scope/RBAC tests and DB/API
+  readback before live closeout.

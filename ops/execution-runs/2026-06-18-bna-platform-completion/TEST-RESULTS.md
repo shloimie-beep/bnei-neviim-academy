@@ -50,6 +50,25 @@ Verified on 2026-06-19 for One Time ramble/agent/integrations follow-up:
   `not_started: 1`, `in_progress: 17`, `needs_verification: 9`,
   `blocked: 2`, `done: 2`.
 
+Verified on 2026-06-19 for canonical future intake hardening continuation:
+
+- PASS `node --check src/lib/bna/intake-parser.js`.
+- PASS `node --check src/lib/bna/intake-schema.js`.
+- PASS `node --check src/lib/bna/ramble-protocol.js`.
+- PASS `node --check src/lib/bna/goal-registry.js`.
+- PASS `node --check src/lib/bna/goal-memory.js`.
+- PASS focused parser/routing suite 37/37:
+  `node --test tests/one-time-intake-scope-hardening.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/intake-parser-class-recording.test.js
+  tests/intake-parser-communications.test.js
+  tests/intake-parser-goals.test.js
+  tests/intake-parser-student-questions.test.js
+  tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js`.
+- PASS `git diff --cached --check`.
+- PASS staged secret-word scan; only harmless evidence/stable-ID literals
+  matched.
+
 Not run for this batch:
 
 - No full `npm test`.

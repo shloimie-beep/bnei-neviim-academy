@@ -23,10 +23,28 @@ implemented and focused-test verified.
 - Focused tests passed; no deployment, no production DB mutation, and no
   external integration write was performed.
 
+2026-06-19 canonical intake hardening continuation:
+
+- Preserved and staged the canonical intake parser hardening already present in
+  the recovery worktree: schema defaults, ramble protocol helpers, goal-memory
+  links, stable IDs, class-recording/student-question/research/content/
+  communications/integration lanes, and focused parser tests.
+- Added One Time scope inheritance across future parser lanes so a Drive,
+  Telegram, transcript, or ramble item that clearly references Rabbi Elie,
+  Scheller/Sheller, One Time, Mishnah/Mishna/Mishnayos, or Worldwide Mishnayos
+  gets `workspace_key: rabbi_sheller_provider` and
+  `project_key: one_time_mishnah_class` even when later split fragments do not
+  repeat the workspace name.
+- Added regression coverage proving generic BNA source-sheet intake does not
+  inherit One Time scope.
+- No deployment, production DB mutation, external integration write, or broad
+  UI crawl was performed.
+
 Still open after this batch:
 
-- Future Telegram/Drive/transcript/ramble canonical ingestion hardening beyond
-  the One Time Drive brief parser.
+- `REQ-20260619-203` remains open for the remaining ambiguity behavior:
+  low-confidence unclear scope should create one routing Decision/review item,
+  not multiple visible tasks. Live raw queue/API readback also remains open.
 - DB/API smoke, negative scoped-identity tests, browser smoke, full One Time
   button audit, safe demo agent run, and manual Agent Mode smoke.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external

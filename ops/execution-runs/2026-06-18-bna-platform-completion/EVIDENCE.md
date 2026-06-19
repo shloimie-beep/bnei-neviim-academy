@@ -90,6 +90,36 @@ Protocol/tooling verification evidence:
   tests/int05-integrations-closeout.test.js` 49/49.
 - PASS `npm run bna:run:validate`; active run remains partial and valid.
 
+2026-06-19 canonical intake hardening continuation evidence:
+
+- Parser/schema/helpers:
+  `src/lib/bna/intake-parser.js`, `src/lib/bna/intake-schema.js`,
+  `src/lib/bna/ramble-protocol.js`, `src/lib/bna/goal-memory.js`, and
+  `src/lib/bna/goal-registry.js`.
+- One Time scope regression:
+  `tests/one-time-intake-scope-hardening.test.js`.
+- Focused parser lanes:
+  `tests/intake-parser-class-recording.test.js`,
+  `tests/intake-parser-communications.test.js`,
+  `tests/intake-parser-goals.test.js`, and
+  `tests/intake-parser-student-questions.test.js`.
+- PASS `node --check src/lib/bna/intake-parser.js`.
+- PASS `node --check src/lib/bna/intake-schema.js`.
+- PASS `node --check src/lib/bna/ramble-protocol.js`.
+- PASS `node --check src/lib/bna/goal-registry.js`.
+- PASS `node --check src/lib/bna/goal-memory.js`.
+- PASS focused parser/routing suite 37/37:
+  `node --test tests/one-time-intake-scope-hardening.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/intake-parser-class-recording.test.js
+  tests/intake-parser-communications.test.js
+  tests/intake-parser-goals.test.js
+  tests/intake-parser-student-questions.test.js
+  tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js`.
+- PASS `git diff --cached --check`.
+- PASS staged secret-word scan; only harmless evidence/stable-ID literals
+  matched.
+
 Not run:
 
 - No full baseline UI crawl.
