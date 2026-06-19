@@ -1998,6 +1998,37 @@ test('Playwright Student Portal acceptance covers private route, Hebrew RTL, and
         dir: document.documentElement.dir,
       }));
       assert.deepEqual(htmlState, { lang: 'he', dir: 'rtl' });
+      const hebrewState = await page.evaluate(() => {
+        const text = (selector) => Array.from(document.querySelectorAll(selector))
+          .map((node) => node.textContent?.replace(/\s+/g, ' ').trim() || '')
+          .filter(Boolean);
+        return {
+          bodyDirection: getComputedStyle(document.body).direction,
+          accessCodeDirection: getComputedStyle(document.getElementById('accessCode')).direction,
+          commandLabels: text('.portal-command-label'),
+          goalActions: text('.goal-card .actions button'),
+          goalDetails: text('.goal-details summary'),
+          dynamicText: [
+            document.getElementById('pageIntro')?.textContent || '',
+            document.getElementById('goalCount')?.textContent || '',
+            ...text('.portal-command-card'),
+            ...text('.goal-card'),
+            document.getElementById('deviceAccessText')?.textContent || '',
+          ].join(' ').replace(/\s+/g, ' ').trim(),
+        };
+      });
+      assert.equal(hebrewState.bodyDirection, 'rtl');
+      assert.equal(hebrewState.accessCodeDirection, 'ltr');
+      assert.ok(hebrewState.commandLabels.length >= 4, JSON.stringify(hebrewState));
+      assert.ok(hebrewState.commandLabels.every((label) => /[\u0590-\u05ff]/.test(label)), JSON.stringify(hebrewState.commandLabels));
+      assert.ok(hebrewState.goalActions.length >= 3, JSON.stringify(hebrewState));
+      assert.ok(hebrewState.goalActions.every((label) => /[\u0590-\u05ff]/.test(label)), JSON.stringify(hebrewState.goalActions));
+      assert.ok(hebrewState.goalDetails.every((label) => /[\u0590-\u05ff]/.test(label)), JSON.stringify(hebrewState.goalDetails));
+      assert.match(hebrewState.dynamicText, /[\u0590-\u05ff]/);
+      assert.doesNotMatch(
+        hebrewState.dynamicText,
+        /My Agreement|Check Off|Tablet Access|Torah \/ Trip|Details|Not Yet|Half|Done|After honest checkoff|Chosen rule|Agreement:/,
+      );
       await noHorizontalOverflow(page);
 
       assert.ok(

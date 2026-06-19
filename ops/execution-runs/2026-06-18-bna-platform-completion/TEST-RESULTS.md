@@ -789,3 +789,14 @@ Goal Board lane separation browser proof (2026-06-19T09:05:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-154 now has browser proof that the selected One Time Goal Board renders separate Current Goals, Progress / Check-ins, Approvals, and History lanes with counts and empty states, and that the pending review item appears in Approvals rather than being mixed into the other lanes. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or tablet/device mutation was performed.
+
+
+Student Portal Hebrew RTL browser proof (2026-06-19T09:15:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/student-portal-i18n.test.js tests/browser-acceptance.test.js` 6/6.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-155 now has browser proof that switching the Student Portal to HE sets `lang=he` and `dir=rtl`, keeps the body RTL and access-code input LTR, renders Hebrew command-card/action/detail labels, omits English fallback labels from dynamic cards, keeps mobile layout free of horizontal overflow, and requests only the private student-portal API. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or student mutation was performed.

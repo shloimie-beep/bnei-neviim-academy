@@ -4918,3 +4918,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or tablet/device mutation was performed.
+
+## 2026-06-19 - Student Portal Hebrew RTL browser proof
+
+Requirement: `REQ-20260618-155`
+
+Changed:
+
+- Added rendered browser proof for Student Portal HE mode.
+- Verified RTL document/body direction, LTR access-code entry, Hebrew dynamic command/action/detail labels, absence of English fallback labels, and mobile overflow safety.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/student-portal-i18n.test.js tests/browser-acceptance.test.js` 6/6.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or student mutation was performed. REQ-20260618-156 remains blocked on operator approval, so resume unblocked local work at REQ-20260618-157.
