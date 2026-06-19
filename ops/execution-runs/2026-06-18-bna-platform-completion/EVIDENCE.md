@@ -245,7 +245,33 @@ Protocol/tooling verification evidence:
 - The smoke proves the Super Admin Agent Control list and Agent Run portal
   render prompt, progress, evidence, submit/seal, blocker, Copy Prompt, Open
   ChatGPT, and Prepare Run controls with fake local data only at 1440x900,
-  768x1024, 390x844, and 360x800.
+768x1024, 390x844, and 360x800.
+
+2026-06-19 Agent Control notification/audit-history evidence:
+
+- Implementation:
+  `server.js` and `public/operations.html`.
+- VM API readback smoke:
+  `tests/agent-control-api-readback.test.js`.
+- Static route/UI contract:
+  `tests/agent-control-center.test.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests/agent-control-api-readback.test.js`.
+- PASS focused Agent Control notification/API suite 7/7:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js`.
+- PASS focused Agent Control suite 8/8:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js`.
+- The VM smoke proves ready and blocked Agent Run notification rows are
+  created through real route handlers with fake local data only.
+- The same smoke proves progress updates do not create alert spam, all Agent
+  Run notifications remain `delivery_state: in_app_only`, `no_send: true`,
+  `external_write_performed: false`, and the blocked notification links to the
+  single operator Decision created for the sealed blocked run.
+- The Operations alert route now sends Agent Run notification cards to the
+  Agents lane, not Support/Admin.
 
 Not run:
 

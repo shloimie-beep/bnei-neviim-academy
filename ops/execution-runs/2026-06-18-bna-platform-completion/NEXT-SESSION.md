@@ -30,6 +30,10 @@ Current 2026-06-19 checkpoint:
   `/operations/agents/runs/run_agent_control_smoke` render correctly at
   1440x900, 768x1024, 390x844, and 360x800 with fake local data, screenshots,
   no overflow, and no console/page errors.
+- `REQ-20260618-122` has local notification/audit-history coverage now:
+  Agent Run ready/blocked alerts are private in-app rows only, progress updates
+  do not create notification spam, and the blocked alert links to the single
+  operator Decision.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -71,13 +75,16 @@ Open requirements:
   withheld until release approval
 - `REQ-20260618-121` Playwright/browser verification policy has focused local
   proof; manual Agent Mode closeout remains open
-- `REQ-20260618-122` notification/audit-history hooks remain in progress
+- `REQ-20260618-122` notification/audit-history hooks are locally implemented
+  and need release/live verification when deployment is approved
 - `REQ-20260618-123` is in progress: safe local API/browser demo fixtures
   exist, while manual Agent Mode smoke remains open
 
-Current blocker for `REQ-20260618-101` through `REQ-20260618-111`:
+Current audit blocker:
 
-`Waiting for user to upload agent-review-package.zip or audit output path`
+`REQ-20260618-101` and screenshot-specific visual findings are waiting for the
+user to upload `agent-review-package.zip` or provide the audit output path.
+Credential-free implementation must continue without waiting for that package.
 
 Agent Control Center next exact command:
 
@@ -85,10 +92,11 @@ Agent Control Center next exact command:
 node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js; npm run bna:run:validate
 ```
 
-After that, continue with `REQ-20260618-121`: add a safe local DB/API smoke
-for one demo task creating an Agent Run, attaching evidence, submitting a
-blocked or fail result, and proving the task/decision side effects without
-touching production data.
+After that, continue `REQ-20260618-123`: perform the manual Agent Mode/browser-
+judgment smoke using the generated Agent Run prompt, record pass/fail/blocked
+evidence in this run, then reassess which Agent Control requirements can move
+from `needs_verification` to locally done while still withholding deployment
+until explicit approval.
 
 Do not run yet:
 
@@ -103,6 +111,7 @@ Do not mark Agent Control Center complete until:
 - the local DB migration/API smoke passes;
 - negative scoped-identity tests pass;
 - browser smoke evidence exists for the Agents list and Agent Run page;
+- private in-app notification/no-spam proof exists;
 - safe demo data/E2E/manual Agent Mode prompt is recorded;
 - `npm run bna:run:validate` passes;
 - release/deploy approval is explicit if live closeout is required.

@@ -204,7 +204,7 @@
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js",
         "npm run bna:run:validate"
       ],
-      "notes": "Backend, Operations UI, action registry, focused contract test, local VM-backed DB/API lifecycle smoke, and focused Super Admin browser smoke are implemented. The API smoke creates a run for a safe demo task, claims it, posts progress, attaches evidence, submits a blocked result, seals it, and proves one linked operator Decision plus task comment/activity side effects. The browser smoke proves the Agent Control list and Agent Run portal at 1440x900, 768x1024, 390x844, and 360x800 with fake local data. Open until manual Agent Mode smoke, deployment approval path, and remaining notification/demo-data work are complete."
+      "notes": "Backend, Operations UI, action registry, focused contract test, local VM-backed DB/API lifecycle smoke, focused Super Admin browser smoke, and private in-app notification/audit-history hooks are implemented. The API smoke creates a run for a safe demo task, claims it, posts progress, attaches evidence, submits a blocked result, seals it, and proves one linked operator Decision plus task comment/activity/notification side effects. The browser smoke proves the Agent Control list and Agent Run portal at 1440x900, 768x1024, 390x844, and 360x800 with fake local data. Open until manual Agent Mode smoke and deployment approval path are complete."
     },
     {
       "id": "REQ-20260618-113",
@@ -431,7 +431,7 @@
       "id": "REQ-20260618-121",
       "title": "Verification policy and Playwright integration",
       "area": "tests",
-      "status": "in_progress",
+      "status": "needs_verification",
       "expected_result": "Tasks store verification mode and route user-visible work through automated checks plus Browser QA where needed, without starting broad crawls or watch loops.",
       "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
       "depends_on_audit_output": false,
@@ -475,15 +475,19 @@
         "server.js",
         "public/operations.html",
         "tests/agent-control-center.test.js",
+        "tests/agent-control-api-readback.test.js",
         "ops/action-registry.json"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js",
         "node --check src/lib/bna/agent-control.js",
-        "node --test tests/agent-control-center.test.js"
+        "node --check tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js",
+        "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js",
+        "npm run bna:run:validate"
       ],
-      "notes": "Run events, task activity, and action-registry coverage exist. Notification hook and no-spam policy tests remain open."
+      "notes": "Local implementation now appends Agent Run events, task activity, task comments on seal, one linked Decision for blocked operator actions, and private in-app-only notifications for ready/blocked/operator-needed/pass/fail/cancel states. The VM route smoke proves progress updates do not create alert spam, notifications stay `delivery_state: in_app_only`, `no_send: true`, `external_write_performed: false`, and no secret-bearing prompt text is stored in notifications. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-123",
@@ -514,7 +518,7 @@
         "node --test tests/agent-control-center.test.js",
         "node --test tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js"
       ],
-      "notes": "Focused contract coverage exists and safe local API/browser demo fixtures now prove the core closed-loop path without production data. Manual Agent Mode/browser-judgment smoke prompt and final local closeout remain open."
+      "notes": "Focused contract coverage exists and safe local API/browser demo fixtures now prove the core closed-loop path plus private notification/no-spam behavior without production data. Manual Agent Mode/browser-judgment smoke prompt and final local closeout remain open."
     },
     {
       "id": "REQ-20260619-201",
@@ -730,7 +734,7 @@
         "Agent results are stored in BNA/task system routes.",
         "Blocked outcomes create one linked Decision."
       ],
-      "notes": "Prior local batch implemented the core. Local VM-backed DB/API route smoke now proves create run, claim, progress, evidence, blocked submit, blocked seal, task comment/activity side effects, one linked operator Decision, and scoped non-Super Admin denial without production data. Focused Super Admin browser smoke now proves the Agent Control list and Agent Run portal with prompt/progress/evidence/submit/seal/blocker controls across 1440x900, 768x1024, 390x844, and 360x800. Manual Agent Mode/browser-judgment smoke remains open."
+      "notes": "Prior local batch implemented the core. Local VM-backed DB/API route smoke now proves create run, claim, progress, evidence, blocked submit, blocked seal, task comment/activity side effects, one linked operator Decision, private in-app notification hooks without progress-spam, and scoped non-Super Admin denial without production data. Focused Super Admin browser smoke now proves the Agent Control list and Agent Run portal with prompt/progress/evidence/submit/seal/blocker controls across 1440x900, 768x1024, 390x844, and 360x800. Manual Agent Mode/browser-judgment smoke remains open."
     },
     {
       "id": "REQ-20260619-207",

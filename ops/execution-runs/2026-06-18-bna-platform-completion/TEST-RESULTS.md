@@ -145,6 +145,32 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/agent-control-api-readback.test.js`.
+- PASS focused Agent Control notification/API suite 7/7:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js`.
+- PASS focused Agent Control suite 8/8:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 14`, `needs_verification: 8`, `blocked: 2`,
+  `done: 7`.
+- The API smoke verifies ready and blocked Agent Run notifications are private
+  in-app rows only, progress updates do not create notification spam,
+  notifications preserve `no_send: true`, and no external write flags are set.
+
+Not run for this batch:
+
+- No manual Agent Mode/browser-judgment smoke yet.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control browser smoke:
 
 - PASS `node --check tests/agent-control-browser-smoke.test.js`.

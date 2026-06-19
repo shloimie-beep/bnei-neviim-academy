@@ -85,6 +85,10 @@ test('Agent run APIs are Super Admin Operations routes with lifecycle endpoints'
   assert.match(server, /if \(req\.opsIdentity\?\.scope\?\.type !== 'all'\) return res\.status\(403\)\.json\(\{ error: 'Agent runs are Super Admin only\.' \}\)/);
   assert.match(server, /eventType = String\(req\.body\?\.event_type/);
   assert.match(server, /passiveEvent = \['copied', 'opened', 'viewed'\]\.includes\(eventType\)/);
+  assert.match(server, /'agent_run_ready'/);
+  assert.match(server, /'agent_run_blocked'/);
+  assert.match(server, /'agent_run_needs_operator'/);
+  assert.match(server, /createAgentRunNotification/);
 });
 
 test('Operations UI exposes Agents module, task launch panel, run portal, and valid script syntax', () => {
@@ -97,6 +101,8 @@ test('Operations UI exposes Agents module, task launch panel, run portal, and va
   assert.match(operations, /openChatGptAgent/);
   assert.match(operations, /submitAgentRunResult/);
   assert.match(operations, /cancelAgentRunAction/);
+  assert.match(operations, /eventType\.includes\('agent_run'\)/);
+  assert.match(operations, /openCommandTarget\('agents'\)/);
   assert.match(operations, /\/operations\/agents\/runs\/\$\{encodeURIComponent\(agentRunDeepKey\)\}/);
 });
 

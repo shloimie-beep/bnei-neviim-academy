@@ -131,6 +131,7 @@ function createFakePostgres() {
     taskEvents: [],
     taskActivity: [],
     taskComments: [],
+    notifications: [],
     queries: [],
     nextRunId: 1,
     nextEventId: 1,
@@ -139,6 +140,7 @@ function createFakePostgres() {
     nextTaskEventId: 1,
     nextTaskActivityId: 1,
     nextCommentId: 1,
+    nextNotificationId: 1,
   };
 
   function taskById(id) {
@@ -321,6 +323,59 @@ function createFakePostgres() {
         created_at: now(),
       };
       db.events.push(row);
+      return { rows: [row] };
+    }
+
+    if (/INSERT INTO bna_in_app_notifications/i.test(compactSql)) {
+      const existing = db.notifications.find((notification) => notification.notification_key === params[0]);
+      const sourceContext = parseJson(params[13], {});
+      if (existing) {
+        Object.assign(existing, {
+          project_id: params[1] || existing.project_id,
+          workspace_key: params[2],
+          recipient_label: params[3],
+          recipient_role: params[4],
+          event_type: params[5],
+          title: params[6],
+          body: params[7],
+          priority: params[8],
+          related_type: params[9],
+          related_id: params[10],
+          source_table: params[11],
+          source_id: params[12],
+          source_context: { ...parseJson(existing.source_context, {}), ...sourceContext },
+          delivery_state: 'in_app_only',
+          no_send: true,
+          external_write_performed: false,
+          updated_at: now(),
+        });
+        return { rows: [existing] };
+      }
+      const row = {
+        id: db.nextNotificationId++,
+        notification_key: params[0],
+        project_id: params[1],
+        workspace_key: params[2],
+        recipient_label: params[3],
+        recipient_role: params[4],
+        event_type: params[5],
+        title: params[6],
+        body: params[7],
+        priority: params[8],
+        status: 'unread',
+        related_type: params[9],
+        related_id: params[10],
+        source_table: params[11],
+        source_id: params[12],
+        source_context: sourceContext,
+        delivery_state: 'in_app_only',
+        no_send: true,
+        external_write_performed: false,
+        created_by: params[14],
+        created_at: now(),
+        updated_at: now(),
+      };
+      db.notifications.push(row);
       return { rows: [row] };
     }
 
@@ -654,6 +709,13 @@ test('Agent Control API lifecycle creates a run, evidence, blocked seal, and one
   assert.doesNotMatch(createRes.body.run.prompt_text, /OPS_PASSWORD|OPENAI_API_KEY/);
   assert.equal(fakeDb.tasks.find((task) => task.id === 101).verification_status, 'ready');
   assert.equal(fakeDb.tasks.find((task) => task.id === 101).active_agent_run_id, createRes.body.run.id);
+  assert.equal(fakeDb.notifications.length, 1);
+  assert.equal(fakeDb.notifications[0].event_type, 'agent_run_ready');
+  assert.equal(fakeDb.notifications[0].workspace_key, 'bna');
+  assert.equal(fakeDb.notifications[0].recipient_label, 'Browser QA');
+  assert.equal(fakeDb.notifications[0].delivery_state, 'in_app_only');
+  assert.equal(fakeDb.notifications[0].no_send, true);
+  assert.equal(fakeDb.notifications[0].external_write_performed, false);
 
   const runKey = createRes.body.run.run_key;
   const detailRes = await invokeRouteHandler(getRoute, superAdminRequest({
@@ -685,6 +747,7 @@ test('Agent Control API lifecycle creates a run, evidence, blocked seal, and one
   }));
   assert.equal(progressRes.statusCode, 200);
   assert.equal(progressRes.body.run.status, 'running');
+  assert.equal(fakeDb.notifications.length, 1, 'progress updates should not create alert spam');
 
   const artifactRes = await invokeRouteHandler(artifactRoute, superAdminRequest({
     path: `/api/bna/agent-runs/${runKey}/artifacts`,
@@ -743,6 +806,16 @@ test('Agent Control API lifecycle creates a run, evidence, blocked seal, and one
   assert.ok(fakeDb.events.some((event) => event.event_type === 'blocked'));
   assert.ok(fakeDb.taskEvents.some((event) => event.event_type === 'agent_run_blocked'));
   assert.equal(fakeDb.tasks.filter((task) => task.item_type === 'decision').length, 1);
+  assert.equal(fakeDb.notifications.length, 2);
+  const blockedNotification = fakeDb.notifications.find((notification) => notification.event_type === 'agent_run_blocked');
+  assert.ok(blockedNotification, 'blocked seal should create one private in-app alert');
+  assert.equal(blockedNotification.priority, 'high');
+  assert.equal(blockedNotification.source_table, 'bna_agent_runs');
+  assert.equal(blockedNotification.source_context.no_send, true);
+  assert.equal(blockedNotification.source_context.external_write_performed, false);
+  assert.equal(blockedNotification.source_context.decision_task_id, sealRes.body.decision.id);
+  assert.ok(fakeDb.notifications.every((notification) => notification.no_send === true));
+  assert.ok(fakeDb.notifications.every((notification) => notification.external_write_performed === false));
 });
 
 test('Agent Control lifecycle routes reject scoped non-Super Admin identities before writes', async () => {

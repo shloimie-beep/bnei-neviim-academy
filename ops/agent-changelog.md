@@ -23698,3 +23698,39 @@ Remaining:
 - `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
+
+## 2026-06-19T08:45:00+03:00 - Agent Control Notification Hooks
+
+Moved the Agent Control notification/audit-history slice to local
+`needs_verification`.
+
+- Added private in-app notification events for Agent Run ready, blocked,
+  needs-operator, sealed-pass, sealed-fail, and cancelled states.
+- Routed Agent Run notifications from the alert cards to the Operations Agents
+  lane.
+- Extended the VM-backed Agent Control API smoke to prove ready and blocked
+  notifications are created through real route handlers, remain in-app only,
+  carry no external-write flags, link blocked outcomes to the single operator
+  Decision, and do not spam alerts for progress updates.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/agent-control-api-readback.test.js`.
+- PASS focused Agent Control notification/API suite 7/7.
+- PASS focused Agent Control suite 8/8.
+
+Guardrails:
+
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No broad UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
+- `REQ-20260619-207` remains blocked on secure external provider credentials,
+  owner-only account actions, and explicit release approval.

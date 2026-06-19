@@ -20526,6 +20526,90 @@ async function appendAgentRunEvent(runOrId, eventType, options = {}, db = pool) 
   return result.rows[0] || null;
 }
 
+function agentRunWorkspaceKey(run = {}) {
+  return normalizeWorkspaceKey(run.workspace_key || workspaceKeyForProject(run.project_key || run.task_project_key || '')) || 'bna';
+}
+
+function agentRunNotificationDefaults(eventType) {
+  const normalized = safeNotificationEventType(eventType, 'agent_run_ready');
+  if (normalized === 'agent_run_ready') {
+    return {
+      recipientLabel: 'Browser QA',
+      recipientRole: 'agent_verifier',
+      priority: 'normal',
+      titlePrefix: 'Agent run ready',
+    };
+  }
+  if (normalized === 'agent_run_blocked' || normalized === 'agent_run_needs_operator') {
+    return {
+      recipientLabel: 'Shloimie',
+      recipientRole: 'operator',
+      priority: 'high',
+      titlePrefix: normalized === 'agent_run_needs_operator' ? 'Agent run needs operator' : 'Agent run blocked',
+    };
+  }
+  if (normalized === 'agent_run_sealed_fail') {
+    return {
+      recipientLabel: 'Codex',
+      recipientRole: 'technical_owner',
+      priority: 'high',
+      titlePrefix: 'Agent run failed',
+    };
+  }
+  if (normalized === 'agent_run_cancelled') {
+    return {
+      recipientLabel: 'Shloimie',
+      recipientRole: 'operator',
+      priority: 'low',
+      titlePrefix: 'Agent run cancelled',
+    };
+  }
+  return {
+    recipientLabel: 'Shloimie',
+    recipientRole: 'operator',
+    priority: 'normal',
+    titlePrefix: 'Agent run sealed pass',
+  };
+}
+
+async function createAgentRunNotification(run = {}, eventType = 'agent_run_ready', input = {}, req, db = pool) {
+  if (!run?.id) return null;
+  const defaults = agentRunNotificationDefaults(eventType);
+  const taskTitle = limitText(run.task_display_title || run.task_title || input.task?.display_title || input.task?.title || '', 160);
+  const runLabel = run.run_key || `#${run.id}`;
+  const summary = limitText(input.summary || input.body || run.result_summary || input.blocker || run.blocker || '', 900);
+  const context = {
+    agent_run_key: run.run_key || null,
+    agent_run_id: run.id,
+    task_id: run.task_id || input.task?.id || null,
+    task_title: taskTitle || null,
+    verification_mode: run.verification_mode || input.verification_mode || null,
+    run_status: input.status || run.status || null,
+    outcome: input.outcome || null,
+    decision_task_id: input.decision_task_id || input.decisionTaskId || null,
+    no_send: true,
+    external_write_performed: false,
+  };
+  return createInAppNotification({
+    eventType,
+    notificationKey: `agent-run:${safeNotificationEventType(eventType, 'agent_run_ready')}:${run.run_key || run.id}`,
+    projectId: run.project_id || input.task?.project_id || null,
+    projectKey: run.project_key || input.task?.project_key || null,
+    workspaceKey: agentRunWorkspaceKey(run),
+    recipientLabel: input.recipientLabel || defaults.recipientLabel,
+    recipientRole: input.recipientRole || defaults.recipientRole,
+    title: `${defaults.titlePrefix}: ${taskTitle || runLabel}`,
+    body: summary || `${defaults.titlePrefix} for ${taskTitle || runLabel}.`,
+    priority: input.priority || defaults.priority,
+    relatedType: 'agent_run',
+    relatedId: run.run_key || String(run.id),
+    sourceTable: 'bna_agent_runs',
+    sourceId: run.id,
+    sourceContext: context,
+    createdBy: req?.opsUser || input.createdBy || 'agent-run',
+  }, db);
+}
+
 async function fetchAgentRunByKey(runKey, db = pool) {
   const result = await db.query(
     `SELECT r.*,
@@ -20745,6 +20829,17 @@ async function createAgentRunForTask(taskId, input = {}, req, db = pool) {
       body: `Prompt v${promptVersion} generated.`,
       metadata: { prompt_version: promptVersion },
     }, client);
+    await createAgentRunNotification(
+      { ...run, task_title: task.title, task_display_title: task.display_title, project_key: task.project_key },
+      'agent_run_ready',
+      {
+        task,
+        summary: `Agent run ${run.run_key} is ready for ${profile.display_name}.`,
+        verification_mode: verificationMode,
+      },
+      req,
+      client
+    );
     await client.query('COMMIT');
     return await fetchAgentRunByKey(run.run_key);
   } catch (error) {
@@ -33230,6 +33325,12 @@ const IN_APP_NOTIFICATION_EVENTS = new Set([
   'one_time_question_reviewed',
   'rabbi_content_added',
   'safety_moderation_flag',
+  'agent_run_ready',
+  'agent_run_blocked',
+  'agent_run_needs_operator',
+  'agent_run_sealed_pass',
+  'agent_run_sealed_fail',
+  'agent_run_cancelled',
 ]);
 
 function safeNotificationEventType(value, fallback = 'support_ticket_created') {
@@ -58042,6 +58143,25 @@ app.post('/api/bna/agent-runs/:runKey/seal', requireAdmin, async (req, res) => {
       body: req.body?.summary || run.result_summary || `Run sealed as ${payload.outcome}.`,
       metadata: { outcome: payload.outcome, decision_task_id: decision?.id || null },
     }, client);
+    await createAgentRunNotification(
+      { ...run, status: sealedStatus },
+      payload.outcome === 'pass'
+        ? 'agent_run_sealed_pass'
+        : payload.outcome === 'fail'
+          ? 'agent_run_sealed_fail'
+          : payload.outcome === 'needs_operator'
+            ? 'agent_run_needs_operator'
+            : 'agent_run_blocked',
+      {
+        summary: req.body?.summary || run.result_summary || `Run sealed as ${payload.outcome}.`,
+        blocker: req.body?.blocker || run.blocker || null,
+        outcome: payload.outcome,
+        status: sealedStatus,
+        decision_task_id: decision?.id || null,
+      },
+      req,
+      client
+    );
     await client.query('COMMIT');
     res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey), decision: decision ? taskApiView(decision) : null });
   } catch (err) {
@@ -58097,6 +58217,19 @@ app.post('/api/bna/agent-runs/:runKey/block', requireAdmin, async (req, res) => 
       body: blocker,
       metadata: { decision_task_id: decision?.id || null },
     }, client);
+    await createAgentRunNotification(
+      { ...run, status: 'blocked' },
+      decision ? 'agent_run_needs_operator' : 'agent_run_blocked',
+      {
+        summary: blocker,
+        blocker,
+        outcome: decision ? 'needs_operator' : 'blocked',
+        status: 'blocked',
+        decision_task_id: decision?.id || null,
+      },
+      req,
+      client
+    );
     await client.query('COMMIT');
     res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey), decision: decision ? taskApiView(decision) : null });
   } catch (err) {
@@ -58200,6 +58333,13 @@ app.post('/api/bna/agent-runs/:runKey/cancel', requireAdmin, async (req, res) =>
       body: reason,
       metadata: { previous_status: run.status },
     }, client);
+    await createAgentRunNotification(
+      { ...run, status: 'cancelled' },
+      'agent_run_cancelled',
+      { summary: reason, status: 'cancelled' },
+      req,
+      client
+    );
     await client.query('COMMIT');
     res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey) });
   } catch (err) {

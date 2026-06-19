@@ -10792,6 +10792,7 @@
         function notificationRouteTarget(notification = {}) {
             const eventType = String(notification.event_type || '').toLowerCase();
             const sourceTable = String(notification.source_table || '').toLowerCase();
+            if (eventType.includes('agent_run') || sourceTable.includes('agent_run')) return "openCommandTarget('agents')";
             if (eventType.includes('question') || eventType.includes('rabbi_content') || sourceTable.includes('content')) return "openCommandTarget('content')";
             if (eventType.includes('provider') || sourceTable.includes('service_provider')) return "openCommandTarget('service_providers')";
             if (eventType.includes('lead') || sourceTable.includes('parent_lead')) return "openCommandTarget('contacts')";

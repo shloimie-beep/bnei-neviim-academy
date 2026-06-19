@@ -123,6 +123,22 @@ remain open.
   production DB mutation, deployment, external account write, or Agent Mode
   browser takeover was performed.
 
+2026-06-19 Agent Control notification/audit-history continuation:
+
+- Added private in-app Agent Run notification hooks for ready,
+  blocked/operator-needed, sealed pass, sealed fail, and cancelled outcomes.
+- Routed Agent Run alerts to the Operations Agents lane, while preserving the
+  existing private-alert no-send copy.
+- Extended the VM-backed API readback smoke to prove ready and blocked alerts
+  are created with `delivery_state: in_app_only`, `no_send: true`,
+  `external_write_performed: false`, and no progress-update alert spam.
+- `REQ-20260618-122` is now locally implemented and moved to
+  `needs_verification` pending release/live approval; the parent Agent Control
+  requirements remain open for manual Agent Mode/browser-judgment smoke.
+- Focused Agent Control tests passed 8/8; no deployment, production DB
+  mutation, external send, broad crawl, watch loop, or agent-fleet loop was
+  performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -131,9 +147,9 @@ Still open after this batch:
   withheld until explicit release approval.
 - `REQ-20260619-205` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
-- `REQ-20260619-206` has local DB/API route smoke and focused Super Admin
-  browser smoke coverage now; it still needs manual Agent Mode/browser-judgment
-  smoke before local closeout.
+- `REQ-20260619-206` has local DB/API route smoke, focused Super Admin browser
+  smoke, and private notification/no-spam coverage now; it still needs manual
+  Agent Mode/browser-judgment smoke before local closeout.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
 
@@ -179,6 +195,7 @@ Protocol/tooling items completed in this run:
 Still open:
 
 - No deployment or production mutation was performed.
-- Notification hooks and manual Agent Mode smoke remain open.
+- Manual Agent Mode smoke remains open. Agent Run notification/no-spam hooks
+  now have local API proof.
 - Audit-dependent `REQ-20260618-101` through `REQ-20260618-111` remain blocked
   on the external audit package only.
