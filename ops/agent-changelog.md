@@ -23806,6 +23806,38 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+## 2026-06-19T07:32:00+03:00 - Operations Shell Navigation Local Proof
+
+Moved `REQ-20260618-104` to local `done`.
+
+- Verified the current Operations shell with workspace switcher, nested sidebar
+  subnav, mobile drawer/header, module toolbar, status chips, route-addressable
+  task/student details, and a single visible helper entry.
+- Updated shell contracts to treat the consolidated Agent Control `Agents`
+  module as first-class navigation.
+
+Verification:
+
+- PASS `node --check tests/operations-shell-navigation-contract.test.js`.
+- PASS focused Operations shell/navigation contract 3/3.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-105` shared responsive design system is the next broad
+  unblocked requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T08:45:00+03:00 - Agent Control Notification Hooks
 
 Moved the Agent Control notification/audit-history slice to local

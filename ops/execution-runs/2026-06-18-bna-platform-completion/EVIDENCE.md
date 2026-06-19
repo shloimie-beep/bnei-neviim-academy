@@ -351,6 +351,23 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 Operations shell/navigation local closeout evidence:
+
+- Operations shell and navigation:
+  `public/operations.html`.
+- Route/auth support:
+  `server.js`.
+- Focused Operations shell/navigation contract:
+  `tests/operations-shell-navigation-contract.test.js`.
+- PASS `node --check tests/operations-shell-navigation-contract.test.js`.
+- PASS focused Operations shell/navigation contract 3/3:
+  `node --test tests/operations-shell-navigation-contract.test.js`.
+- The suite proves workspace switcher, nested sidebar subnav, mobile
+  header/drawer, module toolbar, status chips, single helper entry,
+  route-addressable details, and the current first-class Agents module.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

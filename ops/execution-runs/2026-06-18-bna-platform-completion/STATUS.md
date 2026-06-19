@@ -190,6 +190,18 @@ remain open.
 - Focused tests passed 15/15; no deployment, production DB mutation, external
   write, broad crawl, watch loop, or agent-fleet loop was performed.
 
+2026-06-19 Operations shell/navigation local closeout:
+
+- Moved `REQ-20260618-104` to local `done`.
+- Verified the Operations shell exposes workspace switching, nested sidebar
+  subnav, mobile drawer/header, module toolbar, status chips, route-addressable
+  task/student detail pages, and a single visible helper entry.
+- Updated the shell contracts to recognize the consolidated Agent Control
+  `Agents` module as first-class Operations navigation instead of treating it
+  as drift.
+- Focused Operations shell test passed 3/3; no deployment, production DB mutation, external
+  write, broad crawl, watch loop, or agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -202,6 +214,8 @@ Still open after this batch:
   remains withheld until explicit release approval.
 - `REQ-20260618-103` has local workspace/RBAC proof; live/deploy verification
   remains withheld until explicit release approval.
+- `REQ-20260618-104` has local Operations shell/navigation proof; live/deploy
+  verification remains withheld until explicit release approval.
 - `REQ-20260618-107` has local module-scoping proof; live/deploy verification
   remains withheld until explicit release approval.
 - `REQ-20260619-206` has local DB/API route smoke, focused Super Admin browser

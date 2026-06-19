@@ -81,16 +81,26 @@
       "id": "REQ-20260618-104",
       "title": "Operations shell and navigation",
       "area": "operations",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Operations shell and navigation are mobile-safe, scan-friendly, and route users into the expected modules.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "public/operations.html",
+        "server.js",
+        "tests/operations-shell-navigation-contract.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local shell/navigation contract verifies the current Operations shell without production mutation."
+      ],
+      "verification": [
+        "node --check tests/operations-shell-navigation-contract.test.js",
+        "node --test tests/operations-shell-navigation-contract.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local Operations shell/navigation proof is now recorded: the shell exposes workspace switching, nested sidebar subnav, mobile drawer/header, module toolbar, status chips, single visible helper entry, route-addressable task/student details, and current Agent Control navigation as a first-class Agents module. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-105",

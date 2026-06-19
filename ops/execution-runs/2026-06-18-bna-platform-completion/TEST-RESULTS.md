@@ -213,6 +213,26 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Operations shell/navigation:
+
+- PASS `node --check tests/operations-shell-navigation-contract.test.js`.
+- PASS focused Operations shell/navigation contract 3/3:
+  `node --test tests/operations-shell-navigation-contract.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 10`, `needs_verification: 9`, `blocked: 2`,
+  `done: 10`.
+- The suite verifies workspace switcher, sidebar/subnav, mobile header/drawer,
+  module toolbar, status chips, single helper entry, route-addressable task and
+  student detail pages, and the first-class Agents module.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.

@@ -45,27 +45,27 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-104` Operations shell and navigation continuation, while
-preserving the already closed `REQ-20260618-103` workspace/RBAC proof and
-`REQ-20260618-107` module-scoping proof.
+`REQ-20260618-105` shared responsive design system continuation, while
+preserving the already closed `REQ-20260618-103` workspace/RBAC,
+`REQ-20260618-104` Operations shell/navigation, and `REQ-20260618-107`
+module-scoping proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\workspace-rbac-negative-isolation.test.js tests\workspace-person-household-provider-contract.test.js tests\one-time-rbac-negative-isolation.test.js
+node --test tests\operations-shell-navigation-contract.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-104`: inspect the current Operations shell and
-navigation contracts, add only missing focused proof or small fixes, and avoid
-starting a broad baseline UI crawl.
+Then continue `REQ-20260618-105`: inspect the shared shell/design contracts,
+add only missing focused proof or small fixes, and avoid starting a broad
+baseline UI crawl.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-104` Operations shell and navigation
 - `REQ-20260618-105` design system
 - `REQ-20260618-106` task manager, intake, and calendar
 - `REQ-20260618-108` students, Goal Board, and Hebrew
