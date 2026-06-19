@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "target": "/operations?workspace=platform&view=agents",
+  "runTarget": "/operations/agents/runs/run_agent_control_smoke",
+  "runKey": "run_agent_control_smoke",
+  "desktopListMetrics": {
+    "width": 1440,
+    "scrollWidth": 1440
+  },
+  "desktopRunMetrics": {
+    "width": 1440,
+    "scrollWidth": 1440
+  },
+  "viewportMetrics": {
+    "tablet-run": {
+      "width": 768,
+      "scrollWidth": 768
+    },
+    "mobile-390-run": {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    "mobile-360-list": {
+      "width": 360,
+      "scrollWidth": 360
+    }
+  },
+  "screenshots": [
+    "ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-list.png",
+    "ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-run.png",
+    "ops/playwright-smokes/2026-06-19-agent-control-browser-local/tablet-run.png",
+    "ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-390-run.png",
+    "ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-360-list.png"
+  ],
+  "guardrails": {
+    "productionWrites": false,
+    "productionDataMutation": false,
+    "secretsInFixture": false,
+    "broadCrawl": false
+  }
+}

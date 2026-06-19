@@ -23,8 +23,6 @@ Verified on 2026-06-19:
 
 Still required before local completion:
 
-- Super Admin Agent Control Center browser smoke for `/operations?view=agents`
-  and `/operations/agents/runs/:runKey`.
 - Manual Agent Mode smoke using the generated prompt.
 - Full-suite regression after DB/API/browser smoke changes.
 
@@ -142,6 +140,35 @@ Not run for this batch:
 - No Super Admin browser screenshot smoke yet.
 - No manual Agent Mode/browser-judgment smoke yet.
 - No full `npm test`.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
+Verified on 2026-06-19 for Agent Control browser smoke:
+
+- PASS `node --check tests/agent-control-browser-smoke.test.js`.
+- PASS `node --test tests/agent-control-browser-smoke.test.js` 1/1.
+- PASS focused Agent Control suite 8/8:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 15`, `needs_verification: 7`, `blocked: 2`,
+  `done: 7`.
+- PASS local Playwright screenshots/report:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/report.md`.
+- Viewports covered: 1440x900, 768x1024, 390x844, and 360x800.
+- The browser smoke used fake local Agent Control API payloads only and proved
+  no horizontal overflow, no console/page errors, rendered Agent Control list,
+  rendered Agent Run portal, prompt text without secrets, evidence controls,
+  Submit / Seal controls, Blocker / Operator Decision controls, and handoff
+  buttons.
+
+Not run for this batch:
+
+- No broad UI crawl or audit harness rebuild.
+- No manual Agent Mode/browser-judgment smoke yet.
 - No production DB write/readback.
 - No deployment.
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or

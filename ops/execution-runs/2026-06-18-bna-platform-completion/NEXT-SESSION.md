@@ -24,27 +24,32 @@ Current 2026-06-19 checkpoint:
 - `REQ-20260619-206` has local DB/API route smoke coverage now: a safe demo
   Agent Run can be created, claimed, progressed, given evidence, submitted
   blocked, sealed, and linked to one operator Decision through real route
-  handlers with fake local data. Browser/manual Agent Mode smoke remains open.
+  handlers with fake local data.
+- `REQ-20260619-206` also has focused Super Admin browser smoke coverage now:
+  `/operations?workspace=platform&view=agents` and
+  `/operations/agents/runs/run_agent_control_smoke` render correctly at
+  1440x900, 768x1024, 390x844, and 360x800 with fake local data, screenshots,
+  no overflow, and no console/page errors.
+- Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
   secure keyholder/environment workflow.
 
 Exact next requirement:
 
-`REQ-20260619-206` Agent Control Center Super Admin browser smoke and manual
-Agent Mode/browser-judgment smoke.
+`REQ-20260619-206` manual Agent Mode/browser-judgment smoke for the Agent
+Control Center.
 
 Exact next command:
 
 ```powershell
-node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js
+node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-121` and `REQ-20260618-123`: add focused browser
-smoke evidence for the Super Admin Agent Control Center list and Agent Run
-portal only, then perform the manual Agent Mode/browser-judgment smoke using
-the generated prompt. Do not start a broad baseline UI crawl.
+Then continue `REQ-20260618-123`: perform the manual Agent Mode/browser-
+judgment smoke using the generated prompt and record pass/fail/blocked evidence
+in the same active run. Do not start a broad baseline UI crawl.
 
 Open requirements:
 
@@ -60,15 +65,15 @@ Open requirements:
 - `REQ-20260618-110` public copy and portal headers
 - `REQ-20260618-111` test data and acceptance tests
 - `REQ-20260618-112` Agent Control Center parent
-- `REQ-20260618-113` through `REQ-20260618-118` need browser/manual
-  verification before closure
+- `REQ-20260618-113` through `REQ-20260618-118` have local API/browser proof
+  but still need manual Agent Mode/browser-judgment closeout before closure
 - `REQ-20260618-120` has local negative API smoke; browser/live proof remains
   withheld until release approval
-- `REQ-20260618-121` Playwright/browser verification policy remains in
-  progress
+- `REQ-20260618-121` Playwright/browser verification policy has focused local
+  proof; manual Agent Mode closeout remains open
 - `REQ-20260618-122` notification/audit-history hooks remain in progress
-- `REQ-20260618-123` safe demo data, E2E, and manual Agent Mode smoke remain
-  not started
+- `REQ-20260618-123` is in progress: safe local API/browser demo fixtures
+  exist, while manual Agent Mode smoke remains open
 
 Current blocker for `REQ-20260618-101` through `REQ-20260618-111`:
 
@@ -77,7 +82,7 @@ Current blocker for `REQ-20260618-101` through `REQ-20260618-111`:
 Agent Control Center next exact command:
 
 ```powershell
-node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js; npm run bna:run:validate
+node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js; npm run bna:run:validate
 ```
 
 After that, continue with `REQ-20260618-121`: add a safe local DB/API smoke

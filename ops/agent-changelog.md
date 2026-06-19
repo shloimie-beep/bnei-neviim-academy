@@ -23651,3 +23651,50 @@ Remaining:
   Agent Mode/browser-judgment smoke.
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
+
+## 2026-06-19T08:20:00+03:00 - Agent Control Browser Smoke
+
+Closed the focused Super Admin browser-smoke portion of `REQ-20260619-206`.
+
+- Added `tests/agent-control-browser-smoke.test.js`, a narrow local Playwright
+  smoke for `/operations?workspace=platform&view=agents` and
+  `/operations/agents/runs/run_agent_control_smoke` only.
+- Verified the Agent Control list renders the prepared run, prompt handoff
+  buttons, Codex Queue link, and Prepare from active tasks panel.
+- Verified the Agent Run portal renders Run Summary, Agent Prompt, Progress,
+  Evidence, Submit / Seal, and Blocker / Operator Decision controls without
+  secret-shaped prompt text.
+- Captured screenshots at 1440x900, 768x1024, 390x844, and 360x800 with no
+  horizontal overflow and no console/page errors.
+
+Verification:
+
+- PASS `node --check tests/agent-control-browser-smoke.test.js`.
+- PASS `node --test tests/agent-control-browser-smoke.test.js` 1/1.
+- PASS focused Agent Control suite 8/8.
+
+Evidence:
+
+- `tests/agent-control-browser-smoke.test.js`.
+- `ops/playwright-smokes/2026-06-19-agent-control-browser-local/report.md`.
+- `ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-list.png`.
+- `ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-run.png`.
+- `ops/playwright-smokes/2026-06-19-agent-control-browser-local/tablet-run.png`.
+- `ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-390-run.png`.
+- `ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-360-list.png`.
+
+Guardrails:
+
+- No broad UI crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
+- `REQ-20260619-207` remains blocked on secure external provider credentials,
+  owner-only account actions, and explicit release approval.

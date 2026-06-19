@@ -106,6 +106,23 @@ remain open.
   Telegram send, broad UI crawl, watch loop, or agent-fleet loop was
   performed.
 
+2026-06-19 Agent Control browser-smoke continuation:
+
+- Added `tests/agent-control-browser-smoke.test.js`, a narrow local
+  Playwright smoke for only `/operations?workspace=platform&view=agents` and
+  `/operations/agents/runs/run_agent_control_smoke`.
+- Proved the Super Admin Agent Control list renders the prepared run, prompt
+  actions, ChatGPT handoff action, Codex Queue link, and Prepare from active
+  tasks panel with fake local data.
+- Proved the Agent Run portal renders the generated prompt, Run Summary,
+  Progress, Evidence, Submit / Seal, and Blocker / Operator Decision controls
+  without secret-shaped prompt text.
+- Captured screenshots at 1440x900, 768x1024, 390x844, and 360x800 with no
+  horizontal overflow and no console/page errors.
+- Focused Agent Control tests passed 8/8; no broad baseline crawl,
+  production DB mutation, deployment, external account write, or Agent Mode
+  browser takeover was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -114,8 +131,8 @@ Still open after this batch:
   withheld until explicit release approval.
 - `REQ-20260619-205` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
-- `REQ-20260619-206` has local DB/API route smoke coverage now; it still needs
-  focused Super Admin browser smoke and manual Agent Mode/browser-judgment
+- `REQ-20260619-206` has local DB/API route smoke and focused Super Admin
+  browser smoke coverage now; it still needs manual Agent Mode/browser-judgment
   smoke before local closeout.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
@@ -155,11 +172,13 @@ Protocol/tooling items completed in this run:
 - Added `tests/agent-control-api-readback.test.js`; focused Agent Control
   suite now passes 7/7 and covers DB/API lifecycle plus negative scoped
   identity denial.
+- Added `tests/agent-control-browser-smoke.test.js`; focused Agent Control
+  suite now passes 8/8 and covers the Super Admin Agent Control list plus
+  Agent Run portal across desktop, tablet, and mobile viewports.
 
 Still open:
 
 - No deployment or production mutation was performed.
-- Browser smoke screenshots, notification hooks, and manual Agent Mode smoke
-  remain open.
+- Notification hooks and manual Agent Mode smoke remain open.
 - Audit-dependent `REQ-20260618-101` through `REQ-20260618-111` remain blocked
   on the external audit package only.

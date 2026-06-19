@@ -222,6 +222,31 @@ Protocol/tooling verification evidence:
 - The same smoke proves scoped non-Super Admin One Time identities receive 403
   for Agent Control lifecycle/list routes before any run/event row is written.
 
+2026-06-19 Agent Control browser smoke evidence:
+
+- Browser smoke:
+  `tests/agent-control-browser-smoke.test.js`.
+- Smoke report:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/report.md`
+  and `ops/playwright-smokes/2026-06-19-agent-control-browser-local/report.json`.
+- Screenshots:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-list.png`,
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/desktop-run.png`,
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/tablet-run.png`,
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-390-run.png`,
+  and
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/mobile-360-list.png`.
+- PASS `node --check tests/agent-control-browser-smoke.test.js`.
+- PASS `node --test tests/agent-control-browser-smoke.test.js` 1/1.
+- PASS focused Agent Control suite 8/8:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js`.
+- The smoke proves the Super Admin Agent Control list and Agent Run portal
+  render prompt, progress, evidence, submit/seal, blocker, Copy Prompt, Open
+  ChatGPT, and Prepare Run controls with fake local data only at 1440x900,
+  768x1024, 390x844, and 360x800.
+
 Not run:
 
 - No full baseline UI crawl.
