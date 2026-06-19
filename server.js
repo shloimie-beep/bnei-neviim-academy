@@ -61,6 +61,24 @@ const {
   hasPromptPlanningIntent,
 } = require('./src/lib/bna/telegram-planning-intent');
 const {
+  createAgentControlSQL,
+  normalizeAgentRunStatus,
+  normalizeVerificationMode,
+  normalizeRunOutcome,
+  normalizeAgentPriority,
+  normalizeImplementationStatus,
+  normalizeVerificationStatus,
+  acceptanceCriteriaFromInput,
+  defaultAllowedActions,
+  defaultForbiddenActions,
+  renderAgentRunPrompt,
+  assertAgentRunTransition,
+  criterionResultsFromInput,
+  validateSealPayload,
+  agentRunView,
+  parseJsonMaybe: parseAgentJsonMaybe,
+} = require('./src/lib/bna/agent-control');
+const {
   hasContactLeadPipelineBuildIntent,
   hasInterestedParentLeadCaptureIntent,
 } = require('./src/lib/bna/telegram-contact-lead-capture');
@@ -79,6 +97,9 @@ const {
 const {
   buildBufferAssets,
 } = require('./src/lib/bna/buffer-media-assets');
+const {
+  buildTelegramRuntimeReadiness,
+} = require('./src/lib/bna/telegram-runtime-status');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
@@ -94,6 +115,14 @@ const {
   PARSER_VERSION: INTAKE_PARSER_VERSION,
   stableHash: intakeStableHash,
 } = require('./src/lib/bna/intake-parser');
+const {
+  broadCorrectionRegisterNeeded,
+  extractedItemCounts,
+  formatStableId,
+  isoDate,
+  normalizeSourceChannel,
+  requirementRegisterPath,
+} = require('./src/lib/bna/ramble-protocol');
 const {
   systemSectionRows,
   sectionKeyForItemType,
@@ -170,6 +199,7 @@ const {
 } = require('./src/lib/bna/rabbi-emails');
 const {
   RABBI_PAGE_KEY,
+  RABBI_DEFAULT_TITLE,
   defaultRabbiLandingContent,
   publicReplacementAllowed,
   rabbiPageView,
@@ -222,6 +252,7 @@ const { listInMemoryActionRuns } = require('./src/lib/actions/audit-log');
 const { runAction } = require('./src/lib/actions/runner');
 const { visibleActionsForActor } = require('./src/lib/actions/permissions');
 const { WORKSPACES } = require('./src/lib/actions/types');
+const { requiresHelperConfirmation } = require('./src/lib/bna/helper/confirmation-gates');
 const { insertHelperAudit, listHelperAudit, loadHelperPlan, saveHelperPlan, updateHelperPlan } = require('./src/lib/bna/helper/audit-log');
 const {
   firstConfirmationForActions,
@@ -231,9 +262,19 @@ const {
   sanitizeHelperPageContext,
 } = require('./src/lib/bna/helper/context');
 const { getIntegrationReadiness } = require('./src/lib/bna/helper/integrations');
+const {
+  createHelperKnowledgeItem,
+  listHelperKnowledge,
+} = require('./src/lib/bna/helper/knowledge');
 const { buildHelperPlan } = require('./src/lib/bna/helper/planner');
 const { helperPermissionForTool } = require('./src/lib/bna/helper/permissions');
+const {
+  loadHelperProfile,
+  storeHelperQuestionnaire,
+  upsertHelperProfile,
+} = require('./src/lib/bna/helper/profile');
 const { redactValue, stableHash } = require('./src/lib/bna/helper/redaction');
+const { resolveHelperScope } = require('./src/lib/bna/helper/scope');
 const { buildToolRegistry } = require('./src/lib/bna/helper/tool-registry');
 
 function loadLocalEnvFile(filePath) {
@@ -287,7 +328,17 @@ app.use((req, res, next) => {
   ) {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
-  if (req.path === '/operations' || req.path === '/operations-access' || req.path.startsWith('/api/bna/')) {
+  if (
+    req.path === '/operations' ||
+    req.path === '/operations-access' ||
+    req.path.startsWith('/api/bna/') ||
+    req.path.startsWith('/api/parent') ||
+    req.path.startsWith('/api/parent-portal') ||
+    req.path.startsWith('/api/student-portal') ||
+    req.path.startsWith('/api/provider-portal') ||
+    req.path.startsWith('/api/member-portal') ||
+    req.path.startsWith('/api/rabbi/member')
+  ) {
     res.setHeader('X-Robots-Tag', 'noindex, nofollow, noarchive');
     res.setHeader('Cache-Control', 'no-store');
   }
@@ -2549,7 +2600,14 @@ const WEBSITE_BLOG_STORE_PATH = path.join(__dirname, 'content-memory', 'website-
 const PUBLIC_WEBSITE_BLOG_PATH = path.join(__dirname, 'public', 'data', 'website-blog-posts.json');
 const STATIC_WEBSITE_CONTENT_PATH = path.join(__dirname, 'public', 'js', 'bna-content.js');
 const PUBLIC_HELPER_KNOWLEDGE_PATH = path.join(__dirname, 'public', 'js', 'bna-helper-knowledge.js');
-const OPENAI_API_KEY = usableSecretValue(process.env.OPENAI_API_KEY);
+const OPENAI_API_KEY =
+  integrationSecretLoader.loadConfigValue({
+    envName: 'OPENAI_API_KEY',
+    names: ['openai-api-key', 'openaiv2'],
+    fileNames: ['openai-api-key.txt', 'openaiv2.txt'],
+    repoRoot: __dirname,
+  }) ||
+  usableSecretValue(readLocalEnvValue('OPENAI_API_KEY'));
 const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 const OPENAI_RESEARCH_MODEL = process.env.OPENAI_RESEARCH_MODEL || process.env.OPENAI_WEB_SEARCH_MODEL || OPENAI_MODEL;
@@ -3577,6 +3635,234 @@ function parentInteractionTags(kind = '', category = '', text = '') {
   if (/(student|child|goal|attendance|progress|question|rabbi|meeting)/i.test(body) || normalizedCategory === 'student') tags.push('student_question');
   if (/(bug|broken|error|loading|screen|button|wrong|unclear|suggestion|feedback)/i.test(body) || normalizedCategory === 'problem') tags.push('report_problem');
   return normalizeTextArray(tags);
+}
+
+const COMMUNICATION_PIPELINE_CATEGORIES = [
+  'parent_lead',
+  'parent_accountability',
+  'student_issue',
+  'provider',
+  'payment',
+  'content',
+  'support',
+  'urgent_needs_attention',
+  'general',
+];
+
+const PARENT_COACHING_CATEGORY_PATTERNS = [
+  ['sleep_routine', /\b(sleep|bedtime|wake(?:\s|-)?up|morning|night|routine|late)\b/i],
+  ['screens', /\b(screens?|phone|tablet|ipad|youtube|games?|device|internet|filter)\b/i],
+  ['responsibility', /\b(responsib|chores?|homework|assignment|follow(?:\s|-)?through|self[-\s]?discipline|commitment)\b/i],
+  ['food_body_regulation', /\b(food|eat|eating|snack|hungry|body|regulat|calm down|overwhelmed)\b/i],
+  ['dignity_connection', /\b(dignity|connection|respect|relationship|argu|fight|shame|embarrass|yell)\b/i],
+  ['self_governance', /\b(self[-\s]?govern|self[-\s]?control|choice|own it|ownership|independent|accountab)\b/i],
+  ['parent_follow_up', /\b(parent|mother|father|mom|dad|follow up|call me|speak|talk)\b/i],
+  ['child_support_observation', /\b(child|kid|son|daughter|student|boy|girl|struggl|behavior|behaviour|mood|meltdown)\b/i],
+];
+
+function communicationTextForScreening(input = {}) {
+  const metadata = parseJsonMaybe(input.metadata) || {};
+  const sourceContext = parseJsonMaybe(input.source_context) || {};
+  return [
+    input.summary,
+    input.body,
+    input.subject,
+    input.contact_type,
+    input.channel,
+    input.direction,
+    metadata.chat_name,
+    metadata.matched_name,
+    sourceContext.from_address,
+    sourceContext.to_address,
+    sourceContext.chat_id,
+  ].filter(Boolean).join(' ');
+}
+
+function classifyCommunicationPipeline(input = {}) {
+  const channel = String(input.channel || '').toLowerCase();
+  const direction = String(input.direction || '').toLowerCase();
+  const contactType = String(input.contact_type || '').toLowerCase();
+  const text = communicationTextForScreening(input);
+  const normalized = text.toLowerCase();
+  const categories = new Set();
+  const tags = new Set(['screened']);
+
+  if (/\b(enroll|registration|register|visit|tour|school|tuition|interested|admission|lead)\b/i.test(text)) categories.add('parent_lead');
+  if (/\b(accountability|checkoff|goal|routine|screen|sleep|responsib|self[-\s]?govern|self[-\s]?control|behavior|behaviour|child|kid|son|daughter|student)\b/i.test(text) || ['lead', 'signup', 'student'].includes(contactType)) categories.add('parent_accountability');
+  if (/\b(student issue|child issue|struggl|missed|attendance|assignment|homework|goal|behavior|behaviour)\b/i.test(text)) categories.add('student_issue');
+  if (/\b(provider|rabbi|sheller|scheller|participant|member|classroom|community)\b/i.test(text)) categories.add('provider');
+  if (/\b(payment|invoice|billing|tuition|charge|card|paid|checkout|refund|failed payment)\b/i.test(text)) categories.add('payment');
+  if (/\b(content|video|recording|blog|newsletter|post|clip|source sheet|worksheet)\b/i.test(text)) categories.add('content');
+  if (/\b(help|support|broken|bug|error|login|password|access|portal|link|not working)\b/i.test(text)) categories.add('support');
+  if (/\b(urgent|asap|emergency|safety|unsafe|danger|crisis|now|immediately|cannot|can't|failed email|failed payment)\b/i.test(text)) categories.add('urgent_needs_attention');
+  if (direction === 'inbound' && /\b(reply|responded|question|needs follow|call me|message me)\b/i.test(text)) categories.add('urgent_needs_attention');
+  if (!categories.size) categories.add('general');
+
+  const coachingCategories = PARENT_COACHING_CATEGORY_PATTERNS
+    .filter(([, pattern]) => pattern.test(text))
+    .map(([category]) => category);
+
+  for (const category of categories) tags.add(category);
+  for (const category of coachingCategories) tags.add(category);
+  if (channel) tags.add(`channel_${channel}`);
+  if (direction) tags.add(`direction_${direction}`);
+
+  const urgent = categories.has('urgent_needs_attention');
+  const parentAccountability = categories.has('parent_accountability');
+  const inbound = direction === 'inbound';
+  const followUpRequired = Boolean(input.follow_up_required) || (inbound && (urgent || parentAccountability || categories.has('support') || categories.has('payment')));
+  const priority = urgent ? 'urgent' : inbound && (parentAccountability || categories.has('payment') || categories.has('support')) ? 'high' : followUpRequired ? 'high' : 'normal';
+  const primaryCategory = COMMUNICATION_PIPELINE_CATEGORIES.find((category) => categories.has(category)) || 'general';
+  const subject = limitText(input.subject || input.summary || 'Communication', 180);
+  const parsedParentStudentNote = parentAccountability || coachingCategories.length
+    ? {
+        non_clinical: true,
+        protocol: 'parent_coaching_self_regulation',
+        categories: coachingCategories,
+        summary: limitText(input.body || input.summary || '', 420),
+        note: 'Non-clinical parent coaching / self-regulation observation. This is not a diagnosis or medical label.',
+      }
+    : null;
+
+  return {
+    pipeline_category: primaryCategory,
+    pipeline_categories: [...categories],
+    pipeline_tags: normalizeTextArray([...tags]),
+    coaching_categories: coachingCategories,
+    priority,
+    follow_up_required: followUpRequired,
+    alert_required: inbound && (priority === 'urgent' || priority === 'high'),
+    top_news: urgent || followUpRequired || categories.has('payment'),
+    bot_screening_status: 'screened',
+    action_label: followUpRequired ? 'Review follow-up' : 'Logged',
+    subject,
+    parsed_parent_student_note: parsedParentStudentNote,
+  };
+}
+
+function mergeCommunicationScreeningMetadata(metadata = {}, screening = {}) {
+  const current = metadata && typeof metadata === 'object' && !Array.isArray(metadata) ? metadata : {};
+  return {
+    ...current,
+    communication_pipeline: screening.pipeline_category,
+    communication_pipeline_categories: screening.pipeline_categories,
+    communication_priority: screening.priority,
+    communication_tags: normalizeTextArray([
+      ...(Array.isArray(current.communication_tags) ? current.communication_tags : []),
+      ...(Array.isArray(current.internal_tags) ? current.internal_tags : []),
+      ...(screening.pipeline_tags || []),
+    ]),
+    internal_tags: normalizeTextArray([
+      ...(Array.isArray(current.internal_tags) ? current.internal_tags : []),
+      ...(screening.pipeline_tags || []),
+    ]),
+    bot_screening_status: screening.bot_screening_status,
+    coaching_categories: screening.coaching_categories || [],
+    parsed_parent_student_note: screening.parsed_parent_student_note || null,
+    top_news: Boolean(screening.top_news),
+    no_medical_diagnosis: true,
+  };
+}
+
+function communicationAlertTitle(screening = {}, communication = {}) {
+  if (screening.pipeline_category === 'parent_accountability') return 'Parent accountability message needs review';
+  if (screening.pipeline_category === 'payment') return 'Payment communication needs review';
+  if (screening.pipeline_category === 'support') return 'Support communication needs review';
+  if (screening.pipeline_category === 'student_issue') return 'Student communication needs review';
+  return communication.summary || 'Communication needs review';
+}
+
+async function createCommunicationAttentionArtifacts(communication = {}, screening = {}, { req = null, db = pool } = {}) {
+  if (!communication?.id || !screening?.alert_required) return { notification: null, task: null };
+  const sourceContext = parseJsonMaybe(communication.source_context) || {};
+  const metadata = parseJsonMaybe(communication.metadata) || {};
+  const projectId = communication.project_id || null;
+  const notification = await createInAppNotification({
+    eventType: 'communication_attention_required',
+    projectId,
+    projectKey: communication.project_key || null,
+    workspaceKey: sourceContext.workspace_key || metadata.workspace_key || null,
+    recipientLabel: 'Shloimie',
+    recipientRole: 'operator',
+    title: communicationAlertTitle(screening, communication),
+    body: [
+      limitText(communication.summary || '', 240),
+      screening.parsed_parent_student_note ? `Coaching categories: ${screening.parsed_parent_student_note.categories.join(', ') || 'parent follow-up'}` : '',
+      sourceContext.raw_intake_id ? `Raw intake: ${sourceContext.raw_intake_id}` : '',
+    ].filter(Boolean).join('\n'),
+    priority: screening.priority,
+    relatedType: 'communication',
+    relatedId: communication.id,
+    sourceTable: 'bna_contact_communications',
+    sourceId: communication.id,
+    sourceContext: {
+      communication_pipeline: screening.pipeline_category,
+      communication_tags: screening.pipeline_tags,
+      raw_intake_id: sourceContext.raw_intake_id || null,
+      no_send: true,
+      external_write_performed: false,
+    },
+    createdBy: req?.opsUser || communication.created_by || 'system',
+  }, db).catch(() => null);
+
+  let task = null;
+  if (screening.follow_up_required) {
+    const dedupeKey = `communication-follow-up:${communication.id}`;
+    const existing = (await db.query(
+      `SELECT *
+       FROM bna_tasks
+       WHERE dedupe_key = $1
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [dedupeKey]
+    ).catch(() => ({ rows: [] }))).rows[0] || null;
+    if (existing) {
+      task = existing;
+    } else {
+      task = (await db.query(
+        `INSERT INTO bna_tasks (
+           project_id, project_key, title, summary, notes, stage, category, urgency,
+           assigned_to, item_type, task_kind, source, source_context, ai_parsed,
+           next_action_label, last_activity_at, dedupe_key, created_by
+         ) VALUES (
+           $1, $2, $3, $4, $5, 'assigned', $6, $7,
+           'Shloimie', 'task', 'task', 'web', $8, $9,
+           'Review communication', NOW(), $10, $11
+         )
+         RETURNING *`,
+        [
+          projectId,
+          communication.project_key || null,
+          communicationAlertTitle(screening, communication),
+          limitText(communication.summary || 'Inbound communication needs review.', 500),
+          [
+            `Communication #${communication.id}`,
+            `Pipeline: ${screening.pipeline_category}`,
+            `Priority: ${screening.priority}`,
+            screening.parsed_parent_student_note ? `Parent coaching/self-regulation categories: ${screening.parsed_parent_student_note.categories.join(', ') || 'parent follow-up'}` : '',
+            'No external message was sent by this alert.',
+          ].filter(Boolean).join('\n'),
+          screening.pipeline_category === 'parent_accountability' ? 'parent_coaching' : 'communications',
+          screening.priority === 'urgent' ? 'urgent' : 'today',
+          JSON.stringify({
+            source_table: 'bna_contact_communications',
+            communication_id: communication.id,
+            raw_intake_id: sourceContext.raw_intake_id || null,
+          }),
+          JSON.stringify({
+            parser: 'communication-screening-v1',
+            communication_pipeline: screening.pipeline_category,
+            communication_tags: screening.pipeline_tags,
+            parsed_parent_student_note: screening.parsed_parent_student_note,
+            no_medical_diagnosis: true,
+          }),
+          dedupeKey,
+          req?.opsUser || communication.created_by || 'system',
+        ]
+      ).catch(() => ({ rows: [] }))).rows[0] || null;
+    }
+  }
+  return { notification, task };
 }
 
 function mergeParentTagsSql(alias = 'tags') {
@@ -7066,8 +7352,9 @@ async function buildParentIdentityPortalPayload(context = {}, db = pool) {
 function emptyParentClassroomSafetyContext() {
   return {
     source_grounded_bot_policy: {
-      source_grounded_only: true,
-      allowed_sources: ['approved class transcripts', 'source sheets/assets', 'assignments', 'internal calendar items', 'live-session eligibility', 'member access records'],
+      enabled: false,
+      approval_required: true,
+      current_student_path: 'private_replies_to_rabbi_admin_threads',
       unsupported_answer: 'route_to_rabbi_or_moderation',
       invented_sources_allowed: false,
     },
@@ -7952,7 +8239,7 @@ function identifyOpsUser(username, password = null) {
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
-  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
   const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
   const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
@@ -8034,9 +8321,14 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/helper/context' && method === 'GET') return true;
   if (routePath === '/api/bna/helper/tools' && method === 'GET') return true;
   if (routePath === '/api/bna/helper/message' && method === 'POST') return true;
+  if (routePath === '/api/bna/helper/chat' && method === 'POST') return true;
   if (routePath === '/api/bna/helper/confirm' && method === 'POST') return true;
   if (routePath === '/api/bna/helper/plan' && method === 'POST') return true;
   if (routePath === '/api/bna/helper/execute' && method === 'POST') return true;
+  if (routePath === '/api/bna/helper/profile' && ['GET', 'PATCH'].includes(method)) return true;
+  if (routePath === '/api/bna/helper/profile/questionnaire' && method === 'POST') return true;
+  if (routePath === '/api/bna/helper/knowledge' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/helper/action-log' && method === 'GET') return true;
   if (/^\/api\/bna\/helper\/runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
   if (routePath === '/api/bna/projects' && method === 'GET') return true;
   if (routePath === '/api/bna/people' && ['GET', 'POST'].includes(method)) return true;
@@ -8132,8 +8424,10 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/provider-onboarding-intakes' && method === 'GET') return true;
   if (routePath === '/api/bna/provider-messages' && method === 'GET') return true;
   if (routePath === '/api/bna/contact-communications' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/contact-communications/screening-preview' && method === 'POST') return true;
   if (routePath === '/api/bna/contact-communications/match-note' && method === 'POST') return true;
   if (/^\/api\/bna\/contact-communications\/\d+\/link$/.test(routePath) && method === 'POST') return true;
+  if (routePath === '/api/bna/contact-imports/preview' && method === 'POST') return true;
   if (routePath === '/api/bna/payments' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/payment-intake' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/payment-intake\/\d+$/.test(routePath) && ['PATCH', 'DELETE'].includes(method)) return true;
@@ -8158,6 +8452,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/portal-access/next-year-readiness' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/students\/\d+\/devices$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/students\/\d+\/goal-board$/.test(routePath) && ['GET', 'POST'].includes(method)) return true;
+  if (/^\/api\/bna\/students\/\d+\/household-link$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/assignments' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/assignments/youtube-metadata' && method === 'POST') return true;
   if (/^\/api\/bna\/assignments\/\d+$/.test(routePath) && method === 'PATCH') return true;
@@ -11027,7 +11322,7 @@ const createAssistantSQL = `
 CREATE TABLE IF NOT EXISTS bna_assistant_threads (
   id SERIAL PRIMARY KEY,
   project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
-  actor_type TEXT NOT NULL DEFAULT 'anonymous' CHECK (actor_type IN ('anonymous', 'parent', 'student', 'service_provider', 'rabbi', 'staff', 'admin', 'super_admin')),
+  actor_type TEXT NOT NULL DEFAULT 'anonymous' CHECK (actor_type IN ('anonymous', 'parent', 'student', 'service_provider', 'developer_tester', 'rabbi', 'staff', 'admin', 'super_admin')),
   actor_id TEXT,
   actor_email TEXT,
   actor_name TEXT,
@@ -11167,6 +11462,65 @@ CREATE TABLE IF NOT EXISTS bna_helper_plans (
 
 CREATE INDEX IF NOT EXISTS idx_bna_helper_plans_created_at ON bna_helper_plans (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_helper_plans_status ON bna_helper_plans (status);
+
+CREATE TABLE IF NOT EXISTS bna_helper_action_log (
+  id SERIAL PRIMARY KEY,
+  helper_scope TEXT NOT NULL,
+  workspace_id INTEGER,
+  actor TEXT,
+  user_role TEXT,
+  tool_name TEXT NOT NULL,
+  action_summary TEXT,
+  input_metadata JSONB DEFAULT '{}'::jsonb,
+  outcome TEXT NOT NULL,
+  result_metadata JSONB DEFAULT '{}'::jsonb,
+  confirmation_required BOOLEAN DEFAULT FALSE,
+  confirmed_at TIMESTAMP,
+  error TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_helper_action_log_created_at ON bna_helper_action_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_helper_action_log_scope ON bna_helper_action_log (helper_scope, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_helper_action_log_tool ON bna_helper_action_log (tool_name);
+
+CREATE TABLE IF NOT EXISTS bna_helper_profiles (
+  id SERIAL PRIMARY KEY,
+  scope_type TEXT NOT NULL,
+  scope_id TEXT NOT NULL,
+  helper_name TEXT NOT NULL,
+  display_tone TEXT,
+  communication_style JSONB DEFAULT '{}'::jsonb,
+  do_rules JSONB DEFAULT '[]'::jsonb,
+  avoid_rules JSONB DEFAULT '[]'::jsonb,
+  memory_summary TEXT,
+  safety_level TEXT DEFAULT 'standard',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(scope_type, scope_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_helper_profiles_scope ON bna_helper_profiles (scope_type, scope_id);
+CREATE INDEX IF NOT EXISTS idx_bna_helper_profiles_updated_at ON bna_helper_profiles (updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_helper_knowledge_items (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER,
+  scope_type TEXT,
+  scope_id TEXT,
+  title TEXT NOT NULL,
+  body TEXT,
+  source_type TEXT,
+  source_ref TEXT,
+  visibility TEXT DEFAULT 'internal',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_helper_knowledge_scope ON bna_helper_knowledge_items (scope_type, scope_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_helper_knowledge_workspace ON bna_helper_knowledge_items (workspace_id, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_helper_knowledge_visibility ON bna_helper_knowledge_items (visibility);
 `;
 
 const createUniversalAssistantMvpSQL = `
@@ -11177,13 +11531,32 @@ CREATE TABLE IF NOT EXISTS bna_workspaces (
   workspace_key TEXT,
   name TEXT NOT NULL,
   type TEXT NOT NULL DEFAULT 'school'
-    CHECK (type IN ('super_admin', 'school', 'household', 'provider', 'project', 'community')),
+    CHECK (type IN ('super_admin', 'school', 'family', 'service_provider', 'household', 'provider', 'project', 'community')),
   status TEXT NOT NULL DEFAULT 'active'
     CHECK (status IN ('active', 'setup', 'paused', 'archived')),
   metadata JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS "key" TEXT;
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS workspace_key TEXT;
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS type TEXT DEFAULT 'school';
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+UPDATE bna_workspaces
+SET "key" = COALESCE(NULLIF("key", ''), NULLIF(workspace_key, ''), NULLIF(lower(regexp_replace(COALESCE(name, ''), '[^a-zA-Z0-9]+', '_', 'g')), ''), concat('workspace_', id)),
+    workspace_key = COALESCE(NULLIF(workspace_key, ''), NULLIF("key", ''), concat('workspace_', id)),
+    name = COALESCE(NULLIF(name, ''), NULLIF(workspace_key, ''), NULLIF("key", ''), concat('Workspace ', id)),
+    type = COALESCE(NULLIF(type, ''), 'school'),
+    status = COALESCE(NULLIF(status, ''), 'active'),
+    metadata = COALESCE(metadata, '{}'::jsonb),
+    created_at = COALESCE(created_at, CURRENT_TIMESTAMP),
+    updated_at = COALESCE(updated_at, CURRENT_TIMESTAMP);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_workspaces_key_unique ON bna_workspaces("key");
 CREATE INDEX IF NOT EXISTS idx_bna_workspaces_project_id ON bna_workspaces(project_id);
 CREATE INDEX IF NOT EXISTS idx_bna_workspaces_type_status ON bna_workspaces(type, status);
 
@@ -11194,10 +11567,13 @@ SELECT
   p.project_key,
   p.name,
   CASE
-    WHEN p.workspace_type = 'service_provider' THEN 'provider'
-    WHEN p.workspace_type IN ('super_admin', 'school', 'household', 'project', 'community') THEN p.workspace_type
+    WHEN p.workspace_type IN ('super_admin', 'platform') THEN 'super_admin'
+    WHEN p.workspace_type IN ('service_provider', 'provider') THEN 'service_provider'
+    WHEN p.workspace_type IN ('family', 'household') THEN 'family'
+    WHEN p.workspace_type = 'school' THEN 'school'
+    WHEN p.project_key = '${ONE_TIME_PROJECT_KEY}' THEN 'service_provider'
     WHEN p.project_key = '${DEFAULT_PROJECT_KEY}' THEN 'school'
-    ELSE 'project'
+    ELSE 'school'
   END,
   p.status,
   jsonb_build_object('source', 'bna_projects_backfill')
@@ -11212,7 +11588,7 @@ ON CONFLICT ("key") DO UPDATE SET
 INSERT INTO bna_workspaces ("key", workspace_key, name, type, status, metadata)
 VALUES
   ('bna', 'bna', 'BNA', 'school', 'active', '{"source":"universal_assistant_default_workspace"}'::jsonb),
-  ('one_time_mishnah_class', 'one_time_mishnah_class', 'One Time Mishnah Class', 'project', 'active', '{"source":"universal_assistant_default_workspace"}'::jsonb),
+  ('one_time_mishnah_class', 'one_time_mishnah_class', 'One Time Mishnah Class', 'service_provider', 'active', '{"source":"universal_assistant_default_workspace"}'::jsonb),
   ('internal_super_admin', 'internal_super_admin', 'Internal Super Admin', 'super_admin', 'active', '{"source":"universal_assistant_default_workspace"}'::jsonb)
 ON CONFLICT ("key") DO UPDATE SET
   workspace_key = COALESCE(bna_workspaces.workspace_key, EXCLUDED.workspace_key),
@@ -11542,8 +11918,13 @@ WHERE a.event_type = 'student_goal'
 ALTER TABLE bna_assistant_threads DROP CONSTRAINT IF EXISTS bna_assistant_threads_actor_type_check;
 ALTER TABLE bna_assistant_threads
   ADD CONSTRAINT bna_assistant_threads_actor_type_check
-  CHECK (actor_type IN ('anonymous', 'parent', 'student', 'service_provider', 'provider', 'rabbi', 'staff', 'admin', 'bna_admin', 'super_admin'));
+  CHECK (actor_type IN ('anonymous', 'parent', 'student', 'service_provider', 'provider', 'developer_tester', 'rabbi', 'staff', 'admin', 'bna_admin', 'super_admin'));
 ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS workspace_id INTEGER;
+ALTER TABLE bna_assistant_threads ALTER COLUMN workspace_id DROP DEFAULT;
+UPDATE bna_assistant_threads at
+SET workspace_id = NULL
+WHERE workspace_id IS NOT NULL
+  AND NOT EXISTS (SELECT 1 FROM bna_projects p WHERE p.id = at.workspace_id);
 ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS household_id INTEGER;
 ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS person_id INTEGER;
 ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS provider_profile_id INTEGER REFERENCES bna_provider_profiles(id) ON DELETE SET NULL;
@@ -11554,7 +11935,7 @@ ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS memory_summary TEXT;
 ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS last_message_at TIMESTAMP;
 ALTER TABLE bna_assistant_threads DROP CONSTRAINT IF EXISTS bna_assistant_threads_mode_check;
 ALTER TABLE bna_assistant_threads
-  ADD CONSTRAINT bna_assistant_threads_mode_check CHECK (mode IN ('super_admin', 'operator', 'bna_admin', 'parent', 'student', 'provider', 'public', 'system'));
+  ADD CONSTRAINT bna_assistant_threads_mode_check CHECK (mode IN ('super_admin', 'operator', 'bna_admin', 'parent', 'student', 'provider', 'developer_tester', 'public', 'system'));
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_context ON bna_assistant_threads(workspace_id, household_id, student_id, provider_profile_id, updated_at DESC);
 
 ALTER TABLE bna_assistant_messages ADD COLUMN IF NOT EXISTS sender_type TEXT;
@@ -15268,7 +15649,7 @@ ON CONFLICT (workspace_key) DO UPDATE SET
   updated_at = NOW();
 
 INSERT INTO bna_identity_workspaces (workspace_key, project_id, display_name, workspace_type, metadata)
-SELECT 'family_app', id, 'Family Accountability', 'family', '{"seed":"identity_linking"}'::jsonb
+SELECT 'family_app', id, 'Dratler Family', 'family', '{"seed":"identity_linking"}'::jsonb
 FROM bna_projects WHERE project_key = 'dratler_family'
 ON CONFLICT (workspace_key) DO UPDATE SET
   project_id = COALESCE(EXCLUDED.project_id, bna_identity_workspaces.project_id),
@@ -15278,6 +15659,8 @@ ON CONFLICT (workspace_key) DO UPDATE SET
 `;
 
 const createIntakeParserSQL = `
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 ALTER TABLE bna_people ADD COLUMN IF NOT EXISTS display_name TEXT;
 ALTER TABLE bna_people ADD COLUMN IF NOT EXISTS person_type TEXT DEFAULT 'unknown';
 ALTER TABLE bna_people DROP CONSTRAINT IF EXISTS bna_people_person_type_check;
@@ -15328,6 +15711,36 @@ CREATE TABLE IF NOT EXISTS bna_person_relationships (
 );
 CREATE INDEX IF NOT EXISTS idx_bna_person_relationships_person ON bna_person_relationships(person_id, relationship_type);
 CREATE INDEX IF NOT EXISTS idx_bna_person_relationships_related ON bna_person_relationships(related_person_id, relationship_type);
+
+CREATE TABLE IF NOT EXISTS bna_raw_intake (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  stable_id TEXT UNIQUE NOT NULL,
+  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other')),
+  source_message_id TEXT,
+  source_user TEXT,
+  raw_text TEXT,
+  transcript_text TEXT,
+  media_url TEXT,
+  intake_type TEXT DEFAULT 'general',
+  parse_status TEXT NOT NULL DEFAULT 'raw' CHECK (parse_status IN ('raw', 'parsed', 'needs_review', 'registered', 'implemented', 'archived', 'failed')),
+  parsed_payload JSONB DEFAULT '{}'::jsonb,
+  created_requirement_ids TEXT[] DEFAULT '{}',
+  created_task_ids TEXT[] DEFAULT '{}',
+  created_decision_ids TEXT[] DEFAULT '{}',
+  created_question_ids TEXT[] DEFAULT '{}',
+  requirement_register_path TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  error TEXT,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now(),
+  parsed_at TIMESTAMPTZ,
+  archived_at TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_stable_id ON bna_raw_intake(stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_source_channel ON bna_raw_intake(source_channel);
+CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_parse_status ON bna_raw_intake(parse_status);
+CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_created_at ON bna_raw_intake(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_register_path ON bna_raw_intake(requirement_register_path);
 
 CREATE TABLE IF NOT EXISTS bna_intake_parse_runs (
   id SERIAL PRIMARY KEY,
@@ -17211,8 +17624,9 @@ function polishTaskCandidateText(text) {
     && /(pipeline|contacts?|parents?|whatsapp|previous contact|contact history|login|logins?|parent portal|manage)/.test(lower)) {
     return 'Build interested-parent pipeline in Contacts';
   }
-  if (/(separate intake|intake section|what does intake mean|why is there (?:a )?separate intake)/.test(lower)) {
-    return 'Clarify Signup Intake in Contacts';
+  if (/(separate intake|intake section|signup intake|signup review|ingestion|ingesting|what does intake mean|why is there (?:a )?separate intake)/.test(lower)
+    && /(signed up|students?|contacts?|parents?|interested|pipeline|section|lane|review)/.test(lower)) {
+    return 'Clean Contacts signup review lane';
   }
   if (/(research section|source sheets?|sourcesheets?|sefaria|safari|work cards?|worksheets?)/.test(lower)
     && /(topics?|discuss|content|recordings?|expanded upon|expanded)/.test(lower)) {
@@ -17976,6 +18390,7 @@ async function updateDecisionMetadataAndFields(taskId, updates = {}, metadataPat
 }
 
 function taskNeedsAgentJob(task = {}, input = {}) {
+  if (taskIsTerminalHistory(task)) return false;
   if (safeTaskItemType(task.item_type || input.item_type) === 'decision') return false;
   if (Boolean(task.decision_required ?? input.decision_required)) return false;
   if (normalizeTaskStage(task.stage || input.stage) === 'needs_decision') return false;
@@ -18101,6 +18516,7 @@ async function updateLatestAgentJobForTask(taskId, status, updates = {}, db = po
 
 async function ensureAgentJobForTask(task, input = {}, db = pool) {
   if (!task?.id) return null;
+  if (taskIsTerminalHistory(task)) return null;
   if (!taskNeedsAgentJob(task, input)) return null;
   const existing = (await db.query(
     `SELECT *
@@ -18400,6 +18816,8 @@ const TASK_ARTIFACT_ALLOWED_PREFIXES = [
   'ops/agent-task-ledger.jsonl',
   'ops/playwright-smokes/',
   'ops/local-smokes/',
+  'ops/live-smokes/',
+  'tasks-pending/',
   'screenshots/',
   'renders/',
   'content-memory/',
@@ -18472,7 +18890,7 @@ function extractArtifactLinksFromText(text) {
   const value = String(text || '');
   if (!value) return [];
   const links = [];
-  const repoPathPattern = /\b((?:ops\/agent-fleet-runs|ops\/system-audits|ops\/playwright-smokes|ops\/local-smokes|screenshots|renders|content-memory|public\/documents)\/[^\s)\]}>"']+\.(?:md|json|txt|png|jpe?g|webp|pdf))\b/gi;
+  const repoPathPattern = /\b((?:ops\/agent-fleet-runs|ops\/system-audits|ops\/playwright-smokes|ops\/local-smokes|ops\/live-smokes|tasks-pending|screenshots|renders|content-memory|public\/documents)\/[^\s)\]}>"']+\.(?:md|json|txt|png|jpe?g|webp|pdf))\b/gi;
   for (const match of value.matchAll(repoPathPattern)) {
     links.push({
       label: /agent-fleet-runs/i.test(match[1]) ? 'Agent fleet report' : 'Artifact',
@@ -18605,14 +19023,19 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
   let waitingOn = requestedWaitingOn && isAgentAssignee(requestedWaitingOn) ? null : requestedWaitingOn;
   if (waitingOn === 'none') waitingOn = null;
   if (waitingOn === 'agent') waitingOn = null;
+  const suppressAgentInference = input.agent_executable === false
+    || input.agentExecutable === false
+    || input.suppress_agent_inference === true
+    || input.suppressAgentInference === true;
   let assignedTo = normalizeTaskAssignee(input.assigned_to || input.assignedTo || input.owner);
+  if (suppressAgentInference && isAgentAssignee(assignedTo)) assignedTo = null;
   if (!assignedTo && (input.agent_executable || input.agentExecutable) && !waitingOn && explicitItemType !== 'decision') {
     assignedTo = 'Codex';
   }
   if (!assignedTo && waitingOn && oneTimeProject) {
     assignedTo = normalizeTaskAssignee(taskWaitingOnLabel(waitingOn)) || taskWaitingOnLabel(waitingOn);
   }
-  if (!assignedTo && !waitingOn && explicitItemType !== 'decision') {
+  if (!assignedTo && !waitingOn && explicitItemType !== 'decision' && !suppressAgentInference) {
     assignedTo = inferTaskOwner(taskTextForRouting);
   }
   const requestedDecisionRequired =
@@ -18623,7 +19046,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
       : Boolean(input.decisionRequired) || inferredStage === 'needs_decision';
   const decisionOptions = normalizeDecisionOptions(input.decision_options_json || input.decision_options || input.decisionOptionsJson || input.decisionOptions);
   const hasRealDecision = explicitItemType === 'decision' || decisionOptions.length > 0 || hasExplicitDecisionChoice(taskTextForRouting);
-  const isCodexAction = /codex|kimi|system/i.test(String(assignedTo || '')) && hasConcreteTaskAction(taskTextForRouting);
+  const isCodexAction = !suppressAgentInference && /codex|kimi|system/i.test(String(assignedTo || '')) && hasConcreteTaskAction(taskTextForRouting);
   const lowConfidenceNeedsReview = oneTimeProject
     && rawText
     && taskTitleLooksRawForServer(rawText)
@@ -18685,7 +19108,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
     assignedTo,
     source,
     createdBy,
-    explicitTaskKind: input.task_kind || input.taskKind,
+    explicitTaskKind: suppressAgentInference ? null : (input.task_kind || input.taskKind),
   });
   if (dialogue.taskKind === 'pending_access' && !waitingOn) {
     waitingOn = normalizeTaskWaitingOnKey(taskTextForRouting, 'external');
@@ -18707,7 +19130,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
     display_title: dialogue.displayTitle,
     decision_required: decisionRequired,
     waiting_on: waitingOn,
-    agent_executable: Boolean(input.agent_executable || input.agentExecutable || isAgentAssignee(assignedTo)),
+    agent_executable: Boolean(!suppressAgentInference && (input.agent_executable || input.agentExecutable || isAgentAssignee(assignedTo))),
     needs_human_review: dialogue.needsReview,
     cleaned_summary: dialogue.cleanedSummary,
     bot_created: dialogue.botCreated,
@@ -19024,11 +19447,172 @@ function intakeTicketSeverity(value = '') {
   return 'normal';
 }
 
+function rawIntakeIdsFromCanonical(canonical = {}) {
+  return {
+    requirementIds: (canonical.requirements || []).map((item) => item.stable_id).filter(Boolean),
+    taskIds: (canonical.tasks || []).map((item) => item.stable_id).filter(Boolean),
+    decisionIds: (canonical.decisions || []).map((item) => item.stable_id).filter(Boolean),
+    questionIds: (canonical.open_questions || []).map((item) => item.stable_id).filter(Boolean),
+  };
+}
+
+async function createRawIntakeRecord({
+  rawInput,
+  transcriptText = '',
+  source_type = 'manual',
+  source_channel = '',
+  source_id = null,
+  source_message_id = null,
+  source_user = '',
+  source_table = null,
+  media_url = null,
+  intake_type = 'general',
+  requirement_register_path = null,
+  metadata = {},
+  req = null,
+  db = pool,
+} = {}) {
+  const raw = String(rawInput || '').trim();
+  if (!raw && !String(transcriptText || '').trim()) {
+    const error = new Error('raw intake requires raw_text or transcript_text');
+    error.statusCode = 400;
+    throw error;
+  }
+  const sourceDate = isoDate(metadata.source_date || metadata.created_at || metadata.recorded_at || null);
+  const channel = normalizeRawIntakeSourceChannel(source_channel || source_type || 'manual');
+  const registerPath = requirement_register_path || (broadCorrectionRegisterNeeded(raw) ? requirementRegisterPath(sourceDate) : null);
+  const sourceMessageId = source_message_id || source_id || null;
+  const baseMetadata = {
+    source_type,
+    source_table,
+    source_id: source_id === null || source_id === undefined ? null : String(source_id),
+    route: req?.originalUrl || null,
+    ...metadata,
+  };
+  const prefix = `RAW-${sourceDate.replace(/-/g, '')}-`;
+  const latest = await db.query(
+    `SELECT stable_id
+     FROM bna_raw_intake
+     WHERE stable_id LIKE $1
+     ORDER BY stable_id DESC
+     LIMIT 1`,
+    [`${prefix}%`]
+  );
+  const match = String(latest.rows[0]?.stable_id || '').match(/-(\d{3})$/);
+  const start = match ? Number(match[1]) + 1 : 1;
+  for (let offset = 0; offset < 1000; offset += 1) {
+    const stableId = formatStableId('raw', sourceDate, start + offset);
+    try {
+      const inserted = await db.query(
+        `INSERT INTO bna_raw_intake (
+           stable_id, source_channel, source_message_id, source_user, raw_text,
+           transcript_text, media_url, intake_type, parse_status,
+           requirement_register_path, metadata
+         )
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'raw', $9, $10::jsonb)
+         RETURNING *`,
+        [
+          stableId,
+          channel,
+          sourceMessageId === null || sourceMessageId === undefined ? null : String(sourceMessageId),
+          source_user || null,
+          raw || null,
+          String(transcriptText || '').trim() || null,
+          media_url || null,
+          intake_type || 'general',
+          registerPath,
+          JSON.stringify(baseMetadata),
+        ]
+      );
+      return inserted.rows[0];
+    } catch (error) {
+      if (error.code !== '23505' || offset === 999) throw error;
+    }
+  }
+  throw new Error('Unable to allocate raw intake stable ID');
+}
+
+function normalizeRawIntakeSourceChannel(value = '') {
+  const rawValue = String(value || '').trim();
+  const channel = normalizeSourceChannel(rawValue);
+  if (['telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other'].includes(channel)) {
+    return channel;
+  }
+  if (channel === 'operations_helper') return 'operations_ui';
+  if (channel === 'website_helper') return 'website_bot';
+  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
+  return 'other';
+}
+
+async function updateRawIntakeRecordAfterParse(rawRecord, canonical = {}, parseRun = {}, db = pool) {
+  if (!rawRecord?.id) return null;
+  const ids = rawIntakeIdsFromCanonical(canonical);
+  const counts = extractedItemCounts(canonical);
+  const parseStatus = (canonical.review_items || []).length ? 'needs_review' : 'parsed';
+  const registerPath = canonical.ramble_protocol?.requirement_register_path || rawRecord.requirement_register_path || null;
+  const result = await db.query(
+    `UPDATE bna_raw_intake
+     SET parse_status = $1,
+         parsed_payload = $2::jsonb,
+         created_requirement_ids = $3,
+         created_task_ids = $4,
+         created_decision_ids = $5,
+         created_question_ids = $6,
+         requirement_register_path = COALESCE($7, requirement_register_path),
+         metadata = metadata || $8::jsonb,
+         parsed_at = NOW(),
+         updated_at = NOW()
+     WHERE id = $9
+     RETURNING *`,
+    [
+      parseStatus,
+      JSON.stringify(canonical),
+      ids.requirementIds,
+      ids.taskIds,
+      ids.decisionIds,
+      ids.questionIds,
+      registerPath,
+      JSON.stringify({ parse_run_id: parseRun.id || null, parser_version: parseRun.parser_version || INTAKE_PARSER_VERSION, counts }),
+      rawRecord.id,
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function markRawIntakeFailed(rawRecord, error, db = pool) {
+  if (!rawRecord?.id) return null;
+  const result = await db.query(
+    `UPDATE bna_raw_intake
+     SET parse_status = 'failed',
+         error = $1,
+         updated_at = NOW()
+     WHERE id = $2
+     RETURNING *`,
+    [error?.message || String(error || 'Unknown raw intake failure'), rawRecord.id]
+  );
+  return result.rows[0] || null;
+}
+
 function intakeItemGroups(canonical = {}) {
   return [
+    ['requirement', canonical.requirements || []],
     ['task', canonical.tasks || []],
     ['decision', canonical.decisions || []],
     ['ticket', canonical.tickets || []],
+    ['open_question', canonical.open_questions || []],
+    ['memory_candidate', canonical.memory_candidates || []],
+    ['goal_candidate', canonical.goal_candidates || []],
+    ['student_note', canonical.student_notes || []],
+    ['student_question', canonical.student_questions || []],
+    ['student_observation', canonical.student_observations || []],
+    ['content_item', canonical.content_items || []],
+    ['research_item', canonical.research_items || []],
+    ['accounting_item', canonical.accounting_items || []],
+    ['contact_item', canonical.contact_items || []],
+    ['contact', canonical.contacts || []],
+    ['communication', canonical.communications || []],
+    ['integration_item', canonical.integration_items || []],
+    ['service_provider_item', canonical.service_provider_items || []],
     ['goal', canonical.goals || []],
     ['diet_nutrition_note', canonical.diet_nutrition_notes || []],
     ['attendance', canonical.attendance || []],
@@ -19036,6 +19620,9 @@ function intakeItemGroups(canonical = {}) {
     ['behavior_note', canonical.behavior_notes || []],
     ['provider_lead', canonical.provider_leads || []],
     ['class_session_note', canonical.class_session_notes || []],
+    ['workspace_routing', canonical.workspace_routing || []],
+    ['alert', canonical.alerts || []],
+    ['error', canonical.errors || []],
     ['custom_section', canonical.custom_sections || []],
   ];
 }
@@ -19088,8 +19675,13 @@ async function createIntakeAiStructuredJson(rawInput, context = {}) {
         role: 'system',
         content: [
           'Parse Bnei Neviim Academy natural-language intake into strict JSON only.',
-          'Return keys: raw_input, source, language, summary, extracted_people, extracted_relationships, tasks, decisions, tickets, goals, diet_nutrition_notes, attendance, assignments, behavior_notes, provider_leads, class_session_notes, custom_sections, review_items, filing_plan.',
+          'Return keys: raw_input, source, language, summary, extracted_people, extracted_relationships, requirements, tasks, decisions, open_questions, memory_candidates, student_notes, content_items, accounting_items, contact_items, tickets, goals, diet_nutrition_notes, attendance, assignments, behavior_notes, provider_leads, class_session_notes, custom_sections, review_items, filing_plan, ramble_protocol.',
+          'Every extracted item must include stable_id, short_title, source_quote, expected_result or done_definition, target_lane, verification_method, confidence, and needs_review.',
           'Tasks must have title, what, why, next_action, owner. Never use a raw ramble as a task title.',
+          'Broad correction sessions must produce requirements before implementation; raw input must be saved before parsing.',
+          'ramble_protocol must preserve raw capture/provenance, distilled visible filing, handoff-template, and proof/blocker closeout guidance.',
+          'If the raw input includes BNA_GOAL_MODE_EXECUTION_PACKET, goal mode, set it as a goal, finish everything, work through the whole prompt/output/list/register, keep working until done, or build everything, ramble_protocol must set goal_mode_execution_requested and should_create_or_continue_goal true and reference tasks-pending/_template-goal-mode-correction-output.md.',
+          'If operator language mentions GHL, GoHighLevel, or LeadConnector, classify it as a first-party BNA contact item. Do not propose a new active GHL runtime.',
           'Unknown or low-confidence custom sections must be proposed and reviewed, not silently filed.',
           'Google Classroom requests are backlog tickets only; do not imply a live Classroom write.',
         ].join('\n'),
@@ -19250,7 +19842,8 @@ async function insertIntakeReviews(parseRunId, canonical, items, db = pool) {
            AND review_type = $3
            AND COALESCE(parse_item_id, 0) = COALESCE($2, 0)
            AND reason = $4
-       )`,
+       )
+       ON CONFLICT (parse_item_id, review_type) WHERE parse_item_id IS NOT NULL DO NOTHING`,
       [parseRunId, parseItemId, reviewType, reason, JSON.stringify(payload)]
     );
   }
@@ -19258,10 +19851,17 @@ async function insertIntakeReviews(parseRunId, canonical, items, db = pool) {
 
 async function createCanonicalIntakeParseRun({
   rawInput,
+  transcriptText = '',
   source_type = 'manual',
+  source_channel = '',
   source_id = null,
   source_table = null,
+  source_message_id = null,
   created_by = 'dashboard',
+  media_url = null,
+  intake_type = 'general',
+  requirement_register_path = null,
+  metadata = {},
   dry_run = true,
   req = null,
   db = pool,
@@ -19273,24 +19873,50 @@ async function createCanonicalIntakeParseRun({
     error.statusCode = 400;
     throw error;
   }
-  const aiJson = aiStructuredJson === undefined
-    ? await createIntakeAiStructuredJson(raw, { source_type, source_id, source_table })
-    : aiStructuredJson;
-  const canonical = parseIntakeText({
-    raw_input: raw,
-    source_type,
-    source_id,
-    source_table,
-    aiStructuredJson: aiJson,
-  });
-  const inputHash = intakeStableHash(raw);
-  const sourceIdText = source_id === null || source_id === undefined ? null : String(source_id);
-  const sourceIdKey = sourceIdText || '';
-  const metadata = {
-    route: req?.originalUrl || null,
-    ai_provider: aiJson ? CONTENT_AI_PROVIDER : null,
-    dry_run: Boolean(dry_run),
-  };
+  let rawIntake = null;
+  try {
+    rawIntake = await createRawIntakeRecord({
+      rawInput: raw,
+      transcriptText,
+      source_type,
+      source_channel,
+      source_id,
+      source_message_id,
+      source_user: created_by,
+      source_table,
+      media_url,
+      intake_type,
+      requirement_register_path,
+      metadata,
+      req,
+      db,
+    });
+  } catch (error) {
+    console.warn(`[raw-intake] failed before parsing; raw input was not parsed. ${error.message}`);
+    throw error;
+  }
+  try {
+    const aiJson = aiStructuredJson === undefined
+      ? await createIntakeAiStructuredJson(raw, { source_type, source_id, source_table })
+      : aiStructuredJson;
+    const canonical = parseIntakeText({
+      raw_input: raw,
+      source_type,
+      source_channel,
+      source_id,
+      source_table,
+      source_date: rawIntake?.created_at || null,
+      aiStructuredJson: aiJson,
+    });
+    const inputHash = intakeStableHash(raw);
+    const sourceIdText = source_id === null || source_id === undefined ? null : String(source_id);
+    const sourceIdKey = sourceIdText || '';
+    const runMetadata = {
+      route: req?.originalUrl || null,
+      ai_provider: aiJson ? CONTENT_AI_PROVIDER : null,
+      dry_run: Boolean(dry_run),
+      raw_intake_stable_id: rawIntake?.stable_id || null,
+    };
   const runResult = await db.query(
     `INSERT INTO bna_intake_parse_runs (
        source_type, source_id, source_id_key, source_table, input_hash, parser_version, raw_input,
@@ -19321,7 +19947,7 @@ async function createCanonicalIntakeParseRun({
       Boolean(dry_run),
       (canonical.review_items || []).length ? 'needs_review' : 'parsed',
       created_by,
-      JSON.stringify(metadata),
+      JSON.stringify(runMetadata),
     ]
   );
   const run = runResult.rows[0];
@@ -19363,12 +19989,18 @@ async function createCanonicalIntakeParseRun({
     itemRows.push(intakeParseItemView(inserted.rows[0]));
   }
   await insertIntakeReviews(run.id, canonical, itemRows, db);
+  const updatedRawIntake = await updateRawIntakeRecordAfterParse(rawIntake, canonical, run, db);
   return {
+    raw_intake: updatedRawIntake || rawIntake,
     parse_run: intakeParseRunView(run),
     parsed: canonical,
     items: itemRows,
     review_items: (await fetchIntakeReviewItems({ parseRunId: run.id, db })).reviews,
   };
+  } catch (error) {
+    await markRawIntakeFailed(rawIntake, error, db).catch(() => {});
+    throw error;
+  }
 }
 
 async function fetchIntakeRunDetail(id, db = pool) {
@@ -19449,24 +20081,56 @@ async function getOrCreateSectionDefinition(sectionKey, options = {}, db = pool)
   return sectionDefinitionView(inserted.rows[0]);
 }
 
+function contentRecordingRunLooksLikeSource(run = {}) {
+  return /\b(google_drive|drive|class_recording|content_recording|recording|content_job)\b/i.test(`${run.source_type || ''} ${run.source || ''} ${run.source_table || ''} ${run.created_by || ''}`);
+}
+
+const CONTENT_RECORDING_SYSTEM_WORK_PATTERN = /\b(codex|repo|server|api|database|dashboard|operations|website|web site|ui|button|login|password|pwa|manifest|railway|deploy|smoke|watchdog|ramble|parser|queue|telegram|bot|helper|drive intake|content job|route|filter|app)\b/i;
+const CONTENT_RECORDING_ACTION_PATTERN = /\b(fix|wire|implement|add|remove|update|change|create|run|deploy|verify|test|parse|route|file|repair|debug|harden|finish|clean|reset)\b/i;
+const CONTENT_RECORDING_BUILD_INTENT_PATTERN = /\b(?:i\s+want\s+you\s+to|need\s+you\s+to|please|make\s+sure|make\s+it\s+so|has\s+to|have\s+to|should|build|make)\s+(?:the|a|an|this|that|it|everything|all|whole|new|proper|working|live|parents?|kids?|students?|dashboard|page|app|system|workflow|protocol|queue|parser|button|login|password|ui|website|bot|route|tool)\b/i;
+const CONTENT_RECORDING_CLASS_PATTERN = /\b(pasuk|pusik|rashi|hashem|beis(?:\s|-)?hamikdash|beit(?:\s|-)?hamikdash|mishnah|mishna|gemara|torah|shiur|class|rebbe|rabbi|student|worksheet|source sheet|test\s+[a-z]+|vav|yud[-\s]?heh)\b/i;
+
+function contentRecordingTaskIsExplicitSystemWork(payload = {}, item = {}, run = {}) {
+  const text = [
+    payload.title,
+    payload.summary,
+    payload.what,
+    payload.source_excerpt,
+    payload.raw_excerpt,
+    item.source_excerpt,
+    item.summary,
+  ].filter(Boolean).join('\n');
+  if (!contentRecordingRunLooksLikeSource(run)) return true;
+  if (CONTENT_RECORDING_SYSTEM_WORK_PATTERN.test(text)
+    && (CONTENT_RECORDING_ACTION_PATTERN.test(text) || CONTENT_RECORDING_BUILD_INTENT_PATTERN.test(text))) return true;
+  if (CONTENT_RECORDING_CLASS_PATTERN.test(text) && !CONTENT_RECORDING_SYSTEM_WORK_PATTERN.test(text)) return false;
+  return false;
+}
+
 async function fileTaskIntakeItem(item, run, project, personMap, db) {
   const payload = item.payload || {};
   const shaped = shapeTaskFromText({
     ...payload,
     text: payload.raw_excerpt || payload.source_excerpt || item.source_excerpt || payload.summary || item.summary || payload.title || item.title,
   });
-  const ownerPersonId = await resolvePersonIdByAlias(payload.owner || shaped.owner, db);
+  const explicitSystemWork = contentRecordingTaskIsExplicitSystemWork(payload, item, run);
+  const recordingReviewTask = contentRecordingRunLooksLikeSource(run) && item.item_type !== 'decision' && !explicitSystemWork;
+  const ownerPersonId = await resolvePersonIdByAlias(recordingReviewTask ? null : (payload.owner || shaped.owner), db);
   const task = await createTaskFromText({
     title: shaped.title,
     raw_text: payload.raw_excerpt || payload.source_excerpt || item.source_excerpt || item.summary,
     notes: payload.summary || item.summary || payload.source_excerpt || item.source_excerpt || '',
     summary: payload.summary || shaped.what,
     what: payload.what || shaped.what,
-    why: payload.why || shaped.why,
-    next_action: payload.next_action || shaped.next_action,
+    why: recordingReviewTask
+      ? 'Captured from a Drive/content recording and held for review instead of being treated as machine work.'
+      : (payload.why || shaped.why),
+    next_action: recordingReviewTask
+      ? 'Review parsed recording item and either promote it to work, file it as class/student context, or archive it.'
+      : (payload.next_action || shaped.next_action),
     item_type: item.item_type === 'decision' ? 'decision' : 'task',
     decision_required: item.item_type === 'decision',
-    assigned_to: payload.assigned_to || payload.owner || shaped.assigned_to || shaped.owner,
+    assigned_to: recordingReviewTask ? null : (payload.assigned_to || payload.owner || shaped.assigned_to || shaped.owner),
     owner_person_id: ownerPersonId,
     decision_owner: payload.decision_owner || (item.item_type === 'decision' ? (payload.owner || 'Shloimie') : null),
     category: payload.category || shaped.category || 'operations',
@@ -19474,12 +20138,19 @@ async function fileTaskIntakeItem(item, run, project, personMap, db) {
     source_context: { intake_parse_run_id: run.id, intake_parse_item_id: item.id, source_type: run.source_type, source_id: run.source_id },
     created_by: run.created_by || 'intake_parser',
     project: project.project_key,
+    task_kind: recordingReviewTask ? 'task' : (payload.task_kind || payload.taskKind || undefined),
+    agent_executable: recordingReviewTask ? false : Boolean(payload.agent_executable || payload.agentExecutable),
+    suppress_agent_inference: recordingReviewTask,
+    needs_review: recordingReviewTask || Boolean(payload.needs_review || payload.needsReview),
+    next_action_label: recordingReviewTask ? 'Review recording item' : payload.next_action_label,
     ai_parsed: {
       parser: 'canonical-intake-parser',
       parser_version: run.parser_version,
       intake_parse_run_id: run.id,
       intake_parse_item_id: item.id,
       canonical_item_type: item.item_type,
+      recording_review_task: recordingReviewTask,
+      agent_executable: !recordingReviewTask && Boolean(payload.agent_executable || payload.agentExecutable),
       payload,
     },
   }, {}, db);
@@ -19689,6 +20360,31 @@ async function fileIntakeParseRun(parseRunId, { req = null, force_review = false
       skipped: skipped.length,
     };
     const finalStatus = review.length ? (Object.values(created).some((group) => group.length) ? 'partially_filed' : 'needs_review') : 'filed';
+    const rawIntakeStableId = run.metadata?.raw_intake_stable_id || null;
+    if (rawIntakeStableId) {
+      const rawParseStatus = finalStatus === 'filed'
+        ? 'implemented'
+        : finalStatus === 'partially_filed'
+          ? 'registered'
+          : 'needs_review';
+      await client.query(
+        `UPDATE bna_raw_intake
+         SET parse_status = $1,
+             metadata = metadata || $2::jsonb,
+             updated_at = NOW()
+         WHERE stable_id = $3`,
+        [
+          rawParseStatus,
+          JSON.stringify({
+            applied_parse_run_id: run.id,
+            applied_counts: counts,
+            created_task_db_ids: created.tasks.map((task) => String(task.id)).filter(Boolean),
+            created_ticket_db_ids: created.tickets.map((ticket) => String(ticket.id)).filter(Boolean),
+          }),
+          rawIntakeStableId,
+        ]
+      );
+    }
     const updatedRun = (await client.query(
       `UPDATE bna_intake_parse_runs
        SET status = $1,
@@ -19738,6 +20434,381 @@ function observableAgentJobView(row = {}) {
     input_payload: parseJsonMaybe(row.input_payload),
     result_payload: parseJsonMaybe(row.result_payload),
   };
+}
+
+function agentProfileView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    profile_id: row.id,
+    capabilities: Array.isArray(row.capabilities)
+      ? row.capabilities
+      : Object.values(parseAgentJsonMaybe(row.capabilities, [])),
+  };
+}
+
+function agentControlRunKey() {
+  return `run_${crypto.randomBytes(10).toString('base64url')}`;
+}
+
+function agentControlActor(req, fallback = 'system') {
+  const identity = req?.opsIdentity || null;
+  return {
+    actor_type: identity?.role === 'super_admin' ? 'super_admin' : 'ops_user',
+    actor_id: identity?.username || req?.opsUser || fallback,
+    actor_name: identity?.displayName || identity?.username || req?.opsUser || fallback,
+  };
+}
+
+function agentControlTaskTargetUrl(req, task = {}, input = {}) {
+  const explicit = String(input.target_url || input.targetUrl || '').trim();
+  if (explicit) return explicit;
+  return `${requestBaseUrl(req)}/operations?view=tasks&task=${encodeURIComponent(task.id || '')}`;
+}
+
+async function fetchAgentProfile(input = {}, db = pool) {
+  const key = String(input.agent_key || input.agentKey || input.profile_key || input.profileKey || 'browser_qa').trim();
+  const id = Number(input.agent_profile_id || input.agentProfileId || 0);
+  const result = id
+    ? await db.query('SELECT * FROM bna_agent_profiles WHERE id = $1 AND active = TRUE LIMIT 1', [id])
+    : await db.query('SELECT * FROM bna_agent_profiles WHERE agent_key = $1 AND active = TRUE LIMIT 1', [key]);
+  return result.rows[0] || null;
+}
+
+async function fetchAgentPromptTemplate(agentType = 'browser_qa', db = pool) {
+  const result = await db.query(
+    `SELECT *
+     FROM bna_agent_prompt_templates
+     WHERE active = TRUE
+       AND agent_type = $1
+     ORDER BY version DESC, updated_at DESC
+     LIMIT 1`,
+    [agentType]
+  );
+  return result.rows[0] || null;
+}
+
+async function appendAgentRunEvent(runOrId, eventType, options = {}, db = pool) {
+  const run = typeof runOrId === 'object' && runOrId ? runOrId : { id: runOrId };
+  if (!run?.id || !eventType) return null;
+  const actor = options.actor || {};
+  const result = await db.query(
+    `INSERT INTO bna_agent_run_events (run_id, event_type, actor_type, actor_id, actor_name, body, metadata)
+     VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)
+     RETURNING *`,
+    [
+      run.id,
+      String(eventType).slice(0, 120),
+      String(actor.actor_type || options.actor_type || 'system').slice(0, 80),
+      actor.actor_id || options.actor_id || null,
+      actor.actor_name || options.actor_name || null,
+      options.body || options.summary || null,
+      JSON.stringify(options.metadata || {}),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function fetchAgentRunByKey(runKey, db = pool) {
+  const result = await db.query(
+    `SELECT r.*,
+            t.title AS task_title,
+            t.display_title AS task_display_title,
+            t.stage AS task_stage,
+            t.implementation_status AS task_implementation_status,
+            t.verification_status AS task_verification_status,
+            t.required_verification_mode AS task_required_verification_mode,
+            p.project_key,
+            p.name AS project_name,
+            p.short_name AS project_short_name,
+            ap.agent_key,
+            ap.display_name AS agent_display_name,
+            ap.agent_type,
+            ap.capabilities,
+            COALESCE(artifact_counts.artifact_count, 0)::int AS artifact_count,
+            COALESCE(event_counts.event_count, 0)::int AS event_count
+     FROM bna_agent_runs r
+     LEFT JOIN bna_tasks t ON t.id = r.task_id
+     LEFT JOIN bna_projects p ON p.id = COALESCE(r.project_id, t.project_id)
+     LEFT JOIN bna_agent_profiles ap ON ap.id = r.agent_profile_id
+     LEFT JOIN (
+       SELECT run_id, COUNT(*) AS artifact_count
+       FROM bna_agent_run_artifacts
+       GROUP BY run_id
+     ) artifact_counts ON artifact_counts.run_id = r.id
+     LEFT JOIN (
+       SELECT run_id, COUNT(*) AS event_count
+       FROM bna_agent_run_events
+       GROUP BY run_id
+     ) event_counts ON event_counts.run_id = r.id
+     WHERE r.run_key = $1
+     LIMIT 1`,
+    [runKey]
+  );
+  return result.rows[0] ? agentRunView(result.rows[0]) : null;
+}
+
+async function fetchAgentRunArtifacts(runId, db = pool) {
+  const result = await db.query(
+    `SELECT *
+     FROM bna_agent_run_artifacts
+     WHERE run_id = $1
+     ORDER BY created_at ASC`,
+    [runId]
+  );
+  return result.rows.map((row) => ({
+    ...row,
+    metadata: parseAgentJsonMaybe(row.metadata, {}),
+  }));
+}
+
+async function fetchAgentRunEvents(runId, db = pool) {
+  const result = await db.query(
+    `SELECT *
+     FROM bna_agent_run_events
+     WHERE run_id = $1
+     ORDER BY created_at ASC`,
+    [runId]
+  );
+  return result.rows.map((row) => ({
+    ...row,
+    metadata: parseAgentJsonMaybe(row.metadata, {}),
+  }));
+}
+
+function assertAgentRunAccess(req, run = {}) {
+  assertProjectAccess(req, { project_key: run.project_key || run.task_project_key || null });
+}
+
+function agentControlContextSnapshot(task = {}, input = {}) {
+  return {
+    task_id: task.id || null,
+    task_title: task.display_title || task.title || null,
+    project_key: task.project_key || input.project_key || null,
+    project_name: task.project_name || null,
+    workspace_id: task.workspace_id || null,
+    verification_plan_source: input.source || 'operations',
+    evidence_exempt: Boolean(input.evidence_exempt || input.evidenceExempt),
+  };
+}
+
+function agentControlPromptRunModel(run, task, profile) {
+  return {
+    ...run,
+    workspace_label: task.project_name || task.project_key || 'BNA',
+    purpose: run.purpose || `Verify ${task.display_title || task.title || 'this task'} and seal the result in BNA Operations.`,
+  };
+}
+
+async function createAgentRunForTask(taskId, input = {}, req, db = pool) {
+  const client = db === pool ? await pool.connect() : db;
+  const shouldRelease = db === pool;
+  try {
+    await client.query('BEGIN');
+    const task = await fetchTaskWithProject(taskId, client);
+    if (!task) {
+      const error = new Error('Task not found.');
+      error.statusCode = 404;
+      throw error;
+    }
+    assertProjectAccess(req, { project_key: task.project_key });
+    const verificationMode = normalizeVerificationMode(input.verification_mode || input.verificationMode, 'mixed');
+    const runType = String(input.run_type || input.runType || 'verification').trim().toLowerCase().slice(0, 80) || 'verification';
+    const active = (await client.query(
+      `SELECT run_key
+       FROM bna_agent_runs
+       WHERE task_id = $1
+         AND run_type = $2
+         AND verification_mode = $3
+         AND status IN ('draft', 'ready', 'claimed', 'running', 'waiting_operator', 'submitted')
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [task.id, runType, verificationMode]
+    )).rows[0];
+    if (active && !input.regenerate) {
+      await client.query('COMMIT');
+      return await fetchAgentRunByKey(active.run_key);
+    }
+    const profile = await fetchAgentProfile(input, client);
+    if (!profile) {
+      const error = new Error('Active agent profile not found.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const template = await fetchAgentPromptTemplate(profile.agent_type, client);
+    const taskParsed = parseAgentJsonMaybe(task.ai_parsed, {});
+    const acceptanceCriteria = acceptanceCriteriaFromInput(
+      input.acceptance_criteria || input.acceptanceCriteria || taskParsed.acceptance_criteria || taskParsed.acceptanceCriteria,
+      task
+    );
+    const allowedActions = Array.isArray(input.allowed_actions || input.allowedActions)
+      ? (input.allowed_actions || input.allowedActions)
+      : defaultAllowedActions(profile.agent_type);
+    const forbiddenActions = Array.isArray(input.forbidden_actions || input.forbiddenActions)
+      ? (input.forbidden_actions || input.forbiddenActions)
+      : defaultForbiddenActions();
+    const runKey = agentControlRunKey();
+    const runModel = {
+      run_key: runKey,
+      target_url: agentControlTaskTargetUrl(req, task, input),
+      acceptance_criteria: acceptanceCriteria,
+      allowed_actions: allowedActions,
+      forbidden_actions: forbiddenActions,
+      verification_mode: verificationMode,
+      purpose: input.purpose || null,
+    };
+    const promptVersion = Number(template?.version || 1);
+    const promptText = renderAgentRunPrompt({
+      run: agentControlPromptRunModel(runModel, task, profile),
+      task,
+      profile,
+      templateText: template?.template_text || undefined,
+      baseUrl: requestBaseUrl(req),
+    });
+    const result = await client.query(
+      `INSERT INTO bna_agent_runs (
+         run_key, task_id, workspace_id, project_id, batch_id, agent_profile_id,
+         run_type, verification_mode, status, priority, prompt_version, prompt_text,
+         target_url, acceptance_criteria, allowed_actions, forbidden_actions,
+         context_snapshot, expires_at, created_by
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'ready', $9, $10, $11, $12,
+         $13::jsonb, $14::jsonb, $15::jsonb, $16::jsonb, NOW() + INTERVAL '7 days', $17)
+       RETURNING *`,
+      [
+        runKey,
+        task.id,
+        task.workspace_id || null,
+        task.project_id || null,
+        input.batch_id || input.batchId || null,
+        profile.id,
+        runType,
+        verificationMode,
+        normalizeAgentPriority(input.priority || task.urgency || 'normal'),
+        promptVersion,
+        promptText,
+        runModel.target_url,
+        JSON.stringify(acceptanceCriteria),
+        JSON.stringify(allowedActions),
+        JSON.stringify(forbiddenActions),
+        JSON.stringify(agentControlContextSnapshot(task, input)),
+        req?.opsUser || 'operations',
+      ]
+    );
+    const run = result.rows[0];
+    await client.query(
+      `UPDATE bna_tasks
+       SET required_verification_mode = $1,
+           verification_status = 'ready',
+           implementation_status = COALESCE($2, implementation_status, 'not_started'),
+           active_agent_run_id = $3,
+           next_action = 'Launch Browser QA agent run',
+           last_activity_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $4`,
+      [
+        verificationMode,
+        input.implementation_status ? normalizeImplementationStatus(input.implementation_status, 'not_started') : null,
+        run.id,
+        task.id,
+      ]
+    );
+    await recordTaskActivity(task.id, 'agent_run_ready', {
+      actor: req?.opsUser || 'operations',
+      summary: `Agent run ${run.run_key} is ready for ${profile.display_name}.`,
+      metadata: { agent_run_id: run.id, run_key: run.run_key, verification_mode: verificationMode },
+    }, client);
+    await appendAgentRunEvent(run, 'created', {
+      actor: agentControlActor(req),
+      body: `Agent run ${run.run_key} created for task #${task.id}.`,
+      metadata: { task_id: task.id, profile: profile.agent_key },
+    }, client);
+    await appendAgentRunEvent(run, 'prompt_generated', {
+      actor: agentControlActor(req),
+      body: `Prompt v${promptVersion} generated.`,
+      metadata: { prompt_version: promptVersion },
+    }, client);
+    await client.query('COMMIT');
+    return await fetchAgentRunByKey(run.run_key);
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw error;
+  } finally {
+    if (shouldRelease) client.release();
+  }
+}
+
+async function createAgentRunDecision(run, input = {}, req, db = pool) {
+  if (!run?.task_id) return null;
+  const blocker = String(input.blocker || input.summary || run.blocker || run.result_summary || 'Agent run needs operator action.').slice(0, 4000);
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_tasks
+     WHERE parent_task_id = $1
+       AND item_type = 'decision'
+       AND task_kind = 'decision'
+       AND COALESCE(stage, '') NOT IN ('done', 'archive')
+       AND COALESCE(ai_parsed->>'agent_run_key', '') = $2
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [run.task_id, run.run_key]
+  )).rows[0];
+  if (existing) return existing;
+  const title = `Operator action for agent run ${run.run_key}`;
+  const notes = [
+    `Blocked agent run: ${run.run_key}`,
+    `Parent task: #${run.task_id} ${run.task_title || ''}`,
+    `Action required: ${blocker}`,
+    'Safety: do not share passwords, API keys, refresh tokens, cookies, or production approval in the agent prompt.',
+  ].join('\n');
+  const result = await db.query(
+    `INSERT INTO bna_tasks (
+       title, display_title, notes, stage, category, urgency, source, created_by,
+       assigned_to, parent_task_id, project_id, workspace_id, item_type, task_kind,
+       decision_required, decision_owner, decision_status, decision_route,
+       decision_prompt, decision_options_json, next_action, why_exists, ai_parsed
+     )
+     VALUES ($1, $1, $2, 'needs_decision', 'operations', 'today', 'system', $3,
+       'Shloimie', $4, $5, $6, 'decision', 'decision',
+       TRUE, 'Shloimie', 'created', 'none',
+       $7, $8::jsonb, 'Resolve the operator action and resume the agent run',
+       'Agent verification cannot continue without a human or external action.', $9::jsonb)
+     RETURNING *`,
+    [
+      title,
+      notes,
+      req?.opsUser || 'agent-run',
+      run.task_id,
+      run.project_id || null,
+      run.workspace_id || null,
+      blocker,
+      JSON.stringify([{ label: 'Mark operator step complete', value: 'resume_agent_run' }]),
+      JSON.stringify({ agent_run_key: run.run_key, source: 'agent_control_center', blocker }),
+    ]
+  );
+  const decision = result.rows[0];
+  await recordTaskActivity(decision.id, 'agent_run_decision_created', {
+    actor: req?.opsUser || 'agent-run',
+    summary: blocker,
+    metadata: { agent_run_key: run.run_key, parent_task_id: run.task_id },
+  }, db);
+  return decision;
+}
+
+async function addAgentRunTaskComment(run, body, req, db = pool) {
+  if (!run?.task_id || !String(body || '').trim()) return null;
+  const result = await db.query(
+    `INSERT INTO bna_task_comments (task_id, author, body, visibility, source, source_context)
+     VALUES ($1, $2, $3, 'internal', 'system', $4::jsonb)
+     RETURNING *`,
+    [
+      run.task_id,
+      req?.opsUser || 'agent-run',
+      String(body).slice(0, 4000),
+      JSON.stringify({ source: 'agent_control_center', run_key: run.run_key, run_id: run.id }),
+    ]
+  );
+  return result.rows[0] || null;
 }
 
 function sourceDateFromInput(input = {}) {
@@ -19870,7 +20941,23 @@ async function captureIncomingBotMessage(input = {}, options = {}) {
   };
 
   const client = await pool.connect();
+  let rawIntake = null;
   try {
+    rawIntake = await createRawIntakeRecord({
+      rawInput: rawText,
+      source_type: source,
+      source_channel: sourceChannel,
+      source_id: sourceMessageIdText,
+      source_message_id: sourceMessageIdText,
+      source_user: input.created_by || input.createdBy || source,
+      intake_type: broadCorrectionRegisterNeeded(rawText) ? 'broad_correction' : 'general',
+      metadata: {
+        ...metadata,
+        source_date: sourceCreatedAt,
+        bridge_capture_parser: options.parser || 'observable-bot-capture-v1',
+      },
+      db: pool,
+    });
     await client.query('BEGIN');
 
     let bridge = null;
@@ -19951,6 +21038,21 @@ async function captureIncomingBotMessage(input = {}, options = {}) {
          WHERE id = $5`,
         [existingTicket.id, existingTicket.task_id || null, existingTicket.agent_job_id || null, existingTicket.status || null, bridge.id]
       );
+      await client.query(
+        `UPDATE bna_raw_intake
+         SET parse_status = 'registered',
+             parsed_payload = $1::jsonb,
+             created_task_ids = $2,
+             metadata = metadata || $3::jsonb,
+             updated_at = NOW()
+         WHERE id = $4`,
+        [
+          JSON.stringify({ duplicate: true, ticket_id: existingTicket.id, task_id: existingTicket.task_id || null, agent_job_id: existingTicket.agent_job_id || null }),
+          existingTicket.task_id ? [String(existingTicket.task_id)] : [],
+          JSON.stringify({ duplicate_ticket_id: existingTicket.id, bridge_message_id: bridge.id }),
+          rawIntake.id,
+        ]
+      );
       await client.query('COMMIT');
       const ticket = observableTicketView(existingTicket);
       const viewedTasks = tasks;
@@ -19958,6 +21060,7 @@ async function captureIncomingBotMessage(input = {}, options = {}) {
       return {
         success: true,
         duplicate: true,
+        raw_intake: rawIntake,
         ticket,
         task: viewedTasks[0] || null,
         tasks: viewedTasks,
@@ -20139,12 +21242,40 @@ async function captureIncomingBotMessage(input = {}, options = {}) {
       ]
     );
 
+    await client.query(
+      `UPDATE bna_raw_intake
+       SET parse_status = $1,
+           parsed_payload = $2::jsonb,
+           created_task_ids = $3,
+           created_decision_ids = $4,
+           metadata = metadata || $5::jsonb,
+           parsed_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $6`,
+      [
+        tasks.length || ticket.id ? 'registered' : 'needs_review',
+        JSON.stringify({
+          parser: options.parser || 'observable-bot-capture-v1',
+          ticket_id: ticket.id,
+          task_ids: tasks.map((task) => task.id),
+          agent_job_ids: agentJobs.map((job) => job.id),
+          classification,
+          candidate_count: candidates.length,
+        }),
+        tasks.map((task) => String(task.id)).filter(Boolean),
+        tasks.filter((task) => task.decision_required || task.stage === 'needs_decision').map((task) => String(task.id)).filter(Boolean),
+        JSON.stringify({ bridge_message_id: bridge.id, ticket_id: ticket.id, agent_job_ids: agentJobs.map((job) => job.id).filter(Boolean) }),
+        rawIntake.id,
+      ]
+    );
+
     await client.query('COMMIT');
     const viewedTicket = observableTicketView(ticket);
     const viewedJobs = agentJobs.map(observableAgentJobView);
     return {
       success: true,
       duplicate: false,
+      raw_intake: rawIntake,
       ticket: viewedTicket,
       task: tasks[0] || null,
       tasks,
@@ -20154,6 +21285,7 @@ async function captureIncomingBotMessage(input = {}, options = {}) {
     };
   } catch (error) {
     try { await client.query('ROLLBACK'); } catch {}
+    try { await markRawIntakeFailed(rawIntake, error); } catch {}
     throw error;
   } finally {
     client.release();
@@ -25998,6 +27130,7 @@ async function initDb() {
     await pool.query(createTaskCommentsSQL);
     await pool.query(createTaskWorkflowExtensionsSQL);
     await pool.query(createAgentJobsSQL);
+    await pool.query(createAgentControlSQL);
     await pool.query(createTaskEventsSQL);
     await pool.query(createTaskActivitySQL);
     await pool.query(createSupportTicketsSQL);
@@ -28055,6 +29188,15 @@ function normalizedTaskTitleKey(title) {
   return String(title || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
+function taskIsTerminalHistory(task = {}) {
+  return Boolean(
+    task.completed_at
+    || task.verified_at
+    || ['done', 'archive'].includes(normalizeTaskStage(task.stage))
+    || safeTaskKind(task.task_kind, null) === 'history'
+  );
+}
+
 async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
   if (!oneTime?.id) return [];
   const specs = rabbiLaunchTaskSpecs();
@@ -28142,12 +29284,23 @@ async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
 
     const nextOptions = normalizeDecisionOptions(spec.decision_options_json);
     const existingOptions = normalizeDecisionOptions(existing.decision_options_json);
+    const existingTerminal = taskIsTerminalHistory(existing);
+    const nextItemType = existingTerminal ? (existing.item_type || spec.item_type || 'task') : (spec.item_type || 'task');
+    const nextStage = existingTerminal
+      ? (normalizeTaskStage(existing.stage) === 'archive' ? 'archive' : 'done')
+      : (spec.stage || 'assigned');
+    const nextTaskKind = existingTerminal ? 'history' : specTaskKind;
+    const nextDecisionRequired = existingTerminal ? false : spec.item_type === 'decision';
+    const nextWhyExists = existingTerminal ? defaultWhyExistsForTaskKind('history') : defaultWhyExistsForTaskKind(specTaskKind);
+    const nextAction = existingTerminal
+      ? 'Review completed result'
+      : (spec.next_action_label || defaultNextActionForDialogue({ taskKind: specTaskKind, waitingOn: specWaitingOn, assignedTo: spec.assigned_to }));
     const changed = [
       ['title', spec.title],
       ['summary', spec.summary || null],
       ['notes', spec.notes || null],
-      ['item_type', spec.item_type || 'task'],
-      ['stage', spec.stage || 'assigned'],
+      ['item_type', nextItemType],
+      ['stage', nextStage],
       ['category', safeTaskCategory(spec.category)],
       ['urgency', safeTaskUrgency(spec.urgency)],
       ['assigned_to', normalizeTaskAssignee(spec.assigned_to)],
@@ -28156,11 +29309,12 @@ async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
       ['decision_prompt', spec.decision_prompt || null],
       ['due_date', spec.due_date || null],
       ['next_action_label', spec.next_action_label || null],
-      ['task_kind', specTaskKind],
+      ['task_kind', nextTaskKind],
       ['display_title', spec.title],
-      ['why_exists', defaultWhyExistsForTaskKind(specTaskKind)],
-      ['next_action', spec.next_action_label || defaultNextActionForDialogue({ taskKind: specTaskKind, waitingOn: specWaitingOn, assignedTo: spec.assigned_to })],
+      ['why_exists', nextWhyExists],
+      ['next_action', nextAction],
       ['cleaned_summary', spec.summary || null],
+      ...(existingTerminal ? [['agent_status', 'completed']] : []),
     ].some(([key, value]) => String(existing[key] ?? '') !== String(value ?? ''))
       || JSON.stringify(existingOptions) !== JSON.stringify(nextOptions)
       || (existing.ai_parsed || {})?.rabbi_launch_seed !== RABBI_SCHELLER_LAUNCH_SEED;
@@ -28189,34 +29343,36 @@ async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
              why_exists = $18,
              next_action = $19,
              cleaned_summary = $20,
-             raw_message = COALESCE(raw_message, $21),
+             agent_status = CASE WHEN $21::boolean THEN 'completed' ELSE agent_status END,
+             raw_message = COALESCE(raw_message, $22),
              bot_created = TRUE,
-             ai_parsed = COALESCE(ai_parsed, '{}'::jsonb) || $22::jsonb,
+             ai_parsed = COALESCE(ai_parsed, '{}'::jsonb) || $23::jsonb,
              last_activity_at = COALESCE(last_activity_at, created_at),
              updated_at = NOW()
-         WHERE id = $23
+         WHERE id = $24
          RETURNING *`,
         [
           spec.title,
           spec.summary || null,
           spec.notes || null,
-          spec.item_type || 'task',
-          spec.stage || 'assigned',
+          nextItemType,
+          nextStage,
           safeTaskCategory(spec.category),
           safeTaskUrgency(spec.urgency),
           normalizeTaskAssignee(spec.assigned_to),
           normalizeTaskPerson(spec.decision_owner),
           specWaitingOn,
-          spec.item_type === 'decision',
+          nextDecisionRequired,
           spec.decision_prompt || null,
           JSON.stringify(nextOptions),
           spec.due_date || null,
           spec.next_action_label || null,
-          specTaskKind,
+          nextTaskKind,
           spec.title,
-          defaultWhyExistsForTaskKind(specTaskKind),
-          spec.next_action_label || defaultNextActionForDialogue({ taskKind: specTaskKind, waitingOn: specWaitingOn, assignedTo: spec.assigned_to }),
+          nextWhyExists,
+          nextAction,
           spec.summary || null,
+          existingTerminal,
           spec.summary || spec.title,
           JSON.stringify(aiParsedPatch),
           existing.id,
@@ -28229,7 +29385,7 @@ async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
         metadata: { seed_key: spec.key, seed: RABBI_SCHELLER_LAUNCH_SEED },
       }, db);
     }
-    if (spec.agent_executable || isAgentAssignee(task.assigned_to)) {
+    if (!taskIsTerminalHistory(task) && (spec.agent_executable || isAgentAssignee(task.assigned_to))) {
       await ensureAgentJobForTask(task, { agent_executable: true, source: 'rabbi_launch_seed' }, db);
       task = await fetchTaskWithProject(task.id, db) || task;
     }
@@ -28396,6 +29552,13 @@ async function ensureAssistantPortalReadinessTasks(bna, db = pool) {
       touched.push(created);
       continue;
     }
+    const existingTerminal = taskIsTerminalHistory(existing);
+    const nextItemType = existingTerminal ? (existing.item_type || spec.item_type || 'task') : (spec.item_type || 'task');
+    const nextStage = existingTerminal
+      ? (normalizeTaskStage(existing.stage) === 'archive' ? 'archive' : 'done')
+      : (spec.stage || 'assigned');
+    const nextDecisionRequired = existingTerminal ? false : (spec.item_type || 'task') === 'decision';
+    const nextActionLabel = existingTerminal ? (existing.next_action_label || 'Review completed result') : (spec.next_action_label || null);
     const updated = (await db.query(
       `UPDATE bna_tasks
        SET summary = COALESCE($2, summary),
@@ -28409,6 +29572,11 @@ async function ensureAssistantPortalReadinessTasks(bna, db = pool) {
            decision_owner = $10,
            decision_required = $11,
            next_action_label = $12,
+           task_kind = CASE WHEN $14::boolean THEN 'history' ELSE task_kind END,
+           agent_status = CASE WHEN $14::boolean THEN 'completed' ELSE agent_status END,
+           completed_at = CASE WHEN $14::boolean THEN COALESCE(completed_at, NOW()) ELSE completed_at END,
+           next_action = CASE WHEN $14::boolean THEN COALESCE(next_action, 'Review completed result') ELSE next_action END,
+           why_exists = CASE WHEN $14::boolean THEN COALESCE(why_exists, $15) ELSE why_exists END,
            ai_parsed = COALESCE(ai_parsed, '{}'::jsonb) || $13::jsonb,
            updated_at = NOW()
        WHERE id = $1
@@ -28417,19 +29585,21 @@ async function ensureAssistantPortalReadinessTasks(bna, db = pool) {
         existing.id,
         spec.summary || null,
         spec.notes || null,
-        spec.item_type || 'task',
-        spec.stage || 'assigned',
+        nextItemType,
+        nextStage,
         safeTaskCategory(spec.category || 'operations'),
         safeTaskUrgency(spec.urgency || 'this_week'),
         normalizeTaskAssignee(spec.assigned_to || 'Shloimie'),
         spec.waiting_on ? normalizeTaskPerson(spec.waiting_on) : null,
         normalizeTaskPerson(spec.decision_owner),
-        (spec.item_type || 'task') === 'decision',
-        spec.next_action_label || null,
+        nextDecisionRequired,
+        nextActionLabel,
         JSON.stringify(aiParsed),
+        existingTerminal,
+        defaultWhyExistsForTaskKind('history'),
       ]
     )).rows[0] || existing;
-    if (spec.agent_executable || isAgentAssignee(updated.assigned_to)) {
+    if (!taskIsTerminalHistory(updated) && (spec.agent_executable || isAgentAssignee(updated.assigned_to))) {
       await ensureAgentJobForTask(updated, { agent_executable: true, source: 'assistant_portal_seed' }, db);
     }
     touched.push(updated);
@@ -30338,14 +31508,14 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
   }, db);
   const family = await ensureWorkspaceProject({
     projectKey: 'dratler_family',
-    name: 'Family Accountability',
+    name: 'Dratler Family',
     shortName: 'Family',
-    description: "Private family accountability workspace for Shloimie's household.",
+    description: "Private family workspace for Shloimie's household.",
     workspaceType: 'family',
     ownerPersonId: shloimie.id,
     visibility: 'private',
     languageDefault: 'en',
-    slug: 'family-accountability',
+    slug: 'dratler-family',
     settings: { accountability_mode: 'family' },
     metadata: { source: 'personal_workspace_seed', public: false },
   }, db);
@@ -30361,6 +31531,7 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     slug: 'bna',
     settings: { primary_role_label: 'Rabbi', accountability_mode: 'school' },
   }, db);
+  let oneTimeWorkspace = oneTime || null;
   if (oneTime?.id) {
     await db.query(
       `UPDATE bna_projects
@@ -30372,6 +31543,7 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
        WHERE id = $1`,
       [oneTime.id]
     );
+    oneTimeWorkspace = await getProjectByKey('one_time_mishnah_class', db).catch(() => oneTime);
   }
 
   const menachem = await upsertCanonicalPerson({
@@ -30392,6 +31564,14 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
   await ensureWorkspaceMembership(bnaWorkspace, shloimie, { role: 'owner', access_level: 'owner', tags: ['bna:owner'] }, db);
   await ensureWorkspaceMembership(bnaWorkspace, shloimie, { role: 'rabbi', access_level: 'admin', tags: ['bna:rabbi'] }, db);
   await ensureWorkspaceMembership(bnaWorkspace, shloimie, { role: 'admin', access_level: 'admin', tags: ['bna:admin'] }, db);
+  if (oneTimeWorkspace?.id) {
+    await ensureWorkspaceMembership(oneTimeWorkspace, shloimie, {
+      role: 'owner',
+      access_level: 'owner',
+      tags: ['service_provider:owner', 'one_time:owner', 'rabbi_sheller_provider'],
+      metadata: { seed: 'personal-workspaces-2026-06-17', canonical_workspace: 'rabbi_sheller_provider' },
+    }, db);
+  }
   await ensureWorkspaceMembership(family, shloimie, { role: 'owner', access_level: 'owner', tags: ['family:parent'] }, db);
   await ensureWorkspaceMembership(family, shloimie, { role: 'parent', access_level: 'owner', tags: ['family:parent'] }, db);
   await ensureWorkspaceMembership(family, menachem, { role: 'child', access_level: 'member', relationship_to_owner: 'son', tags: ['family:son'] }, db);
@@ -31481,7 +32661,7 @@ function fallbackWorkspaceProjectRow(workspaceKey) {
     platform: ['All Operations', 'Admin', 'super_admin'],
     super_admin: ['Super Admin', 'Super Admin', 'super_admin'],
     bna: ['BNA', 'BNA', 'school'],
-    dratler_family: ['Family Accountability', 'Family', 'family'],
+    dratler_family: ['Dratler Family', 'Family', 'family'],
     rabbi_sheller_provider: ['One Time Mishnah Class', 'One Time', 'service_provider'],
   };
   const [name, shortName, workspaceType] = labels[key] || [projectKey.replace(/_/g, ' '), projectKey, 'project'];
@@ -31502,11 +32682,21 @@ function fallbackWorkspaceProjectRow(workspaceKey) {
   };
 }
 
+const CANONICAL_WORKSPACE_TYPES = new Set(['school', 'service_provider', 'family']);
+const WORKSPACE_CONTEXT_TYPES = new Set(['super_admin']);
+const WORKSPACE_TYPE_COMPATIBILITY_ALIASES = Object.freeze({
+  platform: 'super_admin',
+  provider: 'service_provider',
+  household: 'family',
+  community: 'workspace_review',
+  project: 'workspace_review',
+});
+
 const WORKSPACE_DISPLAY_CATEGORIES = Object.freeze([
   { id: 'super_admin', label: 'Super Admin', order: 10 },
   { id: 'school', label: 'School', order: 20 },
-  { id: 'service_providers', label: 'Service Providers', order: 30 },
-  { id: 'family_home_accountability', label: 'Family App / Home Accountability', order: 40 },
+  { id: 'service_provider', label: 'Service Provider', order: 30 },
+  { id: 'family', label: 'Family', order: 40 },
 ]);
 
 const WORKSPACE_DISPLAY_CATEGORY_IDS = new Set(WORKSPACE_DISPLAY_CATEGORIES.map((category) => category.id));
@@ -31526,8 +32716,8 @@ function normalizeWorkspaceDisplayCategory(value) {
   if (!key) return '';
   if (['super_admin', 'superadmin', 'admin_global', 'platform', 'operator', 'operations', 'all_operations'].includes(key)) return 'super_admin';
   if (['school', 'schools', 'bna', 'bna_school', 'bnei_neviim', 'bnei_neviim_academy', 'academy'].includes(key)) return 'school';
-  if (['service_provider', 'service_providers', 'provider', 'providers', 'vendor', 'partner', 'collaborator', 'rabbi', 'one_time', 'one_time_mishnah_class', 'one_time_mishna_class'].includes(key)) return 'service_providers';
-  if (['family_home_accountability', 'family_app_home_accountability', 'family_app_home', 'family_app', 'home_accountability', 'accountability_home', 'parent_accountability', 'family', 'parents', 'parent', 'parent_household', 'parent_households', 'household', 'households', 'home'].includes(key)) return 'family_home_accountability';
+  if (['service_provider', 'service_providers', 'provider', 'providers', 'vendor', 'partner', 'collaborator', 'rabbi', 'one_time', 'one_time_mishnah_class', 'one_time_mishna_class'].includes(key)) return 'service_provider';
+  if (['family_home_accountability', 'family_app_home_accountability', 'family_app_home', 'family_app', 'home_accountability', 'accountability_home', 'parent_accountability', 'family', 'parents', 'parent', 'parent_household', 'parent_households', 'household', 'households', 'home'].includes(key)) return 'family';
   return '';
 }
 
@@ -31548,8 +32738,8 @@ function workspaceDisplayCategoryForRecord(record = {}) {
   if (typeCategory && !['project', 'community'].includes(rawType)) return typeCategory;
   if (['platform', 'super_admin'].includes(key)) return 'super_admin';
   if (key === 'bna' || ['bna', 'bnei_neviim', 'bnei_neviim_academy', 'academy'].includes(projectKey)) return 'school';
-  if (key === 'rabbi_sheller_provider' || ['one_time_mishnah_class', 'one_time', 'mishna', 'mishnah', 'rabbi_elie_scheller'].includes(projectKey)) return 'service_providers';
-  if (['dratler_family', 'parent_households'].includes(key)) return 'family_home_accountability';
+  if (key === 'rabbi_sheller_provider' || ['one_time_mishnah_class', 'one_time', 'mishna', 'mishnah', 'rabbi_elie_scheller'].includes(projectKey)) return 'service_provider';
+  if (['dratler_family', 'parent_households'].includes(key)) return 'family';
   return '';
 }
 
@@ -31560,12 +32750,12 @@ function workspaceDirectoryTypeForRecord(record = {}) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '');
-  if (['platform', 'super_admin'].includes(key) || ['platform', 'super_admin'].includes(rawType)) return 'super_admin';
+  if (['platform', 'super_admin'].includes(key) || WORKSPACE_CONTEXT_TYPES.has(rawType)) return 'super_admin';
   if (key === 'bna' || rawType === 'school') return 'school';
   if (key === 'rabbi_sheller_provider' || ['provider', 'service_provider'].includes(rawType)) return 'service_provider';
-  if (rawType === 'household' || key === 'parent_households') return 'household';
-  if (rawType === 'family' || key === 'dratler_family') return 'family';
-  return rawType || 'workspace';
+  if (rawType === 'family' || rawType === 'household' || key === 'dratler_family' || key === 'parent_households') return 'family';
+  if (CANONICAL_WORKSPACE_TYPES.has(rawType)) return rawType;
+  return WORKSPACE_TYPE_COMPATIBILITY_ALIASES[rawType] || 'workspace_review';
 }
 
 function workspaceDirectoryTargetForItem(item = {}) {
@@ -31578,6 +32768,59 @@ function workspaceDirectoryTargetForItem(item = {}) {
     project: projectKey || 'all',
     workspace: item.key || item.workspace_key || '',
   };
+}
+
+function workspaceDirectoryRecordKey(record = {}) {
+  return normalizeWorkspaceKey(record.workspace_key || record.project_key || record.key || record.slug || record.name || record.display_name || '');
+}
+
+function workspaceDirectoryRecordHasMembership(recordOrKey = {}, membershipByWorkspace = new Map()) {
+  const key = typeof recordOrKey === 'string' ? normalizeWorkspaceKey(recordOrKey) : workspaceDirectoryRecordKey(recordOrKey);
+  if (!key) return false;
+  const projectKey = normalizeProjectKey(workspaceProjectKey(key) || key);
+  return membershipByWorkspace.has(key) || (projectKey ? membershipByWorkspace.has(projectKey) : false);
+}
+
+function shouldShowWorkspaceDirectoryRecord(record = {}, { allScope = false, membershipByWorkspace = new Map(), source = '' } = {}) {
+  if (!allScope) return true;
+  const key = workspaceDirectoryRecordKey(record);
+  if (!key) return false;
+  if (source === 'admin_pseudo_workspace' || key === 'platform') return true;
+  return workspaceDirectoryRecordHasMembership(record, membershipByWorkspace);
+}
+
+function workspaceDirectoryRoleLabel({ role = '', displayCategory = '', workspaceType = '' } = {}) {
+  const normalizedRole = String(role || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  if (displayCategory === 'super_admin') return 'Super Admin';
+  if (displayCategory === 'school') {
+    if (['owner', 'project_owner'].includes(normalizedRole)) return 'School Owner';
+    if (['rabbi', 'admin', 'bna_admin', 'school_admin'].includes(normalizedRole)) return 'School Admin';
+    if (['student'].includes(normalizedRole)) return 'Student';
+    if (['parent'].includes(normalizedRole)) return 'Parent';
+    return 'School Member';
+  }
+  if (displayCategory === 'service_provider' || workspaceType === 'service_provider') {
+    if (['project_owner', 'owner'].includes(normalizedRole)) return 'Provider Owner';
+    if (['project_manager', 'manager'].includes(normalizedRole)) return 'Provider Manager';
+    return 'Provider Admin';
+  }
+  if (displayCategory === 'family' || ['family', 'household'].includes(workspaceType)) {
+    if (['owner', 'parent', 'primary_parent'].includes(normalizedRole)) return 'Family Owner';
+    if (['child', 'student'].includes(normalizedRole)) return 'Child';
+    return 'Family Member';
+  }
+  return normalizedRole ? normalizedRole.replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()) : 'Workspace Member';
+}
+
+function workspaceDirectoryScopeLabel({ displayCategory = '', role = '', accessLevel = '' } = {}) {
+  const category = workspaceDisplayCategoryLabel(displayCategory) || 'Workspace';
+  const roleLabel = workspaceDirectoryRoleLabel({ role, displayCategory });
+  const access = String(accessLevel || 'member').replace(/_/g, ' ');
+  return `${category} / ${roleLabel} / ${access}`;
 }
 
 function workspaceDirectoryItemFromRecord(record = {}, { identity = null, activeKey = '', membershipByWorkspace = new Map(), source = '' } = {}) {
@@ -31604,7 +32847,9 @@ function workspaceDirectoryItemFromRecord(record = {}, { identity = null, active
     display_category: displayCategory,
     display_category_label: workspaceDisplayCategoryLabel(displayCategory),
     role,
+    role_label: workspaceDirectoryRoleLabel({ role, displayCategory, workspaceType: workspaceDirectoryTypeForRecord(record) }),
     access_level: accessLevel,
+    scope_label: workspaceDirectoryScopeLabel({ displayCategory, role, accessLevel }),
     active: key === activeKey,
     can_switch: true,
     target: null,
@@ -31614,51 +32859,8 @@ function workspaceDirectoryItemFromRecord(record = {}, { identity = null, active
   return item;
 }
 
-async function findSddraftlerWorkspaceEvidence(db = pool) {
-  const checks = [
-    {
-      source: 'bna_projects',
-      sql: `SELECT project_key AS key, name, short_name, workspace_type, metadata, settings
-            FROM bna_projects
-            WHERE lower(COALESCE(project_key, '') || ' ' || COALESCE(name, '') || ' ' || COALESCE(short_name, '') || ' ' || COALESCE(description, '') || ' ' || COALESCE(metadata::text, '') || ' ' || COALESCE(settings::text, '')) LIKE '%sddraftler%'
-               OR lower(COALESCE(project_key, '') || ' ' || COALESCE(name, '') || ' ' || COALESCE(short_name, '') || ' ' || COALESCE(description, '') || ' ' || COALESCE(metadata::text, '') || ' ' || COALESCE(settings::text, '')) LIKE '%sd draftler%'`,
-    },
-    {
-      source: 'bna_workspace_settings',
-      sql: `SELECT workspace_key AS key, display_name AS name, workspace_type, settings_json AS settings
-            FROM bna_workspace_settings
-            WHERE lower(COALESCE(workspace_key, '') || ' ' || COALESCE(display_name, '') || ' ' || COALESCE(description, '') || ' ' || COALESCE(settings_json::text, '')) LIKE '%sddraftler%'
-               OR lower(COALESCE(workspace_key, '') || ' ' || COALESCE(display_name, '') || ' ' || COALESCE(description, '') || ' ' || COALESCE(settings_json::text, '')) LIKE '%sd draftler%'`,
-    },
-    {
-      source: 'bna_people',
-      sql: `SELECT preferred_name AS key, COALESCE(full_name, preferred_name) AS name, metadata
-            FROM bna_people
-            WHERE lower(COALESCE(preferred_name, '') || ' ' || COALESCE(full_name, '') || ' ' || COALESCE(email, '') || ' ' || COALESCE(metadata::text, '')) LIKE '%sddraftler%'
-               OR lower(COALESCE(preferred_name, '') || ' ' || COALESCE(full_name, '') || ' ' || COALESCE(email, '') || ' ' || COALESCE(metadata::text, '')) LIKE '%sd draftler%'`,
-    },
-    {
-      source: 'bna_households',
-      sql: `SELECT household_name AS key, COALESCE(name, household_name) AS name, metadata
-            FROM bna_households
-            WHERE lower(COALESCE(household_name, '') || ' ' || COALESCE(name, '') || ' ' || COALESCE(metadata::text, '')) LIKE '%sddraftler%'
-               OR lower(COALESCE(household_name, '') || ' ' || COALESCE(name, '') || ' ' || COALESCE(metadata::text, '')) LIKE '%sd draftler%'`,
-    },
-  ];
-  const evidence = [];
-  for (const check of checks) {
-    try {
-      const result = await db.query(check.sql);
-      result.rows.forEach((row) => evidence.push({ source: check.source, ...row }));
-    } catch (err) {
-      // Optional local tables can be absent; absence is not confirmation.
-    }
-  }
-  return evidence;
-}
-
 async function buildWorkspaceDirectoryForIdentity({ identity = null, req = null, db = pool } = {}) {
-  await ensurePersonalWorkspacesAndPeople(db);
+  await ensurePersonalWorkspacesAndPeopleOnce(db);
   await ensureWorkspacePlatformDefaultsOnce(db);
 
   const scopedProjectKey = opsScopeProjectKey(req);
@@ -31691,10 +32893,11 @@ async function buildWorkspaceDirectoryForIdentity({ identity = null, req = null,
   const itemsByKey = new Map();
   const reviewItems = [];
   const addRecord = (record, source) => {
-    const key = normalizeWorkspaceKey(record.workspace_key || record.project_key || record.key || record.slug || record.name || record.display_name || '');
+    const key = workspaceDirectoryRecordKey(record);
     if (!key) return;
     if (key === 'super_admin') return;
     if (!allScope && key !== activeKey) return;
+    if (!shouldShowWorkspaceDirectoryRecord(record, { allScope, membershipByWorkspace, source })) return;
     const item = workspaceDirectoryItemFromRecord(record, { identity, activeKey, membershipByWorkspace, source });
     if (!item) {
       if (allScope) {
@@ -31755,22 +32958,6 @@ async function buildWorkspaceDirectoryForIdentity({ identity = null, req = null,
     workspace_type: setting.workspace_type,
     settings: parseJsonMaybe(setting.settings_json),
   }, 'bna_workspace_settings'));
-
-  if (allScope) {
-    const evidence = await findSddraftlerWorkspaceEvidence(db);
-    const confirmedFamily = evidence.some((row) => workspaceDisplayCategoryForRecord(row) === 'family_home_accountability');
-    if (!confirmedFamily) {
-      reviewItems.push({
-        key: 'sddraftler_workspace_identity',
-        title: 'Confirm SDDraftler workspace identity and category',
-        status: evidence.length ? 'ambiguous' : 'not_found',
-        source: 'runtime_workspace_directory_check',
-        notes: evidence.length
-          ? 'Runtime data mentions SDDraftler, but no explicit family/home-accountability category was confirmed.'
-          : 'No runtime project, workspace, person, or household record confirmed SDDraftler. Do not place it under Family App / Home Accountability until data confirms it.',
-      });
-    }
-  }
 
   const categories = WORKSPACE_DISPLAY_CATEGORIES.map((category) => ({ ...category, workspaces: [] }));
   const categoryById = new Map(categories.map((category) => [category.id, category]));
@@ -32003,6 +33190,7 @@ const IN_APP_NOTIFICATION_EVENTS = new Set([
   'one_time_lead_submitted',
   'support_ticket_created',
   'support_ticket_processed_draft',
+  'communication_attention_required',
   'one_time_question_needs_review',
   'one_time_question_reviewed',
   'rabbi_content_added',
@@ -32374,6 +33562,23 @@ let workspacePlatformDefaultsReady = false;
 let workspacePlatformDefaultsPromise = null;
 let serviceProviderDirectoryDefaultsReady = false;
 let serviceProviderDirectoryDefaultsPromise = null;
+let personalWorkspacesReady = false;
+let personalWorkspacesPromise = null;
+
+async function ensurePersonalWorkspacesAndPeopleOnce(db = pool) {
+  if (db !== pool) return ensurePersonalWorkspacesAndPeople(db);
+  if (personalWorkspacesReady) return;
+  if (!personalWorkspacesPromise) {
+    personalWorkspacesPromise = ensurePersonalWorkspacesAndPeople(db)
+      .then(() => {
+        personalWorkspacesReady = true;
+      })
+      .finally(() => {
+        personalWorkspacesPromise = null;
+      });
+  }
+  return personalWorkspacesPromise;
+}
 
 async function ensureWorkspacePlatformDefaultsOnce(db = pool) {
   if (db !== pool) return ensureWorkspacePlatformDefaults(db);
@@ -32435,8 +33640,8 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
     {
       key: 'dratler_family',
       type: 'family',
-      name: 'Family Accountability',
-      description: "Private family accountability workspace for Shloimie's household. Not public and not part of BNA school views unless a person also has a school role.",
+      name: 'Dratler Family',
+      description: "Private family workspace for Shloimie's household. Not public and not part of BNA school views unless a person also has a school role.",
       owner: 'Shloimie',
       settings: { canonical_role: 'family_owner', project_key: 'dratler_family', accountability_mode: 'family', provider_index_visible: true },
     },
@@ -32459,14 +33664,6 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
         login_release_guard: oneTimeDriveSocialMap.login_release_guard,
         open_forum: false,
       },
-    },
-    {
-      key: 'parent_households',
-      type: 'household',
-      name: 'Family Accountability Directory',
-      description: 'Super-admin directory for family logins, home accountability setup, and child goal onboarding.',
-      owner: 'Shloimie',
-      settings: { canonical_role: 'parent_household_admin', nav_model: 'household_directory', provider_index_visible: true },
     },
   ];
 
@@ -32705,6 +33902,41 @@ function appendScopeCondition(req, conditions, params, columnRef) {
   if (condition) conditions.push(condition);
 }
 
+function requestedProjectKeyForInput(req, input = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = normalizeProjectKey(input.project_key || input.project || '');
+  const requestedWorkspace = normalizeWorkspaceKey(input.workspace_key || input.workspace || '');
+  let projectKey = requestedProjectKey;
+
+  if (requestedWorkspace && !['platform', 'super_admin'].includes(requestedWorkspace)) {
+    const workspaceKey = assertWorkspaceAccess(req, requestedWorkspace);
+    projectKey = workspaceProjectKey(workspaceKey) || projectKey;
+  }
+
+  if (projectKey === 'all' || projectKey === 'platform' || projectKey === 'super_admin') projectKey = '';
+
+  if (scopedProjectKey) {
+    if (projectKey && projectKey !== scopedProjectKey) assertProjectAccess(req, { project_key: projectKey });
+    return scopedProjectKey;
+  }
+
+  if (projectKey) assertProjectAccess(req, { project_key: projectKey });
+  return projectKey;
+}
+
+function requestedProjectKeyForScopedList(req) {
+  return requestedProjectKeyForInput(req, req?.query || {});
+}
+
+function appendRequestedProjectScopeCondition(req, conditions, params, columnRef) {
+  const projectKey = requestedProjectKeyForScopedList(req);
+  if (!projectKey) return '';
+  params.push(projectKey);
+  const condition = `COALESCE(${columnRef}, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`;
+  conditions.push(condition);
+  return condition;
+}
+
 async function resolveProjectForScopedWrite(req, input = {}, db = pool) {
   const scopedProjectKey = opsScopeProjectKey(req);
   if (scopedProjectKey) return getProjectByKey(scopedProjectKey, db);
@@ -32761,6 +33993,15 @@ async function assertProjectOwnedRowAccess(req, tableName, rowId, db = pool) {
     throw error;
   }
   return row;
+}
+
+async function assertProjectOwnedRowsAccess(req, tableName, rowIds, db = pool) {
+  const ids = [...new Set((Array.isArray(rowIds) ? rowIds : [rowIds]).map(Number).filter(Boolean))];
+  for (const rowId of ids) {
+    // eslint-disable-next-line no-await-in-loop
+    await assertProjectOwnedRowAccess(req, tableName, rowId, db);
+  }
+  return ids;
 }
 
 async function assertStudentAccess(req, studentId, actionOrDb = pool, maybeDb = pool) {
@@ -37036,7 +38277,7 @@ app.post('/api/google/drive/setup', requireAdmin, async (req, res) => {
       platformDocs: pipeline.platformDocs,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -37063,7 +38304,7 @@ app.get('/api/google/connections/status', requireAdmin, async (req, res) => {
       video_processing: videoProcessingService,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -37315,7 +38556,7 @@ app.get('/api/google/classroom/courses', requireAdmin, async (req, res) => {
       })),
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -37354,7 +38595,7 @@ app.get('/api/google/calendar/events', requireAdmin, async (req, res) => {
       })),
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -37443,7 +38684,7 @@ app.get('/api/bna/email-log', requireAdmin, async (req, res) => {
   }
 });
 
-function buildCommunicationsQueryFilters(query = {}, forced = {}) {
+function buildCommunicationsQueryFilters(query = {}, forced = {}, req = null) {
   const conditions = [];
   const params = [];
   const addParam = (value) => {
@@ -37451,6 +38692,12 @@ function buildCommunicationsQueryFilters(query = {}, forced = {}) {
     return `$${params.length}`;
   };
   const source = { ...query, ...forced };
+  if (req) {
+    const projectKey = requestedProjectKeyForScopedList(req);
+    if (projectKey) {
+      conditions.push(`COALESCE(project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = ${addParam(projectKey)} LIMIT 1)`);
+    }
+  }
   for (const field of ['workspace_id', 'project_id', 'contact_id', 'signup_id', 'student_id', 'task_id', 'ticket_id']) {
     if (source[field]) conditions.push(`${field} = ${addParam(Number(source[field]))}`);
   }
@@ -37471,7 +38718,7 @@ function buildCommunicationsQueryFilters(query = {}, forced = {}) {
 
 app.get('/api/bna/communications', requireAdmin, async (req, res) => {
   try {
-    const { where, params } = buildCommunicationsQueryFilters(req.query || {});
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, {}, req);
     const limit = Math.min(Number(req.query.limit) || 200, 500);
     params.push(limit);
     const result = await pool.query(
@@ -37490,7 +38737,10 @@ app.get('/api/bna/communications', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/communications/:id', requireAdmin, async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM bna_communications WHERE id = $1 LIMIT 1', [req.params.id]);
+    const conditions = ['id = $1'];
+    const params = [req.params.id];
+    appendRequestedProjectScopeCondition(req, conditions, params, 'project_id');
+    const result = await pool.query(`SELECT * FROM bna_communications WHERE ${conditions.join(' AND ')} LIMIT 1`, params);
     const communication = result.rows[0];
     if (!communication) return res.status(404).json({ error: 'Communication not found' });
     res.json({ communication });
@@ -37501,7 +38751,7 @@ app.get('/api/bna/communications/:id', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/contacts/:id/communications', requireAdmin, async (req, res) => {
   try {
-    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { contact_id: req.params.id });
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { contact_id: req.params.id }, req);
     const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
     res.json({ communications: result.rows });
   } catch (err) {
@@ -37511,7 +38761,7 @@ app.get('/api/bna/contacts/:id/communications', requireAdmin, async (req, res) =
 
 app.get('/api/bna/signups/:id/communications', requireAdmin, async (req, res) => {
   try {
-    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { signup_id: req.params.id });
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { signup_id: req.params.id }, req);
     const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
     res.json({ communications: result.rows });
   } catch (err) {
@@ -37521,7 +38771,7 @@ app.get('/api/bna/signups/:id/communications', requireAdmin, async (req, res) =>
 
 app.get('/api/bna/students/:id/communications', requireAdmin, async (req, res) => {
   try {
-    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { student_id: req.params.id });
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { student_id: req.params.id }, req);
     const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
     res.json({ communications: result.rows });
   } catch (err) {
@@ -37531,7 +38781,7 @@ app.get('/api/bna/students/:id/communications', requireAdmin, async (req, res) =
 
 app.get('/api/bna/tasks/:id/communications', requireAdmin, async (req, res) => {
   try {
-    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { task_id: req.params.id });
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { task_id: req.params.id }, req);
     const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
     res.json({ communications: result.rows });
   } catch (err) {
@@ -37542,9 +38792,15 @@ app.get('/api/bna/tasks/:id/communications', requireAdmin, async (req, res) => {
 app.post('/api/bna/communications', requireAdmin, async (req, res) => {
   const body = req.body || {};
   try {
+    const project = await resolveProjectForScopedWrite(req, {
+      project_id: body.project_id || null,
+      project_key: body.project_key || body.project || DEFAULT_PROJECT_KEY,
+      workspace_key: body.workspace_key || body.workspace || '',
+    }, pool);
+    assertProjectAccess(req, project);
     const communication = await logCommunication({
       workspaceId: body.workspace_id || null,
-      projectId: body.project_id || null,
+      projectId: project?.id || body.project_id || null,
       contactId: body.contact_id || null,
       signupId: body.signup_id || null,
       studentId: body.student_id || null,
@@ -37566,7 +38822,11 @@ app.post('/api/bna/communications', requireAdmin, async (req, res) => {
       provider: body.provider || null,
       status: body.status || 'logged',
       language: body.language || 'en',
-      metadata: body.metadata || {},
+      metadata: {
+        ...(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}),
+        project_key: normalizeProjectKey(project?.project_key || body.project_key || body.project || DEFAULT_PROJECT_KEY),
+        workspace_key: normalizeWorkspaceKey(body.workspace_key || body.workspace || workspaceKeyForProject(project?.project_key || DEFAULT_PROJECT_KEY)),
+      },
       occurredAt: body.occurred_at || null,
     });
     res.json({ success: true, communication });
@@ -37842,6 +39102,27 @@ function runtimeFileStatSafe(filePath) {
   }
 }
 
+async function loadAgentRuntimeStatus(agentKey) {
+  if (!agentKey) return null;
+  try {
+    const result = await pool.query(
+      `SELECT *,
+              CASE
+                WHEN last_seen_at IS NULL THEN true
+                ELSE last_seen_at < NOW() - (COALESCE(stale_after_ms, 180000) * INTERVAL '1 millisecond')
+              END AS stale
+       FROM bna_agent_runtime_status
+       WHERE agent_key = $1
+       ORDER BY last_seen_at DESC
+       LIMIT 1`,
+      [agentKey]
+    );
+    return result.rows[0] || null;
+  } catch {
+    return null;
+  }
+}
+
 function integrationStatusCard({
   provider,
   label,
@@ -37944,7 +39225,7 @@ function buildGoogleDriveStatusCard() {
   });
 }
 
-function buildTelegramStatusCard() {
+async function buildTelegramStatusCard() {
   const token = configuredSecretStatus('TELEGRAM_BOT_TOKEN', {
     names: ['telegram-bot-token', 'telegram'],
     fileNames: ['telegram-bot-token.txt', 'TELEGRAM_BOT_TOKEN.txt', 'telegram.txt'],
@@ -37963,31 +39244,28 @@ function buildTelegramStatusCard() {
   const runtimeDir = path.join(__dirname, '.runtime');
   const lock = runtimeFileStatSafe(path.join(runtimeDir, 'telegram-kimi-bridge.lock'));
   const log = runtimeFileStatSafe(path.join(runtimeDir, 'telegram-kimi-bridge.log'));
-  const staleLock = Boolean(lock.present && lock.age_minutes !== null && lock.age_minutes > 60);
-  const blockers = [];
-  if (!token.configured && !profileToken.configured) blockers.push('Telegram bot token is not configured for the active bridge.');
-  if (!allowedChatIdsConfigured) blockers.push('Allowed Telegram chat IDs are not configured.');
-  if (staleLock) blockers.push('Telegram bridge lock appears stale; restart/status check may be needed.');
+  const hostedRuntime = await loadAgentRuntimeStatus('telegram-academy-bridge');
+  const runtimeReadiness = buildTelegramRuntimeReadiness({
+    tokenConfigured: token.configured || profileToken.configured,
+    allowedChatIdsConfigured,
+    localLock: lock,
+    localLog: log,
+    hostedRuntime,
+    runtimeAgentKey: 'telegram-academy-bridge',
+    activeSource: 'scripts/telegram-kimi-bridge.mjs',
+    legacyWebhookRoute: '/api/bna/telegram',
+  });
   return integrationStatusCard({
     provider: 'telegram',
     label: 'Telegram Bridge',
-    configured: (token.configured || profileToken.configured) && allowedChatIdsConfigured,
-    status: (token.configured || profileToken.configured) && allowedChatIdsConfigured ? 'configured' : 'not_configured',
-    mode: 'bridge_polling_primary',
+    configured: runtimeReadiness.configured,
+    status: runtimeReadiness.status,
+    mode: hostedRuntime ? 'bridge_polling_hosted_worker' : 'bridge_polling_primary',
     accountOwner: 'bna',
     safeActions: ['status_check', 'restart_checklist', 'web_helper_fallback'],
     blockedActions: ['critical_workflow_telegram_only', 'token_print', 'chat_id_print'],
-    blockers,
-    details: {
-      bot_token_configured: token.configured || profileToken.configured,
-      allowed_chat_ids_configured: allowedChatIdsConfigured,
-      bridge_lock_present: lock.present,
-      bridge_lock_stale: staleLock,
-      bridge_log_present: log.present,
-      bridge_log_age_minutes: log.age_minutes,
-      active_source: 'scripts/telegram-kimi-bridge.mjs',
-      legacy_webhook_route: '/api/bna/telegram',
-    },
+    blockers: runtimeReadiness.blockers,
+    details: runtimeReadiness.details,
   });
 }
 
@@ -38203,7 +39481,7 @@ async function buildIntegrationStatusPayload() {
   const cards = [
     buildKeyholderStatusCard(),
     buildGoogleDriveStatusCard(),
-    buildTelegramStatusCard(),
+    await buildTelegramStatusCard(),
     buildGmailReminderStatusCard(),
     resendCard,
     stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig }),
@@ -38242,8 +39520,13 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
   }
 });
 
-app.get('/api/bna/integrations/telegram/status', requireAdmin, (req, res) => {
-  res.json({ success: true, provider: 'telegram', card: buildTelegramStatusCard() });
+app.get('/api/bna/integrations/telegram/status', requireAdmin, async (req, res) => {
+  try {
+    res.json({ success: true, provider: 'telegram', card: await buildTelegramStatusCard() });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Telegram status failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
 });
 
 app.get('/api/bna/integrations/stripe/status', requireAdmin, (req, res) => {
@@ -38479,13 +39762,70 @@ app.post('/api/bna/integrations/resend/domains/:domain/verify', requireAdmin, as
   }
 });
 
+function scopedDraftContextForRequest(req, input = {}) {
+  const projectKey = requestedProjectKeyForInput(req, {
+    ...(req?.query || {}),
+    ...(input || {}),
+  }) || '';
+  return {
+    projectKey,
+    workspaceKey: normalizeWorkspaceKey(
+      input.workspace_key ||
+      input.workspace ||
+      req?.query?.workspace_key ||
+      req?.query?.workspace ||
+      workspaceKeyForProject(projectKey)
+    ),
+  };
+}
+
+function appendJsonbProjectMetadataScope(req, conditions, params, columnRef = 'metadata') {
+  const projectKey = requestedProjectKeyForScopedList(req);
+  if (!projectKey) return '';
+  const workspaceKey = workspaceKeyForProject(projectKey);
+  params.push(projectKey);
+  const projectRef = `$${params.length}`;
+  params.push(workspaceKey);
+  const workspaceRef = `$${params.length}`;
+  const condition = `(COALESCE(${columnRef}->>'project_key', '') = ${projectRef} OR COALESCE(${columnRef}->>'workspace_key', '') = ${workspaceRef})`;
+  conditions.push(condition);
+  return condition;
+}
+
+function appendDnsWorkspaceScope(req, conditions, params) {
+  const projectKey = requestedProjectKeyForScopedList(req);
+  if (!projectKey) return '';
+  params.push(workspaceKeyForProject(projectKey));
+  const condition = `workspace_id = (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length} LIMIT 1)`;
+  conditions.push(condition);
+  return condition;
+}
+
+async function workspaceSettingsIdForKey(workspaceKey, db = pool) {
+  const key = normalizeWorkspaceKey(workspaceKey);
+  if (!key) return null;
+  const row = (await db.query('SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1', [key])).rows[0];
+  return row?.id || null;
+}
+
+function assertScopedDraftMetadataAccess(req, metadata = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (!scopedProjectKey) return;
+  const projectKey = normalizeProjectKey(metadata?.project_key || metadata?.project || DEFAULT_PROJECT_KEY);
+  assertProjectAccess(req, { project_key: projectKey });
+}
+
 app.get('/api/bna/communications/social/drafts', requireAdmin, async (req, res) => {
+  const conditions = [`status <> 'archived'`];
+  const params = [];
+  appendJsonbProjectMetadataScope(req, conditions, params, 'metadata');
   const result = await pool.query(
     `SELECT *
      FROM bna_social_posts
-     WHERE status <> 'archived'
+     WHERE ${conditions.join(' AND ')}
      ORDER BY created_at DESC, id DESC
-     LIMIT 100`
+     LIMIT 100`,
+    params
   );
   res.json({ success: true, drafts: result.rows.map(socialPostView) });
 });
@@ -38497,7 +39837,12 @@ async function createSocialDraft(req, res) {
   if (!text) return res.status(400).json({ error: 'text is required' });
   const channelIds = normalizeStringArray(body.channel_ids || body.channelIds || bufferRuntimeConfig.defaultChannelIds, 160);
   const media = jsonArrayValue(body.media).map((item) => (item && typeof item === 'object' ? sanitizeIntegrationMetadata(item) : { url: String(item || '') })).filter(Boolean);
-  const metadata = sanitizeIntegrationMetadata(body.metadata || {});
+  const draftContext = scopedDraftContextForRequest(req, body);
+  const metadata = sanitizeIntegrationMetadata({
+    ...(body.metadata || {}),
+    project_key: draftContext.projectKey || DEFAULT_PROJECT_KEY,
+    workspace_key: draftContext.workspaceKey || workspaceKeyForProject(draftContext.projectKey || DEFAULT_PROJECT_KEY),
+  });
   const created = (await pool.query(
     `INSERT INTO bna_social_posts (
        provider, provider_account, account_owner, status, channel_ids, body, media, link,
@@ -38579,6 +39924,7 @@ async function createBufferSchedulePreview(req, res) {
   if (!Number.isFinite(scheduledAt.getTime())) return res.status(400).json({ error: 'scheduled_at must be a valid timestamp' });
   const token = crypto.randomBytes(18).toString('base64url');
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+  const draftContext = scopedDraftContextForRequest(req, body);
   const created = (await pool.query(
     `INSERT INTO bna_social_posts (
        provider, provider_account, account_owner, status, channel_ids, body, media, link,
@@ -38598,7 +39944,11 @@ async function createBufferSchedulePreview(req, res) {
       expiresAt.toISOString(),
       body.source || 'manual',
       body.source_id || body.sourceId || null,
-      JSON.stringify(sanitizeIntegrationMetadata(body.metadata || {})),
+      JSON.stringify(sanitizeIntegrationMetadata({
+        ...(body.metadata || {}),
+        project_key: draftContext.projectKey || DEFAULT_PROJECT_KEY,
+        workspace_key: draftContext.workspaceKey || workspaceKeyForProject(draftContext.projectKey || DEFAULT_PROJECT_KEY),
+      })),
       req.opsUser || 'operations',
     ]
   )).rows[0];
@@ -38630,6 +39980,7 @@ async function confirmBufferSchedule(req, res) {
   if (!token || !confirmed) return res.status(409).json({ error: 'Schedule confirmation requires confirmed:true and the preview token, or phrase SCHEDULE BUFFER POST' });
   const row = (await pool.query('SELECT * FROM bna_social_posts WHERE id = $1 LIMIT 1', [id])).rows[0];
   if (!row) return res.status(404).json({ error: 'Social schedule preview was not found' });
+  assertScopedDraftMetadataAccess(req, row.metadata || {});
   if (row.confirmation_token_hash !== confirmationTokenHash(token)) return res.status(409).json({ error: 'Confirmation token does not match this preview' });
   if (row.confirmation_expires_at && Date.parse(row.confirmation_expires_at) < Date.now()) return res.status(409).json({ error: 'Confirmation token expired; create a fresh preview' });
   try {
@@ -38673,12 +40024,16 @@ app.post('/api/bna/communications/social/schedule/confirm', requireAdmin, confir
 app.post('/api/bna/integrations/buffer/schedules/confirm', requireAdmin, confirmBufferSchedule);
 
 app.get('/api/bna/communications/email/drafts', requireAdmin, async (req, res) => {
+  const conditions = [`status <> 'archived'`];
+  const params = [];
+  appendJsonbProjectMetadataScope(req, conditions, params, 'metadata');
   const result = await pool.query(
     `SELECT *
      FROM bna_email_drafts
-     WHERE status <> 'archived'
+     WHERE ${conditions.join(' AND ')}
      ORDER BY created_at DESC, id DESC
-     LIMIT 100`
+     LIMIT 100`,
+    params
   );
   res.json({ success: true, drafts: result.rows.map(emailDraftView) });
 });
@@ -38694,6 +40049,7 @@ async function createResendEmailDraft(req, res) {
   if (!to.length) return res.status(400).json({ error: 'At least one recipient is required' });
   if (!subject || (!text && !html)) return res.status(400).json({ error: 'subject and text/html are required' });
   const readiness = await getResendReadinessForResponse();
+  const draftContext = scopedDraftContextForRequest(req, body);
   const created = (await pool.query(
     `INSERT INTO bna_email_drafts (
        provider, provider_account, account_owner, from_email, to_emails, cc_emails, bcc_emails,
@@ -38714,7 +40070,11 @@ async function createResendEmailDraft(req, res) {
       readiness.send_allowed ? null : readiness.blocker,
       body.source || 'manual',
       body.source_id || body.sourceId || null,
-      JSON.stringify(sanitizeIntegrationMetadata(body.metadata || {})),
+      JSON.stringify(sanitizeIntegrationMetadata({
+        ...(body.metadata || {}),
+        project_key: draftContext.projectKey || DEFAULT_PROJECT_KEY,
+        workspace_key: draftContext.workspaceKey || workspaceKeyForProject(draftContext.projectKey || DEFAULT_PROJECT_KEY),
+      })),
       req.opsUser || 'operations',
     ]
   )).rows[0];
@@ -38730,6 +40090,7 @@ async function sendResendEmailDraft(req, res) {
   if (body.draft_id || body.draftId) {
     draft = (await pool.query('SELECT * FROM bna_email_drafts WHERE id = $1 LIMIT 1', [Number(body.draft_id || body.draftId)])).rows[0] || null;
     if (!draft) return res.status(404).json({ error: 'Email draft not found' });
+    assertScopedDraftMetadataAccess(req, draft.metadata || {});
   } else if (body.reviewed !== true) {
     return res.status(409).json({ error: 'Send requires an existing draft_id or reviewed:true explicit payload' });
   }
@@ -38842,6 +40203,7 @@ app.post('/api/bna/integrations/resend/send', requireAdmin, sendResendEmailDraft
 app.get('/api/bna/communications/dns-tasks', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
+  appendDnsWorkspaceScope(req, conditions, params);
   if (req.query.provider) {
     params.push(String(req.query.provider));
     conditions.push(`provider = $${params.length}`);
@@ -38876,14 +40238,17 @@ app.post('/api/bna/communications/dns-tasks', requireAdmin, async (req, res) => 
     body.notes || '',
     truncated ? 'Full DNS value must be copied directly from the Resend dashboard; truncated screenshot values were intentionally not stored.' : '',
   ].filter(Boolean).join('\n');
+  const draftContext = scopedDraftContextForRequest(req, body);
+  const workspaceId = await workspaceSettingsIdForKey(draftContext.workspaceKey || workspaceKeyForProject(draftContext.projectKey || DEFAULT_PROJECT_KEY));
   const result = await pool.query(
     `INSERT INTO bna_dns_setup_tasks (
-       provider, provider_account, account_owner, domain, record_purpose, type, host, value,
+       workspace_id, provider, provider_account, account_owner, domain, record_purpose, type, host, value,
        ttl, priority, status, copied_from_dashboard_at, verified_at, notes, source, created_by, updated_at
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
-       $9, $10, $11, $12::timestamp, $13::timestamp, $14, $15, $16, NOW())
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9,
+       $10, $11, $12, $13::timestamp, $14::timestamp, $15, $16, $17, NOW())
      RETURNING *`,
     [
+      workspaceId,
       provider,
       body.provider_account || RESEND_PROVIDER_ACCOUNT || null,
       body.account_owner || RESEND_ACCOUNT_OWNER || 'unknown',
@@ -38924,10 +40289,12 @@ app.patch('/api/bna/communications/dns-tasks/:id', requireAdmin, async (req, res
   }
   if (!fields.length) return res.status(400).json({ error: 'No valid DNS task fields provided' });
   values.push(id);
+  const conditions = [`id = $${values.length}`];
+  appendDnsWorkspaceScope(req, conditions, values);
   const result = await pool.query(
     `UPDATE bna_dns_setup_tasks
      SET ${fields.join(', ')}, updated_at = NOW()
-     WHERE id = $${values.length}
+     WHERE ${conditions.join(' AND ')}
      RETURNING *`,
     values
   );
@@ -42292,6 +43659,145 @@ async function currentProviderWithProject(req, db = pool) {
   )).rows[0] || null;
 }
 
+function normalizeProviderClassroomCount(value) {
+  const number = Number(String(value || '').match(/\d+/)?.[0] || 0);
+  if (!Number.isFinite(number) || number <= 0) return null;
+  return Math.max(1, Math.min(number, 52));
+}
+
+function normalizeProviderClassroomBool(value, fallback = false) {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'boolean') return value;
+  const text = String(value).trim().toLowerCase();
+  if (['true', '1', 'yes', 'y', 'on', 'enabled'].includes(text)) return true;
+  if (['false', '0', 'no', 'n', 'off', 'disabled'].includes(text)) return false;
+  return fallback;
+}
+
+function providerClassroomDraftFromBody(provider = {}, body = {}) {
+  const rawPrompt = limitText(body.raw_prompt || body.prompt || body.notes || body.description || '', 2400);
+  const title = limitText(body.title || `Classroom setup for ${provider.provider_name || 'provider'}`, 180);
+  const classCount = normalizeProviderClassroomCount(body.class_count || body.classCount || rawPrompt);
+  const privateReplies = /private|privately|directly to (?:rabbi|teacher|provider)/i.test(rawPrompt);
+  const publicDisplay = /public|community display|publish(?:es|ed|ing)?|featured|show selected/i.test(rawPrompt);
+  const noStudentChat = /no student[-\s]?student|no open chat|no group chat|private only/i.test(rawPrompt);
+  const draft = {
+    title,
+    raw_prompt: rawPrompt,
+    provider_id: provider.id || null,
+    provider_name: provider.provider_name || provider.display_name || null,
+    workspace_key: provider.workspace_id || (provider.project_key === ONE_TIME_PROJECT_KEY ? 'rabbi_sheller_provider' : 'bna'),
+    project_key: provider.project_key || DEFAULT_PROJECT_KEY,
+    status: 'draft',
+    class_count: classCount,
+    community_dialogue_style: limitText(
+      body.community_dialogue_style || body.dialogue_style || (
+        privateReplies
+          ? 'Rabbi/teacher-led Q&A with private student replies'
+          : /discussion|dialogue|community/i.test(rawPrompt)
+            ? 'Moderated community dialogue'
+            : 'Guided classroom Q&A'
+      ),
+      240
+    ),
+    student_access: limitText(body.student_access || 'Provider-managed members/students after BNA admin review', 240),
+    display_rules: limitText(
+      body.display_rules || (
+        publicDisplay
+          ? 'Only teacher-approved replies/questions may be published to the public/community display'
+          : 'Internal classroom first; public/community display remains off until approved'
+      ),
+      280
+    ),
+    message_permissions: limitText(
+      body.message_permissions || (
+        noStudentChat || privateReplies
+          ? 'Students may reply privately to the teacher; no student-to-student chat unless explicitly enabled'
+          : 'Teacher-moderated replies; student-to-student chat disabled by default'
+      ),
+      300
+    ),
+    student_to_teacher_replies: normalizeProviderClassroomBool(body.student_to_teacher_replies, true),
+    student_to_student_chat_enabled: normalizeProviderClassroomBool(body.student_to_student_chat_enabled, false),
+    teacher_moderation_required: normalizeProviderClassroomBool(body.teacher_moderation_required, true),
+    public_display_enabled: normalizeProviderClassroomBool(body.public_display_enabled, publicDisplay),
+  };
+  const setupQuestions = [
+    classCount ? null : 'How many classes or weeks should this classroom start with?',
+    body.community_dialogue_style ? null : 'What dialogue style should this use?',
+    body.student_access ? null : 'Who should receive student/member access first?',
+    body.display_rules ? null : 'What may appear on the public/community display after teacher approval?',
+    body.message_permissions ? null : 'Should student-to-student chat stay off?',
+  ].filter(Boolean);
+  return { draft, setupQuestions };
+}
+
+app.post('/api/provider-portal/classroom-drafts', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await currentProviderWithProject(req);
+    if (!provider) return res.status(404).json({ error: 'Provider was not found' });
+    const { draft, setupQuestions } = providerClassroomDraftFromBody(provider, req.body || {});
+    if (!draft.title) return res.status(400).json({ error: 'Classroom title is required' });
+    if (req.body?.dry_run === true || req.body?.dry_run === 'true') {
+      return res.json({
+        success: true,
+        dry_run: true,
+        classroom_draft: draft,
+        setup_questions: setupQuestions,
+        no_external_write: true,
+      });
+    }
+    const notes = [
+      draft.raw_prompt ? `Provider prompt: ${draft.raw_prompt}` : '',
+      `Class count: ${draft.class_count || 'needs provider answer'}`,
+      `Dialogue style: ${draft.community_dialogue_style}`,
+      `Student access: ${draft.student_access}`,
+      `Display rules: ${draft.display_rules}`,
+      `Message permissions: ${draft.message_permissions}`,
+      `Moderation policy: private student-to-teacher replies, no student-student chat unless enabled, teacher moderation/publish queue.`,
+      setupQuestions.length ? `Open setup questions:\n- ${setupQuestions.join('\n- ')}` : '',
+    ].filter(Boolean).join('\n');
+    const task = await createTaskFromText({
+      title: draft.title,
+      raw_text: draft.raw_prompt || draft.title,
+      notes,
+      summary: `Provider classroom/community setup draft for ${draft.provider_name || 'provider'}.`,
+      category: 'community_setup',
+      urgency: 'this_week',
+      source: 'web',
+      created_by: 'provider_portal',
+      assigned_to: 'Shloimie',
+      stage: 'assigned',
+      task_kind: 'provider_classroom_draft',
+      project: draft.project_key || DEFAULT_PROJECT_KEY,
+      project_key: draft.project_key || DEFAULT_PROJECT_KEY,
+      ai_parsed: {
+        parser: 'provider-portal-classroom-draft',
+        action_id: 'create_provider_classroom_draft',
+        kind: 'provider_classroom_draft',
+        provider_id: provider.id,
+        setup_plan: draft,
+        setup_questions: setupQuestions,
+        no_external_write: true,
+        no_google_classroom_write: true,
+        no_payment_or_access_grant: true,
+      },
+    }, { req }, pool);
+    const payload = await getProviderPortalPayload(req.providerSession.providerId);
+    res.json({
+      success: true,
+      classroom_draft_created: true,
+      task,
+      classroom_draft: draft,
+      setup_questions: setupQuestions,
+      no_external_write: true,
+      ...payload,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.post('/api/provider-portal/one-time/class-media', requireProviderSession, async (req, res) => {
   try {
     const provider = await currentProviderWithProject(req);
@@ -42332,9 +43838,9 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
   const { lead_id, signup_id, student_id, contact_type } = req.query;
   const conditions = [];
   const params = [];
-  const scopedProjectKey = opsScopeProjectKey(req);
-  if (scopedProjectKey) {
-    params.push(scopedProjectKey);
+  const requestedProjectKey = requestedProjectKeyForScopedList(req);
+  if (requestedProjectKey) {
+    params.push(requestedProjectKey);
     conditions.push(`COALESCE(c.project_id, l.project_id, s.project_id, st.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
   }
 
@@ -42384,8 +43890,8 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
         unifiedParams.push(value);
         return `$${unifiedParams.length}`;
       };
-      if (scopedProjectKey) {
-        unifiedConditions.push(`COALESCE(u.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = ${addUnified(scopedProjectKey)} LIMIT 1)`);
+      if (requestedProjectKey) {
+        unifiedConditions.push(`COALESCE(u.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = ${addUnified(requestedProjectKey)} LIMIT 1)`);
       }
       if (signup_id) unifiedConditions.push(`u.signup_id = ${addUnified(signup_id)}`);
       if (student_id) unifiedConditions.push(`u.student_id = ${addUnified(student_id)}`);
@@ -42446,6 +43952,42 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/bna/contact-communications/screening-preview', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const summary = limitText(String(body.summary || body.subject || '').trim(), 240);
+  const messageBody = limitText(String(body.body || body.message || body.text || '').trim(), 4000);
+  if (!summary && !messageBody) return res.status(400).json({ error: 'summary or body is required' });
+  const contactType = body.contact_type || 'general';
+  const sourceContext = body.source_context && typeof body.source_context === 'object' ? body.source_context : {};
+  const screening = classifyCommunicationPipeline({
+    contact_type: contactType,
+    channel: body.channel || 'whatsapp',
+    direction: body.direction || 'inbound',
+    summary: summary || messageBody.slice(0, 160),
+    subject: body.subject || summary,
+    body: messageBody,
+    follow_up_required: body.follow_up_required,
+    source_context: sourceContext,
+    metadata: body.metadata || {},
+  });
+  res.json({
+    success: true,
+    dry_run: true,
+    no_send: true,
+    external_write_performed: false,
+    local_write_performed: false,
+    screening,
+    would_create: {
+      communication_record: true,
+      in_app_alert: Boolean(screening.alert_required),
+      follow_up_task: Boolean(screening.follow_up_required),
+      parsed_parent_student_note: Boolean(screening.parsed_parent_student_note),
+      raw_intake_link: sourceContext.raw_intake_id || null,
+    },
+    guardrail: 'Dry-run only. Parent coaching/self-regulation output is non-clinical and creates no diagnosis labels.',
+  });
+});
+
 app.post('/api/bna/contact-communications', requireAdmin, async (req, res) => {
   const body = req.body || {};
   const summary = String(body.summary || '').trim();
@@ -42469,6 +44011,33 @@ app.post('/api/bna/contact-communications', requireAdmin, async (req, res) => {
       const linked = (await pool.query('SELECT project_id FROM bna_students WHERE id = $1', [body.student_id])).rows[0];
       projectId = linked?.project_id || projectId;
     }
+    const contactType = body.contact_type || (body.lead_id ? 'lead' : body.signup_id ? 'signup' : body.student_id ? 'student' : 'general');
+    const sourceContext = body.source_context && typeof body.source_context === 'object' ? body.source_context : {};
+    const screening = classifyCommunicationPipeline({
+      contact_type: contactType,
+      channel: body.channel || 'internal_note',
+      direction: body.direction || 'internal_note',
+      summary,
+      subject: body.subject || summary,
+      body: body.body || '',
+      follow_up_required: body.follow_up_required,
+      source_context: sourceContext,
+      metadata: body.metadata || {},
+    });
+    const metadata = mergeCommunicationScreeningMetadata(body.metadata || {}, screening);
+    const enrichedSourceContext = {
+      ...sourceContext,
+      communication_screening: {
+        pipeline_category: screening.pipeline_category,
+        pipeline_tags: screening.pipeline_tags,
+        priority: screening.priority,
+        alert_required: screening.alert_required,
+        top_news: screening.top_news,
+      },
+    };
+    const followUpRequired = body.follow_up_required === undefined
+      ? screening.follow_up_required
+      : Boolean(body.follow_up_required || screening.follow_up_required);
     const result = await pool.query(
       `INSERT INTO bna_contact_communications (
         project_id, contact_type, lead_id, signup_id, student_id, channel, direction,
@@ -42482,7 +44051,7 @@ app.post('/api/bna/contact-communications', requireAdmin, async (req, res) => {
       RETURNING *`,
       [
         projectId,
-        body.contact_type || (body.lead_id ? 'lead' : body.signup_id ? 'signup' : 'general'),
+        contactType,
         body.lead_id || null,
         body.signup_id || null,
         body.student_id || null,
@@ -42490,15 +44059,27 @@ app.post('/api/bna/contact-communications', requireAdmin, async (req, res) => {
         body.direction || 'internal_note',
         summary,
         body.body || null,
-        Boolean(body.follow_up_required),
+        followUpRequired,
         body.occurred_at || null,
         body.created_by || req.opsUser || 'admin',
         body.source || 'dashboard',
-        JSON.stringify(body.source_context || {}),
-        JSON.stringify(body.metadata || {}),
+        JSON.stringify(enrichedSourceContext),
+        JSON.stringify(metadata),
       ]
     );
-    res.json({ success: true, communication: result.rows[0] });
+    const communication = result.rows[0];
+    const artifacts = await createCommunicationAttentionArtifacts(communication, screening, { req }).catch(() => ({ notification: null, task: null }));
+    res.json({
+      success: true,
+      communication,
+      screening,
+      attention_artifacts: {
+        in_app_notification_id: artifacts.notification?.id || null,
+        follow_up_task_id: artifacts.task?.id || null,
+        no_send: true,
+        external_write_performed: false,
+      },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -42530,9 +44111,9 @@ app.post('/api/bna/contact-communications/match-note', requireAdmin, async (req,
   try {
     const conditions = [`(c.channel = 'whatsapp' OR c.source = 'wapi')`];
     const params = [];
-    const scopedProjectKey = opsScopeProjectKey(req);
-    if (scopedProjectKey) {
-      params.push(scopedProjectKey);
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    if (requestedProjectKey) {
+      params.push(requestedProjectKey);
       conditions.push(`COALESCE(c.project_id, l.project_id, s.project_id, st.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
     }
 
@@ -43282,10 +44863,11 @@ async function studentIdentityMap(studentRows = [], db = pool) {
   const rolesByPerson = new Map();
   for (const role of roles) {
     const list = rolesByPerson.get(Number(role.person_id)) || [];
+    const workspaceKey = visibleIdentityWorkspaceKey(role.workspace_key);
     list.push({
       role: role.role,
       access_level: role.access_level,
-      workspace_key: role.workspace_key,
+      workspace_key: workspaceKey,
       workspace_name: role.workspace_name,
       workspace_type: role.workspace_type,
       tags: Array.isArray(role.tags) ? role.tags : [],
@@ -43293,6 +44875,13 @@ async function studentIdentityMap(studentRows = [], db = pool) {
     rolesByPerson.set(Number(role.person_id), list);
   }
   return { peopleById, householdsById, rolesByPerson };
+}
+
+function visibleIdentityWorkspaceKey(value = '') {
+  const key = normalizeWorkspaceKey(value);
+  if (key === 'family_app') return 'dratler_family';
+  if (key === 'bna_school') return 'bna';
+  return key;
 }
 
 function studentIdentityTags(student = {}, roles = []) {
@@ -43312,7 +44901,12 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
     await ensureStudentsFromSignups();
     const conditions = ["COALESCE(s.status, 'active') NOT IN ('archived', 'inactive')"];
     const params = [];
-    appendScopeCondition(req, conditions, params, 's.project_id');
+    appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
+    if (req.query.student_id) {
+      await assertStudentAccess(req, req.query.student_id);
+      params.push(req.query.student_id);
+      conditions.push(`s.id = $${params.length}`);
+    }
     const result = await pool.query(
       `SELECT s.*,
         COALESCE(goal_counts.open_goals, 0) AS open_goals,
@@ -43708,6 +45302,158 @@ app.patch('/api/bna/students/:id', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/bna/students/:id/household-link', requireAdmin, async (req, res) => {
+  const studentId = Number(req.params.id);
+  const body = req.body || {};
+  if (!Number.isFinite(studentId) || studentId <= 0) return res.status(400).json({ error: 'Valid student id is required' });
+
+  try {
+    await assertStudentAccess(req, studentId);
+    if (body.ensure_personal_seed || /dratler/i.test(`${body.household_name || ''} ${body.workspace_key || ''} ${body.project_key || ''}`)) {
+      await ensurePersonalWorkspacesAndPeople(pool).catch((error) => {
+        console.warn('Personal workspace seed before household link failed:', error.message);
+      });
+    }
+
+    let student = (await pool.query('SELECT * FROM bna_students WHERE id = $1', [studentId])).rows[0] || null;
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+    if (!student.person_id) {
+      await linkStudentIdentityFields(student).catch((error) => {
+        console.warn('Student identity link before household link failed:', error.message);
+        return null;
+      });
+      student = (await pool.query('SELECT * FROM bna_students WHERE id = $1', [studentId])).rows[0] || student;
+    }
+    if (!student.person_id) {
+      return res.status(409).json({ error: 'Student does not have a linked canonical person yet.' });
+    }
+
+    const person = (await pool.query('SELECT * FROM bna_people WHERE id = $1', [student.person_id])).rows[0] || null;
+    if (!person) return res.status(404).json({ error: 'Linked person not found' });
+
+    let household = null;
+    if (body.household_id || body.householdId) {
+      household = (await pool.query(
+        `SELECT h.*, p.project_key, p.name AS workspace_name, p.workspace_type
+         FROM bna_households h
+         LEFT JOIN bna_projects p ON p.id = h.workspace_id
+         WHERE h.id = $1
+         LIMIT 1`,
+        [Number(body.household_id || body.householdId)]
+      )).rows[0] || null;
+    } else {
+      const householdName = limitText(body.household_name || body.householdName || '', 180);
+      const workspaceKey = limitText(body.workspace_key || body.project_key || body.workspaceKey || body.projectKey || '', 120);
+      const params = [];
+      const conditions = [];
+      if (householdName) {
+        params.push(householdName);
+        conditions.push(`lower(h.household_name) = lower($${params.length})`);
+      }
+      if (workspaceKey) {
+        params.push(workspaceKey);
+        conditions.push(`p.project_key = $${params.length}`);
+      }
+      if (!conditions.length) return res.status(400).json({ error: 'household_id or household_name is required' });
+      household = (await pool.query(
+        `SELECT h.*, p.project_key, p.name AS workspace_name, p.workspace_type
+         FROM bna_households h
+         LEFT JOIN bna_projects p ON p.id = h.workspace_id
+         WHERE ${conditions.join(' AND ')}
+         ORDER BY h.status = 'active' DESC, h.updated_at DESC, h.id DESC
+         LIMIT 1`,
+        params
+      )).rows[0] || null;
+    }
+    if (!household) return res.status(404).json({ error: 'Household not found' });
+
+    const workspace = (await pool.query('SELECT * FROM bna_projects WHERE id = $1', [household.workspace_id])).rows[0] || null;
+    if (!workspace) return res.status(404).json({ error: 'Household workspace not found' });
+
+    const relationship = limitText(body.relationship || 'child', 120) || 'child';
+    const role = ['parent', 'child', 'caregiver', 'viewer'].includes(String(body.role || 'child')) ? String(body.role || 'child') : 'child';
+    const accessLevel = ['owner', 'admin', 'manager', 'member', 'viewer'].includes(String(body.access_level || body.accessLevel || 'member'))
+      ? String(body.access_level || body.accessLevel || 'member')
+      : 'member';
+    const tags = normalizeTextArray(body.tags || (relationship === 'daughter' ? ['family:daughter'] : ['family:child']));
+    const sourceNote = limitText(body.note || body.notes || '', 1000);
+    const metadata = {
+      source: body.source || 'operations_household_link',
+      linked_by: req.opsUser || 'admin',
+      linked_at: new Date().toISOString(),
+      student_id: student.id,
+      preserve_school_membership: body.preserve_school_membership !== false,
+      ...(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}),
+    };
+
+    const member = await ensureHouseholdMember(household, person, {
+      role,
+      relationship,
+      tags,
+      metadata,
+    }, pool);
+    const workspaceRole = await ensurePersonWorkspaceRole(workspace, person, {
+      role: role === 'child' ? 'child' : role,
+      access_level: accessLevel,
+      relationship_to_owner: relationship,
+      tags,
+      metadata,
+    }, pool);
+
+    await pool.query(
+      `UPDATE bna_people
+       SET metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [
+        person.id,
+        JSON.stringify({
+          household_id: household.id,
+          household_name: household.household_name,
+          household_relationship: relationship,
+          household_link_source: metadata.source,
+        }),
+      ]
+    );
+
+    const updateNote = sourceNote || `Codex ${new Date().toISOString().slice(0, 10)}: linked as ${relationship} in ${household.household_name}; school/BNA student membership was not changed.`;
+    const tagList = normalizeTextArray([...(student.tags || []), ...tags, `household:${household.id}`]);
+    const updated = (await pool.query(
+      `UPDATE bna_students
+       SET household_id = $2,
+           tags = $3::text[],
+           notes = CONCAT(COALESCE(notes, ''), CASE WHEN COALESCE(notes, '') = '' THEN '' ELSE E'\n' END, $4::text),
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [student.id, household.id, tagList, updateNote]
+    )).rows[0];
+
+    const identity = await studentIdentityMap([updated]);
+    const roles = identity.rolesByPerson.get(Number(updated.person_id)) || [];
+    res.json({
+      success: true,
+      student: {
+        ...updated,
+        person: identity.peopleById.get(Number(updated.person_id)) || null,
+        household: identity.householdsById.get(Number(updated.household_id)) || null,
+        workspace_roles: roles,
+        identity_tags: studentIdentityTags(updated, roles),
+      },
+      household: {
+        id: household.id,
+        household_name: household.household_name,
+        workspace_id: household.workspace_id,
+        workspace_key: household.project_key || workspace.project_key || null,
+      },
+      member,
+      workspace_role: workspaceRole,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.post('/api/bna/students/:id/access-code', requireAdmin, async (req, res) => {
   try {
     await assertStudentAccess(req, req.params.id);
@@ -44031,7 +45777,7 @@ app.post('/api/bna/assignments/youtube-metadata', requireAdmin, async (req, res)
 app.get('/api/bna/assignments', requireAdmin, async (req, res) => {
   const conditions = ["COALESCE(a.status, 'draft') <> 'archived'"];
   const params = [];
-  appendScopeCondition(req, conditions, params, 'a.project_id');
+  appendRequestedProjectScopeCondition(req, conditions, params, 'a.project_id');
   if (req.query.student_id) {
     params.push(req.query.student_id);
     conditions.push(`EXISTS (
@@ -44875,11 +46621,7 @@ app.post('/api/bna/assignments/:id/actions', requireAdmin, async (req, res) => {
 app.get('/api/bna/devices', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
-  const scopedProjectKey = opsScopeProjectKey(req);
-  if (scopedProjectKey) {
-    params.push(scopedProjectKey);
-    conditions.push(`COALESCE(s.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
-  }
+  appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
   if (req.query.student_id) {
     params.push(req.query.student_id);
     conditions.push(`d.student_id = $${params.length}`);
@@ -44891,6 +46633,7 @@ app.get('/api/bna/devices', requireAdmin, async (req, res) => {
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
+    if (req.query.student_id) await assertStudentAccess(req, req.query.student_id);
     await expireDeviceAccessSessions();
     const result = await pool.query(
       `SELECT d.*,
@@ -45048,11 +46791,7 @@ app.post('/api/bna/devices/:id/actions', requireAdmin, async (req, res) => {
 app.get('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
-  const scopedProjectKey = opsScopeProjectKey(req);
-  if (scopedProjectKey) {
-    params.push(scopedProjectKey);
-    conditions.push(`COALESCE(s.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
-  }
+  appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
   if (req.query.student_id) {
     params.push(req.query.student_id);
     conditions.push(`r.student_id = $${params.length}`);
@@ -45064,8 +46803,8 @@ app.get('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
-    if ((req.body || {}).student_id) await assertStudentAccess(req, (req.body || {}).student_id);
-    if ((req.body || {}).device_id) await assertDeviceAccess(req, (req.body || {}).device_id);
+    if (req.query.student_id) await assertStudentAccess(req, req.query.student_id);
+    if (req.query.device_id) await assertDeviceAccess(req, req.query.device_id);
     const result = await pool.query(
       `SELECT r.*, row_to_json(s.*) AS student, row_to_json(d.*) AS device
        FROM bna_device_access_rules r
@@ -45320,12 +47059,13 @@ app.post('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
     );
     res.json({ success: true, item: goalBoardAdminView(result.rows[0]) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.patch('/api/bna/goal-board/:id', requireAdmin, async (req, res) => {
   try {
+    await assertProjectOwnedRowAccess(req, 'bna_accountability_events', req.params.id);
     const current = await getGoalBoardEvent(req.params.id);
     if (!current) return res.status(404).json({ error: 'Goal Board item not found' });
 
@@ -45415,7 +47155,7 @@ app.patch('/api/bna/goal-board/:id', requireAdmin, async (req, res) => {
     );
     res.json({ success: true, item: goalBoardAdminView(result.rows[0]) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -45466,11 +47206,7 @@ app.get('/api/bna/accountability', requireAdmin, async (req, res) => {
   const { event_type, student_id, limit = 100 } = req.query;
   const conditions = [];
   const params = [];
-  const scopedProjectKey = opsScopeProjectKey(req);
-  if (scopedProjectKey) {
-    params.push(scopedProjectKey);
-    conditions.push(`COALESCE(a.project_id, s.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
-  }
+  appendRequestedProjectScopeCondition(req, conditions, params, 'COALESCE(a.project_id, s.project_id)');
 
   if (event_type) {
     params.push(event_type);
@@ -45486,6 +47222,7 @@ app.get('/api/bna/accountability', requireAdmin, async (req, res) => {
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
+    if (student_id) await assertStudentAccess(req, student_id);
     const result = await pool.query(
       `SELECT a.*, row_to_json(s.*) AS student
        FROM bna_accountability_events a
@@ -45497,7 +47234,7 @@ app.get('/api/bna/accountability', requireAdmin, async (req, res) => {
     );
     res.json({ events: result.rows });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -49141,7 +50878,8 @@ app.post('/api/parent-portal/logout', async (req, res) => {
 
 app.get('/api/bna/torah-learning', requireAdmin, async (req, res) => {
   try {
-    if (opsScopeProjectKey(req)) {
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    if (requestedProjectKey && requestedProjectKey !== DEFAULT_PROJECT_KEY) {
       return res.json({
         date: req.query.date || getTodayDateInTimeZone(),
         group: { progress_percent: 0, complete: false, students_complete: 0, students_count: 0 },
@@ -49614,7 +51352,7 @@ app.post('/api/bna/accountability/enrich-question-sources', requireAdmin, async 
   try {
     const conditions = [`event_type = 'question'`];
     const params = [];
-    appendScopeCondition(req, conditions, params, 'project_id');
+    appendRequestedProjectScopeCondition(req, conditions, params, 'project_id');
     params.push(limit);
     const rows = (await pool.query(
       `SELECT id
@@ -49655,10 +51393,10 @@ app.delete('/api/bna/accountability/:id', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/group-goals', requireAdmin, async (req, res) => {
   try {
-    await ensureDefaultGroupGoal(pool, opsScopeProjectKey(req) || DEFAULT_PROJECT_KEY);
+    await ensureDefaultGroupGoal(pool, requestedProjectKeyForScopedList(req) || DEFAULT_PROJECT_KEY);
     const conditions = [`g.status <> 'archived'`];
     const params = [];
-    appendScopeCondition(req, conditions, params, 'g.project_id');
+    appendRequestedProjectScopeCondition(req, conditions, params, 'g.project_id');
     const result = await pool.query(
       `SELECT g.*,
         COALESCE(
@@ -50148,6 +51886,11 @@ app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const conditions = [];
   appendScopeCondition(req, conditions, params, 'j.project_id');
 
+  const requestedProjectKey = normalizeProjectKey(req.query.project_key || req.query.project || '');
+  if (requestedProjectKey && requestedProjectKey !== 'all') {
+    params.push(requestedProjectKey);
+    conditions.push(`COALESCE(p.project_key, '${DEFAULT_PROJECT_KEY}') = $${params.length}`);
+  }
   if (status) {
     params.push(status);
     conditions.push(`j.status = $${params.length}`);
@@ -50183,16 +51926,23 @@ app.get('/api/bna/class-sessions', requireAdmin, async (req, res) => {
   const params = [];
   const conditions = [];
   const scopedProjectKey = opsScopeProjectKey(req);
-  if (scopedProjectKey) {
-    params.push(scopedProjectKey);
-    conditions.push(`COALESCE(cs.project_id, j.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
+  const requestedProjectKey = normalizeProjectKey(req.query.project_key || req.query.project || '');
+  const effectiveProjectKey = scopedProjectKey || (requestedProjectKey && requestedProjectKey !== 'all' ? requestedProjectKey : '');
+  if (effectiveProjectKey) {
+    params.push(effectiveProjectKey);
+    conditions.push(`COALESCE(p.project_key, '${DEFAULT_PROJECT_KEY}') = $${params.length}`);
   }
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   try {
     const result = await pool.query(
-      `SELECT cs.*, row_to_json(j.*) AS content_job
+      `SELECT cs.*,
+        p.project_key,
+        p.name AS project_name,
+        p.short_name AS project_short_name,
+        row_to_json(j.*) AS content_job
        FROM bna_class_sessions cs
        LEFT JOIN bna_content_jobs j ON j.id = cs.content_job_id
+       LEFT JOIN bna_projects p ON p.id = COALESCE(cs.project_id, j.project_id)
        ${whereClause}
        ORDER BY cs.class_date DESC, cs.created_at DESC
        LIMIT 100`,
@@ -50752,6 +52502,7 @@ app.post('/api/bna/content-jobs/bulk-generate', requireAdmin, async (req, res) =
   }
 
   try {
+    await assertProjectOwnedRowsAccess(req, 'bna_content_jobs', ids);
     const jobs = (await pool.query(
       `SELECT *
        FROM bna_content_jobs
@@ -50818,7 +52569,7 @@ app.post('/api/bna/content-jobs/bulk-generate', requireAdmin, async (req, res) =
       message: `${outputTypeLabel(targetType)} generated from ${jobs.length} selected content item${jobs.length === 1 ? '' : 's'} using prompt v${prompt.version}.`,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -51343,6 +53094,7 @@ async function parseMixedRecordingSource({
   const intake = await createCanonicalIntakeParseRun({
     rawInput,
     source_type: sourceType,
+    source_channel: job.source_type || sourceType,
     source_id: sourceId,
     source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
     created_by: 'recording_parser',
@@ -51353,6 +53105,7 @@ async function parseMixedRecordingSource({
     return {
       success: true,
       dry_run: true,
+      raw_intake: intake.raw_intake,
       parse_run: intake.parse_run,
       parsed,
       items: intake.items,
@@ -51367,11 +53120,15 @@ async function parseMixedRecordingSource({
   const nextParse = {
     ...(previousParse || {}),
     intake_parse_run_id: intake.parse_run.id,
+    raw_intake_stable_id: intake.raw_intake?.stable_id || intake.parse_run?.metadata?.raw_intake_stable_id || null,
     mixed_recording_parse: {
       parser: 'canonical-intake-parser',
       parser_version: intake.parse_run.parser_version || INTAKE_PARSER_VERSION,
       parsed_at: new Date().toISOString(),
+      raw_intake_stable_id: intake.raw_intake?.stable_id || intake.parse_run?.metadata?.raw_intake_stable_id || null,
       intake_parse_run_id: intake.parse_run.id,
+      source_type: sourceType,
+      source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
       counts,
       report: parsed.report,
     },
@@ -51390,6 +53147,7 @@ async function parseMixedRecordingSource({
   return {
     success: true,
     dry_run: false,
+    raw_intake: intake.raw_intake,
     parse_run: intake.parse_run,
     parsed,
     items: intake.items,
@@ -51409,7 +53167,17 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
     const source = intakeSourceFromRequest(req, body);
     const result = await createCanonicalIntakeParseRun({
       rawInput,
+      transcriptText: body.transcript_text || body.transcriptText || '',
       ...source,
+      source_channel: body.source_channel || body.sourceChannel || source.source_type,
+      source_message_id: body.source_message_id || body.message_id || source.source_id || null,
+      media_url: body.media_url || body.mediaUrl || null,
+      intake_type: body.intake_type || body.intakeType || (body.requirement_register_path ? 'broad_correction' : 'general'),
+      requirement_register_path: body.requirement_register_path || body.requirementRegisterPath || null,
+      metadata: {
+        source_chat_id: body.source_chat_id || body.chat_id || null,
+        source_message_id: body.source_message_id || body.message_id || null,
+      },
       dry_run: dryRun,
       req,
     });
@@ -51423,6 +53191,7 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
     res.json({
       success: true,
       dry_run: dryRun,
+      raw_intake: result.raw_intake,
       ...result,
       apply,
     });
@@ -52904,6 +54673,28 @@ async function createCommunicationFromWapiWebhook({ normalized, webhookLogId, pa
     media_type: normalized.mediaType,
     payload_keys: payload && typeof payload === 'object' ? Object.keys(payload).slice(0, 30) : [],
   };
+  const screening = classifyCommunicationPipeline({
+    contact_type: match.contact_type || 'general',
+    channel: 'whatsapp',
+    direction: outboundMessage ? 'outbound' : 'inbound',
+    summary: copy.summary,
+    body: copy.body || '',
+    follow_up_required: followUpRequired,
+    source_context: sourceContext,
+    metadata,
+  });
+  const finalFollowUpRequired = Boolean(followUpRequired || screening.follow_up_required);
+  const enrichedMetadata = mergeCommunicationScreeningMetadata(metadata, screening);
+  const enrichedSourceContext = {
+    ...sourceContext,
+    communication_screening: {
+      pipeline_category: screening.pipeline_category,
+      pipeline_tags: screening.pipeline_tags,
+      priority: screening.priority,
+      alert_required: screening.alert_required,
+      top_news: screening.top_news,
+    },
+  };
 
   const communication = (await db.query(
     `INSERT INTO bna_contact_communications (
@@ -52925,10 +54716,10 @@ async function createCommunicationFromWapiWebhook({ normalized, webhookLogId, pa
       outboundMessage ? 'outbound' : 'inbound',
       copy.summary,
       copy.body,
-      followUpRequired,
+      finalFollowUpRequired,
       normalized.occurredAt || null,
-      JSON.stringify(sourceContext),
-      JSON.stringify(metadata),
+      JSON.stringify(enrichedSourceContext),
+      JSON.stringify(enrichedMetadata),
     ]
   )).rows[0];
 
@@ -52942,6 +54733,8 @@ async function createCommunicationFromWapiWebhook({ normalized, webhookLogId, pa
       [match.lead_id, outboundMessage ? 'outbound' : 'inbound']
     );
   }
+
+  await createCommunicationAttentionArtifacts(communication, screening, { db }).catch(() => {});
 
   return { communication, duplicate: false, match };
 }
@@ -53578,6 +55371,213 @@ function normalizeWhatsappImportMessage(raw = {}) {
     occurredAt,
     phoneForContact,
     rawPayload: raw,
+  };
+}
+
+function splitDelimitedLine(line = '', delimiter = ',') {
+  const cells = [];
+  let current = '';
+  let inQuotes = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    const next = line[index + 1];
+    if (char === '"' && inQuotes && next === '"') {
+      current += '"';
+      index += 1;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === delimiter && !inQuotes) {
+      cells.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  cells.push(current.trim());
+  return cells.map((cell) => cell.replace(/^"|"$/g, '').replace(/""/g, '"'));
+}
+
+function parseDelimitedContactExport(text = '') {
+  const lines = String(text || '').split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  if (!lines.length) return [];
+  const delimiter = lines[0].split('\t').length > lines[0].split(',').length ? '\t' : ',';
+  const headers = splitDelimitedLine(lines[0], delimiter).map((header) => header.trim());
+  return lines.slice(1).map((line, index) => {
+    const cells = splitDelimitedLine(line, delimiter);
+    const row = { row_number: index + 2 };
+    headers.forEach((header, headerIndex) => {
+      row[header || `field_${headerIndex + 1}`] = cells[headerIndex] || '';
+    });
+    return row;
+  });
+}
+
+function parseVcardContactExport(text = '') {
+  const cards = String(text || '').split(/BEGIN:VCARD/i).slice(1);
+  return cards.map((block, index) => {
+    const row = { row_number: index + 1 };
+    for (const rawLine of block.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      const separator = line.indexOf(':');
+      if (separator === -1) continue;
+      const key = line.slice(0, separator).split(';')[0].toUpperCase();
+      const value = line.slice(separator + 1).trim();
+      if (key === 'FN') row.name = value;
+      if (key === 'N' && !row.name) row.name = value.replace(/;/g, ' ').trim();
+      if (key === 'TEL') row.phone = value;
+      if (key === 'EMAIL') row.email = value;
+      if (key === 'ORG') row.organization = value;
+      if (key === 'NOTE') row.notes = value;
+    }
+    return row;
+  });
+}
+
+function contactImportValue(row = {}, keys = []) {
+  const normalized = new Map(Object.entries(row).map(([key, value]) => [String(key).toLowerCase().replace(/[^a-z0-9]+/g, '_'), value]));
+  for (const key of keys) {
+    const value = normalized.get(key);
+    if (value !== undefined && String(value || '').trim()) return String(value).trim();
+  }
+  return '';
+}
+
+function normalizeContactImportRow(row = {}) {
+  const name = contactImportValue(row, ['name', 'full_name', 'display_name', 'first_name', 'parent_name', 'contact_name', 'fn']);
+  const email = normalizeEmail(contactImportValue(row, ['email', 'email_address', 'primary_email', 'parent_email']));
+  const phone = contactImportValue(row, ['phone', 'phone_number', 'mobile', 'mobile_phone', 'primary_phone', 'parent_phone', 'whatsapp', 'tel']);
+  const organization = contactImportValue(row, ['organization', 'org', 'company', 'group', 'community', 'school']);
+  const notes = contactImportValue(row, ['notes', 'note', 'description', 'tags', 'labels', 'category']);
+  const studentName = contactImportValue(row, ['student_name', 'child_name', 'kid_name', 'student', 'child']);
+  const text = [name, email, phone, organization, notes, studentName].join(' ');
+  let classification = 'general_contact';
+  if (/\b(parent|mother|father|mom|dad|child|student|school|enroll|accountability)\b/i.test(text) || studentName) classification = 'parent';
+  if (/\b(provider|rabbi|teacher|therapist|coach|service|vendor|teacher)\b/i.test(text)) classification = 'provider';
+  if (/\b(student|child|kid)\b/i.test(text) && !/\b(parent|mother|father|mom|dad)\b/i.test(text)) classification = 'student';
+  if (/\b(group|community|class|broadcast|whatsapp group|chat)\b/i.test(text)) classification = 'community_group';
+  const tags = normalizeTextArray([
+    'contact_import_preview',
+    classification,
+    email ? 'has_email' : '',
+    phone ? 'has_phone' : '',
+    organization ? 'has_organization' : '',
+  ]);
+  return {
+    row_number: row.row_number || null,
+    name: limitText(name || organization || email || phone || 'Unnamed contact', 180),
+    email,
+    phone,
+    phone_digits: normalizePhoneDigits(phone),
+    organization: limitText(organization, 180),
+    student_name: limitText(studentName, 140),
+    notes: limitText(notes, 500),
+    classification,
+    tags,
+    workspace_association: classification === 'provider' ? 'service_provider' : classification === 'community_group' ? 'community' : 'bna',
+    required_review: !email && !normalizePhoneDigits(phone),
+    source_row: row,
+  };
+}
+
+async function lookupContactImportDedupe(row = {}, db = pool) {
+  const phoneDigits = normalizePhoneDigits(row.phone);
+  const email = normalizeEmail(row.email);
+  if (!phoneDigits && !email) return { status: 'needs_identifier', matches: [] };
+  const matches = [];
+  const params = [];
+  const conditions = [];
+  if (email) {
+    params.push(email);
+    conditions.push(`lower(COALESCE(primary_email, '')) = $${params.length}`);
+  }
+  if (phoneDigits) {
+    params.push(phoneDigits);
+    conditions.push(`regexp_replace(COALESCE(primary_phone, ''), '\\D', '', 'g') = $${params.length}`);
+  }
+  if (conditions.length) {
+    const contacts = (await db.query(
+      `SELECT 'contact' AS type, id, full_name AS name, primary_email AS email, primary_phone AS phone, status, source
+       FROM bna_contacts
+       WHERE ${conditions.join(' OR ')}
+       LIMIT 5`,
+      params
+    ).catch(() => ({ rows: [] }))).rows;
+    matches.push(...contacts);
+  }
+  if (email || phoneDigits) {
+    const leadConditions = [];
+    const leadParams = [];
+    if (email) {
+      leadParams.push(email);
+      leadConditions.push(`lower(COALESCE(parent_email, '')) = $${leadParams.length}`);
+    }
+    if (phoneDigits) {
+      leadParams.push(phoneDigits);
+      leadConditions.push(`regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $${leadParams.length}`);
+    }
+    const leads = (await db.query(
+      `SELECT 'parent_lead' AS type, id, parent_name AS name, parent_email AS email, parent_phone AS phone, status, source
+       FROM bna_parent_leads
+       WHERE ${leadConditions.join(' OR ')}
+       LIMIT 5`,
+      leadParams
+    ).catch(() => ({ rows: [] }))).rows;
+    matches.push(...leads);
+  }
+  return { status: matches.length ? 'possible_duplicate' : 'new_candidate', matches };
+}
+
+function contactImportRowsFromBody(body = {}) {
+  if (Array.isArray(body.rows)) return body.rows;
+  const content = String(body.content || body.text || body.file_text || '');
+  if (!content.trim()) return [];
+  const format = String(body.format || '').toLowerCase();
+  if (format === 'vcard' || /BEGIN:VCARD/i.test(content)) return parseVcardContactExport(content);
+  return parseDelimitedContactExport(content);
+}
+
+async function previewContactImport(body = {}, db = pool) {
+  const rows = contactImportRowsFromBody(body);
+  const normalizedRows = rows.slice(0, Math.max(1, Math.min(Number(body.limit || 100), 500))).map(normalizeContactImportRow);
+  const preview = [];
+  for (const row of normalizedRows) {
+    const dedupe = await lookupContactImportDedupe(row, db);
+    preview.push({
+      ...row,
+      dedupe_status: dedupe.status,
+      duplicate_matches: dedupe.matches,
+      proposed_action: row.required_review ? 'needs_mapping_review' : dedupe.matches.length ? 'review_existing_match' : 'stage_contact_candidate',
+    });
+  }
+  const byClassification = preview.reduce((acc, row) => {
+    acc[row.classification] = (acc[row.classification] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    success: true,
+    dry_run: true,
+    no_send: true,
+    external_write_performed: false,
+    local_write_performed: false,
+    workflow: 'CSV/vCard/email export upload -> field mapping -> dedupe -> tags -> workspace association -> parent/provider/student classification -> preview before commit',
+    field_mapping: {
+      name: ['name', 'full_name', 'display_name', 'fn'],
+      email: ['email', 'email_address', 'primary_email'],
+      phone: ['phone', 'mobile', 'primary_phone', 'whatsapp', 'tel'],
+      organization: ['organization', 'org', 'company', 'group'],
+      student_name: ['student_name', 'child_name', 'kid_name'],
+      notes: ['notes', 'note', 'tags', 'labels'],
+    },
+    summary: {
+      rows_received: rows.length,
+      rows_previewed: preview.length,
+      possible_duplicates: preview.filter((row) => row.dedupe_status === 'possible_duplicate').length,
+      needs_mapping_review: preview.filter((row) => row.required_review).length,
+      classifications: byClassification,
+    },
+    preview,
+    commit_blocked: true,
+    blocker: 'Preview is ready. Commit/import remains approval-gated so no contacts, tags, emails, WhatsApp messages, or external records are written from an upload preview.',
   };
 }
 
@@ -54276,6 +56276,15 @@ app.post('/api/bna/wapi/sync', requireAdmin, async (req, res) => {
       sync_run: err.syncRun || null,
       wapi_response: err.wapiResponse || null,
     });
+  }
+});
+
+app.post('/api/bna/contact-imports/preview', requireAdmin, async (req, res) => {
+  try {
+    const result = await previewContactImport(req.body || {});
+    res.json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -55426,6 +57435,794 @@ async function buildCodexQueueSnapshot(req, { limit = 50 } = {}) {
   };
 }
 
+async function listAgentRuns(req, filters = {}) {
+  const params = [];
+  const conditions = [];
+  appendScopeCondition(req, conditions, params, 'COALESCE(r.project_id, t.project_id)');
+  const status = filters.status ? normalizeAgentRunStatus(filters.status, null) : null;
+  if (status) {
+    params.push(status);
+    conditions.push(`r.status = $${params.length}`);
+  }
+  const verificationMode = filters.verification_mode || filters.verificationMode
+    ? normalizeVerificationMode(filters.verification_mode || filters.verificationMode, null)
+    : null;
+  if (verificationMode) {
+    params.push(verificationMode);
+    conditions.push(`r.verification_mode = $${params.length}`);
+  }
+  if (filters.task_id || filters.taskId) {
+    params.push(Number(filters.task_id || filters.taskId));
+    conditions.push(`r.task_id = $${params.length}`);
+  }
+  if (filters.workspace_id || filters.workspaceId) {
+    params.push(Number(filters.workspace_id || filters.workspaceId));
+    conditions.push(`r.workspace_id = $${params.length}`);
+  }
+  if (filters.openOnly || filters.open_only) {
+    conditions.push(`r.status IN ('draft', 'ready', 'claimed', 'running', 'waiting_operator', 'submitted', 'blocked')`);
+  }
+  const limit = Math.max(1, Math.min(Number(filters.limit || 100), 250));
+  params.push(limit);
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const result = await pool.query(
+    `SELECT r.*,
+            t.title AS task_title,
+            t.display_title AS task_display_title,
+            t.stage AS task_stage,
+            t.implementation_status AS task_implementation_status,
+            t.verification_status AS task_verification_status,
+            t.required_verification_mode AS task_required_verification_mode,
+            p.project_key,
+            p.name AS project_name,
+            p.short_name AS project_short_name,
+            ap.agent_key,
+            ap.display_name AS agent_display_name,
+            ap.agent_type,
+            ap.capabilities,
+            COALESCE(artifact_counts.artifact_count, 0)::int AS artifact_count,
+            COALESCE(event_counts.event_count, 0)::int AS event_count
+     FROM bna_agent_runs r
+     LEFT JOIN bna_tasks t ON t.id = r.task_id
+     LEFT JOIN bna_projects p ON p.id = COALESCE(r.project_id, t.project_id)
+     LEFT JOIN bna_agent_profiles ap ON ap.id = r.agent_profile_id
+     LEFT JOIN (
+       SELECT run_id, COUNT(*) AS artifact_count
+       FROM bna_agent_run_artifacts
+       GROUP BY run_id
+     ) artifact_counts ON artifact_counts.run_id = r.id
+     LEFT JOIN (
+       SELECT run_id, COUNT(*) AS event_count
+       FROM bna_agent_run_events
+       GROUP BY run_id
+     ) event_counts ON event_counts.run_id = r.id
+     ${whereClause}
+     ORDER BY
+       CASE r.status
+         WHEN 'ready' THEN 1
+         WHEN 'claimed' THEN 2
+         WHEN 'running' THEN 3
+         WHEN 'waiting_operator' THEN 4
+         WHEN 'submitted' THEN 5
+         WHEN 'blocked' THEN 6
+         WHEN 'sealed_fail' THEN 7
+         WHEN 'sealed_pass' THEN 8
+         ELSE 9
+       END,
+       r.updated_at DESC,
+       r.created_at DESC
+     LIMIT $${params.length}`,
+    params
+  );
+  const runs = result.rows.map(agentRunView);
+  const summary = runs.reduce((acc, run) => {
+    acc[run.status] = (acc[run.status] || 0) + 1;
+    return acc;
+  }, {});
+  return { runs, summary };
+}
+
+app.get('/api/bna/agent-profiles', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agents menu is Super Admin only.' });
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_agent_profiles
+       WHERE active = TRUE
+       ORDER BY CASE agent_type
+         WHEN 'codex_builder' THEN 1
+         WHEN 'browser_qa' THEN 2
+         WHEN 'playwright_verifier' THEN 3
+         WHEN 'research_agent' THEN 4
+         ELSE 5
+       END, display_name ASC`
+    );
+    res.json({ success: true, profiles: result.rows.map(agentProfileView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/agent-runs', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agents menu is Super Admin only.' });
+    const { runs, summary } = await listAgentRuns(req, req.query);
+    res.json({ success: true, runs, summary });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/tasks/:taskId/verification-plan', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent verification planning is Super Admin only.' });
+    const task = await fetchTaskWithProject(req.params.taskId);
+    if (!task) return res.status(404).json({ error: 'Task not found.' });
+    assertProjectAccess(req, { project_key: task.project_key });
+    const mode = normalizeVerificationMode(req.body?.verification_mode || req.body?.verificationMode, 'mixed');
+    const implementationStatus = normalizeImplementationStatus(req.body?.implementation_status || req.body?.implementationStatus || task.implementation_status || 'not_started', 'not_started');
+    const verificationStatus = ['browser_agent', 'mixed', 'operator'].includes(mode) ? 'needed' : 'not_required';
+    await pool.query(
+      `UPDATE bna_tasks
+       SET required_verification_mode = $1,
+           implementation_status = $2,
+           verification_status = $3,
+           last_activity_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $4`,
+      [mode, implementationStatus, verificationStatus, task.id]
+    );
+    let run = null;
+    if (['browser_agent', 'mixed', 'operator'].includes(mode) && req.body?.create_run !== false && req.body?.createRun !== false) {
+      run = await createAgentRunForTask(task.id, { ...req.body, verification_mode: mode, implementation_status: implementationStatus }, req);
+    }
+    res.json({
+      success: true,
+      task: taskApiView(await fetchTaskWithProject(task.id)),
+      run,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/tasks/:taskId/agent-runs', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    const run = await createAgentRunForTask(req.params.taskId, req.body || {}, req);
+    res.json({ success: true, run });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/agent-runs/:runKey', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    const run = await fetchAgentRunByKey(req.params.runKey);
+    if (!run) return res.status(404).json({ error: 'Agent run not found.' });
+    assertAgentRunAccess(req, run);
+    const [events, artifacts, task] = await Promise.all([
+      fetchAgentRunEvents(run.id),
+      fetchAgentRunArtifacts(run.id),
+      run.task_id ? fetchTaskWithProject(run.task_id) : Promise.resolve(null),
+    ]);
+    res.json({ success: true, run, events, artifacts, task: taskApiView(task) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/claim', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    assertAgentRunTransition(run.status, 'claimed');
+    const claimedBy = String(req.body?.claimed_by || req.body?.claimedBy || req.opsUser || 'Browser QA').slice(0, 160);
+    await client.query(
+      `UPDATE bna_agent_runs
+       SET status = 'claimed',
+           claimed_by = $1,
+           claimed_at = COALESCE(claimed_at, NOW()),
+           updated_at = NOW()
+       WHERE id = $2`,
+      [claimedBy, run.id]
+    );
+    if (run.task_id) {
+      await client.query(
+        `UPDATE bna_tasks
+         SET verification_status = 'running',
+             active_agent_run_id = $1,
+             last_activity_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $2`,
+        [run.id, run.task_id]
+      );
+    }
+    await appendAgentRunEvent(run, 'claimed', {
+      actor: agentControlActor(req),
+      body: `${claimedBy} claimed the run.`,
+      metadata: { claimed_by: claimedBy },
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/progress', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    const eventType = String(req.body?.event_type || req.body?.eventType || 'progress').slice(0, 80);
+    const passiveEvent = ['copied', 'opened', 'viewed'].includes(eventType);
+    let nextStatus = run.status;
+    if (!passiveEvent && (run.status === 'ready' || run.status === 'claimed' || run.status === 'waiting_operator')) {
+      assertAgentRunTransition(run.status, 'running');
+      nextStatus = 'running';
+    }
+    if (!passiveEvent && !['running', 'submitted'].includes(nextStatus)) {
+      const error = new Error(`Cannot post progress while run is ${run.status}.`);
+      error.statusCode = 409;
+      throw error;
+    }
+    const body = String(req.body?.body || req.body?.summary || req.body?.note || 'Progress update.').slice(0, 4000);
+    if (passiveEvent) {
+      await client.query(
+        `UPDATE bna_agent_runs
+         SET updated_at = NOW()
+         WHERE id = $1`,
+        [run.id]
+      );
+    } else {
+      await client.query(
+        `UPDATE bna_agent_runs
+         SET status = $1,
+             started_at = COALESCE(started_at, NOW()),
+             last_progress_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $2`,
+        [nextStatus, run.id]
+      );
+    }
+    await appendAgentRunEvent(run, eventType, {
+      actor: agentControlActor(req),
+      body,
+      metadata: req.body?.metadata || {},
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/artifacts', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    if (['sealed_pass', 'sealed_fail', 'cancelled', 'expired'].includes(run.status)) {
+      const error = new Error('Sealed, cancelled, or expired runs are immutable.');
+      error.statusCode = 409;
+      throw error;
+    }
+    const artifactType = String(req.body?.artifact_type || req.body?.artifactType || 'note').toLowerCase().replace(/[^a-z0-9]+/g, '_');
+    const result = await client.query(
+      `INSERT INTO bna_agent_run_artifacts (run_id, artifact_type, title, path, url, metadata, redaction_status, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6::jsonb, $7, $8)
+       RETURNING *`,
+      [
+        run.id,
+        artifactType,
+        String(req.body?.title || 'Evidence').slice(0, 220),
+        req.body?.path || null,
+        req.body?.url || null,
+        JSON.stringify(req.body?.metadata || {}),
+        String(req.body?.redaction_status || req.body?.redactionStatus || 'not_needed').toLowerCase(),
+        req.opsUser || 'agent-run',
+      ]
+    );
+    await appendAgentRunEvent(run, 'evidence_added', {
+      actor: agentControlActor(req),
+      body: `Evidence added: ${result.rows[0].title}`,
+      metadata: { artifact_id: result.rows[0].id, artifact_type: artifactType },
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, artifact: result.rows[0], run: await fetchAgentRunByKey(req.params.runKey) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/submit', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    assertAgentRunTransition(run.status, 'submitted');
+    const outcome = normalizeRunOutcome(req.body?.outcome, null);
+    if (!outcome) {
+      const error = new Error('Submit Result requires pass, fail, blocked, or needs_operator outcome.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const criteria = acceptanceCriteriaFromInput(run.acceptance_criteria, run);
+    const criterionResults = criterionResultsFromInput(req.body?.criterion_results || req.body?.criterionResults || [], criteria);
+    const resultPayload = {
+      outcome,
+      criterion_results: criterionResults,
+      routes_tested: req.body?.routes_tested || req.body?.routesTested || [],
+      viewports_tested: req.body?.viewports_tested || req.body?.viewportsTested || [],
+      console_network: req.body?.console_network || req.body?.consoleNetwork || {},
+      remaining_issues: req.body?.remaining_issues || req.body?.remainingIssues || [],
+      recommended_next_action: req.body?.recommended_next_action || req.body?.recommendedNextAction || null,
+    };
+    await client.query(
+      `UPDATE bna_agent_runs
+       SET status = 'submitted',
+           submitted_at = NOW(),
+           result_summary = $1,
+           failure_reason = CASE WHEN $2 = 'fail' THEN $3 ELSE failure_reason END,
+           blocker = CASE WHEN $2 IN ('blocked', 'needs_operator') THEN $4 ELSE blocker END,
+           result_payload = $5::jsonb,
+           updated_at = NOW()
+       WHERE id = $6`,
+      [
+        String(req.body?.summary || 'Agent run submitted.').slice(0, 4000),
+        outcome,
+        String(req.body?.failure_reason || req.body?.failureReason || req.body?.summary || '').slice(0, 4000) || null,
+        String(req.body?.blocker || req.body?.summary || '').slice(0, 4000) || null,
+        JSON.stringify(resultPayload),
+        run.id,
+      ]
+    );
+    if (run.task_id) {
+      await client.query(
+        `UPDATE bna_tasks
+         SET verification_status = 'submitted',
+             last_activity_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $1`,
+        [run.task_id]
+      );
+    }
+    await appendAgentRunEvent(run, 'submitted', {
+      actor: agentControlActor(req),
+      body: req.body?.summary || `Agent submitted ${outcome}.`,
+      metadata: resultPayload,
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/seal', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    const submittedPayload = parseAgentJsonMaybe(run.result_payload, {});
+    const outcomeForSeal = normalizeRunOutcome(req.body?.outcome || submittedPayload.outcome, null);
+    assertAgentRunTransition(run.status, outcomeForSeal === 'pass' ? 'sealed_pass' : outcomeForSeal === 'fail' ? 'sealed_fail' : 'blocked');
+    const artifacts = await fetchAgentRunArtifacts(run.id, client);
+    const resultPayload = submittedPayload;
+    const payload = validateSealPayload({
+      run: { ...run, result_payload: resultPayload },
+      artifacts,
+      outcome: outcomeForSeal,
+      summary: req.body?.summary || run.result_summary,
+      criterionResults: req.body?.criterion_results || req.body?.criterionResults || resultPayload.criterion_results || [],
+    });
+    const sealedStatus = payload.outcome === 'pass'
+      ? 'sealed_pass'
+      : payload.outcome === 'fail'
+        ? 'sealed_fail'
+        : 'blocked';
+    let decision = null;
+    if (['blocked', 'needs_operator'].includes(payload.outcome)) {
+      decision = await createAgentRunDecision(run, {
+        blocker: req.body?.blocker || run.blocker || req.body?.summary || run.result_summary,
+      }, req, client);
+    }
+    const nextPayload = {
+      ...resultPayload,
+      outcome: payload.outcome,
+      criterion_results: payload.criterion_results,
+      sealed_by: req.opsUser || 'agent-run',
+      sealed_at: new Date().toISOString(),
+    };
+    await client.query(
+      `UPDATE bna_agent_runs
+       SET status = $1,
+           sealed_at = NOW(),
+           result_summary = COALESCE($2, result_summary),
+           result_payload = $3::jsonb,
+           operator_decision_id = COALESCE($4, operator_decision_id),
+           blocker = COALESCE($5, blocker),
+           updated_at = NOW()
+       WHERE id = $6`,
+      [
+        sealedStatus,
+        String(req.body?.summary || run.result_summary || '').slice(0, 4000),
+        JSON.stringify(nextPayload),
+        decision?.id || null,
+        req.body?.blocker || null,
+        run.id,
+      ]
+    );
+    if (run.task_id) {
+      const task = await fetchTaskWithProject(run.task_id, client);
+      const automatedGatesPassed = req.body?.automated_gates_passed === true || req.body?.automatedGatesPassed === true;
+      if (payload.outcome === 'pass') {
+        const canClose = normalizeImplementationStatus(task?.implementation_status, 'not_started') === 'complete' && automatedGatesPassed;
+        await client.query(
+          `UPDATE bna_tasks
+           SET verification_status = 'passed',
+               last_verified_at = NOW(),
+               verified_at = CASE WHEN $1 THEN COALESCE(verified_at, NOW()) ELSE verified_at END,
+               stage = CASE WHEN $1 THEN 'done' ELSE stage END,
+               completed_at = CASE WHEN $1 THEN COALESCE(completed_at, NOW()) ELSE completed_at END,
+               next_action = CASE WHEN $1 THEN 'Review completed result' ELSE 'Complete remaining implementation or automated gates' END,
+               active_agent_run_id = $2,
+               last_activity_at = NOW(),
+               updated_at = NOW()
+           WHERE id = $3`,
+          [canClose, run.id, run.task_id]
+        );
+      } else if (payload.outcome === 'fail') {
+        await client.query(
+          `UPDATE bna_tasks
+           SET verification_status = 'failed',
+               agent_status = 'failed',
+               task_kind = 'agent_job',
+               assigned_to = COALESCE(assigned_to, 'Codex'),
+               stage = CASE WHEN stage = 'done' THEN 'assigned' ELSE stage END,
+               verification_notes = COALESCE($1, verification_notes),
+               next_action = 'Fix verifier failures and create a new verification run',
+               active_agent_run_id = $2,
+               last_activity_at = NOW(),
+               updated_at = NOW()
+           WHERE id = $3`,
+          [req.body?.summary || run.result_summary || 'Browser QA found defects.', run.id, run.task_id]
+        );
+      } else {
+        await client.query(
+          `UPDATE bna_tasks
+           SET verification_status = $1,
+               decision_required = TRUE,
+               blocked_reason = COALESCE($2, blocked_reason),
+               blocked_at = COALESCE(blocked_at, NOW()),
+               next_action = 'Resolve operator blocker and resume the agent run',
+               active_agent_run_id = $3,
+               last_activity_at = NOW(),
+               updated_at = NOW()
+           WHERE id = $4`,
+          [payload.outcome === 'needs_operator' ? 'needs_operator' : 'blocked', req.body?.blocker || run.blocker || req.body?.summary || run.result_summary || null, run.id, run.task_id]
+        );
+      }
+      await addAgentRunTaskComment(
+        { ...run, status: sealedStatus },
+        `Agent run ${run.run_key} sealed as ${payload.outcome}: ${req.body?.summary || run.result_summary || ''}`.trim(),
+        req,
+        client
+      );
+      await recordTaskActivity(run.task_id, `agent_run_${sealedStatus}`, {
+        actor: req.opsUser || 'agent-run',
+        summary: req.body?.summary || run.result_summary || `Agent run sealed as ${payload.outcome}.`,
+        metadata: { run_key: run.run_key, outcome: payload.outcome, decision_task_id: decision?.id || null },
+      }, client);
+    }
+    await appendAgentRunEvent(run, sealedStatus, {
+      actor: agentControlActor(req),
+      body: req.body?.summary || run.result_summary || `Run sealed as ${payload.outcome}.`,
+      metadata: { outcome: payload.outcome, decision_task_id: decision?.id || null },
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey), decision: decision ? taskApiView(decision) : null });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/block', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    assertAgentRunTransition(run.status, 'blocked');
+    const blocker = String(req.body?.blocker || req.body?.summary || 'Agent run blocked.').slice(0, 4000);
+    const decision = req.body?.needs_operator || req.body?.needsOperator
+      ? await createAgentRunDecision(run, { blocker }, req, client)
+      : null;
+    await client.query(
+      `UPDATE bna_agent_runs
+       SET status = 'blocked',
+           blocker = $1,
+           operator_decision_id = COALESCE($2, operator_decision_id),
+           updated_at = NOW()
+       WHERE id = $3`,
+      [blocker, decision?.id || null, run.id]
+    );
+    if (run.task_id) {
+      await client.query(
+        `UPDATE bna_tasks
+         SET verification_status = $1,
+             blocked_reason = COALESCE($2, blocked_reason),
+             blocked_at = COALESCE(blocked_at, NOW()),
+             decision_required = CASE WHEN $3::boolean THEN TRUE ELSE decision_required END,
+             next_action = CASE WHEN $3::boolean THEN 'Resolve operator blocker and resume the agent run' ELSE 'Review verifier blocker' END,
+             active_agent_run_id = $4,
+             last_activity_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $5`,
+        [decision ? 'needs_operator' : 'blocked', blocker, Boolean(decision), run.id, run.task_id]
+      );
+    }
+    await appendAgentRunEvent(run, decision ? 'decision_requested' : 'blocked', {
+      actor: agentControlActor(req),
+      body: blocker,
+      metadata: { decision_task_id: decision?.id || null },
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey), decision: decision ? taskApiView(decision) : null });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/resume', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    assertAgentRunTransition(run.status, 'running');
+    await client.query(
+      `UPDATE bna_agent_runs
+       SET status = 'running',
+           started_at = COALESCE(started_at, NOW()),
+           last_progress_at = NOW(),
+           blocker = NULL,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [run.id]
+    );
+    if (run.task_id) {
+      await client.query(
+        `UPDATE bna_tasks
+         SET verification_status = 'running',
+             decision_required = FALSE,
+             active_agent_run_id = $1,
+             last_activity_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $2`,
+        [run.id, run.task_id]
+      );
+    }
+    await appendAgentRunEvent(run, 'resumed', {
+      actor: agentControlActor(req),
+      body: req.body?.summary || 'Agent run resumed.',
+      metadata: {},
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/cancel', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    assertAgentRunTransition(run.status, 'cancelled');
+    const reason = String(req.body?.reason || req.body?.summary || 'Agent run cancelled from Operations.').slice(0, 4000);
+    await client.query(
+      `UPDATE bna_agent_runs
+       SET status = 'cancelled',
+           failure_reason = COALESCE($1, failure_reason),
+           result_summary = COALESCE($1, result_summary),
+           updated_at = NOW()
+       WHERE id = $2`,
+      [reason, run.id]
+    );
+    if (run.task_id) {
+      await client.query(
+        `UPDATE bna_tasks
+         SET verification_status = CASE WHEN verification_status IN ('ready', 'running', 'submitted') THEN 'needed' ELSE verification_status END,
+             active_agent_run_id = CASE WHEN active_agent_run_id = $1 THEN NULL ELSE active_agent_run_id END,
+             next_action = CASE WHEN active_agent_run_id = $1 THEN 'Create a fresh verification run when ready' ELSE next_action END,
+             last_activity_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $2`,
+        [run.id, run.task_id]
+      );
+      await recordTaskActivity(run.task_id, 'agent_run_cancelled', {
+        actor: req.opsUser || 'agent-run',
+        summary: reason,
+        metadata: { run_key: run.run_key },
+      }, client);
+    }
+    await appendAgentRunEvent(run, 'cancelled', {
+      actor: agentControlActor(req),
+      body: reason,
+      metadata: { previous_status: run.status },
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(req.params.runKey) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/agent-runs/:runKey/reopen', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') return res.status(403).json({ error: 'Agent runs are Super Admin only.' });
+    await client.query('BEGIN');
+    const run = await fetchAgentRunByKey(req.params.runKey, client);
+    if (!run) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Agent run not found.' });
+    }
+    assertAgentRunAccess(req, run);
+    const reason = String(req.body?.reason || '').trim();
+    if (!reason) {
+      const error = new Error('Reopen as New Run requires an audit reason.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const task = run.task_id ? await fetchTaskWithProject(run.task_id, client) : null;
+    const profile = await fetchAgentProfile({ agent_profile_id: run.agent_profile_id || null, agent_key: run.agent_key || 'browser_qa' }, client);
+    const runKey = agentControlRunKey();
+    const promptText = renderAgentRunPrompt({
+      run: agentControlPromptRunModel({ ...run, run_key: runKey }, task || {}, profile || {}),
+      task: task || {},
+      profile: profile || {},
+      templateText: undefined,
+      baseUrl: requestBaseUrl(req),
+    });
+    const result = await client.query(
+      `INSERT INTO bna_agent_runs (
+         run_key, task_id, workspace_id, project_id, batch_id, agent_profile_id,
+         run_type, verification_mode, status, priority, prompt_version, prompt_text,
+         target_url, acceptance_criteria, allowed_actions, forbidden_actions,
+         context_snapshot, expires_at, created_by
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'ready', $9, $10, $11, $12,
+         $13::jsonb, $14::jsonb, $15::jsonb, $16::jsonb, NOW() + INTERVAL '7 days', $17)
+       RETURNING *`,
+      [
+        runKey,
+        run.task_id || null,
+        run.workspace_id || null,
+        run.project_id || null,
+        run.batch_id || null,
+        run.agent_profile_id || null,
+        run.run_type || 'verification',
+        normalizeVerificationMode(run.verification_mode, 'mixed'),
+        normalizeAgentPriority(run.priority, 'normal'),
+        Number(run.prompt_version || 1) + 1,
+        promptText,
+        run.target_url || null,
+        JSON.stringify(run.acceptance_criteria || []),
+        JSON.stringify(run.allowed_actions || []),
+        JSON.stringify(run.forbidden_actions || []),
+        JSON.stringify({ ...parseAgentJsonMaybe(run.context_snapshot, {}), reopened_from_run_id: run.id, reopen_reason: reason }),
+        req.opsUser || 'operations',
+      ]
+    );
+    const newRun = result.rows[0];
+    if (run.task_id) {
+      await client.query(
+        `UPDATE bna_tasks
+         SET verification_status = 'ready',
+             active_agent_run_id = $1,
+             next_action = 'Launch reopened agent run',
+             last_activity_at = NOW(),
+             updated_at = NOW()
+         WHERE id = $2`,
+        [newRun.id, run.task_id]
+      );
+    }
+    await appendAgentRunEvent(run, 'reopened', {
+      actor: agentControlActor(req),
+      body: reason,
+      metadata: { new_run_key: runKey },
+    }, client);
+    await appendAgentRunEvent(newRun, 'created', {
+      actor: agentControlActor(req),
+      body: `Reopened from ${run.run_key}: ${reason}`,
+      metadata: { reopened_from_run_id: run.id, reopened_from_run_key: run.run_key },
+    }, client);
+    await client.query('COMMIT');
+    res.json({ success: true, run: await fetchAgentRunByKey(runKey), reopened_from: run.run_key });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 app.get('/api/bna/tickets', requireAdmin, async (req, res) => {
   const params = [];
   const conditions = [];
@@ -56194,7 +58991,7 @@ app.get('/api/bna/workspace-directory', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/workspaces', requireAdmin, async (req, res) => {
   try {
-    await ensurePersonalWorkspacesAndPeople();
+    await ensurePersonalWorkspacesAndPeopleOnce();
     const scopedProjectKey = opsScopeProjectKey(req);
     const params = [];
     let query = `SELECT * FROM bna_projects WHERE status <> 'archived'`;
@@ -56228,7 +59025,7 @@ app.get('/api/bna/workspaces', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/workspaces/:key', requireAdmin, async (req, res) => {
   try {
-    await ensurePersonalWorkspacesAndPeople();
+    await ensurePersonalWorkspacesAndPeopleOnce();
     const key = normalizeWorkspaceKey(req.params.key);
     assertWorkspaceAccess(req, key);
     const workspace = await getWorkspaceProjectByKey(key);
@@ -56275,7 +59072,14 @@ app.post('/api/bna/session/workspace', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/people', requireAdmin, async (req, res) => {
   try {
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
     if (String(req.query.canonical || req.query.mode || '').toLowerCase() === 'canonical') {
+      const params = [];
+      let membershipFilter = '';
+      if (requestedProjectKey) {
+        params.push(requestedProjectKey);
+        membershipFilter = ` AND w.project_key = $${params.length}`;
+      }
       const result = await pool.query(
         `SELECT p.*,
                 COALESCE(json_agg(
@@ -56294,9 +59098,19 @@ app.get('/api/bna/people', requireAdmin, async (req, res) => {
          LEFT JOIN bna_workspace_memberships wm ON wm.person_id = p.id AND wm.active = TRUE
          LEFT JOIN bna_projects w ON w.id = wm.workspace_id
          WHERE p.status <> 'archived'
+           ${requestedProjectKey ? `AND EXISTS (
+             SELECT 1
+             FROM bna_workspace_memberships wm_scope
+             JOIN bna_projects w_scope ON w_scope.id = wm_scope.workspace_id
+             WHERE wm_scope.person_id = p.id
+               AND wm_scope.active = TRUE
+               AND w_scope.project_key = $1
+           )` : ''}
+           ${membershipFilter}
          GROUP BY p.id
          ORDER BY p.preferred_name ASC
-         LIMIT 300`
+         LIMIT 300`,
+        params
       );
       return res.json({
         success: true,
@@ -56306,7 +59120,6 @@ app.get('/api/bna/people', requireAdmin, async (req, res) => {
         })),
       });
     }
-    const scopedProjectKey = opsScopeProjectKey(req);
     const params = [];
     let query = `
       SELECT pm.*,
@@ -56317,8 +59130,8 @@ app.get('/api/bna/people', requireAdmin, async (req, res) => {
       JOIN bna_projects p ON p.id = pm.project_id
       WHERE p.status <> 'archived'
         AND COALESCE(pm.active, TRUE) = TRUE`;
-    if (scopedProjectKey) {
-      params.push(scopedProjectKey);
+    if (requestedProjectKey) {
+      params.push(requestedProjectKey);
       query += ` AND p.project_key = $${params.length}`;
     }
     query += `
@@ -56560,9 +59373,13 @@ app.post('/api/bna/learning-communities/:id/members', requireAdmin, async (req, 
 app.get('/api/bna/courses', requireAdmin, async (req, res) => {
   try {
     await ensureWs11CommunityFoundation();
-    const projectKey = normalizeProjectKey(req.query.project_key || req.query.project || opsScopeProjectKey(req) || ONE_TIME_PROJECT_KEY) || ONE_TIME_PROJECT_KEY;
-    const params = [projectKey];
-    const conditions = [`c.project_key = $1`, `c.status <> 'archived'`];
+    const projectKey = requestedProjectKeyForScopedList(req);
+    const params = [];
+    const conditions = [`c.status <> 'archived'`];
+    if (projectKey) {
+      params.push(projectKey);
+      conditions.push(`c.project_key = $${params.length}`);
+    }
     if (req.query.community_id) {
       params.push(Number(req.query.community_id));
       conditions.push(`c.community_id = $${params.length}`);
@@ -56654,6 +59471,7 @@ app.post('/api/bna/courses/:id/lessons', requireAdmin, async (req, res) => {
   try {
     const course = (await pool.query('SELECT * FROM bna_courses WHERE id = $1 LIMIT 1', [req.params.id])).rows[0];
     if (!course) return res.status(404).json({ error: 'Course not found' });
+    assertProjectAccess(req, { project_key: course.project_key || DEFAULT_PROJECT_KEY });
     const result = await pool.query(
       `INSERT INTO bna_course_lessons (
          course_id, class_session_id, content_job_id, assignment_id, slug,
@@ -56684,6 +59502,11 @@ app.get('/api/bna/worksheets', requireAdmin, async (req, res) => {
   try {
     const params = [];
     const conditions = [`w.status <> 'archived'`];
+    const projectKey = requestedProjectKeyForScopedList(req);
+    if (projectKey) {
+      params.push(projectKey);
+      conditions.push(`c.project_key = $${params.length}`);
+    }
     if (req.query.course_id) {
       params.push(Number(req.query.course_id));
       conditions.push(`w.course_id = $${params.length}`);
@@ -56695,6 +59518,7 @@ app.get('/api/bna/worksheets', requireAdmin, async (req, res) => {
     const worksheets = (await pool.query(
       `SELECT w.*
        FROM bna_worksheets w
+       LEFT JOIN bna_courses c ON c.id = w.course_id
        WHERE ${conditions.join(' AND ')}
        ORDER BY w.updated_at DESC, w.id DESC
        LIMIT 200`,
@@ -56728,6 +59552,11 @@ app.post('/api/bna/worksheets', requireAdmin, async (req, res) => {
   const title = limitText(body.title || body.name || '', 220);
   if (!title) return res.status(400).json({ error: 'title is required' });
   try {
+    if (body.course_id || body.courseId) {
+      const course = (await pool.query('SELECT * FROM bna_courses WHERE id = $1 LIMIT 1', [body.course_id || body.courseId])).rows[0];
+      if (!course) return res.status(404).json({ error: 'Course not found' });
+      assertProjectAccess(req, { project_key: course.project_key || DEFAULT_PROJECT_KEY });
+    }
     const result = await pool.query(
       `INSERT INTO bna_worksheets (
          course_id, lesson_id, assignment_id, title, instructions,
@@ -56786,6 +59615,11 @@ app.get('/api/bna/course-questions', requireAdmin, async (req, res) => {
   try {
     const params = [];
     const conditions = [`q.status <> 'archived'`];
+    const projectKey = requestedProjectKeyForScopedList(req);
+    if (projectKey) {
+      params.push(projectKey);
+      conditions.push(`c.project_key = $${params.length}`);
+    }
     if (req.query.course_id) {
       params.push(Number(req.query.course_id));
       conditions.push(`q.course_id = $${params.length}`);
@@ -56802,6 +59636,7 @@ app.get('/api/bna/course-questions', requireAdmin, async (req, res) => {
       `SELECT q.*,
               COUNT(r.id)::int AS response_count
        FROM bna_course_questions q
+       LEFT JOIN bna_courses c ON c.id = q.course_id
        LEFT JOIN bna_course_question_responses r
          ON r.question_id = q.id
         AND r.status <> 'archived'
@@ -56827,6 +59662,7 @@ app.post('/api/bna/course-questions', requireAdmin, async (req, res) => {
     const courseId = Number(body.course_id || body.courseId || foundation.course.id);
     const course = (await pool.query('SELECT * FROM bna_courses WHERE id = $1 LIMIT 1', [courseId])).rows[0];
     if (!course) return res.status(404).json({ error: 'Course not found' });
+    assertProjectAccess(req, { project_key: course.project_key || DEFAULT_PROJECT_KEY });
     const result = await pool.query(
       `INSERT INTO bna_course_questions (
          course_id, lesson_id, class_session_id, title, prompt, question_type,
@@ -56905,6 +59741,7 @@ app.get('/api/bna/gamification-events', requireAdmin, async (req, res) => {
   try {
     const params = [];
     const conditions = [`g.approval_status <> 'archived'`];
+    appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
     if (req.query.student_id) {
       params.push(Number(req.query.student_id));
       conditions.push(`g.student_id = $${params.length}`);
@@ -56985,6 +59822,7 @@ app.get('/api/bna/shoutouts', requireAdmin, async (req, res) => {
   try {
     const params = [];
     const conditions = [`r.approval_status <> 'archived'`];
+    appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
     if (req.query.student_id) {
       params.push(Number(req.query.student_id));
       conditions.push(`r.student_id = $${params.length}`);
@@ -58053,8 +60891,74 @@ function normalizeAssistantSurface(value) {
 function safeAssistantActorType(value) {
   const normalized = String(value || '').trim().toLowerCase();
   if (normalized === 'provider') return 'service_provider';
+  if (['tester', 'developer_tester', 'developer-tester', 'qa_tester', 'test_user'].includes(normalized)) return 'developer_tester';
   if (['parent', 'student', 'service_provider', 'rabbi', 'staff', 'admin', 'super_admin'].includes(normalized)) return normalized;
   return 'anonymous';
+}
+
+function isDeveloperTesterAssistantRequest(body = {}, query = {}) {
+  return [
+    body.role,
+    body.actor_role,
+    body.actorRole,
+    body.actor_type,
+    body.actorType,
+    body.mode,
+    body.assistant_mode,
+    body.assistantMode,
+    body.context?.role,
+    body.context?.actor_role,
+    body.context?.actorType,
+    body.context?.mode,
+    query.role,
+    query.mode,
+  ].some((value) => safeAssistantActorType(value) === 'developer_tester');
+}
+
+function developerTesterActorFromRequestBody(body = {}, query = {}) {
+  if (!isDeveloperTesterAssistantRequest(body, query)) return null;
+  const email = normalizeEmail(
+    body.tester_email ||
+    body.testerEmail ||
+    body.contact_email ||
+    body.email ||
+    body.context?.tester_email ||
+    body.context?.email ||
+    query.email ||
+    ''
+  );
+  const testerId = limitText(
+    email ||
+    body.tester_id ||
+    body.testerId ||
+    body.anonymous_id ||
+    body.anonymousId ||
+    query.tester_id ||
+    crypto.randomUUID(),
+    120
+  );
+  const name = limitText(
+    body.tester_name ||
+    body.testerName ||
+    body.name ||
+    body.context?.tester_name ||
+    body.context?.name ||
+    email ||
+    'Developer tester',
+    180
+  );
+  return {
+    type: 'developer_tester',
+    id: testerId,
+    email,
+    name,
+    role: 'developer_tester',
+    canUseCodex: false,
+    project_key: DEFAULT_PROJECT_KEY,
+    workspace_key: 'developer_testing',
+    scope: { type: 'tester', projectKey: DEFAULT_PROJECT_KEY },
+    mode: 'developer_tester',
+  };
 }
 
 async function resolveAssistantActor(req, bodyOrDb = pool, maybeDb = pool) {
@@ -58107,6 +61011,8 @@ async function resolveAssistantActor(req, bodyOrDb = pool, maybeDb = pool) {
       mode: normalizeAssistantMode(body.mode || body.assistant_mode || communityActor.type),
     };
   }
+  const developerTesterActor = developerTesterActorFromRequestBody(body, query);
+  if (developerTesterActor) return developerTesterActor;
   const anonymousId = limitText(body.anonymous_id || body.anonymousId || query.anonymous_id || query.anonymousId || crypto.randomUUID(), 120);
   return {
     type: 'anonymous',
@@ -58210,25 +61116,31 @@ async function assertProviderAccess(actor = {}, providerProfileId, action = 'rea
 
 async function createAssistantThread({ actor, body, project, db = pool }) {
   const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
+  const actorType = safeAssistantActorType(actor.type);
+  const rawPagePath = body.page_path || body.path || body.context?.path || body.context?.page_path || '';
+  const pagePath = actorType === 'developer_tester'
+    ? limitText(redactValue(rawPagePath), 300)
+    : limitText(rawPagePath, 300);
   return (await db.query(
     `INSERT INTO bna_assistant_threads (
-       project_id, actor_type, actor_id, actor_email, actor_name, actor_role,
+       project_id, workspace_id, actor_type, actor_id, actor_email, actor_name, actor_role,
        surface, page_path, language, status, metadata
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'open', $10::jsonb)
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, 'open', $11::jsonb)
      RETURNING *`,
     [
       project?.id || null,
-      safeAssistantActorType(actor.type),
+      project?.id || null,
+      actorType,
       actor.id || actor.anonymousId || null,
       actor.email || null,
       limitText(actor.name || actor.email || actor.type, 180),
       actor.role || actor.type,
       surface,
-      limitText(body.page_path || body.path || body.context?.path || '', 300) || null,
+      pagePath || null,
       limitText(body.language || body.lang || body.context?.language || '', 20) || null,
       JSON.stringify({
         source: 'web_assistant',
-        user_agent: limitText(body.user_agent || '', 240),
+        user_agent: limitText(redactValue(body.user_agent || body.context?.user_agent || body.context?.userAgent || ''), 240),
       }),
     ]
   )).rows[0];
@@ -58275,6 +61187,9 @@ function assistantIntroForRole(actor = {}) {
   }
   if (actor.type === 'service_provider') {
     return "Hi, I'm the BNA helper. I can help with scoped provider messages, tickets, and workspace questions.";
+  }
+  if (actor.type === 'developer_tester') {
+    return "Hi, I'm the BNA tester helper. I can save a scoped bug ticket with page and device context for review.";
   }
   return "Hi, I'm the BNA helper. I can answer basic questions or help you send a message to the office.";
 }
@@ -60076,6 +62991,7 @@ function normalizeAssistantMode(value = '') {
   if (['parent', 'parent_portal', 'family'].includes(normalized)) return 'parent';
   if (['student', 'student_portal', 'child'].includes(normalized)) return 'student';
   if (['provider', 'service_provider', 'provider_portal', 'provider_workspace'].includes(normalized)) return 'provider';
+  if (['tester', 'developer_tester', 'developer_tester_portal', 'qa_tester', 'test_user'].includes(normalized)) return 'developer_tester';
   if (['system', 'agent', 'codex'].includes(normalized)) return 'system';
   return 'public';
 }
@@ -60086,6 +63002,7 @@ function universalAssistantModeForActor(actor = {}, body = {}) {
   if (actor.type === 'parent') return 'parent';
   if (actor.type === 'student') return 'student';
   if (actor.type === 'service_provider') return 'provider';
+  if (actor.type === 'developer_tester') return 'developer_tester';
   if (['admin', 'staff', 'rabbi'].includes(actor.type)) return 'bna_admin';
   return requested === 'public' ? 'public' : requested;
 }
@@ -60113,19 +63030,125 @@ function universalAssistantFirstLine(text = '', fallback = 'Assistant request') 
   return limitText(line || fallback, 220);
 }
 
+function compactContextObject(value = {}) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const output = {};
+  for (const [key, raw] of Object.entries(value)) {
+    if (raw === undefined || raw === null || raw === '') continue;
+    if (Array.isArray(raw) && !raw.length) continue;
+    if (raw && typeof raw === 'object' && !Array.isArray(raw) && !Object.keys(raw).length) continue;
+    output[key] = raw;
+  }
+  return Object.keys(output).length ? output : null;
+}
+
+function safeTesterNumber(value, min = 0, max = 100000) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  return Math.max(min, Math.min(max, number));
+}
+
+function safeTesterAttachmentReference(value) {
+  if (!value) return null;
+  const redacted = redactValue(value);
+  if (typeof redacted === 'string') {
+    if (/^data:/i.test(redacted)) {
+      return {
+        type: 'redacted_data_url',
+        hash_prefix: stableHash(redacted).slice(0, 16),
+        byte_length: redacted.length,
+      };
+    }
+    return limitText(redacted, 900);
+  }
+  if (typeof redacted !== 'object' || Array.isArray(redacted)) return redacted;
+  return compactContextObject({
+    id: limitText(redacted.id || redacted.file_id || redacted.fileId || '', 140),
+    name: limitText(redacted.name || redacted.filename || redacted.file_name || '', 180),
+    type: limitText(redacted.type || redacted.mime_type || redacted.mimeType || '', 120),
+    url: redacted.url ? limitText(redacted.url, 900) : null,
+    hash_prefix: redacted.hash_prefix || redacted.hashPrefix || null,
+  });
+}
+
+function safeTesterLogContext(value) {
+  if (!value) return null;
+  const privateKeyPattern = /(student|household|parent|provider_profile|selected[_-]?record|access[_-]?code|portal[_-]?link|magic[_-]?link|token|secret|password|authorization|api[_-]?key)/i;
+  const sanitize = (raw, depth = 0) => {
+    if (raw === null || raw === undefined) return raw;
+    if (depth > 4) return '[redacted-depth]';
+    const redacted = redactValue(raw, depth);
+    if (typeof redacted === 'string') return limitText(redacted, 1200);
+    if (typeof redacted === 'number' || typeof redacted === 'boolean') return redacted;
+    if (Array.isArray(redacted)) return redacted.slice(0, 20).map((item) => sanitize(item, depth + 1));
+    if (typeof redacted !== 'object') return limitText(redacted, 1200);
+    const output = {};
+    for (const [key, item] of Object.entries(redacted)) {
+      if (privateKeyPattern.test(key)) continue;
+      output[key] = sanitize(item, depth + 1);
+    }
+    return compactContextObject(output);
+  };
+  return sanitize(value);
+}
+
+function developerTesterTicketContext(body = {}) {
+  const sourceContext = body.context && typeof body.context === 'object' ? body.context : {};
+  const deviceContext = sourceContext.device && typeof sourceContext.device === 'object' ? sourceContext.device : {};
+  const viewportContext = sourceContext.viewport && typeof sourceContext.viewport === 'object' ? sourceContext.viewport : {};
+  const tester = compactContextObject({
+    name: limitText(body.tester_name || body.testerName || body.name || sourceContext.tester_name || sourceContext.name || '', 180),
+    email: normalizeEmail(body.tester_email || body.testerEmail || body.contact_email || body.email || sourceContext.tester_email || sourceContext.email || ''),
+    id: limitText(body.tester_id || body.testerId || sourceContext.tester_id || sourceContext.testerId || '', 120),
+  });
+  const page = compactContextObject({
+    surface: normalizeAssistantSurface(body.surface || body.page || sourceContext.surface),
+    path: limitText(redactValue(body.page_path || body.path || sourceContext.page_path || sourceContext.path || ''), 700),
+    title: limitText(redactValue(body.page_title || body.pageTitle || sourceContext.page_title || sourceContext.title || ''), 320),
+    url: limitText(redactValue(body.page_url || body.pageUrl || sourceContext.page_url || sourceContext.url || ''), 900),
+  });
+  const device = compactContextObject({
+    user_agent: limitText(redactValue(body.user_agent || body.userAgent || sourceContext.user_agent || sourceContext.userAgent || deviceContext.user_agent || deviceContext.userAgent || ''), 700),
+    platform: limitText(redactValue(body.platform || sourceContext.platform || deviceContext.platform || ''), 160),
+    language: limitText(redactValue(body.language || body.lang || sourceContext.language || deviceContext.language || ''), 80),
+    viewport_width: safeTesterNumber(body.viewport_width || body.viewportWidth || sourceContext.viewport_width || sourceContext.viewportWidth || viewportContext.width || deviceContext.viewport_width, 1, 10000),
+    viewport_height: safeTesterNumber(body.viewport_height || body.viewportHeight || sourceContext.viewport_height || sourceContext.viewportHeight || viewportContext.height || deviceContext.viewport_height, 1, 10000),
+    device_pixel_ratio: safeTesterNumber(body.device_pixel_ratio || body.devicePixelRatio || sourceContext.device_pixel_ratio || sourceContext.devicePixelRatio || deviceContext.pixel_ratio || deviceContext.devicePixelRatio, 0.1, 10),
+  });
+  const attachmentSource = body.screenshot_ref || body.screenshotRef || body.screenshot_url || body.screenshotUrl || sourceContext.screenshot_ref || sourceContext.screenshotRef || sourceContext.screenshot_url || sourceContext.screenshotUrl || null;
+  const attachmentList = Array.isArray(body.attachments)
+    ? body.attachments
+    : Array.isArray(sourceContext.attachments)
+      ? sourceContext.attachments
+      : [];
+  return compactContextObject({
+    tester,
+    page,
+    device,
+    screenshot_ref: safeTesterAttachmentReference(attachmentSource),
+    attachments: attachmentList.slice(0, 5).map(safeTesterAttachmentReference).filter(Boolean),
+    log_context: safeTesterLogContext(body.log_context || body.logContext || body.logs || sourceContext.log_context || sourceContext.logContext || sourceContext.logs || sourceContext.console || null),
+    no_private_record_context: true,
+  }) || { no_private_record_context: true };
+}
+
 function universalAssistantSourceContext({ req, actor = {}, body = {}, context = {}, route = '' } = {}) {
+  const actorType = safeAssistantActorType(actor.type);
+  const developerTester = actorType === 'developer_tester';
+  const pagePath = body.page_path || body.path || body.context?.path || body.context?.page_path || null;
   return {
     source: 'universal_assistant_mvp',
     route: route || req?.path || req?.originalUrl || null,
     surface: normalizeAssistantSurface(body.surface || body.page || body.context?.surface),
     mode: universalAssistantModeForActor(actor, body),
-    actor_type: actor.type || null,
+    actor_type: actorType,
     actor_id: actor.id || actor.anonymousId || null,
     actor_email: actor.email || null,
-    household_id: context.household?.id || body.household_id || body.householdId || null,
-    student_id: context.student?.id || body.student_id || body.studentId || actor.student_id || null,
-    provider_profile_id: context.provider_profile?.id || body.provider_profile_id || body.providerProfileId || null,
-    page_path: body.page_path || body.path || body.context?.path || null,
+    household_id: developerTester ? null : (context.household?.id || body.household_id || body.householdId || null),
+    student_id: developerTester ? null : (context.student?.id || body.student_id || body.studentId || actor.student_id || null),
+    provider_profile_id: developerTester ? null : (context.provider_profile?.id || body.provider_profile_id || body.providerProfileId || null),
+    page_path: developerTester ? limitText(redactValue(pagePath), 700) : pagePath,
+    developer_tester_context: developerTester ? developerTesterTicketContext(body) : null,
     no_external_send: true,
   };
 }
@@ -60145,15 +63168,16 @@ async function loadAssistantContext(actor = {}, requestedContext = {}, db = pool
       [project.project_key, project.id]
     )).rows[0] || null;
   } catch {
-    workspace = { id: project.id, key: project.project_key, name: project.name, type: project.workspace_type || 'project' };
+    workspace = { id: null, key: project.project_key, name: project.name, type: project.workspace_type || 'project' };
   }
 
   const context = { project, workspace, cards: [] };
   const admin = assistantRoleCanUseCodex(actor);
-  const requestedStudentId = Number(body.student_id || body.studentId || actor.student_id || 0);
-  const requestedHouseholdId = Number(body.household_id || body.householdId || 0);
-  const requestedProviderProfileId = Number(body.provider_profile_id || body.providerProfileId || 0);
-  const requestedClassSessionId = Number(body.class_session_id || body.classSessionId || 0);
+  const developerTester = safeAssistantActorType(actor.type) === 'developer_tester';
+  const requestedStudentId = developerTester ? 0 : Number(body.student_id || body.studentId || actor.student_id || 0);
+  const requestedHouseholdId = developerTester ? 0 : Number(body.household_id || body.householdId || 0);
+  const requestedProviderProfileId = developerTester ? 0 : Number(body.provider_profile_id || body.providerProfileId || 0);
+  const requestedClassSessionId = developerTester ? 0 : Number(body.class_session_id || body.classSessionId || 0);
 
   if (requestedStudentId) {
     await assertStudentAccess(actor, requestedStudentId, 'load', db);
@@ -60267,6 +63291,7 @@ function assertAssistantPermission(actor = {}, actionType = '', target = {}) {
   const role = safeAssistantActorType(actor.type);
   const roleActions = {
     anonymous: ['create_ticket'],
+    developer_tester: ['create_ticket'],
     parent: ['create_ticket', 'ask_provider_question', 'create_or_update_student_goal', 'log_check_in_progress'],
     student: ['create_ticket', 'create_or_update_student_goal', 'log_check_in_progress'],
     service_provider: ['create_ticket', 'create_provider_profile_item', 'upload_or_link_content', 'create_class_session', 'add_class_material_url', 'ask_provider_question'],
@@ -60337,7 +63362,7 @@ async function ensureUniversalAssistantThread({ actor, body, context, db = pool 
   const mode = universalAssistantModeForActor(actor, body);
   const thread = (await db.query(
     `UPDATE bna_assistant_threads
-     SET workspace_id = COALESCE($2, workspace_id),
+     SET workspace_id = $2,
          household_id = COALESCE($3, household_id),
          person_id = COALESCE($4, person_id),
          provider_profile_id = COALESCE($5, provider_profile_id),
@@ -60351,7 +63376,7 @@ async function ensureUniversalAssistantThread({ actor, body, context, db = pool 
      RETURNING *`,
     [
       ensured.thread.id,
-      context.workspace?.id || null,
+      context.project?.id || null,
       context.household?.id || null,
       body.person_id || body.personId || null,
       context.provider_profile?.id || null,
@@ -60553,7 +63578,7 @@ async function createUniversalAssistantTicket({ req, actor, body, message, threa
      RETURNING *`,
     [
       context.project.id,
-      context.workspace?.id || context.project.id,
+      context.workspace?.id || null,
       supportTicket.id,
       queueCodex ? 'Codex' : (body.assigned_to || 'Shloimie'),
       queueCodex ? 'Codex' : (body.owner || 'Shloimie'),
@@ -61365,6 +64390,8 @@ async function handleUniversalAssistantMessage(req, res, options = {}) {
     const actor = options.actorOverride || await resolveAssistantActor(req, body, client);
     const language = detectLanguage(messageText, body.language || body.lang || actor.language || 'en');
     const context = options.contextOverride || await loadAssistantContext(actor, body.context || body, client);
+    const actorType = safeAssistantActorType(actor.type);
+    const requestPagePath = body.page_path || body.path || body.context?.path || body.context?.page_path || null;
     const { thread, project } = await ensureUniversalAssistantThread({ actor, body: { ...body, language }, context, db: client });
     const userMessage = await insertUniversalAssistantMessage({
       threadId: thread.id,
@@ -61374,7 +64401,7 @@ async function handleUniversalAssistantMessage(req, res, options = {}) {
       content: messageText,
       language,
       metadata: {
-        page_path: body.page_path || body.path || body.context?.path || null,
+        page_path: actorType === 'developer_tester' ? limitText(redactValue(requestPagePath), 700) : requestPagePath,
         surface: normalizeAssistantSurface(body.surface || body.page || body.context?.surface),
         mode: universalAssistantModeForActor(actor, body),
         student_portal: Boolean(options.studentPortal),
@@ -61843,6 +64870,7 @@ function helperRegistryDeps(db = pool) {
     assertProjectOwnedRowAccess,
     assertTaskAccess,
     buildCodexQueueSnapshot,
+    createRawIntakeRecord,
     createLinkedDecisionTask,
     createTaskFromText,
     fetchTaskWithProject,
@@ -61851,6 +64879,7 @@ function helperRegistryDeps(db = pool) {
     recordTaskActivity,
     resolveProjectFromInput,
     sendGmailMessage,
+    updateRawIntakeRecordAfterParse,
     updateLatestAgentJobForTask,
   };
 }
@@ -61875,7 +64904,7 @@ async function helperRequestContext(req, body = {}) {
   ) || DEFAULT_PROJECT_KEY;
   const project = await getProjectByKey(projectKey);
   assertProjectAccess(req, project);
-  return {
+  const helperContext = {
     req,
     identity,
     userName: req.opsUser || identity?.username || 'BNA Helper',
@@ -61888,12 +64917,12 @@ async function helperRequestContext(req, body = {}) {
     pageContext,
     selectedRecord: pageContext.selectedRecord || null,
   };
+  helperContext.helperScope = resolveHelperScope(helperContext);
+  return helperContext;
 }
 
 function helperActionRequiresConfirmation(tool) {
-  if (!tool) return true;
-  if (tool.requiresConfirmation) return true;
-  return ['medium', 'high', 'destructive'].includes(String(tool.risk || '').toLowerCase());
+  return requiresHelperConfirmation(tool || {});
 }
 
 function helperActionSummary(tool, args = {}, fallback = '') {
@@ -61931,7 +64960,15 @@ function helperWorkspacePayload(context = {}) {
 
 function helperContextResponse(context = {}, registry) {
   const tools = registry.metadata(context);
+  const helperScope = context.helperScope || resolveHelperScope(context);
   return {
+    helperName: helperScope.helperName,
+    helperScope,
+    accessSummary: helperScope.accessSummary,
+    suggestedActions: helperScope.suggestedActions,
+    knowledgeSources: helperScope.knowledgeSources,
+    toneProfile: helperScope.toneProfile,
+    safetyPolicy: helperScope.safetyPolicy,
     actor: helperActorPayload(context),
     workspace: helperWorkspacePayload(context),
     allowedTools: tools.filter((tool) => tool.available).map((tool) => tool.name),
@@ -62294,7 +65331,62 @@ app.get('/api/bna/helper/tools', requireAdmin, async (req, res) => {
   }
 });
 
-app.post('/api/bna/helper/message', requireAdmin, async (req, res) => {
+app.get('/api/bna/helper/profile', requireAdmin, async (req, res) => {
+  helperNoStore(res);
+  try {
+    const context = await helperRequestContext(req, req.query || {});
+    const { scope, profile } = await loadHelperProfile(pool, context);
+    res.json({ success: true, scope, profile });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
+  }
+});
+
+app.patch('/api/bna/helper/profile', requireAdmin, async (req, res) => {
+  helperNoStore(res);
+  try {
+    const context = await helperRequestContext(req, req.body || {});
+    const { scope, profile } = await upsertHelperProfile(pool, context, req.body || {});
+    res.json({ success: true, scope, profile });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
+  }
+});
+
+app.post('/api/bna/helper/profile/questionnaire', requireAdmin, async (req, res) => {
+  helperNoStore(res);
+  try {
+    const context = await helperRequestContext(req, req.body || {});
+    const { scope, profile } = await storeHelperQuestionnaire(pool, context, req.body || {});
+    res.json({ success: true, scope, profile });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
+  }
+});
+
+app.get('/api/bna/helper/knowledge', requireAdmin, async (req, res) => {
+  helperNoStore(res);
+  try {
+    const context = await helperRequestContext(req, req.query || {});
+    const result = await listHelperKnowledge(pool, context, { limit: req.query.limit || 50 });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
+  }
+});
+
+app.post('/api/bna/helper/knowledge', requireAdmin, async (req, res) => {
+  helperNoStore(res);
+  try {
+    const context = await helperRequestContext(req, req.body || {});
+    const result = await createHelperKnowledgeItem(pool, context, req.body || {});
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
+  }
+});
+
+async function handleHelperMessageRoute(req, res) {
   helperNoStore(res);
   const body = req.body || {};
   const message = String(body.message || body.text || '').trim();
@@ -62359,7 +65451,10 @@ app.post('/api/bna/helper/message', requireAdmin, async (req, res) => {
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
   }
-});
+}
+
+app.post('/api/bna/helper/message', requireAdmin, handleHelperMessageRoute);
+app.post('/api/bna/helper/chat', requireAdmin, handleHelperMessageRoute);
 
 app.post('/api/bna/helper/confirm', requireAdmin, async (req, res) => {
   helperNoStore(res);
@@ -62564,6 +65659,20 @@ app.get('/api/bna/helper/audit', requireAdmin, async (req, res) => {
     }
     const entries = await listHelperAudit(pool, { limit: req.query.limit || 100 });
     res.json({ success: true, audit: entries });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
+  }
+});
+
+app.get('/api/bna/helper/action-log', requireAdmin, async (req, res) => {
+  helperNoStore(res);
+  try {
+    const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+    if (identity?.scope?.type && identity.scope.type !== 'all') {
+      return res.status(403).json({ success: false, error: 'Helper action log is admin/all-scope only.', code: 'permission_denied' });
+    }
+    const entries = await listHelperAudit(pool, { limit: req.query.limit || 100 });
+    res.json({ success: true, actionLog: entries });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message, code: err.code || 'execution_failed' });
   }
@@ -64038,20 +67147,12 @@ app.post('/api/one-time-classroom/threads/:id/responses', async (req, res) => {
 });
 
 app.post('/api/one-time-classroom/bot', async (req, res) => {
-  try {
-    const reply = await buildOneTimeClassroomBotReply({
-      accessCode: (req.body || {}).code || (req.body || {}).access_code || '',
-      message: (req.body || {}).message || '',
-    });
-    res.json({
-      success: true,
-      reply,
-      source_grounded_only: true,
-      invented_sources_allowed: false,
-    });
-  } catch (err) {
-    res.status(err.statusCode || 500).json({ error: err.message });
-  }
+  res.status(403).json({
+    error: 'OneTime classroom bot is disabled pending explicit operator approval.',
+    blocked: true,
+    approval_required: true,
+    safe_student_path: 'Students can respond privately to Rabbi/admin threads for review.',
+  });
 });
 
 function rabbiJson(value, fallback = {}) {
@@ -64321,7 +67422,16 @@ async function getRabbiTierOr404(projectId, tierKeyOrId, db = pool) {
     error.statusCode = 404;
     throw error;
   }
-  return row;
+  const tierKey = normalizeRabbiTierKey(row.tier_key);
+  const defaults = RABBI_TIER_DEFINITIONS[tierKey] || {};
+  return {
+    ...row,
+    display_name: row.display_name || defaults.display_name || row.tier_key,
+    description: row.description || defaults.description || '',
+    price_amount_cents: row.price_amount_cents === null || row.price_amount_cents === undefined
+      ? (defaults.price_amount_cents ?? null)
+      : row.price_amount_cents,
+  };
 }
 
 async function getRabbiProviderSettings(projectId, db = pool) {
@@ -66201,7 +69311,7 @@ app.patch('/api/bna/rabbi/site', requireAdmin, async (req, res) => {
       [
         project.id,
         RABBI_PAGE_KEY,
-        limitText(body.title || current.title || 'One Time Mishnayos Preview', 200),
+        limitText(body.title || current.title || RABBI_DEFAULT_TITLE, 200),
         status === 'published' ? 'preview' : status,
         JSON.stringify(content),
         JSON.stringify({ ...(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}), preview_only: true }),
@@ -67029,7 +70139,7 @@ app.get('/api/bna/members', requireAdmin, async (req, res) => {
   try {
     const params = [];
     const conditions = ['1=1'];
-    appendScopeCondition(req, conditions, params, 'm.project_id');
+    appendRequestedProjectScopeCondition(req, conditions, params, 'm.project_id');
     if (req.query.access_tier) {
       const tier = requireLiveAccessTier(req.query.access_tier);
       params.push(tier);
@@ -67154,7 +70264,7 @@ app.get('/api/bna/live-sessions', requireAdmin, async (req, res) => {
   try {
     const params = [];
     const conditions = ['1=1'];
-    appendScopeCondition(req, conditions, params, 's.project_id');
+    appendRequestedProjectScopeCondition(req, conditions, params, 's.project_id');
     if (req.query.status) {
       const status = requireLiveSessionStatus(req.query.status);
       params.push(status);
@@ -69818,13 +72928,19 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
         latest_jobs.agent_ledger_ref,
         latest_jobs.agent_changelog_ref,
         COALESCE(task_base.last_activity_at, comment_counts.last_comment_at, activity_counts.latest_activity_event_at, task_base.updated_at, task_base.created_at) AS effective_last_activity_at,
-        COALESCE(latest_jobs.agent_task_status, task_base.agent_status, 'none') AS effective_agent_status,
         CASE
-          WHEN COALESCE(task_base.task_kind, '') = 'history' THEN 'done'
+          WHEN task_base.completed_at IS NOT NULL
+            OR task_base.verified_at IS NOT NULL
+            OR task_base.stage IN ('done', 'archive')
+            OR COALESCE(task_base.task_kind, '') = 'history'
+            THEN 'completed'
+          ELSE COALESCE(latest_jobs.agent_task_status, task_base.agent_status, 'none')
+        END AS effective_agent_status,
+        CASE
+          WHEN task_base.completed_at IS NOT NULL OR task_base.verified_at IS NOT NULL OR task_base.stage IN ('done', 'archive') OR COALESCE(task_base.task_kind, '') = 'history' THEN 'done'
           WHEN COALESCE(task_base.task_kind, '') = 'decision' THEN 'decisions'
           WHEN COALESCE(task_base.task_kind, '') = 'pending_access' THEN 'pending'
           WHEN COALESCE(task_base.task_kind, '') = 'agent_job' THEN 'tasks'
-          WHEN task_base.completed_at IS NOT NULL OR task_base.verified_at IS NOT NULL OR task_base.stage IN ('done', 'archive') THEN 'done'
           WHEN COALESCE(task_base.item_type, 'task') = 'decision' OR task_base.decision_required OR task_base.stage = 'needs_decision' THEN 'decisions'
           WHEN COALESCE(task_base.waiting_on, '') <> ''
             AND LOWER(COALESCE(task_base.waiting_on, '')) !~ '(codex|kimi|system|agent|automation)' THEN 'pending'
@@ -69918,9 +73034,13 @@ app.post('/api/bna/tasks', requireAdmin, async (req, res) => {
         const intake = await createCanonicalIntakeParseRun({
           rawInput: text,
           source_type: source || 'ramble',
+          source_channel: req.body.source_channel || req.body.sourceChannel || source || 'operations_ui',
           source_id: req.body.source_message_id || req.body.message_id || null,
+          source_message_id: req.body.source_message_id || req.body.message_id || null,
           source_table: null,
           created_by: created_by || 'operator',
+          intake_type: broadCorrectionRegisterNeeded(text) ? 'broad_correction' : 'general',
+          requirement_register_path: req.body.requirement_register_path || null,
           dry_run: false,
           req,
         });
@@ -69931,6 +73051,7 @@ app.post('/api/bna/tasks', requireAdmin, async (req, res) => {
         return res.json({
           success: true,
           parser: 'canonical-intake-parser',
+          raw_intake: intake.raw_intake,
           parse_run: applied.parse_run || intake.parse_run,
           tasks_created: applied.counts?.tasks || 0,
           tasks: applied.created?.tasks || [],
@@ -70521,6 +73642,21 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
       values
     );
     let task = result.rows[0];
+    if (taskIsTerminalHistory(task)) {
+      task = (await pool.query(
+        `UPDATE bna_tasks
+         SET stage = CASE WHEN stage = 'archive' THEN 'archive' ELSE 'done' END,
+             task_kind = 'history',
+             agent_status = CASE
+               WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' THEN 'completed'
+               ELSE COALESCE(agent_status, 'none')
+             END,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [id]
+      )).rows[0] || task;
+    }
     const stageNow = normalizeTaskStage(task?.stage);
     const actor = req.opsUser || 'dashboard';
     await recordTaskActivity(id, 'task_updated', {
@@ -71440,6 +74576,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createTaskCommentsSQL);
     await pool.query(createTaskWorkflowExtensionsSQL);
     await pool.query(createAgentJobsSQL);
+    await pool.query(createAgentControlSQL);
     await pool.query(createTaskEventsSQL);
     await pool.query(createSupportTicketsSQL);
     await pool.query(createTicketCompatibilityViewsSQL);
@@ -71615,7 +74752,7 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 });
@@ -71666,7 +74803,7 @@ app.get('/providers/:slug', (req, res) => {
 });
 
 // Operations dashboard - with login redirect
-app.get('/operations', requireAdmin, (req, res) => {
+app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));
 });

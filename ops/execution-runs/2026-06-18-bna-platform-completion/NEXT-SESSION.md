@@ -5,7 +5,7 @@ Start here:
 1. Read `BNA-START-HERE.md`.
 2. Read `docs/BNA-RAMBLE-TO-DONE.md`.
 3. Run `npm run bna:run:status`.
-4. Confirm whether `agent-review-package.zip` or an audit output path exists.
+4. Confirm current branch and HEAD with `git status --short --branch`.
 
 Open requirements:
 
@@ -20,10 +20,29 @@ Open requirements:
 - `REQ-20260618-109` unified OpenAI helper
 - `REQ-20260618-110` public copy and portal headers
 - `REQ-20260618-111` test data and acceptance tests
+- `REQ-20260618-112` Agent Control Center parent
+- `REQ-20260618-113` through `REQ-20260618-118` need local DB/API/browser
+  verification before closure
+- `REQ-20260618-120` needs negative RBAC/API tests
+- `REQ-20260618-121` Playwright verification policy remains in progress
+- `REQ-20260618-122` notification/audit-history hooks remain in progress
+- `REQ-20260618-123` safe demo data, E2E, and manual Agent Mode smoke remain
+  not started
 
-Current blocker for all open audit-dependent remediation:
+Current blocker for `REQ-20260618-101` through `REQ-20260618-111`:
 
 `Waiting for user to upload agent-review-package.zip or audit output path`
+
+Agent Control Center next exact command:
+
+```powershell
+node --test tests\agent-control-center.test.js; npm run bna:run:validate
+```
+
+After that, continue with `REQ-20260618-121`: add a safe local DB/API smoke
+for one demo task creating an Agent Run, attaching evidence, submitting a
+blocked or fail result, and proving the task/decision side effects without
+touching production data.
 
 Do not run yet:
 
@@ -32,6 +51,15 @@ Do not run yet:
 - agent fleet loops;
 - deploys;
 - production data mutations.
+
+Do not mark Agent Control Center complete until:
+
+- the local DB migration/API smoke passes;
+- negative scoped-identity tests pass;
+- browser smoke evidence exists for the Agents list and Agent Run page;
+- safe demo data/E2E/manual Agent Mode prompt is recorded;
+- `npm run bna:run:validate` passes;
+- release/deploy approval is explicit if live closeout is required.
 
 Prompt after the audit ZIP/output exists:
 

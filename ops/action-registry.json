@@ -1,0 +1,223 @@
+{
+  "registry_version": "bna-action-registry-v1",
+  "updated_at": "2026-06-17",
+  "policy": {
+    "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
+    "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
+    "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+  },
+  "actions": [
+    {
+      "action_id": "ACTION-OPERATIONS-HELPER-OPEN",
+      "label": "BNA Helper",
+      "surface": "operations",
+      "route": "/operations",
+      "selector_hint": "[data-helper-open], .local-toolbar-helper, .mobile-helper-button",
+      "expected_behavior": "Opens the scoped Operations helper drawer.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Helper context returns scoped tools and no duplicate public helper widget."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010"]
+    },
+    {
+      "action_id": "ACTION-PARENT-STUDENT-LOGIN-RESET",
+      "label": "Save login for child",
+      "surface": "parent_portal",
+      "route": "/parent",
+      "selector_hint": "student login reset form",
+      "expected_behavior": "Parent can set/reset only their own child's student username/password and sees the child name.",
+      "permission": "parent",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "Parent-scoped endpoint rejects cross-household student IDs."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006"]
+    },
+    {
+      "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
+      "label": "Create automation with helper",
+      "surface": "operations",
+      "route": "/operations?view=settings&section=automation_center",
+      "selector_hint": "create automation helper entry",
+      "expected_behavior": "Creates local automation metadata draft only after confirmation.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Planner maps create automation/billing workflow language to create_automation without external writes."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-HELPER-CAPTURE-RAW-INTAKE",
+      "label": "Capture raw intake",
+      "surface": "operations_helper",
+      "route": "/operations",
+      "selector_hint": "helper tool capture_raw_intake",
+      "expected_behavior": "Helper preserves raw natural-language input, parses it into canonical lanes, returns raw ID/counts, and does not echo private raw text.",
+      "permission": "super_admin/project/provider scoped helper",
+      "status": "active",
+      "helper_tool": "capture_raw_intake",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Planner maps ramble/goal-mode language to capture_raw_intake and parser returns raw ID/counts."
+      },
+      "related_goal_ids": ["GOAL-CORE-007", "GOAL-CORE-008", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-HELPER-RUN-WATCHDOG-AUDIT",
+      "label": "Request watchdog audit",
+      "surface": "operations_helper",
+      "route": "/operations?view=watchdog",
+      "selector_hint": "helper tool run_watchdog_audit",
+      "expected_behavior": "Helper creates a Codex-owned local-safe watchdog audit task without external writes.",
+      "permission": "super_admin/project/provider scoped helper",
+      "status": "active",
+      "helper_tool": "run_watchdog_audit",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Planner maps watchdog audit language to run_watchdog_audit."
+      },
+      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-CLASSROOM-DRAFT",
+      "label": "Start a classroom draft",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "selector_hint": "data-provider-classroom-setup",
+      "expected_behavior": "Creates a first-party provider classroom/community setup draft only.",
+      "permission": "provider",
+      "status": "active",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "No Google Classroom, payment, send, or access grant is performed."
+      },
+      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-014"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "label": "Join the Shir",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "a[href=\"#interest\"].button.primary",
+      "expected_behavior": "Scrolls the public visitor to the OneTime interest form; does not create checkout, send messages, or grant access.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Primary CTA points to #interest and no payment action fires."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-INTEREST-FORM",
+      "label": "Save join interest",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "#interestForm button[type=\"submit\"]",
+      "expected_behavior": "Creates a first-party OneTime interest lead for review only; no checkout, external send, or access grant.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Posts only to /api/one-time/interest and returns a no-checkout/no-send confirmation."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
+      "label": "Member Login",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "a[href=\"/one-time/member-login\"]",
+      "expected_behavior": "Opens the member login entry shell without exposing private library data to logged-out visitors.",
+      "permission": "public_entry",
+      "status": "active",
+      "test": {
+        "type": "route_privacy",
+        "expected_result": "/rabbi-member or member entry shows safe login shell unless valid scoped member access is present."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-PREPARE",
+      "label": "Prepare Agent Run",
+      "surface": "operations_agent_control_center",
+      "route": "/operations?view=agents",
+      "selector_hint": "button:contains('Prepare Run'), task agent verification form",
+      "expected_behavior": "Creates or reuses a scoped bna_agent_runs record, stores the prompt, marks the task verification state ready, and records task/run events.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "POST /api/bna/tasks/:taskId/agent-runs is Super Admin only and the Operations UI exposes the action only inside the Agents surface/task drawer."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-HANDOFF",
+      "label": "Copy Agent Prompt / Open ChatGPT Agent",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Copy Agent Prompt, Open ChatGPT Agent",
+      "expected_behavior": "Copies the scoped prompt locally or opens ChatGPT without production writes, and records a passive copied/opened event on the agent run.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "static",
+        "expected_result": "Progress endpoint treats copied/opened as passive audit events and does not transition the run to running."
+      },
+      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-PROGRESS-EVIDENCE",
+      "label": "Post Progress / Attach Evidence",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Post Progress, Attach Evidence",
+      "expected_behavior": "Records scoped progress and evidence artifacts on the assigned agent run with redaction status; it does not send, publish, delete, charge, or deploy.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "Progress/artifact routes require Super Admin scope and append run events/artifacts."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-SUBMIT-SEAL",
+      "label": "Submit Result / Seal Run",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Submit Result, Seal Run",
+      "expected_behavior": "Requires every criterion to be marked and browser/mixed evidence unless exempt; pass only closes the task when implementation is complete and automated gates passed.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "validateSealPayload enforces summary, criteria, and evidence; task close is gated by implementation_status and automated_gates_passed."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
+      "label": "Block / Resume / Reopen / Cancel Agent Run",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Mark Blocked, Resume, Reopen Fresh Run, Cancel Stale Run",
+      "expected_behavior": "Moves the run through allowed lifecycle transitions, creates a linked operator decision when blocked, and never mutates production data.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "Lifecycle routes require Super Admin scope, allowed transitions, and append audit events."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    }
+  ]
+}

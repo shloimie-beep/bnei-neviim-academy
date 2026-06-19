@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T13:30:00+03:00",
+  "updated_at": "2026-06-19T00:00:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -157,6 +157,306 @@
       "evidence": [],
       "deployment_evidence": [],
       "verification": []
+    },
+    {
+      "id": "REQ-20260618-112",
+      "title": "Agent Control Center and closed-loop verification",
+      "area": "agents",
+      "status": "in_progress",
+      "expected_result": "Operations has a Super Admin Agents workstream where task-specific agent runs generate copy-ready prompts, collect progress/evidence, seal pass/fail/blocked outcomes, and route feedback to Tasks, Decisions, Codex Queue, and durable execution evidence.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Backend, Operations UI, action registry, and focused contract test are implemented locally. Open until local browser/API smoke, manual Agent Mode smoke, deployment approval path, and remaining notification/Playwright/demo-data work are complete."
+    },
+    {
+      "id": "REQ-20260618-113",
+      "title": "Agent profiles and capabilities",
+      "area": "agents",
+      "status": "needs_verification",
+      "expected_result": "A small active agent registry exists for Codex Builder, Browser QA, Playwright Verifier, Research Agent, and Operator with capabilities and workspace-scope metadata.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Local schema seed for Codex Builder, Browser QA, Playwright Verifier, Research Agent, and Operator exists. Needs local DB migration/API smoke before live closeout."
+    },
+    {
+      "id": "REQ-20260618-114",
+      "title": "Agent run schema and state machine",
+      "area": "agents",
+      "status": "needs_verification",
+      "expected_result": "Agent runs, events, artifacts, prompt templates, task verification fields, idempotent creation, and server-side state transitions exist without replacing existing Codex agent jobs.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Local SQL and server lifecycle are implemented, including idempotent run creation, events, artifacts, and cancel. Needs DB-backed route smoke before live closeout."
+    },
+    {
+      "id": "REQ-20260618-115",
+      "title": "Agents menu and task-card handoff UI",
+      "area": "operations",
+      "status": "needs_verification",
+      "expected_result": "Super Admin Operations has one Agents menu plus task detail handoff controls for preparing, copying, opening, and reviewing agent verification runs.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Operations Agents module and task-detail Agent Verification panel are wired locally. Needs browser smoke screenshots before live closeout."
+    },
+    {
+      "id": "REQ-20260618-116",
+      "title": "Prompt generation and versioning",
+      "area": "agents",
+      "status": "needs_verification",
+      "expected_result": "Browser QA prompts are deterministic, versioned, copy-ready, include exact Agent Run URLs and criteria, and never include secrets or unsupported auto-Agent claims.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Versioned Browser QA prompt generation is implemented and unit-tested. Needs DB smoke to confirm seeded template path."
+    },
+    {
+      "id": "REQ-20260618-117",
+      "title": "Agent Run portal and progress reporting",
+      "area": "agents",
+      "status": "needs_verification",
+      "expected_result": "Authenticated Agent Run pages support claim/start, progress events, checklist review, result submission, and safe resume behavior.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Agent Run portal supports claim, progress, evidence, submit, seal, block, resume, reopen, and cancel controls. Needs authenticated browser/API smoke."
+    },
+    {
+      "id": "REQ-20260618-118",
+      "title": "Evidence submission and Seal Run",
+      "area": "agents",
+      "status": "needs_verification",
+      "expected_result": "Runs accept evidence references and enforce Seal Run requirements, immutable pass/fail/blocked outcomes, and task comment/activity updates.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Seal validation and task update paths are implemented and unit-tested for evidence requirement. Needs API smoke with a demo task/run."
+    },
+    {
+      "id": "REQ-20260618-119",
+      "title": "Decision and Codex feedback routing",
+      "area": "tasks",
+      "status": "done",
+      "expected_result": "Failed runs return structured feedback to Codex/task state; blocked or needs-operator outcomes create clean non-duplicate Decision cards linked to the parent task and run.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Failed/blocked outcomes update task state and create/reuse linked operator decision tasks; local static/contract evidence recorded."
+    },
+    {
+      "id": "REQ-20260618-120",
+      "title": "Workspace, RBAC, and security controls",
+      "area": "security",
+      "status": "needs_verification",
+      "expected_result": "Agent run APIs require authenticated authorization, Super Admin access for the control center, project-scope checks, and negative cross-scope tests.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Super Admin and project-scope checks are implemented in routes. Needs negative API tests with scoped identities."
+    },
+    {
+      "id": "REQ-20260618-121",
+      "title": "Verification policy and Playwright integration",
+      "area": "tests",
+      "status": "in_progress",
+      "expected_result": "Tasks store verification mode and route user-visible work through automated checks plus Browser QA where needed, without starting broad crawls or watch loops.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Task verification mode fields and local policy hooks exist. Playwright/API integration and safe demo fixtures remain open."
+    },
+    {
+      "id": "REQ-20260618-122",
+      "title": "Notifications and audit history",
+      "area": "agents",
+      "status": "in_progress",
+      "expected_result": "Agent run actions append run events, task activity, comments, ledger/changelog evidence, and concise notification hooks without spam or secrets.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Run events, task activity, and action-registry coverage exist. Notification hook and no-spam policy tests remain open."
+    },
+    {
+      "id": "REQ-20260618-123",
+      "title": "End-to-end tests, safe demo data, and manual Agent Mode smoke prompt",
+      "area": "tests",
+      "status": "not_started",
+      "expected_result": "Safe test data, unit/API/UI/E2E coverage, and a canonical manual Agent Mode smoke prompt prove the closed loop locally before release approval.",
+      "source": "RAW-20260619-001 / BNA Agent Control Center Codex Queue Prompt",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/agent-control.js",
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "notes": "Focused contract coverage exists, but full safe demo data, API/browser E2E, and manual Agent Mode smoke prompt remain open."
     }
   ]
 }
