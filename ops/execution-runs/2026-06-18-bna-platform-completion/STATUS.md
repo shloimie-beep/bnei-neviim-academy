@@ -175,6 +175,21 @@ remain open.
 - Focused tests passed 9/9; no deployment, production DB mutation, external
   write, broad crawl, watch loop, or agent-fleet loop was performed.
 
+2026-06-19 workspace/RBAC local closeout:
+
+- Moved `REQ-20260618-103` to local `done`.
+- Verified the canonical workspace model uses school/service_provider/family
+  types with compatibility aliases instead of reviving legacy household/provider
+  type drift.
+- Verified the workspace directory switcher is membership-scoped, with only
+  admin pseudo-workspaces available to all-scope identities.
+- Verified scoped route guards for student accountability and bulk content-job
+  IDs run before work starts.
+- Added provider, parent/family, and student helper negative isolation tests,
+  complementing the existing One Time cross-project/workspace RBAC coverage.
+- Focused tests passed 15/15; no deployment, production DB mutation, external
+  write, broad crawl, watch loop, or agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -184,6 +199,8 @@ Still open after this batch:
 - `REQ-20260619-205` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
 - `REQ-20260618-102` has local PWA separation proof; live/deploy verification
+  remains withheld until explicit release approval.
+- `REQ-20260618-103` has local workspace/RBAC proof; live/deploy verification
   remains withheld until explicit release approval.
 - `REQ-20260618-107` has local module-scoping proof; live/deploy verification
   remains withheld until explicit release approval.

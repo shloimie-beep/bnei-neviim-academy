@@ -323,6 +323,34 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 workspace/RBAC local closeout evidence:
+
+- Workspace schema, seed, directory, scoped route guards:
+  `server.js`.
+- Operations workspace selector and labels:
+  `public/operations.html`.
+- Public/parent/provider portal separation:
+  `public/index.html`, `public/parent.html`, `public/provider.html`, and
+  `public/provider-profile.html`.
+- Helper RBAC guard:
+  `src/lib/bna/helper/permissions.js`.
+- Workspace/person/household/provider contract:
+  `tests/workspace-person-household-provider-contract.test.js`.
+- Provider/parent/student negative helper isolation contract:
+  `tests/workspace-rbac-negative-isolation.test.js`.
+- One Time cross-project/workspace isolation contract:
+  `tests/one-time-rbac-negative-isolation.test.js`.
+- PASS `node --check tests/workspace-rbac-negative-isolation.test.js`.
+- PASS focused workspace/RBAC suite 15/15:
+  `node --test tests/workspace-rbac-negative-isolation.test.js
+  tests/workspace-person-household-provider-contract.test.js
+  tests/one-time-rbac-negative-isolation.test.js`.
+- The suite proves canonical workspace types, membership-scoped directory
+  records, guarded student/content route IDs, private-data-safe provider/public
+  surfaces, and provider/parent/student/One Time negative helper isolation.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

@@ -23771,6 +23771,41 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+## 2026-06-19T07:20:00+03:00 - Workspace/RBAC Local Proof
+
+Moved `REQ-20260618-103` to local `done`.
+
+- Verified canonical workspace/person/household/provider schema and seed
+  expectations, including school/service_provider/family workspace types and
+  compatibility aliases.
+- Verified the Operations workspace directory is membership-scoped and route
+  guards check student/content ownership before work starts.
+- Added provider, parent/family, and student negative helper isolation tests.
+- Reused the One Time RBAC negative isolation contract for project/workspace
+  scope mismatch and secret-bearing helper denial.
+
+Verification:
+
+- PASS `node --check tests/workspace-rbac-negative-isolation.test.js`.
+- PASS focused workspace/RBAC suite 15/15.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-104` Operations shell and navigation is the next broad
+  unblocked requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T08:45:00+03:00 - Agent Control Notification Hooks
 
 Moved the Agent Control notification/audit-history slice to local

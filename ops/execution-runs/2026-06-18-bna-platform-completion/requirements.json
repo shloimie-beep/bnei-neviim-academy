@@ -49,16 +49,33 @@
       "id": "REQ-20260618-103",
       "title": "Workspace model and RBAC",
       "area": "workspace",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Workspace model and role-based access controls match the BNA school/service-provider/family product model and prevent cross-scope leakage.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "server.js",
+        "public/operations.html",
+        "public/index.html",
+        "public/parent.html",
+        "public/provider.html",
+        "public/provider-profile.html",
+        "src/lib/bna/helper/permissions.js",
+        "tests/workspace-person-household-provider-contract.test.js",
+        "tests/workspace-rbac-negative-isolation.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local contract tests verify workspace schema/directory, guarded route ownership checks, portal public/private separation, and provider/parent/student/One Time RBAC isolation without production mutation."
+      ],
+      "verification": [
+        "node --check tests/workspace-rbac-negative-isolation.test.js",
+        "node --test tests/workspace-rbac-negative-isolation.test.js tests/workspace-person-household-provider-contract.test.js tests/one-time-rbac-negative-isolation.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local workspace/RBAC proof is now recorded: canonical workspace types are school/service_provider/family with compatibility aliases, the workspace directory is membership-scoped, scoped routes guard student/content IDs before work starts, portal/provider public surfaces stay private-data safe, and helper permissions deny provider, parent/family, student, One Time, cross-project, cross-workspace, and secret-bearing actions outside scope. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-104",

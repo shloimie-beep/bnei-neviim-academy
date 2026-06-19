@@ -190,6 +190,29 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for workspace/RBAC:
+
+- PASS `node --check tests/workspace-rbac-negative-isolation.test.js`.
+- PASS focused workspace/RBAC suite 15/15:
+  `node --test tests/workspace-rbac-negative-isolation.test.js
+  tests/workspace-person-household-provider-contract.test.js
+  tests/one-time-rbac-negative-isolation.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 11`, `needs_verification: 9`, `blocked: 2`,
+  `done: 9`.
+- The suite proves canonical workspace schema/directory expectations,
+  membership-scoped workspace switcher behavior, student/content route
+  ownership guards, public/parent/provider portal separation, and negative
+  provider/parent/student/One Time helper isolation.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.
