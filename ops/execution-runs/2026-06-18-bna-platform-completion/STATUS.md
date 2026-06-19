@@ -1,9 +1,40 @@
 # Status
 
-Current status: recovery run remains partial; One Time intake/API readback,
-owner/admin scoped access, and the One Time Operations UI/browser-smoke gap
-are locally closed. Agent Control Center smoke work and older platform items
-remain open.
+Current status: release closeout is partially complete and validated. The
+approved Railway deployment and focused live smokes have passed for the
+release-gated local work. The run still has external blockers for the audit
+package and remaining provider-owner setup.
+
+2026-06-19 approved release closeout:
+
+- Operator approval covered production env propagation, Railway deploy, focused
+  live smoke, and release-gated closeout for already implemented work.
+- Deployed commit:
+  `22fcff0d9665cb9638e4835a20cd8a962d79a4a8`.
+- Railway deployment
+  `43e590dd-934d-4ba1-98aa-02845b15b6bf` initially crashed because
+  `server.js` required the previously untracked
+  `src/lib/bna/telegram-runtime-status.js`.
+- Commit `22fcff0d` added the missing runtime helper; Railway deployment
+  `f9921a2d-d614-44df-88c0-392d810ddebd` then reached `SUCCESS` for service
+  `skillful-motivation` in `production`.
+- Zoom Server-to-Server OAuth values and Vimeo app client credentials were
+  propagated to Railway with secret values redacted and fingerprint-only
+  evidence. Resend fields and Vimeo user-level upload access remain absent.
+- Focused live smokes passed after the successful deployment:
+  public route privacy, parent PWA setup, generic live app smoke, and approved
+  release smoke covering PWA separation, provider readiness/no-write guards,
+  and a safe temporary Agent Control seal cycle.
+- `npm run bna:run:validate` passed after the requirement-status update with
+  counts `blocked: 1`, `needs_operator_decision: 1`, `done: 29`.
+- Closed release-gated rows:
+  `REQ-20260618-102`, `REQ-20260618-112` through `REQ-20260618-118`,
+  `REQ-20260618-120`, `REQ-20260618-122`, and `REQ-20260619-206`.
+- Still open:
+  `REQ-20260618-101` is blocked on the missing audit package/output path.
+  `REQ-20260619-207` remains `needs_operator_decision` for Resend API/from/
+  domain/DNS setup and Vimeo user-level upload/library access or an approved
+  manual operating policy.
 
 2026-06-19 One Time ramble/agent/integrations follow-up batch:
 

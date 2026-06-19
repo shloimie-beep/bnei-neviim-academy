@@ -1,0 +1,76 @@
+{
+  "started_at": "2026-06-19T08:04:19.023Z",
+  "app_url": "https://bneineviimacademy.org",
+  "success": true,
+  "checks": [
+    {
+      "name": "live parent manifest is parent-scoped",
+      "ok": true,
+      "duration_ms": 708,
+      "details": {
+        "id": "/parent",
+        "start_url": "/parent?source=parent-pwa",
+        "display": "standalone"
+      }
+    },
+    {
+      "name": "live parent page exposes install and setup contracts",
+      "ok": true,
+      "duration_ms": 1284,
+      "details": {
+        "bytes": 259762
+      }
+    },
+    {
+      "name": "live setup API remains parent-session gated",
+      "ok": true,
+      "duration_ms": 483,
+      "details": {
+        "read_status": 401,
+        "submit_status": 401
+      }
+    },
+    {
+      "name": "mocked parent setup UI works at 390px",
+      "ok": true,
+      "duration_ms": 1998,
+      "details": {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "api_calls": 3,
+        "install_status": "If no install prompt appears, use the browser menu and choose Install app or Add to home screen.",
+        "horizontal_overflow": false
+      }
+    },
+    {
+      "name": "mocked parent setup UI works at 820px",
+      "ok": true,
+      "duration_ms": 1951,
+      "details": {
+        "viewport": {
+          "width": 820,
+          "height": 1180
+        },
+        "api_calls": 3,
+        "install_status": "If no install prompt appears, use the browser menu and choose Install app or Add to home screen.",
+        "horizontal_overflow": false
+      }
+    },
+    {
+      "name": "mocked parent setup UI works at 1024px",
+      "ok": true,
+      "duration_ms": 2602,
+      "details": {
+        "viewport": {
+          "width": 1024,
+          "height": 768
+        },
+        "api_calls": 3,
+        "install_status": "If no install prompt appears, use the browser menu and choose Install app or Add to home screen.",
+        "horizontal_overflow": false
+      }
+    }
+  ]
+}

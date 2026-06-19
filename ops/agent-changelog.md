@@ -6,6 +6,48 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-06-19T11:30:00+03:00 - Approved Release Closeout Checkpoint
+
+Completed the approved Railway release closeout for the active BNA recovery
+run without starting new backlog work.
+
+What changed:
+- Propagated existing local keyholder Zoom Server-to-Server OAuth fields and
+  Vimeo app credentials to Railway production with secret-redacted output.
+- Deployed commit `22fcff0d9665cb9638e4835a20cd8a962d79a4a8`.
+- Recorded the first approved deployment crash
+  `43e590dd-934d-4ba1-98aa-02845b15b6bf`, caused by the missing tracked
+  `src/lib/bna/telegram-runtime-status.js` helper.
+- Committed the helper in `22fcff0d`; follow-up Railway deployment
+  `f9921a2d-d614-44df-88c0-392d810ddebd` reached `SUCCESS`.
+- Ran focused live smokes for public privacy, parent PWA setup, live app
+  health/API cleanup, approved-release PWA/provider readiness, and a safe
+  temporary Agent Control seal flow.
+- Moved the approved release-gated rows to done:
+  `REQ-20260618-102`, `REQ-20260618-112` through `REQ-20260618-118`,
+  `REQ-20260618-120`, `REQ-20260618-122`, and `REQ-20260619-206`.
+
+Verification:
+- PASS `npm run bna:run:validate` with counts `blocked: 1`,
+  `needs_operator_decision: 1`, `done: 29`.
+- PASS Railway doctor for deployment
+  `f9921a2d-d614-44df-88c0-392d810ddebd`.
+- PASS `npm run app:smoke:public-privacy`.
+- PASS `npm run app:smoke:parent-pwa-setup`.
+- PASS `npm run app:smoke`.
+- PASS `node scripts/smoke-approved-release-live.mjs`.
+- PASS `git diff --check`; only line-ending warnings were reported.
+- PASS `node scripts/audit-secrets.mjs`.
+
+Remaining blockers:
+- `REQ-20260618-101` remains blocked until the audit package/output path is
+  provided.
+- `REQ-20260619-207` remains `needs_operator_decision` for Resend
+  API/from/domain/DNS setup and Vimeo user-level upload/library access or an
+  approved manual upload/library policy.
+- No DNS write, email send, Zoom meeting creation, Vimeo upload, production DB
+  mutation, broad crawl, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-17T14:25:00+03:00 - Final Website Correction Register Closeout
 
 Completed the remaining pending website correction register rows:

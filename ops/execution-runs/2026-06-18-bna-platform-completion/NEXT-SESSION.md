@@ -1,5 +1,109 @@
 # Next Session
 
+## Release Closeout Checkpoint - 2026-06-19
+
+This supersedes the earlier stop checkpoint that said the latest
+`requirements.json` changes had not yet been validated.
+
+Current branch and deployed commit:
+
+- Branch: `codex/agent-control-center-20260619`
+- Deployed commit:
+  `22fcff0d9665cb9638e4835a20cd8a962d79a4a8`
+- Successful Railway deployment:
+  `f9921a2d-d614-44df-88c0-392d810ddebd`
+- Initial failed Railway deployment:
+  `43e590dd-934d-4ba1-98aa-02845b15b6bf`, fixed by committing
+  `src/lib/bna/telegram-runtime-status.js`.
+
+Closeout status:
+
+- `npm run bna:run:validate` passed with `blocked: 1`,
+  `needs_operator_decision: 1`, and `done: 29`.
+- Release/live rows closed after approved deployment and live smokes:
+  `REQ-20260618-102`, `REQ-20260618-112` through `REQ-20260618-118`,
+  `REQ-20260618-120`, `REQ-20260618-122`, and `REQ-20260619-206`.
+- Zoom/Vimeo app env propagation to Railway is complete and fingerprint-only
+  evidence is recorded.
+- Remaining open requirements:
+  `REQ-20260618-101` is blocked on the audit package/output path.
+  `REQ-20260619-207` is waiting on Resend API/from/domain/DNS and Vimeo
+  user-level upload/library access or approved manual policy.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:status
+```
+
+Do not deploy again, mutate production data, change DNS, create Zoom meetings,
+upload Vimeo videos, send email, run broad crawls, start watch loops, or begin
+backlog implementation unless the next operator instruction explicitly asks for
+that work.
+
+## Stop Checkpoint - 2026-06-19 11:10 Asia/Jerusalem
+
+User explicitly said: `STOP AFTER CHECKPOINT.`
+
+Do not continue implementation, deploy, mutate production data, run broad
+crawls, or start new work from this checkpoint without a fresh operator
+instruction.
+
+Current branch and HEAD:
+
+- Branch: `codex/agent-control-center-20260619`
+- HEAD: `22fcff0d Include Telegram runtime status helper in release`
+- Branch is ahead of origin by two commits:
+  - `48343f1f Add provider Railway env release audit`
+  - `22fcff0d Include Telegram runtime status helper in release`
+
+Checkpoint summary:
+
+- Zoom/Vimeo provider env propagation was completed before the stop request:
+  Railway production now fingerprint-matches the local keyholder for five
+  Zoom/Vimeo app fields.
+- Approved Railway deployment was attempted; deployment
+  `43e590dd-934d-4ba1-98aa-02845b15b6bf` crashed because
+  `src/lib/bna/telegram-runtime-status.js` was untracked and missing from the
+  clean deploy bundle.
+- The missing runtime helper was committed in `22fcff0d`, redeployed as
+  `f9921a2d-d614-44df-88c0-392d810ddebd`, and reached Railway `SUCCESS`.
+- Focused live smokes passed after the fix:
+  - `ops/live-smokes/2026-06-19T08-04-18-423Z-approved-release-live-smoke.md`
+  - `ops/live-smokes/2026-06-19T08-04-19-521Z-live-app-smoke.md`
+  - `ops/live-smokes/2026-06-19T08-04-43-085Z-public-route-privacy-smoke.md`
+  - `ops/live-smokes/2026-06-19T08-04-19-023Z-parent-pwa-tablet-filter-setup-live-smoke.md`
+- `ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json`
+  was updated after the live evidence to close release-gated rows and keep
+  `REQ-20260619-207` open for Resend/Vimeo-user-token decisions. This edit has
+  not yet been validated or committed after the stop request.
+
+Requirements touched in this checkpoint:
+
+- Release/live closeout rows:
+  `REQ-20260618-102`, `REQ-20260618-112` through `REQ-20260618-118`,
+  `REQ-20260618-120`, `REQ-20260618-122`, `REQ-20260619-206`.
+- Provider credential/env row:
+  `REQ-20260619-207`.
+- Audit blocker remains:
+  `REQ-20260618-101`.
+
+Still not complete:
+
+- `REQ-20260618-101`: blocked until the audit ZIP/output path is provided.
+- `REQ-20260619-207`: Zoom/Vimeo app env is live-ready, but Resend API
+  key/from/domain/DNS and Vimeo user-level upload token or approved manual
+  upload/library policy remain external gates.
+- `STATUS.md`, `EVIDENCE.md`, `TEST-RESULTS.md`, ledger, and changelog have
+  not yet been updated for the final approved-release live evidence after the
+  stop request.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:validate
+```
+
 Start here:
 
 1. Read `BNA-START-HERE.md`.

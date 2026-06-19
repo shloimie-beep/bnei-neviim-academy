@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-06-19T07:58:45.441Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": false,
+      "duration_ms": 15281,
+      "error": "GET /api/health returned 502: {\"status\":\"error\",\"code\":502,\"message\":\"Application failed to respond\",\"request_id\":\"cygZBKo8QfC0HO10YqdHTg\"}"
+    }
+  ],
+  "finished_at": "2026-06-19T07:59:00.723Z",
+  "success": false,
+  "counts": {
+    "false": 1
+  }
+}

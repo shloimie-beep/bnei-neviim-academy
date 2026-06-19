@@ -1,5 +1,40 @@
 # Evidence
 
+2026-06-19 approved release closeout evidence:
+
+- Deployed commit:
+  `22fcff0d9665cb9638e4835a20cd8a962d79a4a8`.
+- Railway deployment results:
+  `43e590dd-934d-4ba1-98aa-02845b15b6bf` crashed before the runtime helper fix;
+  `f9921a2d-d614-44df-88c0-392d810ddebd` reached `SUCCESS` after commit
+  `22fcff0d`.
+- Railway doctor:
+  `powershell -ExecutionPolicy Bypass -File scripts/railway-doctor.ps1` passed
+  after deployment `f9921a2d-d614-44df-88c0-392d810ddebd`.
+- Provider env propagation evidence:
+  `ops/qa-runs/2026-06-19T07-51-23-963Z-provider-env-railway-propagation.md`.
+- Final provider env audit:
+  `ops/qa-runs/2026-06-19T08-05-01-508Z-provider-env-railway-audit.md`.
+- Provider diagnostic evidence:
+  `ops/qa-runs/2026-06-19T07-52-10-040Z-provider-credential-diagnostics.md`.
+- Passing live smoke evidence:
+  `ops/live-smokes/2026-06-19T08-04-18-423Z-approved-release-live-smoke.md`,
+  `ops/live-smokes/2026-06-19T08-04-19-521Z-live-app-smoke.md`,
+  `ops/live-smokes/2026-06-19T08-04-43-085Z-public-route-privacy-smoke.md`,
+  and
+  `ops/live-smokes/2026-06-19T08-04-19-023Z-parent-pwa-tablet-filter-setup-live-smoke.md`.
+- Pre-fix crash evidence retained:
+  `ops/live-smokes/2026-06-19T07-58-45-073Z-approved-release-live-smoke.md`,
+  `ops/live-smokes/2026-06-19T07-58-45-441Z-live-app-smoke.md`,
+  `ops/live-smokes/2026-06-19T07-59-00-225Z-public-route-privacy-smoke.md`,
+  and
+  `ops/live-smokes/2026-06-19T07-58-44-949Z-parent-pwa-tablet-filter-setup-live-smoke.md`.
+- Active-run validation after requirement closeout:
+  `npm run bna:run:validate` passed with `blocked: 1`,
+  `needs_operator_decision: 1`, and `done: 29`.
+- Safety checks for this documentation closeout:
+  `git diff --check` and `node scripts/audit-secrets.mjs`.
+
 Protocol/tooling evidence will be recorded here after verification.
 
 Current baseline evidence:

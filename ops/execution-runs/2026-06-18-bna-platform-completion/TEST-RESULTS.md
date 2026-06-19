@@ -1,5 +1,45 @@
 # Test Results
 
+Verified on 2026-06-19 for approved release closeout:
+
+- PASS `npm run bna:run:validate`; active run status counts are
+  `blocked: 1`, `needs_operator_decision: 1`, `done: 29`.
+- PASS `node --test tests/provider-env-railway-audit.test.js
+  tests/provider-env-railway-propagate.test.js`.
+- PASS `node --test tests/provider-env-railway-audit.test.js
+  tests/provider-env-railway-propagate.test.js
+  tests/provider-credentials-diagnostics.test.js
+  tests/provider-integrations-secret-storage.test.js
+  tests/integrations-secret-loader.test.js` 16/16.
+- PASS `node scripts/provider-credentials-diagnostics.mjs`.
+- PASS `node scripts/provider-env-railway-audit.mjs`; final audit found five
+  Zoom/Vimeo required fields matched in Railway and no Railway mismatches.
+- PASS `powershell -ExecutionPolicy Bypass -File scripts/railway-doctor.ps1`
+  after Railway deployment `f9921a2d-d614-44df-88c0-392d810ddebd`.
+- PASS `npm run app:smoke:public-privacy`.
+- PASS `npm run app:smoke:parent-pwa-setup`.
+- PASS `npm run app:smoke`.
+- PASS `node scripts/smoke-approved-release-live.mjs`.
+- PASS `git diff --check`; output contained only line-ending warnings from the
+  pre-existing mixed Windows worktree and no whitespace errors.
+- PASS `node scripts/audit-secrets.mjs`.
+
+Known failed pre-fix live evidence:
+
+- Initial approved Railway deployment
+  `43e590dd-934d-4ba1-98aa-02845b15b6bf` crashed with missing module
+  `./src/lib/bna/telegram-runtime-status`. This was fixed by commit
+  `22fcff0d`, and follow-up deployment
+  `f9921a2d-d614-44df-88c0-392d810ddebd` passed.
+
+Still not complete:
+
+- No audit package/output was provided for `REQ-20260618-101`.
+- Resend API/from/domain/DNS and Vimeo user-level upload/library access or
+  approved manual upload/library policy remain open for `REQ-20260619-207`.
+- No DNS write, email send, Zoom meeting creation, Vimeo upload, production DB
+  mutation, broad crawl, watch loop, or agent-fleet loop was performed.
+
 Verified on 2026-06-18:
 
 - PASS `node --check scripts/bna-execution-run.mjs`.

@@ -1,0 +1,50 @@
+{
+  "started_at": "2026-06-19T08:04:18.423Z",
+  "base_url": "https://bneineviimacademy.org",
+  "result": "passed",
+  "secret_values_printed": false,
+  "steps": [
+    {
+      "name": "live PWA identities stay separated",
+      "status": "PASS",
+      "duration_ms": 2154,
+      "details": {
+        "public_start_url": "/?source=public-pwa",
+        "operations_start_url": "/operations?source=ops-pwa",
+        "parent_start_url": "/parent?source=parent-pwa",
+        "anonymous_operations_status": 302,
+        "external_write_performed": false
+      }
+    },
+    {
+      "name": "live provider integration readiness is scoped and read-only",
+      "status": "PASS",
+      "duration_ms": 1153,
+      "details": {
+        "zoom_status": "configured_but_insufficient_scope",
+        "zoom_preview_external_write": false,
+        "vimeo_app_credentials": true,
+        "vimeo_status": "manual_upload_required",
+        "resend_status": "not_configured",
+        "external_write_performed": false
+      }
+    },
+    {
+      "name": "live Agent Control lifecycle seals safe temporary run",
+      "status": "PASS",
+      "duration_ms": 10598,
+      "details": {
+        "task_id": 1207,
+        "run_key": "run_eWBEbCU-41sPgA",
+        "sealed_status": "sealed_pass",
+        "artifacts": 1,
+        "events": 7,
+        "cleanup": {
+          "attempted": true,
+          "ok": true
+        },
+        "external_write_performed": true
+      }
+    }
+  ]
+}

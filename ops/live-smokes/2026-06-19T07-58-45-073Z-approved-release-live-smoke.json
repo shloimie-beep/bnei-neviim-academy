@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-06-19T07:58:45.073Z",
+  "base_url": "https://bneineviimacademy.org",
+  "result": "failed",
+  "secret_values_printed": false,
+  "steps": [
+    {
+      "name": "live PWA identities stay separated",
+      "status": "FAIL",
+      "duration_ms": 15409,
+      "error": "GET /manifest.json returned 502: {\"status\":\"error\",\"code\":502,\"message\":\"Application failed to respond\",\"request_id\":\"giBlHX8dSTmQ3lU58Hk9cQ\"}"
+    },
+    {
+      "name": "live provider integration readiness is scoped and read-only",
+      "status": "FAIL",
+      "duration_ms": 15359,
+      "error": "GET /api/bna/integrations/zoom/status returned 502: {\"status\":\"error\",\"code\":502,\"message\":\"Application failed to respond\",\"request_id\":\"mBrjDZ8qQ3CyGuuZ55So4g\"}"
+    },
+    {
+      "name": "live Agent Control lifecycle seals safe temporary run",
+      "status": "FAIL",
+      "duration_ms": 15286,
+      "error": "GET /operations?workspace=platform&view=agents returned 502: <!doctype html><meta name=viewport content=\"width=device-width,initial-scale=1\"><meta charset=utf-8><title>502 Bad Gateway</title><style media=screen>\n      :root {\n        --bg: hsl(250, 24%, 9%);\n        --fg: hsl(0, 0%, 100%);\n        --pink: hsl(270, 60%, 52%);\n        --pink-600: hsl(270, 70%, 65%);\n        --green-600: hsl(152, 38%, 60%);\n        --red-600: hsl(1, 62%, 60%);\n        --gray-100: hsl(246, 18%, 15%);\n        --gray-500: hsl(246,  6%, 55%);\n      }\n\n      html,\n      body {\n  "
+    }
+  ]
+}
