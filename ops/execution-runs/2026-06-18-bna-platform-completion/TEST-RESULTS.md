@@ -649,3 +649,12 @@ Task live counts/blockers browser proof (2026-06-19T06:55:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-141 now has browser proof that rendered task overview counts derive from scoped fixture buckets, showing 3 urgent/today, 3 decisions, and 1 blocked record, and that the blocked metric/status pill link to a visible Blocked Work section with the blocked task title and blocker explanation. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Mixed parser idempotency refreshed proof (2026-06-19T07:05:30+03:00):
+
+- PASS `node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-142 refreshed focused backend/parser proof for deterministic parser item keys, scoped student matching, task update instead of duplicate insert, and non-task lane upserts by parser item key. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

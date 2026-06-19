@@ -4308,6 +4308,27 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Mixed parser idempotency refreshed proof
+
+Requirement: `REQ-20260618-142`
+
+Changed:
+
+- Refreshed the local evidence for the already-implemented mixed-recording
+  parser idempotency work.
+- Verified deterministic parser item keys, scoped student matching, task update
+  instead of duplicate insert, and non-task lane upserts remain covered.
+
+Verification:
+
+- PASS `node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Task live counts/blockers browser proof
 
 Requirement: `REQ-20260618-141`

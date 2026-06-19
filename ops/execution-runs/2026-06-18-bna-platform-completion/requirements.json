@@ -1861,24 +1861,31 @@
         "createTaskFromText updates an existing parser-linked task when the same parser_item_key is seen again instead of inserting a duplicate.",
         "Mixed-recording parser student matching is scoped to the content job workspace, and task project fallback uses the job workspace project when parsed text is ambiguous.",
         "Accountability events, group goal entries, and Torah timer accountability events now upsert by parser_item_key; class sessions and daily Torah entries retain existing upsert behavior.",
-        "tests/mixed-recording-idempotency.test.js covers parser keys, unique guards, task upsert behavior, workspace-scoped routing, and non-task lane upserts."
+        "tests/mixed-recording-idempotency.test.js covers parser keys, unique guards, task upsert behavior, workspace-scoped routing, and non-task lane upserts.",
+        "Focused verification reran mixed-recording parser idempotency with task intake routing and browser acceptance coverage, confirming deterministic parser item keys, scoped routing, and no duplicate work regressions remain covered.",
+        "Full npm test suite reran after the parser-idempotency verification batch and passed 210/210."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js PASS",
         "node --check tests/mixed-recording-idempotency.test.js PASS",
         "node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js PASS 18/18",
-        "npm test PASS 127/127"
+        "npm test PASS 127/127",
+        "node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: make mixed parser idempotent"
+        "current batch commit: feat: make mixed parser idempotent",
+        "current batch commit: test: refresh mixed parser idempotency evidence"
       ],
       "files_changed": [
         "server.js",
         "tests/mixed-recording-idempotency.test.js"
       ],
-      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
-      "updated_at": "2026-06-18T22:20:45+03:00"
+      "notes": "Local parser idempotency/routing remains verified by focused backend/parser tests plus full acceptance suite. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for server-visible changes.",
+      "updated_at": "2026-06-19T07:05:30+03:00"
     },
     {
       "id": "REQ-20260618-143",
