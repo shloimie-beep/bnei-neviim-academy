@@ -668,3 +668,14 @@ Community Contacts browser proof (2026-06-19T07:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-143 now has browser proof that after switching to One Time workspace, the Contacts module requests signups with `project=one_time_mishnah_class`, shows the selected service-provider workspace in the header, displays One Time workspace labels on the contact card/detail, and excludes the BNA contact fixture. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Content boundary browser proof (2026-06-19T07:25:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-144 now has browser proof that after switching to the One Time workspace, the Content module requests content jobs with `project=one_time_mishnah_class`, renders reusable Mishnah teaching topics/questions/sources/highlights, and excludes task/accountability/progress/timer/parser-review phrases from the visible card. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

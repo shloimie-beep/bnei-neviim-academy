@@ -4709,3 +4709,22 @@ Verification:
 
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Content boundary browser proof
+
+Requirement: `REQ-20260618-144`
+
+Changed:
+
+- Added a browser acceptance Content fixture with reusable Mishnah teaching material and filtered task/accountability/progress/timer/parser-review noise.
+- Verified the Operations Content view requests the selected One Time workspace and displays teaching topics, questions, sources, and highlights while excluding non-content phrases.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

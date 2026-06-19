@@ -348,7 +348,43 @@ function operationsFixture(pathname, url, options = {}) {
     '/api/bna/payment-intake': { intake: [] },
     '/api/bna/payment-reminders/due': { found: 0, due: [] },
     '/api/bna/green-invoice/webhooks': { events: [] },
-    '/api/bna/content-jobs': { jobs: [] },
+    '/api/bna/content-jobs': {
+      jobs: [
+        {
+          id: 801,
+          title: 'TEST-BNA-SEED Mishnah teaching clip',
+          source_type: 'video',
+          status: 'transcribed',
+          project_key: workspaceProject,
+          workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+          workspace_short_label: project === 'one_time_mishnah_class' ? 'One Time' : 'BNA',
+          source_label: 'Class recording',
+          transcript_status: 'ready',
+          created_at: '2026-06-18T12:00:00+03:00',
+          updated_at: '2026-06-18T12:30:00+03:00',
+          parse_json: {
+            summary: 'Students explored how a Mishnah frames responsibility for found objects.',
+            topics: [
+              'Mishnah structure for lost objects',
+              'Torah progress update: 50 percent',
+            ],
+            discussions: [
+              'Why does the Mishnah separate owner despair from finder responsibility?',
+              'Review accountability notes for Menachem',
+            ],
+            sources: [
+              'Bava Metzia 2a',
+              'timer update 20 minutes',
+            ],
+            highlights: [
+              'Use the case distinction as a discussion opener',
+              'parser fallback: make a task',
+            ],
+          },
+          outputs: [],
+        },
+      ],
+    },
     '/api/bna/content-prompts': { prompts: [] },
     '/api/bna/content-bundles': { bundles: [] },
     '/api/bna/students': { students: project === 'one_time_mishnah_class' ? [] : [student] },
@@ -1048,6 +1084,34 @@ async function assertOperationsContactsCommunityScope(page, calls) {
   assert.doesNotMatch(contactsState.listText, /BNA Parent/);
 }
 
+async function assertOperationsContentBoundary(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Content' }).click();
+  await page.locator('.ops-view-frame[data-current-view="content"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/content-jobs' && call.project === 'one_time_mishnah_class',
+    'Content jobs request scoped to One Time workspace',
+  );
+  const contentCard = page.locator('.content-library-card').filter({ hasText: 'TEST-BNA-SEED Mishnah teaching clip' }).first();
+  await contentCard.waitFor();
+  await contentCard.locator('.content-card-compact').click();
+  await page.locator('.content-library-card.expanded').filter({ hasText: 'TEST-BNA-SEED Mishnah teaching clip' }).waitFor();
+  const contentState = await page.evaluate(() => {
+    const frame = document.querySelector('.ops-view-frame[data-current-view="content"]');
+    return {
+      text: frame?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(contentState.text, /Mishnah structure for lost objects/);
+  assert.match(contentState.text, /Why does the Mishnah separate owner despair from finder responsibility\?/);
+  assert.match(contentState.text, /Bava Metzia 2a/);
+  assert.match(contentState.text, /Use the case distinction as a discussion opener/);
+  assert.doesNotMatch(contentState.text, /Torah progress update/i);
+  assert.doesNotMatch(contentState.text, /Review accountability notes/i);
+  assert.doesNotMatch(contentState.text, /timer update/i);
+  assert.doesNotMatch(contentState.text, /parser fallback/i);
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -1183,6 +1247,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
       await assertOperationsContactsCommunityScope(page, calls);
+      await assertOperationsContentBoundary(page, calls);
     } finally {
       await context.close();
       await browser.close();

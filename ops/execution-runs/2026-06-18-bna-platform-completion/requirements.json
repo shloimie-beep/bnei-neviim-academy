@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T03:25:30+03:00",
+  "updated_at": "2026-06-19T07:25:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -249,7 +249,8 @@
         "Content/class-session extraction now filters task, meeting, accountability, progress, timer, and parser-review material so reusable Content remains teaching/research oriented.",
         "Content items now expose workspace/project context, source/Drive provenance, transcript/parse state, output counts, approval state, dates, and an expanded provenance panel in Operations.",
         "Content Drive intake/routing now resolves workspace-specific folders, rejects known folder/workspace mismatches, scopes bundles by workspace, and blocks mixed-workspace combined outputs.",
-        "Live/class sessions now support direct workspace project filtering and the Calendar class-session feed stays selected-workspace scoped."
+        "Live/class sessions now support direct workspace project filtering and the Calendar class-session feed stays selected-workspace scoped.",
+        "REQ-20260618-144 now has browser proof that the selected workspace Content view renders teaching/research material while filtering task, accountability, progress, timer, and parser-review phrases."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -262,10 +263,14 @@
         "node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/community-workspace-scope.test.js tests/workspace-schema.test.js PASS 13/13",
         "npm test PASS 138/138",
         "node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js PASS 16/16",
-        "npm test PASS 140/140"
+        "npm test PASS 140/140",
+        "node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "notes": "Scoped modules parent remains in_progress until Automations, Integrations, Users, Accounting, and remaining module children have terminal statuses.",
-      "updated_at": "2026-06-18T23:18:20+03:00",
+      "updated_at": "2026-06-19T07:25:30+03:00",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -274,7 +279,8 @@
         "tests/content-metadata-provenance.test.js",
         ".env.example",
         "tests/content-drive-routing.test.js",
-        "tests/class-sessions-scope.test.js"
+        "tests/class-sessions-scope.test.js",
+        "tests/browser-acceptance.test.js"
       ]
     },
     {
@@ -1965,7 +1971,8 @@
         "upsertClassSessionFromContentJob now requires structured reusable class content or an academic title signal instead of treating raw class_notes presence as enough to create/update bna_class_sessions.",
         "basicMixedRecordingParse no longer manufactures class_notes from deterministic task/student fallback output.",
         "public/operations.html mirrors the expanded non-content filtering so Content cards do not display task/accountability/progress/timer/parser-review material as teaching topics.",
-        "tests/content-boundary.test.js covers server class-session storage boundaries, fallback parse behavior, and Operations Content renderer filtering."
+        "tests/content-boundary.test.js covers server class-session storage boundaries, fallback parse behavior, and Operations Content renderer filtering.",
+        "tests/browser-acceptance.test.js now includes a Content fixture/assertion proving the Operations Content view requests the selected One Time workspace, renders reusable teaching/research topics, questions, sources, and highlights, and filters task/accountability/progress/timer/parser-review phrases out of the card."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1973,18 +1980,25 @@
         "node --check tests/content-boundary.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/mixed-recording-idempotency.test.js PASS 11/11",
-        "npm test PASS 132/132"
+        "npm test PASS 132/132",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: keep student notes out of content"
+        "current batch commit: fix: keep student notes out of content",
+        "current batch commit: test: verify content boundary in browser"
       ],
       "files_changed": [
         "server.js",
         "public/operations.html",
-        "tests/content-boundary.test.js"
+        "tests/content-boundary.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
-      "updated_at": "2026-06-18T22:50:05+03:00"
+      "notes": "Local implementation, static checks, backend/parser checks, and browser DOM proof are complete. Live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-19T07:25:30+03:00"
     },
     {
       "id": "REQ-20260618-145",

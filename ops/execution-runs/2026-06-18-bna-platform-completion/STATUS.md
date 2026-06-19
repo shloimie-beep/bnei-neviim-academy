@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T07:15:30+03:00
+Updated: 2026-06-19T07:25:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-143 now has static/API and browser DOM proof that Contacts/Community uses the selected workspace filter and renders workspace labels for scoped community records. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-144.
+Current verification batch: REQ-20260618-144 now has static/backend and browser DOM proof that reusable Content contains teaching/class/research material while task, meeting, accountability, progress, timer, and parser-review material stays out of the Content card. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-145.
 
 No deployment or production-data mutation is approved in this run.
