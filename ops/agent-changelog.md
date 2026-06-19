@@ -23489,3 +23489,44 @@ Remaining:
   single Decision/review behavior and local raw queue/API readback.
 - `REQ-20260619-204` still needs negative One Time scope/RBAC tests and DB/API
   readback before live closeout.
+
+## 2026-06-19T06:45:00+03:00 - Ambiguous Intake and One Time RBAC Negative Tests
+
+Finished the next credential-free continuation for `REQ-20260619-203` and
+`REQ-20260619-204`.
+
+- Added canonical parser behavior for explicit workspace/project ambiguity:
+  one routing Decision, one review item, no automatic task fan-out, and no
+  silent One Time assignment merely because the ambiguity mentions “BNA or One
+  Time.”
+- Added focused regression coverage for ambiguous workspace intake and verified
+  explicit One Time routing still files to `rabbi_sheller_provider` /
+  `one_time_mishnah_class`.
+- Hardened helper permissions so scoped One Time/project users cannot use
+  secret-bearing or upload-token tools: `save_provider_api_key`,
+  `rotate_provider_api_key`, and `prepare_vimeo_upload`.
+- Preserved safe scoped setup actions such as integration setup tasks, DNS setup
+  tasks, manual Vimeo upload-needed tasks, and manual Vimeo URL attachment.
+- Added negative isolation tests for cross-project denial, cross-workspace
+  denial, scoped secret-tool denial, and key One Time admin route
+  `assertWorkspaceAccess(req, 'rabbi_sheller_provider')` coverage.
+- Added the missing One Time workspace assertion to the no-write Drive brief
+  preview route.
+
+Verification:
+
+- PASS baseline parser/routing command 26/26.
+- PASS ambiguity/RBAC/helper focused suite 21/21.
+
+Guardrails:
+
+- No deployment, production DB mutation, external account write, Drive write,
+  Telegram send, social post, payment, DNS write, broad UI crawl, watch loop, or
+  agent-fleet loop was run.
+- No secrets were stored in tracked files.
+
+Remaining:
+
+- `REQ-20260619-203` now needs local raw queue/API readback before closeout.
+- `REQ-20260619-204` needs DB-backed owner/admin and scoped-access API readback.
+- `REQ-20260619-205` still needs One Time browser/button audit.

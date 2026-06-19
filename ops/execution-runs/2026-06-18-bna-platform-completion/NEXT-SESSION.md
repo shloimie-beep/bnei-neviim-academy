@@ -11,13 +11,13 @@ Current 2026-06-19 checkpoint:
 
 - `REQ-20260619-201`, `REQ-20260619-202`, and `REQ-20260619-208` are locally
   done for this no-write batch.
-- `REQ-20260619-203` remains in progress: One Time scope inheritance for future
-  Telegram/Drive/transcript/ramble parser lanes is implemented and tested, but
-  low-confidence unclear-scope intake still needs the single routing
-  Decision/review behavior and local raw queue/API readback.
-- `REQ-20260619-204` and `REQ-20260619-205` need DB/API/browser verification:
-  owner/admin readback, negative scoped-identity tests, One Time module/button
-  audit, and role-based Operations smoke.
+- `REQ-20260619-203` is implemented locally and needs verification: One Time
+  scope inheritance and unclear-scope single routing Decision/review behavior
+  are implemented and tested; local raw queue/API readback remains.
+- `REQ-20260619-204` has local negative helper/route isolation tests; DB/API
+  owner/admin and scoped-access readback remains.
+- `REQ-20260619-205` needs One Time module/button audit and role-based browser
+  smoke.
 - `REQ-20260619-206` continues the Agent Control Center DB/API/browser/manual
   Agent Mode smoke work from `REQ-20260618-112` through `REQ-20260618-123`.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
@@ -26,18 +26,17 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260619-203` remaining unclear-scope Decision/review behavior, then
-`REQ-20260619-204` negative One Time scope/RBAC tests.
+`REQ-20260619-203` local raw queue/API readback, then `REQ-20260619-204`
+DB-backed One Time owner/admin and scoped-access readback.
 
 Exact next command:
 
 ```powershell
-node --test tests\one-time-intake-scope-hardening.test.js tests\intake-parser.test.js tests\telegram-ramble-routing-regression.test.js
+node --test tests\one-time-rbac-negative-isolation.test.js tests\intake-parser-workspace-ambiguity.test.js tests\one-time-drive-brief-ingestion.test.js
 ```
 
-Then add/extend tests so ambiguous workspace language creates one routing
-Decision/review item instead of many visible tasks, followed by cross-workspace
-denial tests without touching production data.
+Then add a safe local API/readback smoke for raw intake parsing and One Time
+owner/admin/scoped access. Do not touch production data.
 
 Open requirements:
 

@@ -76,6 +76,15 @@ function hasOneTimeScopeCue(text = '') {
     .test(String(text || ''));
 }
 
+function hasAmbiguousWorkspaceRouting(text = '', input = {}) {
+  if (input.project_key || input.projectKey || input.workspace_key || input.workspaceKey) return false;
+  const value = String(text || '');
+  const hasRoutingWords = /\b(workspace|project|scope|route|routing|file under|belongs to|where to file|which lane)\b/i.test(value);
+  const hasUncertainty = /\b(not sure|unclear|unknown|do(?:n't| not) know|which workspace|which project|whether|maybe|probably|figure out|decide where|needs routing review)\b/i.test(value);
+  const hasCompetingScopes = /\b(?:bna|one[-\s]?time|provider|family|dratler)\b[\s\S]{0,90}\bor\b[\s\S]{0,90}\b(?:bna|one[-\s]?time|provider|family|dratler)\b/i.test(value);
+  return hasRoutingWords && (hasUncertainty || hasCompetingScopes);
+}
+
 function intakeSourceDate(input = {}) {
   const explicit = String(input.source_date || input.created_at || input.recorded_at || '').match(/\b(20\d{2}-\d{2}-\d{2})\b/);
   if (explicit) return explicit[1];
@@ -172,6 +181,26 @@ function makeDecision(fragment, index) {
     decision_owner: 'Shloimie',
     summary: compactWhitespace(fragment.text),
   }, 'decision', fragment, index, confidenceForFragment(fragment, 0.78));
+}
+
+function makeWorkspaceRoutingDecision(fragment, index) {
+  return withCommonItemFields({
+    title: 'Decide intake workspace routing',
+    short_title: 'Decide intake workspace routing',
+    what: 'Decide the correct workspace/project before creating visible tasks.',
+    why: 'The intake contains work language, but its BNA/One Time/provider/family scope is unclear.',
+    next_action: 'Choose the target workspace/project, then re-parse or file the raw intake under that scope.',
+    owner: 'Shloimie',
+    decision_owner: 'Shloimie',
+    summary: compactWhitespace(fragment.text),
+    workspace_key: 'needs_routing_decision',
+    project_key: null,
+    target_lane: 'Decisions',
+    metadata: {
+      decision_type: 'workspace_routing',
+      auto_task_creation_blocked: true,
+    },
+  }, 'decision', fragment, index, 0.92);
 }
 
 function makeTicket(fragment, index, overrides = {}) {
@@ -411,6 +440,7 @@ function addRambleProtocolItems(output = {}, fragment = {}, index = 0, input = {
 function addStableIdsToCanonicalOutput(output = {}, input = {}) {
   const sourceDate = intakeSourceDate(input);
   const globalScopeText = `${input.raw_input || input.raw_text || input.text || ''} ${output.raw_input || ''}`;
+  const ambiguousGlobalScope = hasAmbiguousWorkspaceRouting(globalScopeText, input);
   const groups = [
     ['requirement', output.requirements],
     ['task', output.tasks],
@@ -451,9 +481,15 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
       if (!item.short_title) item.short_title = title;
       if (!item.source_quote) item.source_quote = sourceQuote(source);
       if (!item.item_type) item.item_type = type;
-      const scopeText = `${title} ${source} ${item.summary || ''} ${item.next_action || ''} ${globalScopeText}`;
-      const inferredWorkspaceKey = inferWorkspaceKey(scopeText, input);
-      const inferredProjectKey = inferProjectKey(scopeText, input);
+      const scopeText = ambiguousGlobalScope
+        ? `${title} ${source} ${item.summary || ''} ${item.next_action || ''}`
+        : `${title} ${source} ${item.summary || ''} ${item.next_action || ''} ${globalScopeText}`;
+      const inferredWorkspaceKey = ambiguousGlobalScope
+        ? (item.workspace_key || input.workspace_key || input.workspaceKey || 'needs_routing_decision')
+        : inferWorkspaceKey(scopeText, input);
+      const inferredProjectKey = ambiguousGlobalScope
+        ? (item.project_key || input.project_key || input.projectKey || null)
+        : inferProjectKey(scopeText, input);
       if (!item.scope_type) item.scope_type = input.scope_type || input.scopeType || 'workspace';
       if (!item.scope_id) item.scope_id = input.scope_id || input.scopeId || null;
       if (!item.workspace_key || (item.workspace_key === 'bna' && inferredWorkspaceKey !== 'bna') || item.workspace_key === ONE_TIME_PROJECT_KEY) {
@@ -548,6 +584,7 @@ function buildRambleProtocol(output = {}, input = {}) {
 function deterministicParse(input = {}) {
   const rawInput = String(input.raw_input || input.raw_text || input.text || '').trim();
   const fragments = splitIntoFragments(rawInput);
+  const ambiguousWorkspaceRouting = hasAmbiguousWorkspaceRouting(rawInput, input);
   const people = extractPeopleFromText(rawInput);
   const relationships = inferRelationshipsFromText(rawInput, people);
   const language = detectLanguage(rawInput);
@@ -564,6 +601,33 @@ function deterministicParse(input = {}) {
   output.extracted_people.push(...people);
   output.extracted_relationships.push(...relationships);
   output.review_items.push(...ambiguousPeopleFromExtraction(people));
+
+  if (ambiguousWorkspaceRouting) {
+    const routingFragment = {
+      text: rawInput,
+      start: 0,
+      end: rawInput.length,
+      excerpt: sourceExcerpt(rawInput, 0, 420),
+    };
+    output.decisions.push(makeWorkspaceRoutingDecision(routingFragment, 0));
+    output.workspace_routing.push(makeStructuredLaneItem('workspace_routing', routingFragment, 0, {
+      title: 'Review ambiguous workspace routing',
+      workspace_key: 'needs_routing_decision',
+      project_key: null,
+      scope_type: 'workspace',
+      target_lane: 'Workspace Routing',
+      metadata: {
+        routing_basis: 'ambiguous_workspace_routing',
+        auto_task_creation_blocked: true,
+      },
+    }, 0.52));
+    output.review_items.push({
+      review_type: 'ambiguous_workspace_routing',
+      reason: 'The raw intake contains work language but the target workspace/project is unclear.',
+      payload: { excerpt: routingFragment.excerpt, workspace_key: 'needs_routing_decision' },
+      confidence: 0.52,
+    });
+  }
 
   fragments.forEach((fragment, index) => {
     const text = fragment.text;
@@ -650,7 +714,7 @@ function deterministicParse(input = {}) {
       }, 0.82));
     }
 
-    if (/\b(workspace|project|scope|belongs to|route to|file under|one time|bna|provider workspace)\b/i.test(text)) {
+    if (!ambiguousWorkspaceRouting && /\b(workspace|project|scope|belongs to|route to|file under|one time|bna|provider workspace)\b/i.test(text)) {
       output.workspace_routing.push(makeStructuredLaneItem('workspace_routing', fragment, index, {
         title: titleFromActionText(text, 'Workspace routing'),
         workspace_key: inferWorkspaceKey(text, input),
@@ -675,7 +739,7 @@ function deterministicParse(input = {}) {
       return;
     }
 
-    if (/\b(decide|decision|choose|approval|approve|whether|which option|not sure)\b/i.test(text)) {
+    if (!ambiguousWorkspaceRouting && /\b(decide|decision|choose|approval|approve|whether|which option|not sure)\b/i.test(text)) {
       output.decisions.push(makeDecision(fragment, index));
     }
 
@@ -685,7 +749,7 @@ function deterministicParse(input = {}) {
       }));
     }
 
-    if (hasTaskCreationIntent(text, input)) {
+    if (!ambiguousWorkspaceRouting && hasTaskCreationIntent(text, input)) {
       output.tasks.push(makeTask(fragment, index));
     }
 

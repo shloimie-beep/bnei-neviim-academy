@@ -69,6 +69,17 @@ Verified on 2026-06-19 for canonical future intake hardening continuation:
 - PASS staged secret-word scan; only harmless evidence/stable-ID literals
   matched.
 
+Verified on 2026-06-19 for ambiguous workspace and One Time RBAC continuation:
+
+- PASS baseline command from `NEXT-SESSION.md` 26/26:
+  `node --test tests/one-time-intake-scope-hardening.test.js
+  tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js`.
+- PASS focused ambiguity/RBAC/helper suite 21/21:
+  `node --test tests/one-time-rbac-negative-isolation.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/intake-parser-workspace-ambiguity.test.js
+  tests/one-time-intake-scope-hardening.test.js tests/bna-helper-tools.test.js`.
+
 Not run for this batch:
 
 - No full `npm test`.

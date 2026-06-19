@@ -527,7 +527,7 @@
       "id": "REQ-20260619-203",
       "title": "Future Telegram, Drive, transcript, and ramble ingestion hardening",
       "area": "ingestion",
-      "status": "in_progress",
+      "status": "needs_verification",
       "expected_result": "Future natural-language sources use canonical raw-first intake, workspace resolution, entity resolution, visible-title cleanup, schema validation, retry limits, and single Decision routing for ambiguity.",
       "source": "RAW-20260619-002",
       "depends_on_audit_output": false,
@@ -545,7 +545,8 @@
         "tests/intake-parser-class-recording.test.js",
         "tests/intake-parser-communications.test.js",
         "tests/intake-parser-goals.test.js",
-        "tests/intake-parser-student-questions.test.js"
+        "tests/intake-parser-student-questions.test.js",
+        "tests/intake-parser-workspace-ambiguity.test.js"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -554,14 +555,14 @@
         "node --check src/lib/bna/ramble-protocol.js",
         "node --check src/lib/bna/goal-registry.js",
         "node --check src/lib/bna/goal-memory.js",
-        "node --test tests/one-time-intake-scope-hardening.test.js tests/one-time-drive-brief-ingestion.test.js tests/intake-parser-class-recording.test.js tests/intake-parser-communications.test.js tests/intake-parser-goals.test.js tests/intake-parser-student-questions.test.js tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js"
+        "node --test tests/intake-parser-workspace-ambiguity.test.js tests/one-time-intake-scope-hardening.test.js tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js"
       ],
       "acceptance_criteria": [
         "One Time aliases cannot silently route into default BNA scope.",
         "Low-confidence scope creates one routing Decision, not many visible tasks.",
         "Parser output contains decisions/tasks/calendar/content/community/integration/notes/unresolved/deduplication keys."
       ],
-      "notes": "This batch adds a concrete One Time Drive parser plus canonical parser helpers for raw-first lanes, goal links, stable IDs, class-recording/content/research/communication lanes, and One Time scope inheritance from full raw intake context. Remaining open: low-confidence ambiguous scope must create one routing Decision rather than many visible tasks, and live raw queue/API readback still needs credential-safe smoke."
+      "notes": "This batch adds a concrete One Time Drive parser plus canonical parser helpers for raw-first lanes, goal links, stable IDs, class-recording/content/research/communication lanes, One Time scope inheritance from full raw intake context, and ambiguous workspace routing collapse into one Decision/review item with task fan-out blocked. Needs local raw queue/API readback before live closeout."
     },
     {
       "id": "REQ-20260619-204",
@@ -577,21 +578,24 @@
         "server.js",
         "src/lib/bna/one-time-drive-brief.js",
         "src/lib/bna/intake-parser.js",
+        "src/lib/bna/helper/permissions.js",
         "tests/one-time-drive-brief-ingestion.test.js",
         "tests/one-time-external-user-portal.test.js",
-        "tests/one-time-intake-scope-hardening.test.js"
+        "tests/one-time-intake-scope-hardening.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js"
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js",
-        "node --test tests/one-time-intake-scope-hardening.test.js"
+        "node --test tests/one-time-intake-scope-hardening.test.js",
+        "node --test tests/one-time-rbac-negative-isolation.test.js tests/one-time-drive-brief-ingestion.test.js tests/bna-helper-tools.test.js"
       ],
       "acceptance_criteria": [
         "Seed membership maps Rabbi to owner and Shloimie to project admin/manager.",
         "Legacy ONE_TIME_OPS_USERNAME remains manager compatibility, not owner.",
         "Generated One Time records reject default BNA routing."
       ],
-      "notes": "Local seed and tests prove the requested owner/admin mapping, and parser regression proves future Rabbi Elie / One Time intake inherits the provider workspace/project instead of default BNA. Still needs DB readback and negative scoped-identity/API smoke before live closeout."
+      "notes": "Local seed and tests prove the requested owner/admin mapping, parser regression proves future Rabbi Elie / One Time intake inherits the provider workspace/project instead of default BNA, and helper/route negative tests prove cross-project/workspace denial plus One Time workspace assertions on key admin routes. Still needs DB-backed readback/API smoke before live closeout."
     },
     {
       "id": "REQ-20260619-205",
@@ -693,6 +697,8 @@
       "evidence": [
         "tests/one-time-drive-brief-ingestion.test.js",
         "tests/one-time-intake-scope-hardening.test.js",
+        "tests/intake-parser-workspace-ambiguity.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js",
         "tests/intake-parser-class-recording.test.js",
         "tests/intake-parser-communications.test.js",
         "tests/intake-parser-goals.test.js",
@@ -710,6 +716,7 @@
         "Operations inline script syntax check",
         "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js tests/one-time-meeting-drops.test.js tests/int05-integrations-closeout.test.js",
         "node --test tests/one-time-intake-scope-hardening.test.js tests/intake-parser-class-recording.test.js tests/intake-parser-communications.test.js tests/intake-parser-goals.test.js tests/intake-parser-student-questions.test.js tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js",
+        "node --test tests/one-time-rbac-negative-isolation.test.js tests/one-time-drive-brief-ingestion.test.js tests/intake-parser-workspace-ambiguity.test.js tests/one-time-intake-scope-hardening.test.js tests/bna-helper-tools.test.js",
         "npm run bna:run:validate"
       ],
       "acceptance_criteria": [

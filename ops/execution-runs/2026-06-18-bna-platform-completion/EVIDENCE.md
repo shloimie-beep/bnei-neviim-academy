@@ -120,6 +120,29 @@ Protocol/tooling verification evidence:
 - PASS staged secret-word scan; only harmless evidence/stable-ID literals
   matched.
 
+2026-06-19 ambiguity and One Time RBAC continuation evidence:
+
+- Parser ambiguity behavior:
+  `src/lib/bna/intake-parser.js` and
+  `tests/intake-parser-workspace-ambiguity.test.js`.
+- Helper/route isolation:
+  `src/lib/bna/helper/permissions.js`, `server.js`, and
+  `tests/one-time-rbac-negative-isolation.test.js`.
+- PASS focused parser baseline 26/26:
+  `node --test tests/one-time-intake-scope-hardening.test.js
+  tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js`.
+- PASS ambiguity/parser/RBAC/helper suite 21/21:
+  `node --test tests/one-time-rbac-negative-isolation.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/intake-parser-workspace-ambiguity.test.js
+  tests/one-time-intake-scope-hardening.test.js tests/bna-helper-tools.test.js`.
+- The negative RBAC test proves:
+  cross-project helper action denial, cross-workspace helper action denial,
+  scoped denial for `save_provider_api_key`, `rotate_provider_api_key`, and
+  `prepare_vimeo_upload`, continued access to safe setup-task tools, and
+  `assertWorkspaceAccess(req, 'rabbi_sheller_provider')` coverage for key
+  One Time admin routes.
+
 Not run:
 
 - No full baseline UI crawl.

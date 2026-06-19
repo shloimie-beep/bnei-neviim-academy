@@ -37,16 +37,25 @@ implemented and focused-test verified.
   repeat the workspace name.
 - Added regression coverage proving generic BNA source-sheet intake does not
   inherit One Time scope.
+- Added ambiguous workspace routing behavior: when an intake explicitly says
+  the workspace/project is unclear, the parser creates one routing Decision and
+  one review item, blocks automatic task fan-out, and avoids silently assigning
+  the item to One Time just because a One Time alias appears in the question.
+- Added negative scoped-helper/route evidence for One Time: project-scoped One
+  Time users are denied cross-project and cross-workspace helper actions,
+  secret-bearing helper tools are admin-only for scoped users, safe setup-task
+  tools remain available, and key One Time admin routes assert
+  `rabbi_sheller_provider` workspace access.
 - No deployment, production DB mutation, external integration write, or broad
   UI crawl was performed.
 
 Still open after this batch:
 
-- `REQ-20260619-203` remains open for the remaining ambiguity behavior:
-  low-confidence unclear scope should create one routing Decision/review item,
-  not multiple visible tasks. Live raw queue/API readback also remains open.
-- DB/API smoke, negative scoped-identity tests, browser smoke, full One Time
-  button audit, safe demo agent run, and manual Agent Mode smoke.
+- `REQ-20260619-203` needs local raw queue/API readback before live closeout.
+- `REQ-20260619-204` still needs DB-backed owner/admin and workspace-access
+  readback/API smoke.
+- Browser smoke, full One Time button audit, safe demo agent run, and manual
+  Agent Mode smoke remain open.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
 

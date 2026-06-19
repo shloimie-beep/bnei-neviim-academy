@@ -52009,6 +52009,7 @@ app.get('/api/bna/project-meetings', requireAdmin, async (req, res) => {
 
 app.post('/api/bna/project-meetings/one-time-drive-brief/preview', requireAdmin, async (req, res) => {
   try {
+    assertWorkspaceAccess(req, 'rabbi_sheller_provider');
     const body = req.body || {};
     const source = {
       ...LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
