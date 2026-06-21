@@ -24834,14 +24834,21 @@ uses raw-body Svix verification, stores safe first-party event summaries, and
 hides raw payloads by default. The sender/domain Decision is recorded at
 `ops/one-time-mishnah/resend-sender-domain-decision.md`.
 
-Deployed commit `fdd39bf327356675f8006bcc4ce04425061ef57e` to Railway
-deployment `a8acf1b4-be28-4f51-b4db-2085a01cc02d`.
+Implemented app-visible code at `fdd39bf327356675f8006bcc4ce04425061ef57e`,
+then pushed Resend API-key propagation evidence and closeout tests at
+`847649198dfaf9f12fd69db958c3f927b460ecd8`. Deployed final commit
+`847649198dfaf9f12fd69db958c3f927b460ecd8` to Railway deployment
+`3ec03a01-2141-401f-988f-a734176a778c`.
 
 Verification passed: focused Email/Resend/provider-env tests 19/19,
-`npm run bna:run:validate`, tracked secret audit, Railway deploy poll, standard
-live app smoke `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`,
-and focused Email/Resend UX live smoke
-`ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`.
+redacted Resend API-key dry-run/apply reports, `npm run bna:run:validate`,
+tracked secret audit, Railway deploy poll, standard live app smoke
+`ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md`, and focused
+Email/Resend UX live smoke
+`ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md`.
+Final live readback confirmed `RESEND_API_KEY` configured, one Resend domain
+readable, sender/domain/send readiness still blocked, and no send controls
+enabled.
 
 Guardrails: no live email send, DNS verification/mutation, provider write,
 bulk campaign, raw private email-body storage, billing, Zoom, Vimeo, Buffer

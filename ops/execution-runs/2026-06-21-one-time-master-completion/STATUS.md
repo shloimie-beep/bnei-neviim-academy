@@ -155,11 +155,15 @@ provider payloads hidden by default. Resend API-key propagation is separated
 from sender/domain readiness so a key can be installed without inventing a
 sender domain.
 
-Focused local verification passed. The safe app-visible changes were pushed at
-`fdd39bf327356675f8006bcc4ce04425061ef57e`, deployed to Railway deployment
-`a8acf1b4-be28-4f51-b4db-2085a01cc02d`, and verified by standard plus focused
-Email/Resend UX live smokes. No email send, DNS verification/mutation, provider
-write, or external write was performed.
+Focused local verification passed. The app-visible implementation landed at
+`fdd39bf327356675f8006bcc4ce04425061ef57e`, then Resend API-key propagation
+evidence and closeout tests were pushed at
+`847649198dfaf9f12fd69db958c3f927b460ecd8`. Final Railway deployment
+`3ec03a01-2141-401f-988f-a734176a778c` picked up the propagated
+`RESEND_API_KEY`; focused live smoke confirmed `configured: true`, one domain
+readable through the domain endpoint, sender/domain readiness still blocked,
+and no send path enabled. No email send, DNS verification/mutation, Resend
+domain mutation, or provider send was performed.
 
 Next unblocked batch: `REQ-20260619-306` product, schedule, booking, portals,
 and billing/access foundations.

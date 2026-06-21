@@ -143,10 +143,12 @@ Email and Resend UX is deployed and live-verified.
 
 - Requirement: `REQ-20260621-504`
 - Implementation status: `verified_live`
-- Implementation/pushed/deployed commit:
+- Implementation commit:
   `fdd39bf327356675f8006bcc4ce04425061ef57e`
+- Final pushed/deployed commit:
+  `847649198dfaf9f12fd69db958c3f927b460ecd8`
 - Railway deployment:
-  `a8acf1b4-be28-4f51-b4db-2085a01cc02d`
+  `3ec03a01-2141-401f-988f-a734176a778c`
 - Key files:
   `public/operations.html`, `server.js`,
   `src/lib/integrations/resend-client.js`,
@@ -157,9 +159,13 @@ Email and Resend UX is deployed and live-verified.
   `ops/one-time-mishnah/resend-sender-domain-decision.md`
 - Focused Email/Resend tests: 19 passed, 0 failed.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md`
 - Focused Email/Resend UX live smoke:
-  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+  `ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md`
+- Resend API-key propagation reports:
+  `ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md`
+  and
+  `ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md`
 
 Next exact action:
 

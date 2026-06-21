@@ -259,16 +259,20 @@ domain Decision, recipient-scope guard, and no-send controls:
 - PASS `node --check scripts/smoke-email-resend-ux-live.mjs`
 - PASS `node --check scripts/provider-env-railway-propagate.mjs`
 - PASS `node --test tests/resend-client.test.js tests/communications-integrations-contract.test.js tests/one-time-communications-workspace.test.js tests/provider-env-railway-propagate.test.js`
+- PASS redacted Resend API-key Railway propagation dry run:
+  `ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md`.
+- PASS redacted Resend API-key Railway propagation apply:
+  `ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md`.
 - PASS `npm run bna:run:validate`
 - PASS `node scripts/audit-secrets.mjs`
 - PASS `git diff --check`
 - PASS Railway deployment poll after Railway deployment
-  `a8acf1b4-be28-4f51-b4db-2085a01cc02d`.
+  `3ec03a01-2141-401f-988f-a734176a778c`.
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`.
+  `ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md`.
 - PASS focused Email/Resend UX live smoke via
   `npm run app:smoke:email-resend-ux`,
-  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`.
+  `ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md`.
 
 Focused Email/Resend test result:
 
@@ -283,7 +287,10 @@ Focused live smoke confirmed:
 
 - Production health and Operations login succeeded.
 - Resend health response separates provider, sender, domain, and send gates.
-- Resend domain endpoint is readable or safely blocked without exposing secrets.
+- Live `RESEND_API_KEY` is configured, while sender/domain/send readiness remain
+  blocked until the operator Decision is answered.
+- Resend domain endpoint is readable with one connected domain without exposing
+  secrets.
 - Resend webhook events endpoint hides raw payload by default.
 - Communications > Email and Communications > Settings render at 1024px and
   390px with no page overflow.
@@ -295,4 +302,7 @@ Intermediate failure recorded:
   failed on the Communications > Settings integration-panel selector. The live
   app still had a placeholder there, so the subtab was wired to the real
   communications integration panel and the final focused smoke passed.
+- `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+  passed before `RESEND_API_KEY` was propagated; the final post-propagation
+  smoke above verified live key/domain readback.
 <!-- batch-8:end -->

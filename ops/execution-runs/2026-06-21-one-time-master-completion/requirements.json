@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T15:07:30+03:00",
+  "updated_at": "2026-06-21T15:14:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -714,7 +714,11 @@
         "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md",
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
         "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
       ],
       "verification": [
         "Batch 7 WhatsApp child verified live; Batch 8 Email/Resend child remains.",
@@ -729,21 +733,25 @@
         "ops/communications/wapi-crm-audit-and-plan.md"
       ],
       "implementation_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
-      "pushed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "pushed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
         "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T15:07:30+03:00",
-      "deployed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
-      "deployment_id": "a8acf1b4-be28-4f51-b4db-2085a01cc02d",
+      "updated_at": "2026-06-21T15:14:00+03:00",
+      "deployed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
+      "deployment_id": "3ec03a01-2141-401f-988f-a734176a778c",
       "live_smoke": [
-        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md"
       ]
     },
     {
@@ -867,7 +875,11 @@
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
         "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
-        "ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
       ],
       "verification": [
         "node --check src/lib/integrations/resend-client.js",
@@ -879,7 +891,8 @@
         "node scripts/audit-secrets.mjs",
         "git diff --check",
         "npm run app:smoke",
-        "npm run app:smoke:email-resend-ux"
+        "npm run app:smoke:email-resend-ux",
+        "npm run railway:doctor"
       ],
       "implementation_files": [
         "docs/integrations/RESEND.md",
@@ -896,21 +909,25 @@
         "tests/provider-env-railway-propagate.test.js"
       ],
       "implementation_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
-      "pushed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "pushed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
         "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T15:07:30+03:00",
-      "deployment_id": "a8acf1b4-be28-4f51-b4db-2085a01cc02d",
-      "deployed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "updated_at": "2026-06-21T15:14:00+03:00",
+      "deployment_id": "3ec03a01-2141-401f-988f-a734176a778c",
+      "deployed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
       "live_smoke": [
-        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md"
       ]
     },
     {
@@ -956,7 +973,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T15:07:30+03:00"
+      "updated_at": "2026-06-21T15:14:00+03:00"
     },
     {
       "id": "REQ-20260619-307",

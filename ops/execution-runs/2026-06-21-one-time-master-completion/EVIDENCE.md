@@ -389,16 +389,20 @@ Implementation evidence:
   `tests/one-time-communications-workspace.test.js`, and
   `tests/provider-env-railway-propagate.test.js`
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md`
 - Focused Email/Resend UX live smoke:
-  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+  `ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md`
+- Resend Railway API-key propagation dry run:
+  `ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md`
+- Resend Railway API-key propagation apply:
+  `ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md`
 
 Deployment and live evidence:
 
 - Implementation commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
-- Pushed commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
-- Deployed commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
-- Railway deployment: `a8acf1b4-be28-4f51-b4db-2085a01cc02d`
+- Final pushed commit: `847649198dfaf9f12fd69db958c3f927b460ecd8`
+- Deployed commit: `847649198dfaf9f12fd69db958c3f927b460ecd8`
+- Railway deployment: `3ec03a01-2141-401f-988f-a734176a778c`
 - Railway doctor/poll: PASS, deployment status `SUCCESS`
 - Standard live smoke: PASS
 - Focused Email/Resend UX live smoke: PASS
@@ -416,14 +420,17 @@ Implemented behavior:
   conflicts.
 - `DEC-RESEND-SENDER-DOMAIN-IDENTITY` exists for the sender/domain/from/reply-to
   decision.
-- Resend API-key propagation is independent from sender/domain propagation.
+- Resend API-key propagation is independent from sender/domain propagation,
+  and was applied to Railway with no secret values printed.
 
 Live smoke covered:
 
 - Production health and Operations login.
 - Resend readiness shape, including configured, connected, sender, domain,
   domain verification, and send gate booleans.
-- Resend domain endpoint safe readback/blocker behavior.
+- Live `RESEND_API_KEY` readback (`configured: true`) with sender/domain/send
+  readiness still blocked.
+- Resend domain endpoint safe readback with one connected domain.
 - Resend webhook events endpoint with raw payload hidden by default.
 - Live Communications > Email rendering at 1024px and 390px.
 - Communications > Settings Resend panel rendering at 1024px and 390px.
@@ -436,4 +443,7 @@ Intermediate focused live-smoke failure recorded:
   Communications > Settings while the live app still rendered a placeholder
   there. The UI was corrected to render the real panel from that subtab, then
   redeployed and rerun successfully.
+- `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+  passed the UI/no-send contract before `RESEND_API_KEY` propagation. The final
+  post-propagation smoke above verified the live key/domain readback.
 <!-- batch-8:end -->
