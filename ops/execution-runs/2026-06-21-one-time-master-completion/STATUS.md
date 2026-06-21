@@ -42,3 +42,24 @@ commit `f8a2fd62` and verified by standard plus focused live smokes.
 
 Next unblocked batch: `REQ-20260619-303` workspace users and roles.
 <!-- batch-3:end -->
+
+<!-- batch-4:start -->
+## Batch 4 - Workspace Users And Roles
+
+Status: implemented / verified local / pending deployment
+
+The canonical One Time role model now includes platform, workspace, and member
+roles; Rabbi Ellie Scheller is the public-facing One Time owner/admin identity
+with legacy aliases preserved; and Shloimie retains platform super-admin plus
+One Time workspace admin/manager access.
+
+The Operations Users screen now has real no-send workspace-user actions for Add
+Member / Invite User, Assign Role, Deactivate, Reactivate, reversible Remove
+Membership, and role-change audit readback. Server APIs enforce workspace scope,
+block scoped users from assigning platform roles, and keep external sends and
+account writes disabled.
+
+Focused local verification passed with 58 tests and syntax checks. Next step:
+commit, push, deploy the safe app-visible changes, run focused live workspace
+user smokes, then continue to Batch 5 action coverage.
+<!-- batch-4:end -->

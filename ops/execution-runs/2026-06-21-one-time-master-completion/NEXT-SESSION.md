@@ -1,9 +1,11 @@
 # Next Session
 
-Continue `REQ-20260619-303`: workspace users and roles. Exact next command:
+Continue `REQ-20260619-303`: workspace users and roles. The implementation is
+locally verified; commit, push, deploy, and run focused live workspace-user
+smokes. Exact next command:
 
 ```powershell
-npm run bna:run:next
+npm run bna:run:validate
 ```
 
 Then implement Batch 4:
@@ -42,3 +44,21 @@ Production cleanup has already been applied through reversible task APIs:
 
 Batch 3 is deployed and live-verified. Continue to Batch 4.
 <!-- batch-3:end -->
+
+<!-- batch-4:start -->
+## Batch 4 Handoff
+
+Workspace user and role implementation is locally verified but not yet deployed
+in this handoff state.
+
+Exact next commands:
+
+```powershell
+npm run bna:run:validate
+node scripts/audit-secrets.mjs
+git diff --check
+```
+
+Then commit, push, deploy the safe app-visible changes, and run the standard
+live smoke plus a focused workspace-user readback smoke.
+<!-- batch-4:end -->

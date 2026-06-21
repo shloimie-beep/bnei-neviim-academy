@@ -15,7 +15,7 @@ test('external access persistence packet defines the approval-gated write target
   assert.match(packet, /Scoped Operations username/);
   assert.match(packet, /Rollback\/revoke owner and revoke steps/);
   assert.match(packet, /Required readback evidence/);
-  assert.match(packet, /Preview\/target endpoint:\s*\n\n`POST \/api\/bna\/admin\/external-access`/);
+  assert.match(packet, /Preview\/target endpoint:\s*\r?\n\r?\n`POST \/api\/bna\/admin\/external-access`/);
   assert.match(packet, /`dry_run:true` returns a no-write preview\/readback/);
 });
 

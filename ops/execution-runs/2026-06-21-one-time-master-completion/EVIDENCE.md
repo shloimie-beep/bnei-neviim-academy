@@ -82,3 +82,37 @@ Live cleanup applied through existing authenticated Task APIs:
 - Focused Batch 3 live smoke:
   `ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md`
 <!-- batch-3:end -->
+
+<!-- batch-4:start -->
+## Batch 4 Evidence
+
+Workspace user and role implementation is locally complete and ready for the
+app-visible deployment step.
+
+- Canonical role model:
+  `src/lib/bna/one-time-role-model.js`
+- Platform RBAC normalization and permissions:
+  `src/platform/rbac/index.js`
+- Server-side workspace membership, role audit, and scoped user APIs:
+  `server.js`
+- Operations scoped Users screen and real membership actions:
+  `public/operations.html`
+- Focused role/auth/UI tests:
+  `tests/workspace-user-role-management.test.js`,
+  `tests/one-time-role-auth-model.test.js`, and
+  `tests/external-access-persistence-workflow.test.js`
+
+Implemented behavior:
+
+- Rabbi Ellie Scheller is the public-facing One Time owner/admin identity while
+  legacy Rabbi name aliases remain accepted.
+- Shloimie retains platform super-admin status and One Time workspace
+  admin/manager access for intentional workspace switching.
+- Canonical platform, workspace, and member roles are normalized and validated.
+- The scoped Operations Users screen supports no-send Add Member / Invite User,
+  Assign Role, Deactivate, Reactivate, reversible Remove Membership, and
+  role-change audit readback.
+- Server APIs enforce workspace scope and deny scoped managers platform-role
+  assignment and cross-workspace membership mutation.
+- Production external writes, sends, billing changes, and hard deletes: 0.
+<!-- batch-4:end -->

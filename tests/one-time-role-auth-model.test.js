@@ -25,7 +25,7 @@ function oneTimeOwnerIdentity() {
     username: 'rabbi-owner@example.test',
     role: 'project_owner',
     scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
-    displayName: 'Rabbi Elie Scheller',
+    displayName: 'Rabbi Ellie Scheller',
   });
 }
 
@@ -41,8 +41,13 @@ function oneTimeManagerIdentity() {
 test('One Time canonical assignments name Rabbi Scheller and Shloimie without changing legacy roles', () => {
   assert.deepEqual(oneTimeCanonicalOwnerAssignments(), [
     {
-      person_name: 'Rabbi Elie Scheller',
+      person_name: 'Rabbi Ellie Scheller',
+      legacy_person_names: ['Rabbi Elie Scheller', 'Rabbi Sheller', 'Rabbi Scheller'],
       canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
+      canonical_roles: [
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+      ],
       canonical_role_label: 'Workspace Owner',
       compatibility_role: 'project owner',
       identity_role: 'project_owner',
@@ -53,8 +58,12 @@ test('One Time canonical assignments name Rabbi Scheller and Shloimie without ch
     },
     {
       person_name: 'Shloimie',
-      canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER,
-      canonical_role_label: 'Workspace Manager',
+      canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+      canonical_roles: [
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER,
+      ],
+      canonical_role_label: 'Workspace Admin',
       platform_role: ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN,
       platform_role_label: 'Platform Super Admin',
       compatibility_role: 'project admin',
@@ -68,7 +77,7 @@ test('One Time canonical assignments name Rabbi Scheller and Shloimie without ch
 });
 
 test('server identity payload exposes canonical One Time role metadata with backwards-compatible roles', () => {
-  assert.match(serverJs, /decorateOneTimeIdentity\(\{[\s\S]*role: 'project_owner'[\s\S]*displayName: 'Rabbi Elie Scheller'/);
+  assert.match(serverJs, /decorateOneTimeIdentity\(\{[\s\S]*role: 'project_owner'[\s\S]*displayName: 'Rabbi Ellie Scheller'/);
   assert.match(serverJs, /decorateOneTimeIdentity\(\{[\s\S]*role: 'project_manager'[\s\S]*displayName: 'Shloimie'/);
   assert.match(serverJs, /canonical_role: identity\?\.canonical_role/);
   assert.match(serverJs, /workspace_role_label: identity\?\.workspace_role_label/);
@@ -104,9 +113,23 @@ test('One Time user list filtering excludes unrelated BNA and family users', () 
   ];
 
   const visible = filterOneTimeUsersForIdentity(users, oneTimeOwnerIdentity());
-  assert.deepEqual(visible.map((item) => item.person_name), ['Rabbi Elie Scheller', 'Shloimie', 'One Time Parent']);
+  assert.deepEqual(visible.map((item) => item.person_name), ['Rabbi Ellie Scheller', 'Shloimie', 'One Time Parent']);
   assert.ok(visible.every((item) => item.workspace_key === ONE_TIME_WORKSPACE_KEY));
   assert.ok(visible.every((item) => item.project_key === ONE_TIME_PROJECT_KEY));
+});
+
+test('One Time role vocabulary includes platform, workspace, and member roles', () => {
+  assert.equal(ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN, 'platform_super_admin');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.PLATFORM_MANAGER, 'platform_manager');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.SUPPORT_ADMIN, 'support_admin');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.TECHNICAL_AGENT, 'technical_agent');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER, 'workspace_owner');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN, 'workspace_admin');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER, 'workspace_manager');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF, 'provider_staff');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.MODERATOR, 'moderator');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.PARENT, 'parent');
+  assert.equal(ONE_TIME_CANONICAL_ROLES.STUDENT, 'student');
 });
 
 test('One Time role permissions deny cross-workspace writes and protect workspace owner changes', () => {

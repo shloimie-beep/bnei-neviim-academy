@@ -3,20 +3,28 @@ const ONE_TIME_WORKSPACE_KEY = 'rabbi_sheller_provider';
 
 const ONE_TIME_CANONICAL_ROLES = Object.freeze({
   PLATFORM_SUPER_ADMIN: 'platform_super_admin',
+  PLATFORM_MANAGER: 'platform_manager',
+  SUPPORT_ADMIN: 'support_admin',
+  TECHNICAL_AGENT: 'technical_agent',
   WORKSPACE_OWNER: 'workspace_owner',
   WORKSPACE_ADMIN: 'workspace_admin',
   WORKSPACE_MANAGER: 'workspace_manager',
   PROVIDER_STAFF: 'provider_staff',
+  MODERATOR: 'moderator',
   PARENT: 'parent',
   STUDENT: 'student',
 });
 
 const ONE_TIME_ROLE_LABELS = Object.freeze({
   [ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN]: 'Platform Super Admin',
+  [ONE_TIME_CANONICAL_ROLES.PLATFORM_MANAGER]: 'Platform Manager',
+  [ONE_TIME_CANONICAL_ROLES.SUPPORT_ADMIN]: 'Support Admin',
+  [ONE_TIME_CANONICAL_ROLES.TECHNICAL_AGENT]: 'Technical Agent',
   [ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER]: 'Workspace Owner',
   [ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN]: 'Workspace Admin',
   [ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER]: 'Workspace Manager',
   [ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF]: 'Provider Staff',
+  [ONE_TIME_CANONICAL_ROLES.MODERATOR]: 'Moderator',
   [ONE_TIME_CANONICAL_ROLES.PARENT]: 'Parent',
   [ONE_TIME_CANONICAL_ROLES.STUDENT]: 'Student',
 });
@@ -24,6 +32,9 @@ const ONE_TIME_ROLE_LABELS = Object.freeze({
 const ONE_TIME_ROLE_COMPATIBILITY = Object.freeze({
   super_admin: ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN,
   platform_super_admin: ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN,
+  platform_manager: ONE_TIME_CANONICAL_ROLES.PLATFORM_MANAGER,
+  support_admin: ONE_TIME_CANONICAL_ROLES.SUPPORT_ADMIN,
+  technical_agent: ONE_TIME_CANONICAL_ROLES.TECHNICAL_AGENT,
   project_owner: ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
   owner: ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
   rabbi: ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
@@ -35,6 +46,7 @@ const ONE_TIME_ROLE_COMPATIBILITY = Object.freeze({
   service_provider: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
   provider_staff: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
   teacher: ONE_TIME_CANONICAL_ROLES.PROVIDER_STAFF,
+  moderator: ONE_TIME_CANONICAL_ROLES.MODERATOR,
   parent: ONE_TIME_CANONICAL_ROLES.PARENT,
   student: ONE_TIME_CANONICAL_ROLES.STUDENT,
   child: ONE_TIME_CANONICAL_ROLES.STUDENT,
@@ -61,6 +73,8 @@ const ONE_TIME_IDENTITY_COMPATIBILITY = Object.freeze({
 const ONE_TIME_ROLE_CAPABILITIES = Object.freeze({
   [ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN]: new Set([
     'switch_workspace',
+    'read_all_workspaces',
+    'assign_platform_role',
     'read_workspace_users',
     'invite_workspace_user',
     'change_workspace_role',
@@ -69,6 +83,31 @@ const ONE_TIME_ROLE_CAPABILITIES = Object.freeze({
     'read_role_audit_log',
     'read_parent_child_link',
     'read_student_enrollment',
+    'read_provider_class',
+  ]),
+  [ONE_TIME_CANONICAL_ROLES.PLATFORM_MANAGER]: new Set([
+    'switch_workspace',
+    'read_workspace_users',
+    'invite_workspace_user',
+    'change_workspace_role',
+    'deactivate_workspace_user',
+    'read_role_audit_log',
+    'read_parent_child_link',
+    'read_student_enrollment',
+    'read_provider_class',
+  ]),
+  [ONE_TIME_CANONICAL_ROLES.SUPPORT_ADMIN]: new Set([
+    'switch_workspace',
+    'read_workspace_users',
+    'read_role_audit_log',
+    'read_parent_child_link',
+    'read_student_enrollment',
+    'read_provider_class',
+  ]),
+  [ONE_TIME_CANONICAL_ROLES.TECHNICAL_AGENT]: new Set([
+    'switch_workspace',
+    'read_workspace_users',
+    'read_role_audit_log',
     'read_provider_class',
   ]),
   [ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER]: new Set([
@@ -105,9 +144,21 @@ const ONE_TIME_ROLE_CAPABILITIES = Object.freeze({
     'read_student_enrollment',
     'read_provider_class',
   ]),
+  [ONE_TIME_CANONICAL_ROLES.MODERATOR]: new Set([
+    'read_workspace_users',
+    'read_student_enrollment',
+    'read_provider_class',
+  ]),
   [ONE_TIME_CANONICAL_ROLES.PARENT]: new Set(['read_parent_child_link']),
   [ONE_TIME_CANONICAL_ROLES.STUDENT]: new Set(['read_student_enrollment']),
 });
+
+const ONE_TIME_PLATFORM_ROLES = new Set([
+  ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN,
+  ONE_TIME_CANONICAL_ROLES.PLATFORM_MANAGER,
+  ONE_TIME_CANONICAL_ROLES.SUPPORT_ADMIN,
+  ONE_TIME_CANONICAL_ROLES.TECHNICAL_AGENT,
+]);
 
 function normalizeKey(value = '') {
   return String(value || '')
@@ -182,8 +233,13 @@ function oneTimeRoleLabel(role = '') {
 function oneTimeCanonicalOwnerAssignments() {
   return [
     {
-      person_name: 'Rabbi Elie Scheller',
+      person_name: 'Rabbi Ellie Scheller',
+      legacy_person_names: ['Rabbi Elie Scheller', 'Rabbi Sheller', 'Rabbi Scheller'],
       canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
+      canonical_roles: [
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER,
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+      ],
       canonical_role_label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER],
       compatibility_role: 'project owner',
       identity_role: 'project_owner',
@@ -194,8 +250,12 @@ function oneTimeCanonicalOwnerAssignments() {
     },
     {
       person_name: 'Shloimie',
-      canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER,
-      canonical_role_label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER],
+      canonical_role: ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+      canonical_roles: [
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN,
+        ONE_TIME_CANONICAL_ROLES.WORKSPACE_MANAGER,
+      ],
+      canonical_role_label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.WORKSPACE_ADMIN],
       platform_role: ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN,
       platform_role_label: ONE_TIME_ROLE_LABELS[ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN],
       compatibility_role: 'project admin',
@@ -307,6 +367,13 @@ function canOneTimeIdentity(action = '', identity = {}, resource = {}) {
   }
   const targetRole = normalizeOneTimeRole(resource.target_role || resource.targetRole || resource.role || '');
   if (
+    ['change_workspace_role', 'invite_workspace_user'].includes(action) &&
+    ONE_TIME_PLATFORM_ROLES.has(targetRole) &&
+    !roles.includes(ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN)
+  ) {
+    return { allowed: false, reason: 'permission_denied: only Platform Super Admin can assign platform roles' };
+  }
+  if (
     ['change_workspace_role', 'deactivate_workspace_user', 'remove_workspace_user'].includes(action) &&
     targetRole === ONE_TIME_CANONICAL_ROLES.WORKSPACE_OWNER &&
     !roles.includes(ONE_TIME_CANONICAL_ROLES.PLATFORM_SUPER_ADMIN)
@@ -348,12 +415,20 @@ function oneTimeUserBelongsToWorkspace(user = {}) {
     || normalizeOneTimeProjectKey(user.project_scope || '') === ONE_TIME_PROJECT_KEY;
 }
 
+function oneTimeDisplayName(value = '') {
+  const normalized = normalizeKey(value);
+  if (['rabbi_elie_scheller', 'rabbi_ellie_scheller', 'rabbi_sheller', 'rabbi_scheller'].includes(normalized)) {
+    return 'Rabbi Ellie Scheller';
+  }
+  return String(value || '');
+}
+
 function oneTimeUserView(user = {}) {
   const canonicalRole = normalizeOneTimeRole(user.canonical_role || user.workspace_role || user.role || user.access_level || '');
   return {
     id: user.id || user.person_id || null,
     person_id: user.person_id || user.id || null,
-    person_name: user.person_name || user.display_name || user.full_name || user.name || '',
+    person_name: oneTimeDisplayName(user.person_name || user.display_name || user.full_name || user.name || ''),
     workspace_key: ONE_TIME_WORKSPACE_KEY,
     project_key: ONE_TIME_PROJECT_KEY,
     canonical_role: canonicalRole,
@@ -423,6 +498,7 @@ module.exports = {
   normalizeOneTimeRole,
   normalizeOneTimeWorkspaceKey,
   oneTimeCanonicalOwnerAssignments,
+  oneTimeDisplayName,
   oneTimeRoleLabel,
   oneTimeUserView,
 };

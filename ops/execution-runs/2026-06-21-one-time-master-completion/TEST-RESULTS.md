@@ -66,3 +66,30 @@ Intermediate deployment failures were fixed before final verification:
 - `task_view=one_time_tasks` SQL ambiguity fixed by `a28a9332`.
 - Text-matched BNA records in One Time task view fixed by strict scoping in `f8a2fd62`.
 <!-- batch-3:end -->
+
+<!-- batch-4:start -->
+## Batch 4 Test Results
+
+Recorded after workspace role model, scoped workspace user APIs, Operations
+Users UI actions, and negative authorization coverage:
+
+- PASS `node --check server.js`
+- PASS `node --check src/lib/bna/one-time-role-model.js`
+- PASS `node --check src/platform/rbac/index.js`
+- PASS `node --test tests/one-time-role-auth-model.test.js tests/platform-core/platform-core-rbac.test.js tests/operations-module-scoping.test.js tests/external-access-persistence-workflow.test.js tests/workspace-user-role-management.test.js tests/operations-pwa-login.test.js tests/workspace-person-household-provider-contract.test.js tests/live-class-infrastructure.test.js tests/agent-control-api-readback.test.js tests/one-time-operations-ui-smoke.test.js`
+
+Focused combined test result:
+
+- Tests: 58 passed, 0 failed.
+- Suites covered: canonical One Time roles, platform RBAC aliases, scoped
+  Operations module access, external-access persistence, workspace user role
+  management, PWA login/admin users UI, workspace person/provider contracts,
+  live-class isolation foundations, agent-control readback, and Operations UI
+  smoke.
+
+Dependency note:
+
+- `npm ci` was run in the clean PR worktree because `node_modules` was absent.
+  It installed declared lockfile dependencies only and did not modify package
+  manifests.
+<!-- batch-4:end -->

@@ -7759,6 +7759,23 @@
                 if (filters.canonical) params.set('canonical', filters.canonical);
                 return this.request('GET', '/people' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getWorkspaceUsers(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.status) params.set('status', filters.status);
+                if (filters.q) params.set('q', filters.q);
+                return this.request('GET', '/workspace-users' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            createWorkspaceUser(payload = {}) { return this.request('POST', '/workspace-users', payload); },
+            updateWorkspaceUser(id, payload = {}) { return this.request('PATCH', '/workspace-users/' + id, payload); },
+            getWorkspaceRoleAudit(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.limit) params.set('limit', String(filters.limit));
+                return this.request('GET', '/workspace-users/role-audit' + (params.toString() ? '?' + params.toString() : ''));
+            },
             getMembers(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.project_key) params.set('project_key', filters.project_key);
@@ -8375,6 +8392,11 @@
         let adminExternalAccessPreviewResult = null;
         let adminExternalAccessPreviewError = '';
         let adminExternalAccessPreviewBusy = false;
+        let workspaceUsers = [];
+        let workspaceRoleAuditEvents = [];
+        let workspaceUserActionNotice = '';
+        let workspaceUserActionError = '';
+        let workspaceUserActionBusy = '';
         let identityMergeReviews = [];
         let studentIdentityReviews = [];
         let identityBackfillNotice = '';
@@ -16896,7 +16918,7 @@
                         <button class="task-action" onclick="sendProviderSetupEmail(${Number(provider.id)})">Send Setup Email</button>
                         ${whatsappDigits ? `<a class="task-action" href="https://wa.me/${escapeHtml(whatsappDigits)}" target="_blank" rel="noopener">WhatsApp</a>` : '<button class="task-action" disabled>No WhatsApp</button>'}
                         <button class="task-action" onclick="showNotConfigured('Provider website import')">Website Import</button>
-                        <button class="task-action" onclick="showNotConfigured('Provider users')">Users</button>
+                        <button class="task-action" onclick="switchView('admin'); setCurrentSection('users')">Users</button>
                         <button class="task-action" onclick="setCurrentSection('commercial')">Commercial Settings</button>
                     </div>
                 </article>
@@ -18809,13 +18831,56 @@
                 || 'external user';
         }
 
+        const WORKSPACE_USER_ROLE_OPTIONS = [
+            ['platform_super_admin', 'Platform Super Admin', 'platform'],
+            ['platform_manager', 'Platform Manager', 'platform'],
+            ['support_admin', 'Support Admin', 'platform'],
+            ['technical_agent', 'Technical Agent', 'platform'],
+            ['workspace_owner', 'Workspace Owner', 'workspace'],
+            ['workspace_admin', 'Workspace Admin', 'workspace'],
+            ['workspace_manager', 'Workspace Manager', 'workspace'],
+            ['provider_staff', 'Provider Staff', 'workspace'],
+            ['moderator', 'Moderator', 'workspace'],
+            ['parent', 'Parent', 'member'],
+            ['student', 'Student', 'member']
+        ];
+
+        function workspaceUserCanAssignPlatformRoles() {
+            return opsMe?.scope?.type !== 'project';
+        }
+
+        function workspaceUserRoleOptionsHtml(selectedRole = '') {
+            const selected = String(selectedRole || '').trim();
+            return WORKSPACE_USER_ROLE_OPTIONS
+                .filter(([, , scope]) => scope !== 'platform' || workspaceUserCanAssignPlatformRoles())
+                .map(([value, label]) => `<option value="${escapeHtml(value)}" ${selected === value ? 'selected' : ''}>${escapeHtml(label)}</option>`)
+                .join('');
+        }
+
+        function workspaceUserAccessOptionsHtml(selectedAccess = '') {
+            const selected = String(selectedAccess || '').trim();
+            return ['owner', 'admin', 'manager', 'member', 'viewer']
+                .map(value => `<option value="${escapeHtml(value)}" ${selected === value ? 'selected' : ''}>${escapeHtml(value)}</option>`)
+                .join('');
+        }
+
+        function workspaceUserRowsForAdmin() {
+            return workspaceUsers.length ? workspaceUsers : people;
+        }
+
+        function workspaceUserMembershipId(row = {}) {
+            return row.membership_id || row.workspace_membership_id || '';
+        }
+
         function adminExternalUserRows() {
-            return people.filter(row => {
+            return workspaceUserRowsForAdmin().filter(row => {
                 const metadata = adminUserMetadata(row);
-                const text = `${row.person_name || row.name || ''} ${row.role || ''} ${metadata.canonical_role || ''} ${row.project_key || ''} ${row.login_username || ''} ${metadata.account_type || ''}`.toLowerCase();
+                const text = `${row.person_name || row.display_name || row.name || ''} ${row.role || ''} ${row.canonical_role || ''} ${metadata.canonical_role || ''} ${row.project_key || ''} ${row.login_username || ''} ${metadata.account_type || ''}`.toLowerCase();
                 return metadata.account_type === 'external_user'
+                    || row.role_scope === 'workspace'
+                    || row.role_scope === 'platform'
                     || Boolean(row.login_username)
-                    || /external account admin|one_time_admin|workspace_owner|workspace_admin|workspace_manager|rabbi elie|rabbi sheller|rabbi scheller|one_time_mishnah_class/.test(text);
+                    || /external account admin|one_time_admin|workspace_owner|workspace_admin|workspace_manager|provider_staff|rabbi ellie|rabbi elie|rabbi sheller|rabbi scheller|one_time_mishnah_class/.test(text);
             });
         }
 
@@ -18832,14 +18897,32 @@
             const workspaceKey = row.project_key || metadata.project_scope || 'one_time_mishnah_class';
             const returnTo = `/operations?workspace=${encodeURIComponent(workspaceFromProjectKey(workspaceKey))}&view=tasks&section=tasks`;
             const pending = adminAccessLinkPendingUsername && adminAccessLinkPendingUsername === loginUsername;
+            const membershipId = workspaceUserMembershipId(row);
+            const active = row.active !== false;
+            const role = row.canonical_role || metadata.canonical_role || row.role || 'provider_staff';
+            const canUpdateMembership = Boolean(membershipId);
+            const statusLabel = active ? (row.invitation_state || 'active') : (row.invitation_state || 'disabled');
             return `
                 <article class="content-card" data-external-user-account>
-                    <div class="content-card-title">${escapeHtml(row.person_name || row.name || loginUsername || 'External user')}</div>
-                    <div class="content-card-meta">${escapeHtml(adminUserWorkspaceLabel(row))} / ${escapeHtml(adminUserRoleLabel(row))} / ${escapeHtml(row.access_level || 'viewer')}</div>
+                    <div class="content-card-title">${escapeHtml(row.display_name || row.person_name || row.name || loginUsername || 'External user')}</div>
+                    <div class="content-card-meta">${escapeHtml(adminUserWorkspaceLabel(row))} / ${escapeHtml(adminUserRoleLabel(row))} / ${escapeHtml(row.access_level || 'viewer')} / ${escapeHtml(statusLabel)}</div>
                     <p class="event-meta">${escapeHtml(loginUsername ? `Operations login username: ${loginUsername}` : 'Operations login username is not configured yet.')}</p>
-                    <p class="settings-disabled-note">External project user. This is not a parent account, student account, billing user, member-library credential, or live Rabbi-owned app login.</p>
+                    <div class="settings-control-grid compact">
+                        ${renderSettingsControlRow('Login state', row.login_state || (loginUsername ? 'configured' : 'not_configured'), 'Readback only; no password or portal credential is created here.', 'Scoped')}
+                        ${renderSettingsControlRow('Entitlement', row.access_entitlement_status || 'not_configured', 'Member-library or billing entitlement remains separate from Operations user membership.', 'Separate')}
+                        ${renderSettingsControlRow('Latest activity', row.last_activity_at ? formatDateTime(row.last_activity_at) : 'No activity yet', 'Membership or project-member update timestamp.', active ? 'Active' : 'Inactive')}
+                    </div>
+                    <p class="settings-disabled-note">External project user. This is not a parent account, student account, billing user, member-library credential, or live Rabbi-owned app login. Workspace membership changes remain first-party and no-send.</p>
+                    <form class="task-form-grid compact" data-workspace-user-role-form onsubmit="updateWorkspaceUserRole(event, '${escapeHtml(String(membershipId))}')">
+                        <select name="canonical_role" ${canUpdateMembership ? '' : 'disabled'}>${workspaceUserRoleOptionsHtml(role)}</select>
+                        <select name="access_level" ${canUpdateMembership ? '' : 'disabled'}>${workspaceUserAccessOptionsHtml(row.access_level || 'member')}</select>
+                        <input name="reason" placeholder="Audit reason" value="Operations role update">
+                        <button class="task-action" type="submit" ${canUpdateMembership ? '' : 'disabled'}>${workspaceUserActionBusy === `role:${membershipId}` ? 'Saving...' : 'Assign Role'}</button>
+                    </form>
                     <div class="task-actions">
                         <button type="button" ${canCreateLink ? '' : 'disabled'} onclick="createAdminOpsAccessLink('${escapeHtml(loginUsername)}', '${escapeHtml(returnTo)}')">${pending ? 'Creating...' : 'Create 20 min link'}</button>
+                        <button type="button" ${canUpdateMembership ? '' : 'disabled'} onclick="workspaceUserMembershipAction('${escapeHtml(String(membershipId))}', '${active ? 'deactivate' : 'reactivate'}')">${active ? 'Deactivate' : 'Reactivate'}</button>
+                        <button type="button" ${canUpdateMembership && isSuperAdmin ? '' : 'disabled'} onclick="workspaceUserMembershipAction('${escapeHtml(String(membershipId))}', 'remove_membership')">Remove Membership</button>
                     </div>
                 </article>
             `;
@@ -19021,6 +19104,109 @@
             `;
         }
 
+        function renderWorkspaceUserActionBanners() {
+            return `
+                ${workspaceUserActionError ? `<div class="error-banner">${escapeHtml(workspaceUserActionError)}</div>` : ''}
+                ${workspaceUserActionNotice ? `<div class="success-banner">${escapeHtml(workspaceUserActionNotice)}</div>` : ''}
+            `;
+        }
+
+        function renderWorkspaceUserCreateForm() {
+            const workspace = currentWorkspaceRecord();
+            const workspaceKey = currentWorkspaceKey();
+            return `
+                <form class="announcement-approval-form" data-workspace-user-create-form onsubmit="createWorkspaceUserFromForm(event)">
+                    <div class="task-section-header compact">
+                        <div>
+                            <h3>Add Member / Invite User</h3>
+                            <p class="settings-disabled-note">Creates a first-party person and workspace membership with no email, WhatsApp, password, billing, member-library credential, or external app write.</p>
+                        </div>
+                        <span>No-send</span>
+                    </div>
+                    <input type="hidden" name="workspace_key" value="${escapeHtml(workspaceKey)}">
+                    <div class="announcement-field-grid">
+                        <label class="announcement-field">
+                            <span>Name</span>
+                            <input name="person_name" required placeholder="Rabbi Ellie Scheller">
+                        </label>
+                        <label class="announcement-field">
+                            <span>Email</span>
+                            <input name="email" type="email" placeholder="optional">
+                        </label>
+                        <label class="announcement-field">
+                            <span>Phone</span>
+                            <input name="phone" placeholder="optional">
+                        </label>
+                        <label class="announcement-field">
+                            <span>Role</span>
+                            <select name="canonical_role">${workspaceUserRoleOptionsHtml(currentWorkspaceIsOneTime() ? 'provider_staff' : 'workspace_manager')}</select>
+                        </label>
+                        <label class="announcement-field">
+                            <span>Access level</span>
+                            <select name="access_level">${workspaceUserAccessOptionsHtml('member')}</select>
+                        </label>
+                        <label class="announcement-field">
+                            <span>Login username</span>
+                            <input name="login_username" placeholder="Operations username, optional">
+                        </label>
+                        <label class="announcement-field">
+                            <span>Entitlement status</span>
+                            <select name="access_entitlement_status">
+                                ${['not_configured', 'active', 'pending_payment', 'paused', 'cancelled'].map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value.replace(/_/g, ' '))}</option>`).join('')}
+                            </select>
+                        </label>
+                        <label class="announcement-field">
+                            <span>Account type</span>
+                            <select name="account_type">
+                                ${[
+                                    ['workspace_user', 'Workspace user'],
+                                    ['provider_staff', 'Provider staff'],
+                                    ['one_time_parent', 'One Time parent'],
+                                    ['one_time_student', 'One Time student'],
+                                    ['technical_agent', 'Technical agent']
+                                ].map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join('')}
+                            </select>
+                        </label>
+                    </div>
+                    <label class="announcement-field">
+                        <span>Relationship / enrollment note</span>
+                        <input name="enrollment_relationship" placeholder="Parent of, student enrollment, provider staff assignment">
+                    </label>
+                    <label class="announcement-field">
+                        <span>Audit reason</span>
+                        <textarea name="reason" placeholder="Why this workspace membership is needed">Workspace membership created from Operations Users screen.</textarea>
+                    </label>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="submit" ${workspaceUserActionBusy === 'create' ? 'disabled' : ''}>${workspaceUserActionBusy === 'create' ? 'Saving...' : 'Invite User'}</button>
+                        <span class="settings-disabled-note">Workspace: ${escapeHtml(workspace.display_name || workspace.name || workspaceKey)}</span>
+                    </div>
+                </form>
+            `;
+        }
+
+        function renderWorkspaceRoleAuditEvents() {
+            const rows = workspaceRoleAuditEvents.slice(0, 8);
+            return `
+                <div class="focus-panel" data-workspace-role-audit-log>
+                    <div class="task-section-header compact">
+                        <h3>Role-Change Audit Log</h3>
+                        <span>${rows.length} shown</span>
+                    </div>
+                    <div class="calendar-event-list">
+                        ${rows.length ? rows.map(event => `
+                            <div class="calendar-event-row">
+                                <div>
+                                    <strong>${escapeHtml(event.target_name || `Membership #${event.membership_id || event.id}`)}</strong>
+                                    <div class="event-meta">${escapeHtml([event.event_type, event.from_role && event.to_role ? `${event.from_role} -> ${event.to_role}` : event.to_role, event.reason].filter(Boolean).join(' / '))}</div>
+                                </div>
+                                <span class="status-pill">${escapeHtml(event.created_at ? formatDateTime(event.created_at) : 'Audit')}</span>
+                            </div>
+                        `).join('') : '<div class="task-empty">No role-change audit events are loaded for this workspace yet.</div>'}
+                    </div>
+                </div>
+            `;
+        }
+
         function renderAdminUsersPanel() {
             const externalRows = adminExternalUserRows();
             const internalRows = adminInternalUserRows(externalRows);
@@ -19038,8 +19224,12 @@
                         ${renderMetricButton('External Users', externalRows.length, 'Project-scoped provider/Rabbi/admin users kept separate from parent accounts.', '')}
                         ${renderMetricButton('Internal Users', internalRows.length, 'BNA project members and operators loaded from project-member records.', '')}
                         ${renderMetricButton('Access Link Gate', canCreateLinks ? 1 : 0, 'Only Super Admin can create a short-lived Operations access link, and only after clicking the button.', '')}
+                        ${renderMetricButton('Role Audit', workspaceRoleAuditEvents.length, 'Role changes, deactivations, reactivations, and archived memberships.', '')}
                     </div>
+                    ${renderWorkspaceUserActionBanners()}
+                    ${renderWorkspaceUserCreateForm()}
                     ${renderAdminAccessLinkResult()}
+                    ${renderWorkspaceRoleAuditEvents()}
                     ${renderAdminExternalAccessPreviewResult()}
                     ${renderAdminExternalAccessPreviewForm()}
                     <div class="task-section-header compact" style="margin-top:14px;"><h3>External Users</h3><span>${externalRows.length} records</span></div>
@@ -19047,6 +19237,9 @@
                     <div class="task-section-header compact" style="margin-top:14px;"><h3>Internal Users</h3><span>${internalRows.length} shown</span></div>
                     ${internalRows.length ? `<div class="contact-list">${internalRows.map(renderAdminInternalUserCard).join('')}</div>` : '<div class="empty-state">No internal people records loaded.</div>'}
                     <div class="settings-control-grid" style="margin-top:14px;">
+                        ${renderSettingsControlRow('Invite workspace user', 'Implemented', 'Creates scoped person, membership, project-member readback, and audit log without sending.', 'No-send')}
+                        ${renderSettingsControlRow('Assign role', 'Implemented', 'Role updates stay in the selected workspace and platform roles are Super Admin-only.', 'Scoped')}
+                        ${renderSettingsControlRow('Deactivate/reactivate', 'Implemented', 'Memberships are reversible and retain provenance/audit history.', 'Reversible')}
                         ${renderSettingsControlRow('Create external user', 'Preview only', 'Dry-run readback exists. Real persistence still requires explicit approval and a future write implementation.', 'No-write')}
                         ${renderSettingsControlRow('Parent account separation', 'Required', 'External provider/Rabbi users are project members or Operations identities, not parent portal accounts.', 'Policy')}
                         ${renderSettingsControlRow('One Time app credentials', 'Separate', 'This panel manages BNA Operations access only. It does not create Rabbi-owned app/admin/member credentials.', 'Blocked')}
@@ -19738,8 +19931,8 @@
                         ${renderInfoMetricCard('Invitation sends', 'Guarded', 'Invite/access email and portal reset email require explicit per-user action.')}
                     </div>
                     <div class="settings-control-grid compact" style="margin-top:14px;">
-                        ${renderSettingsControlRow('Add user', 'Dry-run preview', 'Use the External Access Create/Edit Preview form to stage a person, login username, role, and access level before any write.', 'Preview')}
-                        ${renderSettingsControlRow('Assign role', 'Role field', 'Role/access level are part of the preview readback and stay scoped to the selected workspace.', 'Scoped')}
+                        ${renderSettingsControlRow('Add user', 'Implemented', 'Use Admin Users to create a scoped person and workspace membership without sending an invite.', 'No-send')}
+                        ${renderSettingsControlRow('Assign role', 'Implemented', 'Role/access level changes write to the selected workspace and role-change audit log.', 'Scoped')}
                         ${renderSettingsControlRow('Assign workspace', workspace.display_name || workspace.id || 'Workspace', 'Workspace assignment uses BNA workspace/project keys and does not create parent/student/provider passwords.', 'Scoped')}
                         ${renderSettingsControlRow('Send invite/access email', 'Manual/private delivery', 'Short-lived Operations access links can be created only by Super Admin; no bulk invite email runs from Settings.', 'Guarded')}
                         ${renderSettingsControlRow('Reset portal access', 'Per-family/per-student tools', 'Parent password setup/reset and student access links live in Learning / portal access with explicit single-family actions.', 'Guarded')}
@@ -31558,7 +31751,7 @@
                 const workspaceDataFilters = workspaceDataProjectFilters();
                 const selectedStudentFilters = selectedStudentDetailDataFilters();
                 const shouldLoadOneTimeContentData = needsContentData && (currentWorkspaceIsGlobal() || currentWorkspaceIsOneTime());
-                const [workspaceDirectoryRes, workspacePlatformRes, workspaceBrandingRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes] = await Promise.allSettled([
+                const [workspaceDirectoryRes, workspacePlatformRes, workspaceBrandingRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, workspaceUsersRes, workspaceRoleAuditRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes] = await Promise.allSettled([
                     api.getWorkspaceDirectory({ workspace: currentWorkspaceKey() }),
                     needsPlatformData ? api.getWorkspacePlatform(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ workspaces: [], connector_settings: [], bot_actions: [], bot_action_logs: [] }),
                     needsBrandingData ? api.getWorkspaceBranding(currentWorkspaceKey()).catch(() => null) : Promise.resolve(null),
@@ -31567,6 +31760,8 @@
                     needsDialogueData ? api.getInternalDialogue(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ threads: [], messages: [] }),
                     needsProjectData ? api.getProjects() : Promise.resolve({ projects: [] }),
                     needsPeopleData ? api.getPeople(workspaceDataFilters) : Promise.resolve({ people: [] }),
+                    needsPeopleData ? api.getWorkspaceUsers({ ...workspaceDataFilters, status: 'all' }) : Promise.resolve({ users: [] }),
+                    needsPeopleData ? api.getWorkspaceRoleAudit({ ...workspaceDataFilters, limit: 40 }) : Promise.resolve({ audit_events: [] }),
                     needsTaskData ? api.getTasks(taskProjectFilter !== 'all' ? { project_key: taskProjectFilter } : {}) : Promise.resolve({ tasks: [] }),
                     needsAgentFleetData ? api.getAgentFleetStatus() : Promise.resolve(null),
                     needsQueueHealthData ? api.getQueueHealth() : Promise.resolve(null),
@@ -31633,6 +31828,8 @@
                 }
                 if (projectsRes.status === 'fulfilled' && projectsRes.value?.projects) projects = projectsRes.value.projects;
                 if (peopleRes.status === 'fulfilled' && peopleRes.value?.people) people = peopleRes.value.people;
+                if (workspaceUsersRes.status === 'fulfilled' && workspaceUsersRes.value?.users) workspaceUsers = workspaceUsersRes.value.users;
+                if (workspaceRoleAuditRes.status === 'fulfilled' && workspaceRoleAuditRes.value?.audit_events) workspaceRoleAuditEvents = workspaceRoleAuditRes.value.audit_events;
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (agentFleetRes.status === 'fulfilled' && agentFleetRes.value) agentFleetStatus = agentFleetRes.value;
                 if (queueHealthRes.status === 'fulfilled' && queueHealthRes.value) queueHealth = queueHealthRes.value;
@@ -31753,7 +31950,7 @@
                     }
                 }
 
-                const errors = [workspaceDirectoryRes, workspacePlatformRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes]
+                const errors = [workspaceDirectoryRes, workspacePlatformRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, workspaceUsersRes, workspaceRoleAuditRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -32261,6 +32458,105 @@
                 adminExternalAccessPreviewError = err.message || 'Could not preview external access.';
             } finally {
                 adminExternalAccessPreviewBusy = false;
+                render();
+            }
+        }
+
+        async function createWorkspaceUserFromForm(event) {
+            event?.preventDefault?.();
+            const form = event?.currentTarget;
+            const data = new FormData(form);
+            workspaceUserActionBusy = 'create';
+            workspaceUserActionError = '';
+            workspaceUserActionNotice = '';
+            render();
+            try {
+                const payload = {
+                    workspace_key: String(data.get('workspace_key') || currentWorkspaceKey()).trim(),
+                    person_name: String(data.get('person_name') || '').trim(),
+                    email: String(data.get('email') || '').trim(),
+                    phone: String(data.get('phone') || '').trim(),
+                    canonical_role: String(data.get('canonical_role') || 'provider_staff').trim(),
+                    access_level: String(data.get('access_level') || 'member').trim(),
+                    login_username: String(data.get('login_username') || '').trim(),
+                    account_type: String(data.get('account_type') || 'workspace_user').trim(),
+                    access_entitlement_status: String(data.get('access_entitlement_status') || 'not_configured').trim(),
+                    enrollment_relationship: String(data.get('enrollment_relationship') || '').trim(),
+                    reason: String(data.get('reason') || 'Workspace membership created from Operations Users screen.').trim(),
+                    invitation_state: 'invited',
+                    login_state: String(data.get('login_username') || '').trim() ? 'configured' : 'not_configured',
+                    no_send: true
+                };
+                const result = await api.createWorkspaceUser(payload);
+                workspaceUserActionNotice = `${result?.user?.person_name || payload.person_name} was added to ${result?.user?.workspace_name || currentWorkspaceRecord().display_name || 'the workspace'} without sending an invitation.`;
+                form?.reset?.();
+                await loadData({ background: true });
+            } catch (err) {
+                workspaceUserActionError = err.message || 'Could not create workspace user.';
+            } finally {
+                workspaceUserActionBusy = '';
+                render();
+            }
+        }
+
+        async function updateWorkspaceUserRole(event, membershipId) {
+            event?.preventDefault?.();
+            const id = String(membershipId || '').trim();
+            if (!id) {
+                workspaceUserActionError = 'Membership readback is required before a role can be changed.';
+                render();
+                return;
+            }
+            const form = event?.currentTarget;
+            const data = new FormData(form);
+            workspaceUserActionBusy = `role:${id}`;
+            workspaceUserActionError = '';
+            workspaceUserActionNotice = '';
+            render();
+            try {
+                const result = await api.updateWorkspaceUser(id, {
+                    action: 'update_role',
+                    canonical_role: String(data.get('canonical_role') || '').trim(),
+                    access_level: String(data.get('access_level') || '').trim(),
+                    reason: String(data.get('reason') || 'Operations role update').trim(),
+                    no_send: true
+                });
+                workspaceUserActionNotice = `${result?.user?.person_name || 'Workspace user'} role is now ${result?.user?.canonical_role_label || 'updated'}.`;
+                await loadData({ background: true });
+            } catch (err) {
+                workspaceUserActionError = err.message || 'Could not update role.';
+            } finally {
+                workspaceUserActionBusy = '';
+                render();
+            }
+        }
+
+        async function workspaceUserMembershipAction(membershipId, action) {
+            const id = String(membershipId || '').trim();
+            const nextAction = String(action || '').trim();
+            if (!id || !nextAction) return;
+            const labels = {
+                deactivate: 'deactivate this membership',
+                reactivate: 'reactivate this membership',
+                remove_membership: 'archive this membership'
+            };
+            if (nextAction !== 'reactivate' && !confirm(`Confirm ${labels[nextAction] || nextAction}. No invite, email, WhatsApp, password, billing, or external app action will run.`)) return;
+            workspaceUserActionBusy = `${nextAction}:${id}`;
+            workspaceUserActionError = '';
+            workspaceUserActionNotice = '';
+            render();
+            try {
+                const result = await api.updateWorkspaceUser(id, {
+                    action: nextAction,
+                    reason: `Operations ${nextAction.replace(/_/g, ' ')} action`,
+                    no_send: true
+                });
+                workspaceUserActionNotice = `${result?.user?.person_name || 'Workspace user'} membership ${nextAction.replace(/_/g, ' ')} completed.`;
+                await loadData({ background: true });
+            } catch (err) {
+                workspaceUserActionError = err.message || 'Could not update workspace membership.';
+            } finally {
+                workspaceUserActionBusy = '';
                 render();
             }
         }

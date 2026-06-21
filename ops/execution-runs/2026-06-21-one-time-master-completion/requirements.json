@@ -451,7 +451,7 @@
       "id": "REQ-20260619-303",
       "title": "Workspace users and roles",
       "expected_result": "One Time users and roles are scoped correctly and cross-workspace access is denied.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0005"
@@ -466,21 +466,35 @@
       "depends_on": [
         "REQ-20260619-302"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_local",
       "can_continue_without_operator": true,
-      "next_action": "Complete scoped Users model/UI, role lifecycle, audit logs, and negative authorization tests.",
+      "next_action": "Commit and push Batch 4 workspace user/role implementation, deploy safe app-visible changes, and run live workspace-user smoke tests.",
       "acceptance_criteria": [
-        "Rabbi scoped to One Time",
-        "Shloimie can intentionally switch",
-        "negative tests pass"
+        "Rabbi Ellie Scheller has One Time workspace_owner/workspace_admin assignment only for authorized One Time data.",
+        "Shloimie retains platform_super_admin and One Time workspace_admin/workspace_manager assignment with intentional workspace switching.",
+        "Scoped Users screen supports no-send invite/member creation, role assignment, deactivate, reactivate, reversible membership archive, and role-change audit readback.",
+        "Canonical platform, workspace, and member roles are validated server-side and reflected in UI role controls.",
+        "Negative authorization tests deny cross-workspace user, task, Decision, message, and recording access or mutation paths."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/one-time-role-model.js",
+        "node --check src/platform/rbac/index.js",
+        "node --test tests/one-time-role-auth-model.test.js tests/platform-core/platform-core-rbac.test.js tests/operations-module-scoping.test.js tests/external-access-persistence-workflow.test.js tests/workspace-user-role-management.test.js tests/operations-pwa-login.test.js tests/workspace-person-household-provider-contract.test.js tests/live-class-infrastructure.test.js tests/agent-control-api-readback.test.js tests/one-time-operations-ui-smoke.test.js",
+        "git diff --check"
+      ],
       "implementation_files": [
+        "src/lib/bna/one-time-role-model.js",
+        "src/platform/rbac/index.js",
         "server.js",
         "public/operations.html",
-        "docs/architecture/workspace-community-provider-role-map.md",
-        "tests/one-time-rbac-negative-isolation.test.js"
+        "tests/one-time-role-auth-model.test.js",
+        "tests/external-access-persistence-workflow.test.js",
+        "tests/workspace-user-role-management.test.js"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
@@ -488,7 +502,9 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T14:45:00+03:00",
+      "blocker": "",
+      "blocker_owner": ""
     },
     {
       "id": "REQ-20260621-502",

@@ -89,7 +89,11 @@ const {
 } = require('./src/lib/bna/one-time-drive-brief');
 const {
   decorateOneTimeIdentity,
+  canOneTimeIdentity,
+  normalizeOneTimeRole,
   oneTimeCanonicalOwnerAssignments,
+  oneTimeDisplayName,
+  oneTimeRoleLabel,
 } = require('./src/lib/bna/one-time-role-model');
 const {
   hasContactLeadPipelineBuildIntent,
@@ -8304,7 +8308,7 @@ function identifyOpsUser(username, password = null) {
     });
   }
 
-  // Two-login architecture: owner (Rabbi Elie Scheller) vs manager (Shloimie)
+  // Two-login architecture: owner (Rabbi Ellie Scheller) vs manager (Shloimie)
   if (
     ONE_TIME_OWNER_USERNAME &&
     ONE_TIME_OWNER_PASSWORD &&
@@ -8316,7 +8320,7 @@ function identifyOpsUser(username, password = null) {
       role: 'project_owner',
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: ownerAllowedViews,
-      displayName: 'Rabbi Elie Scheller',
+      displayName: 'Rabbi Ellie Scheller',
     });
   }
 
@@ -8386,6 +8390,9 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/intake\/review\/[^/]+\/resolve$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/projects' && method === 'GET') return true;
   if (routePath === '/api/bna/people' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/workspace-users' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/workspace-users/role-audit' && method === 'GET') return true;
+  if (/^\/api\/bna\/workspace-users\/\d+$/.test(routePath) && method === 'PATCH') return true;
   if (routePath === '/api/bna/workspace-platform' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/drive-social-ingestion' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/app-access-readiness' && method === 'GET') return true;
@@ -9937,7 +9944,7 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
   project_id INTEGER NOT NULL REFERENCES bna_projects(id) ON DELETE CASCADE,
   person_name TEXT NOT NULL,
   role TEXT DEFAULT 'member',
-  access_level TEXT NOT NULL DEFAULT 'member' CHECK (access_level IN ('owner', 'manager', 'member', 'viewer')),
+  access_level TEXT NOT NULL DEFAULT 'member' CHECK (access_level IN ('owner', 'admin', 'manager', 'member', 'viewer')),
   telegram_chat_id TEXT,
   login_username TEXT,
   active BOOLEAN DEFAULT TRUE,
@@ -9946,6 +9953,10 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (project_id, person_name)
 );
+ALTER TABLE bna_project_members DROP CONSTRAINT IF EXISTS bna_project_members_access_level_check;
+ALTER TABLE bna_project_members
+  ADD CONSTRAINT bna_project_members_access_level_check
+  CHECK (access_level IN ('owner', 'admin', 'manager', 'member', 'viewer'));
 `;
 
 const createAutomationCenterSQL = `
@@ -10136,6 +10147,15 @@ CREATE TABLE IF NOT EXISTS bna_workspace_memberships (
   role TEXT NOT NULL CHECK (role IN (
     'owner',
     'super_admin',
+    'platform_super_admin',
+    'platform_manager',
+    'support_admin',
+    'technical_agent',
+    'workspace_owner',
+    'workspace_admin',
+    'workspace_manager',
+    'provider_staff',
+    'moderator',
     'admin',
     'rabbi',
     'teacher',
@@ -10161,6 +10181,53 @@ CREATE TABLE IF NOT EXISTS bna_workspace_memberships (
 
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_memberships_workspace ON bna_workspace_memberships(workspace_id, active);
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_memberships_person ON bna_workspace_memberships(person_id, active);
+ALTER TABLE bna_workspace_memberships DROP CONSTRAINT IF EXISTS bna_workspace_memberships_role_check;
+ALTER TABLE bna_workspace_memberships
+  ADD CONSTRAINT bna_workspace_memberships_role_check
+  CHECK (role IN (
+    'owner',
+    'super_admin',
+    'platform_super_admin',
+    'platform_manager',
+    'support_admin',
+    'technical_agent',
+    'workspace_owner',
+    'workspace_admin',
+    'workspace_manager',
+    'provider_staff',
+    'moderator',
+    'admin',
+    'rabbi',
+    'teacher',
+    'manager',
+    'parent',
+    'child',
+    'student',
+    'service_provider',
+    'client',
+    'tester',
+    'viewer'
+  ));
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS invitation_state TEXT NOT NULL DEFAULT 'active';
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS disabled_at TIMESTAMP;
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMP;
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS login_state TEXT NOT NULL DEFAULT 'not_configured';
+
+CREATE TABLE IF NOT EXISTS bna_platform_role_audit_events (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER,
+  membership_id INTEGER,
+  actor_person_id INTEGER,
+  target_person_id INTEGER,
+  event_type TEXT NOT NULL,
+  from_role TEXT,
+  to_role TEXT,
+  reason TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_platform_role_audit_workspace ON bna_platform_role_audit_events(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_platform_role_audit_membership ON bna_platform_role_audit_events(membership_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS bna_households (
   id SERIAL PRIMARY KEY,
@@ -22313,11 +22380,13 @@ async function ensureTorahSeedStudents(db = pool) {
         `Seeded for Torah learning group goal on ${TORAH_TEMP_SEED_DATE}.`,
       ]
     );
-    await refreshStudentIdentityFields(inserted.rows[0].id, {
+    const insertedStudent = inserted.rows[0];
+    if (!insertedStudent?.id) continue;
+    await refreshStudentIdentityFields(insertedStudent.id, {
       aliases: seed.aliases || [],
-      source_records: [studentIdentitySourceRecord('torah_seed', inserted.rows[0], { seed_name: seed.name })],
+      source_records: [studentIdentitySourceRecord('torah_seed', insertedStudent, { seed_name: seed.name })],
     }, db).catch(() => {});
-    students.push(inserted.rows[0]);
+    students.push(insertedStudent);
   }
 }
 
@@ -24073,6 +24142,7 @@ async function ensureInitialParentLeads() {
       );
 
     const lead = leadResult.rows[0];
+    if (!lead?.id) continue;
     await pool.query(
       `INSERT INTO bna_contact_communications (
         contact_type, lead_id, channel, direction, summary, body,
@@ -28528,20 +28598,35 @@ async function ensureProjectMember(project, personName, fields = {}, db = pool) 
 
 function internalPersonView(row = {}) {
   const metadata = row.metadata && typeof row.metadata === 'object' ? row.metadata : {};
+  const canonicalRole = normalizeWorkspaceUserCanonicalRole(row.canonical_role || metadata.canonical_role || row.workspace_role || row.role);
   return {
     id: row.id,
+    person_id: row.person_id || null,
+    workspace_membership_id: row.workspace_membership_id || null,
     person_name: row.person_name,
+    display_name: oneTimeDisplayName(row.person_name || row.preferred_name || row.full_name || ''),
     role: row.role,
+    canonical_role: canonicalRole,
+    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || workspaceUserRoleLabel(canonicalRole),
+    role_scope: workspaceUserRoleScope(canonicalRole),
     access_level: row.access_level,
     telegram_chat_id: row.telegram_chat_id,
     login_username: row.login_username,
-    active: row.active !== false,
+    active: row.workspace_membership_active === false ? false : row.active !== false,
+    invitation_state: row.invitation_state || metadata.invitation_state || (row.active === false ? 'disabled' : 'active'),
+    disabled_at: row.disabled_at || null,
+    last_activity_at: row.last_activity_at || metadata.last_activity_at || row.updated_at || null,
+    login_state: row.login_state || metadata.login_state || (row.login_username ? 'configured' : 'not_configured'),
+    parent_child_relationship: metadata.parent_child_relationship || null,
+    enrollment_relationship: metadata.enrollment_relationship || null,
+    access_entitlement_status: metadata.access_entitlement_status || 'not_configured',
     project_id: row.project_id,
     project_key: row.project_key,
+    workspace_key: workspaceKeyForProject(row.project_key),
     project_name: row.project_name,
     project_short_name: row.project_short_name,
-    email: metadata.email || null,
-    phone: metadata.phone || null,
+    email: row.email || metadata.email || null,
+    phone: row.phone || metadata.phone || null,
     notes: metadata.notes || null,
     metadata,
     created_at: row.created_at,
@@ -28551,7 +28636,7 @@ function internalPersonView(row = {}) {
 
 function safeProjectMemberAccessLevel(value) {
   const normalized = String(value || '').trim().toLowerCase();
-  return ['owner', 'manager', 'member', 'viewer'].includes(normalized) ? normalized : 'member';
+  return ['owner', 'admin', 'manager', 'member', 'viewer'].includes(normalized) ? normalized : 'member';
 }
 
 async function ensureProjectOwnershipBackfill(bna, db = pool) {
@@ -29978,23 +30063,27 @@ async function ensureDefaultProjects(db = pool) {
 
   await ensureProjectOwnershipBackfill(bna, db);
 
-  await db.query(
-    `UPDATE bna_tasks
-     SET project_id = $1
-     WHERE
-       project_id IS NULL
-       AND (
-         category IN ('torah_class_prep', 'shiur_ideas', 'community_setup', 'community')
-         OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~ '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|shiur)'
-       )`,
-    [oneTime.id]
-  );
-  await db.query(
-    `UPDATE bna_tasks
-     SET project_id = $1
-     WHERE project_id IS NULL`,
-    [bna.id]
-  );
+  if (oneTime?.id) {
+    await db.query(
+      `UPDATE bna_tasks
+       SET project_id = $1
+       WHERE
+         project_id IS NULL
+         AND (
+           category IN ('torah_class_prep', 'shiur_ideas', 'community_setup', 'community')
+           OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~ '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|shiur)'
+         )`,
+      [oneTime.id]
+    );
+  }
+  if (bna?.id) {
+    await db.query(
+      `UPDATE bna_tasks
+       SET project_id = $1
+       WHERE project_id IS NULL`,
+      [bna.id]
+    );
+  }
   await ensureOneTimeProposalTasks(oneTime, db);
   await ensureRabbiSchellerLaunchTasks(oneTime, db);
   await ensureOneTimePendingAccessDialogueCards(oneTime, db);
@@ -30046,6 +30135,7 @@ function workspaceProjectView(row = {}) {
 function workspaceMembershipView(row = {}) {
   if (!row) return null;
   const metadata = parseJsonMaybe(row.metadata);
+  const canonicalRole = normalizeWorkspaceUserCanonicalRole(row.canonical_role || metadata.canonical_role || metadata.workspace_role || row.role);
   return {
     id: row.id,
     workspace_id: row.workspace_id,
@@ -30056,17 +30146,261 @@ function workspaceMembershipView(row = {}) {
     person_id: row.person_id,
     person_name: row.person_name || row.preferred_name,
     role: row.role,
-    canonical_role: row.canonical_role || metadata.canonical_role || metadata.workspace_role || '',
-    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || metadata.workspace_role_label || '',
+    canonical_role: canonicalRole,
+    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || metadata.workspace_role_label || workspaceUserRoleLabel(canonicalRole),
     platform_role: row.platform_role || metadata.platform_role || '',
     platform_role_label: row.platform_role_label || metadata.platform_role_label || '',
     role_contract: row.role_contract || metadata.role_contract || '',
     access_level: row.access_level,
+    invitation_state: row.invitation_state || metadata.invitation_state || (row.active === false ? 'disabled' : 'active'),
+    disabled_at: row.disabled_at || null,
+    last_activity_at: row.last_activity_at || metadata.last_activity_at || null,
+    login_state: row.login_state || metadata.login_state || 'not_configured',
     relationship_to_owner: row.relationship_to_owner,
     tags: Array.isArray(row.tags) ? row.tags : [],
     active: row.active !== false,
     metadata,
   };
+}
+
+const WORKSPACE_USER_PLATFORM_ROLES = new Set([
+  'platform_super_admin',
+  'platform_manager',
+  'support_admin',
+  'technical_agent',
+]);
+
+const WORKSPACE_USER_WORKSPACE_ROLES = new Set([
+  'workspace_owner',
+  'workspace_admin',
+  'workspace_manager',
+  'provider_staff',
+  'moderator',
+]);
+
+const WORKSPACE_USER_MEMBER_ROLES = new Set(['parent', 'student']);
+
+function normalizeWorkspaceUserRoleKey(value = '') {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function normalizeWorkspaceUserCanonicalRole(value = '') {
+  const key = normalizeWorkspaceUserRoleKey(value);
+  const oneTimeRole = normalizeOneTimeRole(key);
+  if (
+    WORKSPACE_USER_PLATFORM_ROLES.has(oneTimeRole) ||
+    WORKSPACE_USER_WORKSPACE_ROLES.has(oneTimeRole) ||
+    WORKSPACE_USER_MEMBER_ROLES.has(oneTimeRole)
+  ) {
+    return oneTimeRole;
+  }
+  const aliases = {
+    super_admin: 'platform_super_admin',
+    platform: 'platform_super_admin',
+    owner: 'workspace_owner',
+    project_owner: 'workspace_owner',
+    rabbi: 'workspace_owner',
+    admin: 'workspace_admin',
+    one_time_admin: 'workspace_admin',
+    project_admin: 'workspace_admin',
+    manager: 'workspace_manager',
+    project_manager: 'workspace_manager',
+    service_provider: 'provider_staff',
+    teacher: 'provider_staff',
+    child: 'student',
+    member_parent: 'parent',
+  };
+  return aliases[key] || (WORKSPACE_USER_MEMBER_ROLES.has(key) ? key : 'provider_staff');
+}
+
+function workspaceUserRoleLabel(role = '') {
+  const canonical = normalizeWorkspaceUserCanonicalRole(role);
+  return oneTimeRoleLabel(canonical);
+}
+
+function workspaceUserRoleScope(role = '') {
+  const canonical = normalizeWorkspaceUserCanonicalRole(role);
+  if (WORKSPACE_USER_PLATFORM_ROLES.has(canonical)) return 'platform';
+  if (WORKSPACE_USER_MEMBER_ROLES.has(canonical)) return 'member';
+  return 'workspace';
+}
+
+function workspaceUserAccessLevelForRole(role = '', fallback = '') {
+  const canonical = normalizeWorkspaceUserCanonicalRole(role);
+  const requested = String(fallback || '').trim().toLowerCase();
+  if (['owner', 'admin', 'manager', 'member', 'viewer'].includes(requested)) return requested;
+  if (canonical === 'platform_super_admin' || canonical === 'workspace_owner') return 'owner';
+  if (['platform_manager', 'support_admin', 'workspace_admin'].includes(canonical)) return 'admin';
+  if (['technical_agent', 'workspace_manager'].includes(canonical)) return 'manager';
+  if (['provider_staff', 'moderator', 'parent', 'student'].includes(canonical)) return 'member';
+  return 'viewer';
+}
+
+function workspaceUserInputMetadata(body = {}, canonicalRole = '') {
+  const metadata = body.metadata && typeof body.metadata === 'object' ? body.metadata : {};
+  const roleScope = workspaceUserRoleScope(canonicalRole);
+  const allowedViews = normalizeTextArray(body.allowed_views || body.allowedViews || metadata.allowed_views || []);
+  return {
+    ...metadata,
+    role_contract: 'workspace-membership-role-model-v1',
+    canonical_role: canonicalRole,
+    canonical_role_label: workspaceUserRoleLabel(canonicalRole),
+    role_scope: roleScope,
+    account_type: normalizeWorkspaceUserRoleKey(body.account_type || body.accountType || metadata.account_type || (
+      roleScope === 'member' ? `one_time_${canonicalRole}` : 'workspace_user'
+    )),
+    project_scope: metadata.project_scope,
+    workspace_scope: metadata.workspace_scope,
+    provider_staff_management: ['provider_staff', 'moderator', 'workspace_manager', 'workspace_admin', 'workspace_owner'].includes(canonicalRole),
+    access_entitlement_status: normalizeWorkspaceUserRoleKey(body.access_entitlement_status || body.accessEntitlementStatus || metadata.access_entitlement_status || 'not_configured'),
+    login_state: normalizeWorkspaceUserRoleKey(body.login_state || body.loginState || metadata.login_state || 'not_configured'),
+    parent_child_relationship: body.parent_child_relationship || body.parentChildRelationship || metadata.parent_child_relationship || null,
+    enrollment_relationship: body.enrollment_relationship || body.enrollmentRelationship || metadata.enrollment_relationship || null,
+    allowed_views: allowedViews,
+    no_send: true,
+  };
+}
+
+function workspaceUserView(row = {}) {
+  if (!row) return null;
+  const metadata = parseJsonMaybe(row.metadata);
+  const projectMemberMetadata = parseJsonMaybe(row.project_member_metadata);
+  const canonicalRole = normalizeWorkspaceUserCanonicalRole(row.canonical_role || metadata.canonical_role || projectMemberMetadata.canonical_role || row.role);
+  const active = row.active !== false && row.person_status !== 'archived';
+  const loginUsername = row.login_username || projectMemberMetadata.login_username || metadata.login_username || '';
+  return {
+    id: row.id,
+    membership_id: row.id,
+    person_id: row.person_id,
+    person_name: oneTimeDisplayName(row.person_name || row.preferred_name || row.full_name || row.login_username || ''),
+    full_name: row.full_name || '',
+    email: row.email || projectMemberMetadata.email || metadata.email || '',
+    phone: row.phone || projectMemberMetadata.phone || metadata.phone || '',
+    workspace_id: row.workspace_id,
+    workspace_key: workspaceKeyForProject(row.project_key || row.workspace_key),
+    project_key: row.project_key || row.workspace_key,
+    workspace_name: row.workspace_name || row.project_name || '',
+    workspace_type: row.workspace_type || '',
+    role: row.role,
+    canonical_role: canonicalRole,
+    canonical_role_label: workspaceUserRoleLabel(canonicalRole),
+    role_scope: workspaceUserRoleScope(canonicalRole),
+    access_level: row.access_level || workspaceUserAccessLevelForRole(canonicalRole),
+    invitation_state: row.invitation_state || metadata.invitation_state || (active ? 'active' : 'disabled'),
+    active,
+    disabled_at: row.disabled_at || null,
+    last_activity_at: row.last_activity_at || projectMemberMetadata.last_activity_at || metadata.last_activity_at || row.updated_at || null,
+    login_state: row.login_state || metadata.login_state || projectMemberMetadata.login_state || (loginUsername ? 'configured' : 'not_configured'),
+    login_username: loginUsername || '',
+    relationship_to_owner: row.relationship_to_owner || '',
+    parent_child_relationship: metadata.parent_child_relationship || null,
+    enrollment_relationship: metadata.enrollment_relationship || null,
+    access_entitlement_status: metadata.access_entitlement_status || projectMemberMetadata.access_entitlement_status || 'not_configured',
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    metadata: {
+      ...metadata,
+      canonical_role: canonicalRole,
+      canonical_role_label: workspaceUserRoleLabel(canonicalRole),
+    },
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+async function workspaceUserRowByMembershipId(membershipId, db = pool) {
+  const result = await db.query(
+    `SELECT wm.*,
+            p.project_key,
+            p.name AS workspace_name,
+            p.workspace_type,
+            people.preferred_name AS person_name,
+            people.full_name,
+            people.email,
+            people.phone,
+            people.status AS person_status,
+            pm.login_username,
+            pm.metadata AS project_member_metadata
+     FROM bna_workspace_memberships wm
+     JOIN bna_projects p ON p.id = wm.workspace_id
+     JOIN bna_people people ON people.id = wm.person_id
+     LEFT JOIN bna_project_members pm
+       ON pm.project_id = p.id
+      AND lower(pm.person_name) = lower(people.preferred_name)
+     WHERE wm.id = $1
+     LIMIT 1`,
+    [membershipId]
+  );
+  return result.rows[0] || null;
+}
+
+function requireWorkspaceUserPermission(req, action, workspaceKey, targetRole = '') {
+  const key = assertWorkspaceAccess(req, workspaceKey, action);
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type === 'all') return key;
+  const canonicalTargetRole = normalizeWorkspaceUserCanonicalRole(targetRole || 'provider_staff');
+  const oneTimeAction = action === 'read_role_audit_log'
+    ? 'read_role_audit_log'
+    : action === 'remove_workspace_user'
+      ? 'remove_workspace_user'
+      : action === 'deactivate_workspace_user'
+        ? 'deactivate_workspace_user'
+        : action === 'invite_workspace_user'
+          ? 'invite_workspace_user'
+          : 'change_workspace_role';
+  const permission = canOneTimeIdentity(oneTimeAction, identity, {
+    workspace_key: key,
+    project_key: workspaceProjectKey(key),
+    target_role: canonicalTargetRole,
+  });
+  if (!permission.allowed) {
+    const error = new Error(permission.reason);
+    error.statusCode = 403;
+    throw error;
+  }
+  return key;
+}
+
+async function insertWorkspaceRoleAuditEvent({
+  workspace_id = null,
+  membership_id = null,
+  actor_person_id = null,
+  target_person_id = null,
+  event_type = 'workspace_role_changed',
+  from_role = '',
+  to_role = '',
+  reason = '',
+  metadata = {},
+} = {}, db = pool) {
+  try {
+    const result = await db.query(
+      `INSERT INTO bna_platform_role_audit_events (
+         workspace_id, membership_id, actor_person_id, target_person_id,
+         event_type, from_role, to_role, reason, metadata
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+       RETURNING *`,
+      [
+        workspace_id || null,
+        membership_id || null,
+        actor_person_id || null,
+        target_person_id || null,
+        limitText(event_type, 120) || 'workspace_role_changed',
+        from_role || null,
+        to_role || null,
+        limitText(reason, 600) || null,
+        JSON.stringify(metadata || {}),
+      ]
+    );
+    return result.rows[0] || null;
+  } catch (err) {
+    console.warn('Workspace role audit insert failed:', err.message);
+    return null;
+  }
 }
 
 function householdView(row = {}, members = []) {
@@ -30205,6 +30539,7 @@ async function ensureWorkspaceProject({
     description,
     metadata,
   }, db);
+  if (!project?.id) return project || fallbackWorkspaceProjectRow(projectKey);
   return (await db.query(
     `UPDATE bna_projects
      SET workspace_type = $2,
@@ -31830,14 +32165,15 @@ async function linkExactStudentPerson({ person, name, workspaceId, householdId =
 }
 
 async function ensurePersonalWorkspacesAndPeople(db = pool) {
-  const { bna, oneTime } = await ensureDefaultProjects(db);
-  const shloimie = await upsertCanonicalPerson({
+  const { bna: seededBna, oneTime } = await ensureDefaultProjects(db);
+  const bna = seededBna || fallbackWorkspaceProjectRow('bna');
+  const shloimie = (await upsertCanonicalPerson({
     preferred_name: 'Shloimie',
     full_name: 'Shloimie Dratler',
     primary_language: 'en',
     metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['super_admin', 'bna:rabbi', 'family:parent'] },
-  }, db);
-  const superAdmin = await ensureWorkspaceProject({
+  }, db)) || { id: null, preferred_name: 'Shloimie', full_name: 'Shloimie Dratler' };
+  const superAdmin = (await ensureWorkspaceProject({
     projectKey: 'super_admin',
     name: 'Super Admin',
     shortName: 'Super Admin',
@@ -31849,8 +32185,8 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     slug: 'super-admin',
     settings: { primary_role_label: 'Operator', accountability_mode: 'admin' },
     metadata: { source: 'personal_workspace_seed' },
-  }, db);
-  const family = await ensureWorkspaceProject({
+  }, db)) || fallbackWorkspaceProjectRow('super_admin');
+  const family = (await ensureWorkspaceProject({
     projectKey: 'dratler_family',
     name: 'Dratler Family',
     shortName: 'Family',
@@ -31862,8 +32198,8 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     slug: 'dratler-family',
     settings: { accountability_mode: 'family' },
     metadata: { source: 'personal_workspace_seed', public: false },
-  }, db);
-  const bnaWorkspace = await ensureWorkspaceProject({
+  }, db)) || fallbackWorkspaceProjectRow('dratler_family');
+  const bnaWorkspace = (await ensureWorkspaceProject({
     projectKey: DEFAULT_PROJECT_KEY,
     name: bna.name || 'BNA',
     shortName: bna.short_name || 'BNA',
@@ -31874,7 +32210,7 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     languageDefault: 'en',
     slug: 'bna',
     settings: { primary_role_label: 'Rabbi', accountability_mode: 'school' },
-  }, db);
+  }, db)) || bna;
   let oneTimeWorkspace = oneTime || null;
   if (oneTime?.id) {
     await db.query(
@@ -31890,18 +32226,18 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     oneTimeWorkspace = await getProjectByKey('one_time_mishnah_class', db).catch(() => oneTime);
   }
 
-  const menachem = await upsertCanonicalPerson({
+  const menachem = (await upsertCanonicalPerson({
     preferred_name: 'Menachem',
     full_name: 'Menachem Mendel Dratler',
     primary_language: 'en',
     metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['family:son', 'school:student', 'bna:student'] },
-  }, db);
-  const esty = await upsertCanonicalPerson({
+  }, db)) || { id: null, preferred_name: 'Menachem', full_name: 'Menachem Mendel Dratler' };
+  const esty = (await upsertCanonicalPerson({
     preferred_name: 'Esty',
     full_name: 'Esty',
     primary_language: 'en',
     metadata: { seed: 'personal-workspaces-2026-06-14', family_name: 'Dratler', tags: ['family:daughter', 'dratler_family'] },
-  }, db);
+  }, db)) || { id: null, preferred_name: 'Esty', full_name: 'Esty' };
 
   await ensureWorkspaceMembership(superAdmin, shloimie, { role: 'super_admin', access_level: 'owner', tags: ['super_admin'] }, db);
   await ensureWorkspaceMembership(superAdmin, shloimie, { role: 'owner', access_level: 'owner', tags: ['super_admin'] }, db);
@@ -31932,7 +32268,9 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
   await ensureHouseholdMember(household, menachem, { role: 'child', relationship: 'son', tags: ['family:son'] }, db);
   await ensureHouseholdMember(household, esty, { role: 'child', relationship: 'daughter', tags: ['family:daughter'] }, db);
 
-  await linkExactStudentPerson({ person: menachem, name: 'Menachem', workspaceId: bnaWorkspace.id }, db);
+  if (menachem?.id && bnaWorkspace?.id) {
+    await linkExactStudentPerson({ person: menachem, name: 'Menachem', workspaceId: bnaWorkspace.id }, db);
+  }
   const estySchoolMatches = (await db.query(
     `SELECT id, name, parent_email, status
      FROM bna_students
@@ -32001,8 +32339,10 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
       assigned_to: 'Codex',
     },
   ];
-  for (const spec of setupTasks) {
-    await ensureWorkspaceSetupTask({ project: bnaWorkspace, category: spec.category || 'technology', urgency: 'this_week', assigned_to: spec.assigned_to || 'Shloimie', ...spec }, db);
+  if (bnaWorkspace?.id) {
+    for (const spec of setupTasks) {
+      await ensureWorkspaceSetupTask({ project: bnaWorkspace, category: spec.category || 'technology', urgency: 'this_week', assigned_to: spec.assigned_to || 'Shloimie', ...spec }, db);
+    }
   }
 
   return { superAdmin, bna: bnaWorkspace, family, people: { shloimie, menachem, esty }, household };
@@ -32018,6 +32358,7 @@ async function getProjectByKey(projectKey, db = pool) {
 
 async function ensureDefaultLearningCommunity(db = pool) {
   const project = await getProjectByKey(DEFAULT_PROJECT_KEY, db);
+  if (!project?.id) return null;
   const result = await db.query(
     `INSERT INTO bna_learning_communities (
        workspace_key, project_id, community_key, title, description,
@@ -32049,6 +32390,7 @@ async function ensureDefaultLearningCommunity(db = pool) {
 
 async function ensureWs11CommunityFoundation(db = pool) {
   const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db);
+  if (!project?.id) return null;
   const community = (await db.query(
     `INSERT INTO bna_learning_communities (
        workspace_key, project_id, project_key, workspace_id, community_key,
@@ -59693,9 +60035,36 @@ app.get('/api/bna/people', requireAdmin, async (req, res) => {
       SELECT pm.*,
              p.project_key,
              p.name AS project_name,
-             p.short_name AS project_short_name
+             p.short_name AS project_short_name,
+             bp.id AS person_id,
+             bp.full_name,
+             bp.email,
+             bp.phone,
+             wm.id AS workspace_membership_id,
+             wm.role AS workspace_role,
+             wm.active AS workspace_membership_active,
+             wm.invitation_state,
+             wm.disabled_at,
+             wm.last_activity_at,
+             wm.login_state,
+             COALESCE(wm.metadata->>'canonical_role', pm.metadata->>'canonical_role', wm.role, pm.role) AS canonical_role,
+             COALESCE(wm.metadata->>'canonical_role_label', pm.metadata->>'canonical_role_label') AS canonical_role_label
       FROM bna_project_members pm
       JOIN bna_projects p ON p.id = pm.project_id
+      LEFT JOIN bna_people bp
+        ON lower(bp.preferred_name) = lower(pm.person_name)
+        OR (pm.login_username IS NOT NULL AND lower(bp.email) = lower(pm.login_username))
+      LEFT JOIN LATERAL (
+        SELECT wm_inner.*
+        FROM bna_workspace_memberships wm_inner
+        WHERE wm_inner.workspace_id = p.id
+          AND wm_inner.person_id = bp.id
+        ORDER BY
+          CASE WHEN wm_inner.active = TRUE THEN 0 ELSE 1 END,
+          wm_inner.updated_at DESC NULLS LAST,
+          wm_inner.id DESC
+        LIMIT 1
+      ) wm ON TRUE
       WHERE p.status <> 'archived'
         AND COALESCE(pm.active, TRUE) = TRUE`;
     if (requestedProjectKey) {
@@ -59757,6 +60126,324 @@ app.post('/api/bna/people', requireAdmin, async (req, res) => {
       [person.id]
     )).rows[0];
     res.json({ success: true, person: internalPersonView(row) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/workspace-users', requireAdmin, async (req, res) => {
+  try {
+    await ensurePersonalWorkspacesAndPeopleOnce();
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    if (requestedProjectKey) {
+      requireWorkspaceUserPermission(req, 'read_workspace_users', workspaceKeyForProject(requestedProjectKey));
+    } else if (req.opsIdentity?.scope?.type === 'project') {
+      requireWorkspaceUserPermission(req, 'read_workspace_users', defaultWorkspaceKeyForRequest(req));
+    }
+
+    const params = [];
+    const conditions = [`p.status <> 'archived'`];
+    if (requestedProjectKey) {
+      params.push(requestedProjectKey);
+      conditions.push(`p.project_key = $${params.length}`);
+    }
+    const status = String(req.query.status || '').trim().toLowerCase();
+    if (status === 'active') conditions.push(`wm.active = TRUE`);
+    if (status === 'inactive' || status === 'disabled') conditions.push(`wm.active = FALSE`);
+    if (req.query.q) {
+      params.push(`%${String(req.query.q).trim()}%`);
+      conditions.push(`(people.preferred_name ILIKE $${params.length} OR people.email ILIKE $${params.length} OR people.phone ILIKE $${params.length})`);
+    }
+
+    const rows = (await pool.query(
+      `SELECT wm.*,
+              p.project_key,
+              p.name AS workspace_name,
+              p.workspace_type,
+              people.preferred_name AS person_name,
+              people.full_name,
+              people.email,
+              people.phone,
+              people.status AS person_status,
+              pm.login_username,
+              pm.metadata AS project_member_metadata
+       FROM bna_workspace_memberships wm
+       JOIN bna_projects p ON p.id = wm.workspace_id
+       JOIN bna_people people ON people.id = wm.person_id
+       LEFT JOIN bna_project_members pm
+         ON pm.project_id = p.id
+        AND lower(pm.person_name) = lower(people.preferred_name)
+       WHERE ${conditions.join(' AND ')}
+       ORDER BY
+         CASE p.project_key WHEN 'super_admin' THEN 1 WHEN 'bna' THEN 2 WHEN 'dratler_family' THEN 3 WHEN 'one_time_mishnah_class' THEN 4 ELSE 5 END,
+         CASE COALESCE(wm.metadata->>'canonical_role', wm.role)
+           WHEN 'platform_super_admin' THEN 1
+           WHEN 'workspace_owner' THEN 2
+           WHEN 'workspace_admin' THEN 3
+           WHEN 'workspace_manager' THEN 4
+           WHEN 'provider_staff' THEN 5
+           WHEN 'moderator' THEN 6
+           WHEN 'parent' THEN 7
+           WHEN 'student' THEN 8
+           ELSE 9
+         END,
+         people.preferred_name ASC
+       LIMIT 500`,
+      params
+    )).rows;
+
+    res.json({
+      success: true,
+      users: rows.map(workspaceUserView),
+      no_send: true,
+      workspace_scope: requestedProjectKey ? workspaceKeyForProject(requestedProjectKey) : 'all',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/workspace-users/role-audit', requireAdmin, async (req, res) => {
+  try {
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    let workspace = null;
+    if (requestedProjectKey) {
+      const workspaceKey = requireWorkspaceUserPermission(req, 'read_role_audit_log', workspaceKeyForProject(requestedProjectKey));
+      workspace = await getWorkspaceProjectByKey(workspaceKey);
+    } else if (req.opsIdentity?.scope?.type === 'project') {
+      const workspaceKey = requireWorkspaceUserPermission(req, 'read_role_audit_log', defaultWorkspaceKeyForRequest(req));
+      workspace = await getWorkspaceProjectByKey(workspaceKey);
+    }
+    const params = [];
+    const conditions = [];
+    if (workspace?.id) {
+      params.push(workspace.id);
+      conditions.push(`e.workspace_id = $${params.length}`);
+    }
+    params.push(Math.min(Math.max(Number(req.query.limit || 80), 1), 200));
+    const limitParam = params.length;
+    const rows = (await pool.query(
+      `SELECT e.*,
+              p.project_key,
+              p.name AS workspace_name,
+              actor.preferred_name AS actor_name,
+              target.preferred_name AS target_name
+       FROM bna_platform_role_audit_events e
+       LEFT JOIN bna_projects p ON p.id = e.workspace_id
+       LEFT JOIN bna_people actor ON actor.id = e.actor_person_id
+       LEFT JOIN bna_people target ON target.id = e.target_person_id
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY e.created_at DESC
+       LIMIT $${limitParam}`,
+      params
+    )).rows;
+    res.json({
+      success: true,
+      audit_events: rows.map((row) => ({
+        id: row.id,
+        workspace_id: row.workspace_id,
+        workspace_key: workspaceKeyForProject(row.project_key),
+        project_key: row.project_key,
+        workspace_name: row.workspace_name,
+        membership_id: row.membership_id,
+        actor_person_id: row.actor_person_id,
+        actor_name: row.actor_name,
+        target_person_id: row.target_person_id,
+        target_name: oneTimeDisplayName(row.target_name || ''),
+        event_type: row.event_type,
+        from_role: row.from_role,
+        to_role: row.to_role,
+        reason: row.reason,
+        metadata: parseJsonMaybe(row.metadata),
+        created_at: row.created_at,
+      })),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/workspace-users', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const requestedWorkspace = normalizeWorkspaceKey(body.workspace_key || body.workspace || defaultWorkspaceKeyForRequest(req));
+    const canonicalRole = normalizeWorkspaceUserCanonicalRole(body.canonical_role || body.canonicalRole || body.role || 'provider_staff');
+    const workspaceKey = requireWorkspaceUserPermission(req, 'invite_workspace_user', requestedWorkspace, canonicalRole);
+    const workspace = await getWorkspaceProjectByKey(workspaceKey);
+    if (!workspace) return res.status(404).json({ error: 'Workspace was not found' });
+    const preferredName = limitText(body.person_name || body.preferred_name || body.name || body.display_name || '', 180);
+    if (!preferredName) return res.status(400).json({ error: 'person_name is required' });
+    const accessLevel = workspaceUserAccessLevelForRole(canonicalRole, body.access_level || body.accessLevel);
+    const invitationState = normalizeWorkspaceUserRoleKey(body.invitation_state || body.invitationState || 'invited') || 'invited';
+    const loginState = normalizeWorkspaceUserRoleKey(body.login_state || body.loginState || (body.login_username || body.loginUsername ? 'configured' : 'not_configured'));
+    const metadata = {
+      ...workspaceUserInputMetadata(body, canonicalRole),
+      project_scope: workspace.project_key,
+      workspace_scope: workspaceKey,
+      invitation_state: invitationState,
+      login_state: loginState,
+      created_by: req.opsUser || 'operations',
+    };
+    const person = await upsertCanonicalPerson({
+      preferred_name: preferredName,
+      full_name: body.full_name || body.fullName || preferredName,
+      email: body.email || '',
+      phone: body.phone || '',
+      status: body.person_status || 'active',
+      metadata: {
+        source: 'workspace_user_management',
+        workspace_key: workspaceKey,
+        project_key: workspace.project_key,
+      },
+    }, pool);
+    const membership = await ensureWorkspaceMembership(workspace, person, {
+      role: canonicalRole,
+      access_level: accessLevel,
+      relationship_to_owner: body.relationship_to_owner || body.relationshipToOwner || '',
+      tags: normalizeTextArray(body.tags || body.tag_list || []),
+      metadata,
+    }, pool);
+    await pool.query(
+      `UPDATE bna_workspace_memberships
+       SET invitation_state = $2,
+           login_state = $3,
+           last_activity_at = COALESCE(last_activity_at, NOW()),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $4::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [membership.id, invitationState, loginState, JSON.stringify(metadata)]
+    );
+
+    await ensureProjectMember(workspace, preferredName, {
+      role: canonicalRole,
+      access_level: accessLevel,
+      login_username: body.login_username || body.loginUsername || null,
+      metadata,
+    }, pool);
+
+    const actorPerson = await getCanonicalPersonForOpsIdentity(req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME)).catch(() => null);
+    const auditEvent = await insertWorkspaceRoleAuditEvent({
+      workspace_id: workspace.id,
+      membership_id: membership.id,
+      actor_person_id: actorPerson?.id || null,
+      target_person_id: person.id,
+      event_type: 'workspace_user_invited',
+      from_role: '',
+      to_role: canonicalRole,
+      reason: body.reason || body.access_reason || 'Workspace user created from Operations Users screen.',
+      metadata: {
+        no_send: true,
+        invitation_state: invitationState,
+        login_state: loginState,
+        project_key: workspace.project_key,
+        workspace_key: workspaceKey,
+      },
+    }, pool);
+    const row = await workspaceUserRowByMembershipId(membership.id);
+    res.status(201).json({
+      success: true,
+      user: workspaceUserView(row),
+      audit_event: auditEvent,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/workspace-users/:id', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const current = await workspaceUserRowByMembershipId(req.params.id);
+    if (!current) return res.status(404).json({ error: 'Workspace user membership was not found' });
+    const workspaceKey = workspaceKeyForProject(current.project_key);
+    const action = normalizeWorkspaceUserRoleKey(body.action || (
+      Object.prototype.hasOwnProperty.call(body, 'active')
+        ? (body.active ? 'reactivate' : 'deactivate')
+        : 'update_role'
+    ));
+    const currentRole = normalizeWorkspaceUserCanonicalRole(current.canonical_role || parseJsonMaybe(current.metadata).canonical_role || current.role);
+    const nextRole = normalizeWorkspaceUserCanonicalRole(body.canonical_role || body.canonicalRole || body.role || currentRole);
+    const permissionAction = action === 'remove_membership' || action === 'archive'
+      ? 'remove_workspace_user'
+      : action === 'deactivate'
+        ? 'deactivate_workspace_user'
+        : 'change_workspace_role';
+    const permissionTargetRole = currentRole === 'workspace_owner' ? currentRole : nextRole;
+    requireWorkspaceUserPermission(req, permissionAction, workspaceKey, permissionTargetRole);
+
+    const metadata = {
+      ...workspaceUserInputMetadata({ ...parseJsonMaybe(current.metadata), ...body }, nextRole),
+      project_scope: current.project_key,
+      workspace_scope: workspaceKey,
+      updated_by: req.opsUser || 'operations',
+    };
+    const accessLevel = workspaceUserAccessLevelForRole(nextRole, body.access_level || body.accessLevel || current.access_level);
+    const fields = [
+      'role = $1',
+      'access_level = $2',
+      `metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb`,
+      'updated_at = NOW()',
+    ];
+    const values = [nextRole, accessLevel, JSON.stringify(metadata)];
+    let eventType = 'workspace_role_changed';
+    if (action === 'deactivate') {
+      fields.push(`active = FALSE`, `invitation_state = 'disabled'`, `disabled_at = NOW()`);
+      eventType = 'workspace_user_deactivated';
+    } else if (action === 'reactivate') {
+      fields.push(`active = TRUE`, `invitation_state = 'active'`, `disabled_at = NULL`);
+      eventType = 'workspace_user_reactivated';
+    } else if (action === 'remove_membership' || action === 'archive') {
+      fields.push(`active = FALSE`, `invitation_state = 'archived'`, `disabled_at = NOW()`);
+      eventType = 'workspace_membership_archived';
+    }
+    if (body.login_state || body.loginState) {
+      values.push(normalizeWorkspaceUserRoleKey(body.login_state || body.loginState));
+      fields.push(`login_state = $${values.length}`);
+    }
+    values.push(current.id);
+    await pool.query(
+      `UPDATE bna_workspace_memberships
+       SET ${fields.join(', ')}
+       WHERE id = $${values.length}`,
+      values
+    );
+    await pool.query(
+      `UPDATE bna_project_members
+       SET role = $1,
+           access_level = $2,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE project_id = $4
+         AND lower(person_name) = lower($5)`,
+      [nextRole, accessLevel, JSON.stringify(metadata), current.workspace_id, current.person_name]
+    );
+    const actorPerson = await getCanonicalPersonForOpsIdentity(req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME)).catch(() => null);
+    const auditEvent = await insertWorkspaceRoleAuditEvent({
+      workspace_id: current.workspace_id,
+      membership_id: current.id,
+      actor_person_id: actorPerson?.id || null,
+      target_person_id: current.person_id,
+      event_type: eventType,
+      from_role: currentRole,
+      to_role: nextRole,
+      reason: body.reason || `${eventType} from Operations Users screen.`,
+      metadata: {
+        no_send: true,
+        action,
+        project_key: current.project_key,
+        workspace_key: workspaceKey,
+      },
+    }, pool);
+    const updated = await workspaceUserRowByMembershipId(current.id);
+    res.json({
+      success: true,
+      user: workspaceUserView(updated),
+      audit_event: auditEvent,
+      no_send: true,
+      external_write_performed: false,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
