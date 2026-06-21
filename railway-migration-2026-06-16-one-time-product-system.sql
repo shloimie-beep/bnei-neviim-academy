@@ -95,6 +95,102 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_product_decisions_program_key
 CREATE INDEX IF NOT EXISTS idx_bna_product_decisions_project_status
   ON bna_product_decisions (project_id, status);
 
+CREATE TABLE IF NOT EXISTS bna_one_time_policy_acceptances (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  program_id BIGINT REFERENCES bna_product_programs(id) ON DELETE SET NULL,
+  program_key TEXT NOT NULL DEFAULT 'one_time_mishnah_class',
+  policy_key TEXT NOT NULL,
+  policy_version TEXT NOT NULL,
+  acceptance_key TEXT NOT NULL,
+  contact_id BIGINT,
+  member_id BIGINT REFERENCES bna_members(id) ON DELETE SET NULL,
+  checkout_record_id BIGINT REFERENCES bna_checkout_records(id) ON DELETE SET NULL,
+  accepted_by_name TEXT,
+  accepted_by_email TEXT,
+  accepted_at TIMESTAMPTZ,
+  source TEXT NOT NULL DEFAULT 'test_local',
+  test_mode BOOLEAN NOT NULL DEFAULT TRUE,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_policy_acceptances DROP CONSTRAINT IF EXISTS bna_one_time_policy_acceptances_policy_key_check;
+ALTER TABLE bna_one_time_policy_acceptances
+  ADD CONSTRAINT bna_one_time_policy_acceptances_policy_key_check
+  CHECK (policy_key IN ('one_time_warm_lead_intro_trial', 'one_time_referral_credit_after_first_paid_cycle'));
+ALTER TABLE bna_one_time_policy_acceptances DROP CONSTRAINT IF EXISTS bna_one_time_policy_acceptances_source_check;
+ALTER TABLE bna_one_time_policy_acceptances
+  ADD CONSTRAINT bna_one_time_policy_acceptances_source_check
+  CHECK (source IN ('test_local', 'admin_preview', 'public_checkout_preview', 'manual'));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_one_time_policy_acceptances_unique
+  ON bna_one_time_policy_acceptances (program_key, policy_key, policy_version, acceptance_key);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_policy_acceptances_project
+  ON bna_one_time_policy_acceptances (project_id, policy_key, accepted_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_referrals (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  program_id BIGINT REFERENCES bna_product_programs(id) ON DELETE SET NULL,
+  program_key TEXT NOT NULL DEFAULT 'one_time_mishnah_class',
+  referrer_member_id BIGINT REFERENCES bna_members(id) ON DELETE SET NULL,
+  referred_contact_id BIGINT,
+  referred_member_id BIGINT REFERENCES bna_members(id) ON DELETE SET NULL,
+  referral_code TEXT NOT NULL,
+  referral_link TEXT,
+  status TEXT NOT NULL DEFAULT 'candidate',
+  activation_status TEXT NOT NULL DEFAULT 'pending_first_paid_cycle',
+  reward_status TEXT NOT NULL DEFAULT 'not_approved',
+  reward_policy_version TEXT NOT NULL DEFAULT 'one-time-referral-credit-v1',
+  first_paid_cycle_event_id TEXT,
+  self_referral_flag BOOLEAN NOT NULL DEFAULT FALSE,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_referrals DROP CONSTRAINT IF EXISTS bna_one_time_referrals_status_check;
+ALTER TABLE bna_one_time_referrals
+  ADD CONSTRAINT bna_one_time_referrals_status_check
+  CHECK (status IN ('candidate', 'lead_created', 'pending_first_paid_cycle', 'converted_pending_reward', 'reward_approved', 'reward_applied', 'suppressed', 'archived'));
+ALTER TABLE bna_one_time_referrals DROP CONSTRAINT IF EXISTS bna_one_time_referrals_reward_status_check;
+ALTER TABLE bna_one_time_referrals
+  ADD CONSTRAINT bna_one_time_referrals_reward_status_check
+  CHECK (reward_status IN ('not_approved', 'manual_review', 'approved', 'applied', 'rejected', 'void'));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_one_time_referrals_code
+  ON bna_one_time_referrals (program_key, referral_code);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_referrals_project_status
+  ON bna_one_time_referrals (project_id, status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_referral_credits (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  program_id BIGINT REFERENCES bna_product_programs(id) ON DELETE SET NULL,
+  program_key TEXT NOT NULL DEFAULT 'one_time_mishnah_class',
+  referral_id BIGINT REFERENCES bna_one_time_referrals(id) ON DELETE SET NULL,
+  member_id BIGINT REFERENCES bna_members(id) ON DELETE SET NULL,
+  amount_cents INTEGER NOT NULL DEFAULT 6700,
+  currency TEXT NOT NULL DEFAULT 'USD',
+  status TEXT NOT NULL DEFAULT 'manual_review_required',
+  policy_version TEXT NOT NULL DEFAULT 'one-time-referral-credit-v1',
+  provider TEXT,
+  provider_credit_id TEXT,
+  invoice_credit_created BOOLEAN NOT NULL DEFAULT FALSE,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  approved_at TIMESTAMPTZ,
+  applied_at TIMESTAMPTZ,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_referral_credits DROP CONSTRAINT IF EXISTS bna_one_time_referral_credits_status_check;
+ALTER TABLE bna_one_time_referral_credits
+  ADD CONSTRAINT bna_one_time_referral_credits_status_check
+  CHECK (status IN ('manual_review_required', 'approved', 'applied', 'rejected', 'void'));
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_referral_credits_project_status
+  ON bna_one_time_referral_credits (project_id, status, created_at DESC);
+
 CREATE TABLE IF NOT EXISTS bna_product_leads (
   id BIGSERIAL PRIMARY KEY,
   project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
@@ -634,7 +730,7 @@ WITH program AS (
       FALSE,
       ARRAY['library_live_low_touch']::text[],
       'draft',
-      '{"no_live_billing_write":true,"checkout_enabled":false,"payment_links_enabled":false,"access_automation_enabled":false,"requires_operator_decision":true,"access_policy":{"failed_payment_state":"failed_payment","grace_period_state":"grace_period","cancellation_state":"cancellation_requested","refund_state":"refund_pending","completion_state":"completed","expiration_state":"expired"}}'::jsonb
+      '{"no_live_billing_write":true,"checkout_enabled":false,"payment_links_enabled":false,"access_automation_enabled":false,"requires_operator_decision":true,"launch_trial":{"policy_key":"one_time_warm_lead_intro_trial","policy_version":"one-time-warm-lead-intro-trial-v1","trial_days":30,"card_required":true,"one_intro_trial_per_household":true},"access_policy":{"failed_payment_state":"failed_payment","grace_period_state":"grace_period","cancellation_state":"cancellation_requested","refund_state":"refund_pending","completion_state":"completed","expiration_state":"expired"}}'::jsonb
     ),
     (
       'premium_masechta_intensive',
@@ -798,6 +894,7 @@ WITH program AS (
   SELECT * FROM (VALUES
     ('tier_pricing', 'Approve OneTime tier pricing', 'Which launch prices should be public?', '{"low_touch":[50,67,100,149],"low_touch_preferred":50,"interactive":[149,150],"vip":["300+"]}'::jsonb),
     ('billing_readiness', 'Approve checkout and billing readiness', 'When can checkout be shown publicly?', '{"requires":["provider readiness","refund/legal copy","test checkout proof","operator approval"]}'::jsonb),
+    ('trial_referral_legal_wording', 'Approve trial and referral legal wording', 'What exact public trial, card-required, renewal, referral, and credit wording may One Time use?', '{"trial_days":30,"renewal_amount_cents":6700,"card_required":true,"one_intro_trial_per_household":true,"referral_activation":"first_successful_paid_cycle","invoice_credit_enabled":false}'::jsonb),
     ('schedule_visibility', 'Approve 7pm Israel schedule visibility', 'Should the 7pm Israel class be public, member-visible, or admin-only at launch?', '{"default":"admin_only","candidate_time":"19:00","timezone":"Asia/Jerusalem"}'::jsonb),
     ('public_claims', 'Approve public claims and social proof', 'Which claims and testimonials are verified for the draft funnels?', '{"no_biggest_claim":true,"social_proof_pending":true}'::jsonb),
     ('meeting_source_ingest', 'Ingest June 15 OneTime meeting source', 'Where is the meeting transcript or source artifact for grounded launch decisions?', '{"blocker":"source_artifact_missing"}'::jsonb)

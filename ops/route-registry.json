@@ -516,6 +516,20 @@
       "canonical_target": "/api/bna/one-time/integrations/readiness",
       "security_expectation": "Readiness only: no Vimeo upload, Zoom mutation, Resend send, DNS write, deploy, secret copy, or production database write is performed.",
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/bna/one-time/trial-referral-config",
+      "surface": "operations_api_one_time_trial_referral_config",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_test_local_trial_referral_policy_without_charge_invoice_credit_or_external_write",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/one-time/trial-referral-config",
+      "security_expectation": "Readiness only: no checkout creation, live card charge, payment link, invoice, invoice credit, email/WhatsApp send, external CRM write, or access grant automation is enabled.",
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
     }
   ]
 }

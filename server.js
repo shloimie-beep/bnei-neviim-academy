@@ -263,6 +263,9 @@ const {
   calendarRangeForView,
   validateOneTimeLead,
   buildSourcePrepDraft,
+  oneTimePolicyAcceptanceRecordView,
+  oneTimeReferralRecordView,
+  buildOneTimeTrialReferralConfiguration,
   oneTimeProductReadinessView,
 } = require('./src/lib/bna/one-time-product-system');
 const {
@@ -8410,6 +8413,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/app-access-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/question-moderation' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/product-system' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/trial-referral-config' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/crm-import-preview' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
@@ -14297,6 +14301,11 @@ const createRabbiCheckoutAccessSQL = fs.readFileSync(
 
 const createOneTimeProductSystemSQL = fs.readFileSync(
   path.join(__dirname, 'railway-migration-2026-06-16-one-time-product-system.sql'),
+  'utf8'
+);
+
+const createOneTimeTrialReferralConfigSQL = fs.readFileSync(
+  path.join(__dirname, 'railway-migration-2026-06-21-one-time-trial-referral-config.sql'),
   'utf8'
 );
 
@@ -27640,6 +27649,7 @@ async function initDb() {
     await pool.query(createLiveClassInfrastructureSQL);
     await pool.query(createRabbiCheckoutAccessSQL);
     await pool.query(createOneTimeProductSystemSQL);
+    await pool.query(createOneTimeTrialReferralConfigSQL);
     await pool.query(createContentOutputsSQL);
     await pool.query(createContentPromptsSQL);
     await pool.query(createContentPromptVersionsSQL);
@@ -69725,6 +69735,28 @@ function oneTimeProductDecisionView(row = {}) {
   };
 }
 
+function oneTimePromotionPolicyView(row = {}) {
+  return {
+    id: row.id ? Number(row.id) : null,
+    project_id: row.project_id ? Number(row.project_id) : null,
+    program_id: row.program_id ? Number(row.program_id) : null,
+    program_key: row.program_key || ONE_TIME_PRODUCT_PROGRAM_KEY,
+    policy_key: row.policy_key || '',
+    policy_version: row.policy_version || '',
+    policy_type: row.policy_type || '',
+    status: row.status || 'draft',
+    title: row.title || '',
+    config: oneTimeProductJson(row.config),
+    public_copy_approved: row.public_copy_approved === true,
+    live_billing_enabled: row.live_billing_enabled === true,
+    invoice_credit_enabled: row.invoice_credit_enabled === true,
+    external_write_performed: row.external_write_performed === true,
+    metadata: oneTimeProductJson(row.metadata),
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
 function oneTimeProductLeadView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
@@ -70190,6 +70222,9 @@ async function oneTimeProductSystemPayload(req) {
     providers,
     libraryItems,
     crmImportPreview,
+    promotionPolicies,
+    acceptanceRows,
+    referralRows,
   ] = await Promise.all([
     rabbiTiers(project.id),
     pool.query(
@@ -70254,12 +70289,52 @@ async function oneTimeProductSystemPayload(req) {
       [project.id]
     ),
     oneTimeCrmImportPreviewReadiness(project.id),
+    pool.query(
+      `SELECT *
+       FROM bna_one_time_promotion_policies
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY policy_type ASC, policy_key ASC, policy_version DESC`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_one_time_policy_acceptances
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY accepted_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+       LIMIT 25`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_one_time_referrals
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY created_at DESC NULLS LAST, id DESC
+       LIMIT 50`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ).catch(() => ({ rows: [] })),
   ]);
   const planningTiers = Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView);
   const scheduleViews = schedules.rows.map(oneTimeScheduleView);
   const productOffers = buildOneTimeProductOfferCatalog(offers.rows.map(oneTimeOfferRowView));
   const availability = buildOneTimeAvailabilityFoundation(availabilityRules.rows.map(oneTimeAvailabilityRowView));
   const appointmentRows = appointmentIntents.rows.map(oneTimeAppointmentRowView);
+  const decisionViews = decisions.rows.map(oneTimeProductDecisionView);
+  const promotionPolicyViews = promotionPolicies.rows.map(oneTimePromotionPolicyView);
+  const acceptanceRecords = acceptanceRows.rows.map(oneTimePolicyAcceptanceRecordView);
+  const referralRecords = referralRows.rows.map(oneTimeReferralRecordView);
+  const trialReferralConfig = {
+    ...buildOneTimeTrialReferralConfiguration({
+      offers: productOffers,
+      decisions: decisionViews,
+      acceptances: acceptanceRecords,
+      referrals: referralRecords,
+    }),
+    promotion_policies: promotionPolicyViews,
+    promotion_policy_count: promotionPolicyViews.length,
+  };
+  const stripeLocalBeta = stripeIntegration.buildOneTimeStripeLocalBetaPlan({
+    trial_referral_config: trialReferralConfig,
+  }, { config: stripeRuntimeConfig });
   const providerReadiness = providers.map((provider) => ({
     provider: provider.provider,
     mode: provider.mode,
@@ -70274,11 +70349,14 @@ async function oneTimeProductSystemPayload(req) {
     planning_tiers: planningTiers,
     tiers,
     funnels: funnels.rows.map(oneTimeProductFunnelView),
-    decisions: decisions.rows.map(oneTimeProductDecisionView),
+    decisions: decisionViews,
     leads: leads.rows.map(oneTimeProductLeadView),
     schedules: scheduleViews,
     calendar,
     product_offers: productOffers,
+    trial_referral_config: trialReferralConfig,
+    trial_referral_policies: promotionPolicyViews,
+    stripe_local_beta: stripeLocalBeta,
     availability,
     appointment_types: defaultOneTimeAppointmentTypes(),
     appointment_intents: appointmentRows,
@@ -70312,6 +70390,24 @@ async function oneTimeProductSystemPayload(req) {
 app.get('/api/bna/one-time/product-system', requireAdmin, async (req, res) => {
   try {
     res.json(await oneTimeProductSystemPayload(req));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/trial-referral-config', requireAdmin, async (req, res) => {
+  try {
+    const system = await oneTimeProductSystemPayload(req);
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      trial_referral_config: system.trial_referral_config,
+      stripe_local_beta: system.stripe_local_beta,
+      live_charges_enabled: false,
+      real_invoice_credits_enabled: false,
+      external_write_performed: false,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -76849,6 +76945,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createLiveClassInfrastructureSQL);
     await pool.query(createRabbiCheckoutAccessSQL);
     await pool.query(createOneTimeProductSystemSQL);
+    await pool.query(createOneTimeTrialReferralConfigSQL);
     await pool.query(createServiceProvidersSQL);
     await pool.query(createProviderIndexMvpSQL);
     await pool.query(createCommunicationsIntegrationsSQL);

@@ -64,6 +64,27 @@ const ONE_TIME_APPOINTMENT_STATUSES = Object.freeze([
   'completed',
 ]);
 
+const ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS = Object.freeze({
+  policy_key: 'one_time_warm_lead_intro_trial',
+  policy_version: 'one-time-warm-lead-intro-trial-v1',
+  offer_key: 'membership_67_monthly',
+  trial_days: 30,
+  renewal_amount_cents: 6700,
+  currency: 'USD',
+  billing_interval: 'month',
+  card_required: true,
+  one_intro_trial_per_household: true,
+});
+
+const ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS = Object.freeze({
+  policy_key: 'one_time_referral_credit_after_first_paid_cycle',
+  policy_version: 'one-time-referral-credit-v1',
+  reward_type: 'manual_month_credit_candidate',
+  reward_amount_cents: 6700,
+  currency: 'USD',
+  activation_trigger: 'first_successful_paid_cycle',
+});
+
 const ONE_TIME_CANDIDATE_PRICING = Object.freeze({
   library_live_low_touch: {
     currency: 'USD',
@@ -371,6 +392,48 @@ const ONE_TIME_PRODUCT_READINESS_SECTIONS = Object.freeze([
       },
     ],
   },
+  {
+    section_key: 'trial_referral_launch',
+    title: 'Trial And Referral Launch',
+    items: [
+      {
+        key: 'warm_lead_30_day_trial',
+        label: '30-day warm-lead intro trial',
+        status: 'local_contract_present',
+        note: 'Default trial policy is modeled locally for the $67 monthly membership without creating a checkout session.',
+      },
+      {
+        key: 'card_required_one_intro_trial',
+        label: 'Card-required and one intro trial per household',
+        status: 'local_contract_present',
+        note: 'Policy rules require card collection and one intro trial per household when a live checkout path is approved.',
+      },
+      {
+        key: 'policy_version_acceptance_storage',
+        label: 'Policy-version acceptance storage',
+        status: 'local_contract_present',
+        note: 'Acceptance rows carry policy_key, policy_version, acceptance_key, actor/contact reference, accepted_at, source, and test-mode metadata.',
+      },
+      {
+        key: 'referral_after_first_paid_cycle',
+        label: 'Referral credit after first successful paid cycle',
+        status: 'local_contract_present',
+        note: 'Referral reward eligibility is manual-review only and activates only after trusted first paid-cycle evidence.',
+      },
+      {
+        key: 'no_real_charge_or_invoice_credit',
+        label: 'No real charge or invoice credit',
+        status: 'blocked_external_approval',
+        note: 'Checkout creation, live charges, payment links, and invoice credits remain disabled until billing/accounting approval and test checkout proof.',
+      },
+      {
+        key: 'trial_referral_legal_wording',
+        label: 'Trial and referral legal wording',
+        status: 'needs_operator_decision',
+        note: 'Public trial, renewal, card-required, referral, and credit wording must be approved before publication.',
+      },
+    ],
+  },
 ]);
 
 function normalizeEnum(value, allowed, fallback) {
@@ -533,6 +596,223 @@ function defaultOneTimeAccessPolicy() {
     expiration_state: 'expired',
     automation_enabled: false,
     manual_review_required: true,
+  };
+}
+
+function safePositiveInteger(value, fallback) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? Math.round(number) : fallback;
+}
+
+function oneTimePolicyDecisionView(decisions = [], decisionKey = 'trial_referral_legal_wording') {
+  const rows = Array.isArray(decisions) ? decisions : [];
+  const match = rows.find((decision) => String(decision?.decision_key || decision?.decisionKey || '') === decisionKey) || {};
+  return {
+    decision_key: decisionKey,
+    status: match.status || 'decision_pending',
+    title: match.title || 'Approve trial and referral legal wording',
+    question: match.question || 'What exact public trial, card-required, renewal, referral, and credit wording may One Time use?',
+    context: match.context || 'Local implementation can store policy versions and acceptance records, but public/legal wording needs approval before publication.',
+    needed_from: match.needed_from || 'Shloimie + legal/accounting owner',
+    public_output_allowed: match.public_output_allowed === true,
+    blocks_public_copy: match.status !== 'approved',
+    blocks_local_configuration: false,
+  };
+}
+
+function oneTimePolicyAcceptanceRecordView(row = {}) {
+  const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
+  return {
+    id: row.id ? Number(row.id) : null,
+    policy_key: row.policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_key,
+    policy_version: row.policy_version || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
+    acceptance_key: row.acceptance_key || row.acceptanceKey || '',
+    contact_id: row.contact_id ? Number(row.contact_id) : null,
+    member_id: row.member_id ? Number(row.member_id) : null,
+    checkout_record_id: row.checkout_record_id ? Number(row.checkout_record_id) : null,
+    accepted_by_name: row.accepted_by_name || '',
+    accepted_by_email: row.accepted_by_email || '',
+    accepted_at: row.accepted_at || null,
+    source: row.source || 'test_local',
+    test_mode: row.test_mode !== false,
+    external_write_performed: row.external_write_performed === true,
+    metadata,
+  };
+}
+
+function buildOneTimePolicyAcceptanceStorageContract(rows = []) {
+  const records = (Array.isArray(rows) ? rows : []).map(oneTimePolicyAcceptanceRecordView);
+  return {
+    table: 'bna_one_time_policy_acceptances',
+    supported: true,
+    test_local_mode_supported: true,
+    policy_versions: [
+      ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
+      ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.policy_version,
+    ],
+    required_fields: [
+      'project_id',
+      'program_key',
+      'policy_key',
+      'policy_version',
+      'acceptance_key',
+      'accepted_by_name_or_email',
+      'accepted_at',
+      'source',
+    ],
+    records,
+    record_count: records.length,
+    live_public_acceptance_enabled: false,
+    external_write_performed: false,
+  };
+}
+
+function buildOneTimeLaunchTrialPolicy(input = {}) {
+  const offer = input.offer && typeof input.offer === 'object' ? input.offer : {};
+  const trialDays = safePositiveInteger(input.trial_days ?? input.trialDays, ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.trial_days);
+  const renewalAmountCents = safePositiveInteger(
+    input.renewal_amount_cents ?? input.renewalAmountCents ?? offer.price_amount_cents,
+    ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.renewal_amount_cents,
+  );
+  const currency = String(input.currency || offer.currency || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.currency).toUpperCase();
+  return {
+    requirement_id: 'REQ-20260621-906',
+    policy_key: input.policy_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_key,
+    policy_version: input.policy_version || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
+    offer_key: input.offer_key || offer.offer_key || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key,
+    status: 'local_contract_present',
+    mode: 'test_local_only',
+    trial_days: trialDays,
+    renewal: {
+      amount_cents: renewalAmountCents,
+      display_amount: `${currency === 'USD' ? '$' : `${currency} `}${(renewalAmountCents / 100).toFixed(2)}`,
+      currency,
+      billing_interval: input.billing_interval || offer.billing_interval || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.billing_interval,
+      starts_after_trial: true,
+    },
+    rules: {
+      card_required: input.card_required !== undefined ? input.card_required === true : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.card_required,
+      one_intro_trial_per_household: input.one_intro_trial_per_household !== undefined
+        ? input.one_intro_trial_per_household === true
+        : ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.one_intro_trial_per_household,
+      acceptance_required: true,
+      household_match_keys: ['normalized_parent_email', 'normalized_parent_phone', 'normalized_student_name'],
+    },
+    acceptance: {
+      policy_version: input.policy_version || ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.policy_version,
+      required: true,
+      storage_table: 'bna_one_time_policy_acceptances',
+      records_are_test_local: true,
+    },
+    gates: {
+      checkout_session_creation_enabled: false,
+      live_charges_enabled: false,
+      invoices_enabled: false,
+      invoice_credit_enabled: false,
+      payment_link_creation_enabled: false,
+      access_grant_automation_enabled: false,
+      external_write_performed: false,
+    },
+  };
+}
+
+function buildOneTimeReferralCreditPolicy(input = {}) {
+  const rewardAmountCents = safePositiveInteger(
+    input.reward_amount_cents ?? input.rewardAmountCents,
+    ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.reward_amount_cents,
+  );
+  const currency = String(input.currency || ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.currency).toUpperCase();
+  return {
+    requirement_id: 'REQ-20260621-906',
+    policy_key: input.policy_key || ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.policy_key,
+    policy_version: input.policy_version || ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.policy_version,
+    status: 'manual_review_required',
+    mode: 'test_local_only',
+    activation_trigger: ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.activation_trigger,
+    reward: {
+      type: input.reward_type || ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.reward_type,
+      amount_cents: rewardAmountCents,
+      display_amount: `${currency === 'USD' ? '$' : `${currency} `}${(rewardAmountCents / 100).toFixed(2)}`,
+      currency,
+      application_mode: 'manual_after_admin_review',
+    },
+    rules: {
+      activate_only_after_first_successful_paid_cycle: true,
+      self_referrals_allowed: false,
+      one_reward_per_referred_member: true,
+      duplicate_referrals_require_review: true,
+      do_not_contact_and_failed_payment_suppression_required: true,
+    },
+    ledger: {
+      referral_table: 'bna_one_time_referrals',
+      credit_table: 'bna_one_time_referral_credits',
+      idempotency_keys: [
+        'referral_code',
+        'referred_contact_or_member_id',
+        'first_paid_cycle_event_id',
+        'reward_policy_version',
+      ],
+    },
+    gates: {
+      automatic_credit_enabled: false,
+      invoice_credit_enabled: false,
+      real_invoice_credit_created: false,
+      payment_provider_write_enabled: false,
+      external_write_performed: false,
+    },
+  };
+}
+
+function oneTimeReferralRecordView(row = {}) {
+  const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
+  return {
+    id: row.id ? Number(row.id) : null,
+    referral_code: row.referral_code || '',
+    status: row.status || 'candidate',
+    activation_status: row.activation_status || 'pending_first_paid_cycle',
+    reward_status: row.reward_status || 'not_approved',
+    reward_policy_version: row.reward_policy_version || ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS.policy_version,
+    first_paid_cycle_event_id: row.first_paid_cycle_event_id || '',
+    external_write_performed: row.external_write_performed === true,
+    metadata,
+  };
+}
+
+function buildOneTimeTrialReferralConfiguration({
+  offers = [],
+  decisions = [],
+  acceptances = [],
+  referrals = [],
+} = {}) {
+  const offerRows = Array.isArray(offers) ? offers : [];
+  const monthlyOffer = offerRows.find((offer) => offer?.offer_key === ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS.offer_key) || {};
+  const referralRows = (Array.isArray(referrals) ? referrals : []).map(oneTimeReferralRecordView);
+  return {
+    requirement_id: 'REQ-20260621-906',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    status: 'local_contract_present',
+    mode: 'test_local_only',
+    launch_trial: buildOneTimeLaunchTrialPolicy({ offer: monthlyOffer }),
+    referral_credit: buildOneTimeReferralCreditPolicy(),
+    acceptance_storage: buildOneTimePolicyAcceptanceStorageContract(acceptances),
+    referral_records: referralRows,
+    legal_wording_decision: oneTimePolicyDecisionView(decisions),
+    guardrails: {
+      live_charges_enabled: false,
+      real_invoice_credits_enabled: false,
+      checkout_creation_enabled: false,
+      payment_link_creation_enabled: false,
+      email_send_enabled: false,
+      whatsapp_send_enabled: false,
+      external_crm_write_enabled: false,
+      external_write_performed: false,
+    },
+    blockers: [
+      'legal_wording_decision_required_before_public_copy',
+      'billing_provider_and_test_checkout_required_before_live_card_collection',
+      'accounting_owner_approval_required_before_real_invoice_credit_or_reward',
+    ],
   };
 }
 
@@ -996,6 +1276,8 @@ module.exports = {
   ONE_TIME_AVAILABILITY_TYPES,
   ONE_TIME_APPOINTMENT_TYPES,
   ONE_TIME_APPOINTMENT_STATUSES,
+  ONE_TIME_LAUNCH_TRIAL_POLICY_DEFAULTS,
+  ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS,
   ONE_TIME_DEFAULT_REGION_NOTES,
   ONE_TIME_READINESS_STATUSES,
   ONE_TIME_PRODUCT_READINESS_SECTIONS,
@@ -1026,5 +1308,11 @@ module.exports = {
   validateOneTimeLead,
   fixtureSefariaLookup,
   buildSourcePrepDraft,
+  oneTimePolicyAcceptanceRecordView,
+  buildOneTimePolicyAcceptanceStorageContract,
+  buildOneTimeLaunchTrialPolicy,
+  buildOneTimeReferralCreditPolicy,
+  oneTimeReferralRecordView,
+  buildOneTimeTrialReferralConfiguration,
   oneTimeProductReadinessView,
 };

@@ -108,6 +108,68 @@ function buildCheckoutPreview(payload = {}, options = {}) {
   };
 }
 
+function buildOneTimeStripeLocalBetaPlan(payload = {}, options = {}) {
+  const readiness = getStripeReadiness(options);
+  const config = payload.trial_referral_config || payload.trialReferralConfig || payload || {};
+  const trial = config.launch_trial || payload.launch_trial || {};
+  const renewal = trial.renewal || {};
+  const trialRules = trial.rules || {};
+  const referral = config.referral_credit || payload.referral_credit || {};
+  const referralReward = referral.reward || {};
+  return {
+    provider: 'stripe',
+    requirement_id: 'REQ-20260621-906',
+    mode: 'test_local_only',
+    preview_only: true,
+    external_write_performed: false,
+    readiness,
+    launch_trial: {
+      policy_key: trial.policy_key || 'one_time_warm_lead_intro_trial',
+      policy_version: trial.policy_version || 'one-time-warm-lead-intro-trial-v1',
+      offer_key: trial.offer_key || 'membership_67_monthly',
+      trial_days: Number.isFinite(Number(trial.trial_days)) ? Number(trial.trial_days) : 30,
+      renewal_amount_cents: Number.isFinite(Number(renewal.amount_cents)) ? Number(renewal.amount_cents) : 6700,
+      currency: String(renewal.currency || 'USD').toUpperCase(),
+      billing_interval: renewal.billing_interval || 'month',
+      card_required: trialRules.card_required !== false,
+      one_intro_trial_per_household: trialRules.one_intro_trial_per_household !== false,
+    },
+    referral_credit: {
+      policy_key: referral.policy_key || 'one_time_referral_credit_after_first_paid_cycle',
+      policy_version: referral.policy_version || 'one-time-referral-credit-v1',
+      activation_trigger: referral.activation_trigger || 'first_successful_paid_cycle',
+      reward_type: referralReward.type || 'manual_month_credit_candidate',
+      reward_amount_cents: Number.isFinite(Number(referralReward.amount_cents)) ? Number(referralReward.amount_cents) : 6700,
+      currency: String(referralReward.currency || 'USD').toUpperCase(),
+      manual_review_required: true,
+    },
+    actions: {
+      checkout_preview_enabled: true,
+      checkout_session_creation_enabled: false,
+      subscription_creation_enabled: false,
+      payment_method_collection_live_enabled: false,
+      invoice_credit_enabled: false,
+      live_charge_enabled: false,
+      external_write_performed: false,
+    },
+    blocked_actions: [
+      'checkout_session_create',
+      'subscription_create',
+      'payment_method_collection',
+      'invoice_credit_apply',
+      'live_charge',
+    ],
+    guardrails: {
+      no_customer_created: true,
+      no_subscription_created: true,
+      no_payment_method_collected: true,
+      no_invoice_credit_created: true,
+      no_live_charge: true,
+      external_write_performed: false,
+    },
+  };
+}
+
 function assertCheckoutCreateApproved(payload = {}, options = {}) {
   const readiness = getStripeReadiness(options);
   const confirm = payload.confirm || payload.confirmation_phrase || '';
@@ -135,6 +197,7 @@ function safeStripeError(error, config = {}) {
 module.exports = {
   assertCheckoutCreateApproved,
   buildCheckoutPreview,
+  buildOneTimeStripeLocalBetaPlan,
   getStripeConfig,
   getStripeReadiness,
   safeStripeError,

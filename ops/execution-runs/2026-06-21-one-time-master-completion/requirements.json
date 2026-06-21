@@ -1544,18 +1544,37 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "src/lib/bna/one-time-product-system.js",
+        "src/lib/integrations/stripe.js",
+        "server.js",
+        "public/operations.html",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "tests/one-time-stripe-local-beta.test.js",
+        "scripts/smoke-one-time-trial-referral-live.mjs",
+        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md"
+      ],
+      "verification": [
+        "PASS node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-contacts-intake-cleanup.test.js",
+        "PASS node --test tests/int05-integrations-closeout.test.js tests/rabbi-checkout-access.test.js tests/provider-integrations-secret-storage.test.js",
+        "PASS node --check server.js",
+        "PASS node --check scripts/smoke-one-time-trial-referral-live.mjs",
+        "PASS node --check src/lib/integrations/stripe.js",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS npm run watchdog:actions",
+        "PASS git diff --check with line-ending warnings only"
+      ],
       "implementation_commit": "",
       "pushed_commit": "",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T17:40:00+03:00",
       "id": "REQ-20260621-906",
       "title": "Warm-lead trial and referral configuration",
       "expected_result": "Warm-lead trial, referral credit, policy-version, and acceptance records are configurable in test/local mode without live charges or invoice credits.",
@@ -1579,6 +1598,9 @@
         "src/lib/bna/one-time-product-system.js",
         "server.js",
         "public/operations.html",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "ops/route-registry.json",
+        "scripts/smoke-one-time-trial-referral-live.mjs",
         "tests/one-time-stripe-local-beta.test.js"
       ]
     },
