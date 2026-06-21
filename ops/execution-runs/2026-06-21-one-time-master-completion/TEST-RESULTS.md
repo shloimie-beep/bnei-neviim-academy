@@ -108,3 +108,23 @@ Intermediate failure recorded:
   exposes `/api/health`. The smoke was corrected and rerun successfully. This
   was a smoke-script endpoint mistake, not an app regression.
 <!-- batch-4:end -->
+
+<!-- batch-5:start -->
+## Batch 5 Test Results
+
+Recorded after action coverage artifacts, visible Operations action labels, and
+setup-path changes:
+
+- PASS `node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js`
+- PASS `node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/workspace-user-role-management.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/action-registry-telegram-ui-bot.test.js`
+- PASS `node --check server.js`
+- PASS `git diff --check` with line-ending warnings only.
+
+Focused combined test result:
+
+- Tests: 52 passed, 0 failed.
+- Covered: One Time action coverage metadata, required visible labels, handler
+  and endpoint mapping, placeholder removal, external-write gates, existing
+  watchdog action registry, Operations UI smoke, module scoping, workspace user
+  actions, and Telegram/UI action registry behavior.
+<!-- batch-5:end -->

@@ -528,7 +528,7 @@
       "id": "REQ-20260621-502",
       "title": "Visible action registry and dead-button coverage",
       "expected_result": "Every visible action is working, disabled with a setup/blocker path, or intentionally informational.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0006"
@@ -543,22 +543,33 @@
       "depends_on": [
         "REQ-20260619-303"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_local",
       "can_continue_without_operator": true,
-      "next_action": "Inventory visible controls, wire working actions or exact disabled blockers, and add coverage tests.",
+      "next_action": "Commit and push Batch 5 visible action coverage, deploy app-visible UI changes, and run focused live action coverage smoke.",
       "acceptance_criteria": [
-        "action coverage report exists",
-        "dead-button tests pass",
-        "external-write controls stay gated"
+        "One Time action coverage Markdown and JSON exist.",
+        "Required visible action labels map to working handlers, setup paths, or gated blockers.",
+        "Generic placeholder buttons are removed except scoped workspace denial.",
+        "External-write controls remain disabled, setup-path, preview-only, or exact-approval gated.",
+        "Automated action coverage tests pass."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js",
+        "node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/workspace-user-role-management.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/action-registry-telegram-ui-bot.test.js",
+        "node --check server.js",
+        "git diff --check"
+      ],
       "implementation_files": [
         "ops/action-registry/one-time-action-coverage.md",
         "ops/action-registry/one-time-action-coverage.json",
         "public/operations.html",
-        "server.js",
-        "tests/watchdog-action-registry.test.js"
+        "tests/one-time-action-coverage.test.js"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
@@ -566,7 +577,9 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T15:35:00+03:00",
+      "blocker": "",
+      "blocker_owner": ""
     },
     {
       "id": "REQ-20260619-304",

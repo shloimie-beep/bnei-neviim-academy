@@ -1,10 +1,12 @@
 # Next Session
 
 Continue `REQ-20260621-502`: visible action coverage and no-dead-buttons
-implementation. Exact next command:
+deployment/live verification. The implementation is locally verified; commit,
+push, deploy, and live-smoke the app-visible Operations changes. Exact next
+command:
 
 ```powershell
-npm run bna:run:next
+npm run bna:run:validate
 ```
 
 Then implement Batch 4:
@@ -58,3 +60,21 @@ Workspace user and role implementation is deployed and live-verified:
 
 Continue automatically with Batch 5 action coverage.
 <!-- batch-4:end -->
+
+<!-- batch-5:start -->
+## Batch 5 Handoff
+
+Visible action coverage is locally verified but not yet deployed in this
+handoff state.
+
+Exact next commands:
+
+```powershell
+npm run bna:run:validate
+node scripts/audit-secrets.mjs
+git diff --check
+```
+
+Then commit, push, deploy, and run standard plus focused live action coverage
+smokes.
+<!-- batch-5:end -->

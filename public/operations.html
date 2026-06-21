@@ -9455,7 +9455,7 @@
                     </nav>
                     <div class="ops-sidebar-footer">
                         <button type="button" class="ops-sidebar-mini" onclick="switchView('settings')">Settings</button>
-                        <button type="button" class="ops-sidebar-mini" onclick="showNotConfigured('Help center')">Help</button>
+                        <button type="button" class="ops-sidebar-mini" onclick="openBnaHelperWithPrompt('Help me with this Operations screen. Show the relevant support, task, decision, or setup path without sending external messages.')">Help</button>
                         <a class="ops-sidebar-mini" href="/operations-login.html">Logout</a>
                     </div>
                 </aside>
@@ -12223,6 +12223,7 @@
                     <div class="task-row-actions" onclick="event.stopPropagation()">
                         ${canClaim ? `<button class="task-action" type="button" onclick="claimAgentRunAction(event, ${attrJson(run.run_key)})">Claim</button>` : ''}
                         <button class="task-action primary" type="button" onclick="openAgentRun(${attrJson(run.run_key)})">Open Run</button>
+                        <button class="task-action" type="button" onclick="openAgentRun(${attrJson(run.run_key)})">View Evidence</button>
                         <button class="task-action" type="button" onclick="copyAgentPrompt(${attrJson(run.run_key)})">Copy Prompt</button>
                         <button class="task-action" type="button" onclick="openChatGptAgent(${attrJson(run.run_key)})">Open ChatGPT</button>
                         ${canCancel ? `<button class="task-action" type="button" onclick="cancelAgentRunAction(event, ${attrJson(run.run_key)})">Cancel</button>` : ''}
@@ -12725,7 +12726,11 @@
                             <strong class="local-toolbar-title">${escapeHtml(state.title || 'Tasks')}</strong>
                             <p class="local-toolbar-copy">${Number(focusCount)} visible item${Number(focusCount) === 1 ? '' : 's'}${activeFilters.length ? ` after ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'}` : ''}. Blocked is only for human or outside-service blockers; Codex Queue is separate.</p>
                         </div>
-                        ${activeFilters.length ? '<button type="button" class="status-chip" onclick="resetTaskFilters()">Clear filters</button>' : ''}
+                        <div class="status-chip-row">
+                            <button type="button" class="status-chip" onclick="openTaskModal()">Add Task</button>
+                            <button type="button" class="status-chip" onclick="openDecisionModal()">Create Decision</button>
+                            ${activeFilters.length ? '<button type="button" class="status-chip" onclick="resetTaskFilters()">Clear filters</button>' : ''}
+                        </div>
                     </div>
                     <div class="status-chip-row">
                         ${lanes.map(lane => renderTaskStatusChip(lane, counts[lane.id] || 0)).join('')}
@@ -16202,6 +16207,10 @@
                         ${renderMetricButton('Operator Decisions', summary.needs_operator_decision || 0, 'Policies or product choices still need approval.', '')}
                         ${renderMetricButton('External Gates', summary.blocked_external_approval || 0, 'Billing, Zoom, send, publish, and live-smoke gates remain blocked.', '')}
                     </div>
+                    <div class="task-actions" style="margin-top:12px;">
+                        <button class="task-action primary" type="button" onclick="setCurrentSection('schedule')">Add Class</button>
+                        <button class="task-action" type="button" onclick="openBnaHelperWithPrompt('Create the One Time appointment booking setup task. Include appointment type, Rabbi availability, timezone, buffers, booking window, cancellation cutoff, entitlement/payment requirement, confirmation text, reminder policy, private notes, parent-visible summary, and no Zoom meeting creation.')">Add Appointment setup</button>
+                    </div>
                     <div class="content-section-grid" style="margin-top:14px;">
                         ${sections.map(section => `
                             <article class="content-card">
@@ -16917,7 +16926,7 @@
                         <a class="task-action primary" href="/provider" target="_blank" rel="noopener">Open Provider Portal</a>
                         <button class="task-action" onclick="sendProviderSetupEmail(${Number(provider.id)})">Send Setup Email</button>
                         ${whatsappDigits ? `<a class="task-action" href="https://wa.me/${escapeHtml(whatsappDigits)}" target="_blank" rel="noopener">WhatsApp</a>` : '<button class="task-action" disabled>No WhatsApp</button>'}
-                        <button class="task-action" onclick="showNotConfigured('Provider website import')">Website Import</button>
+                        <button class="task-action" onclick="openBnaHelperWithPrompt('Create a provider website import setup task for this workspace. Require source URL, provider owner, allowed pages, import mapping, privacy review, rollback plan, and a no-write preview before any content import.')">Website Import setup</button>
                         <button class="task-action" onclick="switchView('admin'); setCurrentSection('users')">Users</button>
                         <button class="task-action" onclick="setCurrentSection('commercial')">Commercial Settings</button>
                     </div>
@@ -19788,8 +19797,8 @@
                         </div>
                         <div class="status-chip-row">
                             <button type="button" class="status-chip" onclick="saveVisibleSettings()">Save</button>
-                            <button type="button" class="status-chip" onclick="showNotConfigured('Settings test action')">Test</button>
-                            <button type="button" class="status-chip" onclick="showNotConfigured('Settings reset action')">Reset</button>
+                            <button type="button" class="status-chip" onclick="openBnaHelperWithPrompt('Create a scoped settings Test Connection plan. Identify the exact settings group, readback endpoint, required role, workspace scope, success state, error state, and no-write verification before enabling the button.')">Test Connection setup</button>
+                            <button type="button" class="status-chip" onclick="openBnaHelperWithPrompt('Create a scoped settings reset plan. Identify the exact setting, confirmation phrase, audit log, rollback/readback evidence, and required role before enabling reset.')">Reset setup</button>
                         </div>
                     </div>
                     <div class="status-chip-row">
@@ -20139,7 +20148,7 @@
                                     ${renderSettingsControlRow('Rotation reminder', '30-day option', 'Workspace/provider-owned keys can carry review dates; raw secrets are never displayed.', 'Reminder')}
                                 </div>
                                 <div class="task-actions" style="margin-top:10px;">
-                                    <button class="task-action" type="button" onclick="${card.target}">Configure</button>
+                                    <button class="task-action" type="button" onclick="${card.target}">Configure Integration</button>
                                 </div>
                             </article>
                         `).join('')}
@@ -23967,7 +23976,7 @@
                         <label>Description<textarea name="description" rows="3"></textarea></label>
                         <label>Source sheet draft<textarea name="source_sheet_draft" rows="3"></textarea></label>
                         <div class="task-actions">
-                            <button class="task-action primary" type="submit">Create Package</button>
+                            <button class="task-action primary" type="submit">Add Class</button>
                             <button class="task-action" type="button" onclick="runOneTimeLibrarySmoke(event)">Run Smoke</button>
                             <input id="oneTimeSmokeApprovalFlag" placeholder="${ONE_TIME_MEMBER_LIBRARY_APPROVAL_FLAG}" style="min-width: 320px;">
                         </div>
@@ -24010,8 +24019,8 @@
                         <label>Transcript notes<textarea name="transcript_notes" rows="3">${escapeHtml(item.transcript_notes || '')}</textarea></label>
                         <label>Source sheet draft<textarea name="source_sheet_draft" rows="4">${escapeHtml(item.source_sheet_draft || '')}</textarea></label>
                         <div class="task-actions">
-                            <button class="task-action primary" type="submit">Save</button>
-                            <button class="task-action" type="button" onclick="previewOneTimeClassPackage(event, ${id})">Preview Package</button>
+                            <button class="task-action primary" type="submit">Save / Attach Vimeo Video</button>
+                            <button class="task-action" type="button" onclick="previewOneTimeClassPackage(event, ${id})">Preview Upload</button>
                         </div>
                     </form>
                     <form id="oneTimeAssetForm-${id}" class="settings-grid" onsubmit="addOneTimeClassAsset(event, ${id})">
@@ -24021,7 +24030,7 @@
                         <label>Status<select name="status">${oneTimeSelectOptions(['draft', 'review', 'approved'], 'draft')}</select></label>
                         <label>Description<textarea name="description" rows="2"></textarea></label>
                         <div class="task-actions">
-                            <button class="task-action" type="submit">Attach Asset</button>
+                            <button class="task-action" type="submit">Attach Source Asset</button>
                         </div>
                     </form>
                     ${assets.length ? `
@@ -24041,7 +24050,7 @@
                             <button class="task-action" type="button" onclick="previewOneTimeClassMember(event, ${id})">Member Preview</button>
                             <button class="task-action" type="button" onclick="approveOneTimeClassLibrary(event, ${id})">Approve</button>
                             <button class="task-action primary" type="submit">Publish</button>
-                            ${latestItem ? `<button class="task-action danger" type="button" onclick="rollbackOneTimeLibraryItem(event, ${Number(latestItem.id)})">Rollback Latest</button>` : ''}
+                            ${latestItem ? `<button class="task-action danger" type="button" onclick="rollbackOneTimeLibraryItem(event, ${Number(latestItem.id)})">Unpublish / Restore Latest</button>` : ''}
                             <a class="task-action" href="/member-library" target="_blank" rel="noopener">Open Library</a>
                         </div>
                     </form>
@@ -24179,7 +24188,7 @@
                                 </label>
                                 <div class="task-actions">
                                     <button class="task-action" type="submit">Preview</button>
-                                    <button class="task-action primary" type="button" onclick="createOneTimeClassroomAssignment(event)">Create Internal Calendar Item</button>
+                                    <button class="task-action primary" type="button" onclick="createOneTimeClassroomAssignment(event)">Add Session</button>
                                 </div>
                             </form>
                             ${renderOneTimeClassroomPreview()}
@@ -24437,6 +24446,10 @@
                         ${renderClassroomMetric(state.summary.transcriptReady, 'Transcripts')}
                         ${renderClassroomMetric(state.summary.summaryReady, 'Summaries')}
                         ${renderClassroomMetric(state.summary.vimeoReady, 'Vimeo refs')}
+                    </div>
+                    <div class="task-actions" style="margin:10px 0 12px;">
+                        <button class="task-action" type="button" onclick="openBnaHelperWithPrompt('Create the One Time Vimeo upload setup task. Include authenticated Vimeo user, account owner, plan, upload scope/capability, storage/quota, folder, privacy default, allowed embed domains, callback URL, token state, idempotent upload job, retry policy, playback verification, and no real upload without explicit authorization.')">Preview Upload setup</button>
+                        <button class="task-action" type="button" onclick="openBnaHelperWithPrompt('Create the One Time recording retry/dead-letter setup task. Include source recording ID, transcript/summary state, idempotency key, retry reason, rollback path, audit log, and confirmation that no publish or delete occurs from retry.')">Retry setup</button>
                     </div>
                     <div class="one-time-output-grid">
                         ${state.sections.map(([title, status, body]) => `
@@ -33545,6 +33558,18 @@
             editingTask = null;
             render();
             document.getElementById('taskModal').classList.add('show');
+        }
+
+        function openDecisionModal() {
+            openTaskModal();
+            const titleInput = document.getElementById('taskTitle');
+            const notesInput = document.getElementById('taskNotes');
+            const stageInput = document.getElementById('taskStage');
+            const decisionInput = document.getElementById('taskDecisionRequired');
+            if (titleInput) titleInput.placeholder = 'Decision needed';
+            if (notesInput) notesInput.placeholder = 'Options, recommendation, consequences, and exact owner action needed...';
+            if (stageInput) stageInput.value = 'needs_decision';
+            if (decisionInput) decisionInput.checked = true;
         }
 
         function openTaskModalForDate(value) {

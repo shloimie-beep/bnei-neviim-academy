@@ -66,3 +66,20 @@ smoke and focused workspace-user role live smoke passed.
 
 Next unblocked batch: `REQ-20260621-502` visible action coverage.
 <!-- batch-4:end -->
+
+<!-- batch-5:start -->
+## Batch 5 - Visible Action Coverage
+
+Status: implemented / verified local / pending deployment
+
+Created the One Time action coverage registry and report, mapped required
+visible controls to handlers/endpoints/setup paths, and removed generic
+placeholder actions from Help, provider website import, and settings Test/Reset.
+Task/Decision creation now has visible Add Task and Create Decision actions,
+One Time class/library controls use explicit labels, and gated appointment,
+Vimeo upload, and recording retry controls open exact setup prompts.
+
+Focused verification passed with 52 tests. Next step: commit, push, deploy the
+safe app-visible Operations UI changes, run standard and focused live action
+coverage smokes, then continue to Batch 6 Operations UI/design correction.
+<!-- batch-5:end -->

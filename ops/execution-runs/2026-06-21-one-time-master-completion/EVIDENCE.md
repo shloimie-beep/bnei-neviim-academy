@@ -137,3 +137,35 @@ Focused live smoke confirmed:
 - Operations Users HTML contains Add Member and role-audit controls.
 - The old Provider Users dead placeholder is absent.
 <!-- batch-4:end -->
+
+<!-- batch-5:start -->
+## Batch 5 Evidence
+
+Visible action coverage is locally implemented and ready for app-visible
+deployment.
+
+- One Time action coverage report:
+  `ops/action-registry/one-time-action-coverage.md`
+- One Time action coverage machine-readable registry:
+  `ops/action-registry/one-time-action-coverage.json`
+- Operations UI action-label/setup-path changes:
+  `public/operations.html`
+- Automated coverage tests:
+  `tests/one-time-action-coverage.test.js`
+
+Implemented behavior:
+
+- Required controls are mapped to working handlers, setup paths, or gated
+  blockers: Add Member, Invite User, Assign Role, Add Class, Add Session,
+  Add Appointment, Add Task, Create Decision, Create Draft, Configure
+  Integration, Test Connection, Preview Upload, Attach Vimeo Video, Approve,
+  Publish, Unpublish, Archive, Restore, Retry, and View Evidence.
+- Generic `showNotConfigured(...)` placeholder buttons were removed from Help,
+  provider website import, and settings Test/Reset actions.
+- The only remaining `showNotConfigured(...)` call is the disabled workspace
+  switch denial for a user who lacks access.
+- One Time appointment, Vimeo upload, and recording retry controls open exact
+  setup prompts instead of silently failing.
+- External-write controls remain no-send, preview-only, setup-only, disabled, or
+  exact-approval gated.
+<!-- batch-5:end -->
