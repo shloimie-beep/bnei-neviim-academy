@@ -25150,3 +25150,37 @@ host/start URL, DNS mutation, or secret exposure was performed.
 
 Next: continue automatically with Batch 9H / `REQ-20260621-908` authenticated
 questions and support-ticket bot.
+
+## 2026-06-21T18:39:23+03:00 - One Time Master Completion Batch 9H Authenticated Support
+
+Closed `REQ-20260621-908` for PR #5. One Time member support now requires a
+member session, stores scoped requester/workspace/project context, persists
+`OT-SUP-######` ticket numbers, returns only the authenticated member's own
+sanitized tickets, hides source context/internal notes, and returns only
+project-visible staff replies. Private member questions now enter the
+first-party question review queue with member scoping and no forum/feed/send or
+external-write behavior. The member portal exposes guarded Private Questions
+and Support panels, and the Rabbi Telegram bridge keeps scoped support tickets
+ticket-only instead of unlocking an unrestricted Mishnah study bot.
+
+Core support implementation commit `98b293d9b8957ec4567d8ede45f3e0d05bb1178b`
+and final deployed PR head `b71b14c5252ca2145b738e11fe4ab547bb412c3a` were
+pushed. The final app-visible bundle was deployed from a clean detached
+worktree to Railway deployment `977430a7-fa56-480d-9289-5abbd6536658` and
+verified by standard live smoke
+`ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md` plus focused
+authenticated-support live smoke
+`ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`.
+
+Verification passed: syntax checks, focused 19/19 member/support/community
+tests, 59/59 broader portal/action/classroom tests, action and security
+watchdogs, execution-run validation, tracked secret audit, diff check, Railway
+doctor, standard live smoke, and focused 9H live smoke.
+
+Guardrails: no email send, WhatsApp send, SMS send, Telegram send, public
+forum post, member-feed publish, checkout/payment write, access grant, external
+CRM write, GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or
+secret exposure was performed.
+
+Next: continue automatically with Batch 9I / `REQ-20260621-909` test identities
+and mock data.

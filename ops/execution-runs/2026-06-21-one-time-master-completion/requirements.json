@@ -1738,22 +1738,22 @@
         "PASS npm run watchdog:actions",
         "PASS npm run watchdog:security",
         "PASS git diff --check with line-ending warnings only",
-        "PASS npm run railway:doctor after deployment e227622b-dad9-464a-b6a5-f4487713a87b",
-        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md",
-        "PASS npm run app:smoke:one-time-authenticated-support ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md"
+        "PASS npm run railway:doctor after deployment 977430a7-fa56-480d-9289-5abbd6536658",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-authenticated-support ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
       ],
       "implementation_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a",
       "pushed_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
-        "Railway deployment e227622b-dad9-464a-b6a5-f4487713a87b SUCCESS for deployed commit b71b14c5252ca2145b738e11fe4ab547bb412c3a",
-        "PASS npm run railway:doctor after deployment e227622b-dad9-464a-b6a5-f4487713a87b",
-        "PASS standard live smoke ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md",
-        "PASS focused live smoke ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md"
+        "Railway deployment 977430a7-fa56-480d-9289-5abbd6536658 SUCCESS for deployed commit b71b14c5252ca2145b738e11fe4ab547bb412c3a",
+        "PASS npm run railway:doctor after deployment 977430a7-fa56-480d-9289-5abbd6536658",
+        "PASS standard live smoke ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "PASS focused live smoke ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T18:36:00+03:00",
+      "updated_at": "2026-06-21T18:39:23+03:00",
       "id": "REQ-20260621-908",
       "title": "Authenticated questions and support-ticket bot",
       "expected_result": "Authenticated users can open scoped support tickets and private/community questions without exposing other users or internal notes.",
@@ -1787,11 +1787,11 @@
         "tests/app-select-dropdown.test.js",
         "tests/developer-tester-ticket-capture.test.js"
       ],
-      "deployment_id": "e227622b-dad9-464a-b6a5-f4487713a87b",
+      "deployment_id": "977430a7-fa56-480d-9289-5abbd6536658",
       "deployed_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a",
       "live_smoke": [
-        "ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md"
+        "ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
       ]
     },
     {

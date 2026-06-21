@@ -844,11 +844,11 @@ Recorded for `REQ-20260621-908` authenticated questions and support-ticket bot:
   `ops/watchdog-audits/2026-06-21T15-29-watchdog-security-routes.md`.
 - PASS `git diff --check` with line-ending warnings only.
 - PASS `npm run railway:doctor` after deployment
-  `e227622b-dad9-464a-b6a5-f4487713a87b`.
+  `977430a7-fa56-480d-9289-5abbd6536658`.
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`.
+  `ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md`.
 - PASS `npm run app:smoke:one-time-authenticated-support`,
-  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`.
+  `ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`.
 
 Focused coverage:
 

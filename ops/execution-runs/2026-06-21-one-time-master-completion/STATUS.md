@@ -569,11 +569,11 @@ authenticated support flows. Follow-up commit
 `b71b14c5252ca2145b738e11fe4ab547bb412c3a` fixed the classroom action label
 compatibility check and was pushed to PR #5. The final app-visible bundle was
 deployed from a clean detached worktree at `b71b14c5252ca2145b738e11fe4ab547bb412c3a`.
-Railway deployment `e227622b-dad9-464a-b6a5-f4487713a87b` reached `SUCCESS`.
+Railway deployment `977430a7-fa56-480d-9289-5abbd6536658` reached `SUCCESS`.
 Railway doctor passed, standard live smoke passed at
-`ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`, and focused
+`ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md`, and focused
 authenticated support/question live smoke passed at
-`ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`.
+`ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`.
 
 Focused local verification passed: syntax checks, 19/19 focused
 member/support/community tests, 59/59 broader portal/action/classroom tests,

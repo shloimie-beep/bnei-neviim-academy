@@ -1318,12 +1318,12 @@ Deployment and live evidence:
 - Core support-flow implementation commit:
   `98b293d9b8957ec4567d8ede45f3e0d05bb1178b`
 - Final Railway deployment:
-  `e227622b-dad9-464a-b6a5-f4487713a87b`
+  `977430a7-fa56-480d-9289-5abbd6536658`
 - Railway doctor after deploy: PASS, deployment status `SUCCESS`.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md`
 - Focused authenticated support live smoke:
-  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`
+  `ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`
 
 Focused live smoke verified:
 
