@@ -464,3 +464,32 @@ goals/check-ins/admin notes in the One Time Contacts UX.
 Next unblocked child: `REQ-20260621-906` warm-lead trial and referral
 configuration.
 <!-- batch-9E:end -->
+
+<!-- batch-9F:start -->
+## Batch 9F - Warm-Lead Trial And Referral Configuration
+
+Status: in progress / local implementation verified / deployment pending
+
+Implemented the configurable One Time warm-lead launch promotion and referral
+model in test/local mode. The product system now exposes the 30-day trial,
+`$67` renewal, card-required rule, one-intro-trial-per-household rule,
+policy-version acceptance storage, referral-after-first-paid-cycle model,
+single legal wording Decision, and Stripe local-beta no-write guardrails.
+
+Operations renders a Trial / Referral Configuration panel under the One Time
+provider workspace. The focused readback route is
+`/api/bna/one-time/trial-referral-config`; it returns policy metadata only and
+keeps checkout, live charges, payment links, subscriptions, invoice credits,
+access automation, sends, and external CRM writes disabled.
+
+Local verification passed:
+
+- Focused product/Operations suite: 25/25.
+- Focused Stripe/Rabbi/provider integration guardrail suite: 16/16.
+- Syntax checks, execution-run validation, tracked secret audit, action
+  watchdog, and diff check with line-ending warnings only.
+
+Next in this batch: commit, push, deploy, run standard plus focused live
+smokes, then mark `REQ-20260621-906` verified live if the deployed bundle
+matches the local verification.
+<!-- batch-9F:end -->

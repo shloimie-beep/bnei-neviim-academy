@@ -713,3 +713,41 @@ Intermediate/known failures recorded:
   `tests/ui-01-public-operations-shell.test.js`. The Batch 9E focused suite
   and live release gate passed.
 <!-- batch-9E:end -->
+
+<!-- batch-9F:start -->
+## Batch 9F Test Results
+
+Recorded after local implementation of warm-lead trial/referral configuration:
+
+- PASS `node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js`
+  with 13/13 tests passing.
+- PASS `node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-contacts-intake-cleanup.test.js`
+  with 25/25 tests passing.
+- PASS `node --test tests/int05-integrations-closeout.test.js tests/rabbi-checkout-access.test.js tests/provider-integrations-secret-storage.test.js`
+  with 16/16 tests passing.
+- PASS `node --check server.js`
+- PASS `node --check src/lib/integrations/stripe.js`
+- PASS `node --check scripts/smoke-one-time-trial-referral-live.mjs`
+- PASS `npm run bna:run:validate`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T14-44-watchdog-action-audit.md`
+- PASS `git diff --check` with line-ending warnings only.
+
+Focused coverage:
+
+- 30-day warm-lead intro trial defaults to the $67 monthly membership renewal.
+- Card-required and one-intro-trial-per-household rules are modeled.
+- Policy-version and acceptance storage use durable local tables.
+- Referral reward activates only after first successful paid cycle and stays
+  manual-review only.
+- Stripe local-beta readback exposes preview/readiness only and blocks checkout
+  session creation, subscriptions, live charges, payment-method collection, and
+  invoice credits.
+- Operations exposes a Trial / Referral Configuration panel with no-write
+  guardrails and the legal wording Decision.
+- `DEC-20260621-901` remains the single legal wording Decision and blocks only
+  public/legal copy and live billing launch.
+
+Deployment/live smoke pending until this implementation commit is pushed.
+<!-- batch-9F:end -->

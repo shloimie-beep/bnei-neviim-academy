@@ -1086,3 +1086,63 @@ Known unrelated QA caveat:
   syntax checks, action watchdog, deployment doctor, standard live smoke, and
   focused live smoke all passed.
 <!-- batch-9E:end -->
+
+<!-- batch-9F:start -->
+## Batch 9F - Warm-Lead Trial And Referral Configuration
+
+Status: in progress / local implementation verified / deployment pending
+
+Implementation evidence:
+
+- Trial/referral policy defaults, policy acceptance storage contract, referral
+  model, and readiness section:
+  `src/lib/bna/one-time-product-system.js`
+- Stripe local-beta preview/readiness helper with no billing writes:
+  `src/lib/integrations/stripe.js`
+- Product-system payload and direct
+  `/api/bna/one-time/trial-referral-config` readback route:
+  `server.js`
+- Operations Trial / Referral Configuration panel:
+  `public/operations.html`
+- Durable forward migration for promotion policies, acceptance records,
+  referral candidates, and manual referral-credit candidates:
+  `railway-migration-2026-06-21-one-time-trial-referral-config.sql`
+- Route registry and focused live-smoke command:
+  `ops/route-registry.json`, `package.json`,
+  `scripts/smoke-one-time-trial-referral-live.mjs`
+- Focused local tests:
+  `tests/one-time-stripe-local-beta.test.js`
+
+Implemented behavior:
+
+- Default warm-lead promotion is configurable as a 30-day intro trial with
+  `$67` monthly renewal, renewal amount/date support, card-required rule, and
+  one-intro-trial-per-household rule.
+- Policy version and acceptance storage are modeled through local durable
+  tables; public acceptance is not enabled.
+- Referral reward is modeled as a manual month-credit candidate that activates
+  only after trusted first-successful-paid-cycle evidence.
+- Self-referral, duplicate reward, failed/refunded payment, and no-send
+  suppression guardrails are represented for review.
+- Real checkout sessions, live charges, subscriptions, payment links, access
+  automation, and invoice credits remain disabled.
+- The legal wording blocker reuses `DEC-20260621-901`; it blocks only public
+  copy/live billing, not local test-mode configuration.
+
+Local verification:
+
+- PASS focused product/Operations suite: 25/25 tests.
+- PASS focused Stripe/Rabbi/provider integration guardrail suite: 16/16 tests.
+- PASS syntax checks for `server.js`, `src/lib/integrations/stripe.js`, and
+  the focused live-smoke script.
+- PASS execution-run validation, tracked secret audit, action watchdog, and
+  diff check with line-ending warnings only.
+
+Deployment/live smoke pending until this implementation commit is pushed.
+
+Guardrails:
+
+- No card charge, checkout session, payment link, subscription, invoice,
+  invoice credit, email send, WhatsApp send, access grant, external CRM write,
+  GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
+<!-- batch-9F:end -->
