@@ -67,6 +67,7 @@
     "app:smoke:communications-screening": "node scripts/smoke-communications-screening-live.mjs",
     "app:smoke:whatsapp-ux": "node scripts/smoke-whatsapp-ux-live.mjs",
     "app:smoke:email-resend-ux": "node scripts/smoke-email-resend-ux-live.mjs",
+    "app:smoke:source-envelope-parser": "node scripts/smoke-source-envelope-parser-live.mjs",
     "app:smoke:final-register-surfaces": "node scripts/smoke-final-register-surfaces-live.mjs",
     "app:smoke:developer-tester-ticket": "node scripts/smoke-developer-tester-ticket-live.mjs",
     "app:smoke:public-navigation-positioning": "node scripts/smoke-public-navigation-positioning-live.mjs",

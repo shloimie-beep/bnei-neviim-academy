@@ -20183,6 +20183,8 @@ async function createCanonicalIntakeParseRun({
   source_id = null,
   source_table = null,
   source_message_id = null,
+  filename = '',
+  source_title = '',
   created_by = 'dashboard',
   media_url = null,
   intake_type = 'general',
@@ -20233,6 +20235,8 @@ async function createCanonicalIntakeParseRun({
       source_channel,
       source_id,
       source_table,
+      filename,
+      title: source_title || filename,
       source_date: rawIntake?.created_at || null,
       workspace_key,
       project_key,
@@ -20248,6 +20252,8 @@ async function createCanonicalIntakeParseRun({
       raw_intake_stable_id: rawIntake?.stable_id || null,
       workspace_key: workspace_key || null,
       project_key: project_key || null,
+      filename: filename || null,
+      source_title: source_title || filename || null,
     };
   const runResult = await db.query(
     `INSERT INTO bna_intake_parse_runs (
@@ -54154,6 +54160,8 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
       ...source,
       source_channel: body.source_channel || body.sourceChannel || source.source_type,
       source_message_id: body.source_message_id || body.message_id || source.source_id || null,
+      filename: body.filename || body.file_name || body.fileName || body.name || body.source_filename || body.sourceFilename || '',
+      source_title: body.title || body.source_title || body.sourceTitle || '',
       media_url: body.media_url || body.mediaUrl || null,
       intake_type: body.intake_type || body.intakeType || (body.requirement_register_path ? 'broad_correction' : 'general'),
       workspace_key: parseWorkspaceKey,

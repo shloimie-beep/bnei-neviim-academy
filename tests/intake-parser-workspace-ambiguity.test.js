@@ -41,3 +41,27 @@ test('explicit One Time routing still files to the One Time workspace', () => {
   assert.equal(parsed.tasks[0].workspace_key, 'rabbi_sheller_provider');
   assert.equal(parsed.tasks[0].project_key, 'one_time_mishnah_class');
 });
+
+test('source envelope keeps Dratler family default while Operations fragment overrides locally', () => {
+  const parsed = parseIntakeText({
+    raw_input: [
+      'Menachem should practice the new bedtime routine.',
+      'Operations task: Codex should update BATCH-STATUS.md with parser evidence.',
+    ].join('\n'),
+    source_type: 'drive',
+    filename: 'Dratler family meeting 2026-06-21 transcript.txt',
+    source_date: '2026-06-21',
+  });
+
+  const operationsTask = parsed.tasks.find((task) => /BATCH-STATUS\.md/i.test(task.source_excerpt));
+  assert.equal(parsed.source_envelope.default_context_type, 'family_meeting');
+  assert.equal(parsed.source_envelope.default_workspace, 'dratler_family');
+  assert.equal(parsed.source_envelope.default_project, 'dratler_family');
+  assert.ok(operationsTask, 'expected Operations task fragment to parse');
+  assert.equal(operationsTask.workspace_key, 'internal_super_admin');
+  assert.equal(operationsTask.project_key, 'bna_operations');
+  assert.equal(operationsTask.metadata.source_context.default_context_type, 'family_meeting');
+  assert.equal(operationsTask.metadata.source_context.context_type, 'operations_ramble');
+  assert.equal(operationsTask.metadata.source_context.override_applied, true);
+  assert.equal(operationsTask.metadata.source_context.default_workspace, 'dratler_family');
+});

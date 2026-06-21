@@ -38,6 +38,10 @@ const {
 } = require('./intake-schema');
 const { affectedGoalIdsForText } = require('./goal-registry');
 const { createGoalCandidateFromText } = require('./goal-memory');
+const {
+  classifySourceEnvelope,
+  classifySourceSegmentContext,
+} = require('../../platform/ingestion/intake-source');
 
 const PARSER_VERSION = 'canonical-intake-parser-v1';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
@@ -201,6 +205,34 @@ function makeWorkspaceRoutingDecision(fragment, index) {
       auto_task_creation_blocked: true,
     },
   }, 'decision', fragment, index, 0.92);
+}
+
+function buildParserSourceEnvelope(input = {}, rawInput = '') {
+  const existing = input.source_envelope || input.sourceEnvelope;
+  if (existing && typeof existing === 'object') return existing;
+  return classifySourceEnvelope({
+    ...input,
+    raw_text: rawInput || input.raw_input || input.raw_text || input.text || '',
+    parser_version: input.parser_version || input.parserVersion || PARSER_VERSION,
+  });
+}
+
+function applySourceContextMetadata(item = {}, sourceContext = {}) {
+  if (!item.metadata || typeof item.metadata !== 'object') item.metadata = {};
+  item.metadata.source_context = {
+    ...(item.metadata.source_context && typeof item.metadata.source_context === 'object' ? item.metadata.source_context : {}),
+    envelope_version: sourceContext.envelope_version,
+    context_type: sourceContext.context_type,
+    default_context_type: sourceContext.default_context_type,
+    default_workspace: sourceContext.default_workspace,
+    default_project: sourceContext.default_project,
+    workspace_key: item.workspace_key || sourceContext.workspace_key || null,
+    project_key: item.project_key || sourceContext.project_key || null,
+    override_applied: Boolean(sourceContext.override_applied),
+    override_reason: sourceContext.override_reason || null,
+    privacy_level: sourceContext.privacy_level || null,
+    confidence: sourceContext.confidence || null,
+  };
 }
 
 function makeTicket(fragment, index, overrides = {}) {
@@ -441,6 +473,8 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
   const sourceDate = intakeSourceDate(input);
   const globalScopeText = `${input.raw_input || input.raw_text || input.text || ''} ${output.raw_input || ''}`;
   const ambiguousGlobalScope = hasAmbiguousWorkspaceRouting(globalScopeText, input);
+  const sourceEnvelope = output.source_envelope || buildParserSourceEnvelope(input, output.raw_input || globalScopeText);
+  output.source_envelope = sourceEnvelope;
   const groups = [
     ['requirement', output.requirements],
     ['task', output.tasks],
@@ -482,21 +516,33 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
       if (!item.short_title) item.short_title = title;
       if (!item.source_quote) item.source_quote = sourceQuote(source);
       if (!item.item_type) item.item_type = type;
+      const itemSourceContext = classifySourceSegmentContext(`${title} ${source} ${item.summary || ''} ${item.next_action || ''}`, sourceEnvelope);
+      const contextInput = {
+        ...input,
+        workspace_key: itemSourceContext.workspace_key || input.workspace_key || input.workspaceKey || sourceEnvelope.default_workspace,
+        project_key: itemSourceContext.project_key ?? input.project_key ?? input.projectKey ?? sourceEnvelope.default_project,
+      };
       const scopeText = ambiguousGlobalScope
         ? `${title} ${source} ${item.summary || ''} ${item.next_action || ''}`
-        : `${title} ${source} ${item.summary || ''} ${item.next_action || ''} ${globalScopeText}`;
+        : itemSourceContext.override_applied
+          ? `${title} ${source} ${item.summary || ''} ${item.next_action || ''}`
+          : `${title} ${source} ${item.summary || ''} ${item.next_action || ''} ${globalScopeText}`;
       const inferredWorkspaceKey = ambiguousGlobalScope
-        ? (item.workspace_key || input.workspace_key || input.workspaceKey || 'needs_routing_decision')
-        : inferWorkspaceKey(scopeText, input);
+        ? (itemSourceContext.override_applied
+          ? itemSourceContext.workspace_key
+          : (item.workspace_key || input.workspace_key || input.workspaceKey || 'needs_routing_decision'))
+        : inferWorkspaceKey(scopeText, contextInput);
       const inferredProjectKey = ambiguousGlobalScope
-        ? (item.project_key || input.project_key || input.projectKey || null)
-        : inferProjectKey(scopeText, input);
+        ? (itemSourceContext.override_applied
+          ? itemSourceContext.project_key
+          : (item.project_key || input.project_key || input.projectKey || null))
+        : inferProjectKey(scopeText, contextInput);
       if (!item.scope_type) item.scope_type = input.scope_type || input.scopeType || 'workspace';
       if (!item.scope_id) item.scope_id = input.scope_id || input.scopeId || null;
-      if (!item.workspace_key || (item.workspace_key === 'bna' && inferredWorkspaceKey !== 'bna') || item.workspace_key === ONE_TIME_PROJECT_KEY) {
+      if (itemSourceContext.override_applied || !item.workspace_key || (item.workspace_key === 'bna' && inferredWorkspaceKey !== 'bna') || item.workspace_key === ONE_TIME_PROJECT_KEY) {
         item.workspace_key = inferredWorkspaceKey;
       }
-      if (!item.project_key || (item.project_key === 'bna' && inferredProjectKey && inferredProjectKey !== 'bna')) {
+      if (itemSourceContext.override_applied || !item.project_key || (item.project_key === 'bna' && inferredProjectKey && inferredProjectKey !== 'bna')) {
         item.project_key = inferredProjectKey;
       }
       if (!item.related_raw_id) item.related_raw_id = input.raw_id || input.raw_intake?.stable_id || null;
@@ -509,6 +555,10 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
       if (!item.target_lane) item.target_lane = type === 'decision' || type === 'open_question' ? 'Decisions' : type === 'calendar_event' ? 'Calendar' : type === 'memory_candidate' ? 'Memory' : 'Tasks';
       if (!item.verification_method) item.verification_method = 'Inspect the affected workflow, run the relevant check, and record evidence or a blocker.';
       if (item.needs_review === undefined) item.needs_review = Number(item.confidence || 0.8) < 0.85;
+      applySourceContextMetadata(item, {
+        ...itemSourceContext,
+        envelope_version: sourceEnvelope.envelope_version,
+      });
     });
   }
 }
@@ -589,6 +639,7 @@ function deterministicParse(input = {}) {
   const people = extractPeopleFromText(rawInput);
   const relationships = inferRelationshipsFromText(rawInput, people);
   const language = detectLanguage(rawInput);
+  const sourceEnvelope = buildParserSourceEnvelope(input, rawInput);
   const output = emptyCanonicalOutput({
     raw_input: rawInput,
     source: input.source || input.source_type || 'manual',
@@ -596,6 +647,7 @@ function deterministicParse(input = {}) {
     source_id: input.source_id || null,
     source_table: input.source_table || null,
     language,
+    source_envelope: sourceEnvelope,
     summary: '',
   });
 
@@ -949,6 +1001,8 @@ function inferWorkspaceKey(text = '', input = {}) {
   const workspaceKey = normalizeScopeKey(explicitWorkspace || '');
   const projectKey = normalizeScopeKey(input.project_key || input.projectKey || '');
   if (hasOneTimeScopeCue(text) || workspaceKey === ONE_TIME_WORKSPACE_KEY || workspaceKey === ONE_TIME_PROJECT_KEY || projectKey === ONE_TIME_PROJECT_KEY) return ONE_TIME_WORKSPACE_KEY;
+  if (workspaceKey === 'dratler_family' || workspaceKey === 'family_app') return 'dratler_family';
+  if (workspaceKey === 'internal_super_admin') return 'internal_super_admin';
   if (lower.includes('provider')) return input.provider_workspace_key || input.workspace_key || 'provider_workspace';
   if (lower.includes('family')) return 'family_legacy';
   return input.workspace_key || input.workspaceKey || 'bna';
@@ -978,6 +1032,7 @@ function emptyCanonicalOutput(base = {}) {
     source_type: base.source_type || base.source || 'manual',
     source_id: base.source_id || null,
     source_table: base.source_table || null,
+    source_envelope: base.source_envelope || null,
     language: base.language || detectLanguage(base.raw_input || ''),
     summary: base.summary || '',
     extracted_people: [],
@@ -1136,6 +1191,7 @@ function normalizeCanonicalOutput(candidate = {}, fallbackInput = {}) {
     source_type: candidate.source_type || fallbackInput.source_type || fallbackInput.source || 'manual',
     source_id: candidate.source_id || fallbackInput.source_id || null,
     source_table: candidate.source_table || fallbackInput.source_table || null,
+    source_envelope: candidate.source_envelope || candidate.sourceEnvelope || buildParserSourceEnvelope(fallbackInput, candidate.raw_input || fallbackInput.raw_input || fallbackInput.raw_text || ''),
     language: candidate.language || detectLanguage(candidate.raw_input || fallbackInput.raw_input || fallbackInput.raw_text || ''),
     summary: candidate.summary || '',
   });

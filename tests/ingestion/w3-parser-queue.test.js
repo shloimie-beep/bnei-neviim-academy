@@ -24,7 +24,9 @@ test('W3 parser emits the required schema and resolves One Time aliases', () => 
 
   assert.equal(parsed.schema_valid, true);
   assert.equal(parsed.workspace.project_key, 'one_time_mishnah_class');
-  assert.equal(parsed.workspace.key, 'one_time_mishnah_class');
+  assert.equal(parsed.workspace.key, 'rabbi_sheller_provider');
+  assert.equal(parsed.source_envelope.default_workspace, 'rabbi_sheller_provider');
+  assert.equal(parsed.source_envelope.default_context_type, 'class_recording');
   for (const key of [
     'participants',
     'decisions',
@@ -41,6 +43,27 @@ test('W3 parser emits the required schema and resolves One Time aliases', () => 
   }
   assert.ok(parsed.tasks.length >= 1);
   assert.ok(parsed.tasks.every((task) => task.title !== parsed.raw_text));
+  assert.ok(parsed.tasks.every((task) => task.workspace_key === 'rabbi_sheller_provider'));
+});
+
+test('W3 parser preserves source envelope defaults while local Operations fragments override item routing', () => {
+  const parsed = parsePlatformIntake({
+    raw_text: [
+      'Menachem should practice the new bedtime routine.',
+      'Operations task: Codex should update parser status evidence.',
+    ].join('\n'),
+    source_provider: 'drive',
+    filename: 'Dratler family meeting 2026-06-21 transcript.txt',
+  });
+
+  assert.equal(parsed.schema_valid, true);
+  assert.equal(parsed.source_envelope.default_context_type, 'family_meeting');
+  assert.equal(parsed.source_envelope.default_workspace, 'dratler_family');
+  assert.ok(parsed.tasks.some((task) => (
+    task.workspace_key === 'internal_super_admin'
+    && task.project_key === 'bna_operations'
+    && task.metadata.source_context.override_applied === true
+  )));
 });
 
 test('W3 parser routes schedule language into Calendar with idempotency', () => {

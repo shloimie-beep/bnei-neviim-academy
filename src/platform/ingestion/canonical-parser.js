@@ -1,6 +1,11 @@
 const { parseIntakeText } = require('../../lib/bna/intake-parser');
 const { titleFromActionText, compactWhitespace } = require('../../lib/bna/task-shaping');
-const { stableHash, normalizeWorkspace } = require('./intake-source');
+const {
+  stableHash,
+  normalizeWorkspace,
+  classifySourceEnvelope,
+  classifySourceSegmentContext,
+} = require('./intake-source');
 
 const PLATFORM_PARSER_CONTRACT_VERSION = 'w3-platform-parser-v1';
 
@@ -11,12 +16,18 @@ const CONFIDENCE_LABELS = {
 };
 
 function emptyParserOutput(input = {}) {
+  const sourceEnvelope = input.source_envelope || input.sourceEnvelope || classifySourceEnvelope({
+    ...input,
+    raw_text: input.raw_text || input.raw_input || input.text || '',
+    parser_version: PLATFORM_PARSER_CONTRACT_VERSION,
+  });
   return {
     parser_version: PLATFORM_PARSER_CONTRACT_VERSION,
+    source_envelope: sourceEnvelope,
     workspace: {
-      key: normalizeWorkspace(input.workspace_key || input.workspace || input.project_key || input.project) || 'bna',
-      project_key: normalizeProjectKey(input.raw_text || input.raw_input || '', input),
-      resolution_status: 'inferred',
+      key: normalizeWorkspace(input.workspace_key || input.workspace || input.project_key || input.project) || sourceEnvelope.default_workspace || 'bna',
+      project_key: normalizeProjectKey(input.raw_text || input.raw_input || '', input) || sourceEnvelope.default_project || 'bna',
+      resolution_status: sourceEnvelope.default_context_type === 'unknown_needs_review' ? 'needs_review' : 'source_envelope_default',
     },
     participants: [],
     decisions: [],
@@ -82,8 +93,15 @@ function existingDedupeKeys(existingRecords = []) {
 }
 
 function normalizeParsedItem(type, item = {}, output = {}, input = {}) {
-  const workspaceKey = output.workspace.key || 'bna';
+  const sourceEnvelope = output.source_envelope || classifySourceEnvelope(input);
+  const itemSourceContext = item.metadata?.source_context && typeof item.metadata.source_context === 'object'
+    ? item.metadata.source_context
+    : classifySourceSegmentContext(`${item.title || ''} ${item.summary || ''} ${item.source_excerpt || ''}`, sourceEnvelope);
+  const workspaceKey = item.workspace_key || itemSourceContext.workspace_key || output.workspace.key || 'bna';
   const key = dedupeKeyForItem(type, item, workspaceKey);
+  const projectKey = item.project_key
+    || itemSourceContext.project_key
+    || normalizeProjectKey(`${item.title || ''} ${item.summary || ''} ${item.source_excerpt || ''}`, input);
   return {
     item_id: item.stable_id || `${type.toUpperCase()}-${key.slice(0, 12)}`,
     item_type: type,
@@ -95,7 +113,8 @@ function normalizeParsedItem(type, item = {}, output = {}, input = {}) {
     idempotency_key: key,
     deduplication_key: key,
     owner: item.owner || item.assigned_to || null,
-    project_key: normalizeProjectKey(`${item.title || ''} ${item.summary || ''} ${item.source_excerpt || ''}`, input),
+    workspace_key: workspaceKey,
+    project_key: projectKey,
     provenance: {
       raw_id: input.raw_id || input.rawId || item.related_raw_id || null,
       source_id: input.source_id || input.sourceId || null,
@@ -104,7 +123,14 @@ function normalizeParsedItem(type, item = {}, output = {}, input = {}) {
     },
     expected_result: item.expected_result || item.what || item.summary || null,
     next_action: item.next_action || null,
-    metadata: item.metadata && typeof item.metadata === 'object' ? item.metadata : {},
+    metadata: {
+      ...(item.metadata && typeof item.metadata === 'object' ? item.metadata : {}),
+      source_context: {
+        ...(itemSourceContext && typeof itemSourceContext === 'object' ? itemSourceContext : {}),
+        workspace_key: workspaceKey,
+        project_key: projectKey,
+      },
+    },
   };
 }
 
@@ -145,12 +171,14 @@ function shouldSuppressRetryNoise(item = {}) {
 
 function mapCanonicalParserOutput(parsed = {}, input = {}) {
   const output = emptyParserOutput(input);
+  output.source_envelope = parsed.source_envelope || parsed.sourceEnvelope || output.source_envelope;
   const existing = existingDedupeKeys(input.existing_records || input.existingRecords || []);
   const seen = new Set();
   const rawText = input.raw_text || input.raw_input || input.text || parsed.raw_input || '';
-  output.workspace.project_key = normalizeProjectKey(rawText, input);
+  output.workspace.project_key = output.source_envelope.default_project || normalizeProjectKey(rawText, input);
+  output.workspace.key = output.source_envelope.default_workspace || output.workspace.key;
   if (output.workspace.project_key === 'one_time_mishnah_class') {
-    output.workspace.key = 'one_time_mishnah_class';
+    output.workspace.key = normalizeWorkspace(input.workspace_key || input.workspace || '') || output.workspace.key || 'one_time_mishnah_class';
     output.workspace.resolution_status = 'high_confidence_alias';
   }
 
