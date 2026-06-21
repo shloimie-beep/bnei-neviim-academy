@@ -1724,8 +1724,8 @@
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-9h",
         "ops/watchdog-audits/2026-06-21T15-29-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-21T15-29-watchdog-security-routes.md",
-        "ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md"
+        "ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
       ],
       "verification": [
         "PASS node --check server.js",

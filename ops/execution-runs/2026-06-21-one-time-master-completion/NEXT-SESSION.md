@@ -565,7 +565,7 @@ Authenticated questions and support-ticket bot is deployed and live-verified.
 - Final pushed/deployed commit:
   `b71b14c5252ca2145b738e11fe4ab547bb412c3a`
 - Railway deployment:
-  `e227622b-dad9-464a-b6a5-f4487713a87b`
+  `977430a7-fa56-480d-9289-5abbd6536658`
 - Key files:
   `server.js`, `public/rabbi-member.html`, `public/js/rabbi-member.js`,
   `public/operations.html`, `scripts/telegram-kimi-bridge.mjs`,
@@ -574,9 +574,9 @@ Authenticated questions and support-ticket bot is deployed and live-verified.
 - Focused local tests: 19/19 support/community tests and 59/59
   portal/member-library/classroom/action tests passed.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md`
 - Focused authenticated support live smoke:
-  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`
+  `ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`
 - Guardrails:
   no email, WhatsApp, SMS, Telegram, public forum, member-feed, payment,
   access-grant, external CRM, GHL/LeadConnector, Google/Zoom, DNS, or secret
