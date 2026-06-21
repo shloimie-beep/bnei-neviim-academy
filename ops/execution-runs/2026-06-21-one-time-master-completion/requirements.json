@@ -1804,18 +1804,46 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "in_progress",
-      "implementation_status": "implementation_started",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-9i",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-9i",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-9i",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
+        "ops/watchdog-audits/2026-06-21T15-49-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T15-49-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check scripts/platform-synthetic-e2e.mjs",
+        "PASS node --check scripts/smoke-one-time-test-identities-live.mjs",
+        "PASS node --test tests/one-time-synthetic-pilot.test.js tests/one-time-rbac-negative-isolation.test.js tests/one-time-external-user-portal.test.js tests/one-time-action-coverage.test.js (49/49)",
+        "PASS npm run platform:synthetic-e2e",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor after deployment 5751098c-2095-4d24-97db-712aba136915",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-test-identities ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ],
+      "implementation_commit": "f741fa91a909db89a79a33b6de5193c6c481732c",
+      "pushed_commit": "f741fa91a909db89a79a33b6de5193c6c481732c",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment 5751098c-2095-4d24-97db-712aba136915 SUCCESS for deployed commit f741fa91a909db89a79a33b6de5193c6c481732c",
+        "PASS npm run railway:doctor after deployment 5751098c-2095-4d24-97db-712aba136915",
+        "PASS standard live smoke ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "PASS focused live smoke ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T18:42:00+03:00",
+      "updated_at": "2026-06-21T18:53:30+03:00",
       "id": "REQ-20260621-909",
       "title": "Test identities and mock data",
       "expected_result": "Realistic beta test identities and mock data exercise BNA/One Time privacy, auth, CRM, payment/access, class links, questions, and support without using real private exports.",
@@ -1824,7 +1852,7 @@
       ],
       "category": "beta_mock_data",
       "batch_id": "batch-9I",
-      "next_action": "Implement safe TEST-prefixed One Time/BNA beta identities, mock scenario preview, cleanup manifest, negative authorization matrix, tests, and live smoke.",
+      "next_action": "Closed. Continue automatically with Batch 9J / REQ-20260621-910 Agent Mode end-to-end acceptance.",
       "acceptance_criteria": [
         "TEST-prefixed and cleanup-ready",
         "no real private exports committed",
@@ -1832,9 +1860,25 @@
         "negative auth cases covered"
       ],
       "implementation_files": [
-        "tests/one-time-synthetic-pilot.test.js",
+        "src/platform/instances/one-time-test-fixtures.js",
+        "server.js",
+        "public/operations.html",
         "scripts/platform-synthetic-e2e.mjs",
-        "server.js"
+        "scripts/smoke-one-time-test-identities-live.mjs",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
+        "package.json",
+        "tests/one-time-synthetic-pilot.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js",
+        "tests/one-time-external-user-portal.test.js",
+        "tests/one-time-action-coverage.test.js"
+      ],
+      "deployment_id": "5751098c-2095-4d24-97db-712aba136915",
+      "deployed_commit": "f741fa91a909db89a79a33b6de5193c6c481732c",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
       ]
     },
     {

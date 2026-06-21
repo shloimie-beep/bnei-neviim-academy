@@ -1346,3 +1346,73 @@ Guardrails:
   GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or secret
   exposure was performed.
 <!-- batch-9H:end -->
+
+<!-- batch-9I:start -->
+## Batch 9I - Test Identities And Mock Data
+
+Status: done / deployed / verified live
+
+Implemented a read-only, TEST-prefixed beta identity and mock data preview for
+`REQ-20260621-909`.
+
+Implemented files:
+
+- Fixture builder and safety checks:
+  `src/platform/instances/one-time-test-fixtures.js`
+- Admin preview route and route allowlist: `server.js`
+- Operations preview panel and disabled Apply/Cleanup blockers:
+  `public/operations.html`
+- Synthetic E2E artifact integration:
+  `scripts/platform-synthetic-e2e.mjs`,
+  `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`
+- Route/action registry and live-smoke command:
+  `ops/route-registry.json`, `ops/action-registry.json`, `package.json`,
+  `scripts/smoke-one-time-test-identities-live.mjs`
+- Focused tests:
+  `tests/one-time-synthetic-pilot.test.js`
+
+Local verification:
+
+- PASS syntax checks for `server.js`, `scripts/platform-synthetic-e2e.mjs`, and
+  `scripts/smoke-one-time-test-identities-live.mjs`.
+- PASS focused 9I/security/action suite: 49/49.
+- PASS `npm run platform:synthetic-e2e`.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T15-49-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T15-49-watchdog-security-routes.md`
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Implementation/pushed/deployed commit:
+  `f741fa91a909db89a79a33b6de5193c6c481732c`
+- Railway deployment:
+  `5751098c-2095-4d24-97db-712aba136915`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`
+- Focused test-identity live smoke:
+  `ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`
+
+Focused live smoke verified:
+
+- The preview API is admin-only, no-write, and scoped to
+  `rabbi_sheller_provider` / `one_time_mishnah_class`.
+- It returns eight `TEST-` identities with `example.test` contact values.
+- It returns five mock records covering CRM, payment/access, class links,
+  questions, and support.
+- It returns twelve negative authorization cases.
+- Cleanup is marked ready only for TEST-prefixed dry-run targets.
+- Operations ships the preview panel plus disabled Apply Mock Data and Cleanup
+  TEST Records blockers.
+
+Guardrails:
+
+- No real private exports, raw private rows, production record creation, email
+  send, WhatsApp send, SMS send, Telegram send, payment/billing write, access
+  grant, Zoom/Vimeo/Google mutation, DNS mutation, external CRM write,
+  GHL/LeadConnector runtime, or secret exposure was performed.
+<!-- batch-9I:end -->

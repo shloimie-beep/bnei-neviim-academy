@@ -593,3 +593,44 @@ exposure was performed.
 
 Next unblocked child: `REQ-20260621-909` test identities and mock data.
 <!-- batch-9H:end -->
+
+<!-- batch-9I:start -->
+## Batch 9I - Test Identities And Mock Data
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260621-909` by adding a credential-free, read-only One Time test
+identity and mock data preview. The preview builds deterministic `TEST-`
+prefixed parent, student, provider, staff, and BNA control identities with
+`example.test` contact values, cleanup keys, and no private export sources.
+
+The fixture set covers CRM dedupe/no-send, local test payment/access review,
+protected class links, private questions, and ticket-only support. It also
+ships a 12-case negative authorization matrix for Rabbi/BNA cross-workspace
+denials, parent/student own-record denials, platform-role assignment denial,
+query-parameter cross-scope denial, and cross-workspace task/Decision/message/
+recording denial.
+
+The admin-only route `/api/bna/one-time/test-identities-preview` and Operations
+panel are deployed as preview-only surfaces. Apply Mock Data and Cleanup TEST
+Records are disabled with explicit dry-run/setup reasons. The platform
+synthetic E2E artifact now records the TEST fixture safety summary.
+
+Implementation/pushed/deployed commit:
+`f741fa91a909db89a79a33b6de5193c6c481732c`. Railway deployment
+`5751098c-2095-4d24-97db-712aba136915` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`, and
+focused 9I live smoke passed at
+`ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`.
+
+Local verification passed: syntax checks, 49/49 focused tests,
+`npm run platform:synthetic-e2e`, action/security watchdogs, execution-run
+validation, tracked secret audit, and diff check with line-ending warnings only.
+
+Guardrails: no real private exports, raw private rows, production record
+creation, email send, WhatsApp send, SMS send, Telegram send, payment/billing
+write, access grant, Zoom/Vimeo/Google mutation, DNS mutation, external CRM
+write, GHL/LeadConnector runtime, or secret exposure was performed.
+
+Next unblocked child: `REQ-20260621-910` Agent Mode end-to-end acceptance.
+<!-- batch-9I:end -->

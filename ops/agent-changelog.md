@@ -25184,3 +25184,34 @@ secret exposure was performed.
 
 Next: continue automatically with Batch 9I / `REQ-20260621-909` test identities
 and mock data.
+
+## 2026-06-21T18:53:30+03:00 - One Time Master Completion Batch 9I Test Identities
+
+Closed `REQ-20260621-909` for PR #5. Added a read-only One Time test identity
+and mock data preview with deterministic `TEST-` parent, student, provider,
+staff, and BNA control identities using `example.test` contact values and
+`REQ-20260621-909` cleanup keys. Mock scenarios cover CRM dedupe/no-send,
+payment/access review, protected class links, private questions, and ticket-only
+support. The preview includes a 12-case negative authorization matrix for
+cross-workspace and own-record denials.
+
+Implementation/pushed/deployed commit
+`f741fa91a909db89a79a33b6de5193c6c481732c` was deployed from a clean detached
+worktree to Railway deployment `5751098c-2095-4d24-97db-712aba136915`.
+Standard smoke passed at
+`ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`; focused
+test-identity smoke passed at
+`ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`.
+
+Verification passed: syntax checks, 49/49 focused tests,
+`npm run platform:synthetic-e2e`, action/security watchdogs, execution-run
+validation, tracked secret audit, diff check, Railway doctor, standard live
+smoke, and focused 9I live smoke.
+
+Guardrails: no real private exports, raw private rows, production record
+creation, email/WhatsApp/SMS/Telegram send, payment/billing write, access
+grant, Zoom/Vimeo/Google mutation, DNS mutation, external CRM write,
+GHL/LeadConnector runtime, or secret exposure occurred.
+
+Next: continue automatically with Batch 9J / `REQ-20260621-910` Agent Mode
+end-to-end acceptance.

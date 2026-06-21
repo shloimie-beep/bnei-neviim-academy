@@ -1,11 +1,11 @@
 # Next Session
 
 Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F, Batch 9G,
-Batch 9H, Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
+Batch 9H, Batch 9I, Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
 continue with the next unblocked open requirement it selects:
-`REQ-20260621-909` / Batch 9I test identities and mock data.
+`REQ-20260621-910` / Batch 9J Agent Mode end-to-end acceptance.
 Exact next command:
 
 ```powershell
@@ -591,6 +591,45 @@ npm run bna:run:next
 Continue automatically with `REQ-20260621-909` / Batch 9I test identities and
 mock data.
 <!-- batch-9H:end -->
+
+<!-- batch-9I:start -->
+## Batch 9I Handoff
+
+Test identities and mock data are deployed and live-verified.
+
+- Requirement: `REQ-20260621-909`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `f741fa91a909db89a79a33b6de5193c6c481732c`
+- Railway deployment:
+  `5751098c-2095-4d24-97db-712aba136915`
+- Key files:
+  `src/platform/instances/one-time-test-fixtures.js`, `server.js`,
+  `public/operations.html`, `scripts/platform-synthetic-e2e.mjs`,
+  `scripts/smoke-one-time-test-identities-live.mjs`,
+  `tests/one-time-synthetic-pilot.test.js`,
+  `ops/action-registry.json`, `ops/route-registry.json`
+- Focused tests: 49/49 passed.
+- Synthetic E2E artifact:
+  `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`
+- Focused test-identity live smoke:
+  `ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`
+- Guardrails:
+  no real private exports, raw private rows, production record creation, sends,
+  billing, access grant, Zoom/Vimeo/Google mutation, DNS, external CRM,
+  GHL/LeadConnector runtime, or secret exposure occurred.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-910` / Batch 9J Agent Mode
+end-to-end acceptance.
+<!-- batch-9I:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

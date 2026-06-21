@@ -375,6 +375,29 @@ post, member-feed publish, payment/billing write, access grant, external CRM
 write, GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or secret
 exposure was performed.
 
+## Batch 9I
+
+- Railway deployment ID: `5751098c-2095-4d24-97db-712aba136915`
+- Deployed commit: `f741fa91a909db89a79a33b6de5193c6c481732c`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`
+- Focused One Time test identities live smoke: PASS,
+  `ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`f741fa91a909db89a79a33b6de5193c6c481732c`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production preview endpoint, TEST-prefixed
+example.test identities, mock CRM/payment/access/class-link/question/support
+coverage, twelve negative authorization cases, cleanup readiness, Operations
+panel rendering, disabled Apply Mock Data and Cleanup TEST Records blockers,
+and no real private exports, production records, sends, billing, Zoom, Vimeo,
+Google, DNS, external CRM, or secret exposure.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`

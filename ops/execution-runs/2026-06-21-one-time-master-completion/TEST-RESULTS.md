@@ -877,3 +877,43 @@ Intermediate/known failures recorded:
   this worktree lacked `OPS_USERNAME` and `OPS_PASSWORD`. The standard smoke
   was rerun with the existing local BNA env file loaded and passed.
 <!-- batch-9H:end -->
+
+<!-- batch-9I:start -->
+## Batch 9I Test Results
+
+Recorded for `REQ-20260621-909` test identities and mock data:
+
+- PASS `node --check server.js`
+- PASS `node --check scripts/platform-synthetic-e2e.mjs`
+- PASS `node --check scripts/smoke-one-time-test-identities-live.mjs`
+- PASS `node --test tests/one-time-synthetic-pilot.test.js tests/one-time-rbac-negative-isolation.test.js tests/one-time-external-user-portal.test.js tests/one-time-action-coverage.test.js`
+  with 49/49 tests passing.
+- PASS `npm run platform:synthetic-e2e`.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T15-49-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T15-49-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `5751098c-2095-4d24-97db-712aba136915`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-test-identities`,
+  `ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`.
+
+Focused coverage:
+
+- All fixture identities are `TEST-` keyed, display as `TEST ...`, use
+  `example.test` contact values, and carry `REQ-20260621-909` cleanup keys.
+- No fixture includes real private exports, raw private rows, production record
+  creation, or external writes.
+- Mock scenarios cover CRM, payment/access, class links, questions, and
+  support.
+- Negative authorization matrix covers cross-workspace Rabbi/BNA staff
+  denials, parent/student own-record denials, platform-role assignment denial,
+  query-parameter cross-scope denial, and cross-workspace task/Decision/message/
+  recording denial.
+- Operations renders the preview panel and disabled Apply/Cleanup blockers.
+<!-- batch-9I:end -->
