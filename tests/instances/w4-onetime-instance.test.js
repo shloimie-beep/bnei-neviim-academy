@@ -11,6 +11,8 @@ const {
 test('W4 One Time instance defaults to scoped workspace with partner-owned split readiness', () => {
   const config = buildOneTimeInstanceConfig();
   assert.equal(config.instance.workspace_key, ONE_TIME_WORKSPACE_KEY);
+  assert.equal(config.instance.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(config.instance.project_key, 'one_time_mishnah_class');
   assert.equal(config.instance.deployment_mode, 'scoped_workspace');
   assert.equal(config.instance.database_scope, 'shared_database_scoped_rows');
   assert.equal(config.instance.split_ready, true);
@@ -38,7 +40,7 @@ test('W4 One Time export manifest excludes secrets and production-only sources',
 
 test('W4 One Time export guard rejects BNA private records', () => {
   assert.deepEqual(assertNoBnaPrivateData([
-    { id: 'one-time-1', workspace_key: 'one_time_mishnah_class', privacy: 'partner_program' },
+    { id: 'one-time-1', workspace_key: 'rabbi_sheller_provider', privacy: 'partner_program' },
   ]), { ok: true, violations: [] });
 
   const result = assertNoBnaPrivateData([

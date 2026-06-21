@@ -874,3 +874,17 @@ Remaining terminal blocker: `REQ-20260619-313` stays
 `needs_operator_decision` for separate paid One Time infrastructure, Railway
 project/database/domain, DNS authority, budget, and ownership approval.
 <!-- batch-19:end -->
+
+<!-- req-313-provisioning:start -->
+## REQ-20260619-313 - Separate One Time Instance Provisioning
+
+Status: in_progress
+
+Operator authorization was received on 2026-06-21 in
+`raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md`.
+The requirement is no longer waiting on the prior Option B decision. The
+current work is to freeze the deployable version, provision or safely reuse a
+separate One Time Railway project/database, deploy the canonical codebase in
+single-tenant One Time scope, smoke owner/parent/student portals, bind
+`app.onetimeonetime.com`, and record any exact DNS or Railway billing blocker.
+<!-- req-313-provisioning:end -->

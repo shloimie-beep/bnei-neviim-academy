@@ -1,6 +1,6 @@
 const { oneTimeBrandConfig } = require('../brands');
 
-const ONE_TIME_WORKSPACE_KEY = 'one_time_mishnah_class';
+const ONE_TIME_WORKSPACE_KEY = 'rabbi_sheller_provider';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
 const ONE_TIME_INSTANCE_SLUG = 'one-time-mishnah-class';
 

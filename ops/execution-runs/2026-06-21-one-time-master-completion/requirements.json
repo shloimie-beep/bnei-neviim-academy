@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T19:45:00+03:00",
+  "updated_at": "2026-06-21T21:10:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -63,6 +63,16 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "codex_attachment"
+    },
+    {
+      "source_id": "RAW-20260621-003",
+      "source_path": "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
+      "captured_at": "2026-06-21T21:10:00+03:00",
+      "content_fingerprint": "codex-chat-one-time-separate-instance-authorization",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat"
     }
   ],
   "source_statements": [
@@ -183,7 +193,14 @@
       "source_id": "RAW-20260621-001",
       "source_statement": "Prepare Option B separate One Time deployment readiness without provisioning paid infrastructure or DNS.",
       "requirement_id": "REQ-20260619-313",
-      "classification": "needs_operator_decision"
+      "classification": "superseded_by_authorization"
+    },
+    {
+      "statement_id": "STMT-20260621-003-0001",
+      "source_id": "RAW-20260621-003",
+      "source_statement": "Provision a separate One Time Railway project, Postgres database, web service, required worker if needed, isolated One Time seed data, stable deployment, app.onetimeonetime.com domain binding, focused live smokes, and UI review package without copying BNA private data or exposing secrets.",
+      "requirement_id": "REQ-20260619-313",
+      "classification": "missing"
     },
     {
       "statement_id": "STMT-20260621-001-0018",
@@ -2451,13 +2468,14 @@
     {
       "id": "REQ-20260619-313",
       "title": "One Time deployment readiness",
-      "expected_result": "Option B readiness is mechanical once external ownership, budget, and DNS decisions are approved.",
-      "status": "needs_operator_decision",
-      "source_id": "RAW-20260621-001",
+      "expected_result": "A separate One Time Railway instance is provisioned from the canonical codebase with an isolated Postgres database, One Time-only seed data, portal isolation evidence, and domain/DNS handoff for Shloimie's UI review.",
+      "status": "in_progress",
+      "source_id": "RAW-20260621-003",
       "source_statement_ids": [
-        "STMT-20260621-001-0017"
+        "STMT-20260621-001-0017",
+        "STMT-20260621-003-0001"
       ],
-      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "source_path": "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
       "workspace_key": "rabbi_sheller_provider",
       "project_key": "one_time_mishnah_class",
       "owner": "Codex",
@@ -2467,23 +2485,33 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "blocked_external",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "blocker": "Separate One Time Railway project, database, domain/DNS, ownership, and budget require operator approval before provisioning or DNS mutation.",
-      "blocker_owner": "Shloimie / Rabbi Ellie Scheller",
-      "blocker_next_action": "Approve Option B ownership, budget, domain, Railway project/database, and DNS authority before provisioning paid infrastructure or changing DNS.",
-      "next_action": "Complete code and runbook readiness where missing; do not provision paid infrastructure or DNS.",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "next_action": "Freeze deployable version, provision/reuse the separate One Time Railway project and database where account permissions allow, deploy and smoke the isolated One Time instance, then record any exact external DNS/billing blocker.",
       "acceptance_criteria": [
-        "architecture decision exists",
-        "Railway runbook exists",
-        "database bootstrap guide exists",
-        "DNS checklist exists"
+        "separate Railway project/service/database recorded",
+        "separate Postgres database migrated and seeded with One Time-only review data",
+        "One Time owner/admin, parent, and student portals live-smoked against the separate instance",
+        "BNA private data isolation scan passes",
+        "app.onetimeonetime.com binding and exact DNS records are recorded or one exact external DNS/billing blocker remains",
+        "operator UI review package exists"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md"
+      ],
+      "verification": [
+        "node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js"
+      ],
       "implementation_files": [
+        "src/platform/instances/one-time.js",
+        "config/brands/one-time.json",
         "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md",
         "ops/one-time-mishnah/option-b-deployment-readiness.json",
+        "tests/instances/w4-onetime-instance.test.js",
         "tests/one-time-deployment-readiness.test.js"
       ],
       "implementation_commit": "",
@@ -2492,7 +2520,7 @@
       "deployment_required": false,
       "deployment_evidence": [],
       "live_required": false,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T21:10:00+03:00"
     },
     {
       "id": "REQ-20260619-314",
@@ -2606,9 +2634,9 @@
       "blocked": 0,
       "duplicate": 34,
       "missing": 2,
-      "needs_operator_decision": 18,
+      "needs_operator_decision": 17,
       "partially_implemented": 24,
-      "supersedes_existing": 0,
+      "supersedes_existing": 1,
       "unrelated_bna_data": 2
     }
   }

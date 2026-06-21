@@ -8,6 +8,20 @@ const currentStateAudit = fs.readFileSync('docs/audits/one-time-one-time/2026-06
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const railwayJson = JSON.parse(fs.readFileSync('railway.json', 'utf8'));
 const railwayStart = fs.readFileSync('scripts/railway-start.mjs', 'utf8');
+const oneTimeBrand = JSON.parse(fs.readFileSync('config/brands/one-time.json', 'utf8'));
+const oneTimeInstance = require('../src/platform/instances/one-time');
+
+test('One Time split uses the stable provider workspace and Mishnah class project', () => {
+  const config = oneTimeInstance.buildOneTimeInstanceConfig({ singleTenant: true });
+  assert.equal(oneTimeInstance.ONE_TIME_WORKSPACE_KEY, 'rabbi_sheller_provider');
+  assert.equal(oneTimeInstance.ONE_TIME_PROJECT_KEY, 'one_time_mishnah_class');
+  assert.equal(config.instance.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(config.instance.project_key, 'one_time_mishnah_class');
+  assert.equal(config.seed.workspace.key, 'rabbi_sheller_provider');
+  assert.equal(config.seed.workspace.project_key, 'one_time_mishnah_class');
+  assert.equal(oneTimeBrand.workspace_key, 'rabbi_sheller_provider');
+  assert.equal(oneTimeBrand.project_key, 'one_time_mishnah_class');
+});
 
 test('Option B readiness packet is local-only and operator-gated', () => {
   assert.equal(readiness.requirement_id, 'REQ-20260619-313');

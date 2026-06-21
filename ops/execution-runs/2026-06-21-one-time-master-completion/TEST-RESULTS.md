@@ -1230,3 +1230,25 @@ Focused coverage:
   billing, access, Google, Zoom, Vimeo, DNS, external CRM/GHL, or secret-write
   action.
 <!-- batch-19:end -->
+
+<!-- req-313-provisioning:start -->
+## REQ-20260619-313 - Separate One Time Instance Baseline
+
+Status: pass / pre-provision freeze
+
+Baseline before Railway provisioning:
+
+- `node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js`: 11/11 pass
+- `npm test`: 1018/1018 pass
+- `npm run bna:run:validate`: pass
+- `npm run watchdog:actions`: pass, 0 findings, report
+  `ops/watchdog-audits/2026-06-21T18-13-watchdog-action-audit.md`
+- `npm run watchdog:security`: pass, 0 findings, report
+  `ops/watchdog-audits/2026-06-21T18-13-watchdog-security-routes.md`
+- `node scripts/audit-secrets.mjs`: pass, 3953 tracked paths checked, 0
+  tracked secret-risk files found
+- `git diff --check`: pass with line-ending warnings only
+
+Selected deployable checkpoint is recorded in
+`ops/one-time-mishnah/separate-instance-version-freeze.md`.
+<!-- req-313-provisioning:end -->

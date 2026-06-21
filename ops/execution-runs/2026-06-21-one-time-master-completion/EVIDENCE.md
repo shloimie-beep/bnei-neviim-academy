@@ -1918,3 +1918,30 @@ Remaining external decision:
   Time infrastructure, Railway project/database/domain, DNS authority, budget,
   and ownership approval.
 <!-- batch-19:end -->
+
+<!-- req-313-provisioning:start -->
+## REQ-20260619-313 - Separate One Time Instance Provisioning
+
+Start evidence:
+
+- Operator authorization source:
+  `raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md`
+- Starting branch: `codex/agent-control-center-20260619`
+- Starting local/remote HEAD:
+  `85e2faf8253a2fd6bd8eade9949231d0b52456c2`
+- Focused identity/config verification passed:
+  `node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js`
+- Pre-provision version freeze recorded:
+  `ops/one-time-mishnah/separate-instance-version-freeze.md`
+- Full release-freeze baseline passed: `npm test` 1018/1018,
+  `npm run bna:run:validate`, action/security watchdogs, tracked secret audit,
+  and `git diff --check` with line-ending warnings only.
+- Clean watchdog reports:
+  `ops/watchdog-audits/2026-06-21T18-13-watchdog-action-audit.md` and
+  `ops/watchdog-audits/2026-06-21T18-13-watchdog-security-routes.md`.
+- One Time single-tenant package now asserts workspace
+  `rabbi_sheller_provider` and project `one_time_mishnah_class`.
+
+No Railway, DNS, email, billing, Zoom, Vimeo, external CRM, or production
+database mutation has occurred yet in this resumed requirement.
+<!-- req-313-provisioning:end -->
