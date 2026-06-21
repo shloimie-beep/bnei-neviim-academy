@@ -73636,8 +73636,8 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   const taskViewWhere = {
     mine: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
     my_tasks: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
-    one_time: `(status_bucket <> 'done' AND (resolved_project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
-    one_time_tasks: `(status_bucket <> 'done' AND (resolved_project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
+    one_time: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
+    one_time_tasks: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
     codex_queue: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
     codex_agent_work: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
     blocked: `status_bucket = 'pending'`,

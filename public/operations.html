@@ -30180,7 +30180,7 @@
         function taskIsOneTimeRecord(task = {}) {
             if (taskProjectKey(task) === 'one_time_mishnah_class') return true;
             if (taskWorkspaceKey(task) === 'rabbi_sheller_provider') return true;
-            return /one[_\s-]?time|mishn|rabbi[_\s-]?(scheller|sheller)|ellie\s+scheller/.test(taskScopeText(task));
+            return false;
         }
 
         function taskIsArchivedRecord(task = {}) {
