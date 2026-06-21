@@ -1138,3 +1138,49 @@ Focused coverage:
   secret-like string values, the focused test includes a regression assertion,
   and the rerun passed.
 <!-- batch-17:end -->
+
+<!-- batch-19:start -->
+## Batch 19 Test Results
+
+Recorded for `REQ-20260619-314` final verification and release:
+
+- PASS targeted release-gate regression suite:
+  `node --test tests/agent-control-center.test.js tests/one-time-intake-api-readback.test.js tests/one-time-ui-design-delta-audit.test.js tests/operations-automation-library.test.js tests/operations-saas-crm-redesign.test.js tests/rabbi-task-dialogue.test.js tests/ui-01-public-operations-shell.test.js tests/operations-shell-navigation-contract.test.js`
+  with 32/32 tests passing.
+- PASS `node --check scripts/smoke-final-register-surfaces-live.mjs`.
+- PASS provider/final-register contract suite:
+  `node --test tests/final-register-surfaces-closeout.test.js tests/service-provider-directory.test.js`
+  with 18/18 tests passing.
+- PASS final full suite: `npm test` with 1017/1017 tests passing.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T17-29-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T17-29-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `96766f0d-ebce-4296-9002-9945b8f85858`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:final-register-surfaces`,
+  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`.
+
+Intermediate caveats:
+
+- The first standard and focused live-smoke attempts failed before authenticated
+  checks because this PR worktree did not contain `OPS_USERNAME` and
+  `OPS_PASSWORD`. Reruns loaded the established local BNA `.env.local` values
+  into the process and passed.
+- The first focused final-register smoke failed on a stale CTA marker. The
+  smoke script now checks the current provider-index CTA and the rerun passed.
+
+Focused coverage:
+
+- Provider public/portal routes, Operations final register markers, helper
+  tools, recording dry-run provenance, calendar readback, and automations
+  readback passed against the deployed app.
+- Final release gate did not merge PR #5 and did not run any external send,
+  billing, access, Google, Zoom, Vimeo, DNS, external CRM/GHL, or secret-write
+  action.
+<!-- batch-19:end -->

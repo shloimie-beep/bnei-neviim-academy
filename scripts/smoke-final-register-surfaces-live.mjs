@@ -143,7 +143,7 @@ async function main() {
     await step('provider public and portal routes expose directory, join, classroom, and plan markers', async () => {
       const checks = [
         ['/', ['Service Provider Network', 'href="/become-service-provider?onboard=provider"']],
-        ['/service-providers', ['Service Provider', 'Provider', 'Become a Service Provider']],
+        ['/service-providers', ['Service Provider', 'Provider', 'Advertise your program for free', 'href="/provider-signup?onboard=provider"']],
         ['/become-service-provider?onboard=provider', ['raw_intake', 'Service Provider', 'provider']],
         ['/provider', ['Safe portal navigation', 'Directory', 'Join', 'data-provider-classroom-setup', 'Start a classroom draft']],
         ['/api/provider-plans', ['plans']],

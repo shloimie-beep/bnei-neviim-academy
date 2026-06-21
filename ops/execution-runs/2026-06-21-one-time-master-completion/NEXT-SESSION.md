@@ -892,3 +892,32 @@ Next exact action:
 npm run bna:run:next
 ```
 <!-- batch-11-13:end -->
+
+<!-- batch-19:start -->
+## Batch 19 Handoff
+
+Final verification and release gate is done for `REQ-20260619-314`.
+
+- Pushed/deployed app commit:
+  `34c74f22145a4422777515b740b8e33eef3f539d`
+- Railway deployment:
+  `96766f0d-ebce-4296-9002-9945b8f85858`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`
+- Focused final register surfaces live smoke:
+  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`
+- Final full suite: `npm test` 1017/1017 passed.
+- PR #5 remains unmerged.
+
+Only external/non-Codex work remains in this run:
+
+- `REQ-20260619-313` stays `needs_operator_decision` for separate paid One
+  Time infrastructure, Railway project/database/domain, DNS authority, budget,
+  and ownership approval.
+
+Next exact action when the operator wants to revisit the external blocker:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-19:end -->

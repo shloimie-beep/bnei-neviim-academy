@@ -630,3 +630,36 @@ Initial focused smoke caveat:
   was fixed to inspect secret-like string values, the focused test now covers
   the regression, and the focused smoke rerun passed.
 
+## Batch 19
+
+- Railway deployment ID: `96766f0d-ebce-4296-9002-9945b8f85858`
+- Deployed app commit: `34c74f22145a4422777515b740b8e33eef3f539d`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`
+- Focused final register surfaces live smoke: PASS,
+  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`34c74f22145a4422777515b740b8e33eef3f539d`, so unrelated uncommitted blog JSON
+files and older browser-smoke artifact changes in the main worktree were not
+included in the bundle.
+
+Focused live smoke verified public health/database readiness, provider
+directory/join/classroom/plan markers, Operations internal-first final
+register markers, helper automation/secret-rotation tools, recording dry-run
+raw-intake provenance, and readable calendar/automation APIs.
+
+Intermediate focused smoke caveat:
+
+- `ops/live-smokes/2026-06-21T17-26-37-835Z-final-register-surfaces-live-smoke.md`
+  failed on a stale provider-index CTA marker; the route was healthy, the smoke
+  contract was updated to current copy, and the rerun passed.
+
+No PR merge, external send, WhatsApp send, email send, charge, refund, access
+grant, public publish, Google Classroom/Calendar/Drive write, Zoom
+meeting/registrant/attendance write, Vimeo upload/publish, DNS or Railway
+variable mutation, external CRM/GHL write, raw private export, or secret
+exposure was performed.
+

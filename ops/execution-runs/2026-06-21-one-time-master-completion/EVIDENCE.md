@@ -1790,3 +1790,77 @@ Guardrails:
   send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or
   secret exposure was performed.
 <!-- batch-17:end -->
+
+<!-- batch-19:start -->
+## Batch 19 - Final Verification And Release
+
+Status: done / deployed / verified live / PR unmerged
+
+Closed `REQ-20260619-314` with pushed code, deployment proof, local release
+gate proof, and live smoke proof.
+
+Implementation and release files:
+
+- Operations topbar copy:
+  `public/operations.html`
+- UI audit current-shell contract:
+  `scripts/one-time-ui-design-delta-audit.mjs`
+- Focused final live smoke current provider-index marker:
+  `scripts/smoke-final-register-surfaces-live.mjs`
+- Release-gate regression tests:
+  `tests/agent-control-center.test.js`,
+  `tests/one-time-intake-api-readback.test.js`,
+  `tests/operations-automation-library.test.js`,
+  `tests/operations-saas-crm-redesign.test.js`,
+  `tests/operations-shell-navigation-contract.test.js`,
+  `tests/rabbi-task-dialogue.test.js`
+
+Deployment and live evidence:
+
+- Pushed/deployed app commit:
+  `34c74f22145a4422777515b740b8e33eef3f539d`
+- Railway deployment:
+  `96766f0d-ebce-4296-9002-9945b8f85858`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`
+- Focused final register surfaces live smoke:
+  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`
+- Final action watchdog:
+  `ops/watchdog-audits/2026-06-21T17-29-watchdog-action-audit.md`
+- Final security watchdog:
+  `ops/watchdog-audits/2026-06-21T17-29-watchdog-security-routes.md`
+
+Focused live smoke verified:
+
+- Public health endpoint is `ok` and database is connected.
+- Provider public and portal routes expose directory, join, classroom, and plan
+  markers.
+- Operations bundle exposes internal-first calendar/classroom, encrypted
+  storage, rotation, automation, billing, provider index, and intake markers.
+- Helper tools expose automation and provider secret-rotation controls.
+- Recording intake dry run returns raw-intake provenance.
+- Calendar and automations APIs remain readable.
+
+Intermediate focused smoke caveat:
+
+- `ops/live-smokes/2026-06-21T17-26-37-835Z-final-register-surfaces-live-smoke.md`
+  failed on the stale marker `Become a Service Provider`. The live route was
+  healthy and exposed the current CTA `Advertise your program for free`; the
+  smoke contract was updated and the rerun passed.
+
+Guardrails:
+
+- No PR merge.
+- No external send, WhatsApp send, email send, charge, refund, access grant,
+  public publish, Google Classroom/Calendar/Drive write, Zoom
+  meeting/registrant/attendance write, Vimeo upload/publish, DNS or Railway
+  variable mutation, external CRM/GHL write, raw private export, or secret
+  exposure.
+
+Remaining external decision:
+
+- `REQ-20260619-313` remains `needs_operator_decision` for separate paid One
+  Time infrastructure, Railway project/database/domain, DNS authority, budget,
+  and ownership approval.
+<!-- batch-19:end -->

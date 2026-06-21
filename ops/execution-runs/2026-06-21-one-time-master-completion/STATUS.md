@@ -819,3 +819,38 @@ exposure occurred.
 
 Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-17:end -->
+
+<!-- batch-19:start -->
+## Batch 19 - Final Verification And Release
+
+Status: done / deployed / verified live / PR unmerged
+
+Closed `REQ-20260619-314` for PR #5. Final release-gate work stabilized the
+last stale final-check contracts, restored explicit Operations topbar status
+chip labels, aligned the UI-design audit with the current sidebar/top-filter
+rail shell, and updated the focused final live smoke for the current provider
+index CTA.
+
+Pushed/deployed app commit:
+`34c74f22145a4422777515b740b8e33eef3f539d`. Railway deployment
+`96766f0d-ebce-4296-9002-9945b8f85858` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`. Focused final
+register surfaces live smoke passed at
+`ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`.
+
+Local verification passed: targeted release-gate regression suite 32/32,
+provider/final-register contract suite 18/18, full `npm test` 1017/1017,
+action watchdog, security watchdog, execution-run validation, tracked secret
+audit, syntax checks, and diff check with line-ending warnings only.
+
+Guardrails: PR #5 was not merged. No external send, WhatsApp send, email send,
+charge, refund, access grant, public publish, Google Classroom/Calendar/Drive
+write, Zoom meeting/registrant/attendance write, Vimeo upload/publish, DNS or
+Railway variable mutation, external CRM/GHL write, raw private export, or
+secret exposure was performed.
+
+Remaining terminal blocker: `REQ-20260619-313` stays
+`needs_operator_decision` for separate paid One Time infrastructure, Railway
+project/database/domain, DNS authority, budget, and ownership approval.
+<!-- batch-19:end -->

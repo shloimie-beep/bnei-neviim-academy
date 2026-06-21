@@ -2498,7 +2498,7 @@
       "id": "REQ-20260619-314",
       "title": "Final verification and release",
       "expected_result": "All unblocked work is verified, pushed, deployed when safe, and live-smoked; only external actions remain.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0018"
@@ -2527,9 +2527,9 @@
         "REQ-20260619-311",
         "REQ-20260619-312"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Run final checks, push PR branch, deploy safe bundle, smoke, and update PR #5; do not merge.",
+      "next_action": "Closed for Codex-controlled release gate. PR #5 remains unmerged; REQ-20260619-313 remains needs_operator_decision for separate paid infrastructure/DNS approval.",
       "acceptance_criteria": [
         "full tests pass",
         "secret audit passes",
@@ -2537,18 +2537,54 @@
         "Railway deploy/live smoke recorded",
         "PR #5 updated"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md#batch-19---final-verification-and-release",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-19---final-verification-and-release",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-19-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-19",
+        "ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md",
+        "ops/watchdog-audits/2026-06-21T17-29-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T17-29-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "node --test tests/agent-control-center.test.js tests/one-time-intake-api-readback.test.js tests/one-time-ui-design-delta-audit.test.js tests/operations-automation-library.test.js tests/operations-saas-crm-redesign.test.js tests/rabbi-task-dialogue.test.js tests/ui-01-public-operations-shell.test.js tests/operations-shell-navigation-contract.test.js",
+        "npm test",
+        "node --check scripts/smoke-final-register-surfaces-live.mjs",
+        "node --test tests/final-register-surfaces-closeout.test.js tests/service-provider-directory.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:redeploy",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:final-register-surfaces"
+      ],
       "implementation_files": [
+        "public/operations.html",
+        "scripts/one-time-ui-design-delta-audit.mjs",
+        "scripts/smoke-final-register-surfaces-live.mjs",
+        "tests/agent-control-center.test.js",
+        "tests/one-time-intake-api-readback.test.js",
+        "tests/operations-automation-library.test.js",
+        "tests/operations-saas-crm-redesign.test.js",
+        "tests/operations-shell-navigation-contract.test.js",
+        "tests/rabbi-task-dialogue.test.js",
         "ops/execution-runs/2026-06-21-one-time-master-completion/"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "34c74f22145a4422777515b740b8e33eef3f539d",
+      "pushed_commit": "34c74f22145a4422777515b740b8e33eef3f539d",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment 96766f0d-ebce-4296-9002-9945b8f85858 SUCCESS",
+        "ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T20:29:00+03:00"
     }
   ],
   "source_statement_matrix": {
