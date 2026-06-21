@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T16:35:00+03:00",
+  "updated_at": "2026-06-21T16:38:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -1097,7 +1097,7 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "split_child_requirements_active",
+      "implementation_status": "children_in_progress",
       "can_continue_without_operator": false,
       "next_action": "Complete child requirements REQ-20260621-901 through REQ-20260621-910; do not mark the parent complete until every required child is done, already satisfied, blocked, needs operator decision, failed, or archived.",
       "acceptance_criteria": [
@@ -1148,7 +1148,7 @@
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:22:25+03:00",
+      "updated_at": "2026-06-21T16:38:00+03:00",
       "deployed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
       "deployment_id": "8c20ae67-9acc-43f2-b77d-c10fcd425d73",
       "live_smoke": [
@@ -1167,9 +1167,9 @@
         "REQ-20260621-909",
         "REQ-20260621-910"
       ],
-      "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910.",
+      "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910. Child REQ-20260621-902 is terminal blocked on transcription credential; continue with unblocked children.",
       "blocker_owner": "Codex",
-      "blocker_next_action": "Continue with child requirement REQ-20260621-902, today's class-upload trace."
+      "blocker_next_action": "Continue with child requirement REQ-20260621-903, Downloads spreadsheet inventory."
     },
     {
       "source_id": "RAW-20260621-002",
@@ -1261,18 +1261,36 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
-      "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "status": "blocked",
+      "implementation_status": "blocked_transcription_credential",
+      "can_continue_without_operator": false,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md"
+      ],
+      "verification": [
+        "node --check scripts/smoke-class-upload-trace-live.mjs",
+        "node --check scripts/telegram-kimi-bridge.mjs",
+        "node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --dry-run --auto-parse BLOCKER-FREE DRY-RUN",
+        "node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse BLOCKED 401 invalid_credential",
+        "live content-job note sanitization patch PASS",
+        "npm run app:smoke",
+        "npm run app:smoke:class-upload-trace -- 78"
+      ],
+      "implementation_commit": "72b5723a7600587d117b63ae972d617526891c22",
+      "pushed_commit": "72b5723a7600587d117b63ae972d617526891c22",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
-      "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_required": false,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T16:38:00+03:00",
       "id": "REQ-20260621-902",
       "title": "Today's class-upload trace",
       "expected_result": "The current class upload path has traceable raw intake, source envelope, parse run, item routing, and review evidence.",
@@ -1281,7 +1299,7 @@
       ],
       "category": "class_upload_trace",
       "batch_id": "batch-9B",
-      "next_action": "Trace the latest class upload from source capture through parse/run/review surfaces and record proof or blockers.",
+      "next_action": "Continue with REQ-20260621-903 Downloads spreadsheet inventory while job #78 remains blocked on transcription credentials.",
       "acceptance_criteria": [
         "raw/source provenance exists",
         "parse run and item routing are inspectable",
@@ -1293,6 +1311,13 @@
         "public/operations.html",
         "scripts/telegram-kimi-bridge.mjs",
         "tests/telegram-media-routing.test.js"
+      ],
+      "blocker": "Hosted transcription credential returns 401 invalid_credential before job #78 can be transcribed or parsed.",
+      "blocker_owner": "operator/keyholder",
+      "blocker_next_action": "Fix or rotate the hosted transcription credential, then rerun node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse with live env and Drive credentials.",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md"
       ]
     },
     {
@@ -1759,7 +1784,10 @@
         "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-21T13-21-13-527Z-one-time-vimeo-member-library-live-smoke.md",
         "ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md",
-        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md"
+        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md"
       ],
       "verification": [
         "node --check src/lib/integrations/video-hosting.js",
@@ -1791,17 +1819,19 @@
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
-        "Railway deployment b2e4ce9b-658b-4713-92a3-431795a66808 deployed commit 37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92 with status SUCCESS",
-        "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md"
+        "Railway deployment 38393641-ee8e-46ed-8daf-16e67b1cde2a deployed commit 23e16a126f6e7461858b5701f2dbd2ba719a35c7 containing implementation commit 37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92 with status SUCCESS",
+        "ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md confirmed the current deployed bundle retained the preceding source-envelope parser work."
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:35:00+03:00",
-      "deployment_id": "b2e4ce9b-658b-4713-92a3-431795a66808",
-      "deployed_commit": "37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92",
+      "updated_at": "2026-06-21T16:40:00+03:00",
+      "deployment_id": "38393641-ee8e-46ed-8daf-16e67b1cde2a",
+      "deployed_commit": "23e16a126f6e7461858b5701f2dbd2ba719a35c7",
       "live_smoke": [
-        "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md"
+        "ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md"
       ]
     },
     {

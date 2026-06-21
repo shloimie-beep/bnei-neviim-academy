@@ -406,6 +406,46 @@ Known unrelated caveat:
   unrelated to source-envelope routing.
 <!-- batch-9A:end -->
 
+<!-- batch-9B:start -->
+## Batch 9B Test Results
+
+Recorded after live class-upload trace, reprocess dry-run, blocked reprocess
+attempt, content-job note sanitization, and focused blocker-verification smoke:
+
+- PASS `node --check scripts/smoke-class-upload-trace-live.mjs`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS dry-run:
+  `node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --dry-run --auto-parse`
+  with job `#78`, title `Drive Class Sunday balak`, status `ingested`, drive
+  stage `02 Ingesting`, source file `Class Sunday balak.m4a`, and
+  `would_update: transcribe_and_patch_existing_job`.
+- BLOCKED actual reprocess:
+  `node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse`
+  stopped on hosted transcription `401 invalid_credential` before transcript
+  text or parse-run creation.
+- PASS live content-job note sanitization patch:
+  job `#78` status `blocked`, drive stage `02 Ingesting`,
+  `notes_sanitized: true`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:class-upload-trace -- 78`,
+  `ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`.
+
+Focused smoke covered:
+
+- Operations login and live content-job readback.
+- Source provenance for job `#78` with `google_drive` source and Drive file id.
+- Explicit blocked-before-parse state with zero transcript chars.
+- Sanitized Batch 9B blocker notes with no secret-like credential material.
+- No parse run for source `content_recording` / `78`.
+
+Guardrails:
+
+- No transcript body was written into reports.
+- No parse-run apply, task filing, external send, billing, Zoom, Vimeo, Buffer,
+  DNS, CRM/GHL, WhatsApp, email, or external-account write was performed.
+<!-- batch-9B:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 Test Results
 
@@ -482,20 +522,26 @@ Closeout checks:
   main workspace
 - PASS clean detached deploy-worktree `node scripts/audit-secrets.mjs`
 - PASS clean detached deploy-worktree `git diff --check`
-- PASS `npm run railway:doctor` after Railway deployment
-  `b2e4ce9b-658b-4713-92a3-431795a66808`
+- PASS `npm run railway:doctor` after current-HEAD Railway deployment
+  `38393641-ee8e-46ed-8daf-16e67b1cde2a`
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md`
 - PASS `node scripts/smoke-one-time-vimeo-member-library-live.mjs`,
-  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md`
+- PASS `npm run app:smoke:source-envelope-parser`,
+  `ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md`
 - PASS read-only production cleanup check:
   `active_unarchived_codex_vimeo_smoke_classes: 0`
 
 Deployment-safety notes:
 
-- The deploy was run from a clean detached worktree at
+- The first deploy was run from a clean detached worktree at
   `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`, because the main worktree
   contained unrelated unstaged files that were not part of this batch.
+- The current deployed bundle was then redeployed from a clean detached
+  worktree at `23e16a126f6e7461858b5701f2dbd2ba719a35c7`, so production
+  contains both the Vimeo/member-library implementation and the preceding
+  source-envelope parser commits.
 - The first clean-worktree focused test attempt failed only because the clean
   deploy worktree had no local `node_modules`; rerun with the main workspace
   `NODE_PATH` passed.

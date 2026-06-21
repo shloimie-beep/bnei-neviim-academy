@@ -296,6 +296,46 @@ Continue automatically with `REQ-20260621-902` / Batch 9B today's class-upload
 trace.
 <!-- batch-9A:end -->
 
+<!-- batch-9B:start -->
+## Batch 9B Handoff
+
+Today's class-upload trace is terminal as blocked, with live blocker proof.
+
+- Requirement: `REQ-20260621-902`
+- Implementation status: `blocked_transcription_credential`
+- Focused smoke command commit:
+  `72b5723a`
+- Live content job:
+  `#78` / `Drive Class Sunday balak`
+- Source:
+  `google_drive`, project `bna`, drive stage `02 Ingesting`
+- Current live job status:
+  `blocked`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`
+- Focused class-upload trace live smoke:
+  `ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`
+- Guardrails: no transcript body committed, no parse run applied, no task
+  filing, no external send, no billing, no Zoom/Vimeo/Buffer/DNS/CRM/GHL,
+  WhatsApp, email, or external-account write.
+
+Blocker:
+
+- Hosted transcription credential returns `401 invalid_credential`. The live
+  content-job note was sanitized and focused smoke verified no secret-like
+  credential material remains.
+
+Next exact actions after the credential is fixed:
+
+```powershell
+node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse
+npm run app:smoke:class-upload-trace -- 78
+```
+
+Continue current master run with the next unblocked requirement:
+`REQ-20260621-903` / Batch 9C Downloads spreadsheet inventory.
+<!-- batch-9B:end -->
+
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff
 
@@ -304,10 +344,12 @@ deployed and live-verified.
 
 - Requirement: `REQ-20260619-308`
 - Implementation status: `verified_live`
-- Implementation/pushed/deployed commit:
+- Implementation/pushed commit:
   `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Current deployed commit:
+  `23e16a126f6e7461858b5701f2dbd2ba719a35c7`
 - Railway deployment:
-  `b2e4ce9b-658b-4713-92a3-431795a66808`
+  `38393641-ee8e-46ed-8daf-16e67b1cde2a`
 - Key files:
   `src/lib/integrations/video-hosting.js`, `server.js`,
   `public/operations.html`, `public/member-library.html`,
@@ -319,9 +361,11 @@ deployed and live-verified.
   `scripts/smoke-one-time-vimeo-member-library-live.mjs`
 - Focused Batch 11/13 tests: 25 passed, 0 failed.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md`
 - Focused One Time Vimeo/member-library live smoke:
-  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md`
+- Source-envelope parser regression smoke on the same deployed bundle:
+  `ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md`
 - Guardrails: no Vimeo upload, provider publish/unpublish/delete, OAuth
   exchange, email send, WhatsApp send, payment, Zoom meeting, participant
   invite, real member access grant, DNS, or external portal write.

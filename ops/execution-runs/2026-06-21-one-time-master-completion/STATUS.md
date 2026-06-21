@@ -242,6 +242,37 @@ focused parser and media-routing regressions passed.
 Next unblocked child: `REQ-20260621-902` today's class-upload trace.
 <!-- batch-9A:end -->
 
+<!-- batch-9B:start -->
+## Batch 9B - Today's Class-Upload Trace
+
+Status: blocked / live blocker verified
+
+The latest live class-upload candidate is content job `#78`, title
+`Drive Class Sunday balak`, source type `google_drive`, project `bna`, created
+`2026-06-21T10:04:38.843Z`, drive stage `02 Ingesting`, and Drive file
+`Class Sunday balak.m4a`. The job has source provenance but no transcript text
+and no parse run for source `content_recording` / `78`.
+
+Dry-run reprocess confirmed the existing job would be transcribed and patched
+in place. The actual reprocess downloaded the audio and began transcription
+chunking, but stopped before any transcript or parse run was saved because the
+hosted transcription credential returned `401 invalid_credential`.
+
+The live content-job notes were patched to a sanitized blocker summary without
+secret-like credential material. Focused live smoke
+`ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`
+verified the blocked source readback, sanitized notes, zero transcript chars,
+and absence of a parse run. Standard live smoke also passed at
+`ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`.
+
+No deployment was required because Batch 9B made no app-visible runtime code
+change. The only committed code change is the repeatable focused live smoke
+command at `72b5723a`; the live production data mutation was limited to marking
+job `#78` blocked with sanitized notes.
+
+Next unblocked child: `REQ-20260621-903` Downloads spreadsheet inventory.
+<!-- batch-9B:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 - Zoom Meeting And Attendance Foundation
 
@@ -310,12 +341,14 @@ retention checks, and deletion gates. Webhook-originated material is not
 published directly.
 
 Focused local verification passed. The implementation commit
-`37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92` was pushed, deployed to Railway
-deployment `b2e4ce9b-658b-4713-92a3-431795a66808`, and verified by standard
-plus focused live smokes. The focused live smoke created only a temporary
-smoke-scoped class package and smoke-scoped library item, then rolled back the
-library item and archived the temporary class. A follow-up production API check
-found zero unarchived `Codex Vimeo Smoke` classes.
+`37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92` was pushed, and the current PR head
+`23e16a126f6e7461858b5701f2dbd2ba719a35c7` was deployed to Railway deployment
+`38393641-ee8e-46ed-8daf-16e67b1cde2a`. Standard, focused Vimeo/member-library,
+and source-envelope parser regression smokes passed against that deployed
+bundle. The focused live smoke created only a temporary smoke-scoped class
+package and smoke-scoped library item, then rolled back the library item and
+archived the temporary class. A follow-up production API check found zero
+unarchived `Codex Vimeo Smoke` classes.
 
 Next: run `npm run bna:run:next` after the closeout evidence commit is pushed
 and continue with the next unblocked requirement selected by the runner.

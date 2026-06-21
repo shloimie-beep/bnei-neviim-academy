@@ -615,6 +615,62 @@ QA caveat:
   touched the One Time owner-name helper.
 <!-- batch-9A:end -->
 
+<!-- batch-9B:start -->
+## Batch 9B Evidence - Today's Class-Upload Trace
+
+Requirement: `REQ-20260621-902`
+
+Status: blocked / live blocker verified
+
+Trace evidence:
+
+- Live content job: `#78`
+- Title: `Drive Class Sunday balak`
+- Source type: `google_drive`
+- Project: `bna`
+- Created at: `2026-06-21T10:04:38.843Z`
+- Drive stage/status after closeout: `02 Ingesting` / `blocked`
+- Drive file: `Class Sunday balak.m4a`
+- Dry-run result:
+  `would_update: transcribe_and_patch_existing_job`, no production mutation.
+- Actual reprocess attempt:
+  `node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse`
+- Actual blocker:
+  hosted transcription rejected the configured credential with
+  `401 invalid_credential` before transcript text or a parse run could be
+  saved.
+
+Implementation/evidence files:
+
+- Repeatable focused live smoke:
+  `scripts/smoke-class-upload-trace-live.mjs`
+- NPM command:
+  `npm run app:smoke:class-upload-trace -- 78`
+- Focused live smoke report:
+  `ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`
+- Standard live smoke report:
+  `ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`
+
+Safety evidence:
+
+- The live job notes were patched to a sanitized Batch 9B blocker summary.
+- Focused smoke verified the notes contain no secret-like credential material.
+- Focused smoke verified transcript chars remain `0`.
+- Focused smoke verified no parse run exists for source type
+  `content_recording` and source id `78`, because the blocker occurred before
+  transcription completed.
+- No parse-run apply, task filing, external send, billing, Zoom, Vimeo, Buffer,
+  DNS, CRM/GHL, WhatsApp, email, or external-account write was performed.
+
+Closeout result:
+
+- `REQ-20260621-902` is terminal as `blocked`.
+- Blocker owner: operator/keyholder.
+- Next action: fix or rotate the hosted transcription credential, then rerun
+  `node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse`
+  with live env and Drive credentials.
+<!-- batch-9B:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 Evidence - Zoom Meeting And Attendance Foundation
 
@@ -748,13 +804,16 @@ Deployment and live evidence:
 
 - Implementation commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
 - Pushed commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
-- Deployed commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
-- Railway deployment: `b2e4ce9b-658b-4713-92a3-431795a66808`
+- Deployed commit: `23e16a126f6e7461858b5701f2dbd2ba719a35c7`
+- Railway deployment: `38393641-ee8e-46ed-8daf-16e67b1cde2a`
 - Railway doctor/poll: PASS, deployment status `SUCCESS`
 - Standard live smoke: PASS,
-  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md`
 - Focused One Time Vimeo/member-library live smoke: PASS,
-  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md`
+- Source-envelope parser regression smoke on the same current deployed bundle:
+  PASS,
+  `ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md`
 
 Focused live smoke covered:
 

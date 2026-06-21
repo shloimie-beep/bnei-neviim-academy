@@ -24947,3 +24947,32 @@ write was performed. The focused live parse used a synthetic dry-run fixture.
 
 Next: continue automatically with Batch 9B / `REQ-20260621-902` today's
 class-upload trace.
+
+## 2026-06-21T16:38:00+03:00 - One Time Master Completion Batch 9B Class-Upload Trace Blocked
+
+Closed `REQ-20260621-902` as terminal blocked on PR #5 with live proof. The
+latest class-upload candidate is live content job `#78` / `Drive Class Sunday
+balak`, source type `google_drive`, project `bna`, drive stage `02 Ingesting`,
+with source provenance but no transcript and no parse run.
+
+Dry-run reprocess verified the existing Drive audio would be transcribed and
+patched back onto job `#78`. The actual reprocess began chunked transcription
+but stopped before saving transcript text or creating a parse run because the
+hosted transcription credential returned `401 invalid_credential`.
+
+The content job was patched to `blocked` with sanitized Batch 9B notes. No
+secret-like credential material remains in the live note according to focused
+smoke `ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`.
+
+Verification passed: syntax checks for the bridge and focused smoke script,
+dry-run readback, sanitized blocker patch, standard live smoke
+`ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`, and focused
+class-upload trace smoke. The actual reprocess remains blocked until the
+hosted transcription credential is fixed or rotated.
+
+Guardrails: no transcript body was committed or written to reports; no parse
+apply, task filing, external send, billing, Zoom, Vimeo, Buffer, DNS, CRM/GHL,
+WhatsApp, email, or external-account write was performed.
+
+Next: continue automatically with Batch 9C / `REQ-20260621-903` Downloads
+spreadsheet inventory while 9B waits on the credential blocker.

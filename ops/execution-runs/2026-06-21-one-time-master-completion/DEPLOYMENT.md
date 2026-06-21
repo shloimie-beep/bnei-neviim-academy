@@ -202,6 +202,23 @@ default `family_meeting` / `dratler_family` classification, and embedded
 parse apply, task filing, external send, billing, Zoom, Vimeo, Buffer, DNS,
 CRM/GHL, or external-account write was performed.
 
+## Batch 9B
+
+- Railway deployment: not required for this blocked trace closeout.
+- App-visible runtime code changes: none.
+- Committed QA command: `72b5723a` (`test: add class upload trace live smoke`)
+- Live production data mutation: content job `#78` was marked `blocked` with a
+  sanitized Batch 9B blocker note after hosted transcription returned
+  `401 invalid_credential`.
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`
+- Focused class-upload trace live smoke: PASS / `blocked_verified`,
+  `ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`
+
+No deploy ran because no app-visible runtime bundle changed. The focused live
+smoke verified source readback, sanitized blocker notes, zero transcript chars,
+and no parse run for source `content_recording` / `78`.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`
@@ -230,14 +247,16 @@ Prior focused smoke-script failure during the same batch:
 
 ## Batch 11/13
 
-- Deployment ID: `b2e4ce9b-658b-4713-92a3-431795a66808`
-- Deployed commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Deployment ID: `38393641-ee8e-46ed-8daf-16e67b1cde2a`
+- Deployed commit: `23e16a126f6e7461858b5701f2dbd2ba719a35c7`
 - Service/environment: `skillful-motivation / production`
 - Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
 - Standard live smoke: PASS,
-  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md`
 - Focused One Time Vimeo/member-library live smoke: PASS,
-  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+  `ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md`
+- Source-envelope parser regression smoke on the same deployed bundle: PASS,
+  `ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md`
 
 Focused live smoke verified production video-hosting status/readiness with
 Vimeo selected, manual fallback ready, automated upload disabled, no
