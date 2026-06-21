@@ -996,3 +996,39 @@ Focused coverage:
 - The production readiness route and Operations panel are body-free and
   no-write.
 <!-- batch-14:end -->
+
+<!-- batch-15:start -->
+## Batch 15 Test Results
+
+Recorded for `REQ-20260619-310` gamification:
+
+- PASS `node --check src/lib/bna/gamification.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-gamification-live.mjs`
+- PASS `node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js tests/one-time-action-coverage.test.js`
+  with 29/29 tests passing.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T16-34-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-gamification`,
+  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`.
+
+Focused coverage:
+
+- Automatic badge evaluation uses per-badge rules, configurable thresholds,
+  approved events, existing active badge suppression, and stable idempotency.
+- `createGamificationEvent` uses the same automatic evaluator before writing
+  badge/audit rows.
+- Manual reversal route requires `reversal_reason`, updates badge status, and
+  writes a badge audit event.
+- Rabbi-awarded badges remain human-review gated.
+- Readiness and Operations panel remain no-write and public leaderboard-free.
+<!-- batch-15:end -->

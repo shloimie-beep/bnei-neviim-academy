@@ -1,7 +1,7 @@
 # Next Session
 
 Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F, Batch 9G,
-Batch 9H, Batch 9I, Batch 9J, Batch 11/13, Batch 12, and Batch 14 are deployed/live-verified or locally verified as
+Batch 9H, Batch 9I, Batch 9J, Batch 11/13, Batch 12, Batch 14, and Batch 15 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
 continue with the next unblocked open requirement it selects.
@@ -702,6 +702,39 @@ Next exact action:
 npm run bna:run:next
 ```
 <!-- batch-14:end -->
+
+<!-- batch-15:start -->
+## Batch 15 Handoff
+
+Gamification is deployed and live-verified.
+
+- Requirement: `REQ-20260619-310`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `39b5db0ea0fb154db8aaf2e69735a40b981a59fc`
+- Railway deployment:
+  `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`
+- Key files:
+  `src/lib/bna/gamification.js`, `server.js`,
+  `public/operations.html`, `scripts/smoke-one-time-gamification-live.mjs`,
+  `tests/gamification-events.test.js`,
+  `tests/one-time-gamification-badge-audit.test.js`
+- Focused tests: 29/29 passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`
+- Focused gamification live smoke:
+  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`
+- Guardrails:
+  no badge award, badge reversal, notification, access grant, prize/coupon/
+  credit, public individual leaderboard, send, charge, Zoom/Vimeo/Google/DNS
+  mutation, external CRM/GHL write, or secret exposure occurred during smoke.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-15:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

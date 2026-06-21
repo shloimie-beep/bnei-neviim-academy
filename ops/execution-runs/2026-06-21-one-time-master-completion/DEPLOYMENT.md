@@ -501,3 +501,26 @@ transcript content write, student-record write, public helper corpus mutation,
 send, charge, Zoom/Vimeo/Google/DNS mutation, or external CRM/GHL write was
 performed.
 
+## Batch 15
+
+- Railway deployment ID: `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`
+- Deployed commit: `39b5db0ea0fb154db8aaf2e69735a40b981a59fc`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`
+- Focused gamification live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`39b5db0ea0fb154db8aaf2e69735a40b981a59fc`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production badge readiness route, implemented
+event-driven award/reversal readiness, no-write readiness flags, no blockers,
+the full automatic/Rabbi-awarded badge catalog, and Operations no-leaderboard
+guardrails. No gamification event, badge award, badge reversal, parent/student
+notification, access grant, prize/coupon/credit, send, charge, Zoom/Vimeo/
+Google/DNS mutation, external CRM/GHL write, or secret exposure was performed.
+

@@ -1555,3 +1555,72 @@ Guardrails:
   send, charge, public helper corpus mutation, Zoom/Vimeo/Google/DNS mutation,
   external CRM/GHL write, or secret exposure was performed.
 <!-- batch-14:end -->
+
+<!-- batch-15:start -->
+## Batch 15 - Gamification
+
+Status: done / deployed / verified live
+
+Implemented `REQ-20260619-310` gamification completion. Server-side event
+creation now awards automatic badges through the shared per-badge evaluator
+instead of broad event-type/points matching. Rabbi-awarded badges remain
+review-gated. Manual badge reversal now requires a reason and writes a badge
+audit event. The readiness route and Operations panel remain read-only.
+
+Implemented files:
+
+- Badge policy and readiness: `src/lib/bna/gamification.js`
+- Event-driven badge award path, manual reversal route, route allowlist:
+  `server.js`
+- Operations badge readiness copy: `public/operations.html`
+- Route/package/smoke registration:
+  `ops/route-registry.json`, `package.json`,
+  `scripts/smoke-one-time-gamification-live.mjs`
+- Focused tests:
+  `tests/gamification-events.test.js`,
+  `tests/one-time-gamification-badge-audit.test.js`
+
+Local verification:
+
+- PASS syntax checks for `src/lib/bna/gamification.js`, `server.js`, and
+  `scripts/smoke-one-time-gamification-live.mjs`.
+- PASS focused gamification/community/action suite: 29/29.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T16-34-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md`
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Implementation/pushed/deployed commit:
+  `39b5db0ea0fb154db8aaf2e69735a40b981a59fc`
+- Railway deployment:
+  `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`
+- Focused gamification live smoke:
+  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`
+
+Focused live smoke verified:
+
+- The production badge readiness route returns `REQ-20260619-310`,
+  `implemented_read_only`, no-write flags, 11 automatic badges, 6
+  Rabbi-awarded badges, and no blockers.
+- Event-driven automatic badge pipeline and manual reversal pipeline are
+  reported as implemented.
+- The readiness route does not award badges, reverse badges, notify anyone,
+  grant access, create prizes/credits, or enable a public individual
+  leaderboard.
+- Operations renders the badge audit panel and no-leaderboard guardrails.
+
+Guardrails:
+
+- Focused smoke was read-only. No gamification event, badge award, badge
+  reversal, parent/student notification, access grant, prize/coupon/credit,
+  charge, external CRM/GHL write, Zoom/Vimeo/Google/DNS mutation, or secret
+  exposure was performed.
+<!-- batch-15:end -->

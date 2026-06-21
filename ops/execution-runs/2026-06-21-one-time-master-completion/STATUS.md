@@ -708,3 +708,34 @@ CRM/GHL write, or secret exposure was performed.
 
 Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-14:end -->
+
+<!-- batch-15:start -->
+## Batch 15 - Gamification
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260619-310` by completing the One Time badge/gamification
+workflow. Automatic badge awards now use the shared event-driven per-badge
+evaluator, configurable thresholds, active-badge suppression, stable
+idempotency keys, source-event evidence, and badge audit events. Rabbi-awarded
+badges remain review-gated. Manual badge reversal now requires a reversal
+reason and writes an audit event.
+
+Implementation/pushed/deployed commit:
+`39b5db0ea0fb154db8aaf2e69735a40b981a59fc`. Railway deployment
+`dcc60355-48fa-4a16-8cd2-5d05c3e8622c` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`, and
+focused Batch 15 live smoke passed at
+`ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`.
+
+Local verification passed: syntax checks, 29/29 focused tests,
+action/security watchdogs, execution-run validation, tracked secret audit, and
+diff check with line-ending warnings only.
+
+Guardrails: focused smoke was read-only; no badge award, badge reversal,
+notification, access grant, prize/coupon/credit, public individual leaderboard,
+send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
+exposure was performed.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-15:end -->

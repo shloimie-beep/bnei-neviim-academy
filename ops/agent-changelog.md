@@ -25261,3 +25261,23 @@ segments require enrollment/registrant context, accepted match method,
 confidence threshold, and review. No transcript content write, raw transcript
 body exposure, public helper corpus mutation, send, charge, Zoom/Vimeo/Google/
 DNS mutation, external CRM/GHL write, or secret exposure occurred.
+
+## 2026-06-21T19:40:00+03:00 - One Time Master Completion Batch 15 Gamification
+
+Closed `REQ-20260619-310` for PR #5. Updated the server-side badge pipeline so
+automatic badge awards use the shared per-badge event evaluator and stable
+idempotency keys instead of broad event-type/points matching. Rabbi-awarded
+badges remain review-gated, and manual badge reversal now requires a reversal
+reason and writes a badge audit event.
+
+Commit `39b5db0ea0fb154db8aaf2e69735a40b981a59fc` was pushed and deployed from
+a clean detached worktree. Railway deployment
+`dcc60355-48fa-4a16-8cd2-5d05c3e8622c` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`; focused
+gamification smoke passed at
+`ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`.
+
+No public individual leaderboard, negative points, prize/coupon/credit, access
+grant, external notification, send, charge, Zoom/Vimeo/Google/DNS mutation,
+external CRM/GHL write, or secret exposure was performed.
