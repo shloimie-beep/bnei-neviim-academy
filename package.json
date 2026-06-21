@@ -76,6 +76,7 @@
     "app:smoke:ws11-parent-progress": "node scripts/smoke-ws11-parent-progress-live.mjs",
     "app:smoke:onboarding-intake": "node scripts/smoke-assistant-onboarding-intake-live.mjs",
     "app:smoke:signup-credit-email-preview": "node scripts/smoke-signup-credit-email-preview.mjs",
+    "inventory:downloads-spreadsheets": "node scripts/inventory-download-spreadsheets.mjs",
     "wapi:phonebook-report": "node scripts/wapi-phonebook-report.mjs",
     "agent:fleet": "node scripts/agent-fleet-supervisor.mjs --watch",
     "agent:fleet:start": "powershell -ExecutionPolicy Bypass -File scripts/start-agent-fleet.ps1",
