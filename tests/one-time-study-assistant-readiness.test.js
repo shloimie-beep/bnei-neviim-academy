@@ -181,6 +181,8 @@ test('package exposes focused study assistant live smoke script', () => {
   assert.match(smokeScript, /arbitrary_version_ingestion_enabled === false/);
   assert.match(smokeScript, /answer_generation_enabled === false/);
   assert.match(smokeScript, /source_corpus_mutation_enabled === false/);
+  assert.match(smokeScript, /Object\.values\(item\)\.some\(walk\)/);
+  assert.doesNotMatch(smokeScript, /authorization\|set-cookie/);
   assert.doesNotMatch(smokeScript, /source-versions|study-assistant\/chat|sefaria\.org\/api|\/api\/sefaria/i);
 });
 

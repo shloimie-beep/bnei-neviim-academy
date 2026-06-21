@@ -1104,12 +1104,18 @@ Recorded for `REQ-20260619-312` Sefaria and study-assistant readiness:
 - PASS `node --test tests/one-time-study-assistant-readiness.test.js tests/one-time-transcript-privacy.test.js tests/one-time-action-coverage.test.js`
   with 19/19 tests passing.
 - PASS `npm run watchdog:actions`,
-  `ops/watchdog-audits/2026-06-21T17-02-watchdog-action-audit.md`.
+  `ops/watchdog-audits/2026-06-21T17-04-watchdog-action-audit.md`.
 - PASS `npm run watchdog:security`,
-  `ops/watchdog-audits/2026-06-21T17-02-watchdog-security-routes.md`.
+  `ops/watchdog-audits/2026-06-21T17-05-watchdog-security-routes.md`.
 - PASS `npm run bna:run:validate`.
 - PASS `node scripts/audit-secrets.mjs`.
 - PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `9657afe5-958c-4cfb-bb6c-6afec77bcd05`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-study-assistant`,
+  `ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
 
 Focused coverage:
 
@@ -1127,4 +1133,8 @@ Focused coverage:
   cross-student retrieval remain disabled.
 - Operations shows the implemented disabled-feature foundation, no arbitrary
   versions, and `Live smoke ready` state.
+- Initial focused smoke failed on a local scanner false positive for the
+  policy key `apply_authorization_before_retrieval`; the scanner now checks
+  secret-like string values, the focused test includes a regression assertion,
+  and the rerun passed.
 <!-- batch-17:end -->

@@ -1716,7 +1716,7 @@ Guardrails:
 <!-- batch-17:start -->
 ## Batch 17 - Sefaria And Study Assistant Readiness
 
-Status: implementation complete locally / deployment pending
+Status: done / deployed / verified live
 
 Implemented `REQ-20260619-312` as a disabled-feature, no-write study-assistant
 foundation. The readiness contract now reports `implemented_read_only`,
@@ -1744,16 +1744,43 @@ Local verification:
   `server.js`, and `scripts/smoke-one-time-study-assistant-live.mjs`.
 - PASS focused study-assistant/transcript/action suite: 19/19.
 - PASS `npm run watchdog:actions`:
-  `ops/watchdog-audits/2026-06-21T17-02-watchdog-action-audit.md`
+  `ops/watchdog-audits/2026-06-21T17-04-watchdog-action-audit.md`
 - PASS `npm run watchdog:security`:
-  `ops/watchdog-audits/2026-06-21T17-02-watchdog-security-routes.md`
+  `ops/watchdog-audits/2026-06-21T17-05-watchdog-security-routes.md`
 - PASS `npm run bna:run:validate`.
 - PASS tracked secret audit.
 - PASS `git diff --check` with line-ending warnings only.
 
 Deployment and live evidence:
 
-- Pending after implementation commit/push.
+- Implementation/pushed/deployed app commit:
+  `7efc8ce3cd3b03c08b1d573d341efed212124785`
+- Railway deployment:
+  `9657afe5-958c-4cfb-bb6c-6afec77bcd05`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`
+- Focused study-assistant live smoke:
+  `ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`
+
+Focused live smoke verified:
+
+- The production study-assistant readiness route returns `REQ-20260619-312`,
+  `implemented_read_only`, no blockers, disabled feature flag, and no-write
+  flags.
+- Authorization is applied before retrieval previews; arbitrary versions,
+  answer generation, source corpus mutation, portal publishing, raw source text
+  return, raw transcript retrieval, and cross-student retrieval are disabled.
+- Operations renders the Sefaria/study-assistant readiness panel, implemented
+  disabled-feature foundation copy, arbitrary-version guardrail, no-arbitrary
+  versions row, and `Live smoke ready` state.
+
+Intermediate smoke caveat:
+
+- The first focused smoke failed because the local smoke scanner treated the
+  policy key `apply_authorization_before_retrieval` as a secret-like value.
+  The scanner was fixed to inspect secret-like string values, a regression
+  assertion was added, and the focused smoke rerun passed.
 
 Guardrails:
 

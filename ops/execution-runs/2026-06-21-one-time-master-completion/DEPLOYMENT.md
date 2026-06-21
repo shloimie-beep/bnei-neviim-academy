@@ -562,3 +562,71 @@ Initial standard/focused smoke attempts failed before authenticated app access
 because this PR worktree did not contain `.env.local`. Reruns with the
 established local env file loaded into the process passed.
 
+## Batch 17
+
+- Railway deployment ID: `9657afe5-958c-4cfb-bb6c-6afec77bcd05`
+- Deployed app commit: `7efc8ce3cd3b03c08b1d573d341efed212124785`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`
+- Focused study-assistant live smoke: PASS,
+  `ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`7efc8ce3cd3b03c08b1d573d341efed212124785`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production study-assistant readiness route,
+`implemented_read_only` status, disabled feature flag, no-write flags, no
+blockers, authorization-before-retrieval policy, arbitrary-version block,
+answer-generation block, source-corpus-mutation block, cross-student retrieval
+block, and Operations readiness panel copy. No Sefaria/API ingestion,
+arbitrary version ingestion, source corpus mutation, answer generation, portal
+publish, chat session, raw source text retrieval, raw transcript retrieval,
+send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
+exposure was performed.
+
+Initial focused smoke caveat:
+
+- The first focused smoke failed because the local smoke scanner treated the
+  policy key `apply_authorization_before_retrieval` as a secret-like value.
+  The scanner now checks secret-like string values, the focused test covers
+  that regression, and the rerun passed.
+
+## Batch 17
+
+- Railway deployment ID: `9657afe5-958c-4cfb-bb6c-6afec77bcd05`
+- Deployed app commit: `7efc8ce3cd3b03c08b1d573d341efed212124785`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`
+- Focused study-assistant live smoke: PASS,
+  `ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`7efc8ce3cd3b03c08b1d573d341efed212124785`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production study-assistant readiness route,
+`implemented_read_only` status, disabled feature flag, no-write flags, no
+blockers, authorization-before-retrieval policy, disabled arbitrary version
+ingestion, disabled answer generation, disabled source corpus mutation,
+disabled cross-student retrieval, and Operations readiness panel copy. No
+Sefaria/API ingestion, arbitrary version ingestion, source corpus mutation,
+answer generation, portal publish, chat session creation, raw source text
+retrieval, raw transcript retrieval, cross-student retrieval, send, charge,
+Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+performed.
+
+Initial focused smoke caveat:
+
+- `npm run app:smoke:one-time-study-assistant` first failed because the local
+  smoke scanner treated the policy key `apply_authorization_before_retrieval`
+  as a secret-like value. No production leak was observed. The smoke scanner
+  was fixed to inspect secret-like string values, the focused test now covers
+  the regression, and the focused smoke rerun passed.
+

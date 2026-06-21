@@ -2376,7 +2376,7 @@
       "id": "REQ-20260619-312",
       "title": "Sefaria and study-assistant readiness",
       "expected_result": "Study assistant foundation is ready but disabled, with approved sources and authorization before retrieval.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0016"
@@ -2391,28 +2391,62 @@
       "depends_on": [
         "REQ-20260619-309"
       ],
-      "implementation_status": "implementation_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Implement and verify approved source-version whitelist, scoped retrieval policy, disabled feature flag, and no-write live smoke.",
+      "next_action": "Closed. Continue automatically with Batch 18/19 deployment readiness and final release verification as the runner directs.",
       "acceptance_criteria": [
         "no arbitrary versions",
         "no raw unreviewed transcripts",
         "citations not fabricated",
         "feature flag disabled"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-17---sefaria-and-study-assistant-readiness",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-17-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-17",
+        "ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/bna/study-assistant-readiness.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-study-assistant-live.mjs",
+        "node --test tests/one-time-study-assistant-readiness.test.js",
+        "node --test tests/one-time-study-assistant-readiness.test.js tests/one-time-transcript-privacy.test.js tests/one-time-action-coverage.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-study-assistant"
+      ],
       "implementation_files": [
         "src/lib/bna/study-assistant-readiness.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/smoke-one-time-study-assistant-live.mjs",
+        "package.json",
         "tests/one-time-study-assistant-readiness.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "7efc8ce3cd3b03c08b1d573d341efed212124785",
+      "pushed_commit": "7efc8ce3cd3b03c08b1d573d341efed212124785",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment 9657afe5-958c-4cfb-bb6c-6afec77bcd05 SUCCESS",
+        "ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T20:00:00+03:00"
+      "updated_at": "2026-06-21T20:10:00+03:00",
+      "deployment_id": "9657afe5-958c-4cfb-bb6c-6afec77bcd05",
+      "deployed_commit": "7efc8ce3cd3b03c08b1d573d341efed212124785",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-313",

@@ -776,6 +776,75 @@ npm run bna:run:next
 ```
 <!-- batch-16:end -->
 
+<!-- batch-17:start -->
+## Batch 17 Handoff
+
+Sefaria and study-assistant readiness is deployed and live-verified.
+
+- Requirement: `REQ-20260619-312`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `7efc8ce3cd3b03c08b1d573d341efed212124785`
+- Railway deployment:
+  `9657afe5-958c-4cfb-bb6c-6afec77bcd05`
+- Key files:
+  `src/lib/bna/study-assistant-readiness.js`, `server.js`,
+  `public/operations.html`,
+  `scripts/smoke-one-time-study-assistant-live.mjs`,
+  `tests/one-time-study-assistant-readiness.test.js`
+- Focused study-assistant/transcript/action tests: 19/19 passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`
+- Focused study-assistant live smoke:
+  `ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`
+- Guardrails:
+  no Sefaria/API ingestion, arbitrary version ingestion, source corpus
+  mutation, answer generation, portal publish, chat session, raw source text
+  retrieval, raw transcript retrieval, cross-student retrieval, send, charge,
+  Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure
+  occurred during smoke.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-17:end -->
+
+<!-- batch-17:start -->
+## Batch 17 Handoff
+
+Sefaria/study-assistant readiness is deployed and live-verified.
+
+- Requirement: `REQ-20260619-312`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed app commit:
+  `7efc8ce3cd3b03c08b1d573d341efed212124785`
+- Railway deployment:
+  `9657afe5-958c-4cfb-bb6c-6afec77bcd05`
+- Key files:
+  `src/lib/bna/study-assistant-readiness.js`, `server.js`,
+  `public/operations.html`, `scripts/smoke-one-time-study-assistant-live.mjs`,
+  `tests/one-time-study-assistant-readiness.test.js`
+- Focused study-assistant/transcript/action tests: 19/19 passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`
+- Focused study-assistant live smoke:
+  `ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`
+- Guardrails:
+  no Sefaria/API ingestion, arbitrary version ingestion, source corpus
+  mutation, answer generation, portal publish, chat session creation, raw
+  source text retrieval, raw transcript retrieval, cross-student retrieval,
+  send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or
+  secret exposure occurred during smoke.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-17:end -->
+
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff
 

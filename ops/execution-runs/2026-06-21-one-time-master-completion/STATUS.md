@@ -783,14 +783,39 @@ Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-17:start -->
 ## Batch 17 - Sefaria And Study Assistant Readiness
 
-`REQ-20260619-312` is in progress with local implementation and focused
-verification complete. The study-assistant readiness contract is now
-`implemented_read_only`, source-version approval and scoped retrieval previews
-are metadata-only, the Operations panel shows the disabled-feature foundation,
-and the focused live smoke script is ready for deployment verification.
+Status: done / deployed / verified live
 
-Remaining steps: commit, push, deploy the safe app-visible bundle, run
-Railway doctor, run standard app smoke and focused study-assistant live smoke,
-then record final deployment evidence and continue to Batch 18/19 as the
-runner directs.
+Closed `REQ-20260619-312` by shipping the disabled-feature One Time
+Sefaria/study-assistant readiness foundation. The readiness route reports
+`implemented_read_only`, source-version approval and scoped retrieval previews
+are metadata-only, authorization runs before retrieval previews, and answer
+generation, unrestricted AI chat, arbitrary version ingestion, Sefaria/API
+ingestion, source corpus mutation, portal publishing, raw transcript retrieval,
+raw source text return, and cross-student retrieval remain disabled.
+
+Implementation/pushed/deployed app commit:
+`7efc8ce3cd3b03c08b1d573d341efed212124785`. Railway deployment
+`9657afe5-958c-4cfb-bb6c-6afec77bcd05` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`, and
+focused Batch 17 live smoke passed at
+`ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
+
+Local verification passed: syntax checks, 19/19 focused
+study-assistant/transcript/action tests, action/security watchdogs, execution
+run validation, tracked secret audit, and diff check with line-ending warnings
+only.
+
+Initial focused smoke caveat: the first run failed because the local smoke
+scanner treated the policy key `apply_authorization_before_retrieval` as a
+secret-like value. The scanner now checks secret-like string values instead of
+policy key names, the focused test covers that regression, and the rerun
+passed.
+
+Guardrails: no Sefaria/API ingestion, arbitrary version ingestion, source
+corpus mutation, answer generation, portal publish, chat session creation, raw
+source text retrieval, raw transcript retrieval, cross-student retrieval, send,
+charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
+exposure occurred.
+
+Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-17:end -->

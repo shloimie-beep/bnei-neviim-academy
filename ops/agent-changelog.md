@@ -25303,6 +25303,31 @@ notification, delete purge, unrestricted student direct messaging, send,
 charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
 exposure.
 
+## 2026-06-21T20:10:00+03:00 - One Time Master Completion Batch 17 Study Assistant Readiness
+
+Closed `REQ-20260619-312` for PR #5. Shipped the disabled-feature One Time
+Sefaria/study-assistant readiness foundation with approved source-version
+metadata, scoped retrieval previews, authorization-before-retrieval policy, and
+Operations readiness panel copy.
+
+Commit `7efc8ce3cd3b03c08b1d573d341efed212124785` was pushed and deployed from
+a clean detached worktree. Railway deployment
+`9657afe5-958c-4cfb-bb6c-6afec77bcd05` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`; focused study
+assistant smoke passed at
+`ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
+
+The first focused smoke failed on a local scanner false positive for the policy
+key `apply_authorization_before_retrieval`; the scanner now checks secret-like
+string values, the focused test covers the regression, and the rerun passed.
+
+No Sefaria/API ingestion, arbitrary version ingestion, source corpus mutation,
+answer generation, portal publish, chat session creation, raw source text
+retrieval, raw transcript retrieval, cross-student retrieval, send, charge,
+Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+performed.
+
 ## 2026-06-21T19:56:00+03:00 - One Time Master Completion Batch 16 Community
 
 Closed `REQ-20260619-311` for PR #5. Completed One Time community moderation
@@ -25324,3 +25349,27 @@ No community thread/message write, approval, parent-visible message, public
 post, staff note, notification, delete purge, unrestricted student direct
 messaging, send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL
 write, or secret exposure was performed.
+
+## 2026-06-21T20:10:00+03:00 - One Time Master Completion Batch 17 Sefaria And Study Assistant Readiness
+
+Closed `REQ-20260619-312` for PR #5. Completed the disabled-feature One Time
+Sefaria/study-assistant foundation: approved source-version metadata is
+required, retrieval previews are metadata-only, authorization runs before
+retrieval, future assistant capabilities are enumerated as gated, and
+unrestricted AI chat, arbitrary version ingestion, Sefaria/API ingestion,
+source corpus mutation, portal publishing, raw transcript/source retrieval,
+cross-student retrieval, and answer generation remain disabled.
+
+App implementation commit `7efc8ce3cd3b03c08b1d573d341efed212124785` was
+pushed and deployed from a clean detached worktree. Railway deployment
+`9657afe5-958c-4cfb-bb6c-6afec77bcd05` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`; focused
+study-assistant smoke passed at
+`ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
+
+No Sefaria/API ingestion, arbitrary version ingestion, source corpus mutation,
+answer generation, portal publish, chat session, raw source text retrieval, raw
+transcript retrieval, cross-student retrieval, send, charge,
+Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+performed.

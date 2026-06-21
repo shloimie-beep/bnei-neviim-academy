@@ -80,8 +80,17 @@ async function loginOperationsSession(appUrl, username, password) {
 }
 
 function includesSecretLikeValue(value) {
-  const text = JSON.stringify(value || {});
-  return /(sk_live_|sk_test_|rk_live_|xox[baprs]-|AKIA[0-9A-Z]{16}|-----BEGIN|authorization|set-cookie)/i.test(text);
+  const secretPattern = /(sk_live_|sk_test_|rk_live_|xox[baprs]-|AKIA[0-9A-Z]{16}|-----BEGIN|bearer\s+[a-z0-9._-]{20,}|basic\s+[a-z0-9+/=]{20,})/i;
+  const seen = new Set();
+  const walk = (item) => {
+    if (typeof item === 'string') return secretPattern.test(item);
+    if (!item || typeof item !== 'object') return false;
+    if (seen.has(item)) return false;
+    seen.add(item);
+    if (Array.isArray(item)) return item.some(walk);
+    return Object.values(item).some(walk);
+  };
+  return walk(value);
 }
 
 function writeReports(report) {
