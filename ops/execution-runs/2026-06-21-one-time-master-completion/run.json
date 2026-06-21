@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T18:39:23+03:00",
+  "updated_at": "2026-06-21T18:42:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -25,9 +25,9 @@
     "latest_deployed_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a"
   },
   "current_batch": {
-    "batch_id": "batch-9H",
-    "requirement_id": "REQ-20260621-908",
-    "title": "Authenticated questions and support-ticket bot",
-    "status": "done"
+    "batch_id": "batch-9I",
+    "requirement_id": "REQ-20260621-909",
+    "title": "Test identities and mock data",
+    "status": "in_progress"
   }
 }

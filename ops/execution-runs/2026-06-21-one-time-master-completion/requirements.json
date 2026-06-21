@@ -1804,8 +1804,8 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
       "evidence": [],
       "verification": [],
@@ -1815,7 +1815,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T18:42:00+03:00",
       "id": "REQ-20260621-909",
       "title": "Test identities and mock data",
       "expected_result": "Realistic beta test identities and mock data exercise BNA/One Time privacy, auth, CRM, payment/access, class links, questions, and support without using real private exports.",
@@ -1824,7 +1824,7 @@
       ],
       "category": "beta_mock_data",
       "batch_id": "batch-9I",
-      "next_action": "Create or update safe TEST-prefixed identities/mock fixtures and cleanup/readback checks.",
+      "next_action": "Implement safe TEST-prefixed One Time/BNA beta identities, mock scenario preview, cleanup manifest, negative authorization matrix, tests, and live smoke.",
       "acceptance_criteria": [
         "TEST-prefixed and cleanup-ready",
         "no real private exports committed",
