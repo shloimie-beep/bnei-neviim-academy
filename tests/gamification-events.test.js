@@ -166,7 +166,7 @@ test('badge award and reversal drafts are review-only and parent safe', () => {
   assert.doesNotMatch(JSON.stringify(award), /sensitive anxiety note/i);
 });
 
-test('gamification badge readiness is no-write and blocks public leaderboards', () => {
+test('gamification badge readiness exposes implemented read-only pipelines and blocks public leaderboards', () => {
   const readiness = buildGamificationBadgeReadiness({
     student_id: 7,
     events: [
@@ -184,7 +184,12 @@ test('gamification badge readiness is no-write and blocks public leaderboards', 
   assert.equal(readiness.production_mutation_performed, false);
   assert.equal(readiness.event_driven_award_pipeline_enabled, true);
   assert.equal(readiness.manual_reversal_pipeline_enabled, true);
-  assert.equal(Object.values(readiness.gates).every((value) => value === false), true);
+  assert.equal(readiness.gates.readiness_route_award_write_enabled, false);
+  assert.equal(readiness.gates.readiness_route_reversal_write_enabled, false);
+  assert.equal(readiness.gates.public_individual_leaderboard_enabled, false);
+  assert.equal(readiness.gates.external_notification_enabled, false);
+  assert.equal(readiness.gates.prize_coupon_credit_enabled, false);
+  assert.equal(readiness.gates.automatic_access_grant_enabled, false);
   assert.equal(readiness.definitions.automatic_badges.length, 11);
   assert.equal(readiness.definitions.rabbi_awarded_badges.length, 6);
   assert.equal(readiness.award_candidates.rabbi_awarded[0].badge_slug, 'clear_explanation');

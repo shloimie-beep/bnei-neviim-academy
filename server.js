@@ -8580,6 +8580,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/gamification-events' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/gamification-events/backfill' && method === 'POST') return true;
   if (routePath === '/api/bna/gamification/badge-readiness' && method === 'GET') return true;
+  if (routePath === '/api/bna/student-badges/rabbi-award' && method === 'POST') return true;
   if (/^\/api\/bna\/student-badges\/\d+\/reverse$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/shoutouts' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/shoutouts\/\d+\/approve$/.test(routePath) && method === 'POST') return true;
@@ -61468,6 +61469,155 @@ app.get('/api/bna/gamification/badge-readiness', requireAdmin, async (req, res) 
   }
 });
 
+app.post('/api/bna/student-badges/rabbi-award', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const studentId = Number(body.student_id || body.studentId);
+  const badgeSlug = String(body.badge_slug || body.badgeSlug || body.slug || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const reason = limitText(body.reason || body.award_reason || body.awardReason || '', 600);
+  const sourceEventId = Number(body.source_event_id || body.sourceEventId || 0) || null;
+  const sourceEventRef = limitText(body.source_event_ref || body.sourceEventRef || body.evidence_ref || body.evidenceRef || (sourceEventId ? `bna_gamification_events:${sourceEventId}` : ''), 240);
+  const actor = limitText(body.actor || body.awarded_by || body.awardedBy || req.opsUser || 'operations', 120) || 'operations';
+  if (!Number.isFinite(studentId)) return res.status(400).json({ error: 'student_id is required' });
+  if (!badgeSlug) return res.status(400).json({ error: 'badge_slug is required' });
+  if (!reason) return res.status(400).json({ error: 'reason is required' });
+  if (!sourceEventRef) return res.status(400).json({ error: 'source_event_ref or source_event_id is required' });
+  const definition = oneTimeBadgeDefinitions().find((badge) => badge.slug === badgeSlug && badge.award_mode === 'rabbi_awarded');
+  if (!definition) return res.status(400).json({ error: 'badge_slug must be a Rabbi-awarded badge' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await assertStudentAccess(req, studentId, client);
+    if (sourceEventId) {
+      const sourceEvent = (await client.query(
+        `SELECT id
+         FROM bna_gamification_events
+         WHERE id = $1
+           AND student_id = $2
+           AND approval_status <> 'archived'
+         LIMIT 1`,
+        [sourceEventId, studentId]
+      )).rows[0];
+      if (!sourceEvent) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ error: 'source gamification event not found for student' });
+      }
+    }
+    const badge = (await client.query(
+      `SELECT *
+       FROM bna_badges
+       WHERE slug = $1
+         AND status = 'active'
+       LIMIT 1`,
+      [badgeSlug]
+    )).rows[0];
+    if (!badge) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'badge definition not found' });
+    }
+    const idempotencyKey = String(body.idempotency_key || body.idempotencyKey || badgeAwardIdempotencyKey({
+      student_id: studentId,
+      badge_slug: badgeSlug,
+      source_event_ref: sourceEventRef,
+    })).slice(0, 240);
+    const existingAudit = (await client.query(
+      `SELECT bae.*, sb.*, b.slug, b.title, b.description
+       FROM bna_badge_audit_events bae
+       LEFT JOIN bna_student_badges sb ON sb.id = bae.student_badge_id
+       LEFT JOIN bna_badges b ON b.id = COALESCE(sb.badge_id, bae.badge_id)
+       WHERE bae.idempotency_key = $1
+       LIMIT 1`,
+      [idempotencyKey]
+    )).rows[0];
+    if (existingAudit?.student_badge_id) {
+      await client.query('COMMIT');
+      return res.json({
+        success: true,
+        idempotent_replay: true,
+        badge: ws11StudentBadgeView(existingAudit),
+        external_write_performed: false,
+        public_individual_leaderboard_enabled: false,
+        notification_sent: false,
+        access_grant_changed: false,
+      });
+    }
+    const auditEntry = [{
+      action: 'awarded',
+      source: 'rabbi_manual_badge_award',
+      reason,
+      actor,
+      source_event_ref: sourceEventRef,
+      source_event_id: sourceEventId,
+      requirement_id: 'REQ-20260619-310',
+      created_at: new Date().toISOString(),
+    }];
+    const metadata = {
+      source: 'rabbi_manual_badge_award',
+      requirement_id: 'REQ-20260619-310',
+      idempotency_key: idempotencyKey,
+      source_event_ref: sourceEventRef,
+      parent_safe_explanation: definition.parent_safe_explanation || badge.description || badge.title,
+      no_public_individual_leaderboard: true,
+    };
+    const awarded = (await client.query(
+      `INSERT INTO bna_student_badges (
+         student_id, badge_id, awarded_event_id, status, awarded_by, metadata, audit_json
+       ) VALUES ($1, $2, $3, 'active', $4, $5::jsonb, $6::jsonb)
+       ON CONFLICT (student_id, badge_id) DO UPDATE SET
+         status = 'active',
+         awarded_event_id = COALESCE(EXCLUDED.awarded_event_id, bna_student_badges.awarded_event_id),
+         awarded_by = EXCLUDED.awarded_by,
+         awarded_at = CASE WHEN bna_student_badges.status = 'revoked' THEN NOW() ELSE bna_student_badges.awarded_at END,
+         revoked_at = NULL,
+         revoked_by = NULL,
+         reversal_reason = NULL,
+         metadata = COALESCE(bna_student_badges.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+         audit_json = COALESCE(bna_student_badges.audit_json, '[]'::jsonb) || EXCLUDED.audit_json
+       RETURNING *`,
+      [
+        studentId,
+        badge.id,
+        sourceEventId,
+        actor,
+        JSON.stringify(metadata),
+        JSON.stringify(auditEntry),
+      ]
+    )).rows[0];
+    await client.query(
+      `INSERT INTO bna_badge_audit_events (
+         student_id, badge_id, student_badge_id, event_type, source_event_id,
+         idempotency_key, reason, parent_safe_explanation, actor_label, metadata
+       ) VALUES ($1, $2, $3, 'awarded', $4, $5, $6, $7, $8, $9::jsonb)
+       ON CONFLICT (idempotency_key) DO NOTHING`,
+      [
+        studentId,
+        badge.id,
+        awarded.id,
+        sourceEventId,
+        idempotencyKey,
+        reason,
+        definition.parent_safe_explanation || badge.description || badge.title,
+        actor,
+        JSON.stringify(metadata),
+      ]
+    );
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      badge: ws11StudentBadgeView({ ...awarded, slug: badge.slug, title: badge.title, description: badge.description }),
+      external_write_performed: false,
+      public_individual_leaderboard_enabled: false,
+      notification_sent: false,
+      access_grant_changed: false,
+      prize_coupon_credit_changed: false,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 app.post('/api/bna/student-badges/:id/reverse', requireAdmin, async (req, res) => {
   const body = req.body || {};
   const reason = limitText(body.reversal_reason || body.reversalReason || body.reason || '', 600);
@@ -61490,6 +61640,7 @@ app.post('/api/bna/student-badges/:id/reverse', requireAdmin, async (req, res) =
       await client.query('ROLLBACK');
       return res.status(404).json({ error: 'badge not found' });
     }
+    await assertStudentAccess(req, existing.student_id, client);
     const idempotencyKey = badgeReversalIdempotencyKey({
       student_id: existing.student_id,
       badge_slug: existing.slug,

@@ -8,7 +8,7 @@ const classroom = fs.readFileSync('public/one-time-classroom.html', 'utf8');
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
 
-test('server declares badge audit schema, seeds, and no-write readiness route', () => {
+test('server declares badge audit schema, seeds, award/reversal routes, and read-only readiness route', () => {
   [
     'bna_badge_audit_events',
     'ALTER TABLE bna_student_badges ADD COLUMN IF NOT EXISTS reversal_reason',
@@ -19,16 +19,20 @@ test('server declares badge audit schema, seeds, and no-write readiness route', 
     'badgeReversalIdempotencyKey',
     'evaluateAutomaticBadgeAwards',
     "app.get('/api/bna/gamification/badge-readiness', requireAdmin",
+    "app.post('/api/bna/student-badges/rabbi-award', requireAdmin",
     "app.post('/api/bna/student-badges/:id/reverse', requireAdmin",
+    'badge_slug must be a Rabbi-awarded badge',
+    'source_event_ref or source_event_id is required',
     'reversal_reason is required',
     'buildGamificationBadgeReadiness',
     'public_individual_leaderboard_enabled: false',
     "routePath === '/api/bna/gamification/badge-readiness' && method === 'GET'",
+    "routePath === '/api/bna/student-badges/rabbi-award' && method === 'POST'",
     "api\\/bna\\/student-badges\\/\\d+\\/reverse",
   ].forEach((snippet) => assert.ok(server.includes(snippet), snippet));
 });
 
-test('Operations Community ledger shows no-write badge audit readiness', () => {
+test('Operations Community ledger shows implemented read-only badge audit readiness', () => {
   assert.match(operations, /getWs11BadgeReadiness/);
   assert.match(operations, /renderCommunityBadgeReadinessPanel/);
   assert.match(operations, /data-one-time-badge-audit-readiness/);
@@ -59,7 +63,7 @@ test('server member-safe classroom payload keeps leaderboard empty', () => {
   assert.doesNotMatch(server, /oneTimeClassroomLeaderboard/);
 });
 
-test('route registry declares private no-write badge readiness route', () => {
+test('route registry declares private badge readiness and badge mutation routes', () => {
   const routes = new Map(routeRegistry.routes.map((route) => [route.route, route]));
   const row = routes.get('/api/bna/gamification/badge-readiness');
   assert.ok(row, 'badge readiness route should be registered');
@@ -68,9 +72,20 @@ test('route registry declares private no-write badge readiness route', () => {
   assert.equal(row.workspace_scope_required, true);
   assert.match(row.security_expectation, /no badge award/i);
   assert.match(row.security_expectation, /public individual leaderboard/i);
+  const award = routes.get('/api/bna/student-badges/rabbi-award');
+  assert.ok(award, 'Rabbi award route should be registered');
+  assert.equal(award.access, 'private');
+  assert.equal(award.public_allowed, false);
+  assert.equal(award.workspace_scope_required, true);
+  assert.match(award.security_expectation, /Rabbi-awarded badge slug/i);
+  assert.match(award.security_expectation, /audit event/i);
+  assert.match(award.security_expectation, /no external notification/i);
   const reversal = routes.get('/api/bna/student-badges/:id/reverse');
   assert.ok(reversal, 'manual reversal route should be registered');
+  assert.equal(reversal.access, 'private');
   assert.equal(reversal.public_allowed, false);
+  assert.equal(reversal.workspace_scope_required, true);
   assert.match(reversal.security_expectation, /reversal reason/i);
   assert.match(reversal.security_expectation, /audit event/i);
+  assert.match(reversal.security_expectation, /public individual leaderboard/i);
 });
