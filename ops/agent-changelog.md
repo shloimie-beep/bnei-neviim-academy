@@ -25059,9 +25059,9 @@ detached worktree to Railway deployment
 Verification passed: focused 15/15 Contacts/scoping/One Time communications
 tests, server and focused-smoke syntax checks, tracked secret audit, diff
 check, action watchdog, Railway doctor, standard live smoke
-`ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`, and focused CRM
+`ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md`, and focused CRM
 Contacts UX live smoke
-`ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`.
+`ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md`.
 Focused live smoke verified 88 scoped One Time parent leads and 94 scoped
 contact communications without recording raw contact bodies or private notes.
 

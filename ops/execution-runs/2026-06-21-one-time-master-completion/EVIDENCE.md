@@ -1050,9 +1050,9 @@ Verification and live evidence:
 - PASS `npm run railway:doctor` after final deployment
   `bf53e21c-a793-4af8-8630-a0e855d857c7`.
 - PASS standard live smoke:
-  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md`
 - PASS focused One Time CRM Contacts UX live smoke:
-  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md`
 
 Deployment and live evidence:
 

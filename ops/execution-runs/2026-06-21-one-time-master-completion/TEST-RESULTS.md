@@ -671,9 +671,9 @@ Contacts tab/direct review actions, and focused live-smoke implementation:
 - PASS `npm run railway:doctor` after final Railway deployment
   `bf53e21c-a793-4af8-8630-a0e855d857c7`.
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md`
 - PASS `npm run app:smoke:one-time-crm-contacts-ux`,
-  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md`
 
 Focused test coverage:
 
@@ -702,6 +702,11 @@ Intermediate/known failures recorded:
   because this PR worktree does not contain local `OPS_USERNAME` and
   `OPS_PASSWORD`; reruns loaded the existing local BNA `.env.local` into the
   process environment and passed.
+- An intermediate standard live-smoke attempt using the One Time-scoped
+  Operations credentials logged in but failed `/api/bna/auth/me`, which is
+  expected for the school-wide standard smoke. The final standard smoke used
+  the platform Operations credentials from the existing local BNA env file and
+  passed.
 - Full `npm test` still fails unrelated/stale assertions in
   `tests/agent-control-center.test.js`,
   `tests/developer-tester-ticket-capture.test.js`, and

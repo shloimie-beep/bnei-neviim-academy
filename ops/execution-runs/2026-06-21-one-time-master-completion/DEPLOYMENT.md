@@ -264,9 +264,9 @@ performed.
 - Service/environment: `skillful-motivation / production`
 - Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
 - Standard live smoke: PASS,
-  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md`
 - Focused One Time CRM Contacts UX live smoke: PASS,
-  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md`
 
 Deployment was run from a clean detached worktree so the unrelated
 uncommitted blog JSON files in the main worktree were not included in the

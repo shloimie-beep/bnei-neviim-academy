@@ -429,9 +429,9 @@ CRM Contacts UX is deployed and live-verified.
 - Focused Batch 9E tests: 15 passed, 0 failed.
 - Action watchdog: PASS.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md`
 - Focused One Time CRM Contacts UX live smoke:
-  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md`
 - Guardrails:
   One Time parent leads are selected-workspace scoped; private BNA
   goals/check-ins/admin notes/school-only data are absent; CRM rows remain
