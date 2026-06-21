@@ -538,6 +538,83 @@ Follow-up split:
   `ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md`
 <!-- batch-9-10:end -->
 
+<!-- batch-9A:start -->
+## Batch 9A Evidence - Source-Envelope And Mixed-Context Parser V2
+
+Requirement: `REQ-20260621-901`
+
+Status: done / deployed / verified live
+
+Implementation evidence:
+
+- Source-envelope classifier and local segment context routing:
+  `src/platform/ingestion/intake-source.js`
+- W3 parser output source-envelope and per-item context metadata:
+  `src/platform/ingestion/canonical-parser.js`
+- Canonical intake parser item-level workspace/project assignment:
+  `src/lib/bna/intake-parser.js`
+- Live intake parse route filename/title handoff:
+  `server.js`
+- Focused dry-run live smoke script:
+  `scripts/smoke-source-envelope-parser-live.mjs`
+- Focused tests:
+  `tests/ingestion/w3-intake-source.test.js`,
+  `tests/ingestion/w3-parser-queue.test.js`,
+  `tests/intake-parser-workspace-ambiguity.test.js`
+
+Implemented behavior:
+
+- Source envelopes include source ID/hash, filename/title, source channel,
+  upload time, source date, uploader, language, default workspace/project,
+  default context type, source-level confidence, privacy level, parser version,
+  processing status, source kind, and local override records.
+- Supported context types are `class_recording`, `family_meeting`,
+  `provider_meeting`, `operations_ramble`, `crm_spreadsheet`,
+  `content_recording`, `mixed`, and `unknown_needs_review`.
+- Filename/title defaults route Dratler family meetings to
+  `dratler_family`, Rabbi Scheller/One Time class cues to
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, Operations rambles to
+  `internal_super_admin` / `bna_operations`, CRM spreadsheets to the
+  first-party Operations CRM path, and content recordings to BNA content.
+- Local fragments such as `Operations task:` override the source default for
+  the individual parsed item and preserve the decision in
+  `metadata.source_context`.
+- The live `/api/bna/intake/parse` path now passes filename/source title into
+  the parser and parse-run metadata, so app/API parsing sees the same envelope
+  inputs as local W3 source records.
+
+Deployment and live evidence:
+
+- Implementation commit: `efe1d86d194cef483f5d6d9d418a769e20800989`
+- Pushed commit: `efe1d86d194cef483f5d6d9d418a769e20800989`
+- Deployed commit: `efe1d86d194cef483f5d6d9d418a769e20800989`
+- Railway deployment: `c1623618-a00c-46d0-8be9-5a8e4102b376`
+- Railway doctor/poll: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md`
+- Focused source-envelope parser live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md`
+
+Focused live smoke covered:
+
+- Authenticated production `/api/bna/intake/parse` dry-run parser path.
+- Synthetic Dratler-family filename default classified as
+  `family_meeting` with `dratler_family` workspace/project.
+- Required envelope fields present in live response.
+- Embedded `Operations task:` item locally routed to
+  `internal_super_admin` / `bna_operations`.
+- No parse-run apply, task filing, external send, billing, Zoom, Vimeo,
+  Buffer, DNS, CRM/GHL, or external-account write.
+
+QA caveat:
+
+- A broader `tests/one-time-intake-api-readback.test.js` run still fails on a
+  pre-existing HEAD fixture mismatch: the auth helper returns
+  `Rabbi Ellie Scheller`, while the test expects `Rabbi Elie Scheller`. The
+  Batch 9A parser/W3/media-routing suites passed and no Batch 9A code changes
+  touched the One Time owner-name helper.
+<!-- batch-9A:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 Evidence - Zoom Meeting And Attendance Foundation
 

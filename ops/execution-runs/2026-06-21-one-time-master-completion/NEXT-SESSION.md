@@ -249,6 +249,47 @@ Next exact actions:
 npm run bna:run:next
 ```
 
-Then continue with `REQ-20260621-901` / Batch 9A source-envelope and
-mixed-context parser v2 from `RAW-20260621-002`.
+Then continue with `REQ-20260621-902` / Batch 9B today's class-upload trace
+from `RAW-20260621-002`.
 <!-- batch-12:end -->
+
+<!-- batch-9A:start -->
+## Batch 9A Handoff
+
+Source-envelope and mixed-context parser v2 is deployed and live-verified.
+
+- Requirement: `REQ-20260621-901`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `efe1d86d194cef483f5d6d9d418a769e20800989`
+- Railway deployment:
+  `c1623618-a00c-46d0-8be9-5a8e4102b376`
+- Key files:
+  `src/platform/ingestion/intake-source.js`,
+  `src/platform/ingestion/canonical-parser.js`,
+  `src/lib/bna/intake-parser.js`, `server.js`,
+  `scripts/smoke-source-envelope-parser-live.mjs`
+- Focused Batch 9A tests: 13/13 W3/parser tests and 38/38 parser/media-routing
+  regressions passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md`
+- Focused source-envelope parser live smoke:
+  `ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md`
+- Guardrails: focused live smoke used a synthetic dry-run parse only; no parse
+  apply, task filing, external send, billing, Zoom, Vimeo, Buffer, DNS,
+  CRM/GHL, or external-account write.
+
+Known unrelated caveat:
+
+- `tests/one-time-intake-api-readback.test.js` still has a HEAD owner-name
+  spelling mismatch (`Rabbi Ellie Scheller` vs `Rabbi Elie Scheller`).
+
+Next exact actions:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-902` / Batch 9B today's class-upload
+trace.
+<!-- batch-9A:end -->

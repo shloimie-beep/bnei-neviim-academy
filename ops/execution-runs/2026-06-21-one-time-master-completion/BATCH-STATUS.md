@@ -12,7 +12,7 @@
 | 7 | REQ-20260621-503 | done | WhatsApp UX deployed and live-smoked without sends or external writes. |
 | 8 | REQ-20260621-504 | done | Email and Resend UX deployed and live-smoked without sends. |
 | 9 parent | REQ-20260619-306 | in_progress | Parent reopened as an umbrella for the revenue-launch/parser follow-up. Do not mark complete until child requirements 9A-9J are terminal. |
-| 9A | REQ-20260621-901 | not_started | Source-envelope and mixed-context parser v2. |
+| 9A | REQ-20260621-901 | done | Source-envelope classifier and mixed-context parser routing deployed and live-smoked with a dry-run synthetic parse. |
 | 9B | REQ-20260621-902 | not_started | Today's class-upload trace. |
 | 9C | REQ-20260621-903 | not_started | Downloads spreadsheet inventory. |
 | 9D | REQ-20260621-904 | not_started | CRM import and deduplication. |

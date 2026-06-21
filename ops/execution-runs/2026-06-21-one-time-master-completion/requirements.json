@@ -1114,7 +1114,8 @@
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.json",
         "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
-        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md"
+        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
       ],
       "verification": [
         "node --check src/lib/bna/one-time-product-system.js",
@@ -1126,7 +1127,8 @@
         "git diff --check",
         "npm run railway:doctor",
         "npm run app:smoke",
-        "node scripts/smoke-one-time-product-booking-live.mjs"
+        "node scripts/smoke-one-time-product-booking-live.mjs",
+        "REQ-20260621-901 verified live"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-product-system.js",
@@ -1146,7 +1148,7 @@
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T16:22:25+03:00",
       "deployed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
       "deployment_id": "8c20ae67-9acc-43f2-b77d-c10fcd425d73",
       "live_smoke": [
@@ -1167,7 +1169,7 @@
       ],
       "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910.",
       "blocker_owner": "Codex",
-      "blocker_next_action": "Continue with the first unblocked child requirement, starting at REQ-20260621-901."
+      "blocker_next_action": "Continue with child requirement REQ-20260621-902, today's class-upload trace."
     },
     {
       "source_id": "RAW-20260621-002",
@@ -1179,18 +1181,40 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check scripts/smoke-source-envelope-parser-live.mjs",
+        "node --check src/platform/ingestion/intake-source.js",
+        "node --check src/lib/bna/intake-parser.js",
+        "node --check src/platform/ingestion/canonical-parser.js",
+        "node --test tests/ingestion/w3-intake-source.test.js tests/intake-parser-workspace-ambiguity.test.js tests/ingestion/w3-parser-queue.test.js",
+        "node --test tests/intake-parser.test.js tests/ramble-protocol-hardening.test.js tests/telegram-ramble-routing-regression.test.js tests/telegram-media-routing.test.js",
+        "git diff --cached --check",
+        "node scripts/audit-secrets.mjs",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:source-envelope-parser"
+      ],
+      "implementation_commit": "efe1d86d194cef483f5d6d9d418a769e20800989",
+      "pushed_commit": "efe1d86d194cef483f5d6d9d418a769e20800989",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T16:22:25+03:00",
       "id": "REQ-20260621-901",
       "title": "Source-envelope and mixed-context parser v2",
       "expected_result": "Parser v2 creates a source envelope before item parsing and keeps local fragment scope from being overwritten by a single global keyword.",
@@ -1201,7 +1225,7 @@
       ],
       "category": "parser",
       "batch_id": "batch-9A",
-      "next_action": "Implement source-envelope classifier, title/default context rules, local segment override metadata, and parser tests.",
+      "next_action": "Continue with REQ-20260621-902, today's class-upload trace.",
       "acceptance_criteria": [
         "source envelope includes required metadata fields",
         "supported context types include class_recording, family_meeting, provider_meeting, operations_ramble, crm_spreadsheet, content_recording, mixed, and unknown_needs_review",
@@ -1213,9 +1237,18 @@
         "src/platform/ingestion/canonical-parser.js",
         "src/lib/bna/intake-parser.js",
         "server.js",
+        "package.json",
+        "scripts/smoke-source-envelope-parser-live.mjs",
         "tests/ingestion/w3-intake-source.test.js",
         "tests/intake-parser-workspace-ambiguity.test.js",
+        "tests/ingestion/w3-parser-queue.test.js",
         "tests/telegram-media-routing.test.js"
+      ],
+      "deployed_commit": "efe1d86d194cef483f5d6d9d418a769e20800989",
+      "deployment_id": "c1623618-a00c-46d0-8be9-5a8e4102b376",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
       ]
     },
     {

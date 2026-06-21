@@ -1,6 +1,6 @@
 # Status
 
-Status as of 2026-06-21T16:05:00+03:00.
+Status as of 2026-06-21T16:22:25+03:00.
 
 Batch 0 and Batch 1 are done locally. The successor run is the single active
 run. The execution CLI now validates structured requirements, reports the next
@@ -202,6 +202,45 @@ The base product/booking slice remains deployed and live-verified. The latest
 terminal. Next unblocked child: `REQ-20260621-901` source-envelope and
 mixed-context parser v2.
 <!-- batch-9-10:end -->
+
+<!-- batch-9A:start -->
+## Batch 9A - Source-Envelope And Mixed-Context Parser V2
+
+Status: done / deployed / verified live
+
+The intake source layer now creates a `source-envelope-v2` record with source
+ID/hash, filename/title, channel, upload/source time, uploader, language,
+default workspace/project/context, source confidence, privacy level, parser
+version, processing status, source kind, and local context overrides.
+
+Supported context types are `class_recording`, `family_meeting`,
+`provider_meeting`, `operations_ramble`, `crm_spreadsheet`,
+`content_recording`, `mixed`, and `unknown_needs_review`. Title and filename
+defaults now route Dratler family material, Rabbi Scheller/One Time class
+material, Operations rambles, CRM spreadsheets, and content recordings before
+item filing, while explicit local fragments can override that default.
+
+The canonical parser now attaches `metadata.source_context` to parsed items and
+uses the local context when assigning `workspace_key` and `project_key`, so an
+Operations task inside a Dratler-family source is filed under
+`internal_super_admin` / `bna_operations` instead of inheriting the family
+scope. The live intake parse route now passes filename/source title into the
+parser and parse-run metadata.
+
+Focused local verification passed. The implementation commit
+`efe1d86d194cef483f5d6d9d418a769e20800989` was pushed, deployed to Railway
+deployment `c1623618-a00c-46d0-8be9-5a8e4102b376`, and verified by standard
+plus focused live smokes. The focused live smoke used a synthetic
+`dry_run: true` parser fixture only; it did not apply/file parse results or
+perform external writes.
+
+Known unrelated QA caveat: `tests/one-time-intake-api-readback.test.js` has a
+pre-existing HEAD fixture mismatch where the live auth helper returns
+`Rabbi Ellie Scheller` while the test expects `Rabbi Elie Scheller`; Batch 9A
+focused parser and media-routing regressions passed.
+
+Next unblocked child: `REQ-20260621-902` today's class-upload trace.
+<!-- batch-9A:end -->
 
 <!-- batch-12:start -->
 ## Batch 12 - Zoom Meeting And Attendance Foundation

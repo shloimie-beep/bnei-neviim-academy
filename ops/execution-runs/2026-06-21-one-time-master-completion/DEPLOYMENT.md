@@ -184,6 +184,24 @@ Prior focused smoke-script failures during the same batch:
 - `ops/live-smokes/2026-06-21T12-38-15-716Z-one-time-product-booking-live-smoke.md`
   failed because the smoke over-flagged an unrelated in-app `Send` control.
 
+## Batch 9A
+
+- Deployment ID: `c1623618-a00c-46d0-8be9-5a8e4102b376`
+- Deployed commit: `efe1d86d194cef483f5d6d9d418a769e20800989`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md`
+- Focused source-envelope parser live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md`
+
+Focused live smoke verified the deployed `/api/bna/intake/parse` dry-run path
+with a synthetic Dratler-family filename, required source-envelope fields,
+default `family_meeting` / `dratler_family` classification, and embedded
+`Operations task:` override to `internal_super_admin` / `bna_operations`. No
+parse apply, task filing, external send, billing, Zoom, Vimeo, Buffer, DNS,
+CRM/GHL, or external-account write was performed.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`

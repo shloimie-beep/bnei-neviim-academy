@@ -369,6 +369,43 @@ Intermediate focused live-smoke failures recorded:
   labels specifically.
 <!-- batch-9-10:end -->
 
+<!-- batch-9A:start -->
+## Batch 9A Test Results
+
+Recorded after source-envelope classifier, mixed-context item routing, live
+parse-route filename/title handoff, and focused smoke-script implementation:
+
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-source-envelope-parser-live.mjs`
+- PASS `node --check src/platform/ingestion/intake-source.js`
+- PASS `node --check src/lib/bna/intake-parser.js`
+- PASS `node --check src/platform/ingestion/canonical-parser.js`
+- PASS `node --test tests/ingestion/w3-intake-source.test.js tests/intake-parser-workspace-ambiguity.test.js tests/ingestion/w3-parser-queue.test.js`
+  with 13/13 tests passing.
+- PASS `node --test tests/intake-parser.test.js tests/ramble-protocol-hardening.test.js tests/telegram-ramble-routing-regression.test.js tests/telegram-media-routing.test.js`
+  with 38/38 tests passing.
+- PASS `git diff --cached --check`.
+- PASS `node scripts/audit-secrets.mjs` with 3759 tracked paths checked and
+  0 tracked secret-risk files found.
+- PASS `npm run railway:doctor` after Railway deployment
+  `c1623618-a00c-46d0-8be9-5a8e4102b376`.
+- PASS deployment poll for `c1623618-a00c-46d0-8be9-5a8e4102b376`, status
+  `SUCCESS`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:source-envelope-parser`,
+  `ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md`.
+
+Known unrelated caveat:
+
+- `node --test tests/intake-parser.test.js tests/ramble-protocol-hardening.test.js tests/telegram-ramble-routing-regression.test.js tests/one-time-intake-api-readback.test.js`
+  passed all parser/ramble tests but failed
+  `scoped One Time owner and admin auth can reach the canonical intake parse API`
+  because the current HEAD auth helper returns `Rabbi Ellie Scheller` and the
+  test expects `Rabbi Elie Scheller`. This mismatch predates Batch 9A and is
+  unrelated to source-envelope routing.
+<!-- batch-9A:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 Test Results
 

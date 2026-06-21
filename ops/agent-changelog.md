@@ -24914,3 +24914,36 @@ Verification passed: active run validation, `npm run bna:run:next` selecting
 Guardrails: no app runtime change, no deploy, no production data mutation, no
 live charge, no invoice credit, no bulk email send, no external CRM/GHL write,
 no DNS/account mutation, and no private spreadsheet/export committed.
+
+## 2026-06-21T16:22:25+03:00 - One Time Master Completion Batch 9A Source-Envelope Parser Live Closeout
+
+Closed `REQ-20260621-901` for PR #5. Source-envelope and mixed-context parser
+v2 is deployed and live-verified while keeping the live parser smoke dry-run
+only.
+
+The implementation at `efe1d86d194cef483f5d6d9d418a769e20800989` adds
+`source-envelope-v2` classification, required envelope metadata, supported
+context types, filename/title default routing, local segment override records,
+canonical parser item `metadata.source_context`, W3 parser exposure, and live
+intake parse-route filename/title handoff.
+
+Deployed commit `efe1d86d194cef483f5d6d9d418a769e20800989` to Railway
+deployment `c1623618-a00c-46d0-8be9-5a8e4102b376`.
+
+Verification passed: syntax checks for server/parser/smoke files, focused
+W3/source-envelope tests 13/13, parser/ramble/media-routing regressions 38/38,
+tracked secret audit, Railway doctor/deploy poll, standard live app smoke
+`ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md`, and focused
+source-envelope parser live smoke
+`ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md`.
+
+Known unrelated caveat: `tests/one-time-intake-api-readback.test.js` still has
+a HEAD owner-name fixture mismatch where the auth helper returns
+`Rabbi Ellie Scheller` and the test expects `Rabbi Elie Scheller`.
+
+Guardrails: no parse-run apply, task filing, external send, billing, Zoom,
+Vimeo upload, Buffer publish, DNS mutation, CRM/GHL write, or external-account
+write was performed. The focused live parse used a synthetic dry-run fixture.
+
+Next: continue automatically with Batch 9B / `REQ-20260621-902` today's
+class-upload trace.
