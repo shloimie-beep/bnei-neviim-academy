@@ -48,6 +48,7 @@
     "platform:synthetic-e2e": "node scripts/platform-synthetic-e2e.mjs",
     "one-time:agent-mode-acceptance": "node scripts/one-time-agent-mode-acceptance.mjs",
     "one-time:separate-instance-package": "node scripts/generate-onetime-separate-instance-package.mjs",
+    "one-time:railway-provision:check": "node scripts/preflight-onetime-railway-provisioning.mjs --allow-blocked",
     "audit:hebrew-rtl": "node scripts/audit-hebrew-rtl-ui-labels.mjs",
     "helper:parity": "node scripts/generate-helper-tool-parity-map.mjs",
     "smoke:int05-integrations": "node scripts/smoke-int05-integrations-ui.mjs",

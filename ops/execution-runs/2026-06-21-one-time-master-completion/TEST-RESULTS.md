@@ -1268,11 +1268,18 @@ Status: pass / provisioning blocked before live smoke
 - PASS `node --check src/platform/instances/one-time-separate-deployment.js`.
 - PASS `node --check scripts/generate-onetime-separate-instance-package.mjs`.
 - PASS `node --check scripts/smoke-onetime-separate-instance-live.mjs`.
-- PASS `npm test`; 1024/1024 tests passed.
+- PASS `node --check scripts/preflight-onetime-railway-provisioning.mjs`.
+- PASS `node --test tests/one-time-separate-instance-package.test.js`;
+  8/8 focused package/preflight tests passed.
+- PASS `npm run one-time:railway-provision:check -- --json`; dry-run-only
+  preflight returned `ok: false` because account-level Railway listing remains
+  unavailable and the current local Railway link mentions forbidden project
+  `skillful-motivation`.
+- PASS `npm test`; 1026/1026 tests passed.
 - PASS `npm run watchdog:actions`; 0 findings, report
-  `ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md`.
+  `ops/watchdog-audits/2026-06-21T18-46-watchdog-action-audit.md`.
 - PASS `npm run watchdog:security`; 0 findings, report
-  `ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md`.
+  `ops/watchdog-audits/2026-06-21T18-46-watchdog-security-routes.md`.
 - PASS `npm run bna:run:validate`; run has 27 done requirements and 2
   blocked external requirements.
 - PASS `npm run bna:run:next`; next unblocked executable batch: none.

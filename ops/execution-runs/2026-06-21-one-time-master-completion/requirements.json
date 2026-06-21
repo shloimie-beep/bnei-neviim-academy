@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T22:20:00+03:00",
+  "updated_at": "2026-06-21T22:50:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -2498,7 +2498,7 @@
       "blocker": "The available Railway credential is project-scoped to the shared BNA project skillful-motivation. The operator explicitly forbids adding the separate One Time instance to that project, and account-level Railway list/create actions return unauthorized.",
       "blocker_owner": "Operator / Railway account owner",
       "blocker_next_action": "Provide an account-level Railway login/session that can list/create projects, or provide a pre-created separate Railway project token for one-time-production with permission to create/configure one-time-web and one-time-postgres.",
-      "next_action": "After Railway account/project access is available, run npm run one-time:separate-instance-package, create/reuse one-time-production with one-time-web and one-time-postgres, apply ops/one-time-mishnah/separate-instance-seed.sql to the separate database, run ops/one-time-mishnah/separate-instance-isolation-scan.sql, deploy the branch, bind app.onetimeonetime.com, capture fresh DNS records, and run npm run app:smoke:onetime-separate-instance.",
+      "next_action": "Run npm run one-time:railway-provision:check -- --json after account-level Railway auth or a scoped One Time project token is available; then create/reuse one-time-production, configure one-time-web/one-time-postgres, seed and scan the separate database, deploy, bind app.onetimeonetime.com, and run npm run app:smoke:onetime-separate-instance.",
       "acceptance_criteria": [
         "separate Railway project/service/database recorded",
         "separate Postgres database migrated and seeded with One Time-only review data",
@@ -2522,7 +2522,10 @@
         "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#req-313-separate-instance-package",
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#req-313-separate-instance-provisioning",
         "ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md",
+        "scripts/preflight-onetime-railway-provisioning.mjs",
+        "ops/watchdog-audits/2026-06-21T18-46-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T18-46-watchdog-security-routes.md"
       ],
       "verification": [
         "node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js",
@@ -2538,7 +2541,9 @@
         "npm run bna:run:validate",
         "npm run bna:run:next",
         "node scripts/audit-secrets.mjs",
-        "git diff --check"
+        "git diff --check",
+        "node --check scripts/preflight-onetime-railway-provisioning.mjs",
+        "npm run one-time:railway-provision:check -- --json"
       ],
       "implementation_files": [
         "src/platform/instances/one-time.js",
@@ -2567,7 +2572,8 @@
         "ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md",
         "ops/one-time-mishnah/operator-ui-review/REVIEW-CHECKLIST.md",
         "ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md",
-        "ops/one-time-mishnah/operator-ui-review/screenshot-index.html"
+        "ops/one-time-mishnah/operator-ui-review/screenshot-index.html",
+        "scripts/preflight-onetime-railway-provisioning.mjs"
       ],
       "implementation_commit": "1aed3f2bc3478db9a5c61f192d66d80c14a6f523",
       "pushed_commit": "",
@@ -2575,7 +2581,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T22:05:00+03:00",
+      "updated_at": "2026-06-21T22:50:00+03:00",
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": []

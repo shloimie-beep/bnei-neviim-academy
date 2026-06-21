@@ -1,7 +1,7 @@
 {
   "plan": {
     "requirement_id": "REQ-20260619-313",
-    "generated_at": "2026-06-21T18:27:37.088Z",
+    "generated_at": "2026-06-21T18:45:43.846Z",
     "railway": {
       "project_name": "one-time-production",
       "environment": "production",
@@ -196,7 +196,7 @@
   },
   "seed_manifest": {
     "requirement_id": "REQ-20260619-313",
-    "generated_at": "2026-06-21T18:27:37.088Z",
+    "generated_at": "2026-06-21T18:45:43.846Z",
     "workspace": {
       "workspace_key": "rabbi_sheller_provider",
       "project_key": "one_time_mishnah_class",

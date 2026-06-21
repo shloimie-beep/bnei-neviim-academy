@@ -969,6 +969,7 @@ Exact external action:
 Next exact command after Railway access is available:
 
 ```powershell
+npm run one-time:railway-provision:check -- --json
 npm run one-time:separate-instance-package
 ```
 

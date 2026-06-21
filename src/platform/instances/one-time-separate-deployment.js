@@ -584,6 +584,18 @@ redacted and represented by names only.
 - Isolation scan SQL: \`${path.basename(scanPath)}\`
 - Seed isolation check: ${isolation.ok ? 'pass' : 'fail'}
 
+## Guarded Preflight
+
+Run this before any Railway mutation:
+
+\`\`\`powershell
+npm run one-time:railway-provision:check -- --json
+\`\`\`
+
+The preflight is read-only. It validates the target project/service names,
+checks account-level Railway visibility when available, refuses the forbidden
+shared project, and prints a redacted apply checklist.
+
 ## Remaining External Action
 
 Railway account-level authentication is required to create or select the
@@ -591,6 +603,131 @@ separate project and services. Project-scoped tokens for the shared BNA service
 must not be used to add One Time services to \`${plan.railway.forbidden_project}\`.
 `);
   return { plan, seedManifest, seedSql, isolation, files: { jsonPath, mdPath, seedPath, scanPath } };
+}
+
+function assertOneTimeRailwayTarget(plan = buildOneTimeRailwayPlan()) {
+  const railway = plan?.railway || {};
+  const targetProject = String(railway.project_name || '').trim();
+  const forbiddenProject = String(railway.forbidden_project || '').trim();
+  const webService = String(railway.web_service_name || '').trim();
+  const postgresService = String(railway.postgres_service_name || '').trim();
+  const failures = [];
+  if (!targetProject) failures.push('missing target Railway project name');
+  if (!webService) failures.push('missing target Railway web service name');
+  if (!postgresService) failures.push('missing target Railway Postgres service name');
+  if (!forbiddenProject) failures.push('missing forbidden shared Railway project guard');
+  if (targetProject && forbiddenProject && targetProject.toLowerCase() === forbiddenProject.toLowerCase()) {
+    failures.push(`target project must not be ${forbiddenProject}`);
+  }
+  if (webService && postgresService && webService.toLowerCase() === postgresService.toLowerCase()) {
+    failures.push('web and Postgres services must be separate');
+  }
+  return {
+    ok: failures.length === 0,
+    failures,
+    target_project: targetProject,
+    forbidden_project: forbiddenProject,
+    web_service: webService,
+    postgres_service: postgresService,
+  };
+}
+
+function buildOneTimeRailwayProvisioningChecklist(plan = buildOneTimeRailwayPlan()) {
+  const target = assertOneTimeRailwayTarget(plan);
+  const railway = plan.railway;
+  const variables = plan.variables || {};
+  const nonSecretVariables = variables.non_secret || {};
+  const requiredSecretNames = (variables.required_secret_names || [])
+    .map((item) => item.name)
+    .filter((name) => name && name !== 'DATABASE_URL');
+  const optionalSecretNames = (variables.optional_secret_names || []).map((item) => item.name).filter(Boolean);
+  const targetProject = railway.project_name;
+  const webService = railway.web_service_name;
+  const postgresService = railway.postgres_service_name;
+  const environment = railway.environment || 'production';
+  const domain = 'app.onetimeonetime.com';
+  const nonSecretVariablePairs = Object.entries(nonSecretVariables).map(([key, value]) => `${key}=${value}`);
+  return {
+    requirement_id: plan.requirement_id || 'REQ-20260619-313',
+    target,
+    safety_guards: [
+      `Do not add services to ${railway.forbidden_project}.`,
+      'Do not clone or import the BNA production database.',
+      'Do not print or pass secret values on the command line.',
+      'Do not create real Zoom meetings, send email/WhatsApp, charge cards, or upload Vimeo videos during UI-review provisioning.',
+      'Do not attach app.onetimeonetime.com before verifying the command is scoped to the One Time web service.',
+    ],
+    read_only_checks: [
+      ['railway', 'whoami'],
+      ['railway', 'list', '--json'],
+      ['railway', 'status', '--json'],
+    ],
+    apply_checklist: [
+      {
+        key: 'create_or_reuse_project',
+        command: ['railway', 'init', '--name', targetProject, '--json'],
+        note: 'Run only if railway list --json proves no intended One Time project exists.',
+      },
+      {
+        key: 'link_target_project',
+        command: ['railway', 'link', '--project', '<one-time-production-project-id>', '--environment', environment, '--json'],
+        note: 'Use a temp link directory or an explicit One Time project token; never link to the shared project.',
+      },
+      {
+        key: 'create_postgres',
+        command: ['railway', 'add', '--database', 'postgres', '--json'],
+        note: `Create or verify the ${postgresService} Postgres service in the One Time project.`,
+      },
+      {
+        key: 'create_web',
+        command: ['railway', 'add', '--service', webService, '--json'],
+        note: `Create or verify the ${webService} application service in the One Time project.`,
+      },
+      {
+        key: 'set_non_secret_variables',
+        command: ['railway', 'variable', 'set', '--service', webService, '--environment', environment, '--skip-deploys', ...nonSecretVariablePairs],
+        note: 'Safe to print; values are non-secret One Time runtime flags and public URLs.',
+      },
+      {
+        key: 'set_database_reference',
+        command: ['railway', 'variable', 'set', '--service', webService, '--environment', environment, '--skip-deploys', `DATABASE_URL=${variables.database_reference || '${{ one-time-postgres.DATABASE_URL }}'}`],
+        note: 'Use the Railway service reference for the One Time Postgres database.',
+      },
+      {
+        key: 'set_required_secrets',
+        command: ['railway', 'variable', 'set', '--service', webService, '--environment', environment, '--skip-deploys', '<SECRET_NAME>'],
+        secret_names: requiredSecretNames,
+        note: 'Set each required secret through stdin or approved Railway secret tooling. Do not print values.',
+      },
+      {
+        key: 'set_optional_readiness_secrets',
+        command: ['railway', 'variable', 'set', '--service', webService, '--environment', environment, '--skip-deploys', '<OPTIONAL_SECRET_NAME>'],
+        secret_names: optionalSecretNames,
+        note: 'Only set optional integration credentials that already exist in approved secure storage.',
+      },
+      {
+        key: 'deploy_web',
+        command: ['railway', 'up', '.', '--project', '<one-time-production-project-id>', '--service', webService, '--environment', environment, '--detach', '--message', 'One Time pilot review deployment'],
+        note: 'Deploy the canonical branch; do not merge PR #5.',
+      },
+      {
+        key: 'attach_domain',
+        command: ['railway', 'domain', domain, '--service', webService, '--json'],
+        note: 'Capture fresh CNAME/TXT records returned for this exact service.',
+      },
+    ],
+    database_steps: [
+      'Apply the existing schema/migration chain to the new One Time Postgres database.',
+      'Apply ops/one-time-mishnah/separate-instance-seed.sql.',
+      'Run ops/one-time-mishnah/separate-instance-isolation-scan.sql and record zero BNA-private rows.',
+    ],
+    verification_commands: [
+      'npm run bna:run:validate',
+      'node scripts/audit-secrets.mjs',
+      'npm run app:smoke:onetime-separate-instance -- https://app.onetimeonetime.com',
+      'npm run bna:run:next',
+    ],
+  };
 }
 
 module.exports = {
@@ -609,5 +746,7 @@ module.exports = {
   assertOneTimeSeedIsolation,
   buildOneTimeIsolationScanSql,
   writeDeploymentPackage,
+  assertOneTimeRailwayTarget,
+  buildOneTimeRailwayProvisioningChecklist,
   buildOneTimeInstanceConfig,
 };

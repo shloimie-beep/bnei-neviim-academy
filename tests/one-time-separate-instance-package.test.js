@@ -8,9 +8,11 @@ const {
   NON_SECRET_VARIABLES,
   REQUIRED_SECRET_VARIABLES,
   buildOneTimeRailwayPlan,
+  buildOneTimeRailwayProvisioningChecklist,
   buildOneTimeRuntimeFlags,
   buildOneTimeSeedManifest,
   buildOneTimeSeedSql,
+  assertOneTimeRailwayTarget,
   assertOneTimeSeedIsolation,
 } = require('../src/platform/instances/one-time-separate-deployment');
 
@@ -96,4 +98,27 @@ test('separate-instance live smoke checks the deployed API health route first', 
   assert.match(smoke, /fetchText\('\/api\/health'\)/);
   assert.match(smoke, /fetchText\('\/health'\)/);
   assert.match(smoke, /health\.response\.status === 404/);
+});
+
+test('Railway provisioning checklist is redacted and guarded against the shared project', () => {
+  const plan = buildOneTimeRailwayPlan({}, { baseUrl: 'https://app.onetimeonetime.com' });
+  const target = assertOneTimeRailwayTarget(plan);
+  const checklist = buildOneTimeRailwayProvisioningChecklist(plan);
+  assert.equal(target.ok, true, target.failures.join(', '));
+  assert.equal(checklist.target.target_project, 'one-time-production');
+  assert.equal(checklist.target.forbidden_project, 'skillful-motivation');
+  assert.ok(checklist.safety_guards.some((line) => /Do not add services to skillful-motivation/.test(line)));
+  assert.ok(checklist.apply_checklist.some((step) => step.key === 'set_non_secret_variables'));
+  const secretStep = checklist.apply_checklist.find((step) => step.key === 'set_required_secrets');
+  assert.ok(secretStep.secret_names.includes('SESSION_SECRET'));
+  assert.ok(!secretStep.secret_names.includes('DATABASE_URL'));
+  assert.doesNotMatch(JSON.stringify(checklist), /do-not-print|password|sk-[A-Za-z0-9]/);
+});
+
+test('Railway provisioning preflight script is dry-run only', () => {
+  const script = fs.readFileSync('scripts/preflight-onetime-railway-provisioning.mjs', 'utf8');
+  assert.match(script, /dry_run_only/);
+  assert.match(script, /allowBlocked/);
+  assert.match(script, /No Railway mutation was performed/);
+  assert.doesNotMatch(script, /runReadOnlyRailway\(\['init|runReadOnlyRailway\(\['add|runReadOnlyRailway\(\['up|runReadOnlyRailway\(\['domain/);
 });

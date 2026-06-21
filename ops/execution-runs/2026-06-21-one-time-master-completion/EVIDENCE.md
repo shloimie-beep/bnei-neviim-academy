@@ -1967,17 +1967,25 @@ Provisioning package evidence added before the external Railway blocker:
   `ops/one-time-mishnah/operator-ui-review/`
 - Focused live-smoke script:
   `scripts/smoke-onetime-separate-instance-live.mjs`
+- Guarded Railway provisioning preflight:
+  `scripts/preflight-onetime-railway-provisioning.mjs`
 - Ignored secure handoff path created locally:
   `.runtime/onetime-review-identities/README.md`
 - Current clean watchdog reports:
-  `ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md` and
-  `ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md`
+  `ops/watchdog-audits/2026-06-21T18-46-watchdog-action-audit.md` and
+  `ops/watchdog-audits/2026-06-21T18-46-watchdog-security-routes.md`
 
 Railway audit result: the available token can identify only the shared
 `skillful-motivation` project and cannot list/create projects. Account-level
 Railway access is required before a separate One Time project/database/domain
 can be created. No service-specific DNS records exist yet because the custom
 domain could not be attached to a One Time web service.
+
+Additional continuation evidence: `npm run one-time:railway-provision:check
+-- --json` runs read-only, validates target project `one-time-production`,
+service names `one-time-web` and `one-time-postgres`, reports that the current
+local Railway link mentions forbidden project `skillful-motivation`, and keeps
+account-level project listing blocked as unauthorized. No mutation occurred.
 
 REQ-20260621-902 follow-up audit:
 `ops/one-time-mishnah/hosted-transcription-credential-audit-2026-06-21.md`.

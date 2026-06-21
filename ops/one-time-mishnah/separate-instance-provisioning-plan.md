@@ -1,6 +1,6 @@
 # One Time Separate Instance Provisioning Plan
 
-Generated: 2026-06-21T18:27:37.088Z
+Generated: 2026-06-21T18:45:43.846Z
 Requirement: REQ-20260619-313
 
 ## Railway Target
@@ -29,6 +29,18 @@ redacted and represented by names only.
 - Seed SQL: `separate-instance-seed.sql`
 - Isolation scan SQL: `separate-instance-isolation-scan.sql`
 - Seed isolation check: pass
+
+## Guarded Preflight
+
+Run this before any Railway mutation:
+
+```powershell
+npm run one-time:railway-provision:check -- --json
+```
+
+The preflight is read-only. It validates the target project/service names,
+checks account-level Railway visibility when available, refuses the forbidden
+shared project, and prints a redacted apply checklist.
 
 ## Remaining External Action
 
