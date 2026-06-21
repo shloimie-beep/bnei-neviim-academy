@@ -36,3 +36,16 @@
   `src/lib/bna/intake-schema.js`.
 - Task lifecycle pointer:
   `TASKS.md`.
+
+<!-- batch-2:start -->
+## Batch 2 Evidence
+
+- Reconciliation Markdown: `ops/one-time-mishnah/master-backlog-reconciliation.md`
+- Reconciliation JSON: `ops/one-time-mishnah/master-backlog-reconciliation.json`
+- Current source rows: 99
+- Legacy statement rows preserved: 1164
+- Visible Tasks created: 0
+- Visible Decisions created: 0
+- Production mutations: 0
+- External writes: 0
+<!-- batch-2:end -->
