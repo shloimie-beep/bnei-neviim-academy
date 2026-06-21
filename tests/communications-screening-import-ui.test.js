@@ -37,7 +37,14 @@ test('contact import preview supports CSV vCard email exports before commit', ()
   assert.match(server, /app\.post\('\/api\/bna\/contact-imports\/preview'/);
   assert.match(server, /CSV\/vCard\/email export upload -> field mapping -> dedupe -> tags -> workspace association -> parent\/provider\/student classification -> preview before commit/);
   assert.match(server, /commit_blocked: true/);
-  assert.match(server, /No contacts?, tags, emails?, WhatsApp messages?, or external records? are written/i);
+  assert.match(server, /source_inventory/);
+  assert.match(server, /contactImportPreviewScope/);
+  assert.match(server, /contactImportDedupeKey/);
+  assert.match(server, /const \{ source_row, \.\.\.safeRow \} = row/);
+  assert.match(server, /warm_leads_no_send_until_approval/);
+  assert.match(server, /forbidden_external_runtimes: \['ghl', 'go_high_level', 'leadconnector'\]/);
+  assert.match(server, /external_crm_write_performed: false/);
+  assert.match(server, /No contacts?, tags, emails?, WhatsApp messages?, external CRM records?, GHL\/LeadConnector records?, or billing records? are written/i);
 });
 
 test('Operations communications view exposes top news, readable cards, WAPI status, and import preview', () => {

@@ -56474,7 +56474,7 @@ function normalizeContactImportRow(row = {}) {
   };
 }
 
-async function lookupContactImportDedupe(row = {}, db = pool) {
+async function lookupContactImportDedupe(row = {}, db = pool, scope = {}) {
   const phoneDigits = normalizePhoneDigits(row.phone);
   const email = normalizeEmail(row.email);
   if (!phoneDigits && !email) return { status: 'needs_identifier', matches: [] };
@@ -56490,10 +56490,14 @@ async function lookupContactImportDedupe(row = {}, db = pool) {
     conditions.push(`regexp_replace(COALESCE(primary_phone, ''), '\\D', '', 'g') = $${params.length}`);
   }
   if (conditions.length) {
+    if (scope.workspaceId) {
+      params.push(scope.workspaceId);
+    }
     const contacts = (await db.query(
       `SELECT 'contact' AS type, id, full_name AS name, primary_email AS email, primary_phone AS phone, status, source
        FROM bna_contacts
-       WHERE ${conditions.join(' OR ')}
+       WHERE (${conditions.join(' OR ')})
+         ${scope.workspaceId ? `AND workspace_id = $${params.length}` : ''}
        LIMIT 5`,
       params
     ).catch(() => ({ rows: [] }))).rows;
@@ -56510,16 +56514,67 @@ async function lookupContactImportDedupe(row = {}, db = pool) {
       leadParams.push(phoneDigits);
       leadConditions.push(`regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $${leadParams.length}`);
     }
+    const scopedProjectParam = scope.projectId ? leadParams.length + 1 : 0;
+    if (scope.projectId) leadParams.push(scope.projectId);
     const leads = (await db.query(
       `SELECT 'parent_lead' AS type, id, parent_name AS name, parent_email AS email, parent_phone AS phone, status, source
        FROM bna_parent_leads
-       WHERE ${leadConditions.join(' OR ')}
+       WHERE (${leadConditions.join(' OR ')})
+         ${scope.projectId ? `AND project_id = $${scopedProjectParam}` : ''}
        LIMIT 5`,
       leadParams
     ).catch(() => ({ rows: [] }))).rows;
     matches.push(...leads);
   }
   return { status: matches.length ? 'possible_duplicate' : 'new_candidate', matches };
+}
+
+function contactImportSourceFromBody(body = {}) {
+  const source = body.source_inventory && typeof body.source_inventory === 'object'
+    ? body.source_inventory
+    : {};
+  const sourceId = limitText(body.source_inventory_id || body.sourceInventoryId || source.id || source.inventory_id || '', 80);
+  const sourceHash = limitText(body.source_sha256 || body.sourceSha256 || source.sha256 || '', 96);
+  const classification = limitText(body.source_classification || body.sourceClassification || source.classification || '', 120);
+  const recommendedLane = limitText(body.recommended_lane || body.recommendedLane || source.recommended_lane || '', 160);
+  return {
+    source_inventory_id: sourceId || null,
+    source_sha256: sourceHash || null,
+    source_classification: classification || null,
+    recommended_lane: recommendedLane || null,
+    source_privacy: 'metadata_reference_only',
+    raw_source_committed: false,
+  };
+}
+
+async function contactImportPreviewScope(body = {}, req = null, db = pool) {
+  const requestedProjectKey = normalizeProjectKey(body.project_key || body.projectKey || '');
+  const requestedWorkspaceKey = normalizeWorkspaceKey(body.workspace_key || body.workspaceKey || '');
+  const scopedProjectKey = req ? opsScopeProjectKey(req) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey || workspaceProjectKey(requestedWorkspaceKey) || DEFAULT_PROJECT_KEY;
+  const project = projectKey ? await getProjectByKey(projectKey, db).catch(() => null) : null;
+  const workspaceKey = requestedWorkspaceKey || (projectKey ? workspaceKeyForProject(projectKey) : '') || 'bna';
+  const workspaceId = projectKey ? await getWorkspaceIdForProjectKey(projectKey, db).catch(() => null) : null;
+  return {
+    project_id: project?.id || null,
+    project_key: project?.project_key || projectKey || null,
+    workspace_id: workspaceId || null,
+    workspace_key: workspaceKey,
+    scope_enforced: Boolean(scopedProjectKey || requestedProjectKey || requestedWorkspaceKey),
+  };
+}
+
+function contactImportDedupeKey(row = {}, scope = {}) {
+  const basis = normalizeEmail(row.email)
+    ? `email:${normalizeEmail(row.email)}`
+    : normalizePhoneDigits(row.phone)
+      ? `phone:${normalizePhoneDigits(row.phone)}`
+      : `row:${row.row_number || ''}:${row.name || row.organization || 'unknown'}`;
+  const scopeKey = scope.project_key || scope.workspace_key || 'bna';
+  return {
+    dedupe_key: sha256Hex(`${scopeKey}:${basis}`).slice(0, 48),
+    dedupe_basis: basis.split(':')[0],
+  };
 }
 
 function contactImportRowsFromBody(body = {}) {
@@ -56531,17 +56586,28 @@ function contactImportRowsFromBody(body = {}) {
   return parseDelimitedContactExport(content);
 }
 
-async function previewContactImport(body = {}, db = pool) {
+async function previewContactImport(body = {}, db = pool, req = null) {
   const rows = contactImportRowsFromBody(body);
+  const scope = await contactImportPreviewScope(body, req, db);
+  const sourceInventory = contactImportSourceFromBody(body);
   const normalizedRows = rows.slice(0, Math.max(1, Math.min(Number(body.limit || 100), 500))).map(normalizeContactImportRow);
   const preview = [];
   for (const row of normalizedRows) {
-    const dedupe = await lookupContactImportDedupe(row, db);
+    const { source_row, ...safeRow } = row;
+    const dedupe = await lookupContactImportDedupe(row, db, scope);
+    const dedupeKey = contactImportDedupeKey(row, scope);
     preview.push({
-      ...row,
+      ...safeRow,
+      ...dedupeKey,
+      project_key: scope.project_key,
+      workspace_key: scope.workspace_key,
+      no_send: true,
+      external_write_performed: false,
+      local_write_performed: false,
       dedupe_status: dedupe.status,
       duplicate_matches: dedupe.matches,
       proposed_action: row.required_review ? 'needs_mapping_review' : dedupe.matches.length ? 'review_existing_match' : 'stage_contact_candidate',
+      import_status: 'preview_only_approval_required',
     });
   }
   const byClassification = preview.reduce((acc, row) => {
@@ -56554,7 +56620,19 @@ async function previewContactImport(body = {}, db = pool) {
     no_send: true,
     external_write_performed: false,
     local_write_performed: false,
+    external_crm_write_performed: false,
+    source_inventory: sourceInventory,
+    scope,
     workflow: 'CSV/vCard/email export upload -> field mapping -> dedupe -> tags -> workspace association -> parent/provider/student classification -> preview before commit',
+    import_policy: {
+      mode: 'preview_only',
+      commit_requires_operator_approval: true,
+      required_confirmation: 'APPROVE_CONTACT_IMPORT',
+      warm_leads_no_send_until_approval: true,
+      no_external_crm_runtime: true,
+      forbidden_external_runtimes: ['ghl', 'go_high_level', 'leadconnector'],
+      raw_upload_content_returned: false,
+    },
     field_mapping: {
       name: ['name', 'full_name', 'display_name', 'fn'],
       email: ['email', 'email_address', 'primary_email'],
@@ -56568,11 +56646,17 @@ async function previewContactImport(body = {}, db = pool) {
       rows_previewed: preview.length,
       possible_duplicates: preview.filter((row) => row.dedupe_status === 'possible_duplicate').length,
       needs_mapping_review: preview.filter((row) => row.required_review).length,
+      warm_leads_no_send: preview.length,
       classifications: byClassification,
+    },
+    audit_plan: {
+      would_write_tables_after_approval: ['bna_parent_leads', 'bna_contacts', 'bna_contact_identities', 'bna_contact_pipeline_events'],
+      dedupe_history: 'Preview computes scoped dedupe keys and duplicate matches; commit/import remains blocked until explicit operator approval.',
+      source_reference: sourceInventory.source_inventory_id || sourceInventory.source_sha256 ? sourceInventory : null,
     },
     preview,
     commit_blocked: true,
-    blocker: 'Preview is ready. Commit/import remains approval-gated so no contacts, tags, emails, WhatsApp messages, or external records are written from an upload preview.',
+    blocker: 'Preview is ready. Commit/import remains approval-gated so no contacts, tags, emails, WhatsApp messages, external CRM records, GHL/LeadConnector records, or billing records are written from an upload preview.',
   };
 }
 
@@ -57291,7 +57375,7 @@ app.post('/api/bna/wapi/sync', requireAdmin, async (req, res) => {
 
 app.post('/api/bna/contact-imports/preview', requireAdmin, async (req, res) => {
   try {
-    const result = await previewContactImport(req.body || {});
+    const result = await previewContactImport(req.body || {}, pool, req);
     res.json(result);
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
