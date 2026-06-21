@@ -145,6 +145,9 @@ const {
   buildOneTimeIntegrationReadinessPayload,
 } = require('./src/platform/integrations/readiness');
 const {
+  buildOneTimeRuntimeFlags,
+} = require('./src/platform/instances/one-time-separate-deployment');
+const {
   buildOneTimeTestIdentityPreview,
 } = require('./src/platform/instances/one-time-test-fixtures');
 const {
@@ -404,6 +407,7 @@ app.use((req, res, next) => {
 
 const DEFAULT_PROJECT_KEY = 'bna';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
@@ -9763,6 +9767,15 @@ app.use(express.static('public', {
     }
   }
 }));
+
+app.get('/api/one-time/instance-config', (req, res) => {
+  res.json({
+    ...INSTANCE_RUNTIME_FLAGS,
+    app_visible: true,
+    secrets_included: false,
+    external_write_performed: false,
+  });
+});
 
 app.get('/documents/parent-handbook', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'documents', 'parent-handbook.html'));

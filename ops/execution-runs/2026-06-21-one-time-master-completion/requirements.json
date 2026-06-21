@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T21:10:00+03:00",
+  "updated_at": "2026-06-21T21:58:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -11,7 +11,12 @@
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
     "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
     "local_preflight_branch": "integration/20260619-platform-finish",
-    "local_preflight_head": "4cb03da4f21c94933a06a729fcf757bd2259652b"
+    "local_preflight_head": "4cb03da4f21c94933a06a729fcf757bd2259652b",
+    "current_branch": "codex/agent-control-center-20260619",
+    "branch": "codex/agent-control-center-20260619",
+    "current_head": "d2c47edb789504c3c06c308714073a30ef2c4ecd",
+    "current_remote_head": "d2c47edb789504c3c06c308714073a30ef2c4ecd",
+    "pr_branch": "codex/agent-control-center-20260619"
   },
   "sources": [
     {
@@ -200,7 +205,8 @@
       "source_id": "RAW-20260621-003",
       "source_statement": "Provision a separate One Time Railway project, Postgres database, web service, required worker if needed, isolated One Time seed data, stable deployment, app.onetimeonetime.com domain binding, focused live smokes, and UI review package without copying BNA private data or exposing secrets.",
       "requirement_id": "REQ-20260619-313",
-      "classification": "missing"
+      "classification": "blocked",
+      "blocker": "Account-level Railway authentication or a pre-created separate One Time project token is required before the separate project, database, deployment, and service-specific DNS records can be created."
     },
     {
       "statement_id": "STMT-20260621-001-0018",
@@ -2469,7 +2475,7 @@
       "id": "REQ-20260619-313",
       "title": "One Time deployment readiness",
       "expected_result": "A separate One Time Railway instance is provisioned from the canonical codebase with an isolated Postgres database, One Time-only seed data, portal isolation evidence, and domain/DNS handoff for Shloimie's UI review.",
-      "status": "in_progress",
+      "status": "blocked",
       "source_id": "RAW-20260621-003",
       "source_statement_ids": [
         "STMT-20260621-001-0017",
@@ -2485,12 +2491,12 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "implementation_started",
-      "can_continue_without_operator": true,
-      "blocker": "",
-      "blocker_owner": "",
-      "blocker_next_action": "",
-      "next_action": "Freeze deployable version, provision/reuse the separate One Time Railway project and database where account permissions allow, deploy and smoke the isolated One Time instance, then record any exact external DNS/billing blocker.",
+      "implementation_status": "blocked_external_railway_account_auth",
+      "can_continue_without_operator": false,
+      "blocker": "The available Railway credential is project-scoped to the shared BNA project skillful-motivation. The operator explicitly forbids adding the separate One Time instance to that project, and account-level Railway list/create actions return unauthorized.",
+      "blocker_owner": "Operator / Railway account owner",
+      "blocker_next_action": "Provide an account-level Railway login/session that can list/create projects, or provide a pre-created separate Railway project token for one-time-production with permission to create/configure one-time-web and one-time-postgres.",
+      "next_action": "After Railway account/project access is available, run npm run one-time:separate-instance-package, create/reuse one-time-production with one-time-web and one-time-postgres, apply ops/one-time-mishnah/separate-instance-seed.sql to the separate database, run ops/one-time-mishnah/separate-instance-isolation-scan.sql, deploy the branch, bind app.onetimeonetime.com, capture fresh DNS records, and run npm run app:smoke:onetime-separate-instance.",
       "acceptance_criteria": [
         "separate Railway project/service/database recorded",
         "separate Postgres database migrated and seeded with One Time-only review data",
@@ -2501,10 +2507,36 @@
       ],
       "evidence": [
         "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/one-time-mishnah/separate-instance-version-freeze.md",
+        "ops/one-time-mishnah/separate-instance-railway-audit.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.json",
+        "ops/one-time-mishnah/separate-instance-seed.sql",
+        "ops/one-time-mishnah/separate-instance-isolation-scan.sql",
+        "ops/one-time-mishnah/onetime-domain-handoff.md",
+        "ops/one-time-mishnah/operator-ui-review/START-HERE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#req-313-provisioning",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#req-313-separate-instance-package",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#req-313-separate-instance-provisioning",
+        "ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md"
       ],
       "verification": [
-        "node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js"
+        "node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js",
+        "npm run one-time:separate-instance-package",
+        "node --test tests/one-time-separate-instance-package.test.js tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js",
+        "node --check server.js",
+        "node --check scripts/generate-onetime-separate-instance-package.mjs",
+        "node --check scripts/smoke-onetime-separate-instance-live.mjs",
+        "node --check src/platform/instances/one-time-separate-deployment.js",
+        "npm test",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "npm run bna:run:next",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check"
       ],
       "implementation_files": [
         "src/platform/instances/one-time.js",
@@ -2512,15 +2544,39 @@
         "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md",
         "ops/one-time-mishnah/option-b-deployment-readiness.json",
         "tests/instances/w4-onetime-instance.test.js",
-        "tests/one-time-deployment-readiness.test.js"
+        "tests/one-time-deployment-readiness.test.js",
+        "src/platform/instances/one-time-separate-deployment.js",
+        "scripts/generate-onetime-separate-instance-package.mjs",
+        "scripts/smoke-onetime-separate-instance-live.mjs",
+        "public/js/one-time-single-tenant.js",
+        "public/parent.html",
+        "public/student.html",
+        "server.js",
+        "package.json",
+        ".env.example",
+        "tests/one-time-separate-instance-package.test.js",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.json",
+        "ops/one-time-mishnah/separate-instance-seed.sql",
+        "ops/one-time-mishnah/separate-instance-isolation-scan.sql",
+        "ops/one-time-mishnah/separate-instance-railway-audit.md",
+        "ops/one-time-mishnah/onetime-domain-handoff.md",
+        "ops/one-time-mishnah/operator-ui-review/START-HERE.md",
+        "ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md",
+        "ops/one-time-mishnah/operator-ui-review/REVIEW-CHECKLIST.md",
+        "ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md",
+        "ops/one-time-mishnah/operator-ui-review/screenshot-index.html"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
-      "deployment_required": false,
+      "deployment_required": true,
       "deployment_evidence": [],
-      "live_required": false,
-      "updated_at": "2026-06-21T21:10:00+03:00"
+      "live_required": true,
+      "updated_at": "2026-06-21T21:58:00+03:00",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": []
     },
     {
       "id": "REQ-20260619-314",
@@ -2631,9 +2687,9 @@
     "legacy_rows": 1164,
     "classification_counts": {
       "already_satisfied": 19,
-      "blocked": 0,
+      "blocked": 1,
       "duplicate": 34,
-      "missing": 2,
+      "missing": 1,
       "needs_operator_decision": 17,
       "partially_implemented": 24,
       "supersedes_existing": 1,

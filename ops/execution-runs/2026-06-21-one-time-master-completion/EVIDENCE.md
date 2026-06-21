@@ -1944,4 +1944,35 @@ Start evidence:
 
 No Railway, DNS, email, billing, Zoom, Vimeo, external CRM, or production
 database mutation has occurred yet in this resumed requirement.
+
+Provisioning package evidence added before the external Railway blocker:
+
+- Single-tenant runtime module:
+  `src/platform/instances/one-time-separate-deployment.js`
+- Redacted Railway/project/database/variable plan:
+  `ops/one-time-mishnah/separate-instance-provisioning-plan.md`
+  and `ops/one-time-mishnah/separate-instance-provisioning-plan.json`
+- Idempotent One Time-only review seed:
+  `ops/one-time-mishnah/separate-instance-seed.sql`
+- Separate-database isolation scan:
+  `ops/one-time-mishnah/separate-instance-isolation-scan.sql`
+- Railway account/auth audit:
+  `ops/one-time-mishnah/separate-instance-railway-audit.md`
+- Custom-domain handoff placeholder:
+  `ops/one-time-mishnah/onetime-domain-handoff.md`
+- Operator UI review package:
+  `ops/one-time-mishnah/operator-ui-review/`
+- Focused live-smoke script:
+  `scripts/smoke-onetime-separate-instance-live.mjs`
+- Ignored secure handoff path created locally:
+  `.runtime/onetime-review-identities/README.md`
+- Current clean watchdog reports:
+  `ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md` and
+  `ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md`
+
+Railway audit result: the available token can identify only the shared
+`skillful-motivation` project and cannot list/create projects. Account-level
+Railway access is required before a separate One Time project/database/domain
+can be created. No service-specific DNS records exist yet because the custom
+domain could not be attached to a One Time web service.
 <!-- req-313-provisioning:end -->

@@ -1251,4 +1251,36 @@ Baseline before Railway provisioning:
 
 Selected deployable checkpoint is recorded in
 `ops/one-time-mishnah/separate-instance-version-freeze.md`.
+
+## REQ-313 Separate Instance Package
+
+Status: pass / provisioning blocked before live smoke
+
+- PASS `npm run one-time:separate-instance-package`; generated
+  `ops/one-time-mishnah/separate-instance-provisioning-plan.json`,
+  `ops/one-time-mishnah/separate-instance-provisioning-plan.md`,
+  `ops/one-time-mishnah/separate-instance-seed.sql`, and
+  `ops/one-time-mishnah/separate-instance-isolation-scan.sql`; isolation
+  failures: 0.
+- PASS `node --test tests/one-time-separate-instance-package.test.js tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js`;
+  17/17 focused tests passed.
+- PASS `node --check server.js`.
+- PASS `node --check src/platform/instances/one-time-separate-deployment.js`.
+- PASS `node --check scripts/generate-onetime-separate-instance-package.mjs`.
+- PASS `node --check scripts/smoke-onetime-separate-instance-live.mjs`.
+- PASS `npm test`; 1024/1024 tests passed.
+- PASS `npm run watchdog:actions`; 0 findings, report
+  `ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`; 0 findings, report
+  `ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`; run has 27 done requirements and 2
+  blocked external requirements.
+- PASS `npm run bna:run:next`; next unblocked executable batch: none.
+- PASS `node scripts/audit-secrets.mjs`; 3957 tracked paths checked, 0
+  tracked secret-risk files found.
+- PASS `git diff --check` with line-ending warnings only.
+
+Focused live smoke against the separate deployment was not run because the
+separate Railway project, database, and web service could not be created with
+the available project-scoped Railway token.
 <!-- req-313-provisioning:end -->

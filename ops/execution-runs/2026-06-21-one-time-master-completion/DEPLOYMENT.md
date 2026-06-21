@@ -683,3 +683,37 @@ meeting/registrant/attendance write, Vimeo upload/publish, DNS or Railway
 variable mutation, external CRM/GHL write, raw private export, or secret
 exposure was performed.
 
+## REQ-313 Separate Instance Provisioning
+
+Status: not deployed / blocked before Railway mutation
+
+Requested target:
+
+- Railway project: `one-time-production`
+- Web service: `one-time-web`
+- Postgres service: `one-time-postgres`
+- Optional worker: not required for the UI-review package
+- Intended domain: `app.onetimeonetime.com`
+
+Deployment did not occur. The only available Railway credential is scoped to
+the shared BNA project `skillful-motivation`, and account-level `railway
+whoami`/`railway list --json` access is unauthorized. Because the operator
+forbade adding the separate One Time instance to `skillful-motivation`, no
+Railway project, service, Postgres database, custom domain, DNS verification
+record, variable write, restart, or deploy was performed.
+
+No deployed commit or Railway deployment ID exists for the separate One Time
+instance yet. The latest shared BNA deployment remains Batch 19 deployment
+`48cf7b0e-5623-43a3-9c5a-278e4d8b7997` at commit
+`34c74f22145a4422777515b740b8e33eef3f539d`; it is not the separate One Time
+instance.
+
+Exact next action after Railway access is available:
+
+```powershell
+npm run one-time:separate-instance-package
+npm run app:smoke:onetime-separate-instance
+```
+
+Use the generated plan and SQL files in `ops/one-time-mishnah/`.
+

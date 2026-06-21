@@ -931,3 +931,50 @@ npm run bna:run:next
 npm run bna:run:blockers
 ```
 <!-- batch-19:end -->
+
+<!-- req-313-separate-instance:blocker -->
+## REQ-313 Separate Instance Handoff
+
+Status: blocked by Railway account/project access.
+
+The deployable version is frozen and the One Time single-tenant provisioning
+package is ready, but no separate Railway project/database/domain was created.
+The available Railway credential is scoped to the shared BNA project
+`skillful-motivation`; account-level `railway whoami` and
+`railway list --json` are unauthorized, and the operator explicitly forbids
+adding One Time services to `skillful-motivation`.
+
+Ready artifacts:
+
+- `ops/one-time-mishnah/separate-instance-provisioning-plan.md`
+- `ops/one-time-mishnah/separate-instance-provisioning-plan.json`
+- `ops/one-time-mishnah/separate-instance-seed.sql`
+- `ops/one-time-mishnah/separate-instance-isolation-scan.sql`
+- `ops/one-time-mishnah/separate-instance-railway-audit.md`
+- `ops/one-time-mishnah/onetime-domain-handoff.md`
+- `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
+- `scripts/smoke-onetime-separate-instance-live.mjs`
+
+Exact external action:
+
+- Provide an account-level Railway login/session that can list/create projects;
+  or
+- provide a pre-created separate Railway project token for
+  `one-time-production`, with permission to create/configure `one-time-web`
+  and `one-time-postgres`.
+
+Next exact command after Railway access is available:
+
+```powershell
+npm run one-time:separate-instance-package
+```
+
+Then follow `ops/one-time-mishnah/separate-instance-provisioning-plan.md` and
+run:
+
+```powershell
+npm run app:smoke:onetime-separate-instance
+```
+
+Do not use the shared `skillful-motivation` project for this requirement.
+<!-- req-313-separate-instance:end -->

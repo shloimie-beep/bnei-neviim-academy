@@ -878,13 +878,33 @@ project/database/domain, DNS authority, budget, and ownership approval.
 <!-- req-313-provisioning:start -->
 ## REQ-20260619-313 - Separate One Time Instance Provisioning
 
-Status: in_progress
+Status: blocked / external Railway account access required
 
 Operator authorization was received on 2026-06-21 in
 `raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md`.
 The requirement is no longer waiting on the prior Option B decision. The
-current work is to freeze the deployable version, provision or safely reuse a
-separate One Time Railway project/database, deploy the canonical codebase in
-single-tenant One Time scope, smoke owner/parent/student portals, bind
-`app.onetimeonetime.com`, and record any exact DNS or Railway billing blocker.
+deployable version was frozen, the One Time single-tenant runtime package was
+implemented, and the redacted provisioning package, idempotent One Time-only
+seed SQL, isolation scan SQL, domain handoff, live-smoke script, and operator
+UI review package now exist.
+
+Provisioning itself is blocked because the available Railway credential is
+project-scoped to the existing shared BNA project `skillful-motivation`.
+`railway whoami` and `railway list --json` return unauthorized, and the prompt
+explicitly forbids creating One Time services inside `skillful-motivation`.
+No Railway project, Postgres database, web service, worker, custom domain,
+DNS record, production variable, payment send, email send, Zoom meeting,
+Vimeo upload, or BNA data copy was created.
+
+Exact next operator action: provide an account-level Railway login/session
+that can list/create projects, or provide a pre-created separate Railway
+project token for `one-time-production` with permission to create/configure
+`one-time-web` and `one-time-postgres`. Then run:
+
+```powershell
+npm run one-time:separate-instance-package
+```
+
+and apply the plan in
+`ops/one-time-mishnah/separate-instance-provisioning-plan.md`.
 <!-- req-313-provisioning:end -->
