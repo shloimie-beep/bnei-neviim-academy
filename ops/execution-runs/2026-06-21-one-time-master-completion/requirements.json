@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T14:07:12+03:00",
+  "updated_at": "2026-06-21T14:21:47+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -683,7 +683,7 @@
       "id": "REQ-20260619-305",
       "title": "First-party communications parent requirement",
       "expected_result": "Communications UX is usable, workspace-scoped, and no-send by default.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0008",
@@ -699,9 +699,9 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "next_action": "Implement child WhatsApp and Email/Resend requirements.",
+      "next_action": "WhatsApp child is locally verified; deploy and live-smoke it, then continue to Email/Resend.",
       "acceptance_criteria": [
         "WhatsApp child verified",
         "Email child verified"
@@ -719,13 +719,13 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T14:21:47+03:00"
     },
     {
       "id": "REQ-20260621-503",
       "title": "WhatsApp UX",
       "expected_result": "WhatsApp UX shows scoped conversations, details, related work, notes, and no-send guarded controls.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0008"
@@ -740,20 +740,33 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_local",
       "can_continue_without_operator": true,
-      "next_action": "Complete three-pane desktop and sequential mobile WhatsApp conversation workspace.",
+      "next_action": "Commit, push, deploy Batch 7, run standard live smoke, and run a focused live WhatsApp UX smoke.",
       "acceptance_criteria": [
         "three panes desktop",
         "mobile back navigation",
         "raw provider payloads hidden by default"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/wapi-phonebook-report.js",
+        "node --test tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js tests/whapi-log-sync-contract.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js",
+        "node --test tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-shell-navigation-contract.test.js",
+        "npm run ops:audit -- smoke-login",
+        "npm run bna:run:validate"
+      ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
-        "tests/wapi-phonebook-report.test.js"
+        "src/lib/bna/wapi-phonebook-report.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js",
+        "tests/communications-integrations-contract.test.js"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
@@ -761,7 +774,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T14:21:47+03:00"
     },
     {
       "id": "REQ-20260621-504",

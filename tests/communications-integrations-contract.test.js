@@ -53,9 +53,9 @@ test('Telegram Buffer path is draft-only and /accounts uses readiness-aware API'
 });
 
 test('.env.example contains blank communications placeholders only', () => {
-  assert.match(envExample, /BUFFER_API_KEY=\n/);
-  assert.match(envExample, /BUFFER_ORGANIZATION_ID=\n/);
-  assert.match(envExample, /RESEND_API_KEY=\n/);
+  assert.match(envExample, /BUFFER_API_KEY=\r?\n/);
+  assert.match(envExample, /BUFFER_ORGANIZATION_ID=\r?\n/);
+  assert.match(envExample, /RESEND_API_KEY=\r?\n/);
   assert.match(envExample, /RESEND_ACCOUNT_OWNER=unknown/);
   assert.match(envExample, /RESEND_SEND_FALLBACK_APPROVED=false/);
   assert.doesNotMatch(envExample, /re_[A-Za-z0-9]/);

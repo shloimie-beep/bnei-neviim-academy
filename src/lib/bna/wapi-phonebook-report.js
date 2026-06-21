@@ -680,9 +680,20 @@ function applyWapiPhonebookCorrectionToGroup(group = {}, correction = {}) {
   };
 }
 
-async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
+async function buildWapiPhonebookReport({ db, limit = 100, projectKey = '', workspaceId = null } = {}) {
   if (!db?.query) throw new Error('db with query(sql, params) is required');
   const boundedLimit = Math.max(1, Math.min(Number(limit || 100), 500));
+  const scopedProjectKey = String(projectKey || '').trim();
+  let scopedProjectId = null;
+  if (scopedProjectKey) {
+    const project = (await db.query(
+      `SELECT id FROM bna_projects WHERE project_key = $1 OR slug = $1 LIMIT 1`,
+      [scopedProjectKey]
+    )).rows[0] || null;
+    scopedProjectId = project?.id || null;
+  }
+  const scopedWorkspaceId = Number(workspaceId || 0) || null;
+  const scoped = Boolean(scopedProjectId || scopedWorkspaceId);
   const [hasWapiContacts, hasWapiChats, hasCommunications] = await Promise.all([
     tableExists(db, 'bna_wapi_contacts'),
     tableExists(db, 'bna_wapi_chats'),
@@ -701,12 +712,12 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
     contacts,
     corrections,
   ] = await Promise.all([
-    queryIfTable(db, 'bna_wapi_contacts', `
+    scoped ? [] : queryIfTable(db, 'bna_wapi_contacts', `
       SELECT id, provider_contact_id, display_name, push_name, phone, saved, last_synced_at, updated_at, created_at
       FROM bna_wapi_contacts
       ORDER BY last_synced_at DESC NULLS LAST, updated_at DESC NULLS LAST, id DESC
       LIMIT $1`, [boundedLimit * 2]),
-    queryIfTable(db, 'bna_wapi_chats', `
+    scoped ? [] : queryIfTable(db, 'bna_wapi_chats', `
       SELECT id, provider_chat_id, chat_type, display_name, phone, is_group, last_message_at,
              last_message_preview, last_synced_at, updated_at, created_at
       FROM bna_wapi_chats
@@ -716,34 +727,38 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
       SELECT id, contact_type, lead_id, signup_id, student_id, channel, direction, summary, body,
              follow_up_required, occurred_at, created_at, source, source_context, metadata
       FROM bna_contact_communications
-      WHERE channel = 'whatsapp' OR source = 'wapi'
+      WHERE (channel = 'whatsapp' OR source = 'wapi')
+        ${scopedProjectId ? 'AND project_id = $2' : ''}
       ORDER BY occurred_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 4]),
+      LIMIT $1`, scopedProjectId ? [boundedLimit * 4, scopedProjectId] : [boundedLimit * 4]),
     queryIfTable(db, 'bna_parent_leads', `
       SELECT id, parent_name, student_name, parent_phone, other_phones, lead_type, status, source, updated_at, created_at
       FROM bna_parent_leads
       WHERE COALESCE(status, 'interested') <> 'archived'
+        ${scopedProjectId ? 'AND project_id = $2' : ''}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 3]),
+      LIMIT $1`, scopedProjectId ? [boundedLimit * 3, scopedProjectId] : [boundedLimit * 3]),
     queryIfTable(db, 'signups', `
       SELECT id, parent_name, student_name, parent_phone, status, created_at
       FROM signups
       WHERE COALESCE(status, 'new') <> 'archived'
+        ${scopedProjectId ? 'AND project_id = $2' : ''}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 3]),
+      LIMIT $1`, scopedProjectId ? [boundedLimit * 3, scopedProjectId] : [boundedLimit * 3]),
     queryIfTable(db, 'bna_students', `
       SELECT id, name, parent_name, parent_phone, status, tags, updated_at, created_at
       FROM bna_students
       WHERE COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+        ${scopedProjectId ? 'AND project_id = $2' : ''}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 3]),
-    queryIfTable(db, 'bna_service_provider_profiles', `
+      LIMIT $1`, scopedProjectId ? [boundedLimit * 3, scopedProjectId] : [boundedLimit * 3]),
+    scoped ? [] : queryIfTable(db, 'bna_service_provider_profiles', `
       SELECT id, display_name, phone, status, updated_at, created_at
       FROM bna_service_provider_profiles
       WHERE COALESCE(status, 'draft') <> 'archived'
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
       LIMIT $1`, [boundedLimit * 2]),
-    queryIfTable(db, 'bna_service_providers', `
+    scoped ? [] : queryIfTable(db, 'bna_service_providers', `
       SELECT id, COALESCE(display_name, provider_name, contact_name) AS name,
              contact_phone, whatsapp_phone, status, updated_at, created_at
       FROM bna_service_providers
@@ -754,9 +769,10 @@ async function buildWapiPhonebookReport({ db, limit = 100 } = {}) {
       SELECT id, full_name, primary_phone, status, source, updated_at, created_at
       FROM bna_contacts
       WHERE COALESCE(status, 'lead') <> 'archived'
+        ${scopedWorkspaceId ? 'AND workspace_id = $2' : ''}
       ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
-      LIMIT $1`, [boundedLimit * 2]),
-    queryIfTable(db, 'bna_wapi_phonebook_corrections', `
+      LIMIT $1`, scopedWorkspaceId ? [boundedLimit * 2, scopedWorkspaceId] : [boundedLimit * 2]),
+    scoped ? [] : queryIfTable(db, 'bna_wapi_phonebook_corrections', `
       SELECT id, phonebook_key, correction_type, notes, applied_by, applied_at, created_at
       FROM bna_wapi_phonebook_corrections
       ORDER BY applied_at DESC NULLS LAST, id DESC

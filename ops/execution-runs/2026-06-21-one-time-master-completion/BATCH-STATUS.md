@@ -9,7 +9,7 @@
 | 4 | REQ-20260619-303 | done | Workspace user and role model deployed and live-smoked. |
 | 5 | REQ-20260621-502 | done | Visible action coverage deployed and live-smoked. |
 | 6 | REQ-20260619-304 | done | Operations UI/design correction deployed and live-smoked. |
-| 7 | REQ-20260621-503 | not_started | WhatsApp UX. |
+| 7 | REQ-20260621-503 | in_progress | WhatsApp UX verified locally; deployment and live smoke pending. |
 | 8 | REQ-20260621-504 | not_started | Email and Resend UX. |
 | 9 | REQ-20260619-306 | not_started | Product, schedule, booking, portals. |
 | 11 | REQ-20260619-308 | not_started | Vimeo and member library. |

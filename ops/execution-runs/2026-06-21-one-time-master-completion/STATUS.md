@@ -109,3 +109,25 @@ Focused local verification, standard production smoke, production after-audit,
 and focused Operations filter-rail live smoke passed. Next unblocked batch:
 `REQ-20260621-503` WhatsApp UX.
 <!-- batch-6:end -->
+
+<!-- batch-7:start -->
+## Batch 7 - WhatsApp UX
+
+Status: in progress / verified local / pending deploy
+
+The existing first-party WAPI/Whapi workspace was extended rather than
+replaced. Operations Communications > WhatsApp now keeps the desktop
+phonebook/conversation/details model, adds sequential mobile pane state, shows
+chronological local timelines, links related tasks, Decisions, tickets, and
+internal/Telegram notes, and exposes explicit send-readiness gates without
+sending WhatsApp messages.
+
+Server readback for `/api/bna/whatsapp/messages` is workspace-scoped and hides
+raw provider payloads by default. The WAPI phonebook report now supports a
+workspace-scoped report for scoped One Time users while preserving account-wide
+reporting for unscoped platform admins.
+
+Focused local verification passed. Next step: commit, push, deploy the safe
+app-visible WhatsApp UX changes, run standard live smoke, run focused
+WhatsApp UX live smoke, and then continue to Batch 8 Email/Resend.
+<!-- batch-7:end -->

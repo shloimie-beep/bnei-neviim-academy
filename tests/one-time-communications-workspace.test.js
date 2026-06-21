@@ -16,9 +16,25 @@ test('One Time WhatsApp operator workspace keeps the three-pane no-send contract
   assert.match(operations, /function jumpToWapiWorkspacePane/);
   assert.match(operations, /data-wapi-sticky-action-area/);
   assert.match(operations, /data-whatsapp-no-send-actions/);
+  assert.match(operations, /data-whatsapp-send-readiness/);
+  assert.match(operations, /data-whatsapp-send-confirmation-gate/);
   assert.match(operations, /Linked parent\/student\/provider\/contact/);
+  assert.match(operations, /Raw provider payloads are hidden by default/);
+  assert.match(operations, /wapiGroupRelatedDecisions/);
+  assert.match(operations, /wapiGroupInternalNotes/);
+  assert.match(operations, /communicationAttachmentSummary/);
+  assert.match(operations, /\.sort\(\(a, b\) => Date\.parse\(a\.at \|\| 0\) - Date\.parse\(b\.at \|\| 0\)\)/);
+  assert.match(operations, /wapiMobilePane = 'conversation'/);
+  assert.match(operations, /wapiPaneClass/);
+  assert.match(operations, /getWapiPhonebookReport\(100, \{ workspace: currentWorkspaceKey\(\) \}\)/);
+  assert.match(operations, /SEND_WHATSAPP/);
   assert.match(operations, /No WhatsApp message, broadcast, or external CRM write/);
   assert.match(server, /confirm !== 'SEND_WHATSAPP'/);
+  assert.match(server, /app\.get\('\/api\/bna\/whatsapp\/messages'/);
+  assert.match(server, /buildWapiPhonebookReport\(\{[\s\S]{0,120}projectKey,[\s\S]{0,80}workspaceId/);
+  assert.match(server, /raw_payload_hidden: !includeRaw/);
+  assert.match(server, /Raw WhatsApp provider payload readback requires an unscoped Operations admin login/);
+  assert.doesNotMatch(server, /SELECT m\.\*,[\s\S]{0,300}FROM bna_whatsapp_messages m/);
 });
 
 test('One Time email lane exposes draft, readiness, recipient, and approval gates', () => {

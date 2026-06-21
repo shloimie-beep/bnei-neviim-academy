@@ -56722,13 +56722,28 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/bna/wapi/phonebook-report', requireAdmin, async (req, res) => {
-  if (req.opsIdentity?.scope?.type !== 'all') {
-    return res.status(403).json({ error: 'Whapi phonebook grouping is account-wide and requires an unscoped Operations admin login.' });
-  }
   try {
     const limit = Math.max(1, Math.min(Number(req.query.limit || 100), 500));
-    const report = await buildWapiPhonebookReport({ db: pool, limit });
-    res.json(report);
+    const requestedWorkspace = normalizeWorkspaceKey(req.query.workspace || req.query.workspace_key || '');
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const scopedWorkspaceKey = scopedProjectKey ? workspaceKeyForProject(scopedProjectKey) : '';
+    const workspaceKey = scopedWorkspaceKey || (requestedWorkspace && !['platform', 'super_admin', 'all'].includes(requestedWorkspace)
+      ? assertWorkspaceAccess(req, requestedWorkspace)
+      : '');
+    const projectKey = workspaceKey ? workspaceProjectKey(workspaceKey) : '';
+    const workspaceId = projectKey ? await getWorkspaceIdForProjectKey(projectKey) : null;
+    const report = await buildWapiPhonebookReport({
+      db: pool,
+      limit,
+      projectKey,
+      workspaceId,
+    });
+    res.json({
+      ...report,
+      scope: projectKey ? 'workspace' : 'account',
+      workspace_key: workspaceKey || 'all',
+      raw_payload_hidden: true,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -57193,20 +57208,45 @@ app.post('/api/bna/whatsapp/sync', requireAdmin, async (req, res) => {
 app.get('/api/bna/whatsapp/messages', requireAdmin, async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit || 200), 1), 500);
   try {
+    const workspaceKey = assertWorkspaceAccess(req, req.query.workspace || req.query.workspace_key || defaultWorkspaceKeyForRequest(req));
+    const projectKey = workspaceProjectKey(workspaceKey);
+    const workspaceId = projectKey ? await getWorkspaceIdForProjectKey(projectKey) : null;
+    const includeRaw = /^(?:1|true|yes)$/i.test(String(req.query.include_raw || req.query.includeRaw || ''));
+    if (includeRaw && req.opsIdentity?.scope?.type !== 'all') {
+      return res.status(403).json({ error: 'Raw WhatsApp provider payload readback requires an unscoped Operations admin login.' });
+    }
+    const conditions = [];
+    const params = [];
+    if (workspaceId) {
+      params.push(workspaceId);
+      conditions.push(`m.workspace_id = $${params.length}`);
+    } else if (opsScopeProjectKey(req)) {
+      conditions.push('1 = 0');
+    }
+    params.push(limit);
+    const limitParam = `$${params.length}`;
+    const rawPayloadSelect = includeRaw ? ', m.raw_payload' : '';
     const result = await pool.query(
-      `SELECT m.*,
+      `SELECT m.id, m.workspace_id, m.contact_id, m.provider, m.external_message_id,
+              m.external_chat_id, m.direction, m.from_phone, m.to_phone, m.from_name,
+              m.body_text, m.occurred_at, m.imported_at${rawPayloadSelect},
               c.full_name AS contact_name,
               c.primary_email AS contact_email,
               c.status AS contact_status
        FROM bna_whatsapp_messages m
        LEFT JOIN bna_contacts c ON c.id = m.contact_id
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
        ORDER BY COALESCE(m.occurred_at, m.imported_at) DESC, m.id DESC
-       LIMIT $1`,
-      [limit]
+       LIMIT ${limitParam}`,
+      params
     );
-    res.json({ messages: result.rows });
+    res.json({
+      messages: result.rows,
+      workspace_key: workspaceKey,
+      raw_payload_hidden: !includeRaw,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 

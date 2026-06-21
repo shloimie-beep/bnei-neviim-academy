@@ -263,7 +263,9 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.match(server, /app\.get\('\/api\/bna\/wapi\/phonebook-report'/);
   assert.match(server, /app\.post\('\/api\/bna\/wapi\/phonebook-corrections'/);
   assert.match(server, /APPLY_WAPI_CORRECTION/);
-  assert.match(server, /account-wide and requires an unscoped Operations admin login/);
+  assert.match(server, /scope: projectKey \? 'workspace' : 'account'/);
+  assert.match(server, /workspace_key: workspaceKey \|\| 'all'/);
+  assert.match(server, /raw_payload_hidden: true/);
   assert.match(server, /applyWapiPhonebookCrmWrites/);
   assert.match(server, /lead_candidate_created_from_wapi_phonebook/);
   assert.match(wapiPhonebookLib, /create_lead_candidate/);
@@ -271,7 +273,7 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.doesNotMatch(server, /phonebook-report[\s\S]{0,500}SEND_WHATSAPP/);
   assert.doesNotMatch(server, /phonebook-corrections[\s\S]{0,900}SEND_WHATSAPP/);
 
-  assert.match(operations, /getWapiPhonebookReport/);
+  assert.match(operations, /getWapiPhonebookReport\(100, \{ workspace: currentWorkspaceKey\(\) \}\)/);
   assert.match(operations, /applyWapiPhonebookCorrection/);
   assert.match(operations, /dry_run: true/);
   assert.match(operations, /apply_contact_tags: true/);

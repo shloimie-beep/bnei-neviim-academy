@@ -266,3 +266,43 @@ Intermediate live-smoke failures recorded:
   page remains active after DOM readiness. The successful rerun used explicit
   DOM selector waits.
 <!-- batch-6:end -->
+
+<!-- batch-7:start -->
+## Batch 7 Evidence
+
+WhatsApp UX is locally implemented and verified. Deployment and live-smoke
+evidence remain pending until the Batch 7 deployment completes.
+
+- Operations WhatsApp UX implementation:
+  `public/operations.html`
+- Workspace-scoped/sanitized WhatsApp readback:
+  `server.js`
+- Scoped WAPI phonebook report builder:
+  `src/lib/bna/wapi-phonebook-report.js`
+- Focused tests:
+  `tests/one-time-communications-workspace.test.js`,
+  `tests/wapi-phonebook-report.test.js`, and
+  `tests/communications-integrations-contract.test.js`
+
+Implemented behavior:
+
+- Desktop WhatsApp workspace remains three-pane: contact/conversation list,
+  selected conversation, and details/related work.
+- Mobile uses sequential pane state with List, Conversation, and Details
+  navigation plus Back to list.
+- Contact list cards show display name, phone/channel identity, workspace,
+  role/classification, last preview, timestamp, review state, confidence,
+  linked record summary, and open work indicator.
+- Conversation timeline is chronological and combines local WhatsApp/WAPI
+  communications, internal notes, Telegram notes, tasks, Decisions, and
+  tickets.
+- Details pane shows contact identity, workspace, linked records,
+  parent/student/provider relationship hints, class/enrollment context,
+  correction state, tasks, tickets, Decisions, and internal notes.
+- Attachment metadata is summarized when available.
+- Raw provider payloads are hidden by default.
+- Send controls remain no-send and expose exact readiness/confirmation gates;
+  the server still requires `SEND_WHATSAPP` before any real send.
+- No GHL, GoHighLevel, LeadConnector, broadcast, external CRM write, or
+  WhatsApp send path was introduced.
+<!-- batch-7:end -->

@@ -1609,6 +1609,48 @@
             padding: 12px;
         }
 
+        .wapi-workspace-pane.mobile-active {
+            display: block;
+        }
+
+        .wapi-readiness-grid {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .wapi-readiness-row {
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.48);
+            color: #cbd5e1;
+            display: grid;
+            gap: 4px;
+            padding: 10px;
+        }
+
+        .wapi-readiness-row strong {
+            color: #f8fafc;
+            font-size: 12px;
+        }
+
+        .wapi-timeline-list .wapi-timeline-item {
+            position: relative;
+        }
+
+        .wapi-timeline-list .wapi-timeline-item::before {
+            content: "";
+            position: absolute;
+            top: 14px;
+            bottom: -14px;
+            left: -8px;
+            border-left: 2px solid rgba(148, 163, 184, 0.18);
+        }
+
+        .wapi-timeline-list .wapi-timeline-item:last-child::before {
+            display: none;
+        }
+
         .wapi-sticky-action-area {
             position: sticky;
             top: 76px;
@@ -5767,6 +5809,14 @@
                 grid-template-columns: 1fr;
             }
 
+            .wapi-workspace-pane {
+                display: none;
+            }
+
+            .wapi-workspace-pane.mobile-active {
+                display: block;
+            }
+
             .wapi-mobile-stepper {
                 display: flex;
             }
@@ -7950,7 +8000,12 @@
             },
             approveParentAnnouncement(payload = {}) { return this.request('POST', '/parent-announcements', payload); },
             getWapiDiagnostics() { return this.request('GET', '/wapi/diagnostics'); },
-            getWapiPhonebookReport(limit = 100) { return this.request('GET', '/wapi/phonebook-report?limit=' + encodeURIComponent(limit)); },
+            getWapiPhonebookReport(limit = 100, filters = {}) {
+                const params = new URLSearchParams();
+                params.set('limit', String(limit));
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                return this.request('GET', '/wapi/phonebook-report?' + params.toString());
+            },
             applyWapiPhonebookCorrection(payload = {}) { return this.request('POST', '/wapi/phonebook-corrections', payload); },
             syncWapiLog(payload = {}) { return this.request('POST', '/wapi/sync', payload); },
             sendParentAccessLink(payload) { return this.request('POST', '/parent-access/link', payload); },
@@ -8501,6 +8556,7 @@
         let wapiDiagnostics = null;
         let wapiDiagnosticsLoading = false;
         let selectedWapiPhonebookKey = null;
+        let wapiMobilePane = 'list';
         let workspacePlatform = null;
         let workspaceDirectory = null;
         let workspaceReviewItems = [];
@@ -15831,12 +15887,14 @@
 
         function renderCommunicationEntry(item) {
             const tags = communicationTags(item).slice(0, 5);
+            const attachmentSummary = communicationAttachmentSummary(item);
             return `
-                <div class="contact-detail-item">
+                <div class="contact-detail-item wapi-timeline-item">
                     <span class="contact-detail-label">${escapeHtml(communicationMetaLine(item))}</span>
                     <div class="contact-detail-value">${escapeHtml(communicationSubject(item) || 'Contact note')}</div>
                     ${renderCommunicationDeliveryPill(item)}
                     ${item.body ? `<div class="contact-communication-body">${escapeHtml(item.body)}</div>` : ''}
+                    ${attachmentSummary ? `<div class="contact-detail-note">Attachments: ${escapeHtml(attachmentSummary)}</div>` : ''}
                     <div class="contact-card-meta">
                         ${item.follow_up_required ? '<span class="page-status-pill">Follow-up</span>' : ''}
                         ${tags.map(tag => `<span class="status-chip">${escapeHtml(tag)}</span>`).join('')}
@@ -17964,6 +18022,108 @@
                 .slice(0, 8);
         }
 
+        function wapiGroupRelatedDecisions(group = {}) {
+            return taskDecisionItems()
+                .filter(task => recordTextMatchesWapiGroup(task, group))
+                .sort((a, b) => Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0))
+                .slice(0, 8);
+        }
+
+        function wapiGroupInternalNotes(group = {}) {
+            return wapiGroupCommunications(group)
+                .filter(item => ['internal_note', 'telegram'].includes(String(item.channel || '').toLowerCase()) || String(item.source || '').toLowerCase().includes('telegram'))
+                .slice(0, 8);
+        }
+
+        function wapiGroupLinkedRecordSummary(group = {}) {
+            const linkedRecords = group.linked_records || [];
+            if (!linkedRecords.length) return 'No linked record';
+            const first = linkedRecords[0] || {};
+            const label = [first.type, first.name || `#${first.id}`].filter(Boolean).join(': ');
+            return linkedRecords.length === 1 ? label : `${label} +${linkedRecords.length - 1}`;
+        }
+
+        function wapiGroupRoleLabel(group = {}) {
+            const type = String(group.applied_type || group.recommended_type || 'general_contact').replace(/_/g, ' ');
+            const linked = group.linked_records || [];
+            const linkedTypes = linked.map(record => String(record.type || '').toLowerCase());
+            if (linkedTypes.includes('signup')) return 'parent/member';
+            if (linkedTypes.includes('student')) return 'student';
+            if (linkedTypes.includes('service_provider') || linkedTypes.includes('provider')) return 'provider';
+            return type;
+        }
+
+        function wapiGroupReviewState(group = {}) {
+            if (group.manual_correction_applied) return 'corrected';
+            if ((group.review_flags || []).length) return 'needs review';
+            return 'screened';
+        }
+
+        function wapiGroupChannelIdentity(group = {}) {
+            return [group.phone_digits ? `+${group.phone_digits}` : '', group.chat_id || ''].filter(Boolean).join(' / ') || 'No phone or chat id loaded';
+        }
+
+        function wapiGroupOpenWorkCount(group = {}) {
+            const openTasks = wapiGroupRelatedTasks(group).filter(task => !['done', 'completed', 'archived'].includes(normalizeTaskStage(task.stage || task.status))).length;
+            const openTickets = wapiGroupRelatedTickets(group).filter(ticket => !['resolved', 'closed', 'archived'].includes(String(ticket.status || '').toLowerCase())).length;
+            const openDecisions = wapiGroupRelatedDecisions(group).filter(task => !['done', 'completed', 'archived'].includes(normalizeTaskStage(task.stage || task.status))).length;
+            return openTasks + openTickets + openDecisions;
+        }
+
+        function wapiPaneKeyFromId(id = '') {
+            if (id === 'wapiConversationPane') return 'conversation';
+            if (id === 'wapiDetailsPane') return 'details';
+            return 'list';
+        }
+
+        function wapiPaneClass(id = '') {
+            return wapiMobilePane === wapiPaneKeyFromId(id) ? ' mobile-active' : '';
+        }
+
+        function wapiStepperButton(id, label) {
+            const active = wapiMobilePane === wapiPaneKeyFromId(id);
+            return `<button class="wapi-workspace-jump ${active ? 'active' : ''}" type="button" aria-current="${active ? 'page' : 'false'}" onclick="jumpToWapiWorkspacePane(${attrJson(id)})">${escapeHtml(label)}</button>`;
+        }
+
+        function communicationAttachmentSummary(item = {}) {
+            const metadata = parseObjectMaybe(item.metadata);
+            const sourceContext = parseObjectMaybe(item.source_context);
+            const attachments = [
+                ...(Array.isArray(metadata.attachments) ? metadata.attachments : []),
+                ...(Array.isArray(sourceContext.attachments) ? sourceContext.attachments : []),
+                ...(Array.isArray(metadata.media) ? metadata.media : []),
+                ...(Array.isArray(sourceContext.media) ? sourceContext.media : []),
+            ];
+            const count = Number(metadata.attachment_count || sourceContext.attachment_count || attachments.length || 0);
+            const kinds = [...new Set(attachments.map(item => item?.type || item?.mime_type || item?.kind).filter(Boolean))];
+            if (!count && !kinds.length) return '';
+            return `${count || kinds.length} attachment${(count || kinds.length) === 1 ? '' : 's'}${kinds.length ? `: ${kinds.slice(0, 3).join(', ')}` : ''}`;
+        }
+
+        function renderWapiSendReadiness(group = {}) {
+            const outboundConfigured = Boolean(wapiDiagnostics?.outbound_configured);
+            const recipientReady = Boolean(group.phone_digits || group.chat_id);
+            const readiness = outboundConfigured && recipientReady
+                ? 'Configured but confirmation-gated'
+                : !outboundConfigured
+                    ? 'Blocked: WAPI/Whapi token missing'
+                    : 'Blocked: recipient identity missing';
+            return `
+                <div class="contact-detail-section" data-whatsapp-send-readiness data-whatsapp-send-confirmation-gate>
+                    <h3>Send Readiness</h3>
+                    <div class="wapi-readiness-grid">
+                        <div class="wapi-readiness-row"><strong>Credential</strong><span>${escapeHtml(outboundConfigured ? 'WAPI/Whapi token present' : 'Missing WAPI_API_TOKEN or WHAPI_API_TOKEN')}</span></div>
+                        <div class="wapi-readiness-row"><strong>Recipient</strong><span>${escapeHtml(recipientReady ? wapiGroupChannelIdentity(group) : 'No recipient identity loaded')}</span></div>
+                        <div class="wapi-readiness-row"><strong>Write gate</strong><span>Server requires explicit confirm: SEND_WHATSAPP. This workspace does not send during this run.</span></div>
+                    </div>
+                    <div class="task-actions" data-whatsapp-no-send-actions>
+                        <button class="task-action" type="button" disabled>${escapeHtml(readiness)}</button>
+                        <button class="task-action" type="button" onclick="openWhatsAppSendReadiness(event)">Setup / blocker</button>
+                    </div>
+                </div>
+            `;
+        }
+
         function wapiGroupTimelineItems(group = {}, items = contactCommunications) {
             const communications = wapiGroupCommunications(group, items).map(item => ({
                 kind: 'communication',
@@ -17980,8 +18140,13 @@
                 at: ticket.updated_at || ticket.created_at,
                 item: ticket,
             }));
-            return [...communications, ...taskItems, ...ticketItems]
-                .sort((a, b) => Date.parse(b.at || 0) - Date.parse(a.at || 0))
+            const decisionItems = wapiGroupRelatedDecisions(group).map(task => ({
+                kind: 'decision',
+                at: task.updated_at || task.created_at,
+                item: task,
+            }));
+            return [...communications, ...taskItems, ...ticketItems, ...decisionItems]
+                .sort((a, b) => Date.parse(a.at || 0) - Date.parse(b.at || 0))
                 .slice(0, 40);
         }
 
@@ -18016,6 +18181,9 @@
             const linkedRecords = selected.linked_records || [];
             const relatedTasks = wapiGroupRelatedTasks(selected);
             const relatedTickets = wapiGroupRelatedTickets(selected);
+            const relatedDecisions = wapiGroupRelatedDecisions(selected);
+            const internalNotes = wapiGroupInternalNotes(selected);
+            const openWorkCount = wapiGroupOpenWorkCount(selected);
             return `
                 <section class="focus-panel">
                     <div class="task-section-header">
@@ -18023,45 +18191,53 @@
                         <span>${groups.length} contacts / no-send</span>
                     </div>
                     <div class="wapi-mobile-stepper" data-wapi-mobile-back-navigation>
-                        <button class="wapi-workspace-jump" type="button" onclick="jumpToWapiWorkspacePane('wapiPhonebookPane')">List</button>
-                        <button class="wapi-workspace-jump" type="button" onclick="jumpToWapiWorkspacePane('wapiConversationPane')">Conversation</button>
-                        <button class="wapi-workspace-jump" type="button" onclick="jumpToWapiWorkspacePane('wapiDetailsPane')">Details</button>
+                        ${wapiStepperButton('wapiPhonebookPane', 'List')}
+                        ${wapiStepperButton('wapiConversationPane', 'Conversation')}
+                        ${wapiStepperButton('wapiDetailsPane', 'Details')}
                     </div>
                     <div class="wapi-conversation-workspace" data-wapi-three-pane-workspace>
-                        <div class="wapi-workspace-pane" id="wapiPhonebookPane" aria-label="WhatsApp phonebook contacts">
+                        <div class="wapi-workspace-pane${wapiPaneClass('wapiPhonebookPane')}" id="wapiPhonebookPane" aria-label="WhatsApp phonebook contacts">
                             <div class="task-section-header"><h3>Phonebook</h3><span>${groups.length}</span></div>
                             <div class="wapi-phonebook-list">
                                 ${groups.map(renderWapiPhonebookListItem).join('')}
                             </div>
                         </div>
-                        <div class="wapi-workspace-pane" id="wapiConversationPane" aria-label="Selected WhatsApp conversation">
+                        <div class="wapi-workspace-pane${wapiPaneClass('wapiConversationPane')}" id="wapiConversationPane" aria-label="Selected WhatsApp conversation">
                             <div class="task-section-header">
                                 <div>
                                     <h3>${escapeHtml(selected.display_name || 'WhatsApp contact')}</h3>
-                                    <p class="settings-disabled-note">${escapeHtml([selected.phone_digits ? `+${selected.phone_digits}` : '', selected.chat_id || '', selected.applied_type || selected.recommended_type || 'general contact'].filter(Boolean).join(' / '))}</p>
+                                    <p class="settings-disabled-note">${escapeHtml([wapiGroupChannelIdentity(selected), wapiGroupRoleLabel(selected), wapiGroupReviewState(selected), openWorkCount ? `${openWorkCount} open work item(s)` : 'No open work'].filter(Boolean).join(' / '))}</p>
                                 </div>
                                 <div class="wapi-sticky-action-area" data-wapi-sticky-action-area>
                                     <button class="task-action" type="button" onclick="jumpToWapiWorkspacePane('wapiPhonebookPane')">Back to list</button>
                                     <button class="task-action primary" onclick="addWapiPhonebookNote(event)">Add note</button>
+                                    <button class="task-action" type="button" onclick="jumpToWapiWorkspacePane('wapiDetailsPane')">Details</button>
                                 </div>
                             </div>
+                            <div class="contact-detail-note">Chronological local timeline. Raw provider payloads are hidden by default; readback uses first-party communication, Telegram note, task, Decision, and ticket records.</div>
                             <div class="wapi-timeline-list">
                                 ${timeline.length ? timeline.map(renderWapiTimelineItem).join('') : '<div class="empty-state">No linked messages, notes, tasks, or tickets are loaded for this phonebook record yet.</div>'}
                             </div>
                         </div>
-                        <aside class="wapi-workspace-pane" id="wapiDetailsPane" aria-label="WhatsApp contact details">
+                        <aside class="wapi-workspace-pane${wapiPaneClass('wapiDetailsPane')}" id="wapiDetailsPane" aria-label="WhatsApp contact details">
                             <div class="task-section-header"><h3>Details</h3><span>${escapeHtml(selected.confidence_label || 'medium')}</span></div>
                             <div class="contact-detail-grid">
                                 ${renderContactDetailItem('Type', String(selected.applied_type || selected.recommended_type || 'general_contact').replace(/_/g, ' '))}
+                                ${renderContactDetailItem('Role', wapiGroupRoleLabel(selected))}
                                 ${renderContactDetailItem('Workspace', currentWorkspaceRecord()?.name || currentWorkspaceKey())}
+                                ${renderContactDetailItem('Channel Identity', wapiGroupChannelIdentity(selected))}
                                 ${renderContactDetailItem('Messages', `${Number(selected.message_count || 0)} total / ${Number(selected.inbound_count || 0)} in / ${Number(selected.outbound_count || 0)} out`)}
                                 ${renderContactDetailItem('Latest', selected.latest_at ? formatDateTime(selected.latest_at) : 'No timestamp')}
                                 ${renderContactDetailItem('Linked parent/student/provider/contact', selected.linked_records?.length ? `${selected.linked_records.length} first-party record(s)` : 'None linked yet')}
                                 ${renderContactDetailItem('Members', selected.member_count || selected.participant_count || selected.linked_records?.length || 'Unknown')}
+                                ${renderContactDetailItem('Class / Enrollment', linkedRecords.some(record => ['signup', 'student'].includes(record.type)) ? 'Linked through parent/student enrollment context' : 'No class enrollment link')}
                                 ${renderContactDetailItem('Pipeline Stage', String(selected.applied_type || selected.recommended_type || 'general_contact').replace(/_/g, ' '))}
                                 ${renderContactDetailItem('Bot Screening', selected.manual_correction_applied ? 'Corrected locally' : selected.review_flags?.length ? 'Needs review' : 'Screened')}
+                                ${renderContactDetailItem('Correction State', selected.applied_correction ? `Applied as ${selected.applied_correction.correction_type || selected.applied_type}` : 'Not corrected locally')}
+                                ${renderContactDetailItem('Open Work', `${openWorkCount} open task/ticket/Decision item(s)`)}
                                 ${renderContactDetailItem('Sources', Object.entries(selected.source_counts || {}).filter(([, count]) => Number(count || 0) > 0).map(([key, count]) => `${key.replace(/_/g, ' ')} ${count}`).join(', ') || 'None')}
                             </div>
+                            ${renderWapiSendReadiness(selected)}
                             <div class="contact-detail-section">
                                 <h3>Review</h3>
                                 <div class="contact-detail-note">${escapeHtml(selected.reason || selected.last_preview || 'No review reason loaded.')}</div>
@@ -18089,10 +18265,15 @@
                             </div>
                             <div class="contact-detail-section">
                                 <h3>Tasks / Tickets</h3>
-                                ${relatedTasks.length || relatedTickets.length ? `<div class="mini-list">
+                                ${relatedTasks.length || relatedTickets.length || relatedDecisions.length ? `<div class="mini-list">
                                     ${relatedTasks.map(task => `<div class="mini-list-item"><strong>Task #${Number(task.id)}: ${escapeHtml(task.title || 'Task')}</strong><span>${escapeHtml([task.stage, task.assigned_to].filter(Boolean).join(' / '))}</span></div>`).join('')}
+                                    ${relatedDecisions.map(task => `<div class="mini-list-item"><strong>Decision #${Number(task.id)}: ${escapeHtml(task.title || 'Decision')}</strong><span>${escapeHtml([task.stage, task.assigned_to || task.owner].filter(Boolean).join(' / '))}</span></div>`).join('')}
                                     ${relatedTickets.map(ticket => `<div class="mini-list-item"><strong>Ticket #${Number(ticket.id)}: ${escapeHtml(ticket.title || 'Ticket')}</strong><span>${escapeHtml([ticket.status, ticket.severity].filter(Boolean).join(' / '))}</span></div>`).join('')}
-                                </div>` : '<div class="contact-detail-note">No linked tasks or tickets loaded.</div>'}
+                                </div>` : '<div class="contact-detail-note">No linked tasks, Decisions, or tickets loaded.</div>'}
+                            </div>
+                            <div class="contact-detail-section">
+                                <h3>Internal Notes</h3>
+                                ${internalNotes.length ? `<div class="mini-list">${internalNotes.map(renderCommunicationEntry).join('')}</div>` : '<div class="contact-detail-note">No linked internal or Telegram notes loaded.</div>'}
                             </div>
                         </aside>
                     </div>
@@ -18104,23 +18285,26 @@
             const active = group.key === selectedWapiPhonebookKey;
             const type = group.applied_type || group.recommended_type || 'general_contact';
             const sourceCounts = group.source_counts || {};
-            const botStatus = group.manual_correction_applied ? 'corrected' : (group.review_flags || []).length ? 'needs review' : 'screened';
+            const botStatus = wapiGroupReviewState(group);
+            const openWorkCount = wapiGroupOpenWorkCount(group);
             return `
                 <button class="contact-card ${active ? 'active' : ''}" type="button" onclick="selectWapiPhonebookGroup(${attrJson(group.key || '')})" aria-pressed="${active ? 'true' : 'false'}">
                     <div class="contact-card-body">
                         <div class="contact-card-top">
                             <div class="contact-card-copy">
                                 <div class="contact-card-title">${escapeHtml(group.display_name || 'Unknown WhatsApp contact')}</div>
-                                <div class="contact-card-subtitle">${escapeHtml([group.phone_digits ? `+${group.phone_digits}` : '', group.chat_id || ''].filter(Boolean).join(' / ') || 'No phone loaded')}</div>
+                                <div class="contact-card-subtitle">${escapeHtml([wapiGroupChannelIdentity(group), currentWorkspaceKey(), wapiGroupRoleLabel(group)].filter(Boolean).join(' / '))}</div>
                             </div>
                             <span class="page-status-pill">${escapeHtml(type.replace(/_/g, ' '))}</span>
                         </div>
                         <div class="contact-card-contact">${escapeHtml(limitTextClient(group.last_preview || group.reason || '', 120))}</div>
                         <div class="contact-card-meta">
+                            <span class="status-chip">${escapeHtml(wapiGroupLinkedRecordSummary(group))}</span>
                             <span class="status-chip">${Number(group.message_count || 0)} messages</span>
                             <span class="status-chip">${Number(group.inbound_count || 0)} inbound</span>
                             <span class="status-chip">${Number(group.outbound_count || 0)} outbound</span>
                             <span class="status-chip">${escapeHtml(botStatus)}</span>
+                            ${openWorkCount ? `<span class="status-chip">${openWorkCount} open work</span>` : '<span class="status-chip">No open work</span>'}
                             <span class="status-chip">${escapeHtml(group.confidence_label || 'medium')} confidence</span>
                             ${group.latest_at ? `<span class="status-chip">${escapeHtml(formatDateTime(group.latest_at))}</span>` : ''}
                             ${Object.entries(sourceCounts).filter(([, count]) => Number(count || 0) > 0).slice(0, 3).map(([key, count]) => `<span class="status-chip">${escapeHtml(key.replace(/_/g, ' '))}: ${Number(count)}</span>`).join('')}
@@ -18136,16 +18320,26 @@
             if (entry.kind === 'task') {
                 const task = entry.item || {};
                 return `
-                    <div class="contact-detail-item">
+                    <div class="contact-detail-item wapi-timeline-item">
                         <span class="contact-detail-label">${escapeHtml([formatDateTime(task.last_activity_at || task.updated_at || task.created_at), 'task', task.stage].filter(Boolean).join(' - '))}</span>
                         <div class="contact-detail-value">Task #${Number(task.id || 0)}: ${escapeHtml(task.title || 'Task')}</div>
                         ${task.summary || task.notes ? `<div class="contact-communication-body">${escapeHtml(limitTextClient(task.summary || task.notes, 260))}</div>` : ''}
                     </div>
                 `;
             }
+            if (entry.kind === 'decision') {
+                const task = entry.item || {};
+                return `
+                    <div class="contact-detail-item wapi-timeline-item">
+                        <span class="contact-detail-label">${escapeHtml([formatDateTime(task.updated_at || task.created_at), 'decision', task.stage].filter(Boolean).join(' - '))}</span>
+                        <div class="contact-detail-value">Decision #${Number(task.id || 0)}: ${escapeHtml(task.title || 'Decision')}</div>
+                        ${task.next_action || task.blocked_reason || task.summary ? `<div class="contact-communication-body">${escapeHtml(limitTextClient(task.next_action || task.blocked_reason || task.summary, 260))}</div>` : ''}
+                    </div>
+                `;
+            }
             const ticket = entry.item || {};
             return `
-                <div class="contact-detail-item">
+                <div class="contact-detail-item wapi-timeline-item">
                     <span class="contact-detail-label">${escapeHtml([formatDateTime(ticket.updated_at || ticket.created_at), 'ticket', ticket.status].filter(Boolean).join(' - '))}</span>
                     <div class="contact-detail-value">Ticket #${Number(ticket.id || 0)}: ${escapeHtml(ticket.title || 'Ticket')}</div>
                     ${ticket.description ? `<div class="contact-communication-body">${escapeHtml(limitTextClient(ticket.description, 260))}</div>` : ''}
@@ -21467,7 +21661,7 @@
                     button.disabled = true;
                     button.textContent = 'Building...';
                 }
-                wapiPhonebookReport = await api.getWapiPhonebookReport(100);
+                wapiPhonebookReport = await api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() });
                 render();
             } catch (err) {
                 alert('Whapi phonebook report failed: ' + err.message);
@@ -21481,13 +21675,29 @@
 
         function selectWapiPhonebookGroup(key) {
             selectedWapiPhonebookKey = key || null;
+            wapiMobilePane = 'conversation';
             render();
         }
 
         function jumpToWapiWorkspacePane(id) {
-            const node = document.getElementById(id);
-            if (!node) return;
-            node.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+            wapiMobilePane = wapiPaneKeyFromId(id);
+            render();
+            requestAnimationFrame(() => {
+                const node = document.getElementById(id);
+                if (!node) return;
+                node.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+            });
+        }
+
+        function openWhatsAppSendReadiness(event) {
+            event?.preventDefault?.();
+            openBnaHelperWithPrompt([
+                'WhatsApp send setup for the selected One Time conversation:',
+                '1. Confirm the WAPI/Whapi sender account and token are configured.',
+                '2. Confirm the selected recipient identity and workspace scope.',
+                '3. Use the server confirmation phrase SEND_WHATSAPP only after explicit operator approval.',
+                'Do not send any WhatsApp message from this run.'
+            ].join('\\n'));
         }
 
         async function addWapiPhonebookNote(event) {
@@ -21603,7 +21813,7 @@
                     confirm: 'APPLY_WAPI_CORRECTION'
                 });
                 if (!result?.success) throw new Error(result?.error || 'Correction was not applied');
-                wapiPhonebookReport = await api.getWapiPhonebookReport(100);
+                wapiPhonebookReport = await api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() });
                 render();
                 const appliedCount = result?.crm_write_result?.applied_writes?.length || 0;
                 alert(`Local WAPI correction applied${appliedCount ? ` with ${appliedCount} contact/tag write(s)` : ''}. No WhatsApp message was sent.`);
@@ -31713,7 +31923,7 @@
                     needsContactData ? api.getParentLeads() : Promise.resolve({ leads: [] }),
                     needsProviderData ? api.getServiceProviders({ approved_only: false }) : Promise.resolve({ providers: [] }),
                     needsContactData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
-                    needsWapiPhonebookData ? api.getWapiPhonebookReport(100) : Promise.resolve(null),
+                    needsWapiPhonebookData ? api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() }) : Promise.resolve(null),
                     needsAnnouncementData ? api.getParentAnnouncements(workspaceFilter ? { workspace: workspaceFilter, limit: 20 } : { limit: 20 }) : Promise.resolve({ announcements: [] }),
                     needsAccountingData ? api.getPayments() : Promise.resolve({ payments: [] }),
                     needsAccountingData ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),

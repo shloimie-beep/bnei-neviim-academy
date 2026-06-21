@@ -198,3 +198,37 @@ Intermediate failure notes:
   the page was then checked with `domcontentloaded` plus explicit selector
   waits and passed.
 <!-- batch-6:end -->
+
+<!-- batch-7:start -->
+## Batch 7 Test Results
+
+Recorded after WhatsApp workspace UX, scoped WAPI report readback, sanitized
+WhatsApp message API readback, and no-send readiness gates:
+
+- PASS `node --check server.js`
+- PASS `node --check src/lib/bna/wapi-phonebook-report.js`
+- PASS `node --test tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js tests/whapi-log-sync-contract.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js`
+- PASS `node --test tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-shell-navigation-contract.test.js`
+- PASS `npm run ops:audit -- smoke-login`
+- PASS `npm run bna:run:validate`
+
+Focused communications test result:
+
+- Tests: 30 passed, 0 failed.
+- Covered: WAPI phonebook workspace, no-send contract, scoped/sanitized
+  WhatsApp API readback, Whapi log sync, communications screening/import UI,
+  communications integration placeholders, and assistant portal communication
+  contract.
+
+Operations runtime smoke result:
+
+- Tests: 10 passed, 0 failed.
+- Covered: Operations UI load, scoped modules, module/filter navigation, and
+  server-side module scoping.
+
+Intermediate failure recorded:
+
+- The first focused communications run exposed an existing CRLF-brittle
+  `.env.example` placeholder assertion. The test was made line-ending tolerant
+  while preserving the blank-placeholder requirement, then the suite passed.
+<!-- batch-7:end -->
