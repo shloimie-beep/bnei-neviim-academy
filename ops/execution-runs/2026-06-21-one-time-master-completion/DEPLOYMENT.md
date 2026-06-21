@@ -346,6 +346,35 @@ checkout sessions, payment links, subscriptions, access grants, email/WhatsApp
 sends, external CRM writes, Zoom meeting/registrant writes, raw member Zoom
 URLs, host/start URLs, DNS mutation, or secret exposure.
 
+## Batch 9H
+
+- Railway deployment ID: `e227622b-dad9-464a-b6a5-f4487713a87b`
+- Deployed commit: `b71b14c5252ca2145b738e11fe4ab547bb412c3a`
+- Core support-flow implementation commit:
+  `98b293d9b8957ec4567d8ede45f3e0d05bb1178b`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`
+- Focused One Time authenticated support live smoke: PASS,
+  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`b71b14c5252ca2145b738e11fe4ab547bb412c3a`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified member portal question/support controls, logged-out
+API rejection, dry-run member session creation, `OT-SUP` ticket creation,
+project-visible staff reply readback, hidden internal notes/source context,
+`OT-Q` private question creation, sanitized own-row lists, and ticket close
+without external-send notification.
+
+Guardrails: no email send, WhatsApp send, SMS send, Telegram send, public forum
+post, member-feed publish, payment/billing write, access grant, external CRM
+write, GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or secret
+exposure was performed.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`

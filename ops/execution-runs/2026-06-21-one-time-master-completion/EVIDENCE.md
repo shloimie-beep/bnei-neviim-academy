@@ -1270,3 +1270,79 @@ Guardrails:
   readiness state. Raw Zoom join URLs and Zoom host/start URLs are not returned
   to members.
 <!-- batch-9G:end -->
+
+<!-- batch-9H:start -->
+## Batch 9H - Authenticated Questions And Support-Ticket Bot
+
+Status: done / deployed / verified live
+
+Implemented authenticated One Time member questions and support tickets for
+`REQ-20260621-908`.
+
+Implemented files:
+
+- Member question/support APIs, schema hardening, ticket/question views, and
+  support-ticket context: `server.js`
+- Member portal forms and API handlers: `public/rabbi-member.html`,
+  `public/js/rabbi-member.js`
+- Telegram support-ticket metadata/readback: `scripts/telegram-kimi-bridge.mjs`
+- Classroom action-label compatibility: `public/operations.html`
+- Route/action registry and live-smoke command: `ops/route-registry.json`,
+  `ops/action-registry.json`, `package.json`
+- Focused live smoke: `scripts/smoke-one-time-authenticated-support-live.mjs`
+- Focused tests: `tests/one-time-member-support-questions.test.js`,
+  `tests/one-time-external-user-portal.test.js`,
+  `tests/rabbi-checkout-access.test.js`,
+  `tests/developer-tester-ticket-capture.test.js`,
+  `tests/one-time-classroom-calendar-community-bot.test.js`,
+  `tests/one-time-action-coverage.test.js`
+
+Local verification:
+
+- PASS syntax checks for `server.js`, `public/js/rabbi-member.js`, and
+  `scripts/smoke-one-time-authenticated-support-live.mjs`.
+- PASS focused support/community suite: 19/19.
+- PASS broader portal/member-library/classroom/action suite: 59/59.
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T15-29-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T15-29-watchdog-security-routes.md`
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Implementation/pushed/deployed commit:
+  `b71b14c5252ca2145b738e11fe4ab547bb412c3a`
+- Core support-flow implementation commit:
+  `98b293d9b8957ec4567d8ede45f3e0d05bb1178b`
+- Final Railway deployment:
+  `e227622b-dad9-464a-b6a5-f4487713a87b`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`
+- Focused authenticated support live smoke:
+  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`
+
+Focused live smoke verified:
+
+- Member portal ships Private Questions and Support forms plus guarded API
+  handlers.
+- Logged-out support/question APIs reject requests without a member session.
+- A disposable One Time member can open a dry-run member session.
+- Authenticated member support creates `OT-SUP-######` scoped tickets.
+- Project-visible staff replies return to the member while internal notes stay
+  hidden.
+- Authenticated private questions create `OT-Q-######` rows with no public
+  forum, no member feed, no send, and no external write.
+- Member lists return only sanitized own support/question rows.
+- Ticket close creates no external-send notification.
+
+Guardrails:
+
+- No email send, WhatsApp send, SMS send, Telegram send, public forum post,
+  member-feed publish, payment/billing write, access grant, external CRM write,
+  GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or secret
+  exposure was performed.
+<!-- batch-9H:end -->

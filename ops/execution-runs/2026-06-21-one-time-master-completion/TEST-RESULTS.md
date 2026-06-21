@@ -823,3 +823,57 @@ Focused live smoke covered:
 - The deployed member portal script does not use `session.zoom_url` and renders
   the protected Join Class blocker.
 <!-- batch-9G:end -->
+
+<!-- batch-9H:start -->
+## Batch 9H Test Results
+
+Recorded for `REQ-20260621-908` authenticated questions and support-ticket bot:
+
+- PASS `node --check server.js`
+- PASS `node --check public/js/rabbi-member.js`
+- PASS `node --check scripts/smoke-one-time-authenticated-support-live.mjs`
+- PASS `node --test tests/one-time-member-support-questions.test.js tests/developer-tester-ticket-capture.test.js tests/one-time-community-moderation-workflow.test.js`
+  with 19/19 tests passing.
+- PASS `node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-member-library.test.js tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-action-coverage.test.js`
+  with 59/59 tests passing.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T15-29-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T15-29-watchdog-security-routes.md`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `e227622b-dad9-464a-b6a5-f4487713a87b`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-authenticated-support`,
+  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`.
+
+Focused coverage:
+
+- Member support/question APIs require bearer member session authentication.
+- Support tickets persist `OT-SUP` ticket numbers and authenticated
+  workspace/project/requester context.
+- Member support lists and detail routes only return the authenticated member's
+  scoped ticket rows.
+- Project-visible staff replies return to the member; internal staff notes and
+  source context do not.
+- Private questions persist `OT-Q` question numbers and stay review-only with
+  no public forum, no member feed, no send, and no external write.
+- The member portal exposes working Private Questions and Support controls.
+- The support bot mode remains `ticket_only`; no unrestricted Mishnah study bot
+  is enabled.
+- The classroom action keeps the clearer visible "Create Internal Calendar
+  Item" label while preserving the legacy "Add Session" accessible alias used
+  by action coverage.
+
+Intermediate/known failures recorded:
+
+- `npm run watchdog:security-routes` failed because that package script does
+  not exist; `npm run watchdog:security` is the correct route watchdog and
+  passed.
+- The first `npm run app:smoke` attempt failed before any app assertion because
+  this worktree lacked `OPS_USERNAME` and `OPS_PASSWORD`. The standard smoke
+  was rerun with the existing local BNA env file loaded and passed.
+<!-- batch-9H:end -->

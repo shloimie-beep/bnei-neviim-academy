@@ -537,3 +537,59 @@ grant, relationship-scoped class links, no raw Zoom member URL, no Zoom
 host/start URL, and the member portal script blocker. Continue automatically
 with the next unblocked requirement after running `npm run bna:run:next`.
 <!-- batch-9G:end -->
+
+<!-- batch-9H:start -->
+## Batch 9H - Authenticated Questions And Support-Ticket Bot
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260621-908` for authenticated One Time member questions and
+support tickets.
+
+Member support now requires a valid Rabbi/One Time member session token, stores
+workspace/project/requester context, persists `OT-SUP-######` ticket numbers,
+and returns only the authenticated member's scoped tickets. Member-visible
+support readback hides source context, staff internal notes, and other-user
+data while returning project-visible staff replies.
+
+Private member questions now write to the first-party
+`bna_one_time_question_reviews` review queue with `OT-Q-######` question
+numbers, `member_id` scoping, `no_public_forum`, `no_member_feed`, `no_send`,
+and `external_write_performed=false`. The member view exposes sanitized
+question previews and only approved member-visible replies.
+
+The member portal now includes guarded Private Questions and Support panels,
+loads the shared select enhancer for native selects, and calls only the member
+session-authenticated APIs. The Rabbi Telegram bridge now tags scoped support
+tickets with ticket-only bot metadata and returns `OT-SUP` ticket numbers in
+operator-facing confirmations.
+
+Implementation commit `98b293d9b8957ec4567d8ede45f3e0d05bb1178b` added the
+authenticated support flows. Follow-up commit
+`b71b14c5252ca2145b738e11fe4ab547bb412c3a` fixed the classroom action label
+compatibility check and was pushed to PR #5. The final app-visible bundle was
+deployed from a clean detached worktree at `b71b14c5252ca2145b738e11fe4ab547bb412c3a`.
+Railway deployment `e227622b-dad9-464a-b6a5-f4487713a87b` reached `SUCCESS`.
+Railway doctor passed, standard live smoke passed at
+`ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`, and focused
+authenticated support/question live smoke passed at
+`ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`.
+
+Focused local verification passed: syntax checks, 19/19 focused
+member/support/community tests, 59/59 broader portal/action/classroom tests,
+action/security watchdogs, execution-run validation, tracked secret audit, and
+diff check with line-ending warnings only.
+
+Known intermediate verification failures: `npm run watchdog:security-routes`
+is not a package script; the correct `npm run watchdog:security` passed.
+The first `npm run app:smoke` attempt failed before touching the app because
+this worktree lacked `OPS_USERNAME`/`OPS_PASSWORD`; rerunning with the existing
+local BNA env file loaded passed.
+
+Guardrails: no email send, WhatsApp send, SMS send, Telegram send, public forum
+post, member-feed publish, checkout/payment write, access grant, external CRM
+write, GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or secret
+exposure was performed.
+
+Next unblocked child: `REQ-20260621-909` test identities and mock data.
+<!-- batch-9H:end -->

@@ -1,11 +1,11 @@
 # Next Session
 
 Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F, Batch 9G,
-Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
+Batch 9H, Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
 continue with the next unblocked open requirement it selects:
-`REQ-20260621-908` / Batch 9H authenticated questions and support-ticket bot.
+`REQ-20260621-909` / Batch 9I test identities and mock data.
 Exact next command:
 
 ```powershell
@@ -552,6 +552,45 @@ npm run bna:run:next
 Continue automatically with `REQ-20260621-908` / Batch 9H authenticated
 questions and support-ticket bot.
 <!-- batch-9G:end -->
+
+<!-- batch-9H:start -->
+## Batch 9H Handoff
+
+Authenticated questions and support-ticket bot is deployed and live-verified.
+
+- Requirement: `REQ-20260621-908`
+- Implementation status: `verified_live`
+- Core implementation commit:
+  `98b293d9b8957ec4567d8ede45f3e0d05bb1178b`
+- Final pushed/deployed commit:
+  `b71b14c5252ca2145b738e11fe4ab547bb412c3a`
+- Railway deployment:
+  `e227622b-dad9-464a-b6a5-f4487713a87b`
+- Key files:
+  `server.js`, `public/rabbi-member.html`, `public/js/rabbi-member.js`,
+  `public/operations.html`, `scripts/telegram-kimi-bridge.mjs`,
+  `scripts/smoke-one-time-authenticated-support-live.mjs`,
+  `ops/route-registry.json`, `ops/action-registry.json`
+- Focused local tests: 19/19 support/community tests and 59/59
+  portal/member-library/classroom/action tests passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T15-34-45-305Z-live-app-smoke.md`
+- Focused authenticated support live smoke:
+  `ops/live-smokes/2026-06-21T15-35-25-103Z-one-time-authenticated-support-live-smoke.md`
+- Guardrails:
+  no email, WhatsApp, SMS, Telegram, public forum, member-feed, payment,
+  access-grant, external CRM, GHL/LeadConnector, Google/Zoom, DNS, or secret
+  write occurred.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-909` / Batch 9I test identities and
+mock data.
+<!-- batch-9H:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff
