@@ -3,7 +3,7 @@
   "title": "Parallel Platform Finish",
   "created_at": "2026-06-19T15:40:21+03:00",
   "updated_at": "2026-06-19T16:55:00+03:00",
-  "active": true,
+  "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "parallel_run_id": "PARALLEL-20260619-001",

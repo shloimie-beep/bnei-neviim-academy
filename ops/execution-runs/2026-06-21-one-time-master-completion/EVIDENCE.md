@@ -10,6 +10,8 @@
   `ops/execution-runs/2026-06-21-one-time-master-completion/`
 - Preflight live smoke:
   `ops/live-smokes/2026-06-21T07-57-58-409Z-live-app-smoke.md`
+- Preflight live smoke machine output:
+  `ops/live-smokes/2026-06-21T07-57-58-409Z-live-app-smoke.json`
 - Successor-run validation:
   `npm run bna:run:validate` passed on 2026-06-21T11:11:03+03:00.
 - Secret audit:
