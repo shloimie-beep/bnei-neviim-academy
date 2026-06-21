@@ -199,7 +199,7 @@ Next unblocked batch: `REQ-20260619-308` Vimeo and member-library pipeline.
 <!-- batch-12:start -->
 ## Batch 12 - Zoom Meeting And Attendance Foundation
 
-Status: implemented local / deploy pending
+Status: done / deployed / verified live
 
 The existing first-party Zoom integration helper now models the credential-free
 parts of Batch 12 without creating a real Zoom meeting. It includes
@@ -218,7 +218,15 @@ writes, live webhook attendance writes, join redirects, external sends, portal
 publishing, recording/transcript/summary reads, and attendance corrections
 disabled.
 
-Local focused verification passed. Next required step is commit, push, Railway
-deploy, standard live smoke, focused One Time Zoom/attendance live smoke, then
-mark `REQ-20260619-307` verified live and continue automatically.
+Focused local verification passed. The safe app-visible changes were pushed at
+`7685133a6e675db6883135eb775ae4cae6b44ad2`, deployed to Railway deployment
+`b2d02f20-64a8-4183-9dba-3587d0449ef7`, and verified by standard plus focused
+One Time Zoom/attendance live smokes. The focused smoke confirmed the Zoom
+status/readiness API, preview routes, Operations Live Classes panel, blocked
+meeting-create route, desktop/mobile rendering, and no real Zoom writes.
+
+Next: continue with the runner-selected `batch-11-13` / `REQ-20260619-308`
+Vimeo, member-library, recording, transcript, and publication pipeline. Manual
+Vimeo mode must be usable now; automated upload remains disabled behind setup
+and authorization gates.
 <!-- batch-12:end -->

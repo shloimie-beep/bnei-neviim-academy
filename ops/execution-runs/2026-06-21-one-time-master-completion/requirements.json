@@ -1006,7 +1006,7 @@
       "id": "REQ-20260619-307",
       "title": "Zoom meeting and attendance foundation",
       "expected_result": "Zoom foundation is production-ready in code without creating a real class meeting.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0012"
@@ -1021,9 +1021,9 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "implemented_local",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Deploy Batch 12 safe app-visible Zoom/attendance foundation changes; run standard and focused live smokes; then mark verified_live and continue to the next unblocked batch.",
+      "next_action": "Complete. Continue to next unblocked batch from the execution runner.",
       "acceptance_criteria": [
         "host start URL never exposed",
         "dashboard click is not attendance",
@@ -1031,13 +1031,23 @@
       ],
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.json",
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.json"
       ],
       "verification": [
         "node --check src/lib/integrations/zoom.js",
         "node --check server.js",
         "node --check scripts/smoke-one-time-zoom-attendance-live.mjs",
-        "node --test tests/one-time-zoom-attendance-automation.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js"
+        "node --test tests/one-time-zoom-attendance-automation.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node scripts/smoke-one-time-zoom-attendance-live.mjs"
       ],
       "implementation_files": [
         "src/lib/integrations/zoom.js",
@@ -1048,13 +1058,23 @@
         "tests/one-time-zoom-attendance-automation.test.js",
         "scripts/smoke-one-time-zoom-attendance-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "7685133a6e675db6883135eb775ae4cae6b44ad2",
+      "pushed_commit": "7685133a6e675db6883135eb775ae4cae6b44ad2",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00"
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "deployed_commit": "7685133a6e675db6883135eb775ae4cae6b44ad2",
+      "deployment_id": "b2d02f20-64a8-4183-9dba-3587d0449ef7",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-308",

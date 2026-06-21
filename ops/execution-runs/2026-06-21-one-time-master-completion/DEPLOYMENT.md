@@ -184,3 +184,22 @@ Prior focused smoke-script failures during the same batch:
 - `ops/live-smokes/2026-06-21T12-38-15-716Z-one-time-product-booking-live-smoke.md`
   failed because the smoke over-flagged an unrelated in-app `Send` control.
 
+## Batch 12
+
+- Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`
+- Deployed commit: `7685133a6e675db6883135eb775ae4cae6b44ad2`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`
+- Focused One Time Zoom/attendance live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`
+
+Focused live smoke verified production Zoom status/readiness readback, session
+automation preview, webhook attendance preview, blocked meeting creation,
+Operations Live Classes rendering at 1440px and 390px, and no page-level
+horizontal overflow. No Zoom meeting, registrant, webhook attendance write,
+attendance correction, recording read, transcript read, summary read, external
+send, portal publish, participant invite, or host-start URL exposure was
+performed.
+

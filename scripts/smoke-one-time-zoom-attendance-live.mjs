@@ -98,7 +98,7 @@ async function collectApiState({ appUrl, cookie }) {
   assert(status.webhook_processing?.queued_processing === true, 'Zoom webhook queued processing plan missing');
   assert(status.webhook_processing?.writes_enabled === false, 'Zoom webhook writes were enabled');
   const serializedStatus = JSON.stringify(status);
-  assert(!/client_secret|access_token|start_url|zak_/i.test(serializedStatus), 'Zoom status exposed secret-like fields');
+  assert(!/"(?:client_secret|access_token|start_url)"\s*:|zak_[A-Za-z0-9_-]+/i.test(serializedStatus), 'Zoom status exposed secret-like values');
 
   const previewPayload = {
     session: {

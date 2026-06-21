@@ -24857,3 +24857,36 @@ publish, or external-account write was performed.
 Next: continue automatically with Batch 9/10 / `REQ-20260619-306` product,
 schedule, booking, portals, and billing/access foundations without live
 charges or external writes.
+
+## 2026-06-21T15:57:16+03:00 - One Time Master Completion Batch 12 Zoom/Attendance Live Closeout
+
+Closed `REQ-20260619-307` for PR #5. The Zoom meeting and attendance
+foundation is deployed and live-verified while keeping all real Zoom writes
+blocked.
+
+The implementation at `7685133a6e675db6883135eb775ae4cae6b44ad2` adds
+Server-to-Server OAuth token/cache scaffolding, secure meeting and registrant
+request builders, report-reader request builders, webhook signature/replay/
+idempotency planning, attendance reconciliation that rejects dashboard clicks
+as attendance, internal Zoom foundation schema, route-registry coverage, and
+Operations Live Classes readiness copy.
+
+Deployed commit `7685133a6e675db6883135eb775ae4cae6b44ad2` to Railway
+deployment `b2d02f20-64a8-4183-9dba-3587d0449ef7`.
+
+Verification passed: Zoom/product/portal focused tests 25/25,
+`npm run bna:run:validate`, tracked secret audit, `git diff --check` with
+line-ending warnings only, Railway doctor/deploy poll, standard live app smoke
+`ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`, and focused
+Zoom/attendance live smoke
+`ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`.
+
+Guardrails: no Zoom meeting, registrant, webhook attendance write, attendance
+correction, recording read, transcript read, summary read, external send,
+portal publish, participant invite, host-start URL exposure, billing, DNS,
+Vimeo upload, email/WhatsApp send, Buffer publish, GHL runtime, or external
+account write was performed.
+
+Next: register the latest One Time revenue-launch/parser follow-up prompt,
+split `REQ-20260619-306` into child requirements, and continue with the first
+unblocked child batch.

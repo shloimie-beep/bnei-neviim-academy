@@ -1,8 +1,9 @@
 # Next Session
 
-Continue `REQ-20260619-306`: product, schedule, booking, portals, and
-billing/access foundations. Batch 8 Email/Resend UX is deployed and
-live-verified without live email sends.
+Batches 0-8, Batch 9/10, and Batch 12 are deployed and live-verified on PR #5.
+The execution runner selects `batch-11-13` / `REQ-20260619-308` as the next
+unblocked executable workstream: Vimeo, member-library, recording, transcript,
+and publication pipeline.
 Exact next command:
 
 ```powershell
@@ -219,11 +220,14 @@ authorization and token.
 <!-- batch-12:start -->
 ## Batch 12 Handoff
 
-Zoom meeting and attendance foundation is implemented locally and focused tests
-passed. Deployment/live-smoke evidence is still pending.
+Zoom meeting and attendance foundation is deployed and live-verified.
 
 - Requirement: `REQ-20260619-307`
-- Implementation status: `implemented_local`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `7685133a6e675db6883135eb775ae4cae6b44ad2`
+- Railway deployment:
+  `b2d02f20-64a8-4183-9dba-3587d0449ef7`
 - Key files:
   `src/lib/integrations/zoom.js`, `server.js`, `public/operations.html`,
   `ops/route-registry.json`,
@@ -231,6 +235,10 @@ passed. Deployment/live-smoke evidence is still pending.
   `tests/one-time-zoom-attendance-automation.test.js`,
   `scripts/smoke-one-time-zoom-attendance-live.mjs`
 - Focused Batch 12 tests: 25 passed, 0 failed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`
+- Focused One Time Zoom/attendance live smoke:
+  `ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`
 - Guardrails: no real Zoom meeting, registrant, webhook attendance write,
   attendance correction, recording read, transcript read, summary read, external
   send, portal publish, participant invite, or host-start URL exposure.
@@ -238,15 +246,10 @@ passed. Deployment/live-smoke evidence is still pending.
 Next exact actions:
 
 ```powershell
-npm run bna:run:validate
-node scripts/audit-secrets.mjs
-git diff --check
-git add src/lib/integrations/zoom.js server.js public/operations.html ops/route-registry.json railway-migration-2026-06-16-one-time-product-system.sql tests/one-time-zoom-attendance-automation.test.js scripts/smoke-one-time-zoom-attendance-live.mjs ops/execution-runs/2026-06-21-one-time-master-completion
-git commit -m "Implement One Time Zoom attendance foundation"
-git push origin codex/agent-control-center-20260619
+npm run bna:run:next
 ```
 
-Then deploy the pushed commit to Railway, run standard and focused live smokes,
-record deployment ID/commit, mark `REQ-20260619-307` verified live, and continue
-automatically to the next unblocked batch.
+Then apply the latest One Time revenue-launch/parser follow-up prompt by adding
+the manual Vimeo workflow, disabled automated-upload readiness, and
+recording/publication pipeline for `REQ-20260619-308`.
 <!-- batch-12:end -->

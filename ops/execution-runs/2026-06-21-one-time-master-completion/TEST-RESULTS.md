@@ -392,12 +392,16 @@ Focused Batch 12 test result:
   dashboard-click exclusion, workflow model, route metadata, Operations UI copy,
   and internal Zoom foundation tables.
 
-Pending after commit/deploy:
+Closeout checks:
 
-- `npm run bna:run:validate`
-- `node scripts/audit-secrets.mjs`
-- `git diff --check`
-- `npm run app:smoke`
-- `node scripts/smoke-one-time-zoom-attendance-live.mjs`
-- `npm run railway:doctor`
+- PASS `npm run bna:run:validate`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check` with line-ending warnings only
+- PASS `npm run railway:doctor` using the main workspace Railway token
+- PASS Railway deployment poll for
+  `b2d02f20-64a8-4183-9dba-3587d0449ef7`
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`
+- PASS `node scripts/smoke-one-time-zoom-attendance-live.mjs`,
+  `ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`
 <!-- batch-12:end -->

@@ -533,7 +533,7 @@ Intermediate focused live-smoke failures recorded:
 
 Requirement: `REQ-20260619-307`
 
-Status: implemented local / deploy pending
+Status: done / deployed / verified live
 
 Implementation evidence:
 
@@ -574,10 +574,26 @@ Implemented behavior:
 
 Deployment and live evidence:
 
-- Implementation commit: pending.
-- Pushed commit: pending.
-- Deployed commit: pending.
-- Railway deployment: pending.
-- Standard live smoke: pending.
-- Focused One Time Zoom/attendance live smoke: pending.
+- Implementation commit: `7685133a6e675db6883135eb775ae4cae6b44ad2`
+- Pushed commit: `7685133a6e675db6883135eb775ae4cae6b44ad2`
+- Deployed commit: `7685133a6e675db6883135eb775ae4cae6b44ad2`
+- Railway deployment: `b2d02f20-64a8-4183-9dba-3587d0449ef7`
+- Railway doctor/poll: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`
+- Focused One Time Zoom/attendance live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`
+
+Focused live smoke covered:
+
+- Authenticated Zoom status/readiness readback without exposing secret-like
+  values, host start URLs, or access tokens.
+- Zoom workflow foundation, webhook processing plan, and blocked meeting-create
+  route.
+- Session automation and webhook attendance preview routes.
+- Operations Live Classes Zoom readiness panel at 1440px and 390px without
+  page-level horizontal overflow.
+- No Zoom meeting, registrant, webhook attendance write, attendance correction,
+  recording read, transcript read, summary read, external send, portal publish,
+  participant invite, or host-start URL exposure.
 <!-- batch-12:end -->
