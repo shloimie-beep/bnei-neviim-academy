@@ -2879,8 +2879,8 @@ const RESEND_REPLY_TO = normalizeEmail(process.env.RESEND_REPLY_TO || integratio
 const RESEND_SEND_FALLBACK_APPROVED = Boolean(resendRuntimeConfig.fallbackApproved);
 const RESEND_WEBHOOK_SECRET = integrationSecretLoader.loadSecret({
   envName: 'RESEND_WEBHOOK_SECRET',
-  names: ['resend-api-key', 'resend-webhook-secret', 'resend'],
-  fileNames: ['resend-api-key.txt', 'RESEND_WEBHOOK_SECRET.txt', 'resend.txt'],
+  names: ['resend-webhook-secret'],
+  fileNames: ['resend-webhook-secret.txt', 'RESEND_WEBHOOK_SECRET.txt'],
   repoRoot: __dirname,
 }).value || usableSecretValue(process.env.RESEND_WEBHOOK_SECRET);
 const stripeRuntimeConfig = stripeIntegration.getStripeConfig({ repoRoot: __dirname });
@@ -9712,7 +9712,14 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 });
 
 // Middleware
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({
+  limit: '25mb',
+  verify: (req, res, buf) => {
+    if (req.originalUrl && req.originalUrl.startsWith('/api/bna/resend/webhook')) {
+      req.rawBody = Buffer.from(buf || '').toString('utf8');
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(express.static('public', {
   setHeaders(res, filePath) {
@@ -12413,6 +12420,24 @@ CREATE TABLE IF NOT EXISTS bna_email_drafts (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS bna_resend_webhook_events (
+  id SERIAL PRIMARY KEY,
+  svix_id TEXT UNIQUE,
+  svix_timestamp BIGINT,
+  event_type TEXT NOT NULL,
+  provider_message_id TEXT,
+  delivery_status TEXT,
+  processing_status TEXT NOT NULL DEFAULT 'queued' CHECK (processing_status IN ('queued', 'processed', 'duplicate', 'dead_letter')),
+  duplicate_count INTEGER NOT NULL DEFAULT 0,
+  payload JSONB NOT NULL DEFAULT '{}',
+  error TEXT,
+  communication_id INTEGER,
+  email_log_id INTEGER,
+  received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  processed_at TIMESTAMP,
+  last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS bna_dns_setup_tasks (
   id SERIAL PRIMARY KEY,
   workspace_id INTEGER,
@@ -12459,6 +12484,22 @@ CREATE INDEX IF NOT EXISTS idx_bna_social_posts_provider_status ON bna_social_po
 CREATE INDEX IF NOT EXISTS idx_bna_social_posts_created_at ON bna_social_posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_email_drafts_provider_status ON bna_email_drafts(provider, status);
 CREATE INDEX IF NOT EXISTS idx_bna_email_drafts_created_at ON bna_email_drafts(created_at DESC);
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS svix_id TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS svix_timestamp BIGINT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS provider_message_id TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS delivery_status TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS processing_status TEXT NOT NULL DEFAULT 'queued';
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS duplicate_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS payload JSONB NOT NULL DEFAULT '{}';
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS error TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS communication_id INTEGER;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS email_log_id INTEGER;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS processed_at TIMESTAMP;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_resend_webhook_events_svix_id ON bna_resend_webhook_events(svix_id) WHERE svix_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_resend_webhook_events_type_received ON bna_resend_webhook_events(event_type, received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_resend_webhook_events_message ON bna_resend_webhook_events(provider_message_id);
 ALTER TABLE bna_dns_setup_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER;
 ALTER TABLE bna_dns_setup_tasks ADD COLUMN IF NOT EXISTS provider_id INTEGER;
 ALTER TABLE bna_dns_setup_tasks ADD COLUMN IF NOT EXISTS purpose TEXT;
@@ -39582,60 +39623,19 @@ app.post('/api/bna/communications', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/bna/resend/webhook', async (req, res) => {
-  const suppliedSecret = String(req.headers['x-resend-webhook-secret'] || req.query.secret || '').trim();
-  if (RESEND_WEBHOOK_SECRET && suppliedSecret !== RESEND_WEBHOOK_SECRET) {
-    return res.status(401).json({ error: 'Unauthorized Resend webhook' });
-  }
-  const payload = req.body && typeof req.body === 'object' ? req.body : {};
-  const eventType = String(payload.type || payload.event || '').trim();
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : payload;
-  const messageId = data.email_id || data.emailId || data.message_id || data.id || null;
-  const status = ({
-    'email.sent': 'sent',
-    'email.delivered': 'delivered',
-    'email.delivery_delayed': 'delivery_delayed',
-    'email.bounced': 'bounced',
-    'email.complained': 'complained',
-    'email.opened': 'opened',
-    'email.clicked': 'clicked',
-  })[eventType] || eventType.replace(/^email\./, '') || 'webhook_received';
   try {
-    let updated = [];
-    if (messageId) {
-      updated = (await pool.query(
-        `UPDATE bna_communications
-         SET status = $2,
-             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
-         WHERE external_message_id = $1
-            OR metadata->>'resend_message_id' = $1
-         RETURNING *`,
-        [messageId, status, JSON.stringify({ resend_event: eventType, resend_payload: payload })]
-      )).rows;
-      await pool.query(
-        `UPDATE bna_email_log
-         SET status = CASE WHEN $2 IN ('delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed') THEN $2 ELSE status END,
-             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
-         WHERE provider_message_id = $1`,
-        [messageId, status, JSON.stringify({ resend_event: eventType })]
-      ).catch(() => {});
-    }
-    if (!updated.length) {
-      const communication = await logCommunication({
-        channel: 'email',
-        direction: 'outbound',
-        communicationType: 'resend_webhook',
-        subject: data.subject || null,
-        toAddress: Array.isArray(data.to) ? data.to.join(', ') : data.to || null,
-        externalMessageId: messageId,
-        provider: 'resend',
-        status,
-        metadata: { resend_event: eventType, resend_payload: payload },
-      });
-      updated = communication ? [communication] : [];
-    }
-    res.json({ success: true, event: eventType, status, updated_count: updated.length });
+    const result = await resendIntegration.processResendWebhook({
+      payload: req.body && typeof req.body === 'object' ? req.body : {},
+      rawPayload: req.rawBody || '',
+      headers: req.headers,
+      secret: RESEND_WEBHOOK_SECRET,
+      suppliedSecret: req.headers['x-resend-webhook-secret'] || req.query.secret || '',
+      db: pool,
+      logCommunication,
+    });
+    res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.status || err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -40509,9 +40509,14 @@ app.get('/api/bna/integrations/resend/health', requireAdmin, async (req, res) =>
     connected: readiness.connected,
     account_owner: readiness.account_owner,
     provider_account: readiness.provider_account,
+    from: readiness.from,
+    from_email: readiness.from_email,
+    sender_configured: Boolean(readiness.from_email),
+    domain_configured: Boolean(readiness.domain),
     domain: readiness.domain,
     domain_verified: readiness.domain_verified,
     send_allowed: readiness.send_allowed,
+    send_blocked: !readiness.send_allowed,
     fallback_approved: readiness.fallback_approved,
     blocker: readiness.blocker || null,
   });
@@ -40557,6 +40562,31 @@ app.get('/api/bna/integrations/resend/domains', requireAdmin, async (req, res) =
   } catch (err) {
     const safe = safeIntegrationError(err, 'Resend domain lookup failed');
     res.status(safe.status).json({ success: false, provider: 'resend', blocker: safe.blocker, error: safe.error });
+  }
+});
+
+app.get('/api/bna/integrations/resend/events', requireAdmin, async (req, res) => {
+  try {
+    const includePayload = !opsScopeProjectKey(req) && ['1', 'true'].includes(String(req.query.include_payload || '').toLowerCase());
+    const limit = Math.min(Math.max(Number(req.query.limit || 50), 1), 200);
+    const result = await pool.query(
+      `SELECT id, svix_id, event_type, provider_message_id, delivery_status,
+              processing_status, duplicate_count, error, communication_id,
+              email_log_id, received_at, processed_at, last_seen_at,
+              CASE WHEN $1 THEN payload ELSE NULL END AS payload
+       FROM bna_resend_webhook_events
+       ORDER BY received_at DESC, id DESC
+       LIMIT $2`,
+      [includePayload, limit]
+    );
+    res.json({
+      success: true,
+      provider: 'resend',
+      raw_payload_hidden: !includePayload,
+      events: result.rows,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, provider: 'resend', error: err.message });
   }
 });
 
@@ -40637,6 +40667,39 @@ function assertScopedDraftMetadataAccess(req, metadata = {}) {
   if (!scopedProjectKey) return;
   const projectKey = normalizeProjectKey(metadata?.project_key || metadata?.project || DEFAULT_PROJECT_KEY);
   assertProjectAccess(req, { project_key: projectKey });
+}
+
+async function findCrossWorkspaceEmailRecipientConflicts(req, emails = [], draftContext = {}, db = pool) {
+  const projectKey = normalizeProjectKey(draftContext.projectKey || requestedProjectKeyForInput(req, draftContext) || '');
+  const normalizedEmails = [...new Set((emails || []).map(normalizeEmail).filter(Boolean))];
+  if (!projectKey || !normalizedEmails.length) return [];
+  const result = await db.query(
+    `WITH known_emails AS (
+       SELECT LOWER(c.primary_email) AS email, COALESCE(ws.project_key, '') AS project_key, 'contact' AS source
+       FROM bna_contacts c
+       LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
+       WHERE c.primary_email IS NOT NULL
+       UNION ALL
+       SELECT LOWER(s.parent_email) AS email, COALESCE(p.project_key, '') AS project_key, 'signup' AS source
+       FROM signups s
+       LEFT JOIN bna_projects p ON p.id = s.project_id
+       WHERE s.parent_email IS NOT NULL
+       UNION ALL
+       SELECT LOWER(st.parent_email) AS email, COALESCE(p.project_key, '') AS project_key, 'student' AS source
+       FROM bna_students st
+       LEFT JOIN bna_projects p ON p.id = st.project_id
+       WHERE st.parent_email IS NOT NULL
+     )
+     SELECT email, project_key, source
+     FROM known_emails
+     WHERE email = ANY($1::text[])
+       AND project_key <> ''
+       AND project_key <> $2
+     ORDER BY email, source
+     LIMIT 20`,
+    [normalizedEmails, projectKey]
+  );
+  return result.rows;
 }
 
 app.get('/api/bna/communications/social/drafts', requireAdmin, async (req, res) => {
@@ -40875,6 +40938,19 @@ async function createResendEmailDraft(req, res) {
   if (!subject || (!text && !html)) return res.status(400).json({ error: 'subject and text/html are required' });
   const readiness = await getResendReadinessForResponse();
   const draftContext = scopedDraftContextForRequest(req, body);
+  const recipientConflicts = await findCrossWorkspaceEmailRecipientConflicts(req, [...to, ...cc, ...bcc], draftContext);
+  if (recipientConflicts.length) {
+    return res.status(403).json({
+      success: false,
+      error: 'Recipient belongs to a different workspace/project',
+      cross_workspace_recipients: recipientConflicts.map((item) => ({
+        email: item.email,
+        project_key: item.project_key,
+        source: item.source,
+      })),
+      send_blocked: true,
+    });
+  }
   const created = (await pool.query(
     `INSERT INTO bna_email_drafts (
        provider, provider_account, account_owner, from_email, to_emails, cc_emails, bcc_emails,

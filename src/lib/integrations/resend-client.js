@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const {
   loadConfigValue,
   loadSecret,
@@ -184,6 +185,281 @@ function safeDnsRecord(record = {}) {
   };
 }
 
+function resendWebhookStatusForEvent(eventType = '') {
+  return ({
+    'email.sent': 'sent',
+    'email.delivered': 'delivered',
+    'email.delivery_delayed': 'delivery_delayed',
+    'email.bounced': 'bounced',
+    'email.complained': 'complained',
+    'email.opened': 'opened',
+    'email.clicked': 'clicked',
+  })[String(eventType || '').trim()] || String(eventType || '').trim().replace(/^email\./, '') || 'webhook_received';
+}
+
+function parseWebhookPayload(payload) {
+  if (payload && typeof payload === 'object' && !Buffer.isBuffer(payload)) return payload;
+  const raw = Buffer.isBuffer(payload) ? payload.toString('utf8') : String(payload || '').trim();
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function normalizeResendWebhookEvent(payload = {}) {
+  const parsed = parseWebhookPayload(payload);
+  const data = parsed.data && typeof parsed.data === 'object' ? parsed.data : parsed;
+  const eventType = String(parsed.type || parsed.event || '').trim();
+  const messageId = data.email_id || data.emailId || data.message_id || data.id || null;
+  return {
+    event_type: eventType,
+    status: resendWebhookStatusForEvent(eventType),
+    message_id: messageId ? String(messageId) : null,
+    webhook_id: parsed.id || parsed.webhook_id || parsed.event_id || null,
+    created_at: parsed.created_at || data.created_at || null,
+    subject: data.subject || null,
+    from: data.from || null,
+    to: Array.isArray(data.to) ? data.to : (data.to ? [data.to] : []),
+    payload: parsed,
+    data,
+  };
+}
+
+function safeWebhookSummary(event = {}) {
+  return {
+    resend_event: event.event_type || null,
+    resend_webhook_id: event.webhook_id || null,
+    resend_message_id: event.message_id || null,
+    created_at: event.created_at || null,
+  };
+}
+
+function headerValue(headers = {}, key = '') {
+  if (!headers || !key) return '';
+  if (typeof headers.get === 'function') return String(headers.get(key) || headers.get(key.toLowerCase()) || '');
+  return String(headers[key] || headers[key.toLowerCase()] || headers[key.toUpperCase()] || '');
+}
+
+function svixSecretBytes(secret = '') {
+  const value = String(secret || '').trim();
+  if (!value) return Buffer.alloc(0);
+  const encoded = value.startsWith('whsec_') ? value.slice('whsec_'.length) : '';
+  if (encoded) {
+    try {
+      const decoded = Buffer.from(encoded, 'base64');
+      if (decoded.length) return decoded;
+    } catch {
+      // Fall through to plain-text comparison for non-Svix local test secrets.
+    }
+  }
+  return Buffer.from(value, 'utf8');
+}
+
+function timingSafeEqualString(left = '', right = '') {
+  const a = Buffer.from(String(left || ''), 'utf8');
+  const b = Buffer.from(String(right || ''), 'utf8');
+  if (a.length !== b.length) return false;
+  return crypto.timingSafeEqual(a, b);
+}
+
+function verifyResendWebhookRequest({
+  payload = '',
+  headers = {},
+  secret = '',
+  toleranceSeconds = 300,
+  nowMs = Date.now(),
+} = {}) {
+  const configuredSecret = String(secret || '').trim();
+  if (!configuredSecret) {
+    const error = new Error('RESEND_WEBHOOK_SECRET is not configured; signed Resend webhooks are blocked until the signing secret is installed.');
+    error.status = 503;
+    throw error;
+  }
+
+  const id = headerValue(headers, 'svix-id');
+  const timestamp = headerValue(headers, 'svix-timestamp');
+  const signatureHeader = headerValue(headers, 'svix-signature');
+  if (!id || !timestamp || !signatureHeader) {
+    const error = new Error('Missing Resend Svix webhook headers');
+    error.status = 401;
+    throw error;
+  }
+
+  const timestampSeconds = Number(timestamp);
+  if (!Number.isFinite(timestampSeconds)) {
+    const error = new Error('Invalid Resend webhook timestamp');
+    error.status = 401;
+    throw error;
+  }
+  const ageSeconds = Math.abs(Math.floor(nowMs / 1000) - timestampSeconds);
+  if (toleranceSeconds && ageSeconds > toleranceSeconds) {
+    const error = new Error('Expired Resend webhook timestamp');
+    error.status = 401;
+    throw error;
+  }
+
+  const rawPayload = Buffer.isBuffer(payload) ? payload.toString('utf8') : String(payload || '');
+  const signedContent = `${id}.${timestamp}.${rawPayload}`;
+  const expected = crypto
+    .createHmac('sha256', svixSecretBytes(configuredSecret))
+    .update(signedContent)
+    .digest('base64');
+  const signatures = String(signatureHeader || '')
+    .split(/\s+/)
+    .flatMap((item) => item.split(',').length === 2 ? [item.split(',')[1]] : [])
+    .filter(Boolean);
+  if (!signatures.some((signature) => timingSafeEqualString(signature, expected))) {
+    const error = new Error('Invalid Resend webhook signature');
+    error.status = 401;
+    throw error;
+  }
+  return {
+    configured: true,
+    verified: true,
+    method: 'svix',
+    svix_id: id,
+    svix_timestamp: timestampSeconds,
+  };
+}
+
+async function storeResendWebhookEvent(db, event = {}, verification = {}) {
+  if (!db || typeof db.query !== 'function') return { stored: false, duplicate: false, event_row: null };
+  const payload = safeWebhookSummary(event);
+  const row = (await db.query(
+    `INSERT INTO bna_resend_webhook_events (
+       svix_id, svix_timestamp, event_type, provider_message_id, delivery_status, payload, processing_status
+     ) VALUES ($1, $2, $3, $4, $5, $6::jsonb, 'queued')
+     ON CONFLICT (svix_id) DO UPDATE
+       SET duplicate_count = bna_resend_webhook_events.duplicate_count + 1,
+           last_seen_at = NOW()
+     RETURNING *`,
+    [
+      verification.svix_id || event.webhook_id || null,
+      verification.svix_timestamp || null,
+      event.event_type || 'unknown',
+      event.message_id || null,
+      event.status || 'webhook_received',
+      JSON.stringify(payload),
+    ]
+  )).rows?.[0] || null;
+  return {
+    stored: Boolean(row),
+    duplicate: Number(row?.duplicate_count || 0) > 0,
+    event_row: row,
+  };
+}
+
+async function markResendWebhookEventProcessed(db, eventId, patch = {}) {
+  if (!eventId || !db || typeof db.query !== 'function') return null;
+  return (await db.query(
+    `UPDATE bna_resend_webhook_events
+     SET processing_status = $2,
+         communication_id = COALESCE($3, communication_id),
+         email_log_id = COALESCE($4, email_log_id),
+         error = $5,
+         processed_at = CASE WHEN $2 IN ('processed', 'dead_letter') THEN NOW() ELSE processed_at END,
+         last_seen_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      eventId,
+      patch.processing_status || 'processed',
+      patch.communication_id || null,
+      patch.email_log_id || null,
+      patch.error || null,
+    ]
+  )).rows?.[0] || null;
+}
+
+async function processResendWebhook({
+  payload = {},
+  rawPayload = '',
+  headers = {},
+  secret = '',
+  suppliedSecret = '',
+  db,
+  logCommunication,
+} = {}) {
+  const raw = rawPayload || (typeof payload === 'string' ? payload : JSON.stringify(payload || {}));
+  const verification = verifyResendWebhookRequest({ payload: raw, headers, secret });
+  const event = normalizeResendWebhookEvent(payload);
+  const metadata = safeWebhookSummary(event);
+  const storedEvent = await storeResendWebhookEvent(db, event, verification);
+  if (storedEvent.duplicate) {
+    await markResendWebhookEventProcessed(db, storedEvent.event_row?.id, { processing_status: 'duplicate' });
+    return {
+      success: true,
+      accepted: true,
+      duplicate: true,
+      event: event.event_type,
+      status: event.status,
+      message_id: event.message_id,
+      verification,
+      processing_status: 'duplicate',
+      updated_count: 0,
+    };
+  }
+  let updated = [];
+  let emailLogId = null;
+
+  if (event.message_id && db && typeof db.query === 'function') {
+    updated = (await db.query(
+      `UPDATE bna_communications
+       SET status = $2,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+       WHERE external_message_id = $1
+          OR metadata->>'resend_message_id' = $1
+       RETURNING *`,
+      [event.message_id, event.status, JSON.stringify(metadata)]
+    )).rows || [];
+    const emailLog = await db.query(
+      `UPDATE bna_email_log
+       SET status = CASE WHEN $2 IN ('delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed') THEN $2 ELSE status END,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+       WHERE provider_message_id = $1
+       RETURNING id`,
+      [event.message_id, event.status, JSON.stringify(metadata)]
+    ).catch(() => ({ rows: [] }));
+    emailLogId = emailLog.rows?.[0]?.id || null;
+  }
+
+  if (!updated.length && typeof logCommunication === 'function') {
+    const communication = await logCommunication({
+      channel: 'email',
+      direction: 'outbound',
+      communicationType: 'resend_webhook',
+      subject: event.subject || null,
+      fromAddress: event.from || null,
+      toAddress: event.to.join(', ') || null,
+      externalMessageId: event.message_id,
+      provider: 'resend',
+      status: event.status,
+      metadata,
+    });
+    updated = communication ? [communication] : [];
+  }
+
+  await markResendWebhookEventProcessed(db, storedEvent.event_row?.id, {
+    processing_status: 'processed',
+    communication_id: updated[0]?.id || null,
+    email_log_id: emailLogId,
+  });
+
+  return {
+    success: true,
+    accepted: true,
+    event: event.event_type,
+    status: event.status,
+    message_id: event.message_id,
+    verification,
+    processing_status: 'processed',
+    stored_event_id: storedEvent.event_row?.id || null,
+    updated_count: updated.length,
+  };
+}
+
 async function listResendDomains(runtime = {}) {
   const payload = await resendRequest('/domains', { method: 'GET' }, runtime);
   const rows = Array.isArray(payload.data) ? payload.data : Array.isArray(payload.domains) ? payload.domains : [];
@@ -330,7 +606,11 @@ module.exports = {
   getResendReadiness,
   listResendDomains,
   normalizeEmail,
+  normalizeResendWebhookEvent,
+  processResendWebhook,
   resendRequest,
+  resendWebhookStatusForEvent,
   sendResendEmail,
+  verifyResendWebhookRequest,
   verifyResendDomain,
 };

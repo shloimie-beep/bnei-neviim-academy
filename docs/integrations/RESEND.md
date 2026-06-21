@@ -18,8 +18,22 @@ Scope: One Time email-domain readiness and future launch emails. This file conta
   - profile-aware configuration
   - domain/sender readiness checks
   - DNS record readback normalization
+  - Resend webhook event normalization
+  - Svix-header webhook verification using the raw request body when a webhook
+    signing secret is configured
+  - local webhook status storage against BNA email communication/email-log rows
+    without storing raw email body content in metadata
   - send operation blocked unless readiness and explicit send confirmation pass
   - redacted errors
+- Operations UI:
+  - Communications > Email exposes provider-account, sender-identity,
+    domain-readiness, recipient-scope, and confirmation gates separately.
+  - Communications > Settings exposes Resend provider connection, sender
+    identity, domain, DNS tasks, and draft list without secret fields.
+- Focused live smoke:
+  - `npm run app:smoke:email-resend-ux`
+  - Read-only except for login/session activity; it does not create drafts,
+    verify DNS, or send email.
 
 ## Configuration Names
 
@@ -47,6 +61,8 @@ Secrets must be stored only in keyholder/server environment:
 
 - `DEC-20260618-203`: Decide Resend recovery, new account, or alternate email provider.
 - `DEC-20260618-204`: Identify One Time launch domain and DNS authority.
+- `DEC-RESEND-SENDER-DOMAIN-IDENTITY`:
+  `ops/one-time-mishnah/resend-sender-domain-decision.md`
 
 Needed before sends:
 
@@ -61,3 +77,8 @@ Needed before sends:
 
 - Automated tests must use mocks.
 - No live email should be sent until the operator explicitly approves a target address and send.
+- Webhook verification tests must use mocked payloads, mocked signing headers,
+  and mocked database writes.
+- Live smoke may read Resend readiness/domain endpoints and render the
+  Operations UI, but must not create drafts, request DNS verification, or call
+  the send endpoint.

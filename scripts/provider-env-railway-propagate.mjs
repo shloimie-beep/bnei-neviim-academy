@@ -134,13 +134,17 @@ function loadProviderValues(repoRoot, keyholderRoots) {
     };
   });
 
-  const resendConfigured = loaded
+  const resendSenderGroupConfigured = loaded
     .filter((field) => field.resendGroup)
+    .filter((field) => field.key !== 'RESEND_API_KEY')
     .every((field) => field.configured);
 
   return loaded.map((field) => {
-    if (field.resendGroup && !resendConfigured) {
-      return { ...field, shouldSet: false, status: field.configured ? 'resend_group_incomplete' : 'missing_local' };
+    if (field.key === 'RESEND_API_KEY' && field.configured) {
+      return { ...field, shouldSet: true, status: 'ready' };
+    }
+    if (field.resendGroup && !resendSenderGroupConfigured) {
+      return { ...field, shouldSet: false, status: field.configured ? 'resend_sender_group_incomplete' : 'missing_local' };
     }
     if (!field.configured) {
       return { ...field, shouldSet: false, status: field.required ? 'missing_local_required' : 'not_configured' };
@@ -197,7 +201,9 @@ export function buildProviderEnvRailwayPropagation(options = {}) {
   const environment = options.environment || process.env.RAILWAY_ENVIRONMENT || 'production';
   const apply = Boolean(options.apply);
   const env = loadRailwayEnv(repoRoot);
-  const fields = loadProviderValues(repoRoot, options.keyholderRoots);
+  const onlyKeys = new Set((options.onlyKeys || []).map((key) => String(key || '').trim().toUpperCase()).filter(Boolean));
+  const allFields = loadProviderValues(repoRoot, options.keyholderRoots);
+  const fields = allFields.filter((field) => !onlyKeys.size || onlyKeys.has(field.key));
   const reportFields = [];
   let attempted = 0;
   let pushed = 0;
@@ -260,6 +266,7 @@ export function buildProviderEnvRailwayPropagation(options = {}) {
     environment,
     railway_auth_ready: !authProblem,
     railway_auth_problem: authProblem || null,
+    only_keys: [...onlyKeys],
     summary: {
       ready_count: fields.filter((field) => field.shouldSet).length,
       attempted,
@@ -267,7 +274,8 @@ export function buildProviderEnvRailwayPropagation(options = {}) {
       failed,
       skipped: fields.length - attempted,
       missing_required_local: fields.filter((field) => field.status === 'missing_local_required').length,
-      resend_group_complete: fields.filter((field) => field.resendGroup).every((field) => field.configured),
+      resend_api_key_independent: true,
+      resend_sender_group_complete: allFields.filter((field) => field.resendGroup && field.key !== 'RESEND_API_KEY').every((field) => field.configured),
     },
     fields: reportFields,
   };
@@ -288,6 +296,7 @@ function renderMarkdown(report) {
     `Railway auth ready: ${report.railway_auth_ready}`,
   ];
   if (report.railway_auth_problem) lines.push(`Railway auth problem: ${report.railway_auth_problem}`);
+  if (report.only_keys?.length) lines.push(`Only keys: ${report.only_keys.join(', ')}`);
   lines.push(
     '',
     '## Summary',
@@ -298,7 +307,8 @@ function renderMarkdown(report) {
     `- failed: ${report.summary.failed}`,
     `- skipped: ${report.summary.skipped}`,
     `- missing_required_local: ${report.summary.missing_required_local}`,
-    `- resend_group_complete: ${report.summary.resend_group_complete}`,
+    `- resend_api_key_independent: ${report.summary.resend_api_key_independent}`,
+    `- resend_sender_group_complete: ${report.summary.resend_sender_group_complete}`,
     '',
     '## Fields',
     ''
@@ -334,6 +344,7 @@ function parseArgs(argv) {
     noWrite: false,
     service: '',
     environment: '',
+    onlyKeys: [],
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -345,6 +356,12 @@ function parseArgs(argv) {
       index += 1;
     } else if (arg === '--environment') {
       args.environment = argv[index + 1] || '';
+      index += 1;
+    } else if (arg === '--only') {
+      args.onlyKeys = String(argv[index + 1] || '')
+        .split(',')
+        .map((key) => key.trim())
+        .filter(Boolean);
       index += 1;
     }
   }
@@ -361,6 +378,7 @@ export async function main(argv = process.argv.slice(2), options = {}) {
     service: args.service || options.service,
     environment: args.environment || options.environment,
     apply: args.apply || options.apply,
+    onlyKeys: args.onlyKeys.length ? args.onlyKeys : options.onlyKeys,
   });
   const paths = args.noWrite ? null : writeReport(report, repoRoot);
 

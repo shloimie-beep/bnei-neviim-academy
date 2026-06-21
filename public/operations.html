@@ -8201,6 +8201,7 @@
             getBufferChannels() { return this.request('GET', '/integrations/buffer/channels'); },
             getResendIntegrationHealth() { return this.request('GET', '/integrations/resend/health'); },
             getResendDomains() { return this.request('GET', '/integrations/resend/domains'); },
+            getResendEvents() { return this.request('GET', '/integrations/resend/events'); },
             verifyResendDomain(domain) { return this.request('POST', '/integrations/resend/domains/' + encodeURIComponent(domain) + '/verify', {}); },
             getSocialDrafts(filters = {}) {
                 const params = new URLSearchParams();
@@ -8557,6 +8558,7 @@
         let wapiDiagnosticsLoading = false;
         let selectedWapiPhonebookKey = null;
         let wapiMobilePane = 'list';
+        let emailOperationsView = 'drafts';
         let workspacePlatform = null;
         let workspaceDirectory = null;
         let workspaceReviewItems = [];
@@ -8570,6 +8572,7 @@
             bufferChannels: [],
             resendHealth: null,
             resendDomains: [],
+            resendEvents: [],
             socialDrafts: [],
             emailDrafts: [],
             dnsTasks: [],
@@ -17819,7 +17822,8 @@
                     ${section === 'bots' ? renderBotConversationPlaceholder() : ''}
                     ${section === 'support_threads' ? renderSupportThreadsPanel() : ''}
                     ${section === 'announcements' ? renderAnnouncementPanel() : ''}
-                    ${['templates', 'settings'].includes(section) ? renderNotConfiguredPanel(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Communications', 'This lane needs template/settings persistence before editing is exposed to normal users.') : ''}
+                    ${section === 'settings' ? renderCommunicationsIntegrationPanel() : ''}
+                    ${section === 'templates' ? renderNotConfiguredPanel(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Communications', 'This lane needs template persistence before editing is exposed to normal users.') : ''}
                 </div>
             `;
         }
@@ -18480,10 +18484,179 @@
             `;
         }
 
+        const EMAIL_WORKSPACE_VIEWS = [
+            { id: 'inbox', label: 'Inbox/imported' },
+            { id: 'drafts', label: 'Drafts' },
+            { id: 'approved', label: 'Approved' },
+            { id: 'sent', label: 'Sent/logged' },
+            { id: 'failed', label: 'Failed' },
+            { id: 'templates', label: 'Templates' },
+            { id: 'domain_readiness', label: 'Domain readiness' },
+            { id: 'dns_setup', label: 'DNS setup' }
+        ];
+
+        function setEmailOperationsView(view) {
+            emailOperationsView = EMAIL_WORKSPACE_VIEWS.some(item => item.id === view) ? view : 'drafts';
+            renderApp();
+        }
+
+        function emailViewCounts(emailRecords = [], drafts = [], resendEvents = [], dnsTasks = [], resendDomains = []) {
+            return {
+                inbox: emailRecords.filter(item => String(item.direction || '').toLowerCase() === 'inbound').length,
+                drafts: drafts.filter(item => !['ready', 'sent', 'failed', 'send_blocked'].includes(String(item.status || '').toLowerCase())).length,
+                approved: drafts.filter(item => String(item.status || '').toLowerCase() === 'ready').length,
+                sent: drafts.filter(item => String(item.status || '').toLowerCase() === 'sent').length + emailRecords.filter(item => ['sent', 'delivered', 'webhook_received'].includes(String(item.status || '').toLowerCase())).length,
+                failed: drafts.filter(item => ['failed', 'send_blocked'].includes(String(item.status || '').toLowerCase())).length + resendEvents.filter(item => ['bounced', 'complained', 'delivery_delayed'].includes(String(item.delivery_status || '').toLowerCase()) || String(item.processing_status || '').toLowerCase() === 'dead_letter').length,
+                templates: 4,
+                domain_readiness: resendDomains.length,
+                dns_setup: dnsTasks.length
+            };
+        }
+
+        function renderEmailViewRail(emailRecords = [], drafts = [], resendEvents = [], dnsTasks = [], resendDomains = []) {
+            const counts = emailViewCounts(emailRecords, drafts, resendEvents, dnsTasks, resendDomains);
+            return `
+                <nav class="ops-filter-rail compact" aria-label="Email workspace views" data-email-workspace-view-rail>
+                    <div class="ops-filter-track" role="tablist" aria-label="Email operations views">
+                        ${EMAIL_WORKSPACE_VIEWS.map(view => `
+                            <button type="button" class="ops-filter-tab ${emailOperationsView === view.id ? 'active' : ''}" role="tab" aria-selected="${emailOperationsView === view.id ? 'true' : 'false'}" onclick="setEmailOperationsView(${attrJson(view.id)})">
+                                <span>${escapeHtml(view.label)}</span>
+                                <strong>${Number(counts[view.id] || 0)}</strong>
+                            </button>
+                        `).join('')}
+                    </div>
+                </nav>
+            `;
+        }
+
+        function renderEmailDetailCard(item = {}, label = 'Email detail') {
+            const metadata = parseObjectMaybe(item.metadata);
+            const bodyText = item.text_body || item.body_text || item.body || '';
+            const bodyHtml = item.html_body || item.body_html || '';
+            const attachments = Array.isArray(metadata.attachments) ? metadata.attachments : [];
+            return `
+                <article class="email-draft-card" data-email-detail-card>
+                    <div class="task-section-header">
+                        <div>
+                            <h3>${escapeHtml(item.subject || label)}</h3>
+                            <p class="settings-disabled-note">${escapeHtml(limitTextClient(bodyText || bodyHtml.replace(/<[^>]+>/g, ' '), 220) || 'No body preview loaded.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(item.status || item.delivery_status || 'draft')}</span>
+                    </div>
+                    <div class="email-draft-meta">
+                        <span><strong>Sender</strong><br>${escapeHtml(item.from_email || item.from_address || metadata.from || 'Not configured')}</span>
+                        <span><strong>Recipients</strong><br>${escapeHtml(emailDraftRecipients(item).join(', ') || item.to_address || item.contact_email || 'No recipients')}</span>
+                        <span><strong>Reply-to</strong><br>${escapeHtml(metadata.reply_to || item.reply_to || 'Not configured')}</span>
+                        <span><strong>Thread</strong><br>${escapeHtml(item.thread_key || metadata.thread_key || 'No thread linked')}</span>
+                        <span><strong>Delivery</strong><br>${escapeHtml(item.delivery_status || item.status || 'draft')}</span>
+                        <span><strong>Related contact</strong><br>${escapeHtml(communicationContactName(item) || metadata.related_record || 'None linked')}</span>
+                        <span><strong>Tasks / Decisions</strong><br>${escapeHtml(metadata.related_task || metadata.related_decision || 'None linked')}</span>
+                        <span><strong>Audit</strong><br>${escapeHtml(formatDateTime(item.updated_at || item.created_at || item.received_at) || 'No activity')}</span>
+                    </div>
+                    ${bodyHtml ? `<div class="settings-disabled-note"><strong>Rendered body</strong><br>${bodyHtml}</div>` : ''}
+                    ${bodyText ? `<div class="settings-disabled-note"><strong>Text fallback</strong><br>${escapeHtml(bodyText)}</div>` : ''}
+                    <div class="settings-disabled-note"><strong>Attachments</strong>: ${escapeHtml(attachments.length ? attachments.map(file => file.name || file.filename || file.url || 'attachment').join(', ') : 'None')}</div>
+                </article>
+            `;
+        }
+
+        function renderResendDomainReadiness(resend = {}, resendDomains = [], resendEvents = []) {
+            return `
+                <div class="content-section-grid" data-resend-domain-readiness>
+                    ${renderReadinessCard('Resend sender readiness', resend, [
+                        ['Credential', resend.configured ? 'API key present' : 'Missing API key', 'Credential presence is separate from send readiness.', resend.configured ? 'Configured' : 'Missing'],
+                        ['Sender identity', resend.from_email || 'Needs operator Decision', 'Do not guess sender name, from email, or reply-to.', resend.from_email ? 'Configured' : 'Decision'],
+                        ['Domain', resend.domain || 'Needs operator Decision', 'Domain verification and DNS are separate from API-key storage.', resend.domain_verified ? 'Verified' : 'Decision'],
+                        ['Send state', resend.send_allowed ? 'Allowed by gates' : 'Disabled', 'Live sends remain disabled unless all gates and exact confirmation pass.', resend.send_allowed ? 'Allowed' : 'Blocked']
+                    ])}
+                    ${resendDomains.map(domain => `
+                        <article class="content-card" data-resend-domain-card>
+                            <div class="content-card-title">${escapeHtml(domain.name || 'Resend domain')}</div>
+                            <div class="content-card-meta">${escapeHtml(domain.status || 'unknown')}</div>
+                            ${(domain.records || []).map(record => `
+                                <div class="settings-disabled-note" data-resend-dns-readback>
+                                    <strong>${escapeHtml(record.type || 'DNS')}</strong> ${escapeHtml(record.name || record.record || '')}<br>
+                                    ${escapeHtml(record.value || 'Value not returned')}<br>
+                                    Status: ${escapeHtml(record.status || 'unknown')}
+                                </div>
+                            `).join('') || '<div class="settings-disabled-note">No DNS records returned by Resend yet.</div>'}
+                        </article>
+                    `).join('') || '<div class="empty-state">No Resend domains returned by the connected account.</div>'}
+                    <article class="content-card" data-resend-webhook-events>
+                        <div class="content-card-title">Webhook delivery events</div>
+                        <div class="content-card-meta">${resendEvents.length} stored</div>
+                        ${(resendEvents || []).slice(0, 8).map(event => `
+                            <div class="settings-disabled-note">
+                                <strong>${escapeHtml(event.event_type || 'event')}</strong>
+                                ${escapeHtml(event.delivery_status || event.processing_status || 'received')}<br>
+                                ${escapeHtml(event.provider_message_id || 'No message id')} / ${escapeHtml(formatDateTime(event.received_at) || '')}
+                            </div>
+                        `).join('') || '<div class="settings-disabled-note">No Resend webhook events stored yet.</div>'}
+                    </article>
+                </div>
+            `;
+        }
+
+        function renderEmailWorkspaceView(view, { emailRecords = [], drafts = [], resend = {}, resendDomains = [], resendEvents = [], dnsTasks = [] } = {}) {
+            if (view === 'domain_readiness') return renderResendDomainReadiness(resend, resendDomains, resendEvents);
+            if (view === 'dns_setup') {
+                return `
+                    <div class="content-section-grid" data-email-dns-setup-view>
+                        ${dnsTasks.map(task => `
+                            <article class="content-card">
+                                <div class="content-card-title">${escapeHtml(task.type || task.record_type || 'DNS')} ${escapeHtml(task.host || task.domain || '')}</div>
+                                <div class="content-card-meta">${escapeHtml(task.status || 'needs_values')}</div>
+                                <p class="settings-disabled-note">${escapeHtml(task.value_present ? 'Value captured from dashboard.' : 'Needs exact value copied from Resend dashboard.')} ${escapeHtml(task.notes || '')}</p>
+                            </article>
+                        `).join('') || '<div class="empty-state">No Resend DNS setup tasks loaded.</div>'}
+                    </div>
+                `;
+            }
+            if (view === 'templates') {
+                return `
+                    <div class="content-section-grid" data-email-template-view>
+                        ${['manual', 'one_time_launch', 'class_reminder', 'support_follow_up'].map(template => `
+                            <article class="content-card">
+                                <div class="content-card-title">${escapeHtml(template.replace(/_/g, ' '))}</div>
+                                <div class="content-card-meta">Preview-only template</div>
+                                <p class="settings-disabled-note">Templates can populate drafts only. No live email send is enabled from this view.</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            const visibleDrafts = drafts.filter(draft => {
+                const status = String(draft.status || '').toLowerCase();
+                if (view === 'approved') return status === 'ready';
+                if (view === 'sent') return status === 'sent';
+                if (view === 'failed') return ['failed', 'send_blocked'].includes(status);
+                return !['ready', 'sent', 'failed', 'send_blocked'].includes(status);
+            });
+            const visibleLogs = emailRecords.filter(item => {
+                const status = String(item.status || '').toLowerCase();
+                const direction = String(item.direction || '').toLowerCase();
+                if (view === 'inbox') return direction === 'inbound';
+                if (view === 'sent') return ['sent', 'delivered', 'webhook_received'].includes(status);
+                if (view === 'failed') return ['failed', 'bounced', 'complained', 'delivery_delayed'].includes(status);
+                return false;
+            });
+            return `
+                <div class="contact-list" data-email-list-view="${escapeHtml(view)}">
+                    ${visibleDrafts.map(draft => renderEmailDraftCard(draft, resend)).join('')}
+                    ${visibleLogs.map(renderLoggedEmailCard).join('')}
+                    ${(visibleDrafts[0] || visibleLogs[0]) ? renderEmailDetailCard(visibleDrafts[0] || visibleLogs[0], 'Email detail') : ''}
+                    ${(!visibleDrafts.length && !visibleLogs.length) ? '<div class="empty-state">No emails match this view.</div>' : ''}
+                </div>
+            `;
+        }
+
         function renderEmailOperatorWorkspace(emailRecords = []) {
             const state = communicationsIntegrationState || {};
             const resend = state.resendHealth || {};
             const drafts = (state.emailDrafts || []).slice(0, 8);
+            const resendDomains = state.resendDomains || [];
+            const resendEvents = state.resendEvents || [];
+            const dnsTasks = state.dnsTasks || [];
             const workspaceFilters = workspaceDataProjectFilters();
             const sendGate = resend.send_allowed ? 'Ready after review + SEND_RESEND_EMAIL' : 'Locked until sender/domain readiness';
             return `
@@ -18496,35 +18669,35 @@
                         <span>${escapeHtml(sendGate)}</span>
                     </div>
                     <div class="settings-control-grid compact" data-email-readiness-gates>
-                        ${renderSettingsControlRow('From identity', resend.from_email || resend.domain || 'Not finalized', 'Sender name/email must be explicitly configured for this workspace before send.', resend.from_email || resend.domain ? 'Configured' : 'Blocked')}
+                        ${renderSettingsControlRow('Provider account', resend.connected ? 'Connected' : (resend.configured ? 'Configured / blocked' : 'Missing'), 'Resend API readiness is checked separately from sender and domain readiness.', resend.connected ? 'Connected' : 'Blocked')}
+                        ${renderSettingsControlRow('Sender identity', resend.from_email || 'Not finalized', 'From identity must be explicitly configured for this workspace before send.', resend.sender_configured || resend.from_email ? 'Configured' : 'Blocked')}
                         ${renderSettingsControlRow('Domain readiness', resend.domain_verified ? 'Verified' : (resend.domain || 'No domain'), 'Verified domain or explicit fallback approval is required before send.', resend.domain_verified || resend.fallback_approved ? 'Allowed' : 'Blocked')}
                         ${renderSettingsControlRow('Recipients', workspaceFilters.project_key || 'All workspaces', 'Recipient validation uses workspace/project filters to prevent accidental cross-workspace sends.', 'Scoped')}
                         ${renderSettingsControlRow('Send confirmation', 'SEND_RESEND_EMAIL', 'The send endpoint rejects requests without the exact approval phrase.', 'Required')}
                     </div>
+                    ${renderEmailViewRail(emailRecords, drafts, resendEvents, dnsTasks, resendDomains)}
                     <div class="email-operator-grid">
                         <div class="email-draft-card">
                             <div class="task-section-header"><h3>Draft Editor</h3><span>Preview only</span></div>
                             <form class="task-form-grid" onsubmit="createCommunicationEmailDraft(event)" data-email-draft-editor>
-                                <input id="commEmailFrom" type="email" placeholder="From identity">
-                                <input id="commEmailReplyTo" type="email" placeholder="Reply-to">
-                                <input id="commEmailTo" type="email" placeholder="Recipient email">
-                                <input id="commEmailSubject" placeholder="Subject">
-                                <select id="commEmailTemplate">
+                                <input id="commEmailFrom" name="from" type="email" placeholder="From identity">
+                                <input id="commEmailReplyTo" name="reply_to" type="email" placeholder="Reply-to">
+                                <input id="commEmailTo" name="to" type="email" placeholder="Recipient email">
+                                <input id="commEmailSubject" name="subject" placeholder="Subject">
+                                <select id="commEmailTemplate" name="template_key">
                                     <option value="manual">Manual template</option>
                                     <option value="one_time_launch">One Time launch</option>
                                     <option value="class_reminder">Class reminder</option>
                                     <option value="support_follow_up">Support follow-up</option>
                                 </select>
-                                <input id="commEmailRelatedRecord" placeholder="Related record or contact ID">
-                                <textarea id="commEmailText" class="settings-wide" rows="4" placeholder="Body preview"></textarea>
+                                <input id="commEmailRelatedRecord" name="source_id" placeholder="Related record or contact ID">
+                                <textarea id="commEmailText" name="text" class="settings-wide" rows="4" placeholder="Text body preview"></textarea>
+                                <textarea id="commEmailHtml" name="html" class="settings-wide" rows="4" placeholder="HTML body preview"></textarea>
                                 <button class="task-action primary" type="submit">Create draft</button>
                             </form>
                             <div class="settings-disabled-note">Draft creation stores a local review item and readiness blocker only. It does not send email.</div>
                         </div>
-                        <div class="contact-list">
-                            ${drafts.map(draft => renderEmailDraftCard(draft, resend)).join('') || '<div class="empty-state">No email drafts loaded.</div>'}
-                            ${emailRecords.slice(0, 6).map(renderLoggedEmailCard).join('')}
-                        </div>
+                        ${renderEmailWorkspaceView(emailOperationsView, { emailRecords, drafts, resend, resendDomains, resendEvents, dnsTasks })}
                     </div>
                 </section>
             `;
@@ -19623,6 +19796,7 @@
             const channelHint = (state.bufferChannels || []).slice(0, 4).map(channel => channel.displayName || channel.name || channel.id).filter(Boolean).join(', ');
             const recentSocial = (state.socialDrafts || []).slice(0, 6);
             const recentEmails = (state.emailDrafts || []).slice(0, 6);
+            const recentResendEvents = (state.resendEvents || []).slice(0, 6);
             const dnsTasks = (state.dnsTasks || []).slice(0, 8);
             const schedulePreview = state.schedulePreview || null;
             return `
@@ -19640,6 +19814,8 @@
                         ])}
                         ${renderReadinessCard('Resend', resend, [
                             ['Account owner', resend.account_owner || 'unknown', resend.provider_account || 'Provider account label not set.', 'Metadata'],
+                            ['Provider connection', resend.connected ? 'Connected' : 'Blocked', 'API/key readiness is separate from sender/domain approval.', resend.connected ? 'Connected' : 'Blocked'],
+                            ['Sender identity', resend.from_email || 'Not set', 'From address is configured separately from the domain list.', resend.sender_configured || resend.from_email ? 'Configured' : 'Blocked'],
                             ['Domain', resend.domain || 'Not set', resend.domain_verified ? 'Verified domain.' : 'Domain verification incomplete.', resend.domain_verified ? 'Verified' : 'Blocked'],
                             ['Send allowed', resend.send_allowed ? 'Yes' : 'No', resend.fallback_approved ? 'Fallback approved by env.' : 'Verified domain or explicit fallback required.', resend.send_allowed ? 'Allowed' : 'Blocked'],
                         ])}
@@ -19684,22 +19860,42 @@
                     <section class="focus-panel">
                         <div class="task-section-header"><h3>Email Drafts</h3><span>${recentEmails.length}</span></div>
                         <form class="task-form-grid" onsubmit="createCommunicationEmailDraft(event)">
-                            <input id="commEmailTo" type="email" placeholder="Recipient email">
-                            <input id="commEmailSubject" placeholder="Subject">
-                            <textarea id="commEmailText" class="settings-wide" rows="3" placeholder="Plain text"></textarea>
+                            <input id="commIntegrationEmailTo" name="to" type="email" placeholder="Recipient email">
+                            <input id="commIntegrationEmailSubject" name="subject" placeholder="Subject">
+                            <textarea id="commIntegrationEmailText" name="text" class="settings-wide" rows="3" placeholder="Plain text"></textarea>
+                            <textarea id="commIntegrationEmailHtml" name="html" class="settings-wide" rows="3" placeholder="HTML body"></textarea>
                             <button class="task-action primary" type="submit">Create draft</button>
                         </form>
                         <div class="calendar-event-list" style="margin-top:12px;">
-                            ${recentEmails.map(draft => `
+                            ${recentEmails.map(draft => {
+                                const canSend = emailDraftCanRequestSend(draft, resend);
+                                return `
                                 <div class="calendar-event-row">
                                     <div>
                                         <strong>#${Number(draft.id)} ${escapeHtml(draft.subject || 'Email draft')}</strong>
                                         <div class="event-meta">${escapeHtml((draft.to_emails || []).join(', '))} / ${escapeHtml(draft.status || 'draft')}</div>
                                         ${draft.send_blocker ? `<div class="settings-disabled-note">${escapeHtml(draft.send_blocker)}</div>` : ''}
                                     </div>
-                                    ${draft.status !== 'sent' ? `<button class="task-action" type="button" onclick="sendCommunicationEmailDraft(${Number(draft.id)})">Send</button>` : '<span class="status-pill">Sent</span>'}
+                                    ${draft.status === 'sent' ? '<span class="status-pill">Sent</span>' : `<button class="task-action" type="button" ${canSend ? '' : 'disabled'} onclick="sendCommunicationEmailDraft(${Number(draft.id)})">${canSend ? 'Type SEND_RESEND_EMAIL' : 'Send locked'}</button>`}
                                 </div>
-                            `).join('') || '<div class="task-empty">No email drafts loaded.</div>'}
+                            `; }).join('') || '<div class="task-empty">No email drafts loaded.</div>'}
+                        </div>
+                    </section>
+
+                    <section class="focus-panel" data-resend-webhook-events>
+                        <div class="task-section-header"><h3>Resend Webhook Events</h3><span>${recentResendEvents.length}</span></div>
+                        <p class="settings-disabled-note">Delivery/open/bounce events are read back from first-party storage. Raw provider payloads are hidden by default; no email send or DNS verification runs from this readback.</p>
+                        <div class="calendar-event-list" style="margin-top:12px;">
+                            ${recentResendEvents.map(event => `
+                                <div class="calendar-event-row">
+                                    <div>
+                                        <strong>#${Number(event.id)} ${escapeHtml(event.event_type || 'resend event')}</strong>
+                                        <div class="event-meta">${escapeHtml([event.delivery_status || 'status pending', event.provider_message_id || 'no message id', event.processing_status || 'stored'].join(' / '))}</div>
+                                        ${event.error ? `<div class="settings-disabled-note">${escapeHtml(event.error)}</div>` : ''}
+                                    </div>
+                                    <span class="status-pill">${event.payload ? 'Payload included' : 'Raw hidden'}</span>
+                                </div>
+                            `).join('') || '<div class="task-empty">No Resend webhook events loaded.</div>'}
                         </div>
                     </section>
 
@@ -19732,16 +19928,17 @@
         }
 
         async function fetchCommunicationsIntegrationBundle(filters = workspaceDataProjectFilters()) {
-            const [bufferHealthRes, bufferChannelsRes, resendHealthRes, resendDomainsRes, socialDraftsRes, emailDraftsRes, dnsTasksRes] = await Promise.allSettled([
+            const [bufferHealthRes, bufferChannelsRes, resendHealthRes, resendDomainsRes, resendEventsRes, socialDraftsRes, emailDraftsRes, dnsTasksRes] = await Promise.allSettled([
                 api.getBufferIntegrationHealth(),
                 api.getBufferChannels(),
                 api.getResendIntegrationHealth(),
                 api.getResendDomains(),
+                api.getResendEvents(),
                 api.getSocialDrafts(filters),
                 api.getEmailDrafts(filters),
                 api.getDnsTasks({ ...filters, provider: 'resend' })
             ]);
-            const errors = [bufferHealthRes, bufferChannelsRes, resendHealthRes, resendDomainsRes, socialDraftsRes, emailDraftsRes, dnsTasksRes]
+            const errors = [bufferHealthRes, bufferChannelsRes, resendHealthRes, resendDomainsRes, resendEventsRes, socialDraftsRes, emailDraftsRes, dnsTasksRes]
                 .filter(result => result.status === 'rejected')
                 .map(result => result.reason?.message || 'Communications integration check failed');
             return {
@@ -19749,6 +19946,7 @@
                 bufferChannels: bufferChannelsRes.status === 'fulfilled' ? (bufferChannelsRes.value?.channels || []) : communicationsIntegrationState.bufferChannels,
                 resendHealth: resendHealthRes.status === 'fulfilled' ? resendHealthRes.value : communicationsIntegrationState.resendHealth,
                 resendDomains: resendDomainsRes.status === 'fulfilled' ? (resendDomainsRes.value?.domains || []) : communicationsIntegrationState.resendDomains,
+                resendEvents: resendEventsRes.status === 'fulfilled' ? (resendEventsRes.value?.events || []) : communicationsIntegrationState.resendEvents,
                 socialDrafts: socialDraftsRes.status === 'fulfilled' ? (socialDraftsRes.value?.drafts || []) : communicationsIntegrationState.socialDrafts,
                 emailDrafts: emailDraftsRes.status === 'fulfilled' ? (emailDraftsRes.value?.drafts || []) : communicationsIntegrationState.emailDrafts,
                 dnsTasks: dnsTasksRes.status === 'fulfilled' ? (dnsTasksRes.value?.dns_tasks || []) : communicationsIntegrationState.dnsTasks,
@@ -19832,17 +20030,24 @@
         async function createCommunicationEmailDraft(event) {
             event?.preventDefault?.();
             try {
+                const form = event?.currentTarget || event?.target || null;
+                const formValue = (name, fallbackId, fallback = '') => {
+                    const local = form?.querySelector?.(`[name="${name}"]`);
+                    if (local) return local.value || fallback;
+                    return document.getElementById(fallbackId)?.value || fallback;
+                };
                 const filters = workspaceDataProjectFilters();
-                const replyTo = document.getElementById('commEmailReplyTo')?.value || '';
-                const templateKey = document.getElementById('commEmailTemplate')?.value || 'manual';
-                const relatedRecord = document.getElementById('commEmailRelatedRecord')?.value || '';
+                const replyTo = formValue('reply_to', 'commEmailReplyTo');
+                const templateKey = formValue('template_key', 'commEmailTemplate', 'manual');
+                const relatedRecord = formValue('source_id', 'commEmailRelatedRecord');
                 const result = await api.createEmailDraft({
                     ...filters,
                     provider: 'resend',
-                    from: document.getElementById('commEmailFrom')?.value || '',
-                    to: [document.getElementById('commEmailTo')?.value || ''],
-                    subject: document.getElementById('commEmailSubject')?.value || '',
-                    text: document.getElementById('commEmailText')?.value || '',
+                    from: formValue('from', 'commEmailFrom'),
+                    to: [formValue('to', 'commEmailTo')],
+                    subject: formValue('subject', 'commEmailSubject'),
+                    text: formValue('text', 'commEmailText'),
+                    html: formValue('html', 'commEmailHtml'),
                     source: templateKey,
                     source_id: relatedRecord,
                     metadata: {

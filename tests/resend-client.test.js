@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -7,7 +8,10 @@ const test = require('node:test');
 const {
   getResendConfig,
   getResendReadiness,
+  normalizeResendWebhookEvent,
+  processResendWebhook,
   sendResendEmail,
+  verifyResendWebhookRequest,
 } = require('../src/lib/integrations/resend-client');
 
 function mockResponse(status, payload) {
@@ -15,6 +19,23 @@ function mockResponse(status, payload) {
     ok: status >= 200 && status < 300,
     status,
     text: async () => JSON.stringify(payload),
+  };
+}
+
+function signedWebhookHeaders(payload, {
+  id = 'msg_test_webhook',
+  secret = 'whsec_dGVzdC1zZWNyZXQ=',
+  timestamp = Math.floor(Date.now() / 1000),
+} = {}) {
+  const key = Buffer.from(secret.slice('whsec_'.length), 'base64');
+  const signature = crypto
+    .createHmac('sha256', key)
+    .update(`${id}.${timestamp}.${payload}`)
+    .digest('base64');
+  return {
+    'svix-id': id,
+    'svix-timestamp': String(timestamp),
+    'svix-signature': `v1,${signature}`,
   };
 }
 
@@ -143,4 +164,92 @@ test('verified Resend domain allows approved send and does not expose API key in
   assert.equal(sent.readiness.send_allowed, true);
   assert.equal(sent.approval.approved, true);
   assert.equal(JSON.parse(calls.at(-1).options.body).from, 'BNA <office@bneineviimacademy.org>');
+});
+
+test('Resend webhook verifier accepts Svix signatures and rejects missing signed headers', () => {
+  const payload = JSON.stringify({ type: 'email.delivered', data: { email_id: 'email_123' } });
+  const secret = 'whsec_dGVzdC1zZWNyZXQ=';
+  const headers = signedWebhookHeaders(payload, { secret });
+  const verified = verifyResendWebhookRequest({ payload, headers, secret });
+  assert.equal(verified.verified, true);
+  assert.equal(verified.method, 'svix');
+  assert.throws(
+    () => verifyResendWebhookRequest({ payload, headers: {}, secret }),
+    /Missing Resend Svix webhook headers/
+  );
+});
+
+test('Resend webhook normalization maps event status and message identity', () => {
+  const event = normalizeResendWebhookEvent({
+    type: 'email.bounced',
+    id: 'evt_123',
+    data: {
+      email_id: 'email_123',
+      to: ['parent@example.com'],
+      subject: 'Launch update',
+    },
+  });
+  assert.equal(event.event_type, 'email.bounced');
+  assert.equal(event.status, 'bounced');
+  assert.equal(event.message_id, 'email_123');
+  assert.deepEqual(event.to, ['parent@example.com']);
+});
+
+test('Resend webhook processing updates local records with safe mocked storage only', async () => {
+  const payload = JSON.stringify({
+    type: 'email.delivered',
+    id: 'evt_delivery',
+    created_at: '2026-06-21T12:00:00.000Z',
+    data: {
+      email_id: 'email_123',
+      to: ['parent@example.com'],
+      subject: 'Launch update',
+      html: '<p>private body is not stored in metadata</p>',
+    },
+  });
+  const secret = 'whsec_dGVzdC1zZWNyZXQ=';
+  const queries = [];
+  const db = {
+    async query(sql, params) {
+      queries.push({ sql, params });
+      if (/INSERT INTO bna_resend_webhook_events/.test(sql)) return { rows: [{ id: 33, duplicate_count: 0 }] };
+      if (/UPDATE bna_resend_webhook_events/.test(sql)) return { rows: [{ id: 33 }] };
+      if (/UPDATE bna_communications/.test(sql)) return { rows: [{ id: 9, status: params[1] }] };
+      return { rows: [] };
+    },
+  };
+
+  const result = await processResendWebhook({
+    payload: JSON.parse(payload),
+    rawPayload: payload,
+    headers: signedWebhookHeaders(payload, { secret }),
+    secret,
+    db,
+    logCommunication: async () => {
+      throw new Error('matched message should update instead of creating a new communication');
+    },
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(result.status, 'delivered');
+  assert.equal(result.stored_event_id, 33);
+  assert.equal(result.updated_count, 1);
+  assert.ok(queries.length >= 2);
+  const eventInsert = queries.find((query) => /INSERT INTO bna_resend_webhook_events/.test(query.sql));
+  assert.ok(eventInsert, 'Resend webhook event insert query was not recorded');
+  assert.deepEqual(JSON.parse(eventInsert.params[5]), {
+    resend_event: 'email.delivered',
+    resend_webhook_id: 'evt_delivery',
+    resend_message_id: 'email_123',
+    created_at: '2026-06-21T12:00:00.000Z',
+  });
+  const communicationUpdate = queries.find((query) => /UPDATE bna_communications/.test(query.sql));
+  assert.ok(communicationUpdate, 'communication update query was not recorded');
+  const metadata = JSON.parse(communicationUpdate.params[2]);
+  assert.deepEqual(metadata, {
+    resend_event: 'email.delivered',
+    resend_webhook_id: 'evt_delivery',
+    resend_message_id: 'email_123',
+    created_at: '2026-06-21T12:00:00.000Z',
+  });
 });

@@ -84,6 +84,8 @@ test('provider env Railway propagation sets only configured approved provider va
   assert.equal(report.railway_auto_deploy_skipped, true);
   assert.equal(report.summary.attempted, 5);
   assert.equal(report.summary.pushed, 5);
+  assert.equal(report.summary.resend_api_key_independent, true);
+  assert.equal(report.summary.resend_sender_group_complete, false);
   assert.equal(report.fields.find((field) => field.key === 'RESEND_API_KEY').status, 'missing_local');
   assert.equal(report.fields.find((field) => field.key === 'VIMEO_ACCESS_TOKEN').status, 'not_configured');
   assert.equal(calls.length, 5);
@@ -95,6 +97,78 @@ test('provider env Railway propagation sets only configured approved provider va
   for (const value of [...Object.values(values), 'railway-test-token']) {
     assert.doesNotMatch(serialized, new RegExp(value));
   }
+
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+});
+
+test('Resend API key propagation is independent from sender/domain readiness', async () => {
+  const { buildProviderEnvRailwayPropagation } = await loadPropagate();
+  const repoRoot = tempRepo();
+  writeSecret(repoRoot, 'railway-token.txt', 'railway-test-token');
+  writeSecret(repoRoot, 'resend-api-key.txt', 'resend-test-key');
+
+  const calls = [];
+  const runner = (command, args, options) => {
+    calls.push({ command, args, input: options.input });
+    return { status: 0, stdout: '{}', stderr: '' };
+  };
+
+  const report = await withEnvCleared(() => buildProviderEnvRailwayPropagation({
+    repoRoot,
+    keyholderRoots: [path.join(repoRoot, 'missing-keyholder')],
+    service: 'test-service',
+    environment: 'production',
+    apply: true,
+    runner,
+  }));
+
+  assert.equal(report.summary.resend_api_key_independent, true);
+  assert.equal(report.summary.resend_sender_group_complete, false);
+  assert.equal(report.summary.attempted, 1);
+  assert.equal(report.summary.pushed, 1);
+  assert.equal(report.fields.find((field) => field.key === 'RESEND_API_KEY').status, 'set');
+  assert.equal(report.fields.find((field) => field.key === 'RESEND_FROM').status, 'missing_local');
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].input, 'resend-test-key');
+  assert.doesNotMatch(JSON.stringify(report), /resend-test-key|railway-test-token/);
+
+  fs.rmSync(repoRoot, { recursive: true, force: true });
+});
+
+test('provider env Railway propagation can push only RESEND_API_KEY without sender/domain fields', async () => {
+  const { buildProviderEnvRailwayPropagation } = await loadPropagate();
+  const repoRoot = tempRepo();
+  writeSecret(repoRoot, 'railway-token.txt', 'railway-test-token');
+  writeSecret(repoRoot, 'resend-api-key.txt', 'resend-test-key');
+
+  const calls = [];
+  const runner = (command, args, options) => {
+    calls.push({ command, args, input: options.input });
+    return { status: 0, stdout: '{}', stderr: '' };
+  };
+
+  const report = await withEnvCleared(() => buildProviderEnvRailwayPropagation({
+    repoRoot,
+    keyholderRoots: [path.join(repoRoot, 'missing-keyholder')],
+    service: 'test-service',
+    environment: 'production',
+    apply: true,
+    onlyKeys: ['RESEND_API_KEY'],
+    runner,
+  }));
+
+  assert.deepEqual(report.only_keys, ['RESEND_API_KEY']);
+  assert.equal(report.summary.ready_count, 1);
+  assert.equal(report.summary.attempted, 1);
+  assert.equal(report.summary.pushed, 1);
+  assert.equal(report.summary.resend_api_key_independent, true);
+  assert.equal(report.summary.resend_sender_group_complete, false);
+  assert.deepEqual(report.fields.map((field) => field.key), ['RESEND_API_KEY']);
+  assert.equal(report.fields[0].status, 'set');
+  assert.equal(calls.length, 1);
+  assert(calls[0].args.includes('RESEND_API_KEY'));
+  assert.equal(calls[0].input, 'resend-test-key');
+  assert.doesNotMatch(JSON.stringify(report), /resend-test-key|railway-test-token/);
 
   fs.rmSync(repoRoot, { recursive: true, force: true });
 });

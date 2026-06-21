@@ -14,7 +14,10 @@ test('server exposes protected Buffer, Resend, draft, schedule, email, and DNS e
     "app.get('/api/bna/integrations/buffer/channels', requireAdmin",
     "app.get('/api/bna/integrations/resend/health', requireAdmin",
     "app.get('/api/bna/integrations/resend/domains', requireAdmin",
+    "app.get('/api/bna/integrations/resend/events', requireAdmin",
+    "app.get('/api/bna/integrations/resend/domains/:domain/status', requireAdmin",
     "app.post('/api/bna/integrations/resend/domains/:domain/verify', requireAdmin",
+    "app.post('/api/bna/resend/webhook', async",
     "app.post('/api/bna/communications/social/drafts', requireAdmin",
     "app.post('/api/bna/communications/social/schedule/preview', requireAdmin",
     "app.post('/api/bna/communications/social/schedule/confirm', requireAdmin",
@@ -27,9 +30,12 @@ test('server exposes protected Buffer, Resend, draft, schedule, email, and DNS e
 test('communications integration schema includes social, email draft, and DNS setup task models', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_social_posts/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_email_drafts/);
+  assert.match(server, /CREATE TABLE IF NOT EXISTS bna_resend_webhook_events/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_dns_setup_tasks/);
   assert.match(server, /copied_from_dashboard_at TIMESTAMP/);
   assert.match(server, /verified_at TIMESTAMP/);
+  assert.match(server, /processResendWebhook/);
+  assert.match(server, /req\.rawBody/);
   assert.match(server, /looksLikeTruncatedDnsValue/);
   assert.match(server, /truncated screenshot values were intentionally not stored/);
 });
@@ -37,9 +43,15 @@ test('communications integration schema includes social, email draft, and DNS se
 test('Operations UI renders Communications integrations without exposing secret fields', () => {
   assert.match(operations, /data-communications-integrations/);
   assert.match(operations, /renderCommunicationsIntegrationPanel/);
+  assert.match(operations, /section === 'settings' \? renderCommunicationsIntegrationPanel\(\)/);
   assert.match(operations, /getBufferIntegrationHealth/);
   assert.match(operations, /getResendIntegrationHealth/);
+  assert.match(operations, /getResendEvents/);
+  assert.match(operations, /data-resend-webhook-events/);
   assert.match(operations, /Confirm schedule/);
+  assert.match(operations, /Provider connection/);
+  assert.match(operations, /Sender identity/);
+  assert.match(operations, /Send locked/);
   assert.doesNotMatch(operations, /BUFFER_API_KEY/);
   assert.doesNotMatch(operations, /RESEND_API_KEY/);
 });
