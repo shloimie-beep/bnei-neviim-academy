@@ -1486,3 +1486,72 @@ Guardrails:
 - No real Agent Mode external write run was performed. The acceptance mode is
   read-only and keeps live Agent Mode execution behind explicit authorization.
 <!-- batch-9J:end -->
+
+<!-- batch-14:start -->
+## Batch 14 - Transcript Privacy
+
+Status: done / deployed / verified live
+
+Implemented `REQ-20260619-309` transcript privacy enforcement for One Time.
+The code now models transcript review state, privacy class, timestamped segment
+metadata, version metadata, Hebrew/Aramaic glossary metadata, and release audit
+metadata on the existing `bna_class_sessions` anchor.
+
+Implemented files:
+
+- Transcript privacy policy: `src/lib/bna/transcript-privacy.js`
+- Server storage fields, class APIs, member-safe redaction, and readiness route:
+  `server.js`
+- Operations readiness panel: `public/operations.html`
+- Additive migration companion:
+  `railway-migration-2026-06-21-one-time-transcript-privacy.sql`
+- Focused smoke:
+  `scripts/smoke-one-time-transcript-privacy-live.mjs`
+- Tests and route registration:
+  `tests/one-time-transcript-privacy.test.js`, `ops/route-registry.json`,
+  `package.json`
+
+Local verification:
+
+- PASS syntax checks for `src/lib/bna/transcript-privacy.js`, `server.js`, and
+  `scripts/smoke-one-time-transcript-privacy-live.mjs`.
+- PASS focused transcript/member-library/recording/action suite: 24/24.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T16-23-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T16-23-watchdog-security-routes.md`
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Implementation/pushed/deployed commit:
+  `b89c17c0ec34a9ba871289afbec7b065c3a0d78f`
+- Railway deployment:
+  `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`
+- Focused transcript privacy live smoke:
+  `ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`
+
+Focused live smoke verified:
+
+- The production transcript privacy route is One Time scoped and admin-only.
+- The route returns `REQ-20260619-309`, `implemented_read_only`, no-write flags,
+  no raw transcript body, no transcript body, no secret-like values, and no
+  blockers.
+- Raw transcript public RAG, cross-student retrieval, unreviewed segment
+  retrieval, public helper raw transcript dump, and guessed-speaker-to-student
+  mapping gates are all disabled.
+- Operations renders the transcript privacy panel with guessed-speaker guardrail
+  copy and `Live smoke ready` state.
+
+Guardrails:
+
+- No transcript content was written to student records.
+- No raw transcript body, staff-private note, cross-student private segment,
+  send, charge, public helper corpus mutation, Zoom/Vimeo/Google/DNS mutation,
+  external CRM/GHL write, or secret exposure was performed.
+<!-- batch-14:end -->

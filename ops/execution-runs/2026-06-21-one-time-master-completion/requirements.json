@@ -2136,7 +2136,7 @@
       "id": "REQ-20260619-309",
       "title": "Transcript privacy",
       "expected_result": "Transcript content cannot expose one child to another and raw guessed speaker identity is never treated as reviewed student data.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0013"
@@ -2151,28 +2151,66 @@
       "depends_on": [
         "REQ-20260619-308"
       ],
-      "implementation_status": "implementation_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Implement transcript release policy, no-guessed-speaker student matching, storage fields, Operations readiness, focused tests, and read-only live smoke.",
+      "next_action": "Closed. Continue automatically with the next unblocked requirement from the execution runner.",
       "acceptance_criteria": [
         "confidence thresholds enforced",
         "manual review for uncertain mapping",
         "parent-visible feedback is reviewed"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.json"
+      ],
+      "verification": [
+        "node --check src/lib/bna/transcript-privacy.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-transcript-privacy-live.mjs",
+        "node --test tests/one-time-transcript-privacy.test.js tests/one-time-member-library.test.js tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-action-coverage.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-transcript-privacy"
+      ],
       "implementation_files": [
         "src/lib/bna/transcript-privacy.js",
         "server.js",
-        "tests/one-time-transcript-privacy.test.js"
+        "public/operations.html",
+        "package.json",
+        "ops/route-registry.json",
+        "railway-migration-2026-06-21-one-time-transcript-privacy.sql",
+        "scripts/smoke-one-time-transcript-privacy-live.mjs",
+        "tests/one-time-transcript-privacy.test.js",
+        "ops/watchdog-audits/2026-06-21T16-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-23-watchdog-security-routes.md"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+      "pushed_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "Railway deployment 7feae8ec-f34f-4e33-9e2d-9dcb479b1f14 SUCCESS for deployed commit b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T19:22:00+03:00"
+      "updated_at": "2026-06-21T19:27:20+03:00",
+      "deployment_id": "7feae8ec-f34f-4e33-9e2d-9dcb479b1f14",
+      "deployed_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-310",

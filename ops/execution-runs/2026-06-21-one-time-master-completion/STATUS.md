@@ -673,3 +673,38 @@ as child blocker `REQ-20260621-902`.
 
 Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-9J:end -->
+
+<!-- batch-14:start -->
+## Batch 14 - Transcript Privacy
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260619-309` by implementing transcript privacy release policy,
+storage fields, member-safe redaction, an admin readiness route, Operations
+readiness panel, focused tests, and a read-only production smoke.
+
+Transcript segments now require accepted student match methods, enrollment or
+registrant context, confidence threshold, and human review before they can be
+treated as student-private or parent-visible data. Guessed speaker labels,
+voice guesses, LLM guesses, and name mentions cannot become student records
+even at high confidence. Parent-visible release prefers reviewed Rabbi feedback
+cards or Rabbi-approved text instead of raw transcript excerpts.
+
+Implementation/pushed/deployed commit:
+`b89c17c0ec34a9ba871289afbec7b065c3a0d78f`. Railway deployment
+`7feae8ec-f34f-4e33-9e2d-9dcb479b1f14` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`, and
+focused Batch 14 live smoke passed at
+`ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`.
+
+Local verification passed: syntax checks, 24/24 focused tests,
+action/security watchdogs, execution-run validation, tracked secret audit, and
+diff check with line-ending warnings only.
+
+Guardrails: no transcript content was written to student records; no raw
+transcript body, staff-private note, cross-student private segment, send,
+charge, public helper corpus mutation, Zoom/Vimeo/Google/DNS mutation, external
+CRM/GHL write, or secret exposure was performed.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-14:end -->

@@ -25239,3 +25239,25 @@ performed.
 
 The product/schedule/portal launch parent is closed for credential-free work.
 Hosted transcription remains isolated in `REQ-20260621-902`.
+
+## 2026-06-21T19:25:00+03:00 - One Time Master Completion Batch 14 Transcript Privacy
+
+Closed `REQ-20260619-309` for PR #5. Added transcript privacy release policy,
+storage fields on `bna_class_sessions`, member-safe redaction, an admin
+readiness route, Operations readiness panel copy, focused tests, and a read-only
+live smoke.
+
+Commit `b89c17c0ec34a9ba871289afbec7b065c3a0d78f` was pushed and deployed from
+a clean detached worktree. Railway deployment
+`9e20c076-1822-4dac-9721-565eb22f585d` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T16-23-48-990Z-live-app-smoke.md`; focused
+transcript privacy smoke passed at
+`ops/live-smokes/2026-06-21T16-24-13-531Z-one-time-transcript-privacy-live-smoke.md`.
+
+The policy blocks guessed speaker labels, voice guesses, LLM guesses, and name
+mentions from becoming student records; student-private and parent-visible
+segments require enrollment/registrant context, accepted match method,
+confidence threshold, and review. No transcript content write, raw transcript
+body exposure, public helper corpus mutation, send, charge, Zoom/Vimeo/Google/
+DNS mutation, external CRM/GHL write, or secret exposure occurred.

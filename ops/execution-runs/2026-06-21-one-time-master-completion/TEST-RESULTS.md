@@ -958,3 +958,41 @@ Focused coverage:
   writes, production mutations, private-data exports, Zoom/Vimeo/Google/DNS
   mutations, or secret exposure.
 <!-- batch-9J:end -->
+
+<!-- batch-14:start -->
+## Batch 14 Test Results
+
+Recorded for `REQ-20260619-309` transcript privacy:
+
+- PASS `node --check src/lib/bna/transcript-privacy.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-transcript-privacy-live.mjs`
+- PASS `node --test tests/one-time-transcript-privacy.test.js tests/one-time-member-library.test.js tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-action-coverage.test.js`
+  with 24/24 tests passing.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T16-23-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T16-23-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-transcript-privacy`,
+  `ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`.
+
+Focused coverage:
+
+- Student-private and parent-visible transcript segments require enrollment or
+  registrant context, accepted match method, confidence threshold, and review.
+- Guessed speaker labels, voice guesses, LLM guesses, and name mentions cannot
+  become reviewed student data even at high confidence.
+- Parent-visible output requires reviewed Rabbi feedback or Rabbi-approved
+  text.
+- Member-safe classroom responses blank transcript text, notes, segments,
+  versions, glossary, and release audit metadata.
+- The production readiness route and Operations panel are body-free and
+  no-write.
+<!-- batch-14:end -->

@@ -478,3 +478,26 @@ No real Agent Mode external write run, charge, send, external CRM/GHL write,
 Zoom/Vimeo/Google/DNS mutation, production private-data export, or secret
 exposure was performed.
 
+## Batch 14
+
+- Railway deployment ID: `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`
+- Deployed commit: `b89c17c0ec34a9ba871289afbec7b065c3a0d78f`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`
+- Focused transcript privacy live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`b89c17c0ec34a9ba871289afbec7b065c3a0d78f`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production transcript privacy route, no-write
+readiness flags, disabled raw/cross-student/guessed-speaker gates, no raw
+transcript body, no secret-like values, and Operations panel guardrail copy. No
+transcript content write, student-record write, public helper corpus mutation,
+send, charge, Zoom/Vimeo/Google/DNS mutation, or external CRM/GHL write was
+performed.
+

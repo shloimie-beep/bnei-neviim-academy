@@ -1,7 +1,7 @@
 # Next Session
 
 Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F, Batch 9G,
-Batch 9H, Batch 9I, Batch 9J, Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
+Batch 9H, Batch 9I, Batch 9J, Batch 11/13, Batch 12, and Batch 14 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
 continue with the next unblocked open requirement it selects.
@@ -667,6 +667,41 @@ Next exact action:
 npm run bna:run:next
 ```
 <!-- batch-9J:end -->
+
+<!-- batch-14:start -->
+## Batch 14 Handoff
+
+Transcript privacy is deployed and live-verified.
+
+- Requirement: `REQ-20260619-309`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `b89c17c0ec34a9ba871289afbec7b065c3a0d78f`
+- Railway deployment:
+  `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`
+- Key files:
+  `src/lib/bna/transcript-privacy.js`, `server.js`,
+  `public/operations.html`,
+  `railway-migration-2026-06-21-one-time-transcript-privacy.sql`,
+  `scripts/smoke-one-time-transcript-privacy-live.mjs`,
+  `tests/one-time-transcript-privacy.test.js`
+- Focused tests: 24/24 passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`
+- Focused transcript privacy live smoke:
+  `ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`
+- Guardrails:
+  no transcript content write to student records, no raw transcript body,
+  no staff-private or cross-student private segment exposure, no send, charge,
+  public helper corpus mutation, Zoom/Vimeo/Google/DNS mutation, external
+  CRM/GHL write, or secret exposure occurred.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-14:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff
