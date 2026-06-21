@@ -75,4 +75,10 @@ Live cleanup applied through existing authenticated Task APIs:
 - Hard deletes: 0.
 - Parent/student/payment/communication record mutations: 0.
 - Final isolation: 0 BNA records in One Time and 0 One Time records in BNA.
+- Deployed commit: `f8a2fd62`
+- Railway deployment: `89967278-38dc-49f3-a70d-4536c59f82f6`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md`
+- Focused Batch 3 live smoke:
+  `ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md`
 <!-- batch-3:end -->

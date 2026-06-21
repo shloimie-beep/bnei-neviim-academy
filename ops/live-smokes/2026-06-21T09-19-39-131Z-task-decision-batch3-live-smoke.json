@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-06-21T09:19:39.132Z",
+  "app": "https://bneineviimacademy.org",
+  "deployed_commit": "f8a2fd62",
+  "railway_deployment_id": "89967278-38dc-49f3-a70d-4536c59f82f6",
+  "ok": true,
+  "results": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "detail": {
+        "reachable": true
+      },
+      "checked_at": "2026-06-21T09:19:35.484Z"
+    },
+    {
+      "name": "operations HTML exposes Batch 3 task and decision views",
+      "ok": true,
+      "detail": {
+        "checked_labels": [
+          "My Tasks",
+          "One Time Tasks",
+          "Codex / Agent Work",
+          "Due Soon",
+          "Needs My Decision",
+          "Needs Rabbi Scheller",
+          "Needs External Owner",
+          "Completed / Activity"
+        ],
+        "missing": []
+      },
+      "checked_at": "2026-06-21T09:19:37.127Z"
+    },
+    {
+      "name": "one time task filter",
+      "ok": true,
+      "detail": {
+        "count": 46,
+        "cross_scope_ids": []
+      },
+      "checked_at": "2026-06-21T09:19:38.036Z"
+    },
+    {
+      "name": "blocked task filter",
+      "ok": true,
+      "detail": {
+        "count": 14,
+        "cross_scope_ids": []
+      },
+      "checked_at": "2026-06-21T09:19:38.327Z"
+    },
+    {
+      "name": "due soon task filter",
+      "ok": true,
+      "detail": {
+        "count": 8,
+        "cross_scope_ids": []
+      },
+      "checked_at": "2026-06-21T09:19:38.613Z"
+    },
+    {
+      "name": "needs rabbi decision filter",
+      "ok": true,
+      "detail": {
+        "count": 0,
+        "cross_scope_ids": []
+      },
+      "checked_at": "2026-06-21T09:19:38.857Z"
+    },
+    {
+      "name": "needs external decision filter",
+      "ok": true,
+      "detail": {
+        "count": 0,
+        "cross_scope_ids": []
+      },
+      "checked_at": "2026-06-21T09:19:39.131Z"
+    }
+  ]
+}

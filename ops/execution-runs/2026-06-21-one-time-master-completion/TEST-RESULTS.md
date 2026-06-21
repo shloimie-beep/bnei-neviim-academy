@@ -52,9 +52,17 @@ Operations view changes:
 - PASS `node --test tests/task-decision-census.test.js tests/operations-task-queue-visibility.test.js tests/operations-task-comments-and-dictation.test.js tests/workspace-task-no-stale-agent.test.js tests/telegram-ramble-routing-regression.test.js`
 - PASS `node scripts/task-decision-census.mjs --limit=1000`
 - PASS `node scripts/task-decision-production-cleanup.mjs --limit=1000 --apply`
+- PASS `npm run railway:doctor` after deployment `89967278-38dc-49f3-a70d-4536c59f82f6`
+- PASS `npm run app:smoke`; report `ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md`
+- PASS focused Batch 3 Task/Decision live smoke; report `ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md`
 
 Post-cleanup live census passed workspace isolation checks:
 
 - BNA records in One Time: 0
 - One Time records in BNA: 0
+
+Intermediate deployment failures were fixed before final verification:
+
+- `task_view=one_time_tasks` SQL ambiguity fixed by `a28a9332`.
+- Text-matched BNA records in One Time task view fixed by strict scoping in `f8a2fd62`.
 <!-- batch-3:end -->

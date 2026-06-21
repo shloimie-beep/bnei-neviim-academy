@@ -21,7 +21,7 @@ Next unblocked batch after verification: `REQ-20260619-302` production Task and 
 <!-- batch-3:start -->
 ## Batch 3 - Production Task And Decision Cleanup
 
-Status: implemented locally / production cleanup applied / deployment pending
+Status: done / deployed / verified live
 
 Created the live production Task/Decision census and reversible cleanup tooling.
 Applied only reversible production changes through existing authenticated task
@@ -36,7 +36,9 @@ Final post-cleanup census:
 - Duplicate groups remaining in dry-run plan: 12
 - Workspace isolation: 0 BNA records in One Time, 0 One Time records in BNA
 
-The Operations UI/server changes for default Task and Decision views are locally
-verified and still require commit, push, deployment, and live smoke before this
-batch can be marked done.
+The Operations UI/server changes for default Task and Decision views are
+deployed in Railway deployment `89967278-38dc-49f3-a70d-4536c59f82f6` at
+commit `f8a2fd62` and verified by standard plus focused live smokes.
+
+Next unblocked batch: `REQ-20260619-303` workspace users and roles.
 <!-- batch-3:end -->

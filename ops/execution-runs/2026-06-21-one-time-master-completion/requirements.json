@@ -371,7 +371,7 @@
       "id": "REQ-20260619-302",
       "title": "Production Task and Decision cleanup",
       "expected_result": "Default Task and Decision views are relevant, deduped, scoped, and backed by reversible cleanup evidence.",
-      "status": "needs_verification",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0004"
@@ -386,9 +386,9 @@
       "depends_on": [
         "REQ-20260621-501"
       ],
-      "implementation_status": "implemented_local_live_cleanup_applied_pending_deploy",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy app-visible Task/Decision view/filter changes, then run live smoke and mark verified live.",
+      "next_action": "Complete. Continue to Batch 4 / REQ-20260619-303 workspace users and roles.",
       "acceptance_criteria": [
         "census exists",
         "cleanup report exists",
@@ -430,13 +430,22 @@
         "tests/telegram-ramble-routing-regression.test.js"
       ],
       "implementation_commit": "c90c007c",
-      "pushed_commit": "",
+      "pushed_commit": "f8a2fd62",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T13:10:00+03:00",
-      "live_smoke": []
+      "updated_at": "2026-06-21T13:23:00+03:00",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md"
+      ],
+      "deployed_commit": "f8a2fd62",
+      "deployment_id": "89967278-38dc-49f3-a70d-4536c59f82f6"
     },
     {
       "id": "REQ-20260619-303",
