@@ -594,3 +594,60 @@ Intermediate focused live-smoke failures recorded:
   failed because the smoke targeted the old content-section query instead of
   the deployed `one_time_library` section.
 <!-- batch-11-13:end -->
+
+<!-- batch-9D:start -->
+## Batch 9D Test Results
+
+Recorded after scoped CRM import preview/dedupe hardening and focused
+live-smoke script updates:
+
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-crm-import-dedupe-live.mjs`
+- PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js`
+- PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js`
+  with 21/21 tests passing.
+
+Focused Batch 9D test result:
+
+- Tests: 21 passed, 0 failed.
+- Covered: contact import preview remains preview-only; source inventory
+  metadata is attached; scoped dedupe helper and keys exist; raw source rows are
+  stripped; warm leads remain no-send until approval; external CRM writes remain
+  false; GHL/LeadConnector are forbidden runtimes only; existing One Time
+  communications, integration, and assistant portal contracts still pass.
+
+Closeout checks:
+
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check` with line-ending warnings only
+- PASS `npm run railway:doctor` before deployment
+- PASS clean detached deploy-worktree deployment to Railway deployment
+  `45bc61bb-0178-4bd3-bad2-70e3738412df`
+- PASS Railway deployment poll for
+  `45bc61bb-0178-4bd3-bad2-70e3738412df`, status `SUCCESS`
+- PASS `npm run railway:doctor` after deployment
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T13-56-35-415Z-live-app-smoke.md`
+- PASS `npm run app:smoke:one-time-crm-import-dedupe`,
+  `ops/live-smokes/2026-06-21T13-58-04-300Z-one-time-crm-import-dedupe-live-smoke.md`
+
+Focused live smoke covered:
+
+- Authenticated production contact-import preview route.
+- Synthetic `.invalid` rows only, 2 preview rows.
+- Metadata-only source inventory reference `DL-SHEET-f93f34d98e`.
+- Scope `rabbi_sheller_provider / one_time_mishnah_class`.
+- Scoped dedupe keys and dedupe bases on each row.
+- `commit_blocked: true`, no-send, no local write, no external write, no
+  external CRM write, forbidden GHL runtime, and no raw `source_row` exposure.
+
+Deployment-safety notes:
+
+- Deployment was run from a clean detached worktree at
+  `5858f658ea4f3dccd5c3662f044764764d23582d`, because the main worktree still
+  contained unrelated uncommitted public data files.
+- An intermediate focused smoke attempt failed after a local, uncommitted smoke
+  edit probed `/api/bna/one-time/crm-import-preview`. That route is not part of
+  Batch 9D. The smoke was restored to the committed Batch 9D contract and the
+  rerun passed.
+<!-- batch-9D:end -->

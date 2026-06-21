@@ -8410,6 +8410,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/app-access-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/question-moderation' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/product-system' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/crm-import-preview' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
@@ -69956,6 +69957,216 @@ async function createOneTimeProductLead(input = {}, db = pool) {
   return oneTimeProductLeadView(row);
 }
 
+const ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY = Object.freeze({
+  generated_at: '2026-06-21T13:46:05.453Z',
+  source_directory_label: 'Downloads',
+  privacy: 'metadata_and_redacted_schema_signals_only',
+  total_files: 203,
+  import_candidates: 56,
+  classification_counts: Object.freeze({
+    one_time_rabbi_scheller_followers: 1,
+    email_audience_export: 5,
+    legacy_crm_or_pipeline_export: 29,
+    contact_list_candidate: 21,
+    external_lead_list: 48,
+    communications_export: 13,
+    import_mapping_reference: 2,
+    accounting_export: 2,
+    research_or_campaign_working_file: 4,
+    unknown_spreadsheet: 78,
+  }),
+  duplicate_hash_group_count: 29,
+});
+
+const ONE_TIME_CRM_IMPORT_CANDIDATE_SOURCES = Object.freeze([
+  Object.freeze({
+    source_inventory_id: 'DL-SHEET-f93f34d98e',
+    label: 'Rabbi Ellie Scheller followers export',
+    file_label: 'Rabbi Scheller Followers.xlsx',
+    classification: 'one_time_rabbi_scheller_followers',
+    recommended_lane: 'one_time_crm_import_candidate',
+    row_count_estimate: 812,
+    column_count: 2,
+    source_hash_prefix: 'e17bbb32c8b2',
+    priority: 'highest',
+    approval_blocker: 'Operator must approve this as the canonical One Time source and approve the field mapping before production import.',
+  }),
+  Object.freeze({
+    source_inventory_id: 'classification:email_audience_export',
+    label: 'Email audience exports',
+    classification: 'email_audience_export',
+    recommended_lane: 'email_audience_reconciliation',
+    file_count: 5,
+    source_hash_prefix: null,
+    priority: 'review',
+    approval_blocker: 'Operator must choose subscribed, unsubscribed, and suppression semantics before any audience import.',
+  }),
+  Object.freeze({
+    source_inventory_id: 'classification:legacy_crm_or_pipeline_export',
+    label: 'Legacy CRM or pipeline exports',
+    classification: 'legacy_crm_or_pipeline_export',
+    recommended_lane: 'metadata_reference_only',
+    file_count: 29,
+    source_hash_prefix: null,
+    priority: 'quarantine',
+    approval_blocker: 'Treat as historical reference only until ownership, consent, and workspace scope are confirmed.',
+  }),
+  Object.freeze({
+    source_inventory_id: 'classification:contact_list_candidate',
+    label: 'Contact-list candidates',
+    classification: 'contact_list_candidate',
+    recommended_lane: 'manual_review_before_import',
+    file_count: 21,
+    source_hash_prefix: null,
+    priority: 'review',
+    approval_blocker: 'Manual review is required before these can become One Time warm leads.',
+  }),
+]);
+
+function oneTimeCrmImportCandidateSourceViews() {
+  return ONE_TIME_CRM_IMPORT_CANDIDATE_SOURCES.map((source) => ({
+    ...source,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: ONE_TIME_PROJECT_KEY,
+    import_enabled: false,
+    dry_run_supported: true,
+    no_send_until_approved: true,
+    external_write_performed: false,
+    raw_rows_returned: false,
+  }));
+}
+
+function oneTimeCrmImportDedupePolicy() {
+  return {
+    stable_key_parts: [
+      'workspace_key',
+      'project_key',
+      'source_inventory_id',
+      'source_statement_or_row_fingerprint',
+      'normalized_email_or_phone',
+      'related_entity',
+      'target_route_or_file',
+    ],
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: ONE_TIME_PROJECT_KEY,
+    match_order: ['normalized_email', 'normalized_phone', 'source_inventory_id', 'source_row_fingerprint'],
+    preserves_audit_history: true,
+    warm_leads_no_send_until_approval: true,
+    import_commit_requires_operator_approval: true,
+    no_external_crm_runtime: true,
+    forbidden_external_runtimes: ['ghl', 'go_high_level', 'leadconnector'],
+    raw_upload_content_returned: false,
+    approved_import_writes: ['bna_parent_leads', 'bna_contact_communications'],
+    approval_confirmation: 'APPROVE_ONE_TIME_CRM_IMPORT',
+  };
+}
+
+async function oneTimeCrmImportCurrentState(projectId, db = pool) {
+  const empty = {
+    scoped_leads: 0,
+    rabbi_email_contacts: 0,
+    subscribers_csv_source: 0,
+    no_send_leads: 0,
+    campaign_staged: 0,
+    external_write_marked: 0,
+    duplicate_email_groups: 0,
+    largest_duplicate_email_group: 0,
+  };
+  if (!projectId) return empty;
+  const countRow = (await db.query(
+    `SELECT
+       (COUNT(*) FILTER (WHERE COALESCE(status, '') <> 'archived'))::int AS scoped_leads,
+       (COUNT(*) FILTER (WHERE 'one-time-list:rabbi-email-contacts' = ANY(COALESCE(tags, ARRAY[]::text[]))))::int AS rabbi_email_contacts,
+       (COUNT(*) FILTER (WHERE 'one-time-source:subscribers-csv' = ANY(COALESCE(tags, ARRAY[]::text[]))))::int AS subscribers_csv_source,
+       (COUNT(*) FILTER (
+          WHERE COALESCE(metadata->>'no_send', 'false') = 'true'
+             OR 'one-time-no-send-until-approved' = ANY(COALESCE(tags, ARRAY[]::text[]))
+       ))::int AS no_send_leads,
+       (COUNT(*) FILTER (
+          WHERE COALESCE(metadata->>'campaign_send_status', '') = 'not_sent'
+             OR 'one-time-campaign-staging' = ANY(COALESCE(tags, ARRAY[]::text[]))
+       ))::int AS campaign_staged,
+       (COUNT(*) FILTER (WHERE COALESCE(metadata->>'external_write_performed', 'false') = 'true'))::int AS external_write_marked
+     FROM bna_parent_leads
+     WHERE project_id = $1`,
+    [projectId]
+  ).catch(() => ({ rows: [empty] }))).rows[0] || empty;
+  const duplicateRow = (await db.query(
+    `WITH grouped AS (
+       SELECT lower(trim(parent_email)) AS normalized_email, COUNT(*)::int AS row_count
+       FROM bna_parent_leads
+       WHERE project_id = $1
+         AND COALESCE(status, '') <> 'archived'
+         AND lower(trim(COALESCE(parent_email, ''))) <> ''
+       GROUP BY lower(trim(parent_email))
+       HAVING COUNT(*) > 1
+     )
+     SELECT
+       COUNT(*)::int AS duplicate_email_groups,
+       COALESCE(MAX(row_count), 0)::int AS largest_duplicate_email_group
+     FROM grouped`,
+    [projectId]
+  ).catch(() => ({ rows: [{ duplicate_email_groups: 0, largest_duplicate_email_group: 0 }] }))).rows[0] || {};
+  return {
+    ...empty,
+    ...countRow,
+    duplicate_email_groups: Number(duplicateRow.duplicate_email_groups || 0),
+    largest_duplicate_email_group: Number(duplicateRow.largest_duplicate_email_group || 0),
+    scoped_to_project_id: true,
+    raw_contact_values_returned: false,
+  };
+}
+
+async function oneTimeCrmImportPreviewReadiness(projectId, db = pool) {
+  const currentState = await oneTimeCrmImportCurrentState(projectId, db);
+  return {
+    success: true,
+    project_key: ONE_TIME_PROJECT_KEY,
+    workspace_key: 'rabbi_sheller_provider',
+    dry_run: true,
+    no_send: true,
+    external_write_performed: false,
+    external_crm_write_performed: false,
+    local_write_performed: false,
+    import_ready: false,
+    commit_blocked: true,
+    blocker_owner: 'operator',
+    blocker: 'Operator must select the canonical source file, approve the field mapping/dedupe plan, and confirm APPROVE_ONE_TIME_CRM_IMPORT before a first-party import apply run.',
+    inventory_summary: ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY,
+    candidate_sources: oneTimeCrmImportCandidateSourceViews(),
+    current_crm_state: currentState,
+    dedupe_policy: oneTimeCrmImportDedupePolicy(),
+    preview_actions: [
+      {
+        action_key: 'one_time_crm_preview_mapping',
+        label: 'Preview Mapping',
+        enabled: true,
+        confirmation_required: false,
+        endpoint: '/api/bna/contact-imports/preview',
+        method: 'POST',
+      },
+      {
+        action_key: 'one_time_crm_apply_import',
+        label: 'Apply Import',
+        enabled: false,
+        confirmation_required: true,
+        disabled_reason: 'Needs operator source, mapping, and dedupe approval. This goal does not import private spreadsheet rows without that approval.',
+      },
+    ],
+    guardrails: {
+      workspace_project_scoped: true,
+      no_raw_rows_returned: true,
+      no_campaign_send: true,
+      no_email_send: true,
+      no_whatsapp_send: true,
+      no_payment_or_invoice: true,
+      no_external_crm_runtime: true,
+      ghl_leadconnector_inactive: true,
+      audit_history_preserved: true,
+    },
+  };
+}
+
 async function oneTimeProductSystemPayload(req) {
   const project = await assertRabbiAdminAccess(req);
   const programRow = await getOneTimeProductProgram(project.id);
@@ -69977,6 +70188,7 @@ async function oneTimeProductSystemPayload(req) {
     sourcePrepJobs,
     providers,
     libraryItems,
+    crmImportPreview,
   ] = await Promise.all([
     rabbiTiers(project.id),
     pool.query(
@@ -70040,6 +70252,7 @@ async function oneTimeProductSystemPayload(req) {
        LIMIT 100`,
       [project.id]
     ),
+    oneTimeCrmImportPreviewReadiness(project.id),
   ]);
   const planningTiers = Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView);
   const scheduleViews = schedules.rows.map(oneTimeScheduleView);
@@ -70075,6 +70288,7 @@ async function oneTimeProductSystemPayload(req) {
       libraryItems: libraryItems.rows,
     }),
     source_prep_jobs: sourcePrepJobs.rows.map(oneTimeSourcePrepJobView),
+    crm_import_preview: crmImportPreview,
     provider_readiness: providerReadiness,
     product_readiness: oneTimeProductReadinessView({
       providers: providerReadiness,
@@ -70097,6 +70311,15 @@ async function oneTimeProductSystemPayload(req) {
 app.get('/api/bna/one-time/product-system', requireAdmin, async (req, res) => {
   try {
     res.json(await oneTimeProductSystemPayload(req));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/crm-import-preview', requireAdmin, async (req, res) => {
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    res.json(await oneTimeCrmImportPreviewReadiness(project.id));
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }

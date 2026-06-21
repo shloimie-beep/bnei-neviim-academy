@@ -395,3 +395,33 @@ unarchived `Codex Vimeo Smoke` classes.
 Next: run `npm run bna:run:next` after the closeout evidence commit is pushed
 and continue with the next unblocked requirement selected by the runner.
 <!-- batch-11-13:end -->
+
+<!-- batch-9D:start -->
+## Batch 9D - CRM Import And Deduplication
+
+Status: done / deployed / verified live
+
+The first-party One Time CRM import preview/dedupe path is now scoped to the
+Rabbi Ellie Scheller workspace and `one_time_mishnah_class` project. The
+generic contact-import preview endpoint attaches metadata-only source inventory
+references, computes scoped dedupe keys, strips raw source rows from preview
+responses, and keeps every preview row no-send/no-local-write/no-external-write.
+
+Duplicate lookup is constrained to the resolved workspace/project, preview
+responses carry `import_policy.mode: preview_only`, warm leads remain no-send
+until operator approval, and GHL/GoHighLevel/LeadConnector remain explicitly
+forbidden inactive runtimes. The focused live smoke submitted only synthetic
+`.invalid` rows and verified that no raw `source_row` data, local writes,
+external writes, external CRM writes, sends, billing records, or GHL records
+were produced.
+
+The implementation was committed and pushed at
+`5858f658ea4f3dccd5c3662f044764764d23582d`, deployed from a clean detached
+worktree to Railway deployment `45bc61bb-0178-4bd3-bad2-70e3738412df`, and
+verified by standard plus focused live smokes:
+
+- `ops/live-smokes/2026-06-21T13-56-35-415Z-live-app-smoke.md`
+- `ops/live-smokes/2026-06-21T13-58-04-300Z-one-time-crm-import-dedupe-live-smoke.md`
+
+Next unblocked child: `REQ-20260621-905` CRM Contacts UX.
+<!-- batch-9D:end -->

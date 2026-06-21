@@ -60,6 +60,22 @@ async function requestJson(url, options = {}) {
   }
 }
 
+async function requestText(url, options = {}) {
+  const expected = options.acceptStatuses || [200];
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      accept: 'text/html, text/plain, */*',
+      ...(options.headers || {}),
+    },
+  });
+  const text = await response.text();
+  if (!expected.includes(response.status)) {
+    throw new Error(`${options.method || 'GET'} ${url} returned ${response.status}: ${text.slice(0, 500)}`);
+  }
+  return { response, text };
+}
+
 async function loginOperationsSession(appUrl, username, password) {
   const { response, data } = await requestJson(`${appUrl}/api/operations/login`, {
     method: 'POST',
@@ -101,6 +117,8 @@ function writeReports(report) {
     '## Preview Evidence',
     `- Source inventory ID: ${report.source_inventory_id || 'n/a'}`,
     `- Scope: ${report.scope || 'n/a'}`,
+    `- Readiness candidates: ${report.readiness_candidates ?? 'n/a'}`,
+    `- Current scoped leads: ${report.current_scoped_leads ?? 'n/a'}`,
     `- Preview rows: ${report.preview_rows ?? 'n/a'}`,
     `- Possible duplicates: ${report.possible_duplicates ?? 'n/a'}`,
     `- Commit blocked: ${report.commit_blocked === true ? 'true' : 'false'}`,
@@ -149,6 +167,47 @@ async function main() {
     return `cookie ${cookie.name}`;
   });
 
+  let readinessData;
+  await step('Read One Time CRM import readiness route', async () => {
+    const { data } = await requestJson(`${appUrl}/api/bna/one-time/crm-import-preview`, {
+      headers: {
+        authorization: basicAuthHeader(username, password),
+        cookie: `${cookie.name}=${cookie.value}`,
+      },
+    });
+    readinessData = data;
+    report.readiness_candidates = data.inventory_summary?.import_candidates || 0;
+    report.current_scoped_leads = data.current_crm_state?.scoped_leads || 0;
+    assert(data.success === true, 'readiness route did not return success');
+    assert(data.workspace_key === 'rabbi_sheller_provider', 'readiness route was not One Time scoped');
+    assert(data.project_key === 'one_time_mishnah_class', 'readiness route was not project scoped');
+    assert(data.dry_run === true, 'readiness route was not dry_run');
+    assert(data.no_send === true, 'readiness route was not no_send');
+    assert(data.external_write_performed === false, 'readiness route external write flag was not false');
+    assert(data.external_crm_write_performed === false, 'readiness route external CRM write flag was not false');
+    assert(data.local_write_performed === false, 'readiness route local write flag was not false');
+    assert(data.commit_blocked === true, 'readiness route did not block import apply');
+    assert(data.guardrails?.no_raw_rows_returned === true, 'readiness route raw-row guardrail missing');
+    assert(data.guardrails?.ghl_leadconnector_inactive === true, 'readiness route GHL/LeadConnector guardrail missing');
+    assert((data.candidate_sources || []).some((candidate) => candidate.source_inventory_id === source.id), 'Rabbi Scheller follower source missing from readiness candidates');
+    return `${report.readiness_candidates} candidates / ${report.current_scoped_leads} scoped leads`;
+  });
+
+  await step('Operations CRM import panel is shipped with disabled apply action', async () => {
+    const { text } = await requestText(`${appUrl}/operations`, {
+      headers: {
+        authorization: basicAuthHeader(username, password),
+        cookie: `${cookie.name}=${cookie.value}`,
+      },
+    });
+    assert(text.includes('data-one-time-crm-import-preview'), 'Operations HTML missing CRM import panel marker');
+    assert(text.includes('CRM Import Preview'), 'Operations HTML missing CRM import heading');
+    assert(text.includes('Preview Mapping'), 'Operations HTML missing preview mapping action');
+    assert(text.includes('Open Import Decision'), 'Operations HTML missing import decision action');
+    assert(text.includes('disabled aria-disabled="true"'), 'Operations HTML missing disabled apply action');
+    return 'panel marker and disabled apply shipped';
+  });
+
   let previewData;
   await step('Preview One Time CRM import without writes', async () => {
     const csv = [
@@ -194,6 +253,7 @@ async function main() {
     assert(previewData.import_policy?.warm_leads_no_send_until_approval === true, 'warm lead no-send policy missing');
     assert(previewData.import_policy?.raw_upload_content_returned === false, 'raw upload return flag missing');
     assert((previewData.import_policy?.forbidden_external_runtimes || []).includes('ghl'), 'GHL forbidden runtime missing');
+    assert(readinessData.dedupe_policy?.import_commit_requires_operator_approval === true, 'readiness dedupe policy approval gate missing');
     return 'preview-only/no-send/no-GHL policy present';
   });
 

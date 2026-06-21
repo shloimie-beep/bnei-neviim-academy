@@ -8048,6 +8048,7 @@
             },
             getOneTimeClassroom() { return this.request('GET', '/one-time/classroom'); },
             getOneTimeProductSystem() { return this.request('GET', '/one-time/product-system'); },
+            getOneTimeCrmImportPreview() { return this.request('GET', '/one-time/crm-import-preview'); },
             getOneTimeCommunityModerationReadiness() { return this.request('GET', '/one-time/community-moderation-readiness'); },
             getOneTimeStudyAssistantReadiness() { return this.request('GET', '/one-time/study-assistant-readiness'); },
             getOneTimeProductCalendar(filters = {}) {
@@ -16300,6 +16301,64 @@
             `;
         }
 
+        function oneTimeCrmImportPreview() {
+            return oneTimeProductSystem().crm_import_preview || {};
+        }
+
+        function renderOneTimeCrmImportSourceCard(source = {}) {
+            const count = source.row_count_estimate || source.file_count || 0;
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(source.label || source.classification || 'CRM import source')}</div>
+                    <div class="content-card-meta">${escapeHtml(source.classification || 'unclassified')} &middot; ${escapeHtml(source.recommended_lane || 'review')}</div>
+                    <div class="tag-list">
+                        <span class="tag">${escapeHtml(count ? Number(count).toLocaleString() : 'metadata')} ${source.row_count_estimate ? 'rows est.' : 'file(s)'}</span>
+                        <span class="tag">${source.dry_run_supported ? 'preview ready' : 'review only'}</span>
+                        <span class="tag">no send</span>
+                        <span class="tag">no external CRM</span>
+                    </div>
+                    <p class="settings-disabled-note">${escapeHtml(source.approval_blocker || 'Approval required before import apply.')}</p>
+                </article>
+            `;
+        }
+
+        function renderOneTimeCrmImportPreviewPanel() {
+            const preview = oneTimeCrmImportPreview();
+            const inventory = preview.inventory_summary || {};
+            const state = preview.current_crm_state || {};
+            const sources = preview.candidate_sources || [];
+            const blocker = preview.blocker || 'Operator approval is required before import apply.';
+            return `
+                <section class="focus-panel" data-one-time-crm-import-preview>
+                    <div class="task-section-header"><h3>CRM Import Preview</h3><span>${escapeHtml(inventory.import_candidates || 0)} candidates</span></div>
+                    <p class="settings-disabled-note">One Time warm-lead import is metadata-only until approval. Preview and dedupe are scoped to Rabbi Ellie Scheller's workspace; apply remains disabled and no email, WhatsApp, payment, or external CRM write is performed.</p>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Inventory Files', Number(inventory.total_files || 0).toLocaleString(), 'Spreadsheet-like files inventoried without committing raw rows.', "switchView('service_providers'); setCurrentSection('tiers')")}
+                        ${renderMetricButton('Import Candidates', Number(inventory.import_candidates || 0).toLocaleString(), 'Candidates require source and mapping approval before apply.', "switchView('service_providers'); setCurrentSection('tiers')")}
+                        ${renderMetricButton('Scoped Leads', Number(state.scoped_leads || 0).toLocaleString(), 'Current One Time parent leads only.', "switchView('contacts'); setCurrentSection('leads')")}
+                        ${renderMetricButton('Duplicate Groups', Number(state.duplicate_email_groups || 0).toLocaleString(), 'Duplicate email groups are counted without exposing contact values.', "switchView('service_providers'); setCurrentSection('tiers')")}
+                    </div>
+                    <div class="content-section-grid" style="margin-top:14px;">
+                        ${sources.map(renderOneTimeCrmImportSourceCard).join('') || '<div class="task-empty">CRM import source inventory has not loaded yet.</div>'}
+                    </div>
+                    <div class="contact-detail-grid" style="margin-top:14px;">
+                        ${renderContactDetailItem('Workspace', preview.workspace_key || 'rabbi_sheller_provider')}
+                        ${renderContactDetailItem('Project', preview.project_key || 'one_time_mishnah_class')}
+                        ${renderContactDetailItem('No-send leads', Number(state.no_send_leads || 0).toLocaleString())}
+                        ${renderContactDetailItem('Campaign staged', Number(state.campaign_staged || 0).toLocaleString())}
+                        ${renderContactDetailItem('External CRM writes', preview.external_crm_write_performed === false ? 'Disabled / none from preview' : 'Check required')}
+                        ${renderContactDetailItem('Raw rows returned', preview.guardrails?.no_raw_rows_returned ? 'No' : 'Check required')}
+                    </div>
+                    <div class="task-actions" style="margin-top:14px;">
+                        <button class="task-action primary" type="button" onclick="switchView('communications'); setCurrentSection('overview')">Preview Mapping</button>
+                        <button class="task-action" type="button" onclick="switchView('decisions'); setCurrentSection('blocked')">Open Import Decision</button>
+                        <button class="task-action" type="button" disabled aria-disabled="true" title="${escapeHtml(blocker)}">Apply Import</button>
+                    </div>
+                    <p class="settings-disabled-note" style="margin-top:10px;">${escapeHtml(blocker)}</p>
+                </section>
+            `;
+        }
+
         function renderOneTimeAvailabilityRuleCard(rule = {}) {
             return `
                 <article class="content-card">
@@ -16445,7 +16504,7 @@
                         </section>
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
-                    ${section === 'tiers' ? `${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}` : ''}
+                    ${section === 'tiers' ? `${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}

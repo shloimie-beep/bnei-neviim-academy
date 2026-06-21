@@ -295,6 +295,7 @@ test('SQL migrations create OneTime product system without final pricing or exte
 test('server exposes scoped OneTime product APIs and public draft routes', () => {
   [
     "app.get('/api/bna/one-time/product-system'",
+    "app.get('/api/bna/one-time/crm-import-preview'",
     "app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads']",
     "app.post(['/api/bna/product-leads', '/api/one-time/interest']",
     "app.get('/api/bna/one-time/calendar'",
@@ -313,6 +314,14 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /no_access_granted: true/);
   assert.match(server, /external_write_performed: false/);
   assert.match(server, /product_readiness: oneTimeProductReadinessView/);
+  assert.match(server, /crm_import_preview: crmImportPreview/);
+  assert.match(server, /oneTimeCrmImportPreviewReadiness/);
+  assert.match(server, /ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY/);
+  assert.match(server, /one_time_rabbi_scheller_followers/);
+  assert.match(server, /APPROVE_ONE_TIME_CRM_IMPORT/);
+  assert.match(server, /ghl_leadconnector_inactive: true/);
+  assert.match(server, /no_raw_rows_returned: true/);
+  assert.match(server, /external_crm_write_performed: false/);
   assert.match(server, /product_offers: productOffers/);
   assert.match(server, /availability,/);
   assert.match(server, /appointment_types: defaultOneTimeAppointmentTypes/);
@@ -348,6 +357,7 @@ test('Operations provider workspace reads OneTime product system and labels pric
     'getOneTimeAppointmentIntents',
     'createOneTimeAppointmentIntent',
     'createOneTimeSourcePrepJob',
+    'getOneTimeCrmImportPreview',
     'renderOneTimeProductDecisionPanel',
     'renderOneTimeProductReadinessPanel',
     'renderOneTimeProductTiersPanel',
@@ -356,6 +366,7 @@ test('Operations provider workspace reads OneTime product system and labels pric
     'renderOneTimePortalFoundationsPanel',
     'renderOneTimeFunnelPanel',
     'renderOneTimeLeadPanel',
+    'renderOneTimeCrmImportPreviewPanel',
     'createOneTimeSourcePrepFixture',
   ].forEach((needle) => assert.match(operationsHtml, new RegExp(needle)));
 
@@ -364,6 +375,13 @@ test('Operations provider workspace reads OneTime product system and labels pric
   assert.match(operationsHtml, /data-one-time-product-offers/);
   assert.match(operationsHtml, /data-one-time-availability-booking/);
   assert.match(operationsHtml, /data-one-time-portal-foundations/);
+  assert.match(operationsHtml, /data-one-time-crm-import-preview/);
+  assert.match(operationsHtml, /CRM Import Preview/);
+  assert.match(operationsHtml, /Preview Mapping/);
+  assert.match(operationsHtml, /Open Import Decision/);
+  assert.match(operationsHtml, /Apply Import/);
+  assert.match(operationsHtml, /disabled aria-disabled="true"/);
+  assert.match(operationsHtml, /no email, WhatsApp, payment, or external CRM write is performed/);
   assert.match(operationsHtml, /REQ-20260619-306/);
   assert.match(operationsHtml, /No checkout, invoice, payment link, Zoom, external calendar, email, WhatsApp, Telegram, portal publish, or access automation is enabled/);
   assert.match(operationsHtml, /Add Class saves an internal OneTime calendar event only/);

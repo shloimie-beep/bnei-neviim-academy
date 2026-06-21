@@ -1397,18 +1397,28 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "local_verified",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-crm-import-dedupe-live.mjs",
+        "node --test tests/communications-screening-import-ui.test.js tests/one-time-product-system.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check"
+      ],
       "implementation_commit": "",
       "pushed_commit": "",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T16:57:20+03:00",
       "id": "REQ-20260621-904",
       "title": "CRM import and deduplication",
       "expected_result": "First-party One Time CRM import/dedupe can safely ingest approved warm leads without external CRM writes or cross-workspace bleed.",
@@ -1417,7 +1427,7 @@
       ],
       "category": "crm_import_dedupe",
       "batch_id": "batch-9D",
-      "next_action": "Implement or harden first-party CRM import preview/dedupe with no-send/no-external-write metadata.",
+      "next_action": "Commit and push Batch 9D, deploy the safe app-visible changes, then run npm run app:smoke and npm run app:smoke:one-time-crm-import-dedupe.",
       "acceptance_criteria": [
         "imports are workspace/project scoped",
         "dedupe preserves audit history",
@@ -1427,8 +1437,10 @@
       "implementation_files": [
         "server.js",
         "public/operations.html",
-        "scripts/import-one-time-subscribers.mjs",
-        "tests/one-time-communications-workspace.test.js"
+        "scripts/smoke-one-time-crm-import-dedupe-live.mjs",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-product-system.test.js",
+        "scripts/import-one-time-subscribers.mjs"
       ]
     },
     {
