@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T13:51:36+03:00",
+  "updated_at": "2026-06-21T14:07:12+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -600,7 +600,7 @@
       "id": "REQ-20260619-304",
       "title": "Operations UI and design-system correction",
       "expected_result": "Operations and One Time surfaces are usable, scan-friendly, responsive, and live-verified.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0007"
@@ -615,9 +615,9 @@
       "depends_on": [
         "REQ-20260621-502"
       ],
-      "implementation_status": "verified_local",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy Batch 6, run standard live smoke, capture after-production UI audit evidence, and run a focused live Operations filter-rail smoke.",
+      "next_action": "Complete. Continue to Batch 7 / REQ-20260621-503 WhatsApp UX.",
       "acceptance_criteria": [
         "no duplicated top rail navigation",
         "horizontal filters scroll",
@@ -628,16 +628,25 @@
         "ops/ui-audits/2026-06-21-batch6-before-prod/ui-audit-report.md",
         "ops/ui-audits/2026-06-21-batch6-before-prod/manifest.json",
         "ops/ui-audits/2026-06-21-batch6-before-prod/screenshot-index.csv",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/manifest.json",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/screenshot-index.csv",
         "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md"
       ],
       "verification": [
         "node --test tests/operations-shell-navigation-contract.test.js tests/operations-saas-crm-redesign.test.js tests/bna-brand-shell.test.js tests/ops-ui-audit-harness.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-ws01-layout-readability.test.js tests/assistant-portal-communications-contract.test.js",
         "node --check scripts/full-ui-audit.mjs",
         "node --check tools/ops-ui-audit/config.js",
         "npm run ops:audit -- smoke-login",
-        "UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-before-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs"
+        "UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-before-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-after-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs",
+        "focused operations-filter-rail live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -649,13 +658,26 @@
         "tests/operations-shell-navigation-contract.test.js",
         "tests/ops-ui-audit-harness.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
+      "pushed_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T13:51:36+03:00"
+      "updated_at": "2026-06-21T14:07:12+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "deployment_id": "d6c09c49-8372-42d7-8b3b-a049ab24ad63",
+      "deployed_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-305",

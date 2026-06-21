@@ -64,3 +64,31 @@ Focused live smoke verified production health, task/decision action controls,
 One Time class/session/appointment/video setup controls, integration setup
 controls, and removal of the old generic placeholder handlers.
 
+## Batch 6
+
+- Deployment ID: `d6c09c49-8372-42d7-8b3b-a049ab24ad63`
+- Deployed commit: `c98c06d7735ec19dec1684684a594de0636064c7`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md`
+- Production after-audit capture: PASS, 141 screenshots, 0 errors,
+  `ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md`
+- Focused Operations filter-rail live smoke: PASS,
+  `ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md`
+
+Focused live smoke verified production health, Operations login, deployed
+bundle markers for the top filter rail, absence of the old module toolbar,
+single-row mobile filter rails at 430px/390px/360px, and no page-level
+horizontal overflow at those mobile widths.
+
+Prior failed checks during the same batch:
+
+- `ops/live-smokes/2026-06-21T11-03-20-126Z-operations-filter-rail-live-smoke.md`
+  failed because the smoke expected the Blocked filter ID to be `blocked`; the
+  live app's stable ID is `pending`.
+- `ops/live-smokes/2026-06-21T11-04-55-135Z-operations-filter-rail-live-smoke.md`
+  failed because the smoke used `networkidle` on an Operations page that stays
+  active after DOM readiness. The successful rerun used explicit selector
+  waits.
+

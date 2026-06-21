@@ -90,7 +90,7 @@ Next unblocked batch: `REQ-20260619-304` Operations UI/design correction.
 <!-- batch-6:start -->
 ## Batch 6 - Operations UI And Design Correction
 
-Status: in progress / verified local / pending deploy
+Status: done / deployed / verified live
 
 Operations module navigation and top filters are now separated: the left side
 panel renders primary modules, while the sticky top rail renders only the
@@ -101,9 +101,11 @@ The existing UI audit harness was extended rather than replaced. Batch 6 mode
 captures the requested 1440px, 1024px, 768px, 430px, 390px, and 360px
 viewports across Operations, communications, content/classroom/library,
 settings/agents, One Time public, and portal surfaces. Production before-audit
-evidence was captured before deploying the local fix.
+evidence was captured before deploying the local fix, and after-audit evidence
+was captured after Railway deployment `d6c09c49-8372-42d7-8b3b-a049ab24ad63`
+at commit `c98c06d7735ec19dec1684684a594de0636064c7`.
 
-Local verification passed. Next step: commit, push, deploy the safe
-app-visible Operations changes, run standard live smoke, capture the after
-production UI audit, and run a focused live Operations filter-rail smoke.
+Focused local verification, standard production smoke, production after-audit,
+and focused Operations filter-rail live smoke passed. Next unblocked batch:
+`REQ-20260621-503` WhatsApp UX.
 <!-- batch-6:end -->

@@ -1,13 +1,13 @@
 # Next Session
 
-Continue `REQ-20260619-304`: Operations UI and design-system correction is
-locally implemented and verified. Commit, push, deploy, run standard live
-smoke, capture after-production UI audit evidence, run the focused live
-Operations filter-rail smoke, update evidence, and then continue to Batch 7.
-Exact next command:
+Continue `REQ-20260621-503`: WhatsApp UX. Batch 6 is deployed and
+live-verified. Inspect the existing first-party WAPI/Whapi communications
+system, keep all writes no-send/confirmation-gated, implement the scoped
+desktop three-pane and mobile sequential UX, add tests, and then repeat the
+commit/push/deploy/live-smoke cadence. Exact next command:
 
 ```powershell
-git status --short --branch
+npm run bna:run:next
 ```
 
 Do not run external sends, billing, DNS, real Zoom meeting creation, real Vimeo
@@ -76,25 +76,31 @@ behavior, then capture before/after evidence.
 <!-- batch-6:start -->
 ## Batch 6 Handoff
 
-Operations UI/design correction is locally verified and pending deploy.
+Operations UI/design correction is deployed and live-verified.
 
 - Requirement: `REQ-20260619-304`
-- Implementation status: `verified_local`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `c98c06d7735ec19dec1684684a594de0636064c7`
+- Railway deployment:
+  `d6c09c49-8372-42d7-8b3b-a049ab24ad63`
 - Before-audit evidence:
   `ops/ui-audits/2026-06-21-batch6-before-prod/ui-audit-report.md`
+- After-audit evidence:
+  `ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md`
 - Local Playwright smoke:
   `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md`
+- Focused Operations filter-rail live smoke:
+  `ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md`
 - Focused local test result: 41 passed, 0 failed.
 
-Next exact actions:
+Next exact action:
 
 ```powershell
-git add public/operations.html scripts/full-ui-audit.mjs tools/ops-ui-audit/config.js tests/bna-brand-shell.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-saas-crm-redesign.test.js tests/operations-shell-navigation-contract.test.js tests/ops-ui-audit-harness.test.js ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md ops/execution-runs/2026-06-21-one-time-master-completion/BATCH-STATUS.md ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json
-git add -f ops/ui-audits/2026-06-21-batch6-before-prod ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png
-git commit -m "feat: correct operations filter rail"
-git push origin HEAD:codex/agent-control-center-20260619
+npm run bna:run:next
 ```
 
-After push, deploy to Railway with `RAILWAY_TOKEN` loaded from the local
-keyholder file without printing it, then run standard and focused live smokes.
+Continue automatically with Batch 7 / `REQ-20260621-503` WhatsApp UX.
 <!-- batch-6:end -->

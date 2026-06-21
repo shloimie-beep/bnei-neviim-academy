@@ -150,6 +150,14 @@ correction, status-chip compaction, and UI audit harness viewport updates:
 - PASS `npm run ops:audit -- smoke-login`
 - PASS production before-audit capture:
   `UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-before-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs`
+- PASS `npm run railway:doctor` after Railway deployment
+  `d6c09c49-8372-42d7-8b3b-a049ab24ad63`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md`.
+- PASS production after-audit capture:
+  `UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-after-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs`
+- PASS focused Operations filter-rail live smoke,
+  `ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md`.
 
 Focused combined test result:
 
@@ -164,4 +172,29 @@ Before-audit capture result:
 - Screenshots: 141.
 - Errors: 0.
 - Required widths captured: 1440, 1024, 768, 430, 390, and 360.
+
+After-audit capture result:
+
+- Screenshots: 141.
+- Errors: 0.
+- Required widths captured: 1440, 1024, 768, 430, 390, and 360.
+
+Focused live smoke confirmed:
+
+- Production health and Operations login succeeded.
+- Deployed Operations HTML contains `data-top-filter-rail`, module-sidebar
+  mode, and filter-track tablist markers.
+- Deployed Operations HTML no longer contains `data-module-toolbar-id` or
+  `MODULE_TOOLBAR_PRIORITY`.
+- Mobile widths 430, 390, and 360 keep the Tasks filter rail in one row with
+  local horizontal scrolling.
+- No page-level horizontal overflow was detected at the checked mobile widths.
+
+Intermediate failure notes:
+
+- First focused live-smoke attempt failed on a smoke-script assertion that
+  expected Blocked filter ID `blocked`; the live ID is `pending`.
+- Second focused live-smoke attempt failed waiting for Playwright `networkidle`;
+  the page was then checked with `domcontentloaded` plus explicit selector
+  waits and passed.
 <!-- batch-6:end -->

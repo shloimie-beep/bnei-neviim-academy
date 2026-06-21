@@ -185,8 +185,7 @@ Implemented behavior:
 <!-- batch-6:start -->
 ## Batch 6 Evidence
 
-Operations UI/design correction is locally implemented and verified. Deployment
-and live-smoke evidence remain pending until the Batch 6 deployment completes.
+Operations UI/design correction is deployed and live-verified.
 
 - Operations UI implementation:
   `public/operations.html`
@@ -208,6 +207,16 @@ and live-smoke evidence remain pending until the Batch 6 deployment completes.
   `ops/ui-audits/2026-06-21-batch6-before-prod/manifest.json`
 - Production before-audit screenshot index:
   `ops/ui-audits/2026-06-21-batch6-before-prod/screenshot-index.csv`
+- Production after-audit report:
+  `ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md`
+- Production after-audit manifest:
+  `ops/ui-audits/2026-06-21-batch6-after-prod/manifest.json`
+- Production after-audit screenshot index:
+  `ops/ui-audits/2026-06-21-batch6-after-prod/screenshot-index.csv`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md`
+- Focused Operations filter-rail live smoke:
+  `ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md`
 
 Before-audit coverage:
 
@@ -216,6 +225,24 @@ Before-audit coverage:
 - Screenshots: 141
 - Errors: 0
 - Viewports: 1440px, 1024px, 768px, 430px, 390px, 360px
+
+After-audit coverage:
+
+- Target mode: `batch6`
+- Base URL: `https://bneineviimacademy.org`
+- Screenshots: 141
+- Errors: 0
+- Viewports: 1440px, 1024px, 768px, 430px, 390px, 360px
+
+Deployment and live evidence:
+
+- Implementation commit: `c98c06d7735ec19dec1684684a594de0636064c7`
+- Pushed commit: `c98c06d7735ec19dec1684684a594de0636064c7`
+- Deployed commit: `c98c06d7735ec19dec1684684a594de0636064c7`
+- Railway deployment: `d6c09c49-8372-42d7-8b3b-a049ab24ad63`
+- Railway doctor: PASS
+- Standard live smoke: PASS
+- Focused Operations filter-rail live smoke: PASS at 430px, 390px, and 360px
 
 Implemented behavior:
 
@@ -228,4 +255,14 @@ Implemented behavior:
   horizontal overflow.
 - Status chips and workspace context were compacted so toolbar text does not
   clip or overlap at desktop and mobile widths.
+
+Intermediate live-smoke failures recorded:
+
+- `ops/live-smokes/2026-06-21T11-03-20-126Z-operations-filter-rail-live-smoke.md`
+  failed because the smoke expected the Blocked filter ID to be `blocked`; the
+  live app's stable ID is `pending`.
+- `ops/live-smokes/2026-06-21T11-04-55-135Z-operations-filter-rail-live-smoke.md`
+  failed because the smoke waited for Playwright `networkidle`; the Operations
+  page remains active after DOM readiness. The successful rerun used explicit
+  DOM selector waits.
 <!-- batch-6:end -->

@@ -1,0 +1,28 @@
+{
+  "status": "fail",
+  "message": "blocked filter missing at 430",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "status": "pass",
+      "details": {
+        "endpoint": "/api/health"
+      }
+    },
+    {
+      "name": "operations login session",
+      "status": "pass",
+      "details": {
+        "user_role": "super_admin",
+        "scope_type": "all"
+      }
+    },
+    {
+      "name": "operations HTML bundle markers",
+      "status": "pass",
+      "details": {
+        "endpoint": "/operations?workspace=rabbi_sheller_provider&view=tasks&section=tasks"
+      }
+    }
+  ]
+}
