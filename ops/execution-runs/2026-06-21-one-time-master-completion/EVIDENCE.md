@@ -1945,6 +1945,9 @@ Start evidence:
 No Railway, DNS, email, billing, Zoom, Vimeo, external CRM, or production
 database mutation has occurred yet in this resumed requirement.
 
+Local implementation commit:
+`1aed3f2bc3478db9a5c61f192d66d80c14a6f523`.
+
 Provisioning package evidence added before the external Railway blocker:
 
 - Single-tenant runtime module:

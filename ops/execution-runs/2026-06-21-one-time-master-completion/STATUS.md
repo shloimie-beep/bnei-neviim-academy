@@ -880,6 +880,8 @@ project/database/domain, DNS authority, budget, and ownership approval.
 
 Status: blocked / external Railway account access required
 
+Local implementation commit: `1aed3f2bc3478db9a5c61f192d66d80c14a6f523`
+
 Operator authorization was received on 2026-06-21 in
 `raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md`.
 The requirement is no longer waiting on the prior Option B decision. The

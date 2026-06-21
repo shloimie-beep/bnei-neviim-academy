@@ -937,6 +937,9 @@ npm run bna:run:blockers
 
 Status: blocked by Railway account/project access.
 
+Local implementation commit:
+`1aed3f2bc3478db9a5c61f192d66d80c14a6f523`.
+
 The deployable version is frozen and the One Time single-tenant provisioning
 package is ready, but no separate Railway project/database/domain was created.
 The available Railway credential is scoped to the shared BNA project

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T21:58:00+03:00",
+  "updated_at": "2026-06-21T22:05:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -14,8 +14,6 @@
     "local_preflight_head": "4cb03da4f21c94933a06a729fcf757bd2259652b",
     "current_branch": "codex/agent-control-center-20260619",
     "branch": "codex/agent-control-center-20260619",
-    "current_head": "d2c47edb789504c3c06c308714073a30ef2c4ecd",
-    "current_remote_head": "d2c47edb789504c3c06c308714073a30ef2c4ecd",
     "pr_branch": "codex/agent-control-center-20260619"
   },
   "sources": [
@@ -2567,13 +2565,13 @@
         "ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md",
         "ops/one-time-mishnah/operator-ui-review/screenshot-index.html"
       ],
-      "implementation_commit": "",
+      "implementation_commit": "1aed3f2bc3478db9a5c61f192d66d80c14a6f523",
       "pushed_commit": "",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T21:58:00+03:00",
+      "updated_at": "2026-06-21T22:05:00+03:00",
       "deployment_id": "",
       "deployed_commit": "",
       "live_smoke": []
