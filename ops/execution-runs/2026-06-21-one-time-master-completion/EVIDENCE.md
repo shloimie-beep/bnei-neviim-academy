@@ -1978,4 +1978,11 @@ Railway audit result: the available token can identify only the shared
 Railway access is required before a separate One Time project/database/domain
 can be created. No service-specific DNS records exist yet because the custom
 domain could not be attached to a One Time web service.
+
+REQ-20260621-902 follow-up audit:
+`ops/one-time-mishnah/hosted-transcription-credential-audit-2026-06-21.md`.
+Both approved local OpenAI credential sources returned HTTP `401`, and Railway
+variable-name readback was unavailable with current auth. No valid replacement
+credential was available, so no Railway variable write, restart, reprocess, or
+transcription retry was performed.
 <!-- req-313-provisioning:end -->

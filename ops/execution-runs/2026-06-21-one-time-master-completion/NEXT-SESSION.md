@@ -980,4 +980,9 @@ npm run app:smoke:onetime-separate-instance
 ```
 
 Do not use the shared `skillful-motivation` project for this requirement.
+
+REQ-20260621-902 remains blocked. The latest credential audit is
+`ops/one-time-mishnah/hosted-transcription-credential-audit-2026-06-21.md`:
+both approved local OpenAI credential sources returned HTTP `401`, so no
+valid replacement credential was available to propagate or retry.
 <!-- req-313-separate-instance:end -->

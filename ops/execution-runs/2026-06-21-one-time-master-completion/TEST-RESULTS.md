@@ -1283,4 +1283,12 @@ Status: pass / provisioning blocked before live smoke
 Focused live smoke against the separate deployment was not run because the
 separate Railway project, database, and web service could not be created with
 the available project-scoped Railway token.
+
+REQ-20260621-902 hosted transcription credential audit:
+
+- Local approved `openai-api-key.txt` readiness check: HTTP `401`.
+- Local approved `.env.local` `OPENAI_API_KEY` readiness check: HTTP `401`.
+- Railway variable-name readback: unavailable/unauthorized with current auth.
+- No valid replacement credential was found; no restart or job `#78` retry was
+  performed.
 <!-- req-313-provisioning:end -->
