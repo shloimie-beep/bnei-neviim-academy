@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-21T18:42:00+03:00",
+  "updated_at": "2026-06-21T18:56:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -629,6 +629,24 @@
       "expected_logged_in_behavior": "return_read_only_TEST_prefixed_fixture_preview_and_negative_authorization_matrix",
       "privacy_risk": "medium",
       "security_expectation": "Requires One Time admin scope; returns only synthetic example.test identities, cleanup manifest, scenario coverage, and no-write safety checks.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/agent-mode-acceptance",
+      "surface": "one_time_agent_mode_acceptance",
+      "access": "private",
+      "required_role": "workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_without_operations_session",
+      "expected_logged_in_behavior": "return_read_only_agent_mode_acceptance_matrix_and_explicit_external_blockers",
+      "privacy_risk": "medium",
+      "security_expectation": "Requires One Time admin scope; returns evidence references, stage coverage, no-write flags, and explicit remaining external blockers only.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-006",

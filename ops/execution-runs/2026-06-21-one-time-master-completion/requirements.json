@@ -1891,8 +1891,8 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
       "evidence": [],
       "verification": [],
@@ -1902,7 +1902,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T18:56:00+03:00",
       "id": "REQ-20260621-910",
       "title": "Agent Mode end-to-end acceptance",
       "expected_result": "Agent Mode acceptance can exercise the launch flow end to end in test mode with evidence, no external writes, and clear remaining blockers.",
@@ -1911,7 +1911,7 @@
       ],
       "category": "agent_mode_acceptance",
       "batch_id": "batch-9J",
-      "next_action": "Run/build Agent Mode acceptance over parser, CRM, trial/referral, access/class links, tickets/questions, and beta data without external writes.",
+      "next_action": "Build read-only Agent Mode acceptance across parser, CRM, trial/referral, access/class links, tickets/questions, and beta data with explicit blockers and no external writes.",
       "acceptance_criteria": [
         "acceptance flow has evidence artifacts",
         "no live charges or sends",

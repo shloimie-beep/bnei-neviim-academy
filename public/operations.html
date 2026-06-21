@@ -8054,6 +8054,7 @@
             getOneTimePaymentAccessClassLinks() { return this.request('GET', '/one-time/payment-access-class-links'); },
             getOneTimeCrmImportPreview() { return this.request('GET', '/one-time/crm-import-preview'); },
             getOneTimeTestIdentitiesPreview() { return this.request('GET', '/one-time/test-identities-preview'); },
+            getOneTimeAgentModeAcceptance() { return this.request('GET', '/one-time/agent-mode-acceptance'); },
             getOneTimeCommunityModerationReadiness() { return this.request('GET', '/one-time/community-moderation-readiness'); },
             getOneTimeStudyAssistantReadiness() { return this.request('GET', '/one-time/study-assistant-readiness'); },
             getOneTimeProductCalendar(filters = {}) {
@@ -8544,6 +8545,7 @@
             site: null,
             productSystem: null,
             testIdentitiesPreview: null,
+            agentModeAcceptance: null,
         };
         let rabbiLaunchNotice = '';
         let members = [];
@@ -16376,7 +16378,7 @@
         }
 
         async function loadRabbiLaunchData() {
-            const [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes] = await Promise.allSettled([
+            const [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes, agentModeRes] = await Promise.allSettled([
                 api.getRabbiConfig(),
                 api.getRabbiTiers(),
                 api.getRabbiProviderSettings(),
@@ -16389,6 +16391,7 @@
                 api.getRabbiSite(),
                 api.getOneTimeProductSystem(),
                 api.getOneTimeTestIdentitiesPreview(),
+                api.getOneTimeAgentModeAcceptance(),
             ]);
             if (configRes.status === 'fulfilled') {
                 rabbiLaunch.config = configRes.value || null;
@@ -16405,7 +16408,8 @@
             if (siteRes.status === 'fulfilled') rabbiLaunch.site = siteRes.value?.site || rabbiLaunch.site;
             if (productSystemRes.status === 'fulfilled') rabbiLaunch.productSystem = productSystemRes.value || null;
             if (testIdentitiesRes.status === 'fulfilled') rabbiLaunch.testIdentitiesPreview = testIdentitiesRes.value || null;
-            const rejected = [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes]
+            if (agentModeRes.status === 'fulfilled') rabbiLaunch.agentModeAcceptance = agentModeRes.value || null;
+            const rejected = [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes, agentModeRes]
                 .filter(result => result.status === 'rejected')
                 .map(result => result.reason?.message || 'Rabbi launch data failed');
             if (rejected.length) rabbiLaunchNotice = rejected.join('; ');
@@ -16940,6 +16944,68 @@
             `;
         }
 
+        function oneTimeAgentModeAcceptance() {
+            return rabbiLaunch.agentModeAcceptance || {};
+        }
+
+        function renderOneTimeAgentAcceptanceStage(stage = {}) {
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(stage.title || stage.key || 'Acceptance stage')}</div>
+                    <div class="content-card-meta">${escapeHtml(stage.requirement_id || '')} &middot; ${escapeHtml(stage.status || 'pending')}</div>
+                    <p class="event-meta">${escapeHtml(stage.evidence || 'evidence pending')}</p>
+                    <div class="tag-list">
+                        ${(stage.acceptance || []).slice(0, 4).map(item => `<span class="tag">${escapeHtml(item)}</span>`).join('')}
+                        <span class="tag">${stage.external_write_performed === false ? 'no external write' : 'check required'}</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderOneTimeAgentModeAcceptancePanel() {
+            const acceptance = oneTimeAgentModeAcceptance();
+            const stages = Array.isArray(acceptance.stages) ? acceptance.stages : [];
+            const blockers = Array.isArray(acceptance.remaining_external_blockers) ? acceptance.remaining_external_blockers : [];
+            const checks = acceptance.acceptance_checks || {};
+            const passCount = Object.values(checks).filter(Boolean).length;
+            const checkCount = Object.keys(checks).length;
+            return `
+                <section class="focus-panel" data-one-time-agent-mode-acceptance data-requirement-id="${escapeHtml(acceptance.requirement_id || 'REQ-20260621-910')}" aria-label="One Time Agent Mode acceptance">
+                    <div class="task-section-header"><h3>Agent Mode Acceptance</h3><span>${escapeHtml(acceptance.status || 'pending')}</span></div>
+                    <p class="settings-disabled-note">Read-only acceptance over parser, CRM import, trial/referral, payment/access/class links, tickets/questions, and beta TEST data. This panel does not run an autonomous agent, create records, send messages, charge cards, write to external CRM, or mutate Zoom/Vimeo/Google/DNS.</p>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Stages Covered', `${stages.length}/6`, 'Parser, CRM, trial/referral, access links, support/questions, and beta data.', "switchView('agents'); setCurrentSection('overview')")}
+                        ${renderMetricButton('Checks Passed', `${passCount}/${checkCount || 0}`, 'Acceptance checks must all pass before closeout.', "switchView('agents'); setCurrentSection('overview')")}
+                        ${renderMetricButton('External Writes', acceptance.external_write_performed === false ? 'None' : 'Check', 'Acceptance is read-only.', "switchView('settings'); setCurrentSection('security')")}
+                        ${renderMetricButton('Blockers', blockers.length, 'Remaining external/operator-only actions.', "switchView('decisions'); setCurrentSection('blocked')")}
+                    </div>
+                    <div class="content-section-grid" style="margin-top:14px;">
+                        ${stages.map(renderOneTimeAgentAcceptanceStage).join('') || '<div class="task-empty">Agent Mode acceptance has not loaded yet.</div>'}
+                    </div>
+                    <details class="workflow-details" style="margin-top:14px;" open>
+                        <summary>Remaining External Blockers</summary>
+                        <div class="calendar-event-list">
+                            ${blockers.map(blocker => `
+                                <div class="calendar-event-row">
+                                    <div>
+                                        <strong>${escapeHtml(blocker.key || 'blocker')}</strong>
+                                        <div class="event-meta">${escapeHtml(blocker.requirement_id || '')} &middot; ${escapeHtml(blocker.status || '')} &middot; owner ${escapeHtml(blocker.owner || 'operator')}</div>
+                                        <div class="event-meta">${escapeHtml(blocker.next_action || 'next action pending')}</div>
+                                    </div>
+                                    <span class="tag">external</span>
+                                </div>
+                            `).join('') || '<div class="task-empty">No external blockers are listed.</div>'}
+                        </div>
+                    </details>
+                    <div class="task-actions" style="margin-top:14px;">
+                        <button class="task-action primary" type="button" onclick="switchView('agents'); setCurrentSection('overview')">View Agent Status</button>
+                        <button class="task-action" type="button" onclick="switchView('tasks'); setTaskFocus('codex_queue')">View Acceptance Evidence</button>
+                        <button class="task-action" type="button" disabled aria-disabled="true" title="Read-only acceptance. Running an external/autonomous agent requires explicit operator authorization.">Run Live Agent Mode</button>
+                    </div>
+                </section>
+            `;
+        }
+
         function renderOneTimeAvailabilityRuleCard(rule = {}) {
             return `
                 <article class="content-card">
@@ -17085,7 +17151,7 @@
                         </section>
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
-                    ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimePaymentAccessPanel()}${renderOneTimeTestIdentitiesPanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
+                    ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimePaymentAccessPanel()}${renderOneTimeTestIdentitiesPanel()}${renderOneTimeAgentModeAcceptancePanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}
@@ -17166,6 +17232,7 @@
                 ${renderOneTimeTrialReferralPanel()}
                 ${renderOneTimePaymentAccessPanel()}
                 ${renderOneTimeTestIdentitiesPanel()}
+                ${renderOneTimeAgentModeAcceptancePanel()}
                 ${renderOneTimeProductReadinessPanel()}
 
                 <section class="focus-panel">

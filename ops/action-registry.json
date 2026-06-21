@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-21T18:42:00+03:00",
+  "updated_at": "2026-06-21T18:56:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -515,6 +515,67 @@
       "test": {
         "type": "api_guarded",
         "expected_result": "Fixture cleanup_manifest.cleanup_ready is true and requires TEST- prefix."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
+      "label": "View Agent Status",
+      "surface": "one_time_agent_mode_acceptance",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-agent-mode-acceptance] button.primary",
+      "expected_behavior": "Navigates to the Agents overview without starting an external/autonomous agent run.",
+      "permission": "workspace_admin",
+      "status": "active",
+      "test": {
+        "type": "ui_static_and_api_guarded",
+        "expected_result": "Operations renders the action and the acceptance API returns status=pass with no-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-EVIDENCE",
+      "label": "View Acceptance Evidence",
+      "surface": "one_time_agent_mode_acceptance",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-agent-mode-acceptance] button",
+      "expected_behavior": "Navigates to Codex/Agent work evidence context using existing in-app navigation only.",
+      "permission": "workspace_admin",
+      "status": "active",
+      "test": {
+        "type": "ui_static",
+        "expected_result": "Button is present and mapped to switchView/tasks evidence navigation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-AGENT-ACCEPTANCE-RUN-LIVE",
+      "label": "Run Live Agent Mode",
+      "surface": "one_time_agent_mode_acceptance",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-agent-mode-acceptance] button[disabled]",
+      "expected_behavior": "Disabled with explicit authorization blocker; no autonomous external agent is launched by this batch.",
+      "permission": "workspace_admin",
+      "status": "disabled_with_reason",
+      "disabled_reason": "Read-only acceptance. Running an external/autonomous agent requires explicit operator authorization.",
+      "test": {
+        "type": "ui_static_and_api_guarded",
+        "expected_result": "Button is disabled and the API reports production_mutation_performed=false and external_write_performed=false."
       },
       "related_goal_ids": [
         "GOAL-CORE-003",

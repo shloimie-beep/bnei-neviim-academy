@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T18:53:30+03:00",
+  "updated_at": "2026-06-21T18:56:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -25,9 +25,9 @@
     "latest_deployed_commit": "f741fa91a909db89a79a33b6de5193c6c481732c"
   },
   "current_batch": {
-    "batch_id": "batch-9I",
-    "requirement_id": "REQ-20260621-909",
-    "title": "Test identities and mock data",
-    "status": "done"
+    "batch_id": "batch-9J",
+    "requirement_id": "REQ-20260621-910",
+    "title": "Agent Mode end-to-end acceptance",
+    "status": "in_progress"
   }
 }
