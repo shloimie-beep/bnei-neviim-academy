@@ -42342,39 +42342,40 @@ app.get('/api/bna/parent-leads', requireAdmin, async (req, res) => {
   const { lead_type, status, interest_level } = req.query;
   const conditions = [];
   const params = [];
-  appendScopeCondition(req, conditions, params, 'project_id');
+  appendRequestedProjectScopeCondition(req, conditions, params, 'l.project_id');
 
   if (lead_type) {
     params.push(lead_type);
-    conditions.push(`lead_type = $${params.length}`);
+    conditions.push(`l.lead_type = $${params.length}`);
   }
   if (status) {
     params.push(status);
-    conditions.push(`status = $${params.length}`);
+    conditions.push(`l.status = $${params.length}`);
   } else {
-    conditions.push(`COALESCE(status, 'interested') <> 'archived'`);
+    conditions.push(`COALESCE(l.status, 'interested') <> 'archived'`);
   }
   if (interest_level) {
     params.push(interest_level);
-    conditions.push(`interest_level = $${params.length}`);
+    conditions.push(`l.interest_level = $${params.length}`);
   }
 
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
     const result = await pool.query(
-      `SELECT *
-       FROM bna_parent_leads
+      `SELECT l.*, p.project_key, p.name AS project_name
+       FROM bna_parent_leads l
+       LEFT JOIN bna_projects p ON p.id = l.project_id
        ${whereClause}
        ORDER BY
-         CASE interest_level
+         CASE l.interest_level
            WHEN 'hot' THEN 1
            WHEN 'warm' THEN 2
            WHEN 'cool' THEN 3
            ELSE 4
          END,
-         COALESCE(next_follow_up_date, CURRENT_DATE + INTERVAL '365 days') ASC,
-         updated_at DESC`,
+         COALESCE(l.next_follow_up_date, CURRENT_DATE + INTERVAL '365 days') ASC,
+         l.updated_at DESC`,
       params
     );
     res.json({ leads: result.rows });

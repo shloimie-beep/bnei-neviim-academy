@@ -64,6 +64,21 @@ test('One Time email lane exposes draft, readiness, recipient, and approval gate
   assert.match(operations, /related_record: relatedRecord/);
 });
 
+test('One Time CRM Contacts UX keeps lead review scoped and no-send', () => {
+  assert.match(operations, /data-one-time-crm-contacts-ux/);
+  assert.match(operations, /Workspace-scoped One Time\/Rabbi leads and members only/);
+  assert.match(operations, /function oneTimeCrmLeadRows\(\)/);
+  assert.match(operations, /normalizeProjectKey\(rawProjectKey\)/);
+  assert.match(operations, /currentWorkspaceIsOneTime\(\)/);
+  assert.match(operations, /one-time-no-send-until-approved/);
+  assert.match(operations, /one-time-campaign-staging/);
+  assert.match(operations, /No email, WhatsApp, payment, or external CRM write/);
+  assert.match(operations, /Dedupe \/ review/);
+  assert.match(operations, /data-one-time-crm-contact-row/);
+  assert.match(server, /app\.get\('\/api\/bna\/parent-leads'/);
+  assert.match(server, /appendRequestedProjectScopeCondition\(req, conditions, params, 'l\.project_id'\)/);
+});
+
 test('Resend draft and send endpoints preserve reply-to while keeping external send approval-gated', () => {
   assert.match(server, /const replyTo = normalizeEmail\(body\.reply_to \|\| body\.replyTo \|\| body\.metadata\?\.reply_to/);
   assert.match(server, /reply_to: row\.reply_to \|\| metadata\.reply_to \|\| null/);

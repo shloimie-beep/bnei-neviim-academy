@@ -7937,6 +7937,8 @@
             updateSignup(id, updates) { return this.request('PATCH', '/signups/' + id, updates); },
             getParentLeads(filters = {}) {
                 const params = new URLSearchParams();
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.workspace) params.set('workspace', filters.workspace);
                 if (filters.lead_type) params.set('lead_type', filters.lead_type);
                 if (filters.status) params.set('status', filters.status);
                 if (filters.interest_level) params.set('interest_level', filters.interest_level);
@@ -8765,7 +8767,7 @@
         let contentSourceFilter = 'all';
         let contentSearchQuery = '';
         let contentSearchRenderTimer = null;
-        let contactSection = currentView === 'contacts' && ['overview', 'people', 'parents', 'interested_parents', 'contacts', 'students', 'participants', 'email_contacts', 'questions', 'access', 'messages', 'intake', 'follow_up', 'tags', 'forms', 'notes'].includes(initialSection)
+        let contactSection = currentView === 'contacts' && ['overview', 'people', 'parents', 'interested_parents', 'contacts', 'students', 'participants', 'crm_contacts', 'email_contacts', 'questions', 'access', 'messages', 'intake', 'follow_up', 'tags', 'forms', 'notes'].includes(initialSection)
             ? initialSection
             : 'overview';
         let intakeSection = currentView === 'intake' && ['runs', 'review', 'sections'].includes(initialSection)
@@ -9069,6 +9071,7 @@
         const PROVIDER_PARTICIPANT_SUBTABS = [
             { id: 'overview', label: 'Overview' },
             { id: 'participants', label: 'Participants / Members' },
+            { id: 'crm_contacts', label: 'CRM Contacts' },
             { id: 'email_contacts', label: 'Email Contacts' },
             { id: 'parents', label: 'Participant Parents' },
             { id: 'questions', label: 'Questions / Posts' },
@@ -14202,13 +14205,18 @@
 
         function renderProviderParticipantsPage() {
             const rows = providerParticipantRows();
+            const crmRows = oneTimeCrmContactRows();
             const emailContacts = oneTimeEmailContactLeads();
             const accessRows = providerAccessRows();
             const questionRows = pipelineCardsForSection('participants').filter(card => /question|post|source|worksheet/i.test(`${card.title || ''} ${card.notes || ''}`));
             const messages = contactCommunications.filter(item => /provider|rabbi|sheller|participant|member/i.test(`${item.summary || ''} ${item.body || ''} ${item.contact_type || ''}`));
+            const noSendCount = crmRows.filter(row => row.noSend.locked).length;
+            const dedupeReviewCount = crmRows.filter(row => row.dedupe.needsReview).length;
+            const communicationLinkedCount = crmRows.filter(row => row.communications.count > 0).length;
             const counts = {
-                overview: rows.length,
+                overview: Math.max(rows.length, crmRows.length),
                 participants: rows.length,
+                crm_contacts: crmRows.length,
                 parents: rows.filter(row => /parent/i.test(`${row.next || ''} ${row.status || ''}`)).length,
                 email_contacts: emailContacts.length,
                 questions: questionRows.length,
@@ -14221,20 +14229,23 @@
                         <div>
                             <div class="page-kicker">Provider Roster</div>
                             <h2>${escapeHtml((PROVIDER_PARTICIPANT_SUBTABS.find(tab => tab.id === contactSection) || PROVIDER_PARTICIPANT_SUBTABS[0]).label)}</h2>
-                            <p>Rabbi Sheller users are participants/members unless actually enrolled in BNA. BNA goals, check-ins, admin notes, and school-only student data are not available in this workspace.</p>
+                            <p>Rabbi Sheller users are participants/members unless actually enrolled in BNA. Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.</p>
                         </div>
                     </div>
                     ${contactSection === 'overview' ? `
                         <section class="focus-panel">
                             <div class="task-overview-grid">
-                                ${renderMetricButton('Participants', rows.length, 'Provider members and leads.', "setCurrentSection('participants')")}
+                                ${renderMetricButton('CRM Contacts', crmRows.length, 'One Time leads/members scoped to Rabbi workspace.', "setCurrentSection('crm_contacts')")}
+                                ${renderMetricButton('No-send', noSendCount, 'Campaign or send actions remain locked until approval.', "setContactFilter('tag', 'one-time-no-send-until-approved')")}
+                                ${renderMetricButton('Dedupe Review', dedupeReviewCount, 'Rows needing duplicate or review attention.', "setCurrentSection('crm_contacts')")}
+                                ${renderMetricButton('Communications', communicationLinkedCount, 'Contacts with matched local communication history.', "setCurrentSection('messages')")}
                                 ${renderMetricButton('Email Contacts', emailContacts.length, 'Rabbi-side email contacts staged for campaigns.', "setCurrentSection('email_contacts')")}
                                 ${renderMetricButton('Questions', questionRows.length, 'Moderated structured questions/posts.', "setCurrentSection('questions')")}
                                 ${renderMetricButton('Access', accessRows.length, 'Payment/access status.', "setCurrentSection('access')")}
-                                ${renderMetricButton('Messages', messages.length, 'Provider help and communication records.', "setCurrentSection('messages')")}
                             </div>
                         </section>
                     ` : ''}
+                    ${['overview', 'crm_contacts'].includes(contactSection) ? renderOneTimeCrmContactsPanel() : ''}
                     ${['overview', 'participants', 'parents'].includes(contactSection) ? `
                         <section class="focus-panel">
                             <div class="task-section-header"><h3>Participants / Members</h3><span>${rows.length} records</span></div>
@@ -14259,6 +14270,71 @@
                     ` : ''}
                     ${renderCommandBotPanel('contacts')}
                 </div>
+            `;
+        }
+
+        function renderOneTimeCrmContactsPanel() {
+            const sectionLeads = oneTimeCrmLeadRows();
+            const visibleLeads = sectionLeads.filter(leadMatchesFilters);
+            const rows = oneTimeCrmContactRows({ leads: visibleLeads });
+            if (!visibleLeads.some(lead => Number(lead.id) === Number(selectedLeadId))) {
+                selectedLeadId = null;
+                leadDetailSection = 'overview';
+            }
+            return `
+                <section class="focus-panel compact-panel" data-one-time-crm-contacts-ux data-requirement-id="REQ-20260621-905" aria-label="One Time CRM Contacts UX">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>One Time CRM Contacts</h3>
+                            <p class="notification-lock-note">Workspace-scoped One Time/Rabbi leads and members only. Lead status, source, no-send, dedupe/review state, and local communications are visible before any campaign decision.</p>
+                        </div>
+                        <span>${rows.length} scoped records</span>
+                    </div>
+                    <div class="settings-control-grid compact" style="margin-top:12px;">
+                        ${renderSettingsControlRow('Workspace scope', 'One Time / Rabbi Scheller', 'Parent-lead data is requested with the selected workspace/project filter and excludes BNA school-only records.', 'Scoped')}
+                        ${renderSettingsControlRow('No-send guard', 'No email, WhatsApp, payment, or external CRM write', 'Campaign sends remain locked until Shloimie approves copy, sender, suppressions, and test recipients.', 'Guarded')}
+                        ${renderSettingsControlRow('Dedupe / review', 'Explicit row state', 'Dedupe keys, possible duplicates, manual-review tags, and preview-only import states are surfaced for admin review.', 'Visible')}
+                        ${renderSettingsControlRow('Privacy', 'Private BNA data absent', 'Private BNA goals, check-ins, admin notes, and school-only student data are not shown in One Time Contacts.', 'Protected')}
+                    </div>
+                </section>
+                ${renderLeadFilterPanel(sectionLeads, visibleLeads)}
+                ${rows.length === 0 ? `
+                    <div class="contact-empty-card">
+                        No One Time CRM contacts are loaded for this workspace yet. Import preview and email-contact staging remain no-send until approval.
+                    </div>
+                ` : sectionLeads.length > 0 && visibleLeads.length === 0 ? `
+                    <div class="contact-empty-card">
+                        No One Time parent-lead contacts match this filter. Product-interest and member rows remain visible below when loaded.
+                    </div>
+                ` : `
+                    <section class="focus-panel">
+                        <div class="task-section-header"><h3>CRM Contact Review</h3><span>${rows.length} shown</span></div>
+                        <div class="data-table compact-table">
+                            <table>
+                                <thead>
+                                    <tr><th>Name</th><th>Record Status</th><th>No-send</th><th>Dedupe / review</th><th>Source</th><th>Communications</th><th>Next Action</th><th>Direct Action</th></tr>
+                                </thead>
+                                <tbody>
+                                    ${rows.map(row => `
+                                        <tr data-one-time-crm-contact-row>
+                                            <td>
+                                                <strong>${escapeHtml(row.name)}</strong>
+                                                <div class="event-meta">${escapeHtml(row.contact)}</div>
+                                            </td>
+                                            <td>${escapeHtml(row.status)}</td>
+                                            <td><span class="status-chip ${escapeHtml(row.noSend.locked ? 'blocked' : 'ready')}">${escapeHtml(row.noSend.label)}</span><div class="event-meta">${escapeHtml(row.noSend.detail)}</div></td>
+                                            <td><span class="status-chip ${escapeHtml(row.dedupe.needsReview ? 'needs-review' : 'ready')}">${escapeHtml(row.dedupe.label)}</span><div class="event-meta">${escapeHtml(row.dedupe.detail)}</div></td>
+                                            <td>${escapeHtml(row.source.label)}<div class="event-meta">${escapeHtml(row.source.detail)}</div></td>
+                                            <td>${escapeHtml(row.communications.label)}<div class="event-meta">${escapeHtml(row.communications.detail)}</div></td>
+                                            <td>${escapeHtml(row.nextAction)}</td>
+                                            <td><div class="task-actions compact-actions">${row.actionHtml}</div></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                `}
             `;
         }
 
@@ -15120,6 +15196,140 @@
 
         function oneTimeEmailContactPlan(lead) {
             return leadTagValue(lead, 'one-time-plan:') || parseObjectMaybe(lead.metadata).source_plan || 'unknown';
+        }
+
+        function oneTimeCrmLeadRows() {
+            return (parentLeads || [])
+                .filter(lead => leadStatusKey(lead) !== 'archived')
+                .filter(lead => {
+                    const metadata = parseObjectMaybe(lead.metadata);
+                    const rawProjectKey = lead.project_key || lead.project || metadata.project_key || '';
+                    const projectKey = rawProjectKey ? normalizeProjectKey(rawProjectKey) : '';
+                    if (projectKey && projectKey !== 'one_time_mishnah_class') return false;
+                    if (currentWorkspaceIsOneTime()) return true;
+                    const text = `${lead.source || ''} ${lead.source_detail || ''} ${lead.notes || ''}`.toLowerCase();
+                    return leadTags(lead).some(tag => /^one-time-|^one_time/i.test(tag))
+                        || /one time|sheller|scheller|mishnah|mishnayos|rabbi/.test(text);
+                });
+        }
+
+        function oneTimeLeadNoSendState(lead) {
+            const metadata = parseObjectMaybe(lead.metadata);
+            const campaignStatus = String(metadata.campaign_send_status || metadata.send_status || '').trim().toLowerCase();
+            const locked = recordFlagIsTrue(metadata.no_send)
+                || recordFlagIsTrue(metadata.no_send_until_approved)
+                || campaignStatus === 'not_sent'
+                || campaignStatus === 'approval_required'
+                || leadHasTag(lead, 'one-time-no-send-until-approved')
+                || leadHasTag(lead, 'one-time-campaign-staging');
+            const approved = recordFlagIsTrue(metadata.campaign_approved) || ['approved', 'send_approved'].includes(campaignStatus);
+            if (locked) {
+                return {
+                    locked: true,
+                    label: 'No-send until approved',
+                    detail: 'Campaign and external actions are held for operator approval.',
+                };
+            }
+            if (approved) {
+                return {
+                    locked: false,
+                    label: 'Approved state',
+                    detail: 'Approval metadata is present; sends still require explicit send flow confirmation.',
+                };
+            }
+            return {
+                locked: true,
+                label: 'Approval review',
+                detail: 'No send approval metadata is loaded for this contact.',
+            };
+        }
+
+        function oneTimeLeadDedupeState(lead) {
+            const metadata = parseObjectMaybe(lead.metadata);
+            const dedupeKey = metadata.dedupe_key || metadata.deterministic_dedupe_key || metadata.normalized_email || '';
+            const importStatus = metadata.import_status || metadata.crm_import_status || '';
+            const possibleDuplicate = recordFlagIsTrue(metadata.possible_duplicate)
+                || recordFlagIsTrue(metadata.duplicate_candidate)
+                || leadHasTag(lead, 'one-time-manual-review')
+                || leadTags(lead).some(tag => /dedupe|duplicate|needs[-_]?review|manual[-_]?review/i.test(tag));
+            if (possibleDuplicate) {
+                return {
+                    needsReview: true,
+                    label: 'Needs dedupe review',
+                    detail: dedupeKey ? `Scoped key ${String(dedupeKey).slice(0, 12)}...` : 'Manual review or duplicate marker is present.',
+                };
+            }
+            if (dedupeKey) {
+                return {
+                    needsReview: false,
+                    label: 'Scoped dedupe key',
+                    detail: `Key ${String(dedupeKey).slice(0, 12)}...`,
+                };
+            }
+            if (importStatus) {
+                return {
+                    needsReview: true,
+                    label: contactStatusLabel(importStatus),
+                    detail: 'Import status exists without a visible dedupe key.',
+                };
+            }
+            return {
+                needsReview: true,
+                label: 'Review pending',
+                detail: 'No dedupe metadata has been recorded yet.',
+            };
+        }
+
+        function oneTimeLeadSourceState(lead) {
+            const metadata = parseObjectMaybe(lead.metadata);
+            const sourceTag = leadTagValue(lead, 'one-time-source:');
+            const importTag = leadTagValue(lead, 'one-time-import:');
+            const sourceInventory = metadata.source_inventory_id || metadata.sourceInventoryId || metadata.source_reference?.source_inventory_id || '';
+            const status = oneTimeEmailContactSourceStatus(lead);
+            const plan = oneTimeEmailContactPlan(lead);
+            const label = sourceTag || lead.source || 'one-time-crm';
+            const detail = [
+                lead.source_detail || '',
+                status && status !== leadStatusLabel(lead.status) ? `status ${contactStatusLabel(status)}` : '',
+                plan && plan !== 'unknown' ? `plan ${contactStatusLabel(plan)}` : '',
+                importTag ? `batch ${importTag}` : '',
+                sourceInventory ? `source ${sourceInventory}` : '',
+            ].filter(Boolean).join(' / ');
+            return {
+                label: contactStatusLabel(label),
+                detail: detail || 'One Time CRM lead source is awaiting review.',
+            };
+        }
+
+        function oneTimeLeadCommunicationState(lead) {
+            const items = leadCommunications(lead);
+            const latest = items[0];
+            return {
+                count: items.length,
+                label: `${items.length} note${items.length === 1 ? '' : 's'}`,
+                detail: latest ? `${communicationChannelLabel(latest.channel)} ${formatDateTime(latest.occurred_at || latest.created_at)}` : 'No local communication history matched yet.',
+            };
+        }
+
+        function oneTimeCrmContactRow(lead) {
+            const contact = [lead.parent_email || '', lead.parent_phone || ''].filter(Boolean).join(' / ') || 'No contact detail';
+            const noSend = oneTimeLeadNoSendState(lead);
+            const nextAction = lead.next_follow_up_date
+                ? `Follow up ${formatDate(lead.next_follow_up_date)}`
+                : noSend.locked
+                    ? 'Review campaign approval, suppressions, and dedupe before sending.'
+                    : 'Review membership/access state.';
+            return {
+                lead,
+                name: lead.parent_name || lead.student_name || 'One Time contact',
+                contact,
+                status: `${leadStatusLabel(lead.status)} / ${leadInterestLabel(lead.interest_level)}`,
+                noSend,
+                dedupe: oneTimeLeadDedupeState(lead),
+                source: oneTimeLeadSourceState(lead),
+                communications: oneTimeLeadCommunicationState(lead),
+                nextAction,
+            };
         }
 
         function normalizeLeadTagInput(value) {
@@ -32415,7 +32625,7 @@
                     needsQueueHealthData ? api.getQueueHealth() : Promise.resolve(null),
                     needsSupportData ? api.getSupportTickets() : Promise.resolve({ tickets: [] }),
                     needsSignupData || needsAccountingData ? api.getSignups() : Promise.resolve({ signups: [] }),
-                    needsContactData ? api.getParentLeads() : Promise.resolve({ leads: [] }),
+                    needsContactData ? api.getParentLeads(workspaceDataFilters) : Promise.resolve({ leads: [] }),
                     needsProviderData ? api.getServiceProviders({ approved_only: false }) : Promise.resolve({ providers: [] }),
                     needsContactData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
                     needsWapiPhonebookData ? api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() }) : Promise.resolve(null),

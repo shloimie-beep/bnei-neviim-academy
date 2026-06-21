@@ -1471,8 +1471,8 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
       "evidence": [],
       "verification": [],
@@ -1482,7 +1482,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T17:12:20+03:00",
       "id": "REQ-20260621-905",
       "title": "CRM Contacts UX",
       "expected_result": "Operations Contacts UX organizes One Time leads/members with scoped communication, lead, no-send, and dedupe state.",

@@ -84,6 +84,7 @@ test('Operations admin, communications, integrations, and automations use select
   assert.match(operationsHtml, /function workspaceDataProjectFilters/);
   assert.match(operationsHtml, /const workspaceDataFilters = workspaceDataProjectFilters\(\);/);
   assert.match(operationsHtml, /api\.getPeople\(workspaceDataFilters\)/);
+  assert.match(operationsHtml, /api\.getParentLeads\(workspaceDataFilters\)/);
   assert.match(operationsHtml, /api\.getContactCommunications\(workspaceDataFilters\)/);
   assert.match(operationsHtml, /fetchCommunicationsIntegrationBundle\(workspaceDataFilters\)/);
   assert.match(operationsHtml, /api\.getAutomations\(workspaceDataFilters\)/);
@@ -121,6 +122,11 @@ test('Server admin, communications, and draft routes enforce requested workspace
   assert.match(contactCommunicationsRoute, /const requestedProjectKey = requestedProjectKeyForScopedList\(req\);/);
   assert.match(contactCommunicationsRoute, /COALESCE\(c\.project_id, l\.project_id, s\.project_id, st\.project_id/);
   assert.match(contactCommunicationsRoute, /COALESCE\(u\.project_id, \(SELECT id FROM bna_projects WHERE project_key = '\$\{DEFAULT_PROJECT_KEY\}' LIMIT 1\)\)/);
+
+  const parentLeadsRoute = sliceBetween(server, "app.get('/api/bna/parent-leads'", "async function updateExistingParentLeadFromBody");
+  assert.match(parentLeadsRoute, /appendRequestedProjectScopeCondition\(req, conditions, params, 'l\.project_id'\)/);
+  assert.match(parentLeadsRoute, /SELECT l\.\*, p\.project_key, p\.name AS project_name/);
+  assert.match(parentLeadsRoute, /LEFT JOIN bna_projects p ON p\.id = l\.project_id/);
 
   const socialDraftsRoute = sliceBetween(server, "app.get('/api/bna/communications/social/drafts'", "async function createSocialDraft");
   assert.match(socialDraftsRoute, /appendJsonbProjectMetadataScope\(req, conditions, params, 'metadata'\)/);
