@@ -2216,7 +2216,7 @@
       "id": "REQ-20260619-310",
       "title": "Gamification",
       "expected_result": "Badges are server-side, evidence-backed, reversible, audited, and not public-leaderboard driven.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0014"
@@ -2232,9 +2232,9 @@
         "REQ-20260619-306",
         "REQ-20260619-307"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "next_action": "Complete event-driven badge awarding, thresholds, idempotency, reversal, audit, and parent-safe explanations.",
+      "next_action": "Implement event-driven badge awards, per-badge thresholds, idempotent award audit, manual reversal endpoint, readiness route, tests, and read-only live smoke.",
       "acceptance_criteria": [
         "automatic badges idempotent",
         "Rabbi-awarded badges audited",
@@ -2253,7 +2253,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T19:36:00+03:00"
     },
     {
       "id": "REQ-20260619-311",

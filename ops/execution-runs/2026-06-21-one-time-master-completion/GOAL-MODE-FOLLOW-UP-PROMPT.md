@@ -52,9 +52,9 @@ next_action: Implement transcript release policy, no-guessed-speaker student mat
 
 ## Post-Closeout Note
 
-At 2026-06-21T19:25:00+03:00, Batch 14 / `REQ-20260619-309`
+At 2026-06-21T19:27:20+03:00, Batch 14 / `REQ-20260619-309`
 was deployed and live-verified in Railway deployment
-`9e20c076-1822-4dac-9721-565eb22f585d`.
+`7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`.
 
 If resuming after that closeout, do not repeat Batch 14. Run
 `npm run bna:run:next` and continue the next unblocked executable batch the

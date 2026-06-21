@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T19:27:20+03:00",
+  "updated_at": "2026-06-21T19:36:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -25,9 +25,9 @@
     "latest_deployed_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f"
   },
   "current_batch": {
-    "batch_id": "batch-14",
-    "requirement_id": "REQ-20260619-309",
-    "title": "Transcript privacy",
-    "status": "done"
+    "batch_id": "batch-15",
+    "requirement_id": "REQ-20260619-310",
+    "title": "Gamification",
+    "status": "in_progress"
   }
 }

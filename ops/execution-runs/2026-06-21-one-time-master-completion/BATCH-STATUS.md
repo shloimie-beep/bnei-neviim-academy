@@ -26,7 +26,7 @@
 | 12 | REQ-20260619-307 | done | Zoom and attendance foundation deployed and live-smoked without creating meetings, registrants, attendance writes, recording reads, transcript reads, summary reads, sends, or portal publishing. |
 | 13 | REQ-20260619-308 | done | Recording/transcript/publication lifecycle and retention gates bundled with Batch 11 under the shared requirement. |
 | 14 | REQ-20260619-309 | done | Transcript privacy deployed and live-smoked in Railway deployment `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`: version/review/storage fields, body-free readiness route, no-guessed-speaker student mapping, confidence/manual-review policy, member-safe redaction, Operations panel, focused tests, and read-only live smoke passed without transcript body exposure, corpus mutation, sends, billing, Zoom/Vimeo/Google/DNS mutation, or CRM writes. |
-| 15 | REQ-20260619-310 | not_started | Gamification. |
+| 15 | REQ-20260619-310 | in_progress | Gamification implementation started: event-driven badge awards, per-badge thresholds, idempotent award audit, manual reversal endpoint, readiness route, focused tests, and read-only live smoke. |
 | 16 | REQ-20260619-311 | not_started | Community. |
 | 17 | REQ-20260619-312 | not_started | Sefaria/study assistant. |
 | 18 | REQ-20260619-313 | needs_operator_decision | Separate paid infrastructure/DNS remains external. |

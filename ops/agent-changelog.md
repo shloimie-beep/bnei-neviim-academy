@@ -25240,7 +25240,7 @@ performed.
 The product/schedule/portal launch parent is closed for credential-free work.
 Hosted transcription remains isolated in `REQ-20260621-902`.
 
-## 2026-06-21T19:25:00+03:00 - One Time Master Completion Batch 14 Transcript Privacy
+## 2026-06-21T19:27:20+03:00 - One Time Master Completion Batch 14 Transcript Privacy
 
 Closed `REQ-20260619-309` for PR #5. Added transcript privacy release policy,
 storage fields on `bna_class_sessions`, member-safe redaction, an admin
@@ -25249,11 +25249,11 @@ live smoke.
 
 Commit `b89c17c0ec34a9ba871289afbec7b065c3a0d78f` was pushed and deployed from
 a clean detached worktree. Railway deployment
-`9e20c076-1822-4dac-9721-565eb22f585d` reached `SUCCESS`; Railway doctor
+`7feae8ec-f34f-4e33-9e2d-9dcb479b1f14` reached `SUCCESS`; Railway doctor
 passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-23-48-990Z-live-app-smoke.md`; focused
+`ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`; focused
 transcript privacy smoke passed at
-`ops/live-smokes/2026-06-21T16-24-13-531Z-one-time-transcript-privacy-live-smoke.md`.
+`ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`.
 
 The policy blocks guessed speaker labels, voice guesses, LLM guesses, and name
 mentions from becoming student records; student-private and parent-visible
