@@ -25105,3 +25105,15 @@ GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
 
 Next: continue automatically with Batch 9G / `REQ-20260621-907`
 payment-to-access and class-link flow.
+
+## 2026-06-21T17:53:00+03:00 - One Time Master Completion Batch 9F Trial/Referral Configuration
+
+Closed `REQ-20260621-906` for PR #5. The One Time product system now exposes the warm-lead 30-day intro trial, `$67` renewal default, card-required and one-intro-trial-per-household rules, policy-version acceptance storage, referral-after-first-paid-cycle model, legal wording Decision, Stripe local-beta no-write guardrails, and Operations Trial / Referral Configuration panel.
+
+The app-visible implementation commit `32708bfa5aa1d673a44ed5765178081ad57dc3de` was pushed, deployed from a clean detached worktree to Railway deployment `12249b2b-f11c-44b0-b9fa-ba75c511c633`, and verified by standard live smoke `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md` plus focused trial/referral live smoke `ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`. Local evidence had already been pushed in `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`; this closeout correction records the latest current deployment/smoke pair.
+
+Verification passed: focused One Time product/Stripe tests, workspace scoping tests, server and smoke-script syntax checks, action watchdog, execution-run validation, tracked secret audit, diff check, Railway doctor, standard live smoke, and focused trial/referral live smoke.
+
+Guardrails: no checkout session, live charge, payment link, subscription, invoice, invoice credit, access grant, email send, WhatsApp send, external CRM write, GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
+
+Next: continue automatically with Batch 9G / `REQ-20260621-907` payment-to-access and class-link flow.

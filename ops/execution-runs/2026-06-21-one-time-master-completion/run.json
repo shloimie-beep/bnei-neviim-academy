@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T17:55:00+03:00",
+  "updated_at": "2026-06-21T17:53:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -22,7 +22,7 @@
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
     "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
     "latest_pushed_head": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
-    "latest_deployed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4"
+    "latest_deployed_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de"
   },
   "current_batch": {
     "batch_id": "batch-9G",

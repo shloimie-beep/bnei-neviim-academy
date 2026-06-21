@@ -489,15 +489,12 @@ Local verification passed:
 - Syntax checks, execution-run validation, tracked secret audit, action
   watchdog, and diff check with line-ending warnings only.
 
-The implementation was committed in `32708bfa5aa1d673a44ed5765178081ad57dc3de`,
-then local evidence was committed and pushed in
-`4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`. The final pushed commit was
-deployed to Railway deployment `9805ff41-bb99-4083-95e1-cf0328c26877`.
+The app-visible implementation was committed in `32708bfa5aa1d673a44ed5765178081ad57dc3de`. Local evidence was committed and pushed in `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`; the safe app-visible bundle from `32708bfa5aa1d673a44ed5765178081ad57dc3de` was deployed from a clean detached worktree to Railway deployment `12249b2b-f11c-44b0-b9fa-ba75c511c633`.
 
 Standard live smoke passed at
-`ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`. Focused Batch 9F
+`ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`. Focused Batch 9F
 live smoke passed at
-`ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`.
+`ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`.
 
 An intermediate standard smoke at
 `ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after login

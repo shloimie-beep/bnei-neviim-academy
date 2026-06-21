@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T16:50:00+03:00",
+  "updated_at": "2026-06-21T17:53:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -1559,12 +1559,12 @@
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
-        "ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md"
+        "ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md"
       ],
       "verification": [
-        "PASS node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-contacts-intake-cleanup.test.js",
-        "PASS node --test tests/int05-integrations-closeout.test.js tests/rabbi-checkout-access.test.js tests/provider-integrations-secret-storage.test.js",
+        "PASS node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js",
+        "PASS node --test tests/operations-module-scoping.test.js tests/one-time-communications-workspace.test.js",
         "PASS node --check server.js",
         "PASS node --check scripts/smoke-one-time-trial-referral-live.mjs",
         "PASS node --check src/lib/integrations/stripe.js",
@@ -1572,9 +1572,9 @@
         "PASS node scripts/audit-secrets.mjs",
         "PASS npm run watchdog:actions",
         "PASS git diff --check with line-ending warnings only",
-        "PASS npm run railway:doctor for deployment 9805ff41-bb99-4083-95e1-cf0328c26877",
-        "PASS npm run app:smoke",
-        "PASS npm run app:smoke:one-time-trial-referral"
+        "PASS npm run railway:doctor for deployment 12249b2b-f11c-44b0-b9fa-ba75c511c633",
+        "PASS npm run app:smoke (ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md)",
+        "PASS npm run app:smoke:one-time-trial-referral (ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md)"
       ],
       "implementation_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de",
       "pushed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
@@ -1582,18 +1582,18 @@
       "deployment_required": true,
       "deployment_evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
-        "ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md"
+        "ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T17:55:00+03:00",
-      "deployed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
-      "deployment_id": "9805ff41-bb99-4083-95e1-cf0328c26877",
+      "updated_at": "2026-06-21T17:53:00+03:00",
+      "deployed_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de",
+      "deployment_id": "12249b2b-f11c-44b0-b9fa-ba75c511c633",
       "live_smoke": [
-        "ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md"
+        "ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md"
       ],
-      "closeout_summary": "Warm-lead 30-day trial, $67 renewal, card-required and one-intro-trial rules, policy acceptance storage, referral-after-first-paid-cycle model, legal wording Decision, Stripe local-beta no-write guardrails, and Operations panel are deployed and live-smoked without charges, invoice credits, sends, or external CRM writes.",
+      "closeout_summary": "Warm-lead 30-day trial, $67 renewal, card-required and one-intro-trial rules, policy acceptance storage, referral-after-first-paid-cycle model, legal wording Decision, Stripe local-beta no-write guardrails, and Operations panel are deployed and live-smoked without charges, invoice credits, sends, access grants, or external CRM writes.",
       "id": "REQ-20260621-906",
       "title": "Warm-lead trial and referral configuration",
       "expected_result": "Warm-lead trial, referral credit, policy-version, and acceptance records are configurable in test/local mode without live charges or invoice credits.",

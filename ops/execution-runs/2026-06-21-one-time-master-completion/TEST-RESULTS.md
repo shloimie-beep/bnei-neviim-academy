@@ -734,11 +734,11 @@ Recorded after local implementation of warm-lead trial/referral configuration:
   `ops/watchdog-audits/2026-06-21T14-44-watchdog-action-audit.md`
 - PASS `git diff --check` with line-ending warnings only.
 - PASS `npm run railway:doctor` after Railway deployment
-  `9805ff41-bb99-4083-95e1-cf0328c26877`.
+  `12249b2b-f11c-44b0-b9fa-ba75c511c633`.
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`
 - PASS `npm run app:smoke:one-time-trial-referral`,
-  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`
 
 Focused coverage:
 
@@ -770,5 +770,5 @@ Intermediate/known failures recorded:
 - `ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after
   login because `/api/bna/auth/me` did not return success. The final standard
   smoke was rerun with platform Operations credentials and passed at
-  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`.
+  `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`.
 <!-- batch-9F:end -->

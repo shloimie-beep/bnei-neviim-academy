@@ -288,14 +288,14 @@ external-account write was performed.
 
 ## Batch 9F
 
-- Deployment ID: `9805ff41-bb99-4083-95e1-cf0328c26877`
-- Deployed commit: `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`
+- Deployment ID: `12249b2b-f11c-44b0-b9fa-ba75c511c633`
+- Deployed app-visible commit: `32708bfa5aa1d673a44ed5765178081ad57dc3de`
 - Service/environment: `skillful-motivation / production`
 - Railway doctor after deploy: PASS, deployment status `SUCCESS`
 - Standard live smoke: PASS,
-  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`
 - Focused One Time trial/referral live smoke: PASS,
-  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`
 
 Focused live smoke verified production trial/referral route readback, 30-day
 trial, `$67` renewal, card-required rule, one-intro-trial-per-household rule,
@@ -309,11 +309,11 @@ Prior standard smoke attempt during the same batch:
 - `ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after
   login because `/api/bna/auth/me` did not return success. The final standard
   smoke rerun passed at
-  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`.
+  `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`.
 
 Deployment was run from a clean detached worktree at
-`4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4` so the unrelated uncommitted blog
-JSON files in the main worktree were not included in the bundle.
+`32708bfa5aa1d673a44ed5765178081ad57dc3de` so the unrelated uncommitted blog
+JSON files in the main worktree were not included in the bundle. The later evidence-only commits were not redeployed because they do not change the app bundle.
 
 ## Batch 12
 

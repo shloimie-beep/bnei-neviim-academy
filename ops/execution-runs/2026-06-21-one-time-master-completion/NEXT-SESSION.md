@@ -1,11 +1,11 @@
 # Next Session
 
-Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E,
+Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F,
 Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
 continue with the next unblocked open requirement it selects:
-`REQ-20260621-906` / Batch 9F warm-lead trial and referral configuration.
+`REQ-20260621-907` / Batch 9G payment-to-access and class-link flow.
 Exact next command:
 
 ```powershell
@@ -452,9 +452,9 @@ Next exact action:
 npm run bna:run:next
 ```
 
-Continue automatically with `REQ-20260621-906` / Batch 9F warm-lead trial and
-referral configuration. Do not perform live charges, invoice credits, or
-campaign sends.
+Continue automatically with `REQ-20260621-907` / Batch 9G payment-to-access and
+class-link flow. Do not perform live charges, real access grants, real Zoom
+meetings, invoice credits, or campaign sends.
 <!-- batch-9E:end -->
 
 <!-- batch-9F:start -->
@@ -464,12 +464,14 @@ Warm-lead trial and referral configuration is deployed and live-verified.
 
 - Requirement: `REQ-20260621-906`
 - Implementation status: `verified_live`
-- Implementation commit:
+- App implementation commit:
   `32708bfa5aa1d673a44ed5765178081ad57dc3de`
-- Final pushed/deployed commit:
+- Local evidence commit before live closeout correction:
   `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`
+- Deployed app-visible commit:
+  `32708bfa5aa1d673a44ed5765178081ad57dc3de`
 - Railway deployment:
-  `9805ff41-bb99-4083-95e1-cf0328c26877`
+  `12249b2b-f11c-44b0-b9fa-ba75c511c633`
 - Key files:
   `src/lib/bna/one-time-product-system.js`,
   `src/lib/integrations/stripe.js`, `server.js`,
@@ -480,9 +482,9 @@ Warm-lead trial and referral configuration is deployed and live-verified.
 - Focused Batch 9F tests: 13/13, 25/25 adjacent suite, and 16/16 integration
   guardrail tests passed.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`
 - Focused One Time trial/referral live smoke:
-  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`
 - Guardrails:
   30-day trial, `$67` renewal, card-required and one-intro-trial rules,
   policy-version acceptance storage, referral-after-first-paid-cycle model,
