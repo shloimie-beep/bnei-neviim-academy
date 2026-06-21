@@ -1,0 +1,46 @@
+{
+  "started_at": "2026-06-21T11:34:54.870Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 607,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "Operations WhatsApp workspace markers are deployed",
+      "ok": true,
+      "duration_ms": 1488,
+      "details": {
+        "markers": 11
+      }
+    },
+    {
+      "name": "workspace-scoped WAPI phonebook report hides raw payloads",
+      "ok": true,
+      "duration_ms": 1061,
+      "details": {
+        "scope": "workspace",
+        "workspace_key": "rabbi_sheller_provider",
+        "groups": 0
+      }
+    },
+    {
+      "name": "WhatsApp message readback stays no-send and hides raw provider payloads",
+      "ok": false,
+      "duration_ms": 500,
+      "error": "whatsapp messages did not return success"
+    }
+  ],
+  "summary": {
+    "operations_markers_checked": 11,
+    "phonebook_scope": "workspace",
+    "raw_payload_hidden": true,
+    "wapi_sync_configured": false,
+    "external_send_performed": false
+  }
+}

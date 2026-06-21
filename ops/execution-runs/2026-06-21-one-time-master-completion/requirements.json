@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T14:21:47+03:00",
+  "updated_at": "2026-06-21T14:47:27+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -701,13 +701,22 @@
       ],
       "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "next_action": "WhatsApp child is locally verified; deploy and live-smoke it, then continue to Email/Resend.",
+      "next_action": "WhatsApp child is deployed and live-verified; continue to Batch 8 / REQ-20260621-504 Email and Resend UX.",
       "acceptance_criteria": [
         "WhatsApp child verified",
         "Email child verified"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.json",
+        "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md"
+      ],
+      "verification": [
+        "Batch 7 WhatsApp child verified live; Batch 8 Email/Resend child remains.",
+        "npm run app:smoke:whatsapp-ux"
+      ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
@@ -719,13 +728,13 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T14:21:47+03:00"
+      "updated_at": "2026-06-21T14:47:27+03:00"
     },
     {
       "id": "REQ-20260621-503",
       "title": "WhatsApp UX",
       "expected_result": "WhatsApp UX shows scoped conversations, details, related work, notes, and no-send guarded controls.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0008"
@@ -740,9 +749,9 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "verified_local",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, deploy Batch 7, run standard live smoke, and run a focused live WhatsApp UX smoke.",
+      "next_action": "Complete. Continue to Batch 8 / REQ-20260621-504 Email and Resend UX.",
       "acceptance_criteria": [
         "three panes desktop",
         "mobile back navigation",
@@ -750,7 +759,20 @@
       ],
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.json",
+        "ops/live-smokes/2026-06-21T11-31-29-921Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-33-10-414Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-34-54-870Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-35-53-288Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-41-52-261Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.json",
+        "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md"
       ],
       "verification": [
         "node --check server.js",
@@ -758,23 +780,41 @@
         "node --test tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js tests/whapi-log-sync-contract.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js",
         "node --test tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-shell-navigation-contract.test.js",
         "npm run ops:audit -- smoke-login",
-        "npm run bna:run:validate"
+        "npm run bna:run:validate",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node --check scripts/smoke-whatsapp-ux-live.mjs",
+        "npm run app:smoke:whatsapp-ux"
       ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
         "src/lib/bna/wapi-phonebook-report.js",
+        "scripts/smoke-whatsapp-ux-live.mjs",
+        "package.json",
         "tests/one-time-communications-workspace.test.js",
         "tests/wapi-phonebook-report.test.js",
         "tests/communications-integrations-contract.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f",
+      "pushed_commit": "b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T14:21:47+03:00"
+      "updated_at": "2026-06-21T14:47:27+03:00",
+      "deployment_id": "3265d380-9a93-488d-844f-f523367aa4e2",
+      "deployed_commit": "b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260621-504",
@@ -797,7 +837,7 @@
       ],
       "implementation_status": "not_started",
       "can_continue_without_operator": true,
-      "next_action": "Complete email workspace, Resend domain readback/status UI, webhook verification/storage, and sender/domain Decision.",
+      "next_action": "Start Batch 8: complete email operations workspace without live sends, Resend domain/status/DNS readback, webhook verification/storage, and one sender/domain Decision.",
       "acceptance_criteria": [
         "send disabled",
         "domain list/status readable",
@@ -819,7 +859,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T14:43:30+03:00"
     },
     {
       "id": "REQ-20260619-306",

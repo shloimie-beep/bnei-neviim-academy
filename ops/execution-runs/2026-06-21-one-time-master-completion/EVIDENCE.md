@@ -270,8 +270,8 @@ Intermediate live-smoke failures recorded:
 <!-- batch-7:start -->
 ## Batch 7 Evidence
 
-WhatsApp UX is locally implemented and verified. Deployment and live-smoke
-evidence remain pending until the Batch 7 deployment completes.
+WhatsApp UX is implemented, deployed, and live-verified without sending
+WhatsApp messages or performing external writes.
 
 - Operations WhatsApp UX implementation:
   `public/operations.html`
@@ -283,6 +283,20 @@ evidence remain pending until the Batch 7 deployment completes.
   `tests/one-time-communications-workspace.test.js`,
   `tests/wapi-phonebook-report.test.js`, and
   `tests/communications-integrations-contract.test.js`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md`
+- Focused/repeatable WhatsApp UX live smoke:
+  `ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md`
+
+Deployment and live evidence:
+
+- Implementation commit: `b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`
+- Pushed commit: `b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`
+- Deployed commit: `b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`
+- Railway deployment: `3265d380-9a93-488d-844f-f523367aa4e2`
+- Railway doctor: PASS
+- Standard live smoke: PASS
+- Focused/repeatable WhatsApp UX live smoke: PASS
 
 Implemented behavior:
 
@@ -305,4 +319,40 @@ Implemented behavior:
   the server still requires `SEND_WHATSAPP` before any real send.
 - No GHL, GoHighLevel, LeadConnector, broadcast, external CRM write, or
   WhatsApp send path was introduced.
+
+Live smoke covered:
+
+- Production health and Operations login.
+- Workspace-scoped WAPI phonebook readback for `rabbi_sheller_provider`.
+- Sanitized `/api/bna/whatsapp/messages` readback with raw payloads hidden by
+  default.
+- Deployed Operations WhatsApp bundle markers for desktop three-pane workspace,
+  mobile back navigation, and send-readiness gate.
+- Live Communications > WhatsApp rendering at 1024px and 390px with no
+  page-level horizontal overflow.
+- Disabled send readiness and confirmation-gated WhatsApp controls.
+- Absence of GHL, GoHighLevel, and LeadConnector UI terms.
+
+Intermediate focused live-smoke failures recorded:
+
+- `ops/live-smokes/2026-06-21T11-31-29-921Z-whatsapp-ux-live-smoke.md`
+  failed before app access because the clean PR worktree did not contain
+  `.env.local`.
+- `ops/live-smokes/2026-06-21T11-33-10-414Z-whatsapp-ux-live-smoke.md`
+  failed on a stale selector; the deployed Operations root is `#app`.
+- `ops/live-smokes/2026-06-21T11-34-54-870Z-whatsapp-ux-live-smoke.md`
+  failed because the smoke expected a legacy `success` wrapper on
+  `/api/bna/whatsapp/messages`; the live contract returns a sanitized
+  `messages` array.
+- `ops/live-smokes/2026-06-21T11-35-53-288Z-whatsapp-ux-live-smoke.md`
+  failed because an ad hoc DOM check assumed an empty message dataset should
+  force an empty phonebook view; the phonebook workspace can still render local
+  phonebook records or its own empty state.
+- `ops/live-smokes/2026-06-21T11-41-52-261Z-whatsapp-ux-live-smoke.md`
+  failed because Playwright waited for visible state on a responsive workspace
+  pane; the final smoke waits for DOM attachment and then asserts actual
+  desktop/mobile rendered state.
+- `ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md`
+  repeated the same visible-state wait issue before the attached-state smoke
+  rerun passed.
 <!-- batch-7:end -->

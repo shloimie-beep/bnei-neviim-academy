@@ -211,6 +211,12 @@ WhatsApp message API readback, and no-send readiness gates:
 - PASS `node --test tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-shell-navigation-contract.test.js`
 - PASS `npm run ops:audit -- smoke-login`
 - PASS `npm run bna:run:validate`
+- PASS `npm run railway:doctor` after Railway deployment
+  `3265d380-9a93-488d-844f-f523367aa4e2`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md`.
+- PASS focused/repeatable WhatsApp UX live smoke via `npm run app:smoke:whatsapp-ux`,
+  `ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md`.
 
 Focused communications test result:
 
@@ -231,4 +237,13 @@ Intermediate failure recorded:
 - The first focused communications run exposed an existing CRLF-brittle
   `.env.example` placeholder assertion. The test was made line-ending tolerant
   while preserving the blank-placeholder requirement, then the suite passed.
+- The first standard live-smoke attempt used scoped One Time credentials and
+  failed session `/me` readback; the rerun used the standard Operations
+  `OPS_*` credentials and passed.
+- Focused live-smoke attempts before the final pass failed on smoke-script
+  assumptions: missing clean-worktree env load, stale Operations selector,
+  legacy message response wrapper, empty-message versus phonebook-state
+  mismatch, and visible-state waiting on a responsive pane. The final focused
+  live smoke passed without changing runtime behavior or weakening the
+  no-send/raw-payload checks.
 <!-- batch-7:end -->

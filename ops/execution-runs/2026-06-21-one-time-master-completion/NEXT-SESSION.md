@@ -1,12 +1,11 @@
 # Next Session
 
-Continue `REQ-20260621-503`: WhatsApp UX. Batch 7 is locally implemented and
-verified. Commit, push, deploy, run standard live smoke, run focused WhatsApp
-UX live smoke, update evidence, and then continue to Batch 8 Email/Resend.
+Continue `REQ-20260621-504`: Email and Resend UX. Batch 7 WhatsApp UX is
+deployed and live-verified. Start Batch 8 without live email sends.
 Exact next command:
 
 ```powershell
-git status --short --branch
+npm run bna:run:next
 ```
 
 Do not run external sends, billing, DNS, real Zoom meeting creation, real Vimeo
@@ -107,26 +106,31 @@ Continue automatically with Batch 7 / `REQ-20260621-503` WhatsApp UX.
 <!-- batch-7:start -->
 ## Batch 7 Handoff
 
-WhatsApp UX is locally verified and pending deploy.
+WhatsApp UX is deployed and live-verified.
 
 - Requirement: `REQ-20260621-503`
-- Implementation status: `verified_local`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`
+- Railway deployment:
+  `3265d380-9a93-488d-844f-f523367aa4e2`
 - Key files:
   `public/operations.html`, `server.js`,
   `src/lib/bna/wapi-phonebook-report.js`
 - Focused communications tests: 30 passed, 0 failed.
 - Operations runtime smoke: 10 passed, 0 failed.
 - Local audit smoke: PASS `npm run ops:audit -- smoke-login`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md`
+- Focused/repeatable WhatsApp UX live smoke:
+  `ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md`
 
-Next exact actions:
+Next exact action:
 
 ```powershell
-git add public/operations.html server.js src/lib/bna/wapi-phonebook-report.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js tests/communications-integrations-contract.test.js ops/execution-runs/2026-06-21-one-time-master-completion/BATCH-STATUS.md ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json
-git commit -m "feat: complete whatsapp operations workspace"
-git push origin HEAD:codex/agent-control-center-20260619
+npm run bna:run:next
 ```
 
-After push, deploy to Railway with `RAILWAY_TOKEN` loaded from the local
-keyholder file without printing it, then run standard and focused WhatsApp live
-smokes. Do not send WhatsApp messages.
+Continue automatically with Batch 8 / `REQ-20260621-504` Email and Resend UX.
+Do not send live email.
 <!-- batch-7:end -->

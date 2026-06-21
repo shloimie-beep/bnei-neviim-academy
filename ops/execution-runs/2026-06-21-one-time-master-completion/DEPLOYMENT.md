@@ -92,3 +92,41 @@ Prior failed checks during the same batch:
   active after DOM readiness. The successful rerun used explicit selector
   waits.
 
+## Batch 7
+
+- Deployment ID: `3265d380-9a93-488d-844f-f523367aa4e2`
+- Deployed commit: `b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md`
+- Focused/repeatable WhatsApp UX live smoke: PASS,
+  `ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md`
+
+Focused live smoke verified production health, Operations login, scoped WAPI
+phonebook report, sanitized WhatsApp messages with raw payloads hidden by
+default, deployed Operations WhatsApp bundle markers, desktop/mobile rendering,
+disabled send readiness, no page-level horizontal overflow, and no
+GHL/GoHighLevel/LeadConnector UI terms. No WhatsApp send or external write was
+performed.
+
+Prior focused smoke-script failures during the same batch:
+
+- `ops/live-smokes/2026-06-21T11-32-25-063Z-live-app-smoke.md`
+  failed the standard live smoke because scoped One Time credentials did not
+  establish an `/api/bna/auth/me` session. The passing rerun used standard
+  Operations `OPS_*` credentials.
+- `ops/live-smokes/2026-06-21T11-31-29-921Z-whatsapp-ux-live-smoke.md`
+  did not load credentials from the main local keyholder env file.
+- `ops/live-smokes/2026-06-21T11-33-10-414Z-whatsapp-ux-live-smoke.md`
+  and `ops/live-smokes/2026-06-21T11-34-54-870Z-whatsapp-ux-live-smoke.md`
+  expected a legacy `success` wrapper on `/api/bna/whatsapp/messages`.
+- `ops/live-smokes/2026-06-21T11-35-53-288Z-whatsapp-ux-live-smoke.md`
+  assumed zero WhatsApp messages should force an empty phonebook view.
+- `ops/live-smokes/2026-06-21T11-41-52-261Z-whatsapp-ux-live-smoke.md`
+  used a visible-state wait on the responsive pane. The successful rerun
+  asserted the actual guardrail copy, disabled send gate, no external write
+  flag, sanitized API readback, and desktop/mobile DOM state.
+- `ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md`
+  repeated the visible-state wait issue before the attached-state rerun passed.
+

@@ -1,6 +1,6 @@
 # Status
 
-Status as of 2026-06-21T11:24:48+03:00.
+Status as of 2026-06-21T14:47:27+03:00.
 
 Batch 0 and Batch 1 are done locally. The successor run is the single active
 run. The execution CLI now validates structured requirements, reports the next
@@ -113,7 +113,7 @@ and focused Operations filter-rail live smoke passed. Next unblocked batch:
 <!-- batch-7:start -->
 ## Batch 7 - WhatsApp UX
 
-Status: in progress / verified local / pending deploy
+Status: done / deployed / verified live
 
 The existing first-party WAPI/Whapi workspace was extended rather than
 replaced. Operations Communications > WhatsApp now keeps the desktop
@@ -127,7 +127,11 @@ raw provider payloads by default. The WAPI phonebook report now supports a
 workspace-scoped report for scoped One Time users while preserving account-wide
 reporting for unscoped platform admins.
 
-Focused local verification passed. Next step: commit, push, deploy the safe
-app-visible WhatsApp UX changes, run standard live smoke, run focused
-WhatsApp UX live smoke, and then continue to Batch 8 Email/Resend.
+Focused local verification passed. The safe app-visible changes were pushed at
+`b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`, deployed to Railway deployment
+`3265d380-9a93-488d-844f-f523367aa4e2`, and verified by standard plus
+focused WhatsApp UX live smokes. No WhatsApp send or external write was
+performed.
+
+Next unblocked batch: `REQ-20260621-504` Email and Resend UX.
 <!-- batch-7:end -->
