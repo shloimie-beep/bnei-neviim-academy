@@ -634,3 +634,42 @@ write, GHL/LeadConnector runtime, or secret exposure was performed.
 
 Next unblocked child: `REQ-20260621-910` Agent Mode end-to-end acceptance.
 <!-- batch-9I:end -->
+
+<!-- batch-9J:start -->
+## Batch 9J - Agent Mode End-To-End Acceptance
+
+Status: done / deployed / verified live
+
+Closed `REQ-20260621-910` by adding a credential-free, read-only One Time
+Agent Mode acceptance artifact. The artifact verifies parser, CRM
+import/dedupe, trial/referral, payment/access/class links, authenticated
+support/questions, and TEST beta data readiness without performing real external
+writes.
+
+The admin-only route `/api/bna/one-time/agent-mode-acceptance` is deployed and
+the Operations Rabbi launch area now includes an Agent Mode acceptance panel.
+`View Agent Status` and `View Acceptance Evidence` are active. `Run Live Agent
+Mode` remains disabled with an explicit authorization blocker.
+
+Implementation/pushed/deployed commit:
+`6c45c4a4f5be60ae8b5dcceee66087f3d54430ae`. Railway deployment
+`b006acf0-41d5-458c-b661-2b673d8de1f7` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`, and
+focused 9J live smoke passed at
+`ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`.
+
+Local verification passed: syntax checks, 17/17 focused tests, acceptance
+evidence generation, action/security watchdogs, execution-run validation,
+tracked secret audit, and diff check with line-ending warnings only.
+
+Guardrails: no real Agent Mode external write run, live charge, email send,
+WhatsApp send, SMS send, Telegram send, external CRM/GHL write, Zoom/Vimeo/
+Google/DNS mutation, production private-data export, or secret exposure was
+performed.
+
+The product/schedule/portal launch parent `REQ-20260619-306` is closed for all
+currently possible credential-free work. Hosted transcription remains isolated
+as child blocker `REQ-20260621-902`.
+
+Next unblocked requirement: run `npm run bna:run:next`.
+<!-- batch-9J:end -->

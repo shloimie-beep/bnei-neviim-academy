@@ -1416,3 +1416,73 @@ Guardrails:
   grant, Zoom/Vimeo/Google mutation, DNS mutation, external CRM write,
   GHL/LeadConnector runtime, or secret exposure was performed.
 <!-- batch-9I:end -->
+
+<!-- batch-9J:start -->
+## Batch 9J - Agent Mode End-To-End Acceptance
+
+Status: done / deployed / verified live
+
+Implemented read-only Agent Mode acceptance for `REQ-20260621-910` across the
+currently credential-free One Time launch flow. The acceptance artifact covers
+source-envelope parsing, CRM import/dedupe, trial/referral, payment/access/class
+links, authenticated support/questions, and TEST-prefixed beta identities.
+
+Implemented files:
+
+- Acceptance builder: `src/platform/agent-control/one-time-acceptance.js`
+- Acceptance evidence generator: `scripts/one-time-agent-mode-acceptance.mjs`
+- Focused live smoke:
+  `scripts/smoke-one-time-agent-mode-acceptance-live.mjs`
+- Admin API and Operations panel: `server.js`, `public/operations.html`
+- Route/action/package registration:
+  `ops/route-registry.json`, `ops/action-registry.json`, `package.json`
+- Generated acceptance evidence:
+  `ops/one-time-mishnah/agent-mode-acceptance.json`,
+  `ops/one-time-mishnah/agent-mode-acceptance.md`
+- Focused tests: `tests/one-time-agent-mode-acceptance.test.js`
+
+Local verification:
+
+- PASS syntax checks for `server.js`,
+  `scripts/one-time-agent-mode-acceptance.mjs`, and
+  `scripts/smoke-one-time-agent-mode-acceptance-live.mjs`.
+- PASS focused Agent Mode/action/readback suite: 17/17.
+- PASS `npm run one-time:agent-mode-acceptance`.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T16-01-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T16-01-watchdog-security-routes.md`
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Implementation/pushed/deployed commit:
+  `6c45c4a4f5be60ae8b5dcceee66087f3d54430ae`
+- Railway deployment:
+  `b006acf0-41d5-458c-b661-2b673d8de1f7`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`
+- Focused Agent Mode acceptance live smoke:
+  `ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`
+
+Focused live smoke verified:
+
+- The production admin API returns the scoped acceptance artifact for
+  `rabbi_sheller_provider` / `one_time_mishnah_class`.
+- Six credential-free stages are present and passing.
+- External blockers are explicit for hosted transcription, Resend sender/domain
+  fields, Vimeo user token, and separate One Time infrastructure.
+- No live charges, real sends, external CRM/GHL writes, production mutations,
+  private exports, Zoom/Vimeo/Google/DNS mutations, or secret-like values are
+  reported.
+- Operations renders the Agent Mode acceptance panel with active evidence/status
+  controls and a disabled, explicitly blocked `Run Live Agent Mode` control.
+
+Guardrails:
+
+- No real Agent Mode external write run was performed. The acceptance mode is
+  read-only and keeps live Agent Mode execution behind explicit authorization.
+<!-- batch-9J:end -->

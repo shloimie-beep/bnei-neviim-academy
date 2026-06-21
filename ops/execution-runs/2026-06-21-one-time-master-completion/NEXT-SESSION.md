@@ -1,11 +1,10 @@
 # Next Session
 
 Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F, Batch 9G,
-Batch 9H, Batch 9I, Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
+Batch 9H, Batch 9I, Batch 9J, Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
-continue with the next unblocked open requirement it selects:
-`REQ-20260621-910` / Batch 9J Agent Mode end-to-end acceptance.
+continue with the next unblocked open requirement it selects.
 Exact next command:
 
 ```powershell
@@ -627,9 +626,47 @@ Next exact action:
 npm run bna:run:next
 ```
 
-Continue automatically with `REQ-20260621-910` / Batch 9J Agent Mode
-end-to-end acceptance.
+Continue automatically with the next unblocked requirement selected by
+`npm run bna:run:next`.
 <!-- batch-9I:end -->
+
+<!-- batch-9J:start -->
+## Batch 9J Handoff
+
+Agent Mode end-to-end acceptance is deployed and live-verified.
+
+- Requirement: `REQ-20260621-910`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `6c45c4a4f5be60ae8b5dcceee66087f3d54430ae`
+- Railway deployment:
+  `b006acf0-41d5-458c-b661-2b673d8de1f7`
+- Key files:
+  `src/platform/agent-control/one-time-acceptance.js`, `server.js`,
+  `public/operations.html`, `scripts/one-time-agent-mode-acceptance.mjs`,
+  `scripts/smoke-one-time-agent-mode-acceptance-live.mjs`,
+  `tests/one-time-agent-mode-acceptance.test.js`,
+  `ops/one-time-mishnah/agent-mode-acceptance.json`,
+  `ops/one-time-mishnah/agent-mode-acceptance.md`
+- Focused tests: 17/17 passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`
+- Focused Agent Mode acceptance live smoke:
+  `ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`
+- Guardrails:
+  no real Agent Mode external write run, live charge, send, external CRM/GHL
+  write, Zoom/Vimeo/Google/DNS mutation, production private-data export, or
+  secret exposure occurred.
+
+The Batch 9/10 launch parent is closed for credential-free work. Hosted
+transcription remains isolated in `REQ-20260621-902`.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-9J:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

@@ -455,3 +455,26 @@ Prior focused smoke-script failures during the same batch:
 - `ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md`
   failed because the smoke targeted the legacy content section.
 
+## Batch 9J
+
+- Railway deployment ID: `b006acf0-41d5-458c-b661-2b673d8de1f7`
+- Deployed commit: `6c45c4a4f5be60ae8b5dcceee66087f3d54430ae`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`
+- Focused Agent Mode acceptance live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`6c45c4a4f5be60ae8b5dcceee66087f3d54430ae`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production Agent Mode acceptance route,
+Operations acceptance panel, active evidence/status controls, disabled live-run
+blocker, six credential-free acceptance stages, and explicit external blockers.
+No real Agent Mode external write run, charge, send, external CRM/GHL write,
+Zoom/Vimeo/Google/DNS mutation, production private-data export, or secret
+exposure was performed.
+

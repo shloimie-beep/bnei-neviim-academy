@@ -25215,3 +25215,27 @@ GHL/LeadConnector runtime, or secret exposure occurred.
 
 Next: continue automatically with Batch 9J / `REQ-20260621-910` Agent Mode
 end-to-end acceptance.
+
+## 2026-06-21T19:07:00+03:00 - One Time Master Completion Batch 9J Agent Mode Acceptance
+
+Closed `REQ-20260621-910` for PR #5. Added a read-only Agent Mode acceptance
+artifact and admin route covering source-envelope parsing, CRM import/dedupe,
+trial/referral, payment/access/class links, authenticated support/questions,
+and TEST beta data.
+
+Commit `6c45c4a4f5be60ae8b5dcceee66087f3d54430ae` was pushed and deployed from
+a clean detached worktree. Railway deployment
+`b006acf0-41d5-458c-b661-2b673d8de1f7` reached `SUCCESS`; Railway doctor
+passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`; focused Agent
+Mode acceptance smoke passed at
+`ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`.
+
+Operations now shows active Agent Mode status/evidence controls and keeps the
+live-run control disabled with an explicit authorization blocker. No real Agent
+Mode external write run, live charge, send, external CRM/GHL write, Zoom/Vimeo/
+Google/DNS mutation, production private-data export, or secret exposure was
+performed.
+
+The product/schedule/portal launch parent is closed for credential-free work.
+Hosted transcription remains isolated in `REQ-20260621-902`.

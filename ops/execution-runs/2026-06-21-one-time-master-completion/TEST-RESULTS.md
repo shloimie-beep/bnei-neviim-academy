@@ -917,3 +917,44 @@ Focused coverage:
   recording denial.
 - Operations renders the preview panel and disabled Apply/Cleanup blockers.
 <!-- batch-9I:end -->
+
+<!-- batch-9J:start -->
+## Batch 9J Test Results
+
+Recorded for `REQ-20260621-910` Agent Mode end-to-end acceptance:
+
+- PASS `node --check server.js`
+- PASS `node --check scripts/one-time-agent-mode-acceptance.mjs`
+- PASS `node --check scripts/smoke-one-time-agent-mode-acceptance-live.mjs`
+- PASS `node --test tests/one-time-agent-mode-acceptance.test.js tests/one-time-synthetic-pilot.test.js tests/one-time-action-coverage.test.js tests/agent-control-api-readback.test.js`
+  with 17/17 tests passing.
+- PASS `npm run one-time:agent-mode-acceptance`.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T16-01-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T16-01-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after deployment
+  `b006acf0-41d5-458c-b661-2b673d8de1f7`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-agent-mode-acceptance`,
+  `ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`.
+
+Focused coverage:
+
+- Agent Mode acceptance includes parser, CRM import/dedupe, trial/referral,
+  payment/access/class links, authenticated support/questions, and TEST beta
+  identity stages.
+- Each acceptance stage maps to its requirement, evidence artifacts, no-write
+  guardrails, and remaining dependency state.
+- External blockers are isolated to transcription credential, Resend
+  sender/domain fields, Vimeo user token, and separate One Time infrastructure.
+- The acceptance route is admin-protected and Operations exposes active status
+  and evidence actions plus a disabled live-run blocker.
+- The generated evidence asserts no live charges, real sends, external CRM/GHL
+  writes, production mutations, private-data exports, Zoom/Vimeo/Google/DNS
+  mutations, or secret exposure.
+<!-- batch-9J:end -->

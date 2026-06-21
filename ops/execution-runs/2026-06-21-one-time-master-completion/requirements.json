@@ -1077,7 +1077,7 @@
       "id": "REQ-20260619-306",
       "title": "Product, scheduling, booking, portals, and billing foundations",
       "expected_result": "One Time product, schedule, booking, portals, and billing/access foundations are usable without live charges.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0010",
@@ -1097,9 +1097,9 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "children_in_progress",
-      "can_continue_without_operator": false,
-      "next_action": "Complete child requirements REQ-20260621-901 through REQ-20260621-910; do not mark the parent complete until every required child is done, already satisfied, blocked, needs operator decision, failed, or archived.",
+      "implementation_status": "verified_live_with_external_blocker",
+      "can_continue_without_operator": true,
+      "next_action": "Closed for all currently possible credential-free work. External transcription remains blocked in REQ-20260621-902 and does not block unrelated batches.",
       "acceptance_criteria": [
         "no guessed final pricing entitlements",
         "booking intent records created",
@@ -1115,7 +1115,9 @@
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.json",
         "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
         "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md",
-        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md",
+        "ops/one-time-mishnah/agent-mode-acceptance.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
       ],
       "verification": [
         "node --check src/lib/bna/one-time-product-system.js",
@@ -1128,7 +1130,9 @@
         "npm run railway:doctor",
         "npm run app:smoke",
         "node scripts/smoke-one-time-product-booking-live.mjs",
-        "REQ-20260621-901 verified live"
+        "REQ-20260621-901 verified live",
+        "REQ-20260621-910 verified live",
+        "REQ-20260621-902 isolated as external transcription credential blocker"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-product-system.js",
@@ -1145,15 +1149,17 @@
       "deployment_evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
         "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:50:00+03:00",
-      "deployed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
-      "deployment_id": "8c20ae67-9acc-43f2-b77d-c10fcd425d73",
+      "updated_at": "2026-06-21T19:07:00+03:00",
+      "deployed_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "deployment_id": "b006acf0-41d5-458c-b661-2b673d8de1f7",
       "live_smoke": [
         "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
       ],
       "child_requirement_ids": [
         "REQ-20260621-901",
@@ -1167,9 +1173,9 @@
         "REQ-20260621-909",
         "REQ-20260621-910"
       ],
-      "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910. Child REQ-20260621-902 is terminal blocked on transcription credential; continue with unblocked children.",
-      "blocker_owner": "Codex",
-      "blocker_next_action": "Continue with child requirement REQ-20260621-905, CRM Contacts UX."
+      "blocker": "External transcription credential remains isolated in child REQ-20260621-902; no credential-free child work remains in this parent requirement.",
+      "blocker_owner": "External/keyholder",
+      "blocker_next_action": "Provide the hosted transcription credential or approve a manual transcription-only workflow when ready."
     },
     {
       "source_id": "RAW-20260621-002",
@@ -1891,18 +1897,46 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "in_progress",
-      "implementation_status": "implementation_started",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/one-time-mishnah/agent-mode-acceptance.json",
+        "ops/one-time-mishnah/agent-mode-acceptance.md",
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.json"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check scripts/one-time-agent-mode-acceptance.mjs",
+        "node --check scripts/smoke-one-time-agent-mode-acceptance-live.mjs",
+        "node --test tests/one-time-agent-mode-acceptance.test.js tests/one-time-synthetic-pilot.test.js tests/one-time-action-coverage.test.js tests/agent-control-api-readback.test.js",
+        "npm run one-time:agent-mode-acceptance",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-agent-mode-acceptance"
+      ],
+      "implementation_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "pushed_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "Railway deployment b006acf0-41d5-458c-b661-2b673d8de1f7 SUCCESS for deployed commit 6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T18:56:00+03:00",
+      "updated_at": "2026-06-21T19:07:00+03:00",
       "id": "REQ-20260621-910",
       "title": "Agent Mode end-to-end acceptance",
       "expected_result": "Agent Mode acceptance can exercise the launch flow end to end in test mode with evidence, no external writes, and clear remaining blockers.",
@@ -1911,7 +1945,7 @@
       ],
       "category": "agent_mode_acceptance",
       "batch_id": "batch-9J",
-      "next_action": "Build read-only Agent Mode acceptance across parser, CRM, trial/referral, access/class links, tickets/questions, and beta data with explicit blockers and no external writes.",
+      "next_action": "Closed. Continue automatically with the next unblocked requirement from the execution runner.",
       "acceptance_criteria": [
         "acceptance flow has evidence artifacts",
         "no live charges or sends",
@@ -1919,9 +1953,25 @@
         "remaining blockers are explicit"
       ],
       "implementation_files": [
-        "src/lib/bna/agent-control.js",
-        "scripts/platform-synthetic-e2e.mjs",
-        "tests/agent-control-api-readback.test.js"
+        "src/platform/agent-control/one-time-acceptance.js",
+        "scripts/one-time-agent-mode-acceptance.mjs",
+        "scripts/smoke-one-time-agent-mode-acceptance-live.mjs",
+        "tests/one-time-agent-mode-acceptance.test.js",
+        "server.js",
+        "public/operations.html",
+        "package.json",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "ops/one-time-mishnah/agent-mode-acceptance.json",
+        "ops/one-time-mishnah/agent-mode-acceptance.md",
+        "ops/watchdog-audits/2026-06-21T16-01-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-01-watchdog-security-routes.md"
+      ],
+      "deployment_id": "b006acf0-41d5-458c-b661-2b673d8de1f7",
+      "deployed_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
       ]
     },
     {
