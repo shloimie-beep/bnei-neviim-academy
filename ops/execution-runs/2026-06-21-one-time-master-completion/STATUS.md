@@ -273,6 +273,48 @@ job `#78` blocked with sanitized notes.
 Next unblocked child: `REQ-20260621-903` Downloads spreadsheet inventory.
 <!-- batch-9B:end -->
 
+<!-- batch-9C:start -->
+## Batch 9C - Downloads Spreadsheet Inventory
+
+Status: done / verified locally
+
+Downloads spreadsheet inventory is complete without committing spreadsheet
+rows, contact values, raw headers, formulas, private exports, or absolute local
+paths. The inventory script scans spreadsheet-like files under Downloads,
+computes SHA-256 hashes, row/column estimates, sheet/header fingerprints,
+redacted filename labels, redacted schema signals, classifications, duplicate
+hash groups, and import-candidate lanes.
+
+Generated inventory:
+
+- `ops/one-time-mishnah/downloads-spreadsheet-inventory.json`
+- `ops/one-time-mishnah/downloads-spreadsheet-inventory.md`
+
+Summary:
+
+- Files inventoried: 203
+- Import candidates: 56
+- One Time Rabbi Scheller follower workbook: 1
+- Email audience exports: 5
+- Legacy CRM/pipeline exports: 29
+- Contact-list candidates: 21
+- External lead lists: 48
+- Unknown spreadsheets needing review: 78
+
+The highest-priority import candidate is `Rabbi Scheller Followers.xlsx` for
+One Time CRM review. Email audience exports are marked for reconciliation
+before any campaign send. Historical GHL/CRM/opportunity exports are labeled as
+first-party BNA Operations migration candidates only; no GHL runtime, client,
+API key, env var, schema, or connector was added.
+
+Verification passed: syntax check, inventory command, privacy regression test,
+JSON parse, tracked secret audit, and diff check. No deployment or live smoke
+was required because this batch only produced local redacted inventory and
+repo tooling.
+
+Next unblocked child: `REQ-20260621-904` CRM import and deduplication.
+<!-- batch-9C:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 - Zoom Meeting And Attendance Foundation
 

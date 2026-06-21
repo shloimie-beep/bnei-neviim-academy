@@ -14,7 +14,7 @@
 | 9 parent | REQ-20260619-306 | in_progress | Parent reopened as an umbrella for the revenue-launch/parser follow-up. Do not mark complete until child requirements 9A-9J are terminal. |
 | 9A | REQ-20260621-901 | done | Source-envelope classifier and mixed-context parser routing deployed and live-smoked with a dry-run synthetic parse. |
 | 9B | REQ-20260621-902 | blocked | Today's class-upload trace reached live source job #78, but transcription/parse is blocked by the hosted transcription credential returning `401 invalid_credential`; content-job notes were sanitized and focused smoke verified no parse run was created. |
-| 9C | REQ-20260621-903 | not_started | Downloads spreadsheet inventory. |
+| 9C | REQ-20260621-903 | done | Downloads spreadsheet inventory generated with redacted metadata/schema signals only: 203 files inventoried, 56 import candidates, no raw rows or private exports committed, no GHL runtime added. |
 | 9D | REQ-20260621-904 | not_started | CRM import and deduplication. |
 | 9E | REQ-20260621-905 | not_started | CRM Contacts UX. |
 | 9F | REQ-20260621-906 | not_started | Warm-lead trial and referral configuration. |

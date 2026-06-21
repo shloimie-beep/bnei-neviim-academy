@@ -671,6 +671,67 @@ Closeout result:
   with live env and Drive credentials.
 <!-- batch-9B:end -->
 
+<!-- batch-9C:start -->
+## Batch 9C Evidence - Downloads Spreadsheet Inventory
+
+Requirement: `REQ-20260621-903`
+
+Status: done / verified locally
+
+Implementation evidence:
+
+- Repeatable inventory script:
+  `scripts/inventory-download-spreadsheets.mjs`
+- Package command:
+  `npm run inventory:downloads-spreadsheets`
+- Privacy regression test:
+  `tests/downloads-spreadsheet-inventory.test.js`
+- Redacted inventory JSON:
+  `ops/one-time-mishnah/downloads-spreadsheet-inventory.json`
+- Redacted inventory Markdown:
+  `ops/one-time-mishnah/downloads-spreadsheet-inventory.md`
+
+Inventory result:
+
+- Source directory: Downloads; absolute path intentionally omitted in outputs.
+- Files inventoried: 203
+- Import candidates: 56
+- Classification counts:
+  - `one_time_rabbi_scheller_followers`: 1
+  - `email_audience_export`: 5
+  - `legacy_crm_or_pipeline_export`: 29
+  - `contact_list_candidate`: 21
+  - `external_lead_list`: 48
+  - `communications_export`: 13
+  - `accounting_export`: 2
+  - `import_mapping_reference`: 2
+  - `research_or_campaign_working_file`: 4
+  - `unknown_spreadsheet`: 78
+
+Import-candidate findings:
+
+- `Rabbi Scheller Followers.xlsx` is the highest-priority One Time CRM import
+  candidate.
+- `subscribed`, `unsubscribed`, `cleaned`, and `subscribers` audience exports
+  need email-audience reconciliation before any send.
+- Historical GHL/opportunity/pipeline exports are inventory-only migration
+  candidates for first-party BNA Operations CRM and dedupe planning.
+- Communication logs and accounting exports are marked as references, not
+  immediate CRM import files.
+
+Privacy and scope guardrails:
+
+- No spreadsheet rows, email addresses, phone numbers, names, raw headers,
+  formulas, or private export contents were committed.
+- Filename labels are redacted for provider/account-like tokens; original
+  source names are represented by hashes where needed.
+- Historical GHL/GoHighLevel/LeadConnector-named exports did not create any
+  GHL runtime, client, API key, env var, route, schema, dashboard control, or
+  connector.
+- No production data import, CRM write, email send, WhatsApp send, billing,
+  deploy, or external-account write was performed.
+<!-- batch-9C:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 Evidence - Zoom Meeting And Attendance Foundation
 

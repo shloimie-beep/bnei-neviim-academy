@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T16:38:00+03:00",
+  "updated_at": "2026-06-21T16:50:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -1148,7 +1148,7 @@
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:38:00+03:00",
+      "updated_at": "2026-06-21T16:50:00+03:00",
       "deployed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
       "deployment_id": "8c20ae67-9acc-43f2-b77d-c10fcd425d73",
       "live_smoke": [
@@ -1169,7 +1169,7 @@
       ],
       "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910. Child REQ-20260621-902 is terminal blocked on transcription credential; continue with unblocked children.",
       "blocker_owner": "Codex",
-      "blocker_next_action": "Continue with child requirement REQ-20260621-903, Downloads spreadsheet inventory."
+      "blocker_next_action": "Continue with child requirement REQ-20260621-904, CRM import and deduplication."
     },
     {
       "source_id": "RAW-20260621-002",
@@ -1330,18 +1330,34 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "done",
+      "implementation_status": "verified_local",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "evidence": [
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.json",
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --check scripts/inventory-download-spreadsheets.mjs",
+        "node scripts/inventory-download-spreadsheets.mjs",
+        "npm run inventory:downloads-spreadsheets",
+        "node --test tests/downloads-spreadsheet-inventory.test.js",
+        "inventory JSON parse PASS",
+        "generated-output privacy scan PASS after filename-token redaction",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check for Batch 9C paths"
+      ],
+      "implementation_commit": "0e1f586b7e7880ca9a2d65f57339d88e15794179",
+      "pushed_commit": "0e1f586b7e7880ca9a2d65f57339d88e15794179",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": false,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md"
+      ],
       "live_required": false,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T16:50:00+03:00",
       "id": "REQ-20260621-903",
       "title": "Downloads spreadsheet inventory",
       "expected_result": "Relevant Downloads spreadsheets are inventoried without committing private exports or secrets, and import candidates are classified.",
@@ -1350,7 +1366,7 @@
       ],
       "category": "spreadsheet_inventory",
       "batch_id": "batch-9C",
-      "next_action": "Inventory Downloads spreadsheet candidates with hashes/redacted metadata and identify CRM import sources.",
+      "next_action": "Continue with REQ-20260621-904 CRM import and deduplication using inventory IDs/hashes, not raw spreadsheet dumps.",
       "acceptance_criteria": [
         "inventory avoids raw private exports",
         "spreadsheet type and source are classified",
@@ -1358,10 +1374,18 @@
         "no GHL runtime added"
       ],
       "implementation_files": [
-        "ops/one-time-mishnah/",
-        "scripts/import-one-time-subscribers.mjs",
-        "tests/one-time-drive-brief-ingestion.test.js"
-      ]
+        "scripts/inventory-download-spreadsheets.mjs",
+        "tests/downloads-spreadsheet-inventory.test.js",
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.json",
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.md",
+        "package.json"
+      ],
+      "inventory_summary": {
+        "files_inventoried": 203,
+        "import_candidates": 56,
+        "highest_priority_candidate": "Rabbi Scheller Followers.xlsx",
+        "guardrail": "metadata and redacted schema signals only; no raw rows or private exports committed"
+      }
     },
     {
       "source_id": "RAW-20260621-002",

@@ -332,9 +332,44 @@ node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --par
 npm run app:smoke:class-upload-trace -- 78
 ```
 
-Continue current master run with the next unblocked requirement:
-`REQ-20260621-903` / Batch 9C Downloads spreadsheet inventory.
+Batch 9C is now complete; continue current master run with the next unblocked
+requirement:
+`REQ-20260621-904` / Batch 9D CRM import and deduplication.
 <!-- batch-9B:end -->
+
+<!-- batch-9C:start -->
+## Batch 9C Handoff
+
+Downloads spreadsheet inventory is complete and verified locally.
+
+- Requirement: `REQ-20260621-903`
+- Implementation status: `verified_local`
+- Implementation/pushed commit:
+  `0e1f586b7e7880ca9a2d65f57339d88e15794179`
+- Key files:
+  `scripts/inventory-download-spreadsheets.mjs`,
+  `tests/downloads-spreadsheet-inventory.test.js`,
+  `ops/one-time-mishnah/downloads-spreadsheet-inventory.json`,
+  `ops/one-time-mishnah/downloads-spreadsheet-inventory.md`
+- Inventory result:
+  203 spreadsheet-like files, 56 import candidates.
+- Highest-priority import candidate:
+  `Rabbi Scheller Followers.xlsx`.
+- Guardrails:
+  no spreadsheet rows, raw contact values, raw headers, private exports,
+  production import, GHL runtime, external send, billing, deploy, or
+  external-account write.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-904` / Batch 9D CRM import and
+deduplication, using the inventory IDs/hashes as source references instead of
+raw spreadsheet dumps.
+<!-- batch-9C:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

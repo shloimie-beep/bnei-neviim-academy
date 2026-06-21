@@ -24976,3 +24976,34 @@ WhatsApp, email, or external-account write was performed.
 
 Next: continue automatically with Batch 9C / `REQ-20260621-903` Downloads
 spreadsheet inventory while 9B waits on the credential blocker.
+
+## 2026-06-21T16:50:00+03:00 - One Time Master Completion Batch 9C Downloads Spreadsheet Inventory
+
+Closed `REQ-20260621-903` for PR #5. Downloads spreadsheet inventory is
+complete with redacted metadata and schema signals only.
+
+The repeatable inventory command scanned 203 spreadsheet-like files under
+Downloads and identified 56 import candidates. It produced
+`ops/one-time-mishnah/downloads-spreadsheet-inventory.json` and
+`ops/one-time-mishnah/downloads-spreadsheet-inventory.md`.
+
+Key classifications: 1 One Time Rabbi Scheller follower workbook, 5 email
+audience exports, 29 historical CRM/pipeline exports, 21 contact-list
+candidates, 48 external lead lists, 13 communications exports, 2 accounting
+exports, 2 import-map references, and 78 unknown spreadsheets needing review.
+
+Highest-priority next import source: `Rabbi Scheller Followers.xlsx`. Email
+audience exports require subscribed/unsubscribed/cleaned reconciliation before
+any send. Historical GHL/opportunity exports are first-party BNA Operations
+migration candidates only; no GHL runtime was added.
+
+Verification passed: inventory script syntax, inventory command, package
+command, privacy regression test, inventory JSON parse, generated-output
+privacy scan, tracked secret audit, and Batch 9C diff check.
+
+Guardrails: no spreadsheet rows, email addresses, phone numbers, names, raw
+headers, formulas, private exports, production import, GHL runtime, external
+send, billing, deploy, or external-account write was performed.
+
+Next: continue automatically with Batch 9D / `REQ-20260621-904` CRM import and
+deduplication using inventory IDs/hashes instead of raw spreadsheet dumps.

@@ -219,6 +219,20 @@ No deploy ran because no app-visible runtime bundle changed. The focused live
 smoke verified source readback, sanitized blocker notes, zero transcript chars,
 and no parse run for source `content_recording` / `78`.
 
+## Batch 9C
+
+- Railway deployment: not required.
+- App-visible runtime code changes: none.
+- Implementation commit: `0e1f586b7e7880ca9a2d65f57339d88e15794179`
+- Live smoke: not required for local Downloads inventory.
+- Production data mutation: none.
+
+Batch 9C generated only redacted local inventory artifacts under
+`ops/one-time-mishnah/` and a repeatable local inventory command. No raw
+spreadsheet rows, contact values, private exports, import writes, external
+sends, billing actions, DNS/account changes, GHL runtime, or deployment action
+was performed.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`

@@ -446,6 +446,39 @@ Guardrails:
   DNS, CRM/GHL, WhatsApp, email, or external-account write was performed.
 <!-- batch-9B:end -->
 
+<!-- batch-9C:start -->
+## Batch 9C Test Results
+
+Recorded after adding the Downloads spreadsheet inventory script, package
+command, privacy regression test, and generated redacted inventory artifacts:
+
+- PASS `node --check scripts/inventory-download-spreadsheets.mjs`
+- PASS `node scripts/inventory-download-spreadsheets.mjs`
+  - Files inventoried: 203
+  - Import candidates: 56
+  - Outputs:
+    `ops/one-time-mishnah/downloads-spreadsheet-inventory.json`,
+    `ops/one-time-mishnah/downloads-spreadsheet-inventory.md`
+- PASS `npm run inventory:downloads-spreadsheets`
+- PASS `node --test tests/downloads-spreadsheet-inventory.test.js`
+  with 1/1 tests passing.
+- PASS inventory JSON parse.
+- PASS generated-output privacy scan after filename-token redaction; scan hits
+  were hashes/fingerprints, not raw contact values.
+- PASS `node scripts/audit-secrets.mjs` with 3779 tracked paths checked and
+  0 tracked secret-risk files found.
+- PASS `git diff --check` for Batch 9C paths with line-ending warning only for
+  `package.json`.
+
+Focused privacy test covered:
+
+- Synthetic CSV exports with private emails, names, and phone numbers.
+- Inventory JSON/Markdown output creation.
+- Classification of One Time follower and legacy CRM/pipeline candidates.
+- No raw private row values in serialized JSON/Markdown.
+- Explicit `No GHL runtime` guardrail copy.
+<!-- batch-9C:end -->
+
 <!-- batch-12:start -->
 ## Batch 12 Test Results
 
