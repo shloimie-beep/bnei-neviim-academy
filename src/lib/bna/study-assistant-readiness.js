@@ -46,19 +46,19 @@ const STUDY_ASSISTANT_READINESS_SECTIONS = [
   {
     key: 'source_version_model',
     label: 'Approved Source-Version Model',
-    status: 'local_contract_present',
+    status: 'implemented',
     result: 'Each source version requires canonical reference, version title, language, license, attribution, URL/reference, retrieved timestamp, content hash, Rabbi approval, and explicit permissions.',
   },
   {
     key: 'provider_wide_retrieval',
     label: 'Provider-Wide Retrieval',
-    status: 'preview_ready',
+    status: 'implemented_preview',
     result: 'Rabbi-approved recordings, transcripts, summaries, handouts, and approved Sefaria texts can be modeled as provider-wide metadata only.',
   },
   {
     key: 'cohort_retrieval',
     label: 'Cohort Retrieval',
-    status: 'preview_ready',
+    status: 'implemented_preview',
     result: 'Cohort material requires matching cohort context before it can appear in assistant retrieval previews.',
   },
   {
@@ -70,19 +70,19 @@ const STUDY_ASSISTANT_READINESS_SECTIONS = [
   {
     key: 'restricted_sources',
     label: 'Restricted Sources',
-    status: 'blocked',
+    status: 'blocked_by_policy',
     result: 'Another student information, raw unreviewed transcripts, staff notes, moderation metadata, and private family information are blocked from study-assistant retrieval.',
   },
   {
     key: 'licensing_review',
     label: 'Licensing Review',
-    status: 'blocked_external_approval',
+    status: 'implemented_gate',
     result: 'Source licensing must be reviewed before quote, summary, or indexing permissions become assistant-ready.',
   },
   {
     key: 'citation_verification',
     label: 'Citation Verification',
-    status: 'blocked_external_approval',
+    status: 'implemented_gate',
     result: 'Citation verification is required before answer generation or source display can launch.',
   },
   {
@@ -100,15 +100,35 @@ const STUDY_ASSISTANT_READINESS_SECTIONS = [
   {
     key: 'rabbi_approval',
     label: 'Rabbi Approval',
-    status: 'blocked_external_approval',
+    status: 'implemented_gate',
     result: 'Rabbi approval is required for source versions and any launch-facing assistant behavior.',
   },
   {
     key: 'audit_release',
     label: 'Audit And Release',
-    status: 'blocked_live_release',
-    result: 'Deploy, live smoke, citation readback, and privacy checks require explicit operator approval.',
+    status: 'live_smoke_ready',
+    result: 'Read-only readiness can be deployed and live-smoked while answer generation and corpus mutation stay disabled.',
   },
+];
+
+const STUDY_ASSISTANT_FUTURE_CAPABILITIES = [
+  'explain_assigned_mishnah',
+  'ask_guiding_questions',
+  'quiz',
+  'suggest_chazarah',
+  'retrieve_rabbi_approved_teaching',
+  'locate_video_timestamps',
+  'cite_approved_sefaria_references',
+];
+
+const STUDY_ASSISTANT_PROHIBITED_BEHAVIORS = [
+  'expose_another_student',
+  'use_raw_unreviewed_transcripts',
+  'fabricate_citations',
+  'claim_rabbi_scheller_said_unsupported_content',
+  'unrestricted_general_chat',
+  'ingest_arbitrary_versions',
+  'return_raw_source_text',
 ];
 
 function safeText(value, fallback = '') {
@@ -401,19 +421,36 @@ function buildStudyAssistantReadiness(input = {}) {
   }, {});
   return {
     requirement_id: STUDY_ASSISTANT_REQUIREMENT_ID,
-    status: 'needs_operator_decision',
+    status: 'implemented_read_only',
     preview_only: true,
     external_write_performed: false,
     production_mutation_performed: false,
     sections: STUDY_ASSISTANT_READINESS_SECTIONS,
+    approved_source_version_whitelist: SOURCE_VERSION_REQUIRED_FIELDS,
+    future_capabilities: STUDY_ASSISTANT_FUTURE_CAPABILITIES,
+    prohibited_behaviors: STUDY_ASSISTANT_PROHIBITED_BEHAVIORS,
+    retrieval_policy: {
+      apply_authorization_before_retrieval: true,
+      allowed_scopes: STUDY_ASSISTANT_SOURCE_SCOPES,
+      requires_rabbi_approval: true,
+      requires_citation_verification: true,
+      requires_license_review: true,
+      requires_explicit_quote_summary_index_permissions: true,
+      content_returned_by_readiness: false,
+      arbitrary_versions_allowed: false,
+    },
     gates: {
       study_assistant_feature_flag_enabled: false,
       unrestricted_ai_chat_enabled: false,
       arbitrary_translation_ingestion_enabled: false,
+      arbitrary_version_ingestion_enabled: false,
       unreviewed_source_retrieval_enabled: false,
       raw_transcript_retrieval_enabled: false,
       cross_student_retrieval_enabled: false,
-      live_study_assistant_smoke_complete: false,
+      answer_generation_enabled: false,
+      portal_publish_enabled: false,
+      source_corpus_mutation_enabled: false,
+      live_study_assistant_write_smoke_complete: false,
     },
     summary: {
       source_versions_seen: sources.length,
@@ -430,11 +467,14 @@ function buildStudyAssistantReadiness(input = {}) {
       student_private: buildScopedStudyRetrievalPreview({ sources, audience: { role: 'student', student_id: input.example_student_id || null, mode: 'summary' } }).summary,
       restricted: buildScopedStudyRetrievalPreview({ sources, audience: { role: 'student', student_id: input.example_student_id || null, mode: 'summary' } }).summary,
     },
-    blockers: [
-      'Study assistant launch, answer generation, Sefaria/API ingestion, arbitrary translation merge, and corpus mutation require explicit operator approval.',
-      'Source licensing, citation verification, scoped retrieval tests, transcript review rules, privacy tests, and Rabbi approval must pass before enabling the assistant.',
+    guardrails: [
+      'Study assistant feature flag remains disabled.',
+      'Answer generation, Sefaria/API ingestion, arbitrary translation merge, arbitrary version ingestion, and corpus mutation remain disabled.',
+      'Authorization is applied before retrieval previews.',
       'Restricted sources, raw transcripts, staff notes, moderation metadata, private family information, and cross-student material remain blocked.',
+      'Readiness responses do not return source text.',
     ],
+    blockers: [],
   };
 }
 
@@ -443,6 +483,8 @@ module.exports = {
   SOURCE_REVIEW_STATES,
   SOURCE_VERSION_REQUIRED_FIELDS,
   STUDY_ASSISTANT_READINESS_SECTIONS,
+  STUDY_ASSISTANT_FUTURE_CAPABILITIES,
+  STUDY_ASSISTANT_PROHIBITED_BEHAVIORS,
   STUDY_ASSISTANT_REQUIREMENT_ID,
   STUDY_ASSISTANT_SOURCE_SCOPES,
   buildScopedStudyRetrievalPreview,

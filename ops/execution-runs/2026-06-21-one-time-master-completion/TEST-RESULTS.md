@@ -1090,3 +1090,41 @@ Focused coverage:
   worktree did not have `.env.local`; reruns with the established local env
   file loaded into the process passed.
 <!-- batch-16:end -->
+
+<!-- batch-17:start -->
+## Batch 17 Test Results
+
+Recorded for `REQ-20260619-312` Sefaria and study-assistant readiness:
+
+- PASS `node --check src/lib/bna/study-assistant-readiness.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-study-assistant-live.mjs`
+- PASS `node --test tests/one-time-study-assistant-readiness.test.js`
+  with 7/7 tests passing.
+- PASS `node --test tests/one-time-study-assistant-readiness.test.js tests/one-time-transcript-privacy.test.js tests/one-time-action-coverage.test.js`
+  with 19/19 tests passing.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T17-02-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T17-02-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+
+Focused coverage:
+
+- Study assistant readiness now reports `implemented_read_only` and no
+  blockers while the feature flag stays disabled.
+- Source versions require canonical reference, title/index/version, language,
+  license, attribution, source URL, retrieved timestamp, content hash, Rabbi
+  approval, and quote/summary/index permissions.
+- Retrieval previews apply authorization before retrieval and block restricted,
+  raw/unreviewed, staff-only, moderation, and cross-student material without
+  returning source text.
+- Future capabilities are declared as gated only; answer generation,
+  unrestricted AI chat, arbitrary version ingestion, Sefaria/API ingestion,
+  corpus mutation, portal publishing, raw transcript retrieval, and
+  cross-student retrieval remain disabled.
+- Operations shows the implemented disabled-feature foundation, no arbitrary
+  versions, and `Live smoke ready` state.
+<!-- batch-17:end -->

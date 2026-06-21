@@ -25951,14 +25951,15 @@
                     restricted: scopeCount('restricted'),
                 },
                 sections: [
-                    ['Source-version model', 'Local contract', 'Canonical reference, version, language, license, attribution, source URL, retrieved timestamp, content hash, Rabbi approval, and quote/summary/index permissions are required.'],
-                    ['Provider-wide retrieval', 'Preview ready', 'Approved recordings, transcripts, summaries, handouts, and Sefaria source metadata can be scoped provider-wide after review.'],
-                    ['Cohort retrieval', 'Guarded', 'Class curriculum, recordings, summaries, discussions, and sources require matching cohort context.'],
+                    ['Source-version model', 'Implemented', 'Canonical reference, version, language, license, attribution, source URL, retrieved timestamp, content hash, Rabbi approval, and quote/summary/index permissions are required.'],
+                    ['Provider-wide retrieval', 'Implemented preview', 'Approved recordings, transcripts, summaries, handouts, and Sefaria source metadata can be scoped provider-wide after review.'],
+                    ['Cohort retrieval', 'Implemented preview', 'Class curriculum, recordings, summaries, discussions, and sources require matching cohort context.'],
                     ['Student-private retrieval', 'Guarded', 'Student questions, feedback, assignments, progress, attendance, badges, and approved student transcript segments stay scoped to the matching student.'],
-                    ['Restricted sources', 'Blocked', 'Another student information, raw transcripts, staff notes, moderation metadata, and family-private material are blocked.'],
-                    ['Licensing and citation review', 'Blocked', 'Licensing, citation verification, scoped retrieval tests, transcript review, privacy tests, and Rabbi approval must pass before launch.'],
-                    ['Disabled feature flag', 'Blocked', 'The study assistant and unrestricted AI chat remain off; this panel does not generate answers.'],
-                    ['Audit and release', 'Blocked', 'Deploy, live smoke, Sefaria/API ingestion, citation readback, and privacy checks require explicit operator approval.'],
+                    ['Restricted sources', 'Blocked by policy', 'Another student information, raw transcripts, staff notes, moderation metadata, and family-private material are blocked.'],
+                    ['Licensing and citation review', 'Implemented gate', 'Licensing, citation verification, scoped retrieval tests, transcript review, privacy tests, and Rabbi approval must pass before launch.'],
+                    ['Disabled feature flag', 'Disabled by policy', 'The study assistant and unrestricted AI chat remain off; this panel does not generate answers.'],
+                    ['No arbitrary versions', 'Guarded', 'Only approved source-version metadata may appear in retrieval previews; arbitrary versions and raw text ingestion stay disabled.'],
+                    ['Audit and release', 'Live smoke ready', 'Read-only production smoke is safe while Sefaria/API ingestion, source corpus mutation, portal publishing, and answer generation stay disabled.'],
                 ],
             };
         }
@@ -25968,8 +25969,8 @@
             return `
                 <section class="one-time-approval-packet" data-one-time-study-assistant-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time Sefaria and study assistant readiness">
                     <strong>Sefaria / Study Assistant Readiness</strong>
-                    <span>${escapeHtml(state.requirementId)} / disabled feature flag</span>
-                    <p>No unrestricted AI chat, Sefaria/API ingestion, arbitrary translation merge, source corpus mutation, raw transcript retrieval, cross-student retrieval, portal publish, or answer generation runs from this panel.</p>
+                    <span>${escapeHtml(state.requirementId)} / implemented disabled-feature foundation</span>
+                    <p>No unrestricted AI chat, Sefaria/API ingestion, arbitrary translation merge, arbitrary version ingestion, source corpus mutation, raw transcript retrieval, cross-student retrieval, portal publish, or answer generation runs from this panel.</p>
                     <div class="classroom-board-metrics">
                         ${renderClassroomMetric(state.summary.sources, 'Sources')}
                         ${renderClassroomMetric(state.summary.missingMetadata, 'Need metadata')}

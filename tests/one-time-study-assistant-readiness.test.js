@@ -90,11 +90,19 @@ test('study assistant readiness keeps feature flag and all launch gates disabled
   });
 
   assert.equal(readiness.requirement_id, 'REQ-20260619-312');
-  assert.equal(readiness.status, 'needs_operator_decision');
+  assert.equal(readiness.status, 'implemented_read_only');
   assert.equal(readiness.preview_only, true);
   assert.equal(readiness.external_write_performed, false);
   assert.equal(readiness.production_mutation_performed, false);
   assert.equal(Object.values(readiness.gates).every((value) => value === false), true);
+  assert.deepEqual(readiness.approved_source_version_whitelist, studyAssistant.SOURCE_VERSION_REQUIRED_FIELDS);
+  assert.ok(readiness.future_capabilities.includes('explain_assigned_mishnah'));
+  assert.ok(readiness.future_capabilities.includes('cite_approved_sefaria_references'));
+  assert.ok(readiness.prohibited_behaviors.includes('fabricate_citations'));
+  assert.ok(readiness.prohibited_behaviors.includes('ingest_arbitrary_versions'));
+  assert.equal(readiness.retrieval_policy.apply_authorization_before_retrieval, true);
+  assert.equal(readiness.retrieval_policy.arbitrary_versions_allowed, false);
+  assert.equal(readiness.retrieval_policy.content_returned_by_readiness, false);
   assert.deepEqual(
     readiness.sections.map((section) => section.key),
     [
@@ -117,7 +125,9 @@ test('study assistant readiness keeps feature flag and all launch gates disabled
   assert.equal(readiness.summary.license_reviewed_sources, 4);
   assert.equal(readiness.summary.citation_verified_sources, 4);
   assert.equal(readiness.summary.scope_counts.restricted, 1);
-  assert.match(readiness.blockers.join(' '), /Study assistant launch/);
+  assert.deepEqual(readiness.blockers, []);
+  assert.match(readiness.guardrails.join(' '), /Study assistant feature flag remains disabled/);
+  assert.equal(readiness.sections.find((section) => section.key === 'audit_release').status, 'live_smoke_ready');
   assert.doesNotMatch(JSON.stringify(readiness), /Draft text/);
 });
 
@@ -134,6 +144,10 @@ test('server declares source-version schema, private route, scoped allowlist, an
     "app.get('/api/bna/one-time/study-assistant-readiness', requireAdmin",
     'study_assistant_feature_flag_enabled: false',
     'unrestricted_ai_chat_enabled: false',
+    'arbitrary_version_ingestion_enabled: false',
+    'answer_generation_enabled: false',
+    'source_corpus_mutation_enabled: false',
+    'portal_publish_enabled: false',
     'raw_source_text_returned: false',
     "routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET'",
     "app.post('/api/one-time-classroom/bot'",
@@ -150,10 +164,24 @@ test('Operations shows no-write Sefaria and study assistant readiness panel', ()
   assert.match(operations, /data-one-time-study-assistant-readiness/);
   assert.match(operations, /REQ-20260619-312/);
   assert.match(operations, /Sefaria \/ Study Assistant Readiness/);
-  assert.match(operations, /No unrestricted AI chat, Sefaria\/API ingestion, arbitrary translation merge, source corpus mutation, raw transcript retrieval, cross-student retrieval, portal publish, or answer generation runs from this panel/);
+  assert.match(operations, /No unrestricted AI chat, Sefaria\/API ingestion, arbitrary translation merge, arbitrary version ingestion, source corpus mutation, raw transcript retrieval, cross-student retrieval, portal publish, or answer generation runs from this panel/);
   assert.match(operations, /Source-version model/);
   assert.match(operations, /Student-private retrieval/);
   assert.match(operations, /Disabled feature flag/);
+  assert.match(operations, /No arbitrary versions/);
+  assert.match(operations, /Live smoke ready/);
+});
+
+test('package exposes focused study assistant live smoke script', () => {
+  const packageJson = fs.readFileSync('package.json', 'utf8');
+  const smokeScript = fs.readFileSync('scripts/smoke-one-time-study-assistant-live.mjs', 'utf8');
+  assert.match(packageJson, /"app:smoke:one-time-study-assistant": "node scripts\/smoke-one-time-study-assistant-live\.mjs"/);
+  assert.match(smokeScript, /study-assistant-readiness/);
+  assert.match(smokeScript, /implemented_read_only/);
+  assert.match(smokeScript, /arbitrary_version_ingestion_enabled === false/);
+  assert.match(smokeScript, /answer_generation_enabled === false/);
+  assert.match(smokeScript, /source_corpus_mutation_enabled === false/);
+  assert.doesNotMatch(smokeScript, /source-versions|study-assistant\/chat|sefaria\.org\/api|\/api\/sefaria/i);
 });
 
 test('route registry declares private no-write study assistant readiness route', () => {

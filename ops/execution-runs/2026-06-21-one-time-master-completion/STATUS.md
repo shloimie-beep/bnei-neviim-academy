@@ -779,3 +779,18 @@ performed.
 
 Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-16:end -->
+
+<!-- batch-17:start -->
+## Batch 17 - Sefaria And Study Assistant Readiness
+
+`REQ-20260619-312` is in progress with local implementation and focused
+verification complete. The study-assistant readiness contract is now
+`implemented_read_only`, source-version approval and scoped retrieval previews
+are metadata-only, the Operations panel shows the disabled-feature foundation,
+and the focused live smoke script is ready for deployment verification.
+
+Remaining steps: commit, push, deploy the safe app-visible bundle, run
+Railway doctor, run standard app smoke and focused study-assistant live smoke,
+then record final deployment evidence and continue to Batch 18/19 as the
+runner directs.
+<!-- batch-17:end -->

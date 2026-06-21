@@ -80,6 +80,7 @@
     "app:smoke:one-time-transcript-privacy": "node scripts/smoke-one-time-transcript-privacy-live.mjs",
     "app:smoke:one-time-gamification": "node scripts/smoke-one-time-gamification-live.mjs",
     "app:smoke:one-time-community": "node scripts/smoke-one-time-community-live.mjs",
+    "app:smoke:one-time-study-assistant": "node scripts/smoke-one-time-study-assistant-live.mjs",
     "app:smoke:final-register-surfaces": "node scripts/smoke-final-register-surfaces-live.mjs",
     "app:smoke:developer-tester-ticket": "node scripts/smoke-developer-tester-ticket-live.mjs",
     "app:smoke:public-navigation-positioning": "node scripts/smoke-public-navigation-positioning-live.mjs",

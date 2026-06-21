@@ -1712,3 +1712,54 @@ Guardrails:
   staff note, notification, send, charge, Zoom/Vimeo/Google/DNS mutation,
   external CRM/GHL write, delete purge, or secret exposure was performed.
 <!-- batch-16:end -->
+
+<!-- batch-17:start -->
+## Batch 17 - Sefaria And Study Assistant Readiness
+
+Status: implementation complete locally / deployment pending
+
+Implemented `REQ-20260619-312` as a disabled-feature, no-write study-assistant
+foundation. The readiness contract now reports `implemented_read_only`,
+requires approved source-version metadata, applies scoped authorization before
+retrieval previews, and keeps answer generation, unrestricted AI chat,
+arbitrary version ingestion, Sefaria/API ingestion, corpus mutation, portal
+publishing, raw transcript retrieval, and cross-student retrieval disabled.
+
+Implemented files:
+
+- Study assistant readiness contract:
+  `src/lib/bna/study-assistant-readiness.js`
+- Route no-write disabled-gate flags:
+  `server.js`
+- Operations readiness panel and copy:
+  `public/operations.html`
+- Focused live smoke:
+  `scripts/smoke-one-time-study-assistant-live.mjs`
+- Package and tests:
+  `package.json`, `tests/one-time-study-assistant-readiness.test.js`
+
+Local verification:
+
+- PASS syntax checks for `src/lib/bna/study-assistant-readiness.js`,
+  `server.js`, and `scripts/smoke-one-time-study-assistant-live.mjs`.
+- PASS focused study-assistant/transcript/action suite: 19/19.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T17-02-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T17-02-watchdog-security-routes.md`
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Pending after implementation commit/push.
+
+Guardrails:
+
+- No Sefaria/API ingestion, arbitrary version ingestion, source corpus
+  mutation, answer generation, portal publish, chat session creation, raw
+  source text retrieval, raw transcript retrieval, cross-student retrieval,
+  send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or
+  secret exposure was performed.
+<!-- batch-17:end -->
