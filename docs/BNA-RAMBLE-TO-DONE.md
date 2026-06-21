@@ -20,7 +20,54 @@ done.
 - Closed statuses need evidence. App-visible or server-visible closed statuses
   also need deployment/live evidence unless the item is explicitly blocked.
 - `blocked` and `needs_operator_decision` rows need `blocker`,
-  `blocker_owner`, and `blocker_next_action`.
+  `blocker_owner`, and `blocker_next_action` or `next_action`.
+
+## Structured Requirement Fields
+
+Each active-run requirement should carry machine-readable fields rather than
+status prose only:
+
+`id`, `title`, `source_id`, `source_statement_ids`, `source_path`,
+`workspace_key`, `project_key`, `owner`, `category`, `priority`, `batch_id`,
+`depends_on`, `status`, `implementation_status`,
+`can_continue_without_operator`, `blocker`, `blocker_owner`, `next_action`,
+`acceptance_criteria`, `evidence`, `verification`, `implementation_files`,
+`implementation_commit`, `pushed_commit`, `pull_request`,
+`deployment_required`, `deployment_id`, `deployed_commit`, `live_smoke`,
+`superseded_by`, and `updated_at`.
+
+Closed implementation requirements cannot be documentation-only unless the
+requirement category is actually protocol, audit, reconciliation, preflight, or
+deployment-readiness documentation. App-visible closed requirements must have
+push evidence and live deployment evidence that contains the implementation
+commit.
+
+## Next Unblocked Batch
+
+The execution CLI is the queue authority:
+
+- `npm run bna:run:status` validates the active run.
+- `npm run bna:run:resume` prints `NEXT-SESSION.md`, open requirements, and
+  the next unblocked executable batch.
+- `npm run bna:run:next` prints only the next unblocked executable batch.
+- `npm run bna:run:blockers` prints remaining external blockers.
+- `npm run bna:run:source-coverage` reports statement mapping coverage.
+- `npm run bna:run:stale-evidence` reports stale/missing evidence signals.
+
+After a batch completes, immediately select the next unblocked batch. Do not
+wait for the operator to choose order unless the next step requires a real
+credential, account action, DNS, financial, legal, privacy, or explicit
+authorization decision.
+
+## Decisions And Blockers
+
+Use one concise Decision/blocker per missing external fact. Record the missing
+information, owner, recommended option, alternatives, consequences, and exact
+action required. Mark only requirements that directly depend on that external
+fact as blocked; unrelated requirements stay executable.
+
+Do not create repeated Decisions for the same blocker. Update the existing
+Decision/blocker with new evidence or status.
 
 ## Source Mapping
 
@@ -117,6 +164,10 @@ active pointer, branch, HEAD, remote HEAD, or PR reference is recorded in
 `requirements.json`, `npm run bna:run:validate` must confirm it still matches
 the local checkout.
 
+Visible user Tasks must be canonical. Duplicate canonical task keys,
+audit-output rows, internal handoff files, raw prompt titles, and completed
+machine work do not belong in the default human Task views.
+
 ## Independent Verification
 
 Implementation and verification are separate jobs. A verification pass should
@@ -155,6 +206,7 @@ Execution runs live under `ops/execution-runs/<run-id>/` and include:
 - `TEST-RESULTS.md`
 - `DEPLOYMENT.md`
 - `NEXT-SESSION.md`
+- `BATCH-STATUS.md`
 - `run.json`
 
 Use `npm run bna:run:validate` before closeout and `npm run bna:run:resume`

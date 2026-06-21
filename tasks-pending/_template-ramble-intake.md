@@ -33,18 +33,25 @@ similar.
 
 ## Parsed requirements
 
-| ID | Requirement | Source quote | Expected result | Affected area | Verification | Status |
-|---|---|---|---|---|---|---|
+| ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Parsed tasks
 
-| ID | Task | Owner | Lane | Source quote | Done definition | Status |
-|---|---|---|---|---|---|---|
+Do not fan out one broad source into dozens of visible Tasks. Collapse related
+source statements into canonical executable requirements and only create visible
+Tasks for clear human actions.
+
+| ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
+|---|---|---|---|---|---|---|---|---|
 
 ## Decisions
 
-| ID | Decision | Impact | Where stored | Status |
-|---|---|---|---|---|
+Use one Decision per external blocker. Record the owner, recommended option,
+alternatives, consequences, and exact action required.
+
+| ID | Decision | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required | Blocks requirements | Status |
+|---|---|---|---|---|---|---|---|---|
 
 ## Open questions
 
@@ -58,8 +65,8 @@ similar.
 
 ## Implementation map
 
-| ID | Files/routes/components | Plan | Verification |
-|---|---|---|---|
+| ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
+|---|---|---|---|---|---|---|
 
 ## Final audit
 

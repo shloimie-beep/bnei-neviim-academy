@@ -6,7 +6,15 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] Continue `RAW-20260619-005` / `REQ-20260619-300` through `REQ-20260619-314`: One Time master recovery packet is terminal locally; `REQ-20260619-300` and `REQ-20260619-301` are locally done, `REQ-20260619-302` through `REQ-20260619-314` are terminal as `needs_operator_decision` with approval-gated production cleanup, live user/role persistence, UI audit, communications, product/billing, Zoom, Vimeo, transcript, gamification, community, Sefaria/study-assistant, Option B deployment/domain, final commit/push/PR/deploy/Railway/live-smoke, screenshot, and live data-isolation steps. Safe local final verification passed (`npm test` 901/901, focused RBAC/final-surface and Agents/auth suites, run validation, JSON/ledger parse, secret audit, diff check, watchdog audit); local smoke is blocked without approved `DATABASE_URL`, `OPS_USERNAME`, and `OPS_PASSWORD`. Do not run production cleanup, live user/role persistence, external sends, billing, DNS, Zoom, Vimeo, new Railway resources, authenticated broad crawls, deploys, live checkout, invoices, payment links, subscriptions, Zoom/calendar writes, live webhooks, attendance mutations, provider recording fetches, upload/publish/unpublish/delete actions, watch-progress writes, raw transcript import, transcript publication, vector/public-helper/source corpus mutation, cross-student retrieval enablement, badge award/reversal writes, parent/student badge notifications, access grants, prizes/coupons/credits, public/member leaderboards, public/member community publication, external community notifications, deletion purges, unrestricted student messaging, Sefaria/licensed source ingestion, arbitrary translation merge, assistant answer generation, portal publishing, Railway variable writes, database create/attach, domain/DNS changes, pushes/PR updates, commits, or live smoke without explicit action-specific approval.
+- [ ] Continue `RAW-20260621-001` / `REQ-20260619-301` in the active run
+  `ops/execution-runs/2026-06-21-one-time-master-completion/`: Batch 0 is
+  committed and PR #5 was advanced to `e1706a8e` through a workflow-safe
+  fast-forward checkpoint. The next executable batch is protocol repair, then
+  backlog reconciliation, production Task/Decision cleanup, roles/users, action
+  coverage, UI correction, communications, product/portal/media/Zoom/community
+  foundations, and final verification. External credential/account/DNS/legal/
+  financial decisions block only their dependent requirements.
+- [x] Superseded by `RAW-20260621-001`: `RAW-20260619-005` / `REQ-20260619-300` through `REQ-20260619-314` was the previous local-only One Time master recovery run. Its still-relevant requirements were migrated into `ops/execution-runs/2026-06-21-one-time-master-completion/`, where safe commit/push/deploy/live-smoke work is now authorized and true external blockers are isolated to their dependent requirements.
 - [ ] Continue `RAW-20260619-002` / `REQ-20260619-203` after the local
   One Time Drive brief no-write batch. Completed locally: newest Drive brief
   discovery, deterministic One Time-only dry-run parse, Operations Preview

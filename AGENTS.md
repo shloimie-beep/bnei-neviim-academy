@@ -88,6 +88,14 @@ Required behavior:
    the work, leave a continuation register/status note that names the next
    requirement IDs and proof/blockers. Do not mark the goal complete merely
    because the local batch ended.
+7. Use the execution-run CLI to choose the next batch: `npm run bna:run:next`
+   or `npm run bna:run:resume`. Continue automatically through the next
+   unblocked batch. A missing credential, account action, DNS change, legal,
+   financial, privacy, or explicit authorization decision blocks only the
+   dependent requirement, not the whole run.
+8. Each blocker/Decision must be concise and reusable: missing information,
+   owner, recommended option, alternatives, consequences, and exact next
+   action. Do not create repeated Decisions for the same blocker.
 
 GPT/ChatGPT outputs meant for Codex should include a clear
 `BNA_GOAL_MODE_EXECUTION_PACKET` section with raw source, requirement IDs,
@@ -112,6 +120,15 @@ A parsed item is complete only when:
 3. Verification was run, or the blocker is documented.
 4. The final audit table contains evidence.
 5. Shloimie can see the item ID and status.
+
+Structured execution-run requirements must include source, workspace/project,
+owner, priority, batch, dependency, implementation status, continuation,
+acceptance criteria, evidence, verification, implementation files, commit/push,
+PR, deployment/live-smoke, blocker, supersession, and update metadata. The
+validator rejects duplicate IDs, duplicate canonical Tasks, unmapped source
+statements, internal handoffs showing as visible user Tasks, doc-only
+implementation claims, stale evidence, and app-visible work marked complete
+without push/deploy proof.
 
 When the operator rambles:
 
@@ -344,6 +361,15 @@ Keep `MEMORY.md` compact and curated.
   `Calendar` and `Done / Activity` as supporting views. `Pending` means a
   human or external system is blocking progress; it must not mean "waiting for
   Codex."
+- Task lifecycle: raw source is preserved first, canonical executable
+  requirements are created second, and visible Tasks are created only for
+  distilled human actions with owner, workspace/project, source, next action,
+  blocker if any, and direct action. Duplicate canonical task keys must be
+  archived/superseded, not shown repeatedly.
+- Decision lifecycle: one Decision per external blocker. A Decision stays in
+  `Needs My Decision`, `Needs Rabbi Scheller`, or `Needs External Owner` until
+  the missing information is supplied, then moves to `Decided`, `Superseded`,
+  or `Archived`. Reuse the original Decision for repeated mentions.
 - Codex/system work belongs in the agent lifecycle (`queued`, `running`,
   `completed`, `failed`, or `blocked_needs_human_decision`) and stays visible as
   agent status under Tasks/Activity, not as a human-facing Pending card.

@@ -17,6 +17,7 @@ const requiredMarkdown = {
   'EVIDENCE.md': '# Evidence\n',
   'TEST-RESULTS.md': '# Test Results\n',
   'DEPLOYMENT.md': '# Deployment\n',
+  'BATCH-STATUS.md': '# Batch Status\n',
   'NEXT-SESSION.md': '# Next Session\nResume REQ-20260618-901.\n'
 };
 
@@ -26,12 +27,36 @@ function baseRequirement(overrides = {}) {
     title: 'Protocol validator fixture',
     status: 'not_started',
     expected_result: 'Validator fixture remains resumable.',
+    source_id: 'RAW-20260618-901',
+    source_statement_ids: ['STMT-20260618-901-001'],
+    source_path: 'raw-input/RAW-20260618-901-fixture.md',
+    workspace_key: 'test_workspace',
+    project_key: 'test_project',
+    owner: 'Codex',
+    category: 'protocol',
+    priority: 'P0',
+    batch_id: 'batch-fixture',
+    depends_on: [],
+    implementation_status: 'not_started',
+    can_continue_without_operator: true,
+    next_action: 'Continue the validator fixture.',
+    acceptance_criteria: ['Fixture validation passes.'],
     source: 'test',
     depends_on_audit_output: false,
     live_required: false,
+    deployment_required: false,
     evidence: [],
     deployment_evidence: [],
     verification: [],
+    implementation_files: [],
+    implementation_commit: '',
+    pushed_commit: '',
+    pull_request: '',
+    deployment_id: '',
+    deployed_commit: '',
+    live_smoke: '',
+    superseded_by: '',
+    updated_at: '2026-06-18T00:00:00+03:00',
     ...overrides
   };
 }
@@ -264,14 +289,15 @@ test('blocked requirement without owner and next action fails', () => {
     requirements: [
       baseRequirement({
         status: 'blocked',
-        blocker: 'Waiting on a fixture decision.'
+        blocker: 'Waiting on a fixture decision.',
+        next_action: ''
       })
     ]
   });
   const result = validate(root);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /blocker_owner/i);
-  assert.match(result.stderr, /blocker_next_action/i);
+  assert.match(result.stderr, /blocker_next_action or next_action/i);
 });
 
 test('unmapped source statements fail', () => {
@@ -408,4 +434,123 @@ test('stale git refs fail when declared refs disagree', () => {
   assert.match(result.stderr, /stale branch reference/i);
   assert.match(result.stderr, /stale head reference/i);
   assert.match(result.stderr, /PR URL does not match/i);
+});
+
+test('resume output identifies next unblocked executable batch', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({ status: 'done', evidence: ['raw-input/RAW-20260618-901-fixture.md'] }),
+      baseRequirement({
+        id: 'REQ-20260618-902',
+        title: 'Second executable fixture',
+        source_statement_ids: ['STMT-20260618-901-002'],
+        batch_id: 'batch-next',
+        depends_on: ['REQ-20260618-901']
+      })
+    ],
+    nextSessionContent: '# Next Session\nResume REQ-20260618-902.\n'
+  });
+  const result = spawnSync(process.execPath, [scriptPath, 'resume', '--root', root], {
+    encoding: 'utf8'
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Next unblocked executable batch:/);
+  assert.match(result.stdout, /batch-next \/ REQ-20260618-902/);
+});
+
+test('duplicate canonical tasks fail', () => {
+  const root = makeRoot({
+    docOverrides: {
+      canonical_tasks: [
+        {
+          canonical_task_key: 'test_workspace|test_project|same-action',
+          title: 'First task'
+        },
+        {
+          canonical_task_key: 'test_workspace|test_project|same-action',
+          title: 'Duplicate task'
+        }
+      ]
+    }
+  });
+  const result = validate(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /duplicate canonical task/i);
+});
+
+test('internal handoff files cannot appear as visible user tasks', () => {
+  const root = makeRoot({
+    docOverrides: {
+      tasks: [
+        {
+          title: 'Visible internal handoff',
+          visible: true,
+          source_path: 'tasks-pending/2026-06-18-internal-handoff.md'
+        }
+      ]
+    }
+  });
+  const result = validate(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /internal handoff file appears as a visible user Task/i);
+});
+
+test('implementation requirements cannot close with documentation-only files', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'verified',
+        category: 'ui',
+        live_required: true,
+        evidence: ['raw-input/RAW-20260618-901-fixture.md'],
+        deployment_evidence: ['Railway deployment fixture reached SUCCESS; live smoke passed.'],
+        implementation_files: ['docs/product/ui-brief.md']
+      })
+    ]
+  });
+  const result = validate(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /documentation\/evidence files only/i);
+});
+
+test('closed requirements cannot depend on incomplete requirements', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'done',
+        evidence: ['raw-input/RAW-20260618-901-fixture.md'],
+        depends_on: ['REQ-20260618-902']
+      }),
+      baseRequirement({
+        id: 'REQ-20260618-902',
+        title: 'Open dependency',
+        source_statement_ids: ['STMT-20260618-901-002'],
+        status: 'not_started'
+      })
+    ],
+    nextSessionContent: '# Next Session\nResume REQ-20260618-902.\n'
+  });
+  const result = validate(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /cannot be done while dependency REQ-20260618-902 is not_started/i);
+});
+
+test('app-visible closed requirements require pushed commit evidence when implementation commit is recorded', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'verified',
+        category: 'api',
+        live_required: true,
+        evidence: ['raw-input/RAW-20260618-901-fixture.md'],
+        deployment_evidence: ['Railway deployment fixture reached SUCCESS; live smoke passed.'],
+        implementation_files: ['server.js'],
+        implementation_commit: '1111111111111111111111111111111111111111',
+        pushed_commit: ''
+      })
+    ]
+  });
+  const result = validate(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /no pushed_commit/i);
 });

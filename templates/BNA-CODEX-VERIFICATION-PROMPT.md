@@ -19,9 +19,15 @@ Verify:
 - live-required closed requirements have positive deployment/live-smoke
   evidence, not only withheld/not-deployed text;
 - blocker rows include owner and next action;
+- duplicate canonical Tasks are absent;
+- internal handoff/audit/raw prompt files are not visible user Tasks;
+- implementation requirements are not closed with documentation-only evidence;
+- app-visible closed work has pushed commit and real deployment/live evidence;
+- done requirements do not depend on incomplete requirements;
 - git branch/HEAD/PR refs are current when recorded;
 - only one execution run is active;
 - NEXT-SESSION.md exists and names an open requirement ID while work remains;
+- resume/next output names the next unblocked executable batch;
 - audit harness, audit output, and implementation claims are kept separate;
 - ledger/changelog entries match the run.
 

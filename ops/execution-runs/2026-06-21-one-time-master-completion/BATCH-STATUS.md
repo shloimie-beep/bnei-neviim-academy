@@ -3,8 +3,8 @@
 | Batch | Requirement | Status | Notes |
 | --- | --- | --- | --- |
 | 0 | REQ-20260619-300 | done | Successor run created and validation passed. |
-| 1 | REQ-20260619-301 | next | Next unblocked batch. |
-| 2 | REQ-20260621-501 | not_started | Master reconciliation refresh. |
+| 1 | REQ-20260619-301 | done | Protocol, validator, schema, resume/next/source/blocker/stale-evidence behavior verified locally. |
+| 2 | REQ-20260621-501 | next | Master reconciliation refresh. |
 | 3 | REQ-20260619-302 | not_started | Task and Decision cleanup. |
 | 4 | REQ-20260619-303 | not_started | Roles and users. |
 | 5 | REQ-20260621-502 | not_started | Visible action coverage. |
