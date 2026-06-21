@@ -178,14 +178,17 @@ test('gamification badge readiness is no-write and blocks public leaderboards', 
   });
 
   assert.equal(readiness.requirement_id, 'REQ-20260619-310');
-  assert.equal(readiness.status, 'needs_operator_decision');
+  assert.equal(readiness.status, 'implemented_read_only');
   assert.equal(readiness.preview_only, true);
   assert.equal(readiness.external_write_performed, false);
   assert.equal(readiness.production_mutation_performed, false);
+  assert.equal(readiness.event_driven_award_pipeline_enabled, true);
+  assert.equal(readiness.manual_reversal_pipeline_enabled, true);
   assert.equal(Object.values(readiness.gates).every((value) => value === false), true);
   assert.equal(readiness.definitions.automatic_badges.length, 11);
   assert.equal(readiness.definitions.rabbi_awarded_badges.length, 6);
   assert.equal(readiness.award_candidates.rabbi_awarded[0].badge_slug, 'clear_explanation');
   assert.equal(readiness.award_candidates.reversals[0].status, 'ready_for_human_review');
-  assert.match(readiness.blockers.join(' '), /No public individual leaderboard/);
+  assert.equal(readiness.blockers.length, 0);
+  assert.match(readiness.guardrails.join(' '), /No public individual leaderboard/);
 });

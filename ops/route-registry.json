@@ -691,6 +691,24 @@
       ]
     },
     {
+      "route": "/api/bna/student-badges/:id/reverse",
+      "surface": "operations_api_one_time_manual_badge_reversal",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "revoke_badge_only_with_reversal_reason_and_badge_audit_event",
+      "privacy_risk": "high",
+      "security_expectation": "Requires admin scope and reversal reason; writes only a badge status reversal plus audit event, with no external notification, access grant, prize/credit, or public individual leaderboard.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
       "route": "/api/bna/one-time/community-moderation-readiness",
       "surface": "operations_api_one_time_community_moderation_readiness",
       "access": "private",

@@ -24203,12 +24203,12 @@
                     rabbiBadges: rabbiBadges.length,
                 },
                 sections: [
-                    ['Automatic badges', 'Local contract', automaticBadges.join(', ')],
-                    ['Rabbi-awarded badges', 'Human review', rabbiBadges.join(', ')],
-                    ['Thresholds', 'Configurable', 'Five on-time classes, three-week consistency, and chazarah streak counts are threshold-driven.'],
-                    ['Idempotency', 'Guarded', 'Badge award and reversal keys are stable per student, badge, and source event/reversal reference.'],
-                    ['Source evidence', 'Required', 'Awards require source event, reason, class/session evidence when relevant, and parent-safe explanation.'],
-                    ['Manual reversal', 'Review only', 'Reversal requires reason and audit trail before any badge status changes.'],
+                    ['Automatic badges', 'Implemented', automaticBadges.join(', ')],
+                    ['Rabbi-awarded badges', 'Review required', rabbiBadges.join(', ')],
+                    ['Thresholds', 'Implemented', 'Five on-time classes, three-week consistency, and chazarah streak counts are threshold-driven.'],
+                    ['Idempotency', 'Implemented', 'Badge award and reversal keys are stable per student, badge, and source event/reversal reference.'],
+                    ['Source evidence', 'Implemented', 'Awards require source event, reason, class/session evidence when relevant, and parent-safe explanation.'],
+                    ['Manual reversal', 'Implemented', 'Reversal requires reason and writes a badge audit trail before any parent-facing readback changes.'],
                     ['Public leaderboard', 'Blocked', 'No public individual leaderboard, negative points, prize/coupon/credit, access grant, or external notification is enabled.'],
                 ],
             };
@@ -24220,7 +24220,7 @@
                 <section class="one-time-approval-packet" data-one-time-badge-audit-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time gamification badge readiness">
                     <strong>Gamification / Badge Audit</strong>
                     <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
-                    <p>No badge award, badge reversal, parent/student notification, automatic access grant, prize/coupon/credit, negative-point action, or public individual leaderboard runs from this panel.</p>
+                    <p>Server-side event badges and manual reversals are implemented, but this panel is read-only. No badge award, badge reversal, parent/student notification, automatic access grant, prize/coupon/credit, negative-point action, or public individual leaderboard runs from this panel.</p>
                     <div class="classroom-board-metrics">
                         ${renderClassroomMetric(state.summary.loadedEvents, 'Events')}
                         ${renderClassroomMetric(state.summary.approvedEvents, 'Approved')}

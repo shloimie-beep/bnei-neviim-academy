@@ -40,8 +40,10 @@ const {
 const {
   GAMIFICATION_EVENT_TYPES,
   badgeAwardIdempotencyKey,
+  badgeReversalIdempotencyKey,
   buildGamificationBadgeReadiness,
   courseEnrollmentSummary,
+  evaluateAutomaticBadgeAwards,
   gamificationIdempotencyKey,
   normalizeGamificationEventType,
   oneTimeBadgeDefinitions,
@@ -8578,6 +8580,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/gamification-events' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/gamification-events/backfill' && method === 'POST') return true;
   if (routePath === '/api/bna/gamification/badge-readiness' && method === 'GET') return true;
+  if (/^\/api\/bna\/student-badges\/\d+\/reverse$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/shoutouts' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/shoutouts\/\d+\/approve$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/parent-student-links' && ['GET', 'POST'].includes(method)) return true;
@@ -32849,6 +32852,26 @@ function ws11GamificationEventView(row = {}) {
   };
 }
 
+function ws11StudentBadgeView(row = {}) {
+  return {
+    id: row.id,
+    student_id: row.student_id,
+    badge_id: row.badge_id,
+    badge_slug: row.slug || row.badge_slug || '',
+    badge_title: row.title || row.badge_title || '',
+    status: row.status || 'active',
+    awarded_event_id: row.awarded_event_id || null,
+    awarded_at: row.awarded_at || null,
+    awarded_by: row.awarded_by || '',
+    revoked_at: row.revoked_at || null,
+    revoked_by: row.revoked_by || '',
+    reversal_reason_present: Boolean(row.reversal_reason),
+    parent_safe_explanation: parseJsonMaybe(row.metadata).parent_safe_explanation || row.description || row.title || '',
+    metadata: parseJsonMaybe(row.metadata),
+    audit: parseJsonMaybe(row.audit_json),
+  };
+}
+
 function ws11StudentReferenceView(row = {}) {
   return {
     id: row.id,
@@ -32898,25 +32921,41 @@ function ws11ProgressReportView(row = {}) {
 }
 
 async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
-  const total = (await db.query(
-    `SELECT COALESCE(SUM(points), 0)::int AS total_points
+  if (!event || event.approval_status !== 'approved') return [];
+  const events = (await db.query(
+    `SELECT *
      FROM bna_gamification_events
      WHERE student_id = $1
-       AND approval_status = 'approved'`,
+       AND approval_status = 'approved'
+     ORDER BY occurred_at ASC, id ASC`,
     [studentId]
-  )).rows[0]?.total_points || 0;
-  const badges = (await db.query(
+  )).rows;
+  const existingBadges = (await db.query(
+    `SELECT sb.*, b.slug, b.title
+     FROM bna_student_badges sb
+     JOIN bna_badges b ON b.id = sb.badge_id
+     WHERE sb.student_id = $1
+       AND sb.status = 'active'`,
+    [studentId]
+  )).rows;
+  const candidates = evaluateAutomaticBadgeAwards({
+    student_id: studentId,
+    events,
+    existing_badges: existingBadges,
+  });
+  if (!candidates.length) return [];
+  const badgeRows = (await db.query(
     `SELECT *
      FROM bna_badges
      WHERE status = 'active'
-       AND (
-         event_type = $1
-         OR (points_required > 0 AND points_required <= $2)
-       )
-     ORDER BY points_required ASC, id ASC`,
-    [event.event_type, total]
+       AND slug = ANY($1::text[])`,
+    [candidates.map((candidate) => candidate.badge_slug)]
   )).rows;
-  for (const badge of badges) {
+  const badgesBySlug = new Map(badgeRows.map((badge) => [badge.slug, badge]));
+  const awardedRows = [];
+  for (const candidate of candidates) {
+    const badge = badgesBySlug.get(candidate.badge_slug);
+    if (!badge) continue;
     const awarded = (await db.query(
       `INSERT INTO bna_student_badges (
          student_id, badge_id, awarded_event_id, status, awarded_by, metadata, audit_json
@@ -32927,17 +32966,25 @@ async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
         studentId,
         badge.id,
         event.id,
-        JSON.stringify({ source: 'ws11_auto_award', total_points: total, requirement_id: 'REQ-20260619-310' }),
+        JSON.stringify({
+          source: 'event_driven_auto_award',
+          requirement_id: 'REQ-20260619-310',
+          idempotency_key: candidate.idempotency_key,
+          source_event_ref: candidate.evidence?.source_ref || String(event.id),
+          parent_safe_explanation: candidate.parent_safe_explanation,
+        }),
         JSON.stringify([{
           action: 'awarded',
-          source: 'ws11_auto_award',
+          source: 'event_driven_auto_award',
           event_id: event.id,
           awarded_by: 'system',
-          parent_safe_explanation: badge.description || badge.title,
+          reason: candidate.reason,
+          parent_safe_explanation: candidate.parent_safe_explanation,
         }]),
       ]
     )).rows[0];
     if (awarded) {
+      awardedRows.push(awarded);
       await db.query(
         `INSERT INTO bna_badge_audit_events (
            student_id, badge_id, student_badge_id, event_type, source_event_id,
@@ -32949,14 +32996,20 @@ async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
           badge.id,
           awarded.id,
           event.id,
-          badgeAwardIdempotencyKey({ student_id: studentId, badge_slug: badge.slug, source_event_ref: event.id }),
-          badge.title,
-          badge.description || badge.title,
-          JSON.stringify({ source: 'ws11_auto_award', requirement_id: 'REQ-20260619-310', total_points: total }),
+          candidate.idempotency_key || badgeAwardIdempotencyKey({ student_id: studentId, badge_slug: badge.slug, source_event_ref: event.id }),
+          candidate.reason || badge.title,
+          candidate.parent_safe_explanation || badge.description || badge.title,
+          JSON.stringify({
+            source: 'event_driven_auto_award',
+            requirement_id: 'REQ-20260619-310',
+            badge_slug: badge.slug,
+            source_event_id: event.id,
+          }),
         ]
       );
     }
   }
+  return awardedRows;
 }
 
 async function createGamificationEvent(input = {}, db = pool) {
@@ -61412,6 +61465,87 @@ app.get('/api/bna/gamification/badge-readiness', requireAdmin, async (req, res) 
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/student-badges/:id/reverse', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const reason = limitText(body.reversal_reason || body.reversalReason || body.reason || '', 600);
+  if (!reason) return res.status(400).json({ error: 'reversal_reason is required' });
+  const actor = limitText(body.actor || body.revoked_by || body.revokedBy || req.opsUser || 'operations', 120) || 'operations';
+  const badgeId = Number(req.params.id);
+  if (!Number.isFinite(badgeId)) return res.status(400).json({ error: 'badge id is required' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const existing = (await client.query(
+      `SELECT sb.*, b.slug, b.title, b.description
+       FROM bna_student_badges sb
+       JOIN bna_badges b ON b.id = sb.badge_id
+       WHERE sb.id = $1
+       FOR UPDATE`,
+      [badgeId]
+    )).rows[0];
+    if (!existing) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'badge not found' });
+    }
+    const idempotencyKey = badgeReversalIdempotencyKey({
+      student_id: existing.student_id,
+      badge_slug: existing.slug,
+      reversal_ref: body.reversal_ref || body.reversalRef || reason,
+    });
+    const auditEntry = [{
+      action: 'revoked',
+      source: 'manual_badge_reversal',
+      reason,
+      actor,
+      requirement_id: 'REQ-20260619-310',
+      created_at: new Date().toISOString(),
+    }];
+    const updated = (await client.query(
+      `UPDATE bna_student_badges
+       SET status = 'revoked',
+           revoked_at = NOW(),
+           revoked_by = $2,
+           reversal_reason = $3,
+           audit_json = COALESCE(audit_json, '[]'::jsonb) || $4::jsonb
+       WHERE id = $1
+       RETURNING *`,
+      [existing.id, actor, reason, JSON.stringify(auditEntry)]
+    )).rows[0];
+    await client.query(
+      `INSERT INTO bna_badge_audit_events (
+         student_id, badge_id, student_badge_id, event_type, source_event_id,
+         idempotency_key, reason, parent_safe_explanation, actor_label, metadata
+       ) VALUES ($1, $2, $3, 'revoked', $4, $5, $6, $7, $8, $9::jsonb)
+       ON CONFLICT (idempotency_key) DO NOTHING`,
+      [
+        existing.student_id,
+        existing.badge_id,
+        existing.id,
+        existing.awarded_event_id || null,
+        idempotencyKey,
+        reason,
+        'Badge reversal recorded after human review.',
+        actor,
+        JSON.stringify({ source: 'manual_badge_reversal', requirement_id: 'REQ-20260619-310', badge_slug: existing.slug }),
+      ]
+    );
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      badge: ws11StudentBadgeView({ ...updated, slug: existing.slug, title: existing.title, description: existing.description }),
+      external_write_performed: false,
+      public_individual_leaderboard_enabled: false,
+      notification_sent: false,
+      access_grant_changed: false,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 

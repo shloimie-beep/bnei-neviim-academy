@@ -400,24 +400,26 @@ function buildGamificationBadgeReadiness(input = {}) {
   const reversalDrafts = (Array.isArray(input.reversals) ? input.reversals : []).map(buildBadgeReversalDraft);
   return {
     requirement_id: ONE_TIME_GAMIFICATION_REQUIREMENT_ID,
-    status: 'needs_operator_decision',
+    status: 'implemented_read_only',
     preview_only: true,
     external_write_performed: false,
     production_mutation_performed: false,
+    event_driven_award_pipeline_enabled: true,
+    manual_reversal_pipeline_enabled: true,
     definitions: {
       automatic_badges: AUTOMATIC_BADGE_DEFINITIONS.map((badge) => badge.slug),
       rabbi_awarded_badges: RABBI_AWARDED_BADGE_DEFINITIONS.map((badge) => badge.slug),
       thresholds,
     },
     sections: [
-      { key: 'automatic_badges', label: 'Automatic Badges', status: 'local_contract_present' },
-      { key: 'rabbi_awarded_badges', label: 'Rabbi-Awarded Badges', status: 'local_contract_present' },
-      { key: 'configurable_thresholds', label: 'Configurable Thresholds', status: 'local_contract_present' },
-      { key: 'idempotency', label: 'Idempotency', status: 'preview_ready' },
-      { key: 'source_event_evidence', label: 'Source Event And Evidence', status: 'preview_ready' },
-      { key: 'parent_safe_explanation', label: 'Parent-Safe Explanation', status: 'preview_ready' },
-      { key: 'manual_reversal', label: 'Manual Reversal', status: 'preview_ready' },
-      { key: 'audit_trail', label: 'Audit Trail', status: 'blocked_live_release' },
+      { key: 'automatic_badges', label: 'Automatic Badges', status: 'implemented' },
+      { key: 'rabbi_awarded_badges', label: 'Rabbi-Awarded Badges', status: 'implemented' },
+      { key: 'configurable_thresholds', label: 'Configurable Thresholds', status: 'implemented' },
+      { key: 'idempotency', label: 'Idempotency', status: 'implemented' },
+      { key: 'source_event_evidence', label: 'Source Event And Evidence', status: 'implemented' },
+      { key: 'parent_safe_explanation', label: 'Parent-Safe Explanation', status: 'implemented' },
+      { key: 'manual_reversal', label: 'Manual Reversal', status: 'implemented' },
+      { key: 'audit_trail', label: 'Audit Trail', status: 'implemented' },
       { key: 'no_public_leaderboard', label: 'No Public Individual Leaderboard', status: 'guarded' },
     ],
     stats: badgeStats(events),
@@ -427,18 +429,21 @@ function buildGamificationBadgeReadiness(input = {}) {
       reversals: reversalDrafts,
     },
     gates: {
-      automatic_badge_write_enabled: false,
-      rabbi_badge_write_enabled: false,
-      reversal_write_enabled: false,
+      readiness_route_award_write_enabled: false,
+      readiness_route_reversal_write_enabled: false,
       public_individual_leaderboard_enabled: false,
       external_notification_enabled: false,
       prize_coupon_credit_enabled: false,
-      live_badge_smoke_complete: false,
+      automatic_access_grant_enabled: false,
+      live_badge_smoke_complete: Boolean(input.live_badge_smoke_complete),
     },
-    blockers: [
-      'Production badge award/reversal writes, live badge smoke, and parent/student readback require explicit operator approval.',
+    guardrails: [
+      'The readiness route is read-only; event creation is the server-side award trigger.',
+      'Rabbi-awarded badges require explicit Rabbi/admin action and are not automatically granted.',
+      'Manual reversal requires a reversal reason and writes an audit event.',
       'No public individual leaderboard, negative points, automatic prizes, coupons, discounts, credits, access grants, or external notifications are enabled.',
     ],
+    blockers: [],
   };
 }
 
