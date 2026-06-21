@@ -2542,10 +2542,14 @@
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-19---final-verification-and-release",
         "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-19-test-results",
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-19",
-        "ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md",
-        "ops/watchdog-audits/2026-06-21T17-29-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-21T17-29-watchdog-security-routes.md"
+        "ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-33-54-274Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-33-57-277Z-ws11-parent-progress-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-35-16-906Z-student-auth-policy-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-35-23-215Z-public-navigation-positioning-smoke.md",
+        "ops/watchdog-audits/2026-06-21T17-35-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T17-35-watchdog-security-routes.md"
       ],
       "verification": [
         "node --test tests/agent-control-center.test.js tests/one-time-intake-api-readback.test.js tests/one-time-ui-design-delta-audit.test.js tests/operations-automation-library.test.js tests/operations-saas-crm-redesign.test.js tests/rabbi-task-dialogue.test.js tests/ui-01-public-operations-shell.test.js tests/operations-shell-navigation-contract.test.js",
@@ -2560,12 +2564,18 @@
         "npm run railway:redeploy",
         "npm run railway:doctor",
         "npm run app:smoke",
-        "npm run app:smoke:final-register-surfaces"
+        "npm run app:smoke:final-register-surfaces",
+        "npm run app:smoke:operations-workspace-taxonomy",
+        "npm run app:smoke:ws11-parent-progress",
+        "npm run app:smoke:student-auth",
+        "npm run app:smoke:public-navigation-positioning"
       ],
       "implementation_files": [
         "public/operations.html",
         "scripts/one-time-ui-design-delta-audit.mjs",
         "scripts/smoke-final-register-surfaces-live.mjs",
+        "scripts/smoke-operations-workspace-taxonomy-live.mjs",
+        "scripts/smoke-public-navigation-positioning-live.mjs",
         "tests/agent-control-center.test.js",
         "tests/one-time-intake-api-readback.test.js",
         "tests/operations-automation-library.test.js",
@@ -2579,12 +2589,12 @@
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
-        "Railway deployment 96766f0d-ebce-4296-9002-9945b8f85858 SUCCESS",
-        "ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md"
+        "Railway deployment 48cf7b0e-5623-43a3-9c5a-278e4d8b7997 SUCCESS",
+        "ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T20:29:00+03:00"
+      "updated_at": "2026-06-21T20:36:00+03:00"
     }
   ],
   "source_statement_matrix": {

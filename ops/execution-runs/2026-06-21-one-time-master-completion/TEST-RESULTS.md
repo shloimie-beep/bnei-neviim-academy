@@ -1153,18 +1153,53 @@ Recorded for `REQ-20260619-314` final verification and release:
   with 18/18 tests passing.
 - PASS final full suite: `npm test` with 1017/1017 tests passing.
 - PASS `npm run watchdog:actions`,
-  `ops/watchdog-audits/2026-06-21T17-29-watchdog-action-audit.md`.
+  `ops/watchdog-audits/2026-06-21T17-35-watchdog-action-audit.md`.
 - PASS `npm run watchdog:security`,
-  `ops/watchdog-audits/2026-06-21T17-29-watchdog-security-routes.md`.
+  `ops/watchdog-audits/2026-06-21T17-35-watchdog-security-routes.md`.
 - PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:source-coverage`.
+- PASS `npm run bna:run:stale-evidence`.
+- PASS `npm run bna:run:blockers`; only `REQ-20260621-902` and
+  `REQ-20260619-313` remain blocked/external.
 - PASS `node scripts/audit-secrets.mjs`.
 - PASS `git diff --check` with line-ending warnings only.
 - PASS `npm run railway:doctor` after deployment
-  `96766f0d-ebce-4296-9002-9945b8f85858`.
+  `48cf7b0e-5623-43a3-9c5a-278e4d8b7997`.
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`.
+  `ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:public-privacy`,
+  `ops/live-smokes/2026-06-21T17-30-14-661Z-public-route-privacy-smoke.md`.
 - PASS `npm run app:smoke:final-register-surfaces`,
-  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`.
+  `ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md`.
+- PASS focused Operations and One Time smoke matrix:
+  `ops/live-smokes/2026-06-21T17-30-44-984Z-operations-helper-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-33-54-274Z-operations-workspace-taxonomy-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-30-52-019Z-operations-settings-dashboard-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-30-56-432Z-provider-classroom-settings-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-30-59-449Z-content-research-scope-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-31-14-215Z-communications-screening-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-31-18-789Z-whatsapp-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-31-42-431Z-email-resend-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-08-700Z-one-time-crm-import-dedupe-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-13-303Z-one-time-crm-contacts-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-18-713Z-one-time-trial-referral-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-23-769Z-one-time-payment-access-class-links-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-27-721Z-one-time-authenticated-support-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-39-053Z-one-time-test-identities-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-42-555Z-one-time-agent-mode-acceptance-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-45-845Z-one-time-transcript-privacy-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-50-364Z-one-time-gamification-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-54-852Z-one-time-community-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-57-987Z-one-time-study-assistant-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-33-02-699Z-rabbi-onetime-landing-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-33-57-277Z-ws11-parent-progress-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-19-160Z-source-envelope-parser-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-21-270Z-class-upload-trace-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-35-16-906Z-student-auth-policy-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-43-758Z-operator-setup-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-35-23-215Z-public-navigation-positioning-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-49-332Z-developer-tester-ticket-live-smoke.md`,
+  and `ops/live-smokes/2026-06-21T17-34-50-924Z-signup-credit-email-preview-live-smoke.md`.
 
 Intermediate caveats:
 
@@ -1174,6 +1209,17 @@ Intermediate caveats:
   into the process and passed.
 - The first focused final-register smoke failed on a stale CTA marker. The
   smoke script now checks the current provider-index CTA and the rerun passed.
+- The first Operations taxonomy and public-navigation smokes failed on retired
+  label expectations (`Family Directory` and public Operations login nav).
+  Local product tests already enforce the current behavior; the smokes were
+  updated and rerun successfully.
+- WS11 parent progress and student-auth audit readback smokes require a live
+  database URL. Reruns loaded the Railway database URL into the process without
+  printing it and passed.
+- `npm run smoke:local` is still a local harness/configuration blocker
+  (`spawnSync npm.cmd EINVAL` plus placeholder local `DATABASE_URL`), and
+  `npm run ops:audit` is blocked by missing authenticated Playwright storage
+  state. These do not block production live verification.
 
 Focused coverage:
 

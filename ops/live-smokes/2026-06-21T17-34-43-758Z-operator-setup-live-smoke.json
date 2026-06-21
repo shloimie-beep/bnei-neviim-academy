@@ -1,0 +1,77 @@
+{
+  "started_at": "2026-06-21T17:34:43.758Z",
+  "app_url": "https://bneineviimacademy.org",
+  "checks": [
+    {
+      "name": "operations login sets hardened session cookie",
+      "ok": true,
+      "duration_ms": 574,
+      "details": {
+        "cookie_set": true,
+        "http_only": true,
+        "same_site_lax": true,
+        "secure_for_https": true
+      }
+    },
+    {
+      "name": "session can inspect authenticated identity",
+      "ok": true,
+      "duration_ms": 567,
+      "details": {
+        "role": "super_admin",
+        "scope_type": "all",
+        "allowed_views": 22
+      }
+    },
+    {
+      "name": "operator setup status is super-admin accessible and hardened",
+      "ok": true,
+      "duration_ms": 230,
+      "details": {
+        "ttl_minutes": 10,
+        "passphrase_min_length": 20,
+        "missing_required_count": 3,
+        "super_admin_only": true,
+        "one_time_download": true
+      }
+    },
+    {
+      "name": "safe operator setup package can be created without secrets",
+      "ok": true,
+      "duration_ms": 241,
+      "details": {
+        "filename": "bna-operator-bootstrap-safe-1782063283805.json",
+        "expires_at": "2026-06-21T17:35:43.804Z",
+        "one_time": true,
+        "encrypted": false,
+        "includes_secret_values": false,
+        "token_hash_prefix": "8355662883a09f09"
+      }
+    },
+    {
+      "name": "safe operator setup package downloads once and contains no secret values",
+      "ok": true,
+      "duration_ms": 251,
+      "details": {
+        "filename": "bna-operator-bootstrap-safe-1782063283805.json",
+        "package_type": "bna_operator_bootstrap",
+        "encrypted": false,
+        "download_kind": "safe_non_secret",
+        "env_keys": 0,
+        "sensitive_env_values_blank": true,
+        "secret_file_manifest_count": 0,
+        "setup_commands": 5
+      }
+    },
+    {
+      "name": "safe operator setup package cannot be redeemed twice",
+      "ok": true,
+      "duration_ms": 239,
+      "details": {
+        "second_redeem_status": 404
+      }
+    }
+  ],
+  "finished_at": "2026-06-21T17:34:45.861Z",
+  "success": true
+}

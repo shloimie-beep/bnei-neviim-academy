@@ -833,16 +833,36 @@ index CTA.
 
 Pushed/deployed app commit:
 `34c74f22145a4422777515b740b8e33eef3f539d`. Railway deployment
-`96766f0d-ebce-4296-9002-9945b8f85858` reached `SUCCESS`; Railway doctor
+`48cf7b0e-5623-43a3-9c5a-278e4d8b7997` reached `SUCCESS`; Railway doctor
 passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`. Focused final
+`ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md`. Focused final
 register surfaces live smoke passed at
-`ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`.
+`ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md`.
+Additional focused live smokes passed for public privacy, Operations workspace
+taxonomy, Operations helper/settings/provider classroom/content/communications,
+WhatsApp UX, Email/Resend UX, One Time CRM import/contacts, trial/referral,
+payment/access/class links, authenticated member support, test identities,
+Agent Mode acceptance, transcript privacy, gamification, community,
+study-assistant readiness, Rabbi landing, WS11 parent progress, source-envelope
+parsing, class-upload blocked-state trace, student auth, operator setup,
+public navigation positioning, developer-tester tickets, and signup credit
+email preview.
 
 Local verification passed: targeted release-gate regression suite 32/32,
 provider/final-register contract suite 18/18, full `npm test` 1017/1017,
 action watchdog, security watchdog, execution-run validation, tracked secret
 audit, syntax checks, and diff check with line-ending warnings only.
+
+Final watchdog reports:
+`ops/watchdog-audits/2026-06-21T17-35-watchdog-action-audit.md` and
+`ops/watchdog-audits/2026-06-21T17-35-watchdog-security-routes.md`.
+
+Local-only caveats: `npm run smoke:local` remains blocked by the local harness
+`spawnSync npm.cmd EINVAL`/placeholder local `DATABASE_URL` configuration, and
+`npm run ops:audit` remains blocked by missing authenticated Playwright storage
+state `.runtime/auth/operations-storage-state.json`. Production health and
+focused live smokes passed with established live credentials loaded into the
+process without printing secrets.
 
 Guardrails: PR #5 was not merged. No external send, WhatsApp send, email send,
 charge, refund, access grant, public publish, Google Classroom/Calendar/Drive

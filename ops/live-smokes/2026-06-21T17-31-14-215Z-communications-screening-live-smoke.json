@@ -1,0 +1,122 @@
+{
+  "started_at": "2026-06-21T17:31:14.215Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 725,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "Operations communications bundle markers are deployed",
+      "ok": true,
+      "duration_ms": 1602,
+      "details": {
+        "markers": 7
+      }
+    },
+    {
+      "name": "screening preview flags parent accountability without writing",
+      "ok": true,
+      "duration_ms": 224,
+      "details": {
+        "screening": {
+          "pipeline_category": "parent_lead",
+          "pipeline_categories": [
+            "parent_lead",
+            "parent_accountability",
+            "urgent_needs_attention"
+          ],
+          "pipeline_tags": [
+            "screened",
+            "parent_lead",
+            "parent_accountability",
+            "urgent_needs_attention",
+            "sleep_routine",
+            "screens",
+            "parent_follow_up",
+            "child_support_observation",
+            "channel_whatsapp",
+            "direction_inbound"
+          ],
+          "coaching_categories": [
+            "sleep_routine",
+            "screens",
+            "parent_follow_up",
+            "child_support_observation"
+          ],
+          "priority": "urgent",
+          "follow_up_required": true,
+          "alert_required": true,
+          "top_news": true,
+          "bot_screening_status": "screened",
+          "action_label": "Review follow-up",
+          "subject": "Parent accountability message needs follow-up",
+          "parsed_parent_student_note": {
+            "non_clinical": true,
+            "protocol": "parent_coaching_self_regulation",
+            "categories": [
+              "sleep_routine",
+              "screens",
+              "parent_follow_up",
+              "child_support_observation"
+            ],
+            "summary": "Parent says the child is struggling with sleep routine, screens, responsibility, and needs urgent follow up.",
+            "note": "Non-clinical parent coaching / self-regulation observation. This is not a diagnosis or medical label."
+          }
+        },
+        "would_create": {
+          "communication_record": true,
+          "in_app_alert": true,
+          "follow_up_task": true,
+          "parsed_parent_student_note": true,
+          "raw_intake_link": "RAW-SMOKE-COMMUNICATIONS"
+        }
+      }
+    },
+    {
+      "name": "contact import preview maps and dedupes sample export without writing",
+      "ok": true,
+      "duration_ms": 1042,
+      "details": {
+        "summary": {
+          "rows_received": 2,
+          "rows_previewed": 2,
+          "possible_duplicates": 0,
+          "needs_mapping_review": 0,
+          "warm_leads_no_send": 2,
+          "classifications": {
+            "parent": 1,
+            "provider": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "WAPI diagnostics report configured or blocked status",
+      "ok": true,
+      "duration_ms": 378,
+      "details": {
+        "sync_configured": true,
+        "required_sync_env": []
+      }
+    }
+  ],
+  "summary": {
+    "health_status": "ok/connected",
+    "screening_pipeline": "parent_lead",
+    "coaching_categories": [
+      "sleep_routine",
+      "screens",
+      "parent_follow_up",
+      "child_support_observation"
+    ],
+    "import_preview_rows": 2,
+    "wapi_sync_configured": true,
+    "operations_markers_checked": 7
+  }
+}

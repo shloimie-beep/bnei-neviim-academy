@@ -114,9 +114,9 @@ async function main() {
       '/parent/login',
       '/student/login',
       '/provider',
-      '/operations-login.html',
     ], 'shared nav');
-    pass('shared nav has grouped audience and safe portal destinations');
+    expectNotIncludes(nav.text, ['/operations-login.html', 'href="/operations"'], 'shared nav');
+    pass('shared nav has grouped audience and safe public portal destinations');
 
     const parents = await fetchText(options.baseUrl, '/parents');
     assert(parents.response.status === 200, `/parents expected 200, got ${parents.response.status}`);

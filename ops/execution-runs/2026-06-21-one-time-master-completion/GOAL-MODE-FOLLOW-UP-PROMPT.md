@@ -31,23 +31,24 @@ Then continue the next unblocked executable batch returned by the runner.
 
 ## Current State At Capture
 
-At 2026-06-21T19:22:41+03:00 the runner reported:
+At 2026-06-21T20:36:00+03:00 the runner reported:
 
 - Batch 9I / `REQ-20260621-909` test identities and mock data: done.
 - Batch 9J / `REQ-20260621-910` Agent Mode acceptance: done.
-- Batch 14 / `REQ-20260619-309` transcript privacy: in progress.
-- Batch 15 / `REQ-20260619-310` gamification: not started.
-- Batch 16 / `REQ-20260619-311` community: not started.
-- Batch 17 / `REQ-20260619-312` Sefaria and study-assistant readiness: not started.
+- Batch 14 / `REQ-20260619-309` transcript privacy: done.
+- Batch 15 / `REQ-20260619-310` gamification: done.
+- Batch 16 / `REQ-20260619-311` community: done.
+- Batch 17 / `REQ-20260619-312` Sefaria and study-assistant readiness: done.
 - Batch 18 / `REQ-20260619-313` One Time deployment readiness: needs operator decision for paid/DNS/project provisioning only.
-- Batch 19 / `REQ-20260619-314` final verification and release: not started.
+- Batch 19 / `REQ-20260619-314` final verification and release: done.
 - Batch 9B / `REQ-20260621-902` remains blocked on hosted transcription credentials.
 
-At capture time the next unblocked executable batch was:
+At capture time there was no unblocked executable batch. Only external or
+operator-owned blockers remained:
 
 ```text
-batch-14 / REQ-20260619-309 Transcript privacy
-next_action: Implement transcript release policy, no-guessed-speaker student matching, storage fields, Operations readiness, focused tests, and read-only live smoke.
+REQ-20260621-902: hosted transcription credential returns 401 invalid_credential.
+REQ-20260619-313: approve separate One Time paid infrastructure, DNS, ownership, and budget before provisioning.
 ```
 
 ## Post-Closeout Note
@@ -85,6 +86,16 @@ If resuming after that closeout, do not repeat Batch 14, Batch 15, Batch 16,
 or Batch 17. Run `npm run bna:run:next` and continue the next executable
 batch the runner returns. Separate One Time infrastructure remains an
 operator decision; do not provision paid infrastructure or modify DNS.
+
+At 2026-06-21T20:36:00+03:00, Batch 19 / `REQ-20260619-314`
+was deployed and live-verified in Railway deployment
+`48cf7b0e-5623-43a3-9c5a-278e4d8b7997`. The deployed app commit was
+`34c74f22145a4422777515b740b8e33eef3f539d`. Full tests, final watchdogs,
+execution-run validation, source coverage, stale-evidence validation, secret
+audit, Railway doctor, and focused live smokes passed. If resuming after that
+closeout, do not repeat Batch 19. Run `npm run bna:run:blockers`; only the
+hosted transcription credential and separate One Time infrastructure/DNS
+operator decision remain.
 
 ## Guardrails
 

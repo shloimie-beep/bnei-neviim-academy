@@ -901,11 +901,17 @@ Final verification and release gate is done for `REQ-20260619-314`.
 - Pushed/deployed app commit:
   `34c74f22145a4422777515b740b8e33eef3f539d`
 - Railway deployment:
-  `96766f0d-ebce-4296-9002-9945b8f85858`
+  `48cf7b0e-5623-43a3-9c5a-278e4d8b7997`
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md`
 - Focused final register surfaces live smoke:
-  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`
+  `ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md`
+- Final smoke matrix: PASS for public privacy, Operations helper/taxonomy,
+  communications, WhatsApp, Email/Resend, One Time CRM/access/portal paths,
+  transcript privacy, gamification, community, study-assistant readiness,
+  Rabbi landing, WS11 parent progress, source-envelope parser, class-upload
+  blocked-state trace, student auth, operator setup, public navigation,
+  developer-tester ticket, and signup credit email preview.
 - Final full suite: `npm test` 1017/1017 passed.
 - PR #5 remains unmerged.
 
@@ -914,10 +920,14 @@ Only external/non-Codex work remains in this run:
 - `REQ-20260619-313` stays `needs_operator_decision` for separate paid One
   Time infrastructure, Railway project/database/domain, DNS authority, budget,
   and ownership approval.
+- `REQ-20260621-902` stays blocked on hosted transcription credential
+  `401 invalid_credential`; the class-upload trace smoke verified job #78 is
+  isolated to blocked intake/transcription work.
 
-Next exact action when the operator wants to revisit the external blocker:
+Next exact action when the operator wants to revisit the external blockers:
 
 ```powershell
 npm run bna:run:next
+npm run bna:run:blockers
 ```
 <!-- batch-19:end -->

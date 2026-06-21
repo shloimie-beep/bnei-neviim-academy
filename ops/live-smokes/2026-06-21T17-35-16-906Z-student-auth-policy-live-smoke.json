@@ -1,0 +1,73 @@
+{
+  "started_at": "2026-06-21T17:35:16.906Z",
+  "app_url": "https://bneineviimacademy.org",
+  "code_hash_prefix": "ba30f21f44b9d24d",
+  "username_hash_prefix": "6ea3140a792b4c16",
+  "checks": [
+    {
+      "name": "invalid code returns generic 401 without echoing raw code",
+      "ok": true,
+      "details": {
+        "status": 401,
+        "generic_error": "Invalid or expired student access code",
+        "raw_code_echoed": false
+      }
+    },
+    {
+      "name": "invalid username/password returns generic 401 without echoing raw credentials",
+      "ok": true,
+      "details": {
+        "status": 401,
+        "generic_error": "Invalid username or password",
+        "raw_username_echoed": false,
+        "raw_password_echoed": false
+      }
+    },
+    {
+      "name": "persistent access-code audit row stores hashes and sanitized route only",
+      "ok": true,
+      "details": {
+        "id": "64",
+        "outcome": "failure",
+        "route": "/api/student-portal",
+        "student_id": null,
+        "reason": "invalid_or_expired_code",
+        "user_agent_hash_present": true,
+        "raw_code_stored": false
+      }
+    },
+    {
+      "name": "persistent password audit row stores hashes and sanitized route only",
+      "ok": true,
+      "details": {
+        "id": "12",
+        "outcome": "failure",
+        "route": "/api/student-portal/login",
+        "student_id": null,
+        "reason": "invalid_username_or_password",
+        "user_agent_hash_present": true,
+        "raw_username_or_password_stored": false
+      }
+    }
+  ],
+  "access_code_audit": {
+    "id": "64",
+    "outcome": "failure",
+    "route": "/api/student-portal",
+    "student_id": null,
+    "reason": "invalid_or_expired_code",
+    "user_agent_hash_present": true,
+    "raw_code_stored": false
+  },
+  "password_audit": {
+    "id": "12",
+    "outcome": "failure",
+    "route": "/api/student-portal/login",
+    "student_id": null,
+    "reason": "invalid_username_or_password",
+    "user_agent_hash_present": true,
+    "raw_username_or_password_stored": false
+  },
+  "success": true,
+  "finished_at": "2026-06-21T17:35:22.759Z"
+}

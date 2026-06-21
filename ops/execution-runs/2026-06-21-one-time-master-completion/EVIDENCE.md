@@ -1807,6 +1807,10 @@ Implementation and release files:
   `scripts/one-time-ui-design-delta-audit.mjs`
 - Focused final live smoke current provider-index marker:
   `scripts/smoke-final-register-surfaces-live.mjs`
+- Final smoke expectation updates for current Operations taxonomy and public
+  navigation:
+  `scripts/smoke-operations-workspace-taxonomy-live.mjs`,
+  `scripts/smoke-public-navigation-positioning-live.mjs`
 - Release-gate regression tests:
   `tests/agent-control-center.test.js`,
   `tests/one-time-intake-api-readback.test.js`,
@@ -1820,16 +1824,55 @@ Deployment and live evidence:
 - Pushed/deployed app commit:
   `34c74f22145a4422777515b740b8e33eef3f539d`
 - Railway deployment:
-  `96766f0d-ebce-4296-9002-9945b8f85858`
+  `48cf7b0e-5623-43a3-9c5a-278e4d8b7997`
 - Railway doctor after deploy: PASS, deployment status `SUCCESS`.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md`
 - Focused final register surfaces live smoke:
-  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`
+  `ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md`
 - Final action watchdog:
-  `ops/watchdog-audits/2026-06-21T17-29-watchdog-action-audit.md`
+  `ops/watchdog-audits/2026-06-21T17-35-watchdog-action-audit.md`
 - Final security watchdog:
-  `ops/watchdog-audits/2026-06-21T17-29-watchdog-security-routes.md`
+  `ops/watchdog-audits/2026-06-21T17-35-watchdog-security-routes.md`
+
+Additional focused live smoke evidence:
+
+- Public route privacy:
+  `ops/live-smokes/2026-06-21T17-30-14-661Z-public-route-privacy-smoke.md`
+- Operations helper, taxonomy, settings, provider classroom, content, and
+  communications:
+  `ops/live-smokes/2026-06-21T17-30-44-984Z-operations-helper-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-33-54-274Z-operations-workspace-taxonomy-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-30-52-019Z-operations-settings-dashboard-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-30-56-432Z-provider-classroom-settings-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-30-59-449Z-content-research-scope-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-31-14-215Z-communications-screening-live-smoke.md`
+- Communications and email:
+  `ops/live-smokes/2026-06-21T17-31-18-789Z-whatsapp-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-31-42-431Z-email-resend-ux-live-smoke.md`
+- One Time CRM, access, portals, and role/privacy paths:
+  `ops/live-smokes/2026-06-21T17-32-08-700Z-one-time-crm-import-dedupe-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-13-303Z-one-time-crm-contacts-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-18-713Z-one-time-trial-referral-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-23-769Z-one-time-payment-access-class-links-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-27-721Z-one-time-authenticated-support-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-39-053Z-one-time-test-identities-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-33-57-277Z-ws11-parent-progress-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-35-16-906Z-student-auth-policy-live-smoke.md`
+- One Time content/product foundations:
+  `ops/live-smokes/2026-06-21T17-32-42-555Z-one-time-agent-mode-acceptance-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-45-845Z-one-time-transcript-privacy-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-50-364Z-one-time-gamification-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-54-852Z-one-time-community-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-32-57-987Z-one-time-study-assistant-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-33-02-699Z-rabbi-onetime-landing-smoke.md`
+- Intake/support/utility:
+  `ops/live-smokes/2026-06-21T17-34-19-160Z-source-envelope-parser-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-21-270Z-class-upload-trace-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-43-758Z-operator-setup-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-35-23-215Z-public-navigation-positioning-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-49-332Z-developer-tester-ticket-live-smoke.md`,
+  `ops/live-smokes/2026-06-21T17-34-50-924Z-signup-credit-email-preview-live-smoke.md`
 
 Focused live smoke verified:
 
@@ -1848,6 +1891,17 @@ Intermediate focused smoke caveat:
   failed on the stale marker `Become a Service Provider`. The live route was
   healthy and exposed the current CTA `Advertise your program for free`; the
   smoke contract was updated and the rerun passed.
+- Initial Operations taxonomy and public-navigation smokes failed on stale
+  expectations for retired visible labels. The product already omits
+  `Family Directory` and the public Operations-login nav entry; the smokes were
+  updated to assert the current behavior and rerun successfully.
+- WS11 parent-progress and student-auth audit readback smokes require the live
+  database URL. Reruns loaded that URL into the process without printing it and
+  passed.
+- Local-only blockers remain for unauthenticated local smoke/audit harnesses:
+  `npm run smoke:local` failed on `spawnSync npm.cmd EINVAL` plus placeholder
+  local `DATABASE_URL`, and `npm run ops:audit` requires
+  `.runtime/auth/operations-storage-state.json`.
 
 Guardrails:
 

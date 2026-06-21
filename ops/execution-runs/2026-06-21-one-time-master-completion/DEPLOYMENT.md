@@ -632,14 +632,23 @@ Initial focused smoke caveat:
 
 ## Batch 19
 
-- Railway deployment ID: `96766f0d-ebce-4296-9002-9945b8f85858`
+- Railway deployment ID: `48cf7b0e-5623-43a3-9c5a-278e4d8b7997`
 - Deployed app commit: `34c74f22145a4422777515b740b8e33eef3f539d`
 - Service/environment: `skillful-motivation / production`
 - Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
 - Standard live smoke: PASS,
-  `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md`
 - Focused final register surfaces live smoke: PASS,
-  `ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`
+  `ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md`
+- Focused release smoke matrix: PASS for public privacy, Operations helper,
+  workspace taxonomy, settings dashboard, provider classroom settings, content
+  research scope, communications screening, WhatsApp UX, Email/Resend UX, One
+  Time CRM import/dedupe, contacts UX, trial/referral, payment/access/class
+  links, authenticated support, test identities, Agent Mode acceptance,
+  transcript privacy, gamification, community, study assistant, Rabbi landing,
+  WS11 parent progress, source-envelope parser, class-upload blocked-state
+  trace, student auth, operator setup, public navigation positioning,
+  developer-tester ticket, and signup credit email preview.
 
 Deployment was run from a clean detached worktree at
 `34c74f22145a4422777515b740b8e33eef3f539d`, so unrelated uncommitted blog JSON
@@ -651,11 +660,22 @@ directory/join/classroom/plan markers, Operations internal-first final
 register markers, helper automation/secret-rotation tools, recording dry-run
 raw-intake provenance, and readable calendar/automation APIs.
 
-Intermediate focused smoke caveat:
+Intermediate focused smoke caveats:
 
 - `ops/live-smokes/2026-06-21T17-26-37-835Z-final-register-surfaces-live-smoke.md`
   failed on a stale provider-index CTA marker; the route was healthy, the smoke
   contract was updated to current copy, and the rerun passed.
+- `ops/live-smokes/2026-06-21T17-30-49-258Z-operations-workspace-taxonomy-live-smoke.md`
+  failed on the retired `Family Directory` label; local tests already require
+  the label to stay absent, the smoke now checks the current selector copy, and
+  the rerun passed.
+- `ops/live-smokes/2026-06-21T17-34-46-522Z-public-navigation-positioning-smoke.md`
+  failed on a retired public Operations-login nav marker; the public nav is
+  intentionally Operations-free, the smoke now asserts that omission, and the
+  rerun passed.
+- WS11 parent-progress and student-auth audit readback smokes require the live
+  database URL. Reruns loaded the Railway database URL into the process without
+  printing it and passed.
 
 No PR merge, external send, WhatsApp send, email send, charge, refund, access
 grant, public publish, Google Classroom/Calendar/Drive write, Zoom

@@ -1,0 +1,48 @@
+{
+  "started_at": "2026-06-21T17:32:08.700Z",
+  "app_url": "https://bneineviimacademy.org",
+  "source_inventory_id": "DL-SHEET-f93f34d98e",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Read One Time CRM import readiness route",
+      "ok": true,
+      "detail": "56 candidates / 88 scoped leads"
+    },
+    {
+      "name": "Operations CRM import panel is shipped with disabled apply action",
+      "ok": true,
+      "detail": "panel marker and disabled apply shipped"
+    },
+    {
+      "name": "Preview One Time CRM import without writes",
+      "ok": true,
+      "detail": "2 rows"
+    },
+    {
+      "name": "Preview response has 9D safety policy",
+      "ok": true,
+      "detail": "preview-only/no-send/no-GHL policy present"
+    },
+    {
+      "name": "Inventory source and One Time scope are attached",
+      "ok": true,
+      "detail": "inventory source and One Time scope present"
+    },
+    {
+      "name": "Rows have scoped dedupe metadata and no raw source rows",
+      "ok": true,
+      "detail": "scoped row dedupe metadata present"
+    }
+  ],
+  "readiness_candidates": 56,
+  "current_scoped_leads": 88,
+  "preview_rows": 2,
+  "possible_duplicates": 0,
+  "commit_blocked": true,
+  "scope": "rabbi_sheller_provider / one_time_mishnah_class"
+}
