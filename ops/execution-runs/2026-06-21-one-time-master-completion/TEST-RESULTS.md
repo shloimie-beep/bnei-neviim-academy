@@ -38,3 +38,23 @@ Recorded after focused verification:
 - PASS `git diff --check` with line-ending warnings only where reported by Git
 - PASS `node scripts/audit-secrets.mjs`
 <!-- batch-2:end -->
+
+<!-- batch-3:start -->
+## Batch 3 Test Results
+
+Recorded after Task/Decision census, cleanup tooling, server filters, and
+Operations view changes:
+
+- PASS `node --check scripts/task-decision-census.mjs`
+- PASS `node --check scripts/task-decision-production-cleanup.mjs`
+- PASS `node --check server.js`
+- PASS `node --test tests/task-decision-census.test.js tests/task-decision-production-cleanup.test.js`
+- PASS `node --test tests/task-decision-census.test.js tests/operations-task-queue-visibility.test.js tests/operations-task-comments-and-dictation.test.js tests/workspace-task-no-stale-agent.test.js tests/telegram-ramble-routing-regression.test.js`
+- PASS `node scripts/task-decision-census.mjs --limit=1000`
+- PASS `node scripts/task-decision-production-cleanup.mjs --limit=1000 --apply`
+
+Post-cleanup live census passed workspace isolation checks:
+
+- BNA records in One Time: 0
+- One Time records in BNA: 0
+<!-- batch-3:end -->

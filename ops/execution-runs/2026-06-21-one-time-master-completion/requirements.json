@@ -371,7 +371,7 @@
       "id": "REQ-20260619-302",
       "title": "Production Task and Decision cleanup",
       "expected_result": "Default Task and Decision views are relevant, deduped, scoped, and backed by reversible cleanup evidence.",
-      "status": "not_started",
+      "status": "needs_verification",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0004"
@@ -386,31 +386,57 @@
       "depends_on": [
         "REQ-20260621-501"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implemented_local_live_cleanup_applied_pending_deploy",
       "can_continue_without_operator": true,
-      "next_action": "Create fresh census, backup/export, dry-run plan, reversible cleanup, server-side filters, and tests.",
+      "next_action": "Commit, push, deploy app-visible Task/Decision view/filter changes, then run live smoke and mark verified live.",
       "acceptance_criteria": [
         "census exists",
         "cleanup report exists",
         "default views exclude unrelated records",
         "tests pass"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
+      "evidence": [
         "ops/one-time-mishnah/task-decision-production-census.md",
         "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json"
+      ],
+      "verification": [
+        "node --check scripts/task-decision-census.mjs",
+        "node --check scripts/task-decision-production-cleanup.mjs",
+        "node --check server.js",
+        "node --test tests/task-decision-census.test.js tests/task-decision-production-cleanup.test.js tests/operations-task-queue-visibility.test.js tests/operations-task-comments-and-dictation.test.js tests/workspace-task-no-stale-agent.test.js tests/telegram-ramble-routing-regression.test.js",
+        "node scripts/task-decision-census.mjs --limit=1000",
+        "node scripts/task-decision-production-cleanup.mjs --limit=1000 --apply"
+      ],
+      "implementation_files": [
+        "scripts/task-decision-census.mjs",
+        "scripts/task-decision-production-cleanup.mjs",
+        "ops/one-time-mishnah/task-decision-production-census.md",
+        "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json",
         "server.js",
         "public/operations.html",
-        "tests/task-decision-census.test.js"
+        "tests/task-decision-census.test.js",
+        "tests/task-decision-production-cleanup.test.js",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/operations-task-comments-and-dictation.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "tests/telegram-ramble-routing-regression.test.js"
       ],
-      "implementation_commit": "",
+      "implementation_commit": "05f3dcd9",
       "pushed_commit": "",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T13:08:00+03:00",
+      "live_smoke": []
     },
     {
       "id": "REQ-20260619-303",

@@ -8587,11 +8587,20 @@
         const TASK_FOCUS_ALIASES = {
             assigned: 'tasks',
             calendar: 'schedule',
+            archive: 'archived',
+            archived_decision: 'archived_decisions',
+            archived_decisions: 'archived_decisions',
+            blocked: 'pending',
+            completed: 'done_activity',
             codex: 'codex_queue',
             codex_ready: 'codex_queue',
+            codex_agent_work: 'codex_queue',
             done: 'done_activity',
             in_progress: 'tasks',
-            mine: 'tasks',
+            mine: 'mine',
+            my_tasks: 'mine',
+            one_time: 'one_time',
+            one_time_tasks: 'one_time',
             overview: 'tasks',
             parsed: 'tasks',
             pending: 'pending',
@@ -8603,10 +8612,18 @@
             roadmap: 'schedule',
             source_sheets: 'tasks',
             stale: 'tasks',
+            due_soon: 'due_soon',
+            needs_my_decision: 'needs_my_decision',
+            needs_rabbi: 'needs_rabbi_decision',
+            needs_rabbi_scheller: 'needs_rabbi_decision',
+            needs_external: 'needs_external_decision',
+            needs_external_owner: 'needs_external_decision',
+            decided: 'decided',
+            superseded: 'superseded_decisions',
             torah_research: 'tasks'
         };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
-        let taskFocus = currentView === 'tasks' && ['decisions', 'tasks', 'codex_queue', 'pending', 'schedule', 'done_activity'].includes(normalizedInitialTaskSection)
+        let taskFocus = currentView === 'tasks' && ['mine', 'one_time', 'tasks', 'codex_queue', 'pending', 'due_soon', 'schedule', 'done_activity', 'archived', 'decisions', 'needs_my_decision', 'needs_rabbi_decision', 'needs_external_decision', 'decided', 'superseded_decisions', 'archived_decisions'].includes(normalizedInitialTaskSection)
             ? normalizedInitialTaskSection
             : 'tasks';
         let taskUrgencyFilter = 'all';
@@ -8793,12 +8810,22 @@
         ];
 
         const TASK_SUBTABS = [
-            { id: 'decisions', label: 'Decisions' },
-            { id: 'tasks', label: 'Tasks' },
-            { id: 'codex_queue', label: 'Codex Queue' },
+            { id: 'mine', label: 'My Tasks' },
+            { id: 'one_time', label: 'One Time Tasks' },
+            { id: 'tasks', label: 'All Tasks' },
+            { id: 'codex_queue', label: 'Codex / Agent Work' },
             { id: 'pending', label: 'Blocked' },
+            { id: 'due_soon', label: 'Due Soon' },
             { id: 'schedule', label: 'Calendar' },
-            { id: 'done_activity', label: 'Done / Activity' }
+            { id: 'done_activity', label: 'Completed / Activity' },
+            { id: 'archived', label: 'Archived' },
+            { id: 'decisions', label: 'Decisions' },
+            { id: 'needs_my_decision', label: 'Needs My Decision' },
+            { id: 'needs_rabbi_decision', label: 'Needs Rabbi Scheller' },
+            { id: 'needs_external_decision', label: 'Needs External Owner' },
+            { id: 'decided', label: 'Decided' },
+            { id: 'superseded_decisions', label: 'Superseded' },
+            { id: 'archived_decisions', label: 'Archived Decisions' }
         ];
         const AUTOMATION_SUBTABS = [
             { id: 'center', label: 'Center' }
@@ -8821,19 +8848,20 @@
             { id: 'parent_preview', label: 'Parent Preview' }
         ];
 
-        const TASK_LANE_IDS = ['decisions', 'tasks', 'codex_queue', 'pending', 'schedule', 'done_activity'];
+        const TASK_LANE_IDS = TASK_SUBTABS.map(tab => tab.id);
         const TASK_STAGE_FLOW = TASK_SUBTABS;
         const TASK_OPERATIONAL_LANES = TASK_SUBTABS;
         const RABBI_DIALOGUE_COLUMNS = [
             { id: 'decisions', label: 'Decisions', note: 'Human choices that unlock the next step.' },
             { id: 'pending', label: 'Blocked/access', note: 'Missing access, assets, or outside systems.' },
-            { id: 'tasks', label: 'Tasks', note: 'Work that can move, including agent jobs.' },
-            { id: 'done_activity', label: 'Done / Activity', note: 'Completed and verified trail.' }
+            { id: 'codex_queue', label: 'Codex / Agent', note: 'Observable agent jobs and machine-owned work.' },
+            { id: 'tasks', label: 'Tasks', note: 'Human work that can move.' },
+            { id: 'done_activity', label: 'Completed / Activity', note: 'Completed and verified trail.' }
         ];
         const TASK_SIGNAL_FILTERS = [
             { id: 'all', label: 'All owners' },
             { id: 'assigned_shloimie', label: 'Me / Shloimie' },
-            { id: 'assigned_rabbi', label: 'Rabbi Elie Scheller' },
+            { id: 'assigned_rabbi', label: 'Rabbi Ellie Scheller' },
             { id: 'other_team', label: 'Other team' },
             { id: 'unassigned', label: 'Unassigned' },
             { id: 'external', label: 'External blocker' }
@@ -11324,7 +11352,13 @@
             const codexQueueTasks = buckets.tasks.filter(taskMatchesCodexQueue).sort(sortTasks);
             const regularTasks = buckets.tasks.filter(task => !taskMatchesCodexQueue(task)).sort(sortTasks);
             const openTasks = [...buckets.decisions, ...buckets.pending, ...regularTasks, ...codexQueueTasks].sort(sortTasks);
+            const myTasks = openTasks
+                .filter(task => taskMatchesSignalFilter(task, 'assigned_shloimie') || taskMatchesSignalFilter(task, 'needs_shloimie'))
+                .sort(sortTasks);
+            const oneTimeTasks = openTasks.filter(taskIsOneTimeRecord).sort(sortTasks);
+            const dueSoonTasks = openTasks.filter(task => taskIsDueWithinDays(task, 7)).sort(sortTasks);
             const scheduleTasks = tasks.filter(task => taskHasSchedule(task) && taskStatusBucket(task) !== null).sort(sortTasks);
+            const archivedTasks = tasks.filter(taskIsArchivedRecord).sort(sortTasks);
             const activityTasks = (buckets.activity.length ? buckets.activity : tasks).slice().sort((a, b) => {
                 const aTime = Date.parse(a.last_activity_at || a.updated_at || a.created_at || 0);
                 const bTime = Date.parse(b.last_activity_at || b.updated_at || b.created_at || 0);
@@ -11336,13 +11370,35 @@
                 return bTime - aTime;
             });
             const staleTasks = staleTaskItems();
+            const needsMyDecisionTasks = buckets.decisions
+                .filter(task => taskMatchesSignalFilter(task, 'needs_shloimie') || taskMatchesSignalFilter(task, 'assigned_shloimie'))
+                .sort(sortTasks);
+            const needsRabbiDecisionTasks = buckets.decisions
+                .filter(task => taskMatchesSignalFilter(task, 'needs_rabbi') || taskMatchesSignalFilter(task, 'assigned_rabbi'))
+                .sort(sortTasks);
+            const needsExternalDecisionTasks = buckets.decisions
+                .filter(task => taskMatchesSignalFilter(task, 'external'))
+                .sort(sortTasks);
+            const decidedTasks = tasks.filter(taskIsDecisionDecided).sort(sortTasks);
+            const supersededDecisionTasks = tasks.filter(taskIsDecisionSuperseded).sort(sortTasks);
+            const archivedDecisionTasks = archivedTasks.filter(taskIsDecisionLike).sort(sortTasks);
             const focusMap = {
+                mine: myTasks,
+                one_time: oneTimeTasks,
                 decisions: buckets.decisions,
                 pending: buckets.pending,
                 tasks: regularTasks,
                 codex_queue: codexQueueTasks,
+                due_soon: dueSoonTasks,
                 schedule: scheduleTasks,
-                done_activity: doneActivityTasks
+                done_activity: doneActivityTasks,
+                archived: archivedTasks,
+                needs_my_decision: needsMyDecisionTasks,
+                needs_rabbi_decision: needsRabbiDecisionTasks,
+                needs_external_decision: needsExternalDecisionTasks,
+                decided: decidedTasks,
+                superseded_decisions: supersededDecisionTasks,
+                archived_decisions: archivedDecisionTasks
             };
             const decisionCount = buckets.decisions.length;
             const pendingCount = buckets.pending.length;
@@ -11361,20 +11417,40 @@
                 .filter(task => taskSignalFilter === 'all' || taskMatchesSignalFilter(task, taskSignalFilter))
                 .filter(task => taskMatchesDateFilter(task, taskDateFilter));
             const title = ({
+                mine: 'My Tasks',
+                one_time: 'One Time Tasks',
                 decisions: 'Decisions',
                 pending: 'Blocked',
-                tasks: 'Tasks',
-                codex_queue: 'Codex Queue',
+                tasks: 'All Tasks',
+                codex_queue: 'Codex / Agent Work',
+                due_soon: 'Due Soon',
                 schedule: 'Calendar',
-                done_activity: 'Done / Activity'
+                done_activity: 'Completed / Activity',
+                archived: 'Archived',
+                needs_my_decision: 'Needs My Decision',
+                needs_rabbi_decision: 'Needs Rabbi Scheller',
+                needs_external_decision: 'Needs External Owner',
+                decided: 'Decided',
+                superseded_decisions: 'Superseded Decisions',
+                archived_decisions: 'Archived Decisions'
             })[normalizedFocus] || 'Tasks';
             const tabCounts = {
+                mine: myTasks.length,
+                one_time: oneTimeTasks.length,
                 decisions: decisionCount,
                 pending: pendingCount,
                 tasks: taskCount,
                 codex_queue: codexQueueCount,
+                due_soon: dueSoonTasks.length,
                 schedule: scheduleTasks.length,
-                done_activity: doneActivityTasks.length
+                done_activity: doneActivityTasks.length,
+                archived: archivedTasks.length,
+                needs_my_decision: needsMyDecisionTasks.length,
+                needs_rabbi_decision: needsRabbiDecisionTasks.length,
+                needs_external_decision: needsExternalDecisionTasks.length,
+                decided: decidedTasks.length,
+                superseded_decisions: supersededDecisionTasks.length,
+                archived_decisions: archivedDecisionTasks.length
             };
 
             return {
@@ -11390,9 +11466,13 @@
                 decisionCount,
                 pendingCount,
                 taskCount,
+                myTaskCount: myTasks.length,
+                oneTimeTaskCount: oneTimeTasks.length,
                 codexQueueCount,
                 doneCount,
                 urgentCount,
+                dueSoonCount: dueSoonTasks.length,
+                archivedCount: archivedTasks.length,
                 rawInputCount: 0,
                 assignedCount: regularTasks.filter(task => task.assigned_to && !taskMatchesCodexQueue(task)).length,
                 inProgressCount: regularTasks.filter(task => normalizeTaskStage(task.stage) === 'in_progress' || task.started_at).length,
@@ -12614,7 +12694,7 @@
             const counts = taskOperationalLaneCounts(state);
             const activeFilters = taskActiveFilterLabels();
             const focusCount = state.filteredTasks?.length ?? 0;
-            const lanes = isOneTimeTaskWorkspace() ? RABBI_DIALOGUE_COLUMNS : TASK_OPERATIONAL_LANES;
+            const lanes = TASK_OPERATIONAL_LANES;
             return `
                 <section class="local-toolbar task-status-toolbar" aria-label="Task status and filters">
                     <div class="local-toolbar-header">
@@ -12649,11 +12729,14 @@
                 <section class="focus-panel" aria-label="Tasks overview">
                     <div class="focused-grid">
                         ${renderMetricButton('Urgent / Today', state.urgentCount, 'Open work due now.', "openTaskUrgentToday()")}
+                        ${renderMetricButton('My Tasks', state.myTaskCount, 'Open work owned by Shloimie/operator roles.', "setTaskFocus('mine')")}
+                        ${renderMetricButton('One Time Tasks', state.oneTimeTaskCount, 'Open One Time Mishnah Class work only.', "setTaskFocus('one_time')")}
                         ${renderMetricButton('Decisions', state.decisionCount, 'Human choices that unlock the next step.', "setTaskFocus('decisions')")}
                         ${renderMetricButton('Blocked', state.pendingCount, 'Human or external blockers only.', "setTaskFocus('pending')")}
-                        ${renderMetricButton('Tasks', state.taskCount, 'Actionable work that can move now.', "setTaskFocus('tasks')")}
-                        ${renderMetricButton('Codex Queue', state.codexQueueCount, 'Machine work that is queued, running, failed, or waiting for a decision.', "setTaskFocus('codex_queue')")}
-                        ${renderMetricButton('Done / Activity', state.activityCount, 'Completed work and recent task history.', "setTaskFocus('done_activity')")}
+                        ${renderMetricButton('Due Soon', state.dueSoonCount, 'Open work due within seven days.', "setTaskFocus('due_soon')")}
+                        ${renderMetricButton('All Tasks', state.taskCount, 'Actionable work that can move now.', "setTaskFocus('tasks')")}
+                        ${renderMetricButton('Codex / Agent Work', state.codexQueueCount, 'Machine work that is queued, running, failed, or waiting for a decision.', "setTaskFocus('codex_queue')")}
+                        ${renderMetricButton('Completed / Activity', state.activityCount, 'Completed work and recent task history.', "setTaskFocus('done_activity')")}
                     </div>
                     <details class="workflow-details">
                         <summary>Workflow rule</summary>
@@ -12665,12 +12748,22 @@
 
         function renderTaskWorkflowStrip(state = {}) {
             const countForStage = {
+                mine: state.myTaskCount,
+                one_time: state.oneTimeTaskCount,
                 decisions: state.decisionCount,
                 pending: state.pendingCount,
                 tasks: state.taskCount,
                 codex_queue: state.codexQueueCount,
+                due_soon: state.dueSoonCount,
                 schedule: state.tabCounts?.schedule || 0,
                 done_activity: state.activityCount,
+                archived: state.archivedCount,
+                needs_my_decision: state.tabCounts?.needs_my_decision || 0,
+                needs_rabbi_decision: state.tabCounts?.needs_rabbi_decision || 0,
+                needs_external_decision: state.tabCounts?.needs_external_decision || 0,
+                decided: state.tabCounts?.decided || 0,
+                superseded_decisions: state.tabCounts?.superseded_decisions || 0,
+                archived_decisions: state.tabCounts?.archived_decisions || 0,
             };
             return `
                 <section class="focus-panel compact-panel" aria-label="Task stage flow">
@@ -12684,12 +12777,22 @@
 
         function taskOperationalLaneCounts(state = {}) {
             return {
+                mine: state.myTaskCount || 0,
+                one_time: state.oneTimeTaskCount || 0,
                 decisions: state.decisionCount || 0,
                 pending: state.pendingCount || 0,
                 tasks: state.taskCount || 0,
                 codex_queue: state.codexQueueCount || 0,
+                due_soon: state.dueSoonCount || 0,
                 schedule: state.tabCounts?.schedule || 0,
                 done_activity: state.activityCount || 0,
+                archived: state.archivedCount || 0,
+                needs_my_decision: state.tabCounts?.needs_my_decision || 0,
+                needs_rabbi_decision: state.tabCounts?.needs_rabbi_decision || 0,
+                needs_external_decision: state.tabCounts?.needs_external_decision || 0,
+                decided: state.tabCounts?.decided || 0,
+                superseded_decisions: state.tabCounts?.superseded_decisions || 0,
+                archived_decisions: state.tabCounts?.archived_decisions || 0,
             };
         }
 
@@ -12707,34 +12810,64 @@
 
         function operationalLaneTarget(laneId) {
             return ({
+                mine: "setTaskFocus('mine')",
+                one_time: "setTaskFocus('one_time')",
                 decisions: "setTaskFocus('decisions')",
                 pending: "setTaskFocus('pending')",
                 tasks: "setTaskFocus('tasks')",
                 codex_queue: "setTaskFocus('codex_queue')",
+                due_soon: "setTaskFocus('due_soon')",
                 schedule: "setTaskFocus('schedule')",
                 done_activity: "setTaskFocus('done_activity')",
+                archived: "setTaskFocus('archived')",
+                needs_my_decision: "setTaskFocus('needs_my_decision')",
+                needs_rabbi_decision: "setTaskFocus('needs_rabbi_decision')",
+                needs_external_decision: "setTaskFocus('needs_external_decision')",
+                decided: "setTaskFocus('decided')",
+                superseded_decisions: "setTaskFocus('superseded_decisions')",
+                archived_decisions: "setTaskFocus('archived_decisions')",
             })[laneId] || "setTaskFocus('tasks')";
         }
 
         function operationalLaneFocus(laneId) {
             return ({
+                mine: 'mine',
+                one_time: 'one_time',
                 decisions: 'decisions',
                 pending: 'pending',
                 tasks: 'tasks',
                 codex_queue: 'codex_queue',
+                due_soon: 'due_soon',
                 schedule: 'schedule',
                 done_activity: 'done_activity',
+                archived: 'archived',
+                needs_my_decision: 'needs_my_decision',
+                needs_rabbi_decision: 'needs_rabbi_decision',
+                needs_external_decision: 'needs_external_decision',
+                decided: 'decided',
+                superseded_decisions: 'superseded_decisions',
+                archived_decisions: 'archived_decisions',
             })[laneId] || 'tasks';
         }
 
         function operationalLaneNote(laneId) {
             return ({
+                mine: 'Open work owned by Shloimie/operator roles.',
+                one_time: 'Open One Time Mishnah Class work only.',
                 decisions: 'Real choices that need approval before work moves.',
                 pending: 'Human or outside-service blockers only.',
-                tasks: 'Actionable human work that can move now.',
+                tasks: 'All open human-actionable work.',
                 codex_queue: 'Machine work owned by Codex or another system agent.',
+                due_soon: 'Open work due within seven days.',
                 schedule: 'Tasks with due or planned dates.',
                 done_activity: 'Completed work and recent activity.',
+                archived: 'Archived, hidden, or duplicate-linked records.',
+                needs_my_decision: 'Open Decisions owned by Shloimie/operator roles.',
+                needs_rabbi_decision: 'Open Decisions owned by Rabbi Ellie Scheller or provider staff.',
+                needs_external_decision: 'Open Decisions blocked by an outside owner or account action.',
+                decided: 'Decisions with a selected outcome or terminal lifecycle status.',
+                superseded_decisions: 'Duplicate, stale, or replaced Decision records.',
+                archived_decisions: 'Hidden or archived Decision records.',
             })[laneId] || 'Operational bucket.';
         }
 
@@ -13109,11 +13242,14 @@
                             ${activeFilters.length ? '<button class="task-reset-button" onclick="resetTaskFilters()">Clear filters</button>' : ''}
                         </div>
                     </div>
+                    ${renderTaskOverviewButton('mine', 'My Tasks', state.myTaskCount, 'Owned by Shloimie/operator')}
+                    ${renderTaskOverviewButton('one_time', 'One Time', state.oneTimeTaskCount, 'One Time scoped')}
                     ${renderTaskOverviewButton('decisions', 'Decisions', state.decisionCount, 'Choices needed')}
-                    ${renderTaskOverviewButton('pending', 'Pending', state.pendingCount, 'Human or external blockers')}
-                    ${renderTaskOverviewButton('tasks', 'Tasks', state.taskCount, 'Actionable work')}
+                    ${renderTaskOverviewButton('pending', 'Blocked', state.pendingCount, 'Human or external blockers')}
+                    ${renderTaskOverviewButton('tasks', 'All Tasks', state.taskCount, 'Actionable work')}
+                    ${renderTaskOverviewButton('due_soon', 'Due Soon', state.dueSoonCount, 'Due within seven days')}
                     ${renderTaskOverviewButton('schedule', 'Calendar', state.tabCounts?.schedule || 0, 'Planned work')}
-                    ${renderTaskOverviewButton('done', 'Done', state.doneCount, 'Closed work')}
+                    ${renderTaskOverviewButton('done_activity', 'Completed', state.activityCount, 'Closed work')}
                 </div>
             `;
         }
@@ -13214,12 +13350,22 @@
 
         function renderTaskEmpty(columnId) {
             const message = ({
+                mine: 'No tasks assigned to you match these filters.',
+                one_time: 'No One Time tasks match these filters.',
                 decisions: 'No decisions match these filters.',
                 pending: 'No blocked items match these filters.',
                 tasks: 'No actionable tasks match these filters.',
-                codex_queue: 'No Codex Queue items match these filters.',
+                codex_queue: 'No Codex / Agent Work items match these filters.',
+                due_soon: 'No due-soon items match these filters.',
                 schedule: 'No calendar items match these filters.',
-                done_activity: 'No completed or recent activity items match these filters.'
+                done_activity: 'No completed or recent activity items match these filters.',
+                archived: 'No archived records match these filters.',
+                needs_my_decision: 'No Decisions need your input under these filters.',
+                needs_rabbi_decision: 'No Decisions need Rabbi Scheller under these filters.',
+                needs_external_decision: 'No Decisions need an external owner under these filters.',
+                decided: 'No decided records match these filters.',
+                superseded_decisions: 'No superseded Decisions match these filters.',
+                archived_decisions: 'No archived Decisions match these filters.'
             })[columnId] || 'Nothing here right now.';
             return `<div class="task-empty">${escapeHtml(message)}</div>`;
         }
@@ -13250,7 +13396,7 @@
         function taskWaitingOnLabel(value) {
             const normalized = String(value || '').trim().toLowerCase();
             return ({
-                rabbi: 'Rabbi Elie Scheller',
+                rabbi: 'Rabbi Ellie Scheller',
                 shloimie: 'Shloimie',
                 external: 'External system',
                 agent: 'Agent job',
@@ -30006,6 +30152,56 @@
 
         function taskProjectKey(task = {}) {
             return normalizeProjectKey(task.project_key || task.project || task.project_name || 'bna');
+        }
+
+        function taskWorkspaceKey(task = {}) {
+            return normalizeWorkspaceKey(task.workspace_key || task.workspace || task.workspace_slug || currentWorkspaceKey() || '');
+        }
+
+        function taskScopeText(task = {}) {
+            return [
+                task.workspace_key,
+                task.workspace,
+                task.project_key,
+                task.project_name,
+                task.project,
+                task.title,
+                task.display_title,
+                task.summary,
+                task.notes,
+                task.raw_message,
+                task.original_raw_message
+            ]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+        }
+
+        function taskIsOneTimeRecord(task = {}) {
+            if (taskProjectKey(task) === 'one_time_mishnah_class') return true;
+            if (taskWorkspaceKey(task) === 'rabbi_sheller_provider') return true;
+            return /one[_\s-]?time|mishn|rabbi[_\s-]?(scheller|sheller)|ellie\s+scheller/.test(taskScopeText(task));
+        }
+
+        function taskIsArchivedRecord(task = {}) {
+            const stage = normalizeTaskStage(task.stage);
+            return Boolean(task.archived_at || task.duplicate_archived_at || task.decision_hidden_at || ['archive', 'archived'].includes(stage));
+        }
+
+        function taskIsDecisionLike(task = {}) {
+            const taskKind = String(task.task_kind || '').toLowerCase();
+            const itemType = String(task.item_type || '').toLowerCase();
+            return taskKind === 'decision' || itemType === 'decision' || normalizeTaskStage(task.stage) === 'needs_decision' || Boolean(task.decision_required);
+        }
+
+        function taskIsDecisionDecided(task = {}) {
+            const decisionStatus = String(task.decision_status || '').toLowerCase();
+            return taskIsDecisionLike(task) && (decisionStatus === 'done' || decisionStatus === 'decided' || Boolean(String(task.decision_outcome || '').trim()) || taskStatusBucket(task) === 'done');
+        }
+
+        function taskIsDecisionSuperseded(task = {}) {
+            const decisionStatus = String(task.decision_status || '').toLowerCase();
+            return taskIsDecisionLike(task) && (decisionStatus === 'stale' || Boolean(task.duplicate_of_task_id || task.canonical_task_id));
         }
 
         function taskProjectLabel(task = {}) {

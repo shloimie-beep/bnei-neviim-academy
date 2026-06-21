@@ -73565,6 +73565,8 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     item_type,
     task_kind,
     status_bucket,
+    task_view,
+    decision_view,
     assigned_to,
     waiting_on,
     decision_owner,
@@ -73625,6 +73627,45 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   }
   if (/^(1|true|yes)$/i.test(String(stale_only || ''))) {
     outerWhere.push('is_stale = true');
+  }
+  const normalizedTaskView = String(task_view || '').trim().toLowerCase();
+  const normalizedDecisionView = String(decision_view || '').trim().toLowerCase();
+  const ownerTextSql = `LOWER(COALESCE(assigned_to, '') || ' ' || COALESCE(decision_owner, '') || ' ' || COALESCE(waiting_on, ''))`;
+  const scopeTextSql = `LOWER(COALESCE(project_key, '') || ' ' || COALESCE(project_name, '') || ' ' || COALESCE(project_short_name, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(display_title, '') || ' ' || COALESCE(summary, '') || ' ' || COALESCE(notes, '') || ' ' || COALESCE(raw_message, '') || ' ' || COALESCE(original_raw_message, ''))`;
+  const archivedSql = `(COALESCE(stage, '') IN ('archive', 'archived') OR archived_at IS NOT NULL OR duplicate_archived_at IS NOT NULL OR decision_hidden_at IS NOT NULL)`;
+  const taskViewWhere = {
+    mine: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    my_tasks: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    one_time: `(status_bucket <> 'done' AND (project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
+    one_time_tasks: `(status_bucket <> 'done' AND (project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
+    codex_queue: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
+    codex_agent_work: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
+    blocked: `status_bucket = 'pending'`,
+    pending: `status_bucket = 'pending'`,
+    due_soon: `(status_bucket <> 'done' AND due_date IS NOT NULL AND due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days')`,
+    calendar: `(status_bucket <> 'done' AND (due_date IS NOT NULL OR planned_at IS NOT NULL))`,
+    schedule: `(status_bucket <> 'done' AND (due_date IS NOT NULL OR planned_at IS NOT NULL))`,
+    completed_activity: `status_bucket = 'done'`,
+    done_activity: `status_bucket = 'done'`,
+    completed: `status_bucket = 'done'`,
+    archived: archivedSql,
+    archive: archivedSql
+  };
+  if (normalizedTaskView && normalizedTaskView !== 'all' && taskViewWhere[normalizedTaskView]) {
+    outerWhere.push(taskViewWhere[normalizedTaskView]);
+  }
+  const decisionViewWhere = {
+    needs_my_decision: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    needs_rabbi: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(rabbi|scheller|sheller|provider)')`,
+    needs_rabbi_scheller: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(rabbi|scheller|sheller|provider)')`,
+    needs_external: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(external|credential|account|dns|domain|legal|billing|payment|railway|resend|vimeo|zoom|stripe|wapi|whapi|whatsapp)')`,
+    needs_external_owner: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(external|credential|account|dns|domain|legal|billing|payment|railway|resend|vimeo|zoom|stripe|wapi|whapi|whatsapp)')`,
+    decided: `(status_bucket = 'done' OR COALESCE(decision_status, '') IN ('done', 'decided') OR COALESCE(decision_outcome, '') <> '')`,
+    superseded: `(COALESCE(decision_status, '') = 'stale' OR duplicate_of_task_id IS NOT NULL OR canonical_task_id IS NOT NULL)`,
+    archived: archivedSql
+  };
+  if (normalizedDecisionView && normalizedDecisionView !== 'all' && decisionViewWhere[normalizedDecisionView]) {
+    outerWhere.push(decisionViewWhere[normalizedDecisionView]);
   }
   const limitParam = addParam(taskLimit);
 
