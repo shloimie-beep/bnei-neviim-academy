@@ -10265,11 +10265,14 @@
 
         function contactSubnavCounts() {
             const providerEmailContacts = oneTimeEmailContactLeads();
+            const providerCrmContacts = isProviderWorkspace() ? oneTimeCrmContactRows() : [];
             return {
-                overview: signups.length + parentLeads.length,
+                overview: isProviderWorkspace() ? providerCrmContacts.length : signups.length + parentLeads.length,
                 people: people.length,
                 parents: signups.filter(signup => contactMatchesSection(signup, 'parents')).length,
                 interested_parents: parentLeads.length,
+                participants: isProviderWorkspace() ? providerParticipantRows().length : 0,
+                crm_contacts: providerCrmContacts.length,
                 email_contacts: providerEmailContacts.length,
                 contacts: signups.length,
                 students: students.length,
@@ -15206,11 +15209,54 @@
                     const rawProjectKey = lead.project_key || lead.project || metadata.project_key || '';
                     const projectKey = rawProjectKey ? normalizeProjectKey(rawProjectKey) : '';
                     if (projectKey && projectKey !== 'one_time_mishnah_class') return false;
-                    if (currentWorkspaceIsOneTime()) return true;
                     const text = `${lead.source || ''} ${lead.source_detail || ''} ${lead.notes || ''}`.toLowerCase();
-                    return leadTags(lead).some(tag => /^one-time-|^one_time/i.test(tag))
+                    const looksOneTime = leadTags(lead).some(tag => /^one-time-|^one_time/i.test(tag))
                         || /one time|sheller|scheller|mishnah|mishnayos|rabbi/.test(text);
+                    return projectKey === 'one_time_mishnah_class' || looksOneTime;
                 });
+        }
+
+        function oneTimeCrmContactRows(options = {}) {
+            const leadRows = (options.leads || oneTimeCrmLeadRows()).map(oneTimeCrmContactRow);
+            const productRows = oneTimeProductLeadRows().map(oneTimeCrmProductLeadRow);
+            const memberRows = oneTimeCrmMemberRows().map(oneTimeCrmMemberRow);
+            const rows = [...leadRows, ...productRows, ...memberRows];
+            const groups = rows.reduce((map, row) => {
+                if (!row.dedupeContactKey) return map;
+                const existing = map.get(row.dedupeContactKey) || [];
+                existing.push(row);
+                map.set(row.dedupeContactKey, existing);
+                return map;
+            }, new Map());
+            groups.forEach(group => {
+                if (group.length < 2) return;
+                group.forEach(row => {
+                    row.dedupe = {
+                        needsReview: true,
+                        label: 'Duplicate contact review',
+                        detail: `${group.length} scoped One Time records share this email/phone key.`,
+                    };
+                });
+            });
+            return rows.sort((a, b) => Date.parse(b.sortDate || 0) - Date.parse(a.sortDate || 0));
+        }
+
+        function oneTimeProductLeadRows() {
+            const system = oneTimeProductSystem();
+            return (Array.isArray(system.leads) ? system.leads : [])
+                .filter(lead => !['archived', 'deleted'].includes(String(lead.status || '').toLowerCase()));
+        }
+
+        function oneTimeCrmMemberRows() {
+            return (Array.isArray(rabbiLaunch.members) ? rabbiLaunch.members : [])
+                .filter(member => !['archived', 'deleted', 'removed'].includes(String(member.status || member.access_status || '').toLowerCase()));
+        }
+
+        function oneTimeCrmContactKey(values = []) {
+            const email = values.map(value => normalizeEmailKey(value)).find(Boolean);
+            if (email) return `email:${email}`;
+            const phone = values.map(value => normalizePhoneDigitsClient(value)).find(value => value && value.length >= 7);
+            return phone ? `phone:${phone}` : '';
         }
 
         function oneTimeLeadNoSendState(lead) {
@@ -15314,6 +15360,7 @@
         function oneTimeCrmContactRow(lead) {
             const contact = [lead.parent_email || '', lead.parent_phone || ''].filter(Boolean).join(' / ') || 'No contact detail';
             const noSend = oneTimeLeadNoSendState(lead);
+            const leadId = Number(lead.id || 0);
             const nextAction = lead.next_follow_up_date
                 ? `Follow up ${formatDate(lead.next_follow_up_date)}`
                 : noSend.locked
@@ -15321,6 +15368,9 @@
                     : 'Review membership/access state.';
             return {
                 lead,
+                recordType: 'parent_lead',
+                dedupeContactKey: oneTimeCrmContactKey([lead.parent_email, lead.email, lead.parent_phone, lead.phone, lead.whatsapp_phone]),
+                sortDate: lead.last_inbound_at || lead.last_outbound_at || lead.updated_at || lead.created_at,
                 name: lead.parent_name || lead.student_name || 'One Time contact',
                 contact,
                 status: `${leadStatusLabel(lead.status)} / ${leadInterestLabel(lead.interest_level)}`,
@@ -15329,6 +15379,81 @@
                 source: oneTimeLeadSourceState(lead),
                 communications: oneTimeLeadCommunicationState(lead),
                 nextAction,
+                actionHtml: leadId
+                    ? `<button class="task-action primary" type="button" onclick="addLeadCommunication(${leadId})">Add note</button><button class="task-action" type="button" onclick="setLeadNextFollowUp(${leadId})">Follow-up</button>`
+                    : '<button class="task-action" type="button" disabled title="This contact has no editable parent-lead record yet.">No lead action</button>',
+            };
+        }
+
+        function oneTimeCrmProductLeadRow(lead) {
+            const contactLead = {
+                ...lead,
+                parent_email: lead.parent_email || lead.email,
+                parent_phone: lead.parent_phone || lead.phone || lead.whatsapp,
+                whatsapp_phone: lead.whatsapp_phone || lead.whatsapp,
+                parent_name: lead.parent_name || lead.name,
+            };
+            const communications = oneTimeLeadCommunicationState(contactLead);
+            const tiers = Array.isArray(lead.interested_tiers) ? lead.interested_tiers : [];
+            return {
+                lead,
+                recordType: 'product_interest',
+                dedupeContactKey: oneTimeCrmContactKey([lead.parent_email, lead.email, lead.parent_phone, lead.phone, lead.whatsapp]),
+                sortDate: lead.updated_at || lead.created_at,
+                name: lead.parent_name || lead.email || lead.phone || lead.whatsapp || 'Product interest lead',
+                contact: [lead.email || lead.parent_email || '', lead.phone || lead.parent_phone || lead.whatsapp || ''].filter(Boolean).join(' / ') || 'No contact detail',
+                status: `${contactStatusLabel(lead.status || 'new')} / ${contactStatusLabel(lead.region || 'worldwide')}`,
+                noSend: {
+                    locked: true,
+                    label: 'No-send product lead',
+                    detail: 'Product interest rows stay internal until recipient/copy/sender approval.',
+                },
+                dedupe: {
+                    needsReview: !oneTimeCrmContactKey([lead.parent_email, lead.email, lead.parent_phone, lead.phone, lead.whatsapp]),
+                    label: oneTimeCrmContactKey([lead.parent_email, lead.email, lead.parent_phone, lead.phone, lead.whatsapp]) ? 'Contact-keyed' : 'Review pending',
+                    detail: tiers.length ? `Interested tiers: ${tiers.map(contactStatusLabel).join(', ')}` : 'No tier preference loaded.',
+                },
+                source: {
+                    label: 'Product interest',
+                    detail: lead.source_landing_page || 'First-party One Time product lead.',
+                },
+                communications,
+                nextAction: 'Review offer, source, and suppressions before any campaign or checkout action.',
+                actionHtml: `<button class="task-action" type="button" onclick="switchView('service_providers'); setCurrentSection('tiers')">Review offers</button><button class="task-action" type="button" disabled title="External sends and CRM writes require operator approval.">No-send</button>`,
+            };
+        }
+
+        function oneTimeCrmMemberRow(member) {
+            const scopes = Array.isArray(member.active_scopes) ? member.active_scopes : [];
+            return {
+                lead: member,
+                recordType: 'member',
+                dedupeContactKey: oneTimeCrmContactKey([member.email, member.phone, member.parent_email, member.parent_phone]),
+                sortDate: member.updated_at || member.created_at,
+                name: member.display_name || member.parent_name || member.email || 'One Time member',
+                contact: [member.email || '', member.phone || ''].filter(Boolean).join(' / ') || 'No contact detail',
+                status: `${contactStatusLabel(member.access_status || member.status || 'member')} / ${contactStatusLabel(member.access_tier || member.tier_key || 'membership')}`,
+                noSend: {
+                    locked: true,
+                    label: 'No-send in CRM view',
+                    detail: 'Member communication uses approval-gated member workflows, not this CRM table.',
+                },
+                dedupe: {
+                    needsReview: false,
+                    label: 'Member record',
+                    detail: scopes.length ? `Scopes: ${scopes.join(', ')}` : 'No active scope list loaded.',
+                },
+                source: {
+                    label: 'Member access',
+                    detail: 'First-party One Time member/access record.',
+                },
+                communications: {
+                    count: 0,
+                    label: 'Member workflow',
+                    detail: 'Use member/access panels for grant history and access actions.',
+                },
+                nextAction: 'Review access grant status and entitlement before member communication.',
+                actionHtml: `<button class="task-action" type="button" onclick="switchView('service_providers'); setCurrentSection('launch')">Open access</button><button class="task-action" type="button" disabled title="Member sends require approved copy, sender, and recipient policy.">No-send</button>`,
             };
         }
 

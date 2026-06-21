@@ -42,11 +42,17 @@ test('Task proof links accept live smoke reports and registers', () => {
 test('One Time CRM Contacts UX shows scoped lead source, no-send, and dedupe state', () => {
   assert.match(operations, /data-one-time-crm-contacts-ux/);
   assert.match(operations, /REQ-20260621-905/);
+  assert.match(operations, /\{ id: 'crm_contacts', label: 'CRM Contacts' \}/);
   assert.match(operations, /function oneTimeCrmLeadRows\(\)/);
+  assert.match(operations, /function oneTimeCrmContactRows\(options = \{\}\)/);
+  assert.match(operations, /function oneTimeProductLeadRows\(\)/);
+  assert.match(operations, /function oneTimeCrmMemberRows\(\)/);
   assert.match(operations, /function oneTimeLeadNoSendState\(lead\)/);
   assert.match(operations, /function oneTimeLeadDedupeState\(lead\)/);
   assert.match(operations, /function oneTimeLeadSourceState\(lead\)/);
   assert.match(operations, /function oneTimeCrmContactRow\(lead\)/);
+  assert.match(operations, /function oneTimeCrmProductLeadRow\(lead\)/);
+  assert.match(operations, /function oneTimeCrmMemberRow\(member\)/);
   assert.match(operations, /One Time CRM Contacts/);
   assert.match(operations, /Lead status, source, no-send, dedupe\/review state, and local communications are visible/);
   assert.match(operations, /No email, WhatsApp, payment, or external CRM write/);
@@ -54,6 +60,12 @@ test('One Time CRM Contacts UX shows scoped lead source, no-send, and dedupe sta
   assert.match(operations, /one-time-no-send-until-approved/);
   assert.match(operations, /one-time-campaign-staging/);
   assert.match(operations, /data-one-time-crm-contact-row/);
+  assert.match(operations, /Duplicate contact review/);
+  assert.match(operations, /Product interest/);
+  assert.match(operations, /Member access/);
+  assert.match(operations, /addLeadCommunication\(\$\{leadId\}\)/);
+  assert.match(operations, /External sends and CRM writes require operator approval/);
+  assert.match(operations, /Direct Action/);
 });
 
 test('One Time Contacts fetch parent leads with the selected workspace project scope', () => {
