@@ -1544,8 +1544,8 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "in_progress",
-      "implementation_status": "implementation_started",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
       "evidence": [
         "src/lib/bna/one-time-product-system.js",
@@ -1555,7 +1555,12 @@
         "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
         "tests/one-time-stripe-local-beta.test.js",
         "scripts/smoke-one-time-trial-referral-live.mjs",
-        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md"
+        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md"
       ],
       "verification": [
         "PASS node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-contacts-intake-cleanup.test.js",
@@ -1566,15 +1571,29 @@
         "PASS npm run bna:run:validate",
         "PASS node scripts/audit-secrets.mjs",
         "PASS npm run watchdog:actions",
-        "PASS git diff --check with line-ending warnings only"
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor for deployment 9805ff41-bb99-4083-95e1-cf0328c26877",
+        "PASS npm run app:smoke",
+        "PASS npm run app:smoke:one-time-trial-referral"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de",
+      "pushed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T17:40:00+03:00",
+      "updated_at": "2026-06-21T17:55:00+03:00",
+      "deployed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
+      "deployment_id": "9805ff41-bb99-4083-95e1-cf0328c26877",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md"
+      ],
+      "closeout_summary": "Warm-lead 30-day trial, $67 renewal, card-required and one-intro-trial rules, policy acceptance storage, referral-after-first-paid-cycle model, legal wording Decision, Stripe local-beta no-write guardrails, and Operations panel are deployed and live-smoked without charges, invoice credits, sends, or external CRM writes.",
       "id": "REQ-20260621-906",
       "title": "Warm-lead trial and referral configuration",
       "expected_result": "Warm-lead trial, referral credit, policy-version, and acceptance records are configurable in test/local mode without live charges or invoice credits.",

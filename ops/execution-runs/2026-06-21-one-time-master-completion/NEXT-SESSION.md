@@ -457,6 +457,57 @@ referral configuration. Do not perform live charges, invoice credits, or
 campaign sends.
 <!-- batch-9E:end -->
 
+<!-- batch-9F:start -->
+## Batch 9F Handoff
+
+Warm-lead trial and referral configuration is deployed and live-verified.
+
+- Requirement: `REQ-20260621-906`
+- Implementation status: `verified_live`
+- Implementation commit:
+  `32708bfa5aa1d673a44ed5765178081ad57dc3de`
+- Final pushed/deployed commit:
+  `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`
+- Railway deployment:
+  `9805ff41-bb99-4083-95e1-cf0328c26877`
+- Key files:
+  `src/lib/bna/one-time-product-system.js`,
+  `src/lib/integrations/stripe.js`, `server.js`,
+  `public/operations.html`,
+  `railway-migration-2026-06-21-one-time-trial-referral-config.sql`,
+  `tests/one-time-stripe-local-beta.test.js`,
+  `scripts/smoke-one-time-trial-referral-live.mjs`
+- Focused Batch 9F tests: 13/13, 25/25 adjacent suite, and 16/16 integration
+  guardrail tests passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+- Focused One Time trial/referral live smoke:
+  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
+- Guardrails:
+  30-day trial, `$67` renewal, card-required and one-intro-trial rules,
+  policy-version acceptance storage, referral-after-first-paid-cycle model,
+  and legal wording Decision are live-readable; no checkout session, live
+  charge, payment link, subscription, invoice credit, email send, WhatsApp
+  send, access grant, external CRM write, GHL/LeadConnector runtime, DNS
+  mutation, or secret exposure occurred.
+
+Known intermediate failure:
+
+- `ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after
+  login because `/api/bna/auth/me` did not return success. The final standard
+  smoke rerun passed.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-907` / Batch 9G payment-to-access
+and class-link flow. Do not create live charges, access grants, or real Zoom
+meetings.
+<!-- batch-9F:end -->
+
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff
 

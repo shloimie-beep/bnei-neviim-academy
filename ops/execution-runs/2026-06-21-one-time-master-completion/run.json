@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T17:40:00+03:00",
+  "updated_at": "2026-06-21T17:55:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -21,13 +21,13 @@
     "pr_branch": "codex/agent-control-center-20260619",
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
     "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
-    "latest_pushed_head": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
-    "latest_deployed_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306"
+    "latest_pushed_head": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
+    "latest_deployed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4"
   },
   "current_batch": {
-    "batch_id": "batch-9F",
-    "requirement_id": "REQ-20260621-906",
-    "title": "Warm-lead trial and referral configuration",
-    "status": "in_progress"
+    "batch_id": "batch-9G",
+    "requirement_id": "REQ-20260621-907",
+    "title": "Payment-to-access and class-link flow",
+    "status": "not_started"
   }
 }

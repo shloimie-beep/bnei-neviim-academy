@@ -25077,3 +25077,31 @@ tests. Batch 9E focused tests and live release gate passed.
 
 Next: continue automatically with Batch 9F / `REQ-20260621-906` warm-lead
 trial and referral configuration.
+
+## 2026-06-21T17:55:00+03:00 - One Time Master Completion Batch 9F Trial Referral Configuration
+
+Closed `REQ-20260621-906` for PR #5. The One Time product system now exposes a
+test/local warm-lead launch promotion with a 30-day trial, `$67` monthly
+renewal, card-required rule, one-intro-trial-per-household rule,
+policy-version acceptance storage, referral-after-first-paid-cycle model, and
+single legal wording Decision. Stripe local-beta readback stays preview-only
+and Operations renders a Trial / Referral Configuration panel.
+
+Implementation commit `32708bfa5aa1d673a44ed5765178081ad57dc3de` was pushed,
+then evidence commit `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4` was deployed
+from a clean detached worktree to Railway deployment
+`9805ff41-bb99-4083-95e1-cf0328c26877`.
+
+Verification passed: focused 13/13 trial/referral tests, 25/25 adjacent
+product/Operations tests, 16/16 integration guardrail tests, syntax checks,
+tracked secret audit, action watchdog, Railway doctor, standard live smoke
+`ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`, and focused
+trial/referral live smoke
+`ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`.
+
+Guardrails: no checkout session, live charge, payment link, subscription,
+invoice credit, email send, WhatsApp send, access grant, external CRM write,
+GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
+
+Next: continue automatically with Batch 9G / `REQ-20260621-907`
+payment-to-access and class-link flow.

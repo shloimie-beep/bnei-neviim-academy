@@ -1090,7 +1090,7 @@ Known unrelated QA caveat:
 <!-- batch-9F:start -->
 ## Batch 9F - Warm-Lead Trial And Referral Configuration
 
-Status: in progress / local implementation verified / deployment pending
+Status: done / deployed / verified live
 
 Implementation evidence:
 
@@ -1138,7 +1138,32 @@ Local verification:
 - PASS execution-run validation, tracked secret audit, action watchdog, and
   diff check with line-ending warnings only.
 
-Deployment/live smoke pending until this implementation commit is pushed.
+Deployment and live evidence:
+
+- Implementation commit:
+  `32708bfa5aa1d673a44ed5765178081ad57dc3de`
+- Final pushed/deployed commit:
+  `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`
+- Railway deployment:
+  `9805ff41-bb99-4083-95e1-cf0328c26877`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+- Focused trial/referral live smoke:
+  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
+
+Focused live smoke verified:
+
+- Production `/api/bna/one-time/trial-referral-config` returns
+  `REQ-20260621-906`.
+- Trial days: `30`.
+- Renewal amount: `6700` cents.
+- Card required: `true`.
+- One intro trial per household: `true`.
+- Referral trigger: `first_successful_paid_cycle`.
+- Acceptance table: `bna_one_time_policy_acceptances`.
+- Promotion policy count: `3`.
+- Live charges, real invoice credits, and external writes are disabled.
+- Operations ships the trial/referral panel and no-write guardrail copy.
 
 Guardrails:
 

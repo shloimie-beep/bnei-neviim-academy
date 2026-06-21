@@ -733,6 +733,12 @@ Recorded after local implementation of warm-lead trial/referral configuration:
 - PASS `npm run watchdog:actions`,
   `ops/watchdog-audits/2026-06-21T14-44-watchdog-action-audit.md`
 - PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after Railway deployment
+  `9805ff41-bb99-4083-95e1-cf0328c26877`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+- PASS `npm run app:smoke:one-time-trial-referral`,
+  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
 
 Focused coverage:
 
@@ -749,5 +755,20 @@ Focused coverage:
 - `DEC-20260621-901` remains the single legal wording Decision and blocks only
   public/legal copy and live billing launch.
 
-Deployment/live smoke pending until this implementation commit is pushed.
+Focused live smoke covered:
+
+- Production trial/referral route returned 30-day trial, `$67` renewal,
+  card-required rule, one-intro-trial rule, first-paid-cycle referral trigger,
+  `bna_one_time_policy_acceptances`, three promotion policies, and no-write
+  guardrails.
+- Operations shipped the Batch 9F panel marker, requirement ID, trial copy,
+  one-intro-trial copy, referral trigger copy, acceptance table copy, and
+  no-charge/no-credit guardrail.
+
+Intermediate/known failures recorded:
+
+- `ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after
+  login because `/api/bna/auth/me` did not return success. The final standard
+  smoke was rerun with platform Operations credentials and passed at
+  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`.
 <!-- batch-9F:end -->

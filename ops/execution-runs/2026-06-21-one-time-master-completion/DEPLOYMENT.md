@@ -286,6 +286,35 @@ No email send, WhatsApp send, payment write, external CRM write, GHL,
 GoHighLevel, LeadConnector, DNS mutation, billing write, bulk campaign, or
 external-account write was performed.
 
+## Batch 9F
+
+- Deployment ID: `9805ff41-bb99-4083-95e1-cf0328c26877`
+- Deployed commit: `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`
+- Focused One Time trial/referral live smoke: PASS,
+  `ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`
+
+Focused live smoke verified production trial/referral route readback, 30-day
+trial, `$67` renewal, card-required rule, one-intro-trial-per-household rule,
+first-paid-cycle referral trigger, `bna_one_time_policy_acceptances`, three
+promotion policies, Operations panel markers, and no live charges, invoice
+credits, sends, access grants, external CRM writes, GHL/LeadConnector runtime,
+DNS mutation, or secret exposure.
+
+Prior standard smoke attempt during the same batch:
+
+- `ops/live-smokes/2026-06-21T14-49-04-951Z-live-app-smoke.md` failed after
+  login because `/api/bna/auth/me` did not return success. The final standard
+  smoke rerun passed at
+  `ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`.
+
+Deployment was run from a clean detached worktree at
+`4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4` so the unrelated uncommitted blog
+JSON files in the main worktree were not included in the bundle.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`
