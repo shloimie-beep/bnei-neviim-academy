@@ -1,10 +1,14 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-21",
+  "updated_at": "2026-06-21T18:42:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
-    "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    "related_goal_ids": [
+      "GOAL-CORE-002",
+      "GOAL-CORE-010",
+      "GOAL-CORE-015"
+    ]
   },
   "actions": [
     {
@@ -20,7 +24,10 @@
         "type": "helper_command",
         "expected_result": "Helper context returns scoped tools and no duplicate public helper widget."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-STUDENT-LOGIN-RESET",
@@ -35,7 +42,10 @@
         "type": "api",
         "expected_result": "Parent-scoped endpoint rejects cross-household student IDs."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
@@ -50,7 +60,11 @@
         "type": "helper_command",
         "expected_result": "Planner maps create automation/billing workflow language to create_automation without external writes."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-HELPER-CAPTURE-RAW-INTAKE",
@@ -66,7 +80,12 @@
         "type": "helper_command",
         "expected_result": "Planner maps ramble/goal-mode language to capture_raw_intake and parser returns raw ID/counts."
       },
-      "related_goal_ids": ["GOAL-CORE-007", "GOAL-CORE-008", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-007",
+        "GOAL-CORE-008",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-HELPER-RUN-WATCHDOG-AUDIT",
@@ -82,7 +101,10 @@
         "type": "helper_command",
         "expected_result": "Planner maps watchdog audit language to run_watchdog_audit."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PROVIDER-CLASSROOM-DRAFT",
@@ -97,7 +119,10 @@
         "type": "helper_command",
         "expected_result": "No Google Classroom, payment, send, or access grant is performed."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
@@ -112,7 +137,11 @@
         "type": "static_and_browser",
         "expected_result": "Primary CTA points to #interest and no payment action fires."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
@@ -127,7 +156,12 @@
         "type": "api_guarded",
         "expected_result": "Posts only to /api/one-time/interest and returns a no-checkout/no-send confirmation."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
@@ -142,7 +176,12 @@
         "type": "route_privacy",
         "expected_result": "/rabbi-member or member entry shows safe login shell unless valid scoped member access is present."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-PRIVATE-QUESTION",
@@ -157,7 +196,13 @@
         "type": "api_guarded",
         "expected_result": "POST /api/rabbi/member/questions requires a member session token and returns a sanitized question number without internal notes or source context."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-SUPPORT-TICKET",
@@ -172,7 +217,13 @@
         "type": "api_guarded",
         "expected_result": "POST /api/rabbi/member/support-tickets requires a member session token, returns OT-SUP ticket numbers, hides source context/internal notes, and sets unrestricted_mishnah_study_bot=false."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-PREPARE",
@@ -187,7 +238,11 @@
         "type": "api_and_static",
         "expected_result": "POST /api/bna/tasks/:taskId/agent-runs is Super Admin only and the Operations UI exposes the action only inside the Agents surface/task drawer."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-HANDOFF",
@@ -202,7 +257,10 @@
         "type": "static",
         "expected_result": "Progress endpoint treats copied/opened as passive audit events and does not transition the run to running."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-PROGRESS-EVIDENCE",
@@ -217,7 +275,11 @@
         "type": "api_and_static",
         "expected_result": "Progress/artifact routes require Super Admin scope and append run events/artifacts."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-SUBMIT-SEAL",
@@ -232,7 +294,11 @@
         "type": "unit_and_static",
         "expected_result": "validateSealPayload enforces summary, criteria, and evidence; task close is gated by implementation_status and automated_gates_passed."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
@@ -247,7 +313,11 @@
         "type": "api_and_static",
         "expected_result": "Lifecycle routes require Super Admin scope, allowed transitions, and append audit events."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-SCOPED-AGENT-STATUS",
@@ -262,7 +332,12 @@
         "type": "browser_smoke",
         "expected_result": "tests/one-time-operations-ui-smoke.test.js renders [data-scoped-agent-status], verifies One Time tasks, and confirms Claim/Seal controls are absent for scoped users."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-DRIVE-BRIEF-PREVIEW",
@@ -277,7 +352,12 @@
         "type": "unit_and_static",
         "expected_result": "POST /api/bna/project-meetings/one-time-drive-brief/preview returns dry_run=true and Operations exposes only the preview action, not production mutation."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
@@ -292,7 +372,12 @@
         "type": "unit_and_live_smoke",
         "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify the payment/access panel ships without no-write guardrail regressions."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS",
@@ -307,7 +392,12 @@
         "type": "unit_and_live_smoke",
         "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify class-link visibility remains relationship scoped."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED",
@@ -323,7 +413,12 @@
         "type": "unit_and_live_smoke",
         "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify automated_access_grants_enabled=false."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED",
@@ -339,7 +434,12 @@
         "type": "unit_and_live_smoke",
         "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify raw_zoom_join_url_returned_to_members=false and zoom_host_start_url_returned=false."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-OPERATIONS-PLATFORM-SUITE-NAV",
@@ -354,7 +454,74 @@
         "type": "browser_smoke",
         "expected_result": "Operations platform_suite view mounts [data-platform-ui-root] across desktop and mobile viewports without exposing secret values or live provider mutation controls."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEST-IDENTITIES-REVIEW-AUTH-MATRIX",
+      "label": "Review Auth Matrix",
+      "surface": "one_time_test_identities_preview",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-test-identities-preview] button.primary",
+      "expected_behavior": "Navigates to the security/settings context for reviewing the no-write negative authorization matrix.",
+      "permission": "workspace_admin",
+      "status": "active",
+      "test": {
+        "type": "ui_static_and_api_guarded",
+        "expected_result": "Operations renders the action and /api/bna/one-time/test-identities-preview returns TEST-prefixed negative authorization cases."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEST-IDENTITIES-APPLY-MOCK-DATA",
+      "label": "Apply Mock Data",
+      "surface": "one_time_test_identities_preview",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-test-identities-preview] button[disabled]",
+      "expected_behavior": "Disabled preview-only action with a clear setup reason; no production record is created without explicit dry-run/apply authorization.",
+      "permission": "workspace_admin",
+      "status": "disabled_with_reason",
+      "disabled_reason": "Preview only. Apply requires an explicit dry-run cleanup/apply command and TEST-prefix review.",
+      "test": {
+        "type": "ui_static",
+        "expected_result": "Button is disabled and the API reports records_created=false and external_write_performed=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEST-IDENTITIES-CLEANUP",
+      "label": "Cleanup TEST Records",
+      "surface": "one_time_test_identities_preview",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-test-identities-preview] button[disabled]",
+      "expected_behavior": "Disabled cleanup action with a clear dry-run requirement and TEST-prefix guard.",
+      "permission": "workspace_admin",
+      "status": "disabled_with_reason",
+      "disabled_reason": "Cleanup is a dry-run manifest only until an operator confirms target TEST records.",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Fixture cleanup_manifest.cleanup_ready is true and requires TEST- prefix."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

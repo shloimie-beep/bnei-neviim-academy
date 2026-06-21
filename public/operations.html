@@ -8053,6 +8053,7 @@
             getOneTimeTrialReferralConfig() { return this.request('GET', '/one-time/trial-referral-config'); },
             getOneTimePaymentAccessClassLinks() { return this.request('GET', '/one-time/payment-access-class-links'); },
             getOneTimeCrmImportPreview() { return this.request('GET', '/one-time/crm-import-preview'); },
+            getOneTimeTestIdentitiesPreview() { return this.request('GET', '/one-time/test-identities-preview'); },
             getOneTimeCommunityModerationReadiness() { return this.request('GET', '/one-time/community-moderation-readiness'); },
             getOneTimeStudyAssistantReadiness() { return this.request('GET', '/one-time/study-assistant-readiness'); },
             getOneTimeProductCalendar(filters = {}) {
@@ -8542,6 +8543,7 @@
             communications: [],
             site: null,
             productSystem: null,
+            testIdentitiesPreview: null,
         };
         let rabbiLaunchNotice = '';
         let members = [];
@@ -16374,7 +16376,7 @@
         }
 
         async function loadRabbiLaunchData() {
-            const [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes] = await Promise.allSettled([
+            const [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes] = await Promise.allSettled([
                 api.getRabbiConfig(),
                 api.getRabbiTiers(),
                 api.getRabbiProviderSettings(),
@@ -16386,6 +16388,7 @@
                 api.getRabbiCommunications(),
                 api.getRabbiSite(),
                 api.getOneTimeProductSystem(),
+                api.getOneTimeTestIdentitiesPreview(),
             ]);
             if (configRes.status === 'fulfilled') {
                 rabbiLaunch.config = configRes.value || null;
@@ -16401,7 +16404,8 @@
             if (commsRes.status === 'fulfilled') rabbiLaunch.communications = commsRes.value?.communications || [];
             if (siteRes.status === 'fulfilled') rabbiLaunch.site = siteRes.value?.site || rabbiLaunch.site;
             if (productSystemRes.status === 'fulfilled') rabbiLaunch.productSystem = productSystemRes.value || null;
-            const rejected = [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes]
+            if (testIdentitiesRes.status === 'fulfilled') rabbiLaunch.testIdentitiesPreview = testIdentitiesRes.value || null;
+            const rejected = [configRes, tiersRes, providersRes, checkoutsRes, membersRes, grantsRes, libraryRes, liveRes, commsRes, siteRes, productSystemRes, testIdentitiesRes]
                 .filter(result => result.status === 'rejected')
                 .map(result => result.reason?.message || 'Rabbi launch data failed');
             if (rejected.length) rabbiLaunchNotice = rejected.join('; ');
@@ -16872,6 +16876,70 @@
             `;
         }
 
+        function oneTimeTestIdentitiesPreview() {
+            return rabbiLaunch.testIdentitiesPreview || {};
+        }
+
+        function renderOneTimeTestIdentityCard(identity = {}) {
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(identity.display_name || identity.key || 'TEST identity')}</div>
+                    <div class="content-card-meta">${escapeHtml(identity.role || 'role')} &middot; ${escapeHtml(identity.workspace_key || '')}</div>
+                    <p class="event-meta">${escapeHtml(identity.email || 'example.test email')}</p>
+                    <div class="tag-list">
+                        <span class="tag">${escapeHtml(identity.key || 'TEST-key')}</span>
+                        <span class="tag">${escapeHtml(identity.cleanup_key || 'cleanup marker pending')}</span>
+                        <span class="tag">${identity.external_write_performed === false ? 'no external write' : 'check required'}</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderOneTimeTestIdentitiesPanel() {
+            const preview = oneTimeTestIdentitiesPreview();
+            const fixtures = preview.fixtures || {};
+            const identities = Array.isArray(fixtures.identities) ? fixtures.identities : [];
+            const scenarios = Array.isArray(preview.scenarios) ? preview.scenarios : [];
+            const denials = Array.isArray(preview.negative_authorization_matrix) ? preview.negative_authorization_matrix : [];
+            const safety = preview.safety || {};
+            const checks = safety.checks || {};
+            const cleanup = preview.cleanup_manifest || {};
+            const scenarioLabels = [...new Set(scenarios.map(item => item.category).filter(Boolean))];
+            return `
+                <section class="focus-panel" data-one-time-test-identities-preview data-requirement-id="${escapeHtml(preview.requirement_id || 'REQ-20260621-909')}" aria-label="One Time test identities and mock data preview">
+                    <div class="task-section-header"><h3>Test Identities / Mock Data</h3><span>${safety.ok === false ? 'check required' : 'safe preview'}</span></div>
+                    <p class="settings-disabled-note">TEST-prefixed beta identities exercise CRM, payment/access, class-link, question, support, and negative authorization paths without real private exports, production record creation, external sends, billing, Zoom, Vimeo, Google, DNS, or CRM writes.</p>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('TEST Identities', Number(checks.identity_count || identities.length || 0).toLocaleString(), 'Synthetic parent, student, provider, staff, and BNA control identities.', "switchView('service_providers'); setCurrentSection('tiers')")}
+                        ${renderMetricButton('Mock Records', Number(checks.mock_record_count || (fixtures.mock_records || []).length || 0).toLocaleString(), 'CRM/payment/access/class-link/question/support fixtures.', "switchView('service_providers'); setCurrentSection('tiers')")}
+                        ${renderMetricButton('Negative Auth', Number(checks.negative_authorization_count || denials.length || 0).toLocaleString(), 'Cross-workspace and own-record denial cases.', "switchView('settings'); setCurrentSection('security')")}
+                        ${renderMetricButton('Cleanup Ready', cleanup.cleanup_ready ? 'Yes' : 'No', 'Dry-run cleanup only for TEST-prefixed records.', "switchView('agents'); setCurrentSection('evidence')")}
+                    </div>
+                    <div class="tag-list" style="margin-top:12px;">
+                        ${scenarioLabels.map(label => `<span class="tag">${escapeHtml(label.replace(/_/g, ' '))}</span>`).join('')}
+                        <span class="tag">${preview.private_export_sources_included === false ? 'no private exports' : 'private export check'}</span>
+                        <span class="tag">${preview.external_write_performed === false ? 'no external writes' : 'external write check'}</span>
+                    </div>
+                    <div class="content-section-grid" style="margin-top:14px;">
+                        ${identities.slice(0, 6).map(renderOneTimeTestIdentityCard).join('') || '<div class="task-empty">Test identity preview has not loaded yet.</div>'}
+                    </div>
+                    <div class="contact-detail-grid" style="margin-top:14px;">
+                        ${renderContactDetailItem('Workspace', preview.workspace_key || 'rabbi_sheller_provider')}
+                        ${renderContactDetailItem('Project', preview.project_key || 'one_time_mishnah_class')}
+                        ${renderContactDetailItem('Fixture prefix', preview.fixture_prefix || 'TEST-')}
+                        ${renderContactDetailItem('Scenario coverage', scenarioLabels.join(', ') || 'pending')}
+                        ${renderContactDetailItem('Raw private rows', preview.raw_private_rows_included === false ? 'No' : 'Check required')}
+                        ${renderContactDetailItem('Safety checks', safety.ok === false ? (safety.failures || []).join('; ') : 'Passed')}
+                    </div>
+                    <div class="task-actions" style="margin-top:14px;">
+                        <button class="task-action primary" type="button" onclick="switchView('settings'); setCurrentSection('security')">Review Auth Matrix</button>
+                        <button class="task-action" type="button" disabled aria-disabled="true" title="Preview only. Apply requires an explicit dry-run cleanup/apply command and TEST-prefix review.">Apply Mock Data</button>
+                        <button class="task-action" type="button" disabled aria-disabled="true" title="Cleanup is a dry-run manifest only until an operator confirms target TEST records.">Cleanup TEST Records</button>
+                    </div>
+                </section>
+            `;
+        }
+
         function renderOneTimeAvailabilityRuleCard(rule = {}) {
             return `
                 <article class="content-card">
@@ -17017,7 +17085,7 @@
                         </section>
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
-                    ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimePaymentAccessPanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
+                    ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimePaymentAccessPanel()}${renderOneTimeTestIdentitiesPanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}
@@ -17097,6 +17165,7 @@
                 ${renderOneTimeProductDecisionPanel()}
                 ${renderOneTimeTrialReferralPanel()}
                 ${renderOneTimePaymentAccessPanel()}
+                ${renderOneTimeTestIdentitiesPanel()}
                 ${renderOneTimeProductReadinessPanel()}
 
                 <section class="focus-panel">

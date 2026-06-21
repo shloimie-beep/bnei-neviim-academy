@@ -16,6 +16,7 @@ const { parsePlatformIntake } = require('../src/platform/ingestion/canonical-par
 const { createParentPrompt, appendChildOutcome, transitionPrompt, buildQueueViewModel, buildRambleStatusViewModel } = require('../src/platform/ingestion/prompt-queue');
 const { createWorkPackage, claimWorkPackage, recordEvidence, recordProgress: recordWorkPackageProgress, sealWorkPackage, requeueFindingOrDecision } = require('../src/platform/agent-control/closed-loop');
 const { buildOneTimeInstanceConfig, assertNoBnaPrivateData } = require('../src/platform/instances/one-time');
+const { buildOneTimeTestIdentityPreview, assertOneTimeTestFixtureSafety } = require('../src/platform/instances/one-time-test-fixtures');
 const { buildOneTimeIntegrationReadinessPayload } = require('../src/platform/integrations/readiness');
 
 const checkedAt = new Date().toISOString();
@@ -264,6 +265,8 @@ const readiness = buildOneTimeIntegrationReadinessPayload({
   zoomReadiness: { configured: false, blocker: 'synthetic_zoom_credential_missing' },
   resendReadiness: { configured: false, blocker: 'synthetic_resend_domain_missing' },
 });
+const testIdentityPreview = buildOneTimeTestIdentityPreview({ checked_at: checkedAt });
+const testIdentitySafety = assertOneTimeTestFixtureSafety(testIdentityPreview);
 
 const bnaPrivateRecord = { id: 'bna-private-synthetic', workspace_key: 'bna', privacy: 'bna_private' };
 const leakCheck = assertNoBnaPrivateData([member, student, provider, community, course]);
@@ -288,6 +291,9 @@ if (duplicateParsed.tasks.length || duplicateParsed.decisions.length || duplicat
 }
 if (!leakCheck.ok || blockedLeakCheck.ok || bnaVisibility.length) {
   throw new Error('Synthetic E2E workspace isolation check failed.');
+}
+if (!testIdentitySafety.ok) {
+  throw new Error(`Synthetic TEST identity safety check failed: ${testIdentitySafety.failures.join('; ')}`);
 }
 if (tempStore.size !== 0) throw new Error('Synthetic E2E cleanup failed.');
 
@@ -369,6 +375,22 @@ const artifact = {
     deleted_or_archived_ids: cleanupIds,
     remaining_in_memory_records: tempStore.size,
     passed: true,
+  },
+  test_identities_and_mock_data: {
+    requirement_id: testIdentityPreview.requirement_id,
+    fixture_prefix: testIdentityPreview.fixture_prefix,
+    identity_count: testIdentitySafety.checks.identity_count,
+    relationship_count: testIdentitySafety.checks.relationship_count,
+    mock_record_count: testIdentitySafety.checks.mock_record_count,
+    scenario_count: testIdentitySafety.checks.scenario_count,
+    negative_authorization_count: testIdentitySafety.checks.negative_authorization_count,
+    cleanup_ready: testIdentitySafety.checks.cleanup_ready,
+    no_bna_private_data: testIdentitySafety.checks.no_bna_private_data,
+    private_export_sources_included: testIdentityPreview.private_export_sources_included,
+    raw_private_rows_included: testIdentityPreview.raw_private_rows_included,
+    external_write_performed: testIdentityPreview.external_write_performed,
+    scenario_categories: testIdentityPreview.scenarios.map((scenario) => scenario.category),
+    negative_authorization_keys: testIdentityPreview.negative_authorization_matrix.map((item) => item.key),
   },
 };
 

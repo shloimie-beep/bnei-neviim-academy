@@ -1,10 +1,15 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-19",
+  "updated_at": "2026-06-21T18:42:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
-    "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-015"]
+    "related_goal_ids": [
+      "GOAL-CORE-003",
+      "GOAL-CORE-006",
+      "GOAL-CORE-009",
+      "GOAL-CORE-015"
+    ]
   },
   "routes": [
     {
@@ -17,7 +22,9 @@
       "expected_logged_out_behavior": "load_anonymous_public_homepage",
       "expected_logged_in_behavior": "load_anonymous_public_homepage",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/he",
@@ -29,7 +36,9 @@
       "expected_logged_out_behavior": "load_anonymous_public_hebrew_homepage_or_alias",
       "expected_logged_in_behavior": "load_anonymous_public_hebrew_homepage_or_alias",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/school",
@@ -41,7 +50,9 @@
       "expected_logged_out_behavior": "load_anonymous_school_information",
       "expected_logged_in_behavior": "load_anonymous_school_information",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/parents",
@@ -53,7 +64,9 @@
       "expected_logged_out_behavior": "load_anonymous_parent_information",
       "expected_logged_in_behavior": "load_anonymous_parent_information",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/signup.html",
@@ -65,7 +78,9 @@
       "expected_logged_out_behavior": "load_public_signup_intake",
       "expected_logged_in_behavior": "load_public_signup_intake",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003"]
+      "related_goal_ids": [
+        "GOAL-CORE-003"
+      ]
     },
     {
       "route": "/parent/login",
@@ -77,7 +92,10 @@
       "expected_logged_out_behavior": "show_parent_login_or_access_request",
       "expected_logged_in_behavior": "show_explicit_continue_or_switch_parent",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/student/login",
@@ -89,7 +107,10 @@
       "expected_logged_out_behavior": "show_student_login_shell_without_private_data",
       "expected_logged_in_behavior": "show_explicit_continue_or_switch_student",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/parent",
@@ -101,7 +122,9 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_anonymous_shell_without_private_data",
       "expected_logged_in_behavior": "own_parent_dashboard_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/student",
@@ -113,7 +136,9 @@
       "expected_logged_out_behavior": "show_student_login_shell_without_private_data",
       "expected_logged_in_behavior": "own_student_dashboard_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/provider",
@@ -125,7 +150,11 @@
       "expected_logged_out_behavior": "show_safe_provider_login_and_join_entry",
       "expected_logged_in_behavior": "own_provider_workspace_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/operations",
@@ -137,7 +166,10 @@
       "expected_logged_out_behavior": "redirect_to_operations_login",
       "expected_logged_in_behavior": "authorized_operations_dashboard_only",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-009"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009"
+      ]
     },
     {
       "route": "/operations-login.html",
@@ -149,7 +181,10 @@
       "expected_logged_out_behavior": "show_operations_login_without_private_data",
       "expected_logged_in_behavior": "redirect_to_authorized_operations_dashboard",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/api/bna/helper/execute",
@@ -161,7 +196,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "execute_registered_helper_tool_with_scope_and_confirmation_gates",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "route": "/api/bna/helper/plan",
@@ -173,7 +212,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "return_scoped_helper_plan_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "route": "/api/bna/intake/parse",
@@ -185,7 +228,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "create_raw_intake_parse_run_and_scoped_review_items",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-006", "GOAL-CORE-007", "GOAL-CORE-008"]
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-007",
+        "GOAL-CORE-008"
+      ]
     },
     {
       "route": "/service-providers",
@@ -197,7 +244,10 @@
       "expected_logged_out_behavior": "load_public_provider_index_only",
       "expected_logged_in_behavior": "load_public_provider_index_only",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/become-service-provider",
@@ -209,7 +259,10 @@
       "expected_logged_out_behavior": "load_provider_join_intake",
       "expected_logged_in_behavior": "load_provider_join_intake",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/provider-signup",
@@ -221,7 +274,10 @@
       "expected_logged_out_behavior": "load_provider_join_intake",
       "expected_logged_in_behavior": "load_provider_join_intake",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/providers/:slug",
@@ -233,7 +289,10 @@
       "expected_logged_out_behavior": "load_public_provider_profile_only",
       "expected_logged_in_behavior": "load_public_provider_profile_only",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/rabbi",
@@ -245,7 +304,10 @@
       "expected_logged_out_behavior": "load_one_time_public_landing",
       "expected_logged_in_behavior": "load_one_time_public_landing",
       "privacy_risk": "normal",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/one-time",
@@ -258,7 +320,10 @@
       "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "privacy_risk": "normal",
       "canonical_target": "/one-time/mishnayos",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/one-time/mishnayos",
@@ -271,7 +336,10 @@
       "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "privacy_risk": "normal",
       "canonical_target": "/one-time",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/rabbi-member",
@@ -283,7 +351,11 @@
       "expected_logged_out_behavior": "show_member_login_or_safe_entry_without_private_library_data",
       "expected_logged_in_behavior": "load_own_member_library_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/rabbi/member/support-tickets",
@@ -296,7 +368,12 @@
       "expected_logged_in_behavior": "list_or_create_only_the_authenticated_member_scoped_support_tickets",
       "privacy_risk": "high",
       "security_expectation": "Requires a valid One Time member session token; returns ticket numbers and project-visible staff replies only, with no source context or internal notes.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/rabbi/member/support-tickets/:id",
@@ -309,7 +386,12 @@
       "expected_logged_in_behavior": "load_only_the_authenticated_member_scoped_support_ticket",
       "privacy_risk": "high",
       "security_expectation": "Requires ticket source_context member_id and relationship_scope match; hides source context and internal/operator-only comments.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/rabbi/member/questions",
@@ -322,7 +404,12 @@
       "expected_logged_in_behavior": "list_or_create_only_the_authenticated_member_private_questions",
       "privacy_risk": "high",
       "security_expectation": "Stores private questions for staff review only; no forum post, member feed, external send, source context, or internal review notes are returned.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/member-library",
@@ -334,7 +421,11 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_member_entry_without_private_library_data",
       "expected_logged_in_behavior": "load_own_member_library_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/member",
@@ -346,7 +437,10 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_member_entry_without_private_data",
       "expected_logged_in_behavior": "load_own_member_portal_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
     },
     {
       "route": "/one-time-classroom",
@@ -358,7 +452,11 @@
       "expected_logged_out_behavior": "redirect_to_login_or_show_classroom_entry_without_private_data",
       "expected_logged_in_behavior": "load_scoped_one_time_classroom_only",
       "privacy_risk": "high",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/google/oauth/start",
@@ -370,7 +468,11 @@
       "expected_logged_out_behavior": "reject_unauthorized",
       "expected_logged_in_behavior": "start_google_oauth_for_authorized_admin_only",
       "privacy_risk": "critical",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/status",
@@ -383,7 +485,12 @@
       "expected_logged_in_behavior": "return_zoom_readiness_api_workflow_and_webhook_foundation_without_writes",
       "privacy_risk": "high",
       "security_expectation": "Readiness only: no Zoom token, client secret, host start URL, meeting creation, registrant write, webhook acceptance, recording read, transcript read, summary read, or attendance write is performed.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/meeting-preview",
@@ -396,7 +503,12 @@
       "expected_logged_in_behavior": "return_zoom_meeting_request_preview_without_creating_meeting",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no Zoom meeting is created and no host start URL is returned.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/session-automation-preview",
@@ -409,7 +521,12 @@
       "expected_logged_in_behavior": "return_no_write_zoom_session_creation_registrant_join_redirect_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no Zoom meeting, registrant, join redirect, webhook, attendance write, notification send, or portal publish is performed.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/webhook-attendance-preview",
@@ -422,7 +539,12 @@
       "expected_logged_in_behavior": "return_no_write_zoom_webhook_attendance_mapping_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no live webhook is accepted and no attendance row is mutated.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/integrations/zoom/attendance-correction-preview",
@@ -435,7 +557,12 @@
       "expected_logged_in_behavior": "return_no_write_zoom_attendance_correction_draft",
       "privacy_risk": "high",
       "security_expectation": "Preview only: correction drafts require operator review and do not mutate attendance rows.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/video-library/recording-pipeline-preview",
@@ -448,7 +575,12 @@
       "expected_logged_in_behavior": "return_no_write_recording_transcript_summary_vimeo_pipeline_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: no provider webhook, recording fetch, upload, publish, unpublish, delete, member visibility, watch-progress write, or notification send is performed.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/video-library/:id/publication-preview",
@@ -461,7 +593,12 @@
       "expected_logged_in_behavior": "return_no_write_vimeo_publication_readiness_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: publication, unpublishing, deletion, member visibility, and provider writes stay disabled until explicit operator approval.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/video-library/:id/retention-preview",
@@ -474,7 +611,30 @@
       "expected_logged_in_behavior": "return_no_write_recording_retention_deletion_preview",
       "privacy_risk": "high",
       "security_expectation": "Preview only: source recording deletion remains disabled until retention, backup, playback smoke, and operator approval are recorded.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/test-identities-preview",
+      "surface": "one_time_test_identities_preview",
+      "access": "private",
+      "required_role": "workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_without_operations_session",
+      "expected_logged_in_behavior": "return_read_only_TEST_prefixed_fixture_preview_and_negative_authorization_matrix",
+      "privacy_risk": "medium",
+      "security_expectation": "Requires One Time admin scope; returns only synthetic example.test identities, cleanup manifest, scenario coverage, and no-write safety checks.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/one-time/transcript-privacy",
@@ -487,7 +647,12 @@
       "expected_logged_in_behavior": "return_no_write_transcript_privacy_readiness_without_raw_transcript_text",
       "privacy_risk": "critical",
       "security_expectation": "Readiness only: no raw transcript body is returned, no vector/public-helper corpus is mutated, and cross-student/private retrieval remains blocked.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/gamification/badge-readiness",
@@ -500,7 +665,12 @@
       "expected_logged_in_behavior": "return_no_write_badge_policy_readiness_without_awarding_or_reversing_badges",
       "privacy_risk": "high",
       "security_expectation": "Readiness only: no badge award, reversal, external notification, access grant, prize/credit, or public individual leaderboard is enabled.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/one-time/community-moderation-readiness",
@@ -513,7 +683,12 @@
       "expected_logged_in_behavior": "return_no_write_community_moderation_readiness_without_raw_private_message_text",
       "privacy_risk": "critical",
       "security_expectation": "Readiness only: no public/member post publication, external notification, unrestricted student messaging, deletion without history, or raw private question exposure is enabled.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/one-time/study-assistant-readiness",
@@ -526,7 +701,12 @@
       "expected_logged_in_behavior": "return_no_write_study_assistant_readiness_without_source_text_or_answer_generation",
       "privacy_risk": "critical",
       "security_expectation": "Readiness only: no unrestricted AI chat, Sefaria/API ingestion, arbitrary translation merge, source corpus mutation, raw source text, raw transcript retrieval, cross-student retrieval, or assistant answer generation is enabled.",
-      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-009", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "route": "/api/bna/project-meetings/one-time-drive-brief/preview",
@@ -540,7 +720,12 @@
       "privacy_risk": "high",
       "canonical_target": "/api/bna/project-meetings/one-time-drive-brief/preview",
       "security_expectation": "No production writes, no external integration writes, no raw transcript persisted, and all derived records scoped to one_time_mishnah_class/rabbi_sheller_provider.",
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/one-time/integrations/readiness",
@@ -554,7 +739,12 @@
       "privacy_risk": "high",
       "canonical_target": "/api/bna/one-time/integrations/readiness",
       "security_expectation": "Readiness only: no Vimeo upload, Zoom mutation, Resend send, DNS write, deploy, secret copy, or production database write is performed.",
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/one-time/trial-referral-config",
@@ -568,7 +758,12 @@
       "privacy_risk": "high",
       "canonical_target": "/api/bna/one-time/trial-referral-config",
       "security_expectation": "Readiness only: no checkout creation, live card charge, payment link, invoice, invoice credit, email/WhatsApp send, external CRM write, or access grant automation is enabled.",
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "route": "/api/bna/one-time/payment-access-class-links",
@@ -582,7 +777,12 @@
       "privacy_risk": "critical",
       "canonical_target": "/api/bna/one-time/payment-access-class-links",
       "security_expectation": "Readiness only: no live charge, checkout session, payment link, subscription, automated access grant, receipt/welcome send, external CRM write, raw member Zoom URL, or Zoom host/start URL is enabled.",
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

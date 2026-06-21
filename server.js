@@ -141,6 +141,9 @@ const {
   buildOneTimeIntegrationReadinessPayload,
 } = require('./src/platform/integrations/readiness');
 const {
+  buildOneTimeTestIdentityPreview,
+} = require('./src/platform/instances/one-time-test-fixtures');
+const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
   stableHash: intakeStableHash,
@@ -8417,6 +8420,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/trial-referral-config' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/payment-access-class-links' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/crm-import-preview' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/test-identities-preview' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
@@ -70526,6 +70530,21 @@ app.get('/api/bna/one-time/crm-import-preview', requireAdmin, async (req, res) =
   try {
     const project = await assertRabbiAdminAccess(req);
     res.json(await oneTimeCrmImportPreviewReadiness(project.id));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/test-identities-preview', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const preview = buildOneTimeTestIdentityPreview({ checked_at: new Date().toISOString() });
+    res.json({
+      success: true,
+      ...preview,
+      production_records_created: false,
+      external_write_performed: false,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
