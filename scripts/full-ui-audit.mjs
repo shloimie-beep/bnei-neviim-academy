@@ -6,7 +6,7 @@ import { chromium } from 'playwright';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const today = new Date().toISOString().slice(0, 10);
-const auditSlug = `${today}-full-app-ui-audit`;
+const auditSlug = process.env.UI_AUDIT_SLUG || `${today}-full-app-ui-audit`;
 const outputRoot = path.join(repoRoot, 'ops', 'ui-audits', auditSlug);
 const screenshotsRoot = path.join(outputRoot, 'screenshots');
 
@@ -18,10 +18,16 @@ const env = {
 const BASE_URL = (env.UI_AUDIT_BASE_URL || 'https://bneineviimacademy.org').replace(/\/+$/, '');
 const OPS_USERNAME = env.OPS_USERNAME || '';
 const OPS_PASSWORD = env.OPS_PASSWORD || '';
+const TARGET_MODE = String(env.UI_AUDIT_TARGET_MODE || env.UI_AUDIT_SCOPE || 'full').toLowerCase();
+const TARGET_IDS = new Set(String(env.UI_AUDIT_TARGET_IDS || '').split(',').map(item => item.trim()).filter(Boolean));
 
 const VIEWPORTS = [
-  { id: 'desktop', width: 1440, height: 1000 },
-  { id: 'mobile', width: 390, height: 900 },
+  { id: 'desktop-1440', width: 1440, height: 1000 },
+  { id: 'desktop-1024', width: 1024, height: 900 },
+  { id: 'tablet-768', width: 768, height: 1024 },
+  { id: 'mobile-430', width: 430, height: 932 },
+  { id: 'mobile-390', width: 390, height: 900 },
+  { id: 'mobile-360', width: 360, height: 800 },
 ];
 
 const WORKSPACES = [
@@ -64,6 +70,41 @@ const PUBLIC_TARGETS = [
   { id: 'provider-login', label: 'Provider Portal Login', path: '/provider', group: 'Provider Portal' },
   { id: 'provider-join', label: 'Provider Join / Onboarding', path: '/providers/join', group: 'Provider Onboarding' },
 ];
+
+const BATCH6_PUBLIC_TARGETS = [
+  { id: 'one-time-landing', label: 'One Time Landing', path: '/rabbi', group: 'One Time Public' },
+  { id: 'one-time-member-library', label: 'One Time Member Library', path: '/member-library', group: 'One Time Public' },
+  { id: 'one-time-classroom', label: 'One Time Classroom', path: '/one-time-classroom', group: 'One Time Public' },
+  { id: 'parent-portal', label: 'Parent Portal', path: '/parent', group: 'Parent Portal' },
+  { id: 'student-portal', label: 'Student Portal', path: '/student', group: 'Student Workspace' },
+  { id: 'provider-portal', label: 'Provider Portal', path: '/provider', group: 'Provider Portal' },
+];
+
+const BATCH6_OPERATION_TARGETS = [
+  { id: 'operations-overview', label: 'Operations / Overview', workspace: 'rabbi_sheller_provider', view: 'dashboard', section: 'overview' },
+  { id: 'operations-tasks', label: 'Operations / Tasks', workspace: 'rabbi_sheller_provider', view: 'tasks', section: 'tasks' },
+  { id: 'operations-decisions', label: 'Operations / Decisions', workspace: 'rabbi_sheller_provider', view: 'tasks', section: 'decisions' },
+  { id: 'operations-contacts-members', label: 'Operations / Contacts and Members', workspace: 'rabbi_sheller_provider', view: 'contacts', section: 'participants' },
+  { id: 'operations-users', label: 'Operations / Users', workspace: 'platform', view: 'admin', section: 'users' },
+  { id: 'operations-communications', label: 'Operations / Communications', workspace: 'rabbi_sheller_provider', view: 'communications', section: 'overview' },
+  { id: 'operations-whatsapp', label: 'Operations / WhatsApp', workspace: 'rabbi_sheller_provider', view: 'communications', section: 'whatsapp' },
+  { id: 'operations-email', label: 'Operations / Email', workspace: 'rabbi_sheller_provider', view: 'communications', section: 'email' },
+  { id: 'operations-community', label: 'Operations / Community', workspace: 'rabbi_sheller_provider', view: 'community', section: 'overview' },
+  { id: 'operations-content', label: 'Operations / Content', workspace: 'rabbi_sheller_provider', view: 'content', section: 'library' },
+  { id: 'operations-member-library', label: 'Operations / Member Library', workspace: 'rabbi_sheller_provider', view: 'content', section: 'one_time_library' },
+  { id: 'operations-classroom', label: 'Operations / Classroom', workspace: 'rabbi_sheller_provider', view: 'content', section: 'meetings' },
+  { id: 'operations-live-classes', label: 'Operations / Live Classes', workspace: 'rabbi_sheller_provider', view: 'live_classes', section: 'overview' },
+  { id: 'operations-schedule', label: 'Operations / Schedule', workspace: 'rabbi_sheller_provider', view: 'service_providers', section: 'schedule' },
+  { id: 'operations-integrations', label: 'Operations / Integrations', workspace: 'rabbi_sheller_provider', view: 'integrations', section: 'readiness' },
+  { id: 'operations-settings', label: 'Operations / Settings', workspace: 'rabbi_sheller_provider', view: 'settings', section: 'users_access' },
+  { id: 'operations-agents', label: 'Operations / Agents', workspace: 'rabbi_sheller_provider', view: 'agents', section: 'ready' },
+].map(target => ({
+  ...target,
+  group: 'Operations Batch 6',
+  path: `/operations?workspace=${encodeURIComponent(target.workspace)}&view=${encodeURIComponent(target.view)}&section=${encodeURIComponent(target.section)}`,
+  authenticated: true,
+  operations: true,
+}));
 
 const EXTRA_STATES = [
   {
@@ -160,10 +201,12 @@ async function main() {
 async function auditPublicTargets(context, viewport) {
   const page = await context.newPage();
   try {
-    for (const target of PUBLIC_TARGETS) {
+    const targets = selectAuditTargets(TARGET_MODE === 'batch6' ? BATCH6_PUBLIC_TARGETS : PUBLIC_TARGETS);
+    const extraStates = TARGET_MODE === 'batch6' ? [] : EXTRA_STATES;
+    for (const target of targets) {
       await captureTarget(page, viewport, target);
     }
-    for (const target of EXTRA_STATES) {
+    for (const target of extraStates) {
       await captureTarget(page, viewport, target);
     }
   } finally {
@@ -177,6 +220,29 @@ async function auditOperationsTargets(context, viewport) {
   try {
     if (!OPS_USERNAME || !OPS_PASSWORD) {
       errors.push({ target: 'operations', error: 'Missing OPS_USERNAME or OPS_PASSWORD; Operations screenshots limited to login page.' });
+      return;
+    }
+
+    if (TARGET_MODE === 'batch6') {
+      for (const target of selectAuditTargets(BATCH6_OPERATION_TARGETS)) {
+        await captureTarget(page, viewport, target);
+      }
+      if (viewport.width <= 430) {
+        await captureTarget(page, viewport, {
+          id: 'operations-mobile-nav-open',
+          label: 'Operations / Mobile Navigation Drawer Open',
+          group: 'Operations Batch 6',
+          path: '/operations?workspace=rabbi_sheller_provider&view=dashboard&section=overview',
+          workspace: 'rabbi_sheller_provider',
+          view: 'dashboard',
+          section: 'mobile_drawer',
+          authenticated: true,
+          operations: true,
+          run: async (currentPage) => {
+            await clickIfPresent(currentPage, '.menu-button');
+          },
+        });
+      }
       return;
     }
 
@@ -291,10 +357,15 @@ async function settlePage(page, target) {
       const app = document.querySelector('#app');
       return Boolean(app && !/Loading BNA Operations/i.test(app.textContent || ''));
     }, null, { timeout: 18000 }).catch(() => {});
-    await page.waitForTimeout(850);
+    await page.waitForTimeout(TARGET_MODE === 'batch6' ? 300 : 850);
     return;
   }
-  await page.waitForTimeout(650);
+  await page.waitForTimeout(TARGET_MODE === 'batch6' ? 300 : 650);
+}
+
+function selectAuditTargets(targets) {
+  if (!TARGET_IDS.size) return targets;
+  return targets.filter(target => TARGET_IDS.has(target.id));
 }
 
 async function collectPageInfo(page) {
@@ -458,6 +529,8 @@ function writeManifest() {
   fs.writeFileSync(path.join(outputRoot, 'manifest.json'), `${JSON.stringify({
     generated_at: new Date().toISOString(),
     base_url: BASE_URL,
+    target_mode: TARGET_MODE,
+    viewports: VIEWPORTS,
     total_screenshots: reportRows.length,
     errors,
     screenshots: reportRows,
@@ -492,6 +565,8 @@ function writeReports() {
   summary.push(`# BNA Full App UI Audit - ${today}`);
   summary.push('');
   summary.push(`Base URL: ${BASE_URL}`);
+  summary.push(`Target mode: ${TARGET_MODE}`);
+  summary.push(`Viewports: ${VIEWPORTS.map(viewport => viewport.width).join(', ')}px`);
   summary.push(`Screenshots captured: ${reportRows.length}`);
   summary.push(`Capture errors: ${errors.length}`);
   summary.push('');
@@ -570,16 +645,15 @@ function writeReadme() {
     '- `ui-audit-report.md`: executive summary and group links.',
     '- `manifest.json`: full machine-readable screenshot/action inventory.',
     '- `screenshot-index.csv`: spreadsheet-friendly screenshot index.',
-    '- `screenshots/desktop/`: desktop captures.',
-    '- `screenshots/mobile/`: mobile captures.',
+    '- `screenshots/desktop-1440/`, `screenshots/desktop-1024/`, `screenshots/tablet-768/`, `screenshots/mobile-430/`, `screenshots/mobile-390/`, `screenshots/mobile-360/`: viewport captures.',
     '',
   ];
   fs.writeFileSync(path.join(outputRoot, 'README.md'), `${lines.join('\n')}\n`);
 }
 
 function executiveSummaryLines() {
-  const mobileRows = reportRows.filter((row) => row.viewport === 'mobile');
-  const desktopRows = reportRows.filter((row) => row.viewport === 'desktop');
+  const mobileRows = reportRows.filter((row) => row.viewport.startsWith('mobile-') || row.viewport.startsWith('tablet-'));
+  const desktopRows = reportRows.filter((row) => row.viewport.startsWith('desktop-'));
   const avg = (rows) => rows.length ? Math.round((rows.reduce((sum, row) => sum + Number(row.rating || 0), 0) / rows.length) * 10) / 10 : 0;
   const lowRows = reportRows.filter((row) => row.rating < 7).sort((a, b) => a.rating - b.rating).slice(0, 12);
   return [
@@ -592,7 +666,7 @@ function executiveSummaryLines() {
 
 function priorityOptimizations() {
   const overflowCount = reportRows.filter((row) => row.metrics?.horizontalOverflow).length;
-  const highActionCount = reportRows.filter((row) => row.visibleButtonCount > (row.viewport === 'mobile' ? 34 : 55)).length;
+  const highActionCount = reportRows.filter((row) => row.visibleButtonCount > (/^(mobile|tablet)-/.test(row.viewport) ? 34 : 55)).length;
   const placeholderCount = reportRows.filter((row) => (row.metrics?.todoMentions || 0) > 6).length;
   const authScreens = reportRows.filter((row) => /login/i.test(row.id)).length;
   return [

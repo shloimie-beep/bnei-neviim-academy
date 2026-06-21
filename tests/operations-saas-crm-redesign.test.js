@@ -8,7 +8,7 @@ const student = fs.readFileSync('public/student.html', 'utf8');
 const provider = fs.readFileSync('public/provider.html', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 
-test('Operations uses the SaaS shell with global nav, workspace switcher, and nested subnav', () => {
+test('Operations uses the SaaS shell with module sidebar, workspace switcher, and top filter rail', () => {
   for (const id of [
     'dashboard',
     'pipelines',
@@ -56,11 +56,14 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /function currentSubnavConfig/);
   assert.match(operations, /class="ops-sidebar-drilldown ops-nested-subnav"/);
   assert.match(operations, /class="ops-brand-topbar saas-topbar"/);
-  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'platform_suite',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
-  assert.match(operations, /function renderModuleToolbar/);
-  assert.match(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"/);
+  assert.match(operations, /let sidebarMode = 'modules'/);
+  assert.match(operations, /\$\{renderSidebarModuleList\(navItems\)\}/);
+  assert.match(operations, /function renderTopFilterRail/);
+  assert.match(operations, /data-top-filter-rail="true"/);
+  assert.match(operations, /data-current-module="\$\{escapeHtml\(currentView\)\}"/);
+  assert.match(operations, /class="ops-filter-track" role="tablist"/);
   assert.match(operations, /openCommandTarget\('tasks', 'decisions'\)/);
-  assert.match(operations, /data-module-toolbar-id="\$\{escapeHtml\(item\.id\)\}"/);
+  assert.doesNotMatch(operations, /data-module-toolbar-id/);
   assert.match(operations, /function renderSectionNav\(tabs, activeId, handlerName\) \{\s*return '';/);
   assert.match(operations, /\.ops-app-shell\.drawer-open \.ops-main\s*{[\s\S]*display:\s*none/);
 });

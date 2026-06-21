@@ -259,25 +259,34 @@
         }
 
         .section-nav {
-            border: 1px solid rgba(51, 65, 85, 0.9);
-            border-radius: 14px;
-            background: rgba(17, 24, 39, 0.82);
-            margin-bottom: 16px;
-            padding: 8px;
+            margin-bottom: 14px;
+            min-width: 0;
+            overflow: hidden;
         }
 
-        .section-tab-list {
+        .section-tab-list,
+        .ops-filter-track {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
             gap: 6px;
+            min-width: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            overscroll-behavior-x: contain;
+            padding-bottom: 2px;
+            scroll-snap-type: x proximity;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .section-tab {
+        .section-tab,
+        .ops-filter-tab {
             border: 1px solid transparent;
             border-radius: 9px;
             background: transparent;
             color: #94a3b8;
             cursor: pointer;
+            flex: 0 0 auto;
             display: inline-flex;
             align-items: center;
             gap: 7px;
@@ -286,17 +295,21 @@
             font-weight: 800;
             min-height: 34px;
             padding: 7px 10px;
-            white-space: normal;
+            scroll-snap-align: start;
+            white-space: nowrap;
         }
 
         .section-tab:hover,
-        .section-tab.active {
+        .section-tab.active,
+        .ops-filter-tab:hover,
+        .ops-filter-tab.active {
             border-color: rgba(201, 162, 39, 0.32);
             background: rgba(201, 162, 39, 0.12);
             color: #f8fafc;
         }
 
-        .section-tab-count {
+        .section-tab-count,
+        .ops-filter-count {
             border: 1px solid rgba(148, 163, 184, 0.2);
             border-radius: 999px;
             background: rgba(15, 23, 42, 0.72);
@@ -309,7 +322,8 @@
             text-align: center;
         }
 
-        .section-tab.active .section-tab-count {
+        .section-tab.active .section-tab-count,
+        .ops-filter-tab.active .ops-filter-count {
             border-color: rgba(201, 162, 39, 0.38);
             color: #facc15;
         }
@@ -5706,20 +5720,15 @@
                 overflow-x: hidden;
             }
 
-            .section-nav {
-                margin-bottom: 12px;
-                padding: 7px;
-            }
-
             .section-tab-list {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
             }
 
             .section-tab {
-                width: 100%;
                 min-width: 0;
-                padding: 8px 6px;
+                padding: 8px 10px;
                 text-align: center;
             }
 
@@ -6497,7 +6506,7 @@
             backdrop-filter: blur(16px);
         }
 
-        .ops-module-toolbar {
+        .ops-filter-rail {
             position: sticky;
             top: 66px;
             z-index: 160;
@@ -6507,18 +6516,34 @@
             backdrop-filter: blur(14px);
         }
 
-        .ops-module-toolbar-track {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
-            gap: 7px;
+        .ops-filter-rail-inner {
             max-width: 1480px;
             margin: 0 auto;
             min-width: 0;
+            display: grid;
+            gap: 6px;
         }
 
-        .ops-module-tab {
+        .ops-filter-rail-meta {
+            color: var(--bna-muted);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 11px;
+            font-weight: 750;
             min-width: 0;
-            min-height: 44px;
+        }
+
+        .ops-filter-rail-meta strong {
+            color: var(--bna-blue-dark);
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .ops-filter-tab {
+            min-width: 0;
+            min-height: 36px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -6530,19 +6555,19 @@
             cursor: pointer;
             font: 900 12px 'Inter', sans-serif;
             line-height: 1.15;
-            padding: 8px 10px;
+            padding: 7px 10px;
             text-align: center;
             white-space: nowrap;
         }
 
-        .ops-module-tab:hover,
-        .ops-module-tab.active {
+        .ops-filter-tab:hover,
+        .ops-filter-tab.active {
             border-color: rgba(30, 58, 95, 0.32);
             background: linear-gradient(180deg, var(--ops-card-surface-strong), var(--ops-card-surface));
             box-shadow: inset 0 -3px 0 var(--ops-status-accent);
         }
 
-        .ops-module-marker {
+        .ops-filter-count {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -6598,6 +6623,7 @@
             flex-wrap: wrap;
             justify-content: flex-end;
             gap: 8px;
+            min-width: 0;
         }
 
         .ops-brand-chip {
@@ -6610,6 +6636,12 @@
             font-weight: 850;
             letter-spacing: 0.02em;
             white-space: nowrap;
+        }
+
+        .ops-brand-actions > .ops-brand-chip:first-child {
+            max-width: min(280px, 26vw);
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         button.ops-brand-chip,
@@ -6868,28 +6900,35 @@
         }
 
         .ops-topbar-center {
-            flex: 1 1 280px;
-            min-width: 190px;
-            max-width: 430px;
+            flex: 1 1 360px;
+            max-width: 560px;
+            min-width: 0;
         }
 
         .ops-topbar-status {
             display: flex;
-            flex-wrap: wrap;
-            gap: 7px;
+            flex-wrap: nowrap;
+            gap: 5px;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
+            min-width: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding-bottom: 2px;
+            scrollbar-width: thin;
         }
 
         .ops-topbar-status .ops-brand-chip,
         button.ops-brand-chip {
-            min-height: 38px;
+            min-height: 34px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            flex: 0 0 auto;
             gap: 6px;
             cursor: pointer;
-            font: 850 11px 'Inter', sans-serif;
+            font: 850 10.5px 'Inter', sans-serif;
+            padding: 6px 8px;
             text-transform: none;
         }
 
@@ -7457,7 +7496,6 @@
             border-radius: 8px;
         }
 
-        .section-nav,
         .person-section-control,
         .filter-card,
         .summary-card,
@@ -7588,24 +7626,14 @@
                 display: none;
             }
 
-            .ops-module-toolbar {
-                top: 0;
+            .ops-filter-rail {
+                top: 58px;
                 padding: 7px 10px;
             }
 
-            .ops-module-toolbar-track {
-                display: flex;
-                gap: 7px;
-                overflow-x: auto;
-                overscroll-behavior-x: contain;
-                padding-bottom: 2px;
-                scroll-snap-type: x proximity;
-                scrollbar-width: thin;
-            }
-
-            .ops-module-tab {
+            .ops-filter-tab {
                 flex: 0 0 auto;
-                min-width: 108px;
+                min-width: 96px;
                 scroll-snap-align: start;
             }
 
@@ -8599,7 +8627,7 @@
         if (initialAgentRunMatch) currentView = 'agents';
         agentRunDeepKey = initialAgentRunMatch ? decodeURIComponent(initialAgentRunMatch[1]) : String(initialParams.get('run') || '');
         let navDrawerOpen = false;
-        let sidebarMode = initialParams.get('nav') === 'modules' ? 'modules' : 'sections';
+        let sidebarMode = 'modules';
         let currentWorkspaceId = normalizeWorkspaceKey(initialWorkspace || '');
         let workspaceDirectoryFilter = 'all';
         const normalizedInitialDashboardSection = initialSection || 'overview';
@@ -8796,21 +8824,6 @@
             { id: 'admin', label: 'Team / Admin', marker: 'AD' },
             { id: 'integrations', label: 'Integrations', marker: 'IN' },
             { id: 'settings', label: 'Settings', marker: 'SE' }
-        ];
-
-        const MODULE_TOOLBAR_PRIORITY = [
-            'decisions',
-            'tasks',
-            'agents',
-            'platform_suite',
-            'calendar',
-            'students',
-            'content',
-            'community',
-            'accounting',
-            'automations',
-            'admin',
-            'integrations'
         ];
 
         const AGENT_RUN_TABS = [
@@ -9430,7 +9443,7 @@
                     <main class="ops-main">
                         ${renderMobileHeader()}
                         ${renderOpsTopbar()}
-                        ${renderModuleToolbar()}
+                        ${renderTopFilterRail()}
                         ${innerHtml}
                     </main>
                     ${renderBnaHelperDock()}
@@ -9451,7 +9464,7 @@
                     </div>
                     ${renderWorkspaceSwitcher()}
                     <nav class="ops-sidebar-nav">
-                        ${sidebarMode === 'modules' ? renderSidebarModuleList(navItems) : renderSidebarSubnav()}
+                        ${renderSidebarModuleList(navItems)}
                     </nav>
                     <div class="ops-sidebar-footer">
                         <button type="button" class="ops-sidebar-mini" onclick="switchView('settings')">Settings</button>
@@ -9704,7 +9717,7 @@
             normalizeCurrentRouteForWorkspace();
             if (!workspaceNavViewIds(currentWorkspaceId).includes(currentView) || !allowedViews().has(currentView)) currentView = 'dashboard';
             if (isProviderWorkspace(currentWorkspaceId) && currentView === 'dashboard') dashboardSection = 'overview';
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             navDrawerOpen = false;
             syncOperationsUrl();
             render();
@@ -9768,7 +9781,7 @@
         }
 
         function showModuleDrilldown() {
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             render();
         }
 
@@ -9832,122 +9845,39 @@
             `;
         }
 
-        function moduleToolbarItems() {
-            const navById = new Map(workspaceNavItems().map(item => [item.id, item]));
-            const canUseView = (view) => navById.has(view) && allowedViews().has(view) && workspaceNavViewIds().includes(view);
-            const build = {
-                decisions: () => canUseView('tasks') ? {
-                    id: 'decisions',
-                    view: 'tasks',
-                    label: 'Decisions',
-                    marker: 'DE',
-                    active: currentView === 'tasks' && taskFocus === 'decisions',
-                    action: "openCommandTarget('tasks', 'decisions')"
-                } : null,
-                tasks: () => canUseView('tasks') ? {
-                    id: 'tasks',
-                    view: 'tasks',
-                    label: 'Tasks',
-                    marker: navById.get('tasks')?.marker || 'TA',
-                    active: currentView === 'tasks' && taskFocus !== 'decisions',
-                    action: "openCommandTarget('tasks', 'tasks')"
-                } : null,
-                agents: () => canUseView('agents') ? {
-                    id: 'agents',
-                    view: 'agents',
-                    label: 'Agents',
-                    marker: navById.get('agents')?.marker || 'AG',
-                    active: currentView === 'agents',
-                    action: "switchView('agents')"
-                } : null,
-                platform_suite: () => canUseView('platform_suite') ? {
-                    id: 'platform_suite',
-                    view: 'platform_suite',
-                    label: navById.get('platform_suite')?.label || 'Platform Suite',
-                    marker: navById.get('platform_suite')?.marker || 'PS',
-                    active: currentView === 'platform_suite',
-                    action: "switchView('platform_suite')"
-                } : null,
-                calendar: () => canUseView('calendar') ? {
-                    id: 'calendar',
-                    view: 'calendar',
-                    label: navById.get('calendar')?.label || 'Calendar',
-                    marker: navById.get('calendar')?.marker || 'CA',
-                    active: currentView === 'calendar',
-                    action: "switchView('calendar')"
-                } : null,
-                students: () => canUseView('students') ? {
-                    id: 'students',
-                    view: 'students',
-                    label: 'Students',
-                    marker: navById.get('students')?.marker || 'ST',
-                    active: currentView === 'students',
-                    action: "switchView('students')"
-                } : null,
-                content: () => canUseView('content') ? {
-                    id: 'content',
-                    view: 'content',
-                    label: 'Content',
-                    marker: navById.get('content')?.marker || 'CT',
-                    active: currentView === 'content',
-                    action: "switchView('content')"
-                } : null,
-                community: () => canUseView('community') ? {
-                    id: 'community',
-                    view: 'community',
-                    label: navById.get('community')?.label || 'Community',
-                    marker: navById.get('community')?.marker || 'CO',
-                    active: currentView === 'community',
-                    action: "switchView('community')"
-                } : null,
-                accounting: () => canUseView('accounting') ? {
-                    id: 'accounting',
-                    view: 'accounting',
-                    label: navById.get('accounting')?.label || 'Accounting',
-                    marker: navById.get('accounting')?.marker || 'AC',
-                    active: currentView === 'accounting',
-                    action: "switchView('accounting')"
-                } : null,
-                automations: () => canUseView('automations') ? {
-                    id: 'automations',
-                    view: 'automations',
-                    label: navById.get('automations')?.label || 'Automations',
-                    marker: navById.get('automations')?.marker || 'AU',
-                    active: currentView === 'automations',
-                    action: "switchView('automations')"
-                } : null,
-                admin: () => canUseView('admin') ? {
-                    id: 'admin',
-                    view: 'admin',
-                    label: 'Users',
-                    marker: navById.get('admin')?.marker || 'US',
-                    active: currentView === 'admin',
-                    action: "switchView('admin')"
-                } : null,
-                integrations: () => canUseView('integrations') ? {
-                    id: 'integrations',
-                    view: 'integrations',
-                    label: navById.get('integrations')?.label || 'Integrations',
-                    marker: navById.get('integrations')?.marker || 'IN',
-                    active: currentView === 'integrations',
-                    action: "switchView('integrations')"
-                } : null
+        function topFilterRailItems() {
+            const config = currentSubnavConfig();
+            const tabs = tabsWithCounts(config.tabs || [], config.countSource || {});
+            return {
+                config,
+                active: String(config.active || currentSectionId() || ''),
+                tabs
             };
-            return MODULE_TOOLBAR_PRIORITY.map(id => build[id]?.()).filter(Boolean);
         }
 
-        function renderModuleToolbar() {
-            const items = moduleToolbarItems();
-            if (!items.length) return '';
+        function renderTopFilterRail() {
+            const { config, active, tabs } = topFilterRailItems();
+            if (!tabs.length) return '';
+            const moduleLabel = currentNavItem().label || config.label || 'Operations';
+            const activeTab = tabs.find(tab => String(tab.id) === active) || tabs[0];
             return `
-                <nav class="ops-module-toolbar" aria-label="Operations module toolbar" data-module-toolbar-priority="${MODULE_TOOLBAR_PRIORITY.join(',')}">
-                    <div class="ops-module-toolbar-track">
-                        ${items.map(item => `
-                            <button type="button" class="ops-module-tab ${item.active ? 'active' : ''}" data-module-toolbar-id="${escapeHtml(item.id)}" aria-pressed="${item.active ? 'true' : 'false'}" onclick="${item.action}">
-                                <span class="ops-module-marker">${escapeHtml(item.marker)}</span>
-                                <span>${escapeHtml(item.label)}</span>
+                <nav class="ops-filter-rail" aria-label="${escapeHtml(moduleLabel)} filters" data-top-filter-rail="true" data-current-module="${escapeHtml(currentView)}">
+                    <div class="ops-filter-rail-inner">
+                        <div class="ops-filter-rail-meta">
+                            <span>${escapeHtml(moduleLabel)}</span>
+                            <strong>${escapeHtml(activeTab?.label || currentSectionLabel())}</strong>
+                        </div>
+                        <div class="ops-filter-track" role="tablist" aria-label="${escapeHtml(moduleLabel)} views">
+                            ${tabs.map(tab => {
+                                const selected = String(tab.id) === active;
+                                return `
+                            <button type="button" class="ops-filter-tab ${selected ? 'active' : ''}" role="tab" aria-selected="${selected ? 'true' : 'false'}" aria-current="${selected ? 'page' : 'false'}" data-top-filter-id="${escapeHtml(tab.id)}" onclick="setCurrentSection(${attrJson(tab.id)})">
+                                <span>${escapeHtml(tab.label || tab.id)}</span>
+                                ${tab.count !== undefined && tab.count !== null ? `<span class="ops-filter-count">${escapeHtml(String(tab.count))}</span>` : ''}
                             </button>
-                        `).join('')}
+                                `;
+                            }).join('')}
+                        </div>
                     </div>
                 </nav>
             `;
@@ -9961,9 +9891,9 @@
                 .filter(snapshot => ['needs_setup', 'needs_review', 'missed', 'due_today'].includes(snapshot.status)).length);
             const alerts = safeCount(() => inAppNotifications.filter(item => item.status === 'unread').length);
             return [
-                { label: 'Need decision', value: decisions, tone: decisions ? 'attention' : 'ok', action: "openCommandTarget('tasks', 'decisions')", title: 'Human choices that unlock the next step.' },
-                { label: 'Codex Queue', value: codexQueue, tone: codexQueue ? 'active' : 'ok', action: "openCommandTarget('tasks', 'codex_queue')", title: 'Queued or running machine work.' },
-                { label: 'Student accountability', value: accountability, tone: accountability ? 'attention' : 'ok', action: "openCommandTarget('students', 'accountability')", title: 'Students with accountability attention signals.' },
+                { label: 'Decisions', value: decisions, tone: decisions ? 'attention' : 'ok', action: "openCommandTarget('tasks', 'decisions')", title: 'Human choices that unlock the next step.' },
+                { label: 'Codex', value: codexQueue, tone: codexQueue ? 'active' : 'ok', action: "openCommandTarget('tasks', 'codex_queue')", title: 'Queued or running machine work.' },
+                { label: 'Students', value: accountability, tone: accountability ? 'attention' : 'ok', action: "openCommandTarget('students', 'accountability')", title: 'Students with accountability attention signals.' },
                 { label: 'Alerts', value: alerts, tone: alerts ? 'attention' : 'ok', action: "openCommandTarget('dashboard', 'alerts')", title: 'Unread private Operations alerts.' },
             ];
         }
@@ -20622,7 +20552,7 @@
         function openAutomationPromptBrowser() {
             currentView = 'content';
             contentSection = 'prompts';
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             navDrawerOpen = false;
             syncOperationsUrl();
             render();
@@ -32053,7 +31983,7 @@
             currentView = VIEW_ALIASES[view] || view;
             normalizeCurrentRouteForWorkspace();
             if (!viewAllowed(currentView)) currentView = 'dashboard';
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             navDrawerOpen = false;
             syncOperationsUrl();
             render();
@@ -32160,7 +32090,7 @@
             if (currentView === 'settings') settingsSection = settingsAllSectionIds().includes(section) ? section : 'workspace';
             normalizeCurrentRouteForWorkspace();
             selectedTaskId = currentView === 'tasks' ? selectedTaskId : null;
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             navDrawerOpen = false;
             syncOperationsUrl();
             render();
@@ -32171,7 +32101,7 @@
             settingsSection = settingsAllSectionIds().includes(section) ? section : 'workspace';
             currentView = 'settings';
             normalizeCurrentRouteForWorkspace();
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             navDrawerOpen = false;
             syncOperationsUrl();
             render();
@@ -32182,7 +32112,7 @@
             currentView = VIEW_ALIASES[view] || view;
             normalizeCurrentRouteForWorkspace();
             if (!viewAllowed(currentView)) currentView = 'dashboard';
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             if (currentView === 'dashboard' && focus) {
                 dashboardSection = DASHBOARD_SUBTABS.some(tab => tab.id === focus) ? focus : 'overview';
             }
@@ -32207,7 +32137,7 @@
             taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'tasks';
             currentView = 'tasks';
             selectedTaskId = null;
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             syncOperationsUrl();
             render();
         }
@@ -32219,7 +32149,7 @@
             taskSignalFilter = 'all';
             currentView = 'tasks';
             selectedTaskId = null;
-            sidebarMode = 'sections';
+            sidebarMode = 'modules';
             syncOperationsUrl();
             render();
         }

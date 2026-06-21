@@ -137,3 +137,31 @@ Focused combined test result:
   One Time class/session/appointment/video setup controls, integration setup
   controls, and absence of the old generic placeholder handlers.
 <!-- batch-5:end -->
+
+<!-- batch-6:start -->
+## Batch 6 Test Results
+
+Recorded after Operations sidebar/top-filter separation, horizontal filter rail
+correction, status-chip compaction, and UI audit harness viewport updates:
+
+- PASS `node --test tests/operations-shell-navigation-contract.test.js tests/operations-saas-crm-redesign.test.js tests/bna-brand-shell.test.js tests/ops-ui-audit-harness.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-ws01-layout-readability.test.js tests/assistant-portal-communications-contract.test.js`
+- PASS `node --check scripts/full-ui-audit.mjs`
+- PASS `node --check tools/ops-ui-audit/config.js`
+- PASS `npm run ops:audit -- smoke-login`
+- PASS production before-audit capture:
+  `UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-before-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs`
+
+Focused combined test result:
+
+- Tests: 41 passed, 0 failed.
+- Covered: Operations shell navigation contract, SaaS CRM layout expectations,
+  brand shell filter behavior, UI audit viewport configuration, Operations
+  Playwright smoke, module scoping, layout readability, and assistant portal
+  communications contract.
+
+Before-audit capture result:
+
+- Screenshots: 141.
+- Errors: 0.
+- Required widths captured: 1440, 1024, 768, 430, 390, and 360.
+<!-- batch-6:end -->

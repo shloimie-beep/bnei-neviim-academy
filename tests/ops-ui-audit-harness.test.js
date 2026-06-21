@@ -5,6 +5,7 @@ const path = require('node:path');
 const test = require('node:test');
 
 const { normalizeSeverity } = require('../tools/ops-ui-audit/detectors');
+const { VIEWPORTS } = require('../tools/ops-ui-audit/config');
 const { collectPackageFiles, shouldIncludePackageFile } = require('../tools/ops-ui-audit/package-export');
 const { redactSensitiveText } = require('../tools/ops-ui-audit/privacy');
 const { classifyAction } = require('../tools/ops-ui-audit/safe-actions');
@@ -16,6 +17,10 @@ test('safe-action policy blocks mutating concepts and permits read-only navigati
   assert.match(classifyAction({ label: 'Send WhatsApp update' }).reason, /send|whatsapp|risky/i);
   assert.equal(classifyAction({ label: 'Open details', role: 'button' }).safe, true);
   assert.equal(classifyAction({ label: 'Save filter', inForm: true }).safe, false);
+});
+
+test('operations UI audit covers required Batch 6 viewport widths', () => {
+  assert.deepEqual(VIEWPORTS.map((viewport) => viewport.width), [1440, 1024, 768, 430, 390, 360]);
 });
 
 test('state fingerprint and route normalization are deterministic', () => {

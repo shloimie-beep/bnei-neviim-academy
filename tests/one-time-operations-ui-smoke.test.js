@@ -482,12 +482,13 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
   try {
     await page.goto(`http://127.0.0.1:${activePort}/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules`, { waitUntil: 'networkidle' });
-    await page.waitForSelector('[data-module-toolbar-id="agents"]', { timeout: 15000 });
+    await page.waitForSelector('[data-top-filter-rail][data-current-module="content"]', { timeout: 15000 });
     await page.waitForSelector('[data-preview-one-time-drive-brief]', { timeout: 15000 });
 
     const initialContract = await page.evaluate(() => {
       const navItems = window.workspaceNavItems().map((item) => ({ id: item.id, label: item.label }));
-      const toolbarIds = Array.from(document.querySelectorAll('[data-module-toolbar-id]')).map((item) => item.getAttribute('data-module-toolbar-id'));
+      const filterIds = Array.from(document.querySelectorAll('[data-top-filter-id]')).map((item) => item.getAttribute('data-top-filter-id'));
+      const sidebarLabels = Array.from(document.querySelectorAll('.ops-sidebar-button')).map((item) => item.textContent.trim().replace(/\s+/g, ' '));
       const workspaceOptions = Array.from(document.querySelectorAll('[data-workspace-option]')).map((button) => ({
         label: button.textContent.trim().replace(/\s+/g, ' '),
         disabled: button.getAttribute('aria-disabled') === 'true',
@@ -498,11 +499,14 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
         roleLabel: window.currentWorkspaceRoleLabel(),
         navIds: navItems.map((item) => item.id),
         navLabels: navItems.map((item) => item.label),
-        toolbarIds,
+        filterIds,
+        sidebarLabels,
         workspaceOptions,
         hasStudentsText: navItems.some((item) => item.id === 'students'),
         hasAccountingText: navItems.some((item) => item.id === 'accounting'),
         driveButton: Boolean(document.querySelector('[data-preview-one-time-drive-brief]')),
+        topRailModule: document.querySelector('[data-top-filter-rail]')?.getAttribute('data-current-module') || '',
+        hasModuleToolbar: Boolean(document.querySelector('[data-module-toolbar-id]')),
       };
     });
 
@@ -513,10 +517,14 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     }
     assert.equal(initialContract.hasStudentsText, false);
     assert.equal(initialContract.hasAccountingText, false);
-    assert.ok(initialContract.toolbarIds.includes('agents'));
-    assert.ok(initialContract.toolbarIds.includes('tasks'));
-    assert.ok(initialContract.toolbarIds.includes('content'));
-    assert.ok(initialContract.toolbarIds.includes('community'));
+    assert.equal(initialContract.topRailModule, 'content');
+    assert.equal(initialContract.hasModuleToolbar, false);
+    assert.ok(initialContract.filterIds.includes('meetings'));
+    assert.ok(initialContract.filterIds.includes('one_time_library'));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Agents/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Tasks/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Content/.test(label)));
+    assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
     assert.ok(initialContract.workspaceOptions.some((option) => /Bnei Neviim Academy/.test(option.label) && option.disabled));
     assert.ok(initialContract.workspaceOptions.some((option) => /One Time Mishnah Class/.test(option.label) && option.current));
     assert.equal(initialContract.driveButton, true);
@@ -535,7 +543,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.notEqual(previewRequests[0].body.workspace_key, 'bna');
     assert.notEqual(previewRequests[0].body.project_key, 'bna');
 
-    await page.locator('[data-module-toolbar-id="agents"]').click();
+    await page.evaluate(() => window.switchView('agents'));
     await page.waitForSelector('[data-scoped-agent-status]', { timeout: 10000 });
     const agentText = await page.locator('[data-scoped-agent-status]').evaluate((node) => node.textContent.replace(/\s+/g, ' ').trim());
     assert.match(agentText, /One Time Agent Status/);
@@ -544,15 +552,16 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.doesNotMatch(agentText, /Claim Run|Seal/);
 
     const moduleChecks = [
-      ['tasks', '[data-module-toolbar-id="tasks"]', /Rabbi \/ One Time Dialogue|Complete One Time Operations UI/],
-      ['community', '[data-module-toolbar-id="community"]', /One Time Mishnah Community|One Time community overview/],
-      ['content', '[data-module-toolbar-id="content"]', /Rabbi Meeting Intake|Meeting Drops|One Time Library/],
-      ['live_classes', '[data-module-toolbar-id="calendar"]', /Calendar|Program Schedule|7:00 Mishnah Class/],
-      ['integrations', '[data-module-toolbar-id="integrations"]', /Integrations|Google|Communications|Connectors/],
+      ['tasks', /Rabbi \/ One Time Dialogue|Complete One Time Operations UI/],
+      ['community', /One Time Mishnah Community|One Time community overview/],
+      ['content', /Rabbi Meeting Intake|Meeting Drops|One Time Library/],
+      ['live_classes', /Live Classes|Program Schedule|7:00 Mishnah Class/],
+      ['integrations', /Integrations|Google|Communications|Connectors/],
     ];
 
-    for (const [name, selector, expectedText] of moduleChecks) {
-      await page.locator(selector).click();
+    for (const [name, expectedText] of moduleChecks) {
+      await page.evaluate((view) => window.switchView(view), name);
+      await page.waitForSelector(`[data-top-filter-rail][data-current-module="${name}"]`, { timeout: 10000 });
       await page.waitForFunction((patternSource) => new RegExp(patternSource).test(document.body.textContent), expectedText.source, { timeout: 10000 });
       const bodyText = await page.evaluate(() => document.body.textContent.replace(/\s+/g, ' ').trim());
       assert.match(bodyText, expectedText, `${name} rendered expected One Time text`);
@@ -566,16 +575,18 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     await page.screenshot({ path: path.join(outDir, 'desktop.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.locator('[data-module-toolbar-id="agents"]').click();
+    await page.evaluate(() => window.switchView('agents'));
     await page.waitForSelector('[data-scoped-agent-status]', { timeout: 10000 });
     const mobileMetrics = await page.evaluate(() => ({
       width: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
       hasAgentStatus: Boolean(document.querySelector('[data-scoped-agent-status]')),
-      toolbarAgents: Boolean(document.querySelector('[data-module-toolbar-id="agents"]')),
+      hasFilterRail: Boolean(document.querySelector('[data-top-filter-rail][data-current-module="agents"]')),
+      hasModuleToolbar: Boolean(document.querySelector('[data-module-toolbar-id]')),
     }));
     assert.equal(mobileMetrics.hasAgentStatus, true);
-    assert.equal(mobileMetrics.toolbarAgents, true);
+    assert.equal(mobileMetrics.hasFilterRail, true);
+    assert.equal(mobileMetrics.hasModuleToolbar, false);
     assert.ok(mobileMetrics.scrollWidth <= mobileMetrics.width + 1, `mobile overflow ${mobileMetrics.scrollWidth} > ${mobileMetrics.width}`);
     await page.screenshot({ path: path.join(outDir, 'mobile-agents.png'), fullPage: true });
 

@@ -86,3 +86,24 @@ standard plus focused visible-action live smokes.
 
 Next unblocked batch: `REQ-20260619-304` Operations UI/design correction.
 <!-- batch-5:end -->
+
+<!-- batch-6:start -->
+## Batch 6 - Operations UI And Design Correction
+
+Status: in progress / verified local / pending deploy
+
+Operations module navigation and top filters are now separated: the left side
+panel renders primary modules, while the sticky top rail renders only the
+current module's filters/subviews. The top filter rail is horizontal,
+single-row, touch-scrollable, and keeps module buttons out of the toolbar.
+
+The existing UI audit harness was extended rather than replaced. Batch 6 mode
+captures the requested 1440px, 1024px, 768px, 430px, 390px, and 360px
+viewports across Operations, communications, content/classroom/library,
+settings/agents, One Time public, and portal surfaces. Production before-audit
+evidence was captured before deploying the local fix.
+
+Local verification passed. Next step: commit, push, deploy the safe
+app-visible Operations changes, run standard live smoke, capture the after
+production UI audit, and run a focused live Operations filter-rail smoke.
+<!-- batch-6:end -->

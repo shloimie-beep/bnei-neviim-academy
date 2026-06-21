@@ -52,9 +52,11 @@ test('shared shell defines light BNA palette, sticky toolbar, side menus, and to
   assert.match(shellCss, /@media \(max-width: 768px\)/);
   assert.match(operationsHtml, /--ops-card-surface:\s*#fffaf0/);
   assert.match(operationsHtml, /--ops-card-border:\s*rgba\(201, 162, 39, 0\.28\)/);
-  assert.match(operationsHtml, /\.ops-module-toolbar-track\s*{[\s\S]*grid-template-columns:\s*repeat\(auto-fit, minmax\(88px, 1fr\)\)/);
-  assert.match(operationsHtml, /@media \(max-width: 900px\)[\s\S]*\.ops-module-toolbar-track\s*{[\s\S]*overflow-x:\s*auto/);
-  assert.match(operationsHtml, /\.section-nav,[\s\S]*\.ramble-box\s*{[\s\S]*background:\s*var\(--ops-card-surface\) !important/);
+  assert.match(operationsHtml, /\.ops-filter-rail\s*{[\s\S]*position:\s*sticky/);
+  assert.match(operationsHtml, /\.section-tab-list,\s*\.ops-filter-track\s*{[\s\S]*flex-wrap:\s*nowrap[\s\S]*overflow-x:\s*auto/);
+  assert.match(operationsHtml, /data-top-filter-rail="true"/);
+  assert.doesNotMatch(operationsHtml, /data-module-toolbar-id/);
+  assert.doesNotMatch(operationsHtml, /\.section-nav,[\s\S]*\.ramble-box\s*{/);
 });
 
 test('custom select enhancer uses light in-app menus for Operations and portals', () => {

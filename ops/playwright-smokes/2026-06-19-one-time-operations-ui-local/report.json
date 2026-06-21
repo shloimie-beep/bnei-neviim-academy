@@ -8,6 +8,7 @@
       "dashboard",
       "watchdog",
       "service_providers",
+      "agents",
       "contacts",
       "community",
       "content",
@@ -15,7 +16,6 @@
       "calendar",
       "communications",
       "tasks",
-      "agents",
       "automations",
       "integrations",
       "api_usage",
@@ -25,6 +25,7 @@
       "Dashboard",
       "Watchdog",
       "Program",
+      "Agents",
       "Members",
       "Community",
       "Content",
@@ -32,21 +33,38 @@
       "Schedule",
       "Communications",
       "Tasks",
-      "Agents",
       "Automations",
       "Integrations",
       "Reporting",
       "Settings"
     ],
-    "toolbarIds": [
-      "decisions",
-      "tasks",
-      "agents",
-      "calendar",
-      "content",
-      "community",
-      "automations",
-      "integrations"
+    "filterIds": [
+      "library",
+      "one_time_library",
+      "meetings",
+      "research",
+      "selected",
+      "repurpose",
+      "newsletter",
+      "prompts",
+      "bundles"
+    ],
+    "sidebarLabels": [
+      "Dashboard DB",
+      "Watchdog WG",
+      "Program PG",
+      "Agents AG",
+      "Members MB",
+      "Community CO",
+      "Content CT",
+      "Live LC",
+      "Schedule SC",
+      "Communications CM",
+      "Tasks TS",
+      "Automations AU",
+      "Integrations IN",
+      "Reporting RP",
+      "Settings SE"
     ],
     "workspaceOptions": [
       {
@@ -72,7 +90,9 @@
     ],
     "hasStudentsText": false,
     "hasAccountingText": false,
-    "driveButton": true
+    "driveButton": true,
+    "topRailModule": "content",
+    "hasModuleToolbar": false
   },
   "previewRequests": [
     {
@@ -93,7 +113,8 @@
     "width": 390,
     "scrollWidth": 390,
     "hasAgentStatus": true,
-    "toolbarAgents": true
+    "hasFilterRail": true,
+    "hasModuleToolbar": false
   },
   "screenshots": [
     "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png",

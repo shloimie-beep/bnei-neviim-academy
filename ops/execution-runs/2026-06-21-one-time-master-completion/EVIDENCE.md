@@ -181,3 +181,51 @@ Implemented behavior:
   session, appointment, video setup, integration setup, and helper setup-path
   controls, and for removal of the old generic placeholder handlers.
 <!-- batch-5:end -->
+
+<!-- batch-6:start -->
+## Batch 6 Evidence
+
+Operations UI/design correction is locally implemented and verified. Deployment
+and live-smoke evidence remain pending until the Batch 6 deployment completes.
+
+- Operations UI implementation:
+  `public/operations.html`
+- Existing full UI audit harness extension:
+  `scripts/full-ui-audit.mjs`
+- Shared audit viewport configuration:
+  `tools/ops-ui-audit/config.js`
+- Updated focused UI/navigation/audit tests:
+  `tests/operations-shell-navigation-contract.test.js`,
+  `tests/operations-saas-crm-redesign.test.js`,
+  `tests/bna-brand-shell.test.js`,
+  `tests/ops-ui-audit-harness.test.js`, and
+  `tests/one-time-operations-ui-smoke.test.js`
+- Local Playwright Operations UI smoke:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`
+- Production before-audit report:
+  `ops/ui-audits/2026-06-21-batch6-before-prod/ui-audit-report.md`
+- Production before-audit manifest:
+  `ops/ui-audits/2026-06-21-batch6-before-prod/manifest.json`
+- Production before-audit screenshot index:
+  `ops/ui-audits/2026-06-21-batch6-before-prod/screenshot-index.csv`
+
+Before-audit coverage:
+
+- Target mode: `batch6`
+- Base URL: `https://bneineviimacademy.org`
+- Screenshots: 141
+- Errors: 0
+- Viewports: 1440px, 1024px, 768px, 430px, 390px, 360px
+
+Implemented behavior:
+
+- The left side panel is primary module navigation only.
+- The top rail uses current-module filters/subviews only.
+- Module controls are no longer duplicated in the top horizontal rail.
+- Filter rails render horizontally and remain single-row with local overflow
+  scrolling instead of becoming vertical button stacks.
+- Mobile and tablet layouts keep the filter rail horizontal and avoid page-wide
+  horizontal overflow.
+- Status chips and workspace context were compacted so toolbar text does not
+  clip or overlap at desktop and mobile widths.
+<!-- batch-6:end -->

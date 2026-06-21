@@ -1,22 +1,14 @@
 # Next Session
 
-Continue `REQ-20260619-304`: Operations UI and design-system correction
-deployment/live verification. The implementation is locally verified; commit,
-push, deploy, and live-smoke the app-visible Operations changes. Exact next
-command:
+Continue `REQ-20260619-304`: Operations UI and design-system correction is
+locally implemented and verified. Commit, push, deploy, run standard live
+smoke, capture after-production UI audit evidence, run the focused live
+Operations filter-rail smoke, update evidence, and then continue to Batch 7.
+Exact next command:
 
 ```powershell
-npm run bna:run:validate
+git status --short --branch
 ```
-
-Then implement Batch 4:
-
-- complete workspace membership model;
-- scope Rabbi Ellie Scheller to One Time only;
-- retain Shloimie platform super-admin and intentional workspace switching;
-- implement scoped Users screen and role/member management actions;
-- add negative authorization tests for cross-workspace users, tasks, Decisions,
-  messages, and recordings.
 
 Do not run external sends, billing, DNS, real Zoom meeting creation, real Vimeo
 upload/publication, hard deletes, or PR merge.
@@ -80,3 +72,29 @@ harness, fix Operations side-panel/top-filter separation, horizontal filter
 rails, sticky module toolbars, button consistency, cards/lists, and responsive
 behavior, then capture before/after evidence.
 <!-- batch-5:end -->
+
+<!-- batch-6:start -->
+## Batch 6 Handoff
+
+Operations UI/design correction is locally verified and pending deploy.
+
+- Requirement: `REQ-20260619-304`
+- Implementation status: `verified_local`
+- Before-audit evidence:
+  `ops/ui-audits/2026-06-21-batch6-before-prod/ui-audit-report.md`
+- Local Playwright smoke:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`
+- Focused local test result: 41 passed, 0 failed.
+
+Next exact actions:
+
+```powershell
+git add public/operations.html scripts/full-ui-audit.mjs tools/ops-ui-audit/config.js tests/bna-brand-shell.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-saas-crm-redesign.test.js tests/operations-shell-navigation-contract.test.js tests/ops-ui-audit-harness.test.js ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md ops/execution-runs/2026-06-21-one-time-master-completion/BATCH-STATUS.md ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json
+git add -f ops/ui-audits/2026-06-21-batch6-before-prod ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png
+git commit -m "feat: correct operations filter rail"
+git push origin HEAD:codex/agent-control-center-20260619
+```
+
+After push, deploy to Railway with `RAILWAY_TOKEN` loaded from the local
+keyholder file without printing it, then run standard and focused live smokes.
+<!-- batch-6:end -->

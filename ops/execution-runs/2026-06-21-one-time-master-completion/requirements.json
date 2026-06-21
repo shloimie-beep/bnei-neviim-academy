@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T13:12:30+03:00",
+  "updated_at": "2026-06-21T13:51:36+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -600,7 +600,7 @@
       "id": "REQ-20260619-304",
       "title": "Operations UI and design-system correction",
       "expected_result": "Operations and One Time surfaces are usable, scan-friendly, responsive, and live-verified.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0007"
@@ -615,22 +615,39 @@
       "depends_on": [
         "REQ-20260621-502"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_local",
       "can_continue_without_operator": true,
-      "next_action": "Use the existing audit harness and fix sidebar/filter rail separation, horizontal filters, toolbar, buttons, cards, and mobile behavior.",
+      "next_action": "Commit, push, deploy Batch 6, run standard live smoke, capture after-production UI audit evidence, and run a focused live Operations filter-rail smoke.",
       "acceptance_criteria": [
         "no duplicated top rail navigation",
         "horizontal filters scroll",
         "no horizontal overflow",
         "screenshots captured"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/ui-audits/2026-06-21-batch6-before-prod/ui-audit-report.md",
+        "ops/ui-audits/2026-06-21-batch6-before-prod/manifest.json",
+        "ops/ui-audits/2026-06-21-batch6-before-prod/screenshot-index.csv",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --test tests/operations-shell-navigation-contract.test.js tests/operations-saas-crm-redesign.test.js tests/bna-brand-shell.test.js tests/ops-ui-audit-harness.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-ws01-layout-readability.test.js tests/assistant-portal-communications-contract.test.js",
+        "node --check scripts/full-ui-audit.mjs",
+        "node --check tools/ops-ui-audit/config.js",
+        "npm run ops:audit -- smoke-login",
+        "UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-before-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs"
+      ],
       "implementation_files": [
         "public/operations.html",
-        "public/rabbi.html",
-        "tools/ops-ui-audit.js",
-        "tests/one-time-ui-design-delta-audit.test.js"
+        "scripts/full-ui-audit.mjs",
+        "tools/ops-ui-audit/config.js",
+        "tests/bna-brand-shell.test.js",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/operations-saas-crm-redesign.test.js",
+        "tests/operations-shell-navigation-contract.test.js",
+        "tests/ops-ui-audit-harness.test.js"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
@@ -638,7 +655,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T13:51:36+03:00"
     },
     {
       "id": "REQ-20260619-305",
