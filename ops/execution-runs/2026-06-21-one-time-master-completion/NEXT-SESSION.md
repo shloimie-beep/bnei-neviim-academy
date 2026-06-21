@@ -1,11 +1,10 @@
 # Next Session
 
-Continue `REQ-20260619-303`: workspace users and roles. The implementation is
-locally verified; commit, push, deploy, and run focused live workspace-user
-smokes. Exact next command:
+Continue `REQ-20260621-502`: visible action coverage and no-dead-buttons
+implementation. Exact next command:
 
 ```powershell
-npm run bna:run:validate
+npm run bna:run:next
 ```
 
 Then implement Batch 4:
@@ -48,17 +47,14 @@ Batch 3 is deployed and live-verified. Continue to Batch 4.
 <!-- batch-4:start -->
 ## Batch 4 Handoff
 
-Workspace user and role implementation is locally verified but not yet deployed
-in this handoff state.
+Workspace user and role implementation is deployed and live-verified:
 
-Exact next commands:
+- Implementation/deployed commit: `c8d93646`
+- Railway deployment: `04fde749-fca1-4e54-a7c4-f2ece847847b`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md`
+- Focused workspace-user live smoke:
+  `ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md`
 
-```powershell
-npm run bna:run:validate
-node scripts/audit-secrets.mjs
-git diff --check
-```
-
-Then commit, push, deploy the safe app-visible changes, and run the standard
-live smoke plus a focused workspace-user readback smoke.
+Continue automatically with Batch 5 action coverage.
 <!-- batch-4:end -->

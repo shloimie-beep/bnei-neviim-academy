@@ -92,4 +92,19 @@ Dependency note:
 - `npm ci` was run in the clean PR worktree because `node_modules` was absent.
   It installed declared lockfile dependencies only and did not modify package
   manifests.
+
+Deployment/live verification:
+
+- PASS `npm run railway:doctor` after deployment
+  `04fde749-fca1-4e54-a7c4-f2ece847847b`.
+- PASS `npm run app:smoke`; report
+  `ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md`.
+- PASS focused workspace-user role live smoke; report
+  `ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md`.
+
+Intermediate failure recorded:
+
+- The first focused workspace-user smoke attempt queried `/health`; the live app
+  exposes `/api/health`. The smoke was corrected and rerun successfully. This
+  was a smoke-script endpoint mistake, not an app regression.
 <!-- batch-4:end -->

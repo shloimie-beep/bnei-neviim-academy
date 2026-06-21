@@ -1,0 +1,60 @@
+{
+  "started_at": "2026-06-21T09:53:03.531Z",
+  "smoke": "workspace-user-role-live-smoke",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_commit": "c8d93646c899ce01a79605395307ff8fb8664d96",
+  "deployment_id": "04fde749-fca1-4e54-a7c4-f2ece847847b",
+  "checks": [
+    {
+      "name": "credentials configured",
+      "status": "PASS",
+      "has_ops_username": true,
+      "has_ops_password": true
+    },
+    {
+      "name": "api health endpoint",
+      "status": 200
+    },
+    {
+      "name": "workspace-users read",
+      "status": 200
+    },
+    {
+      "name": "one time users scoped",
+      "status": "PASS",
+      "count": 1
+    },
+    {
+      "name": "canonical roles visible",
+      "status": "PASS",
+      "count": 1
+    },
+    {
+      "name": "no unrelated BNA workspace leakage",
+      "status": "PASS",
+      "count": 1
+    },
+    {
+      "name": "role audit read",
+      "status": 200
+    },
+    {
+      "name": "operations users html read",
+      "status": 200
+    },
+    {
+      "name": "operations add member control present",
+      "status": "PASS"
+    },
+    {
+      "name": "operations role audit control present",
+      "status": "PASS"
+    },
+    {
+      "name": "provider users dead placeholder absent",
+      "status": "PASS"
+    }
+  ],
+  "completed_at": "2026-06-21T09:53:49.694Z",
+  "status": "PASS"
+}

@@ -29,3 +29,23 @@ Prior failed checks during the same batch:
   pre-existing `Family Directory` HTML expectation. The focused Batch 3 smoke
   passed after the scoping fix.
 
+## Batch 4
+
+- Deployment ID: `04fde749-fca1-4e54-a7c4-f2ece847847b`
+- Deployed commit: `c8d93646`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md`
+- Focused workspace-user live smoke: PASS,
+  `ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md`
+
+Prior failed checks during the same batch:
+
+- Initial deploy command in the clean PR worktree failed before upload because
+  `.secrets/railway-token.txt` is intentionally not present there. The deploy
+  was rerun with `RAILWAY_TOKEN` loaded from the main repo local secret file
+  without printing the token.
+- First focused workspace-user smoke queried `/health`; the deployed app uses
+  `/api/health`. The smoke was corrected and rerun successfully.
+

@@ -46,7 +46,7 @@ Next unblocked batch: `REQ-20260619-303` workspace users and roles.
 <!-- batch-4:start -->
 ## Batch 4 - Workspace Users And Roles
 
-Status: implemented / verified local / pending deployment
+Status: done / deployed / verified live
 
 The canonical One Time role model now includes platform, workspace, and member
 roles; Rabbi Ellie Scheller is the public-facing One Time owner/admin identity
@@ -59,7 +59,10 @@ Membership, and role-change audit readback. Server APIs enforce workspace scope,
 block scoped users from assigning platform roles, and keep external sends and
 account writes disabled.
 
-Focused local verification passed with 58 tests and syntax checks. Next step:
-commit, push, deploy the safe app-visible changes, run focused live workspace
-user smokes, then continue to Batch 5 action coverage.
+Focused local verification passed with 58 tests and syntax checks. The safe
+app-visible changes were deployed to Railway deployment
+`04fde749-fca1-4e54-a7c4-f2ece847847b` at commit `c8d93646`. Standard live
+smoke and focused workspace-user role live smoke passed.
+
+Next unblocked batch: `REQ-20260621-502` visible action coverage.
 <!-- batch-4:end -->

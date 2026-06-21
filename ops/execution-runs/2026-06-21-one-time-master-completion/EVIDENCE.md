@@ -86,8 +86,7 @@ Live cleanup applied through existing authenticated Task APIs:
 <!-- batch-4:start -->
 ## Batch 4 Evidence
 
-Workspace user and role implementation is locally complete and ready for the
-app-visible deployment step.
+Workspace user and role implementation is deployed and live-verified.
 
 - Canonical role model:
   `src/lib/bna/one-time-role-model.js`
@@ -115,4 +114,26 @@ Implemented behavior:
 - Server APIs enforce workspace scope and deny scoped managers platform-role
   assignment and cross-workspace membership mutation.
 - Production external writes, sends, billing changes, and hard deletes: 0.
+
+Deployment and live evidence:
+
+- Implementation commit: `c8d93646`
+- Pushed commit: `c8d93646`
+- Deployed commit: `c8d93646`
+- Railway deployment: `04fde749-fca1-4e54-a7c4-f2ece847847b`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md`
+- Focused workspace-user live smoke:
+  `ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md`
+
+Focused live smoke confirmed:
+
+- `/api/bna/workspace-users?workspace_key=rabbi_sheller_provider` is readable.
+- `/api/bna/workspace-users/role-audit?workspace_key=rabbi_sheller_provider`
+  is readable.
+- One Time users are scoped to `rabbi_sheller_provider`.
+- Canonical roles are visible in live readback.
+- `bna_main` does not leak into the One Time workspace-user readback.
+- Operations Users HTML contains Add Member and role-audit controls.
+- The old Provider Users dead placeholder is absent.
 <!-- batch-4:end -->
