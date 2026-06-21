@@ -14,7 +14,8 @@ const operations = fs.readFileSync('public/operations.html', 'utf8');
 const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
 
 function operationsInlineScript() {
-  const start = operations.indexOf('<script>\n        // API Client');
+  const match = operations.match(/<script>\r?\n\s*\/\/ API Client/);
+  const start = match ? match.index : -1;
   assert.ok(start > -1, 'Operations app script start should be present');
   const scriptStart = operations.indexOf('>', start) + 1;
   const end = operations.indexOf('</script>', scriptStart);

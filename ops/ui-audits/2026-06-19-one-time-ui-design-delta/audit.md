@@ -37,8 +37,8 @@ This is a credential-free current-state delta audit. It did not run a full authe
 | Current One Time Operations UI smoke evidence exists | pass |  | ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md<br>ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json |
 | Authenticated Operations audit storage state | blocked | Full authenticated ops:audit crawl is blocked until a local Operations storage state is created through npm run ops:audit:auth. | .runtime/auth/operations-storage-state.json |
 | Top toolbar contract | pass | Operations keeps a branded topbar with workspace context. | public/operations.html |
-| Module toolbar contract | pass | Operations exposes a stable module toolbar with data IDs for testing and navigation. | public/operations.html |
-| Module toolbar mobile scroll | pass | Module toolbar scrolls horizontally on smaller screens instead of forcing page overflow. | public/operations.html |
+| Sidebar and top filter rail contract | pass | Operations exposes stable sidebar module navigation and a current-module top filter rail for subviews. | public/operations.html |
+| Top filter rail mobile scroll | pass | Top filter tabs scroll horizontally on smaller screens instead of forcing page overflow. | public/operations.html |
 | Button tap target and wrapping contract | pass | Shared shell CSS gives Operations actions mobile-safe height and wrapping behavior. | public/css/bna-app-shell.css |
 | Filter dropdown contract | pass | Filter menus are fixed-position, high z-index overlays and use shared toggle behavior. | public/operations.html |
 | Cards, lists, empty, loading, and error states | pass | Operations defines shared list/card surfaces and basic loading, error, and empty states. | public/operations.html |

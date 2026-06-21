@@ -380,7 +380,7 @@ function scopedRequest(body = {}) {
       role: 'project_owner',
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: ['intake', 'tasks', 'community', 'content', 'calendar', 'integrations', 'settings'],
-      displayName: 'Rabbi Elie Scheller',
+      displayName: 'Rabbi Ellie Scheller',
     },
   };
 }
@@ -406,7 +406,7 @@ test('scoped One Time owner and admin auth can reach the canonical intake parse 
   assert.equal(owner.req.opsIdentity.role, 'project_owner');
   assert.equal(owner.req.opsIdentity.scope.type, 'project');
   assert.equal(owner.req.opsIdentity.scope.projectKey, ONE_TIME_PROJECT_KEY);
-  assert.equal(owner.req.opsIdentity.displayName, 'Rabbi Elie Scheller');
+  assert.equal(owner.req.opsIdentity.displayName, 'Rabbi Ellie Scheller');
 
   const admin = await authenticate(route, 'shloimie-admin@example.test', 'manager-pass');
   assert.equal(admin.nextCalled, true);

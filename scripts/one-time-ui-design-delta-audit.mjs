@@ -99,18 +99,27 @@ function buildOneTimeUiDesignDeltaAudit({ outputDir = DEFAULT_OUTPUT_DIR, write 
 
   addCheck(checks, {
     id: 'module_toolbar_contract',
-    title: 'Module toolbar contract',
-    status: patternStatus(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"[\s\S]*data-module-toolbar-id/),
+    title: 'Sidebar and top filter rail contract',
+    status: allPatternsStatus(operations, [
+      /function renderSidebarModuleList/,
+      /function renderTopFilterRail/,
+      /data-top-filter-rail="true"/,
+      /class="ops-filter-track" role="tablist"/,
+      /function currentSubnavConfig/,
+    ]),
     evidence: ['public/operations.html'],
-    details: 'Operations exposes a stable module toolbar with data IDs for testing and navigation.',
+    details: 'Operations exposes stable sidebar module navigation and a current-module top filter rail for subviews.',
   });
 
   addCheck(checks, {
     id: 'module_toolbar_mobile_scroll',
-    title: 'Module toolbar mobile scroll',
-    status: patternStatus(operations, /@media \(max-width: 900px\)[\s\S]*\.ops-module-toolbar-track\s*{[\s\S]*overflow-x:\s*auto/),
+    title: 'Top filter rail mobile scroll',
+    status: allPatternsStatus(operations, [
+      /\.section-tab-list,\s*\.ops-filter-track\s*{[\s\S]*flex-wrap:\s*nowrap[\s\S]*overflow-x:\s*auto[\s\S]*scroll-snap-type:\s*x proximity/,
+      /\.section-tab,\s*\.ops-filter-tab\s*{[\s\S]*flex:\s*0 0 auto[\s\S]*scroll-snap-align:\s*start/,
+    ]),
     evidence: ['public/operations.html'],
-    details: 'Module toolbar scrolls horizontally on smaller screens instead of forcing page overflow.',
+    details: 'Top filter tabs scroll horizontally on smaller screens instead of forcing page overflow.',
   });
 
   addCheck(checks, {

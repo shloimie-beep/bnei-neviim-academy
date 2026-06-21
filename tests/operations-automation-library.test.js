@@ -4,6 +4,14 @@ const test = require('node:test');
 
 const operations = fs.readFileSync('public/operations.html', 'utf8');
 
+function automationLibrarySettingsBlock() {
+  const start = operations.indexOf('function renderAutomationLibrarySettings()');
+  assert.ok(start > -1, 'renderAutomationLibrarySettings should exist');
+  const end = operations.indexOf('function previewAutomationLibraryItem', start);
+  assert.ok(end > start, 'renderAutomationLibrarySettings block should end before preview handler');
+  return operations.slice(start, end);
+}
+
 test('Operations Settings Automations renders a read-only automation and prompt library', () => {
   assert.match(operations, /function renderAutomationLibrarySettings/);
   assert.match(operations, /Automation Library/);
@@ -31,7 +39,8 @@ test('Operations Automations count is based on the library, not support-ticket p
 });
 
 test('Automation library does not expose a live run or enable handler', () => {
+  const block = automationLibrarySettingsBlock();
   assert.doesNotMatch(operations, /runAutomationLibraryItem/);
   assert.doesNotMatch(operations, /enableAutomationLibraryItem/);
-  assert.doesNotMatch(operations, /SEND_WHATSAPP[\s\S]*renderAutomationLibrarySettings/);
+  assert.doesNotMatch(block, /SEND_WHATSAPP/);
 });

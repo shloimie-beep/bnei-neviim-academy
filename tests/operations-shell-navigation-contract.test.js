@@ -41,7 +41,7 @@ test('Operations top filter rail is current-module subview navigation', () => {
 });
 
 test('Operations topbar keeps concise status chips and one helper entry per header', () => {
-  for (const label of ['Decisions', 'Codex', 'Students', 'Alerts']) {
+  for (const label of ['Need decision', 'Codex Queue', 'Student accountability', 'Alerts']) {
     assert.match(operations, new RegExp(label));
   }
   assert.match(operations, /function operationsTopbarStatusChips/);

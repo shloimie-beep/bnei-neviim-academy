@@ -9963,9 +9963,9 @@
                 .filter(snapshot => ['needs_setup', 'needs_review', 'missed', 'due_today'].includes(snapshot.status)).length);
             const alerts = safeCount(() => inAppNotifications.filter(item => item.status === 'unread').length);
             return [
-                { label: 'Decisions', value: decisions, tone: decisions ? 'attention' : 'ok', action: "openCommandTarget('tasks', 'decisions')", title: 'Human choices that unlock the next step.' },
-                { label: 'Codex', value: codexQueue, tone: codexQueue ? 'active' : 'ok', action: "openCommandTarget('tasks', 'codex_queue')", title: 'Queued or running machine work.' },
-                { label: 'Students', value: accountability, tone: accountability ? 'attention' : 'ok', action: "openCommandTarget('students', 'accountability')", title: 'Students with accountability attention signals.' },
+                { label: 'Need decision', value: decisions, tone: decisions ? 'attention' : 'ok', action: "openCommandTarget('tasks', 'decisions')", title: 'Human choices that unlock the next step.' },
+                { label: 'Codex Queue', value: codexQueue, tone: codexQueue ? 'active' : 'ok', action: "openCommandTarget('tasks', 'codex_queue')", title: 'Queued or running machine work.' },
+                { label: 'Student accountability', value: accountability, tone: accountability ? 'attention' : 'ok', action: "openCommandTarget('students', 'accountability')", title: 'Students with accountability attention signals.' },
                 { label: 'Alerts', value: alerts, tone: alerts ? 'attention' : 'ok', action: "openCommandTarget('dashboard', 'alerts')", title: 'Unread private Operations alerts.' },
             ];
         }

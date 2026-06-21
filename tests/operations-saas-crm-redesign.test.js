@@ -143,7 +143,7 @@ test('Operations auth identity read does not run workspace seeding on every requ
 
 test('Parent lead reads hide archived records unless archived status is explicitly requested', () => {
   assert.match(server, /app\.get\('\/api\/bna\/parent-leads'/);
-  assert.match(server, /if \(status\) \{\s*params\.push\(status\);\s*conditions\.push\(`status = \$\$\{params\.length\}`\);\s*\} else \{\s*conditions\.push\(`COALESCE\(status, 'interested'\) <> 'archived'`\);/);
+  assert.match(server, /if \(status\) \{\s*params\.push\(status\);\s*conditions\.push\(`l\.status = \$\$\{params\.length\}`\);\s*\} else \{\s*conditions\.push\(`COALESCE\(l\.status, 'interested'\) <> 'archived'`\);/);
 });
 
 test('Operations task and student details are query-addressable routed views', () => {

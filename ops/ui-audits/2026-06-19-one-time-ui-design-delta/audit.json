@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-19T09:53:36.350Z",
+  "generated_at": "2026-06-21T17:22:13.545Z",
   "requirement_id": "REQ-20260619-304",
   "status": "needs_operator_decision",
   "external_write_performed": false,
@@ -227,8 +227,8 @@
         "public/operations.html"
       ],
       "id": "module_toolbar_contract",
-      "title": "Module toolbar contract",
-      "details": "Operations exposes a stable module toolbar with data IDs for testing and navigation."
+      "title": "Sidebar and top filter rail contract",
+      "details": "Operations exposes stable sidebar module navigation and a current-module top filter rail for subviews."
     },
     {
       "status": "pass",
@@ -237,8 +237,8 @@
         "public/operations.html"
       ],
       "id": "module_toolbar_mobile_scroll",
-      "title": "Module toolbar mobile scroll",
-      "details": "Module toolbar scrolls horizontally on smaller screens instead of forcing page overflow."
+      "title": "Top filter rail mobile scroll",
+      "details": "Top filter tabs scroll horizontally on smaller screens instead of forcing page overflow."
     },
     {
       "status": "pass",
