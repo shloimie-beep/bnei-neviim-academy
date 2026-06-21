@@ -24,3 +24,17 @@
 - PASS `npm run bna:run:stale-evidence`.
 - PASS `git diff --check` with LF/CRLF warnings only.
 - PASS `node scripts/audit-secrets.mjs` with 0 tracked secret-risk files.
+
+<!-- batch-2:start -->
+## Batch 2 Test Results
+
+Recorded after focused verification:
+
+- PASS `node --check scripts/generate-one-time-master-completion-reconciliation.mjs`
+- PASS `node scripts/generate-one-time-master-completion-reconciliation.mjs`
+- PASS `node --test tests/one-time-master-backlog-reconciliation.test.js tests/rabbi-scheller-meeting-reconciliation.test.js`
+- PASS `npm run bna:run:validate`
+- PASS `npm run bna:run:source-coverage`
+- PASS `git diff --check` with line-ending warnings only where reported by Git
+- PASS `node scripts/audit-secrets.mjs`
+<!-- batch-2:end -->
