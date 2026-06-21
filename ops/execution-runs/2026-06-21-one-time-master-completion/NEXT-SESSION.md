@@ -1,11 +1,11 @@
 # Next Session
 
-Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 11/13, and Batch 12 are
-deployed and live-verified on PR #5. Batch 11/13 closed
-`REQ-20260619-308`; run the execution runner after this closeout commit is
-pushed and continue with the next unblocked open requirement it selects, such
-as `REQ-20260619-309` transcript privacy or `REQ-20260621-902` today's
-class-upload trace if its dependencies are satisfied.
+Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E,
+Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
+appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
+credentials. Run the execution runner after this closeout commit is pushed and
+continue with the next unblocked open requirement it selects:
+`REQ-20260621-906` / Batch 9F warm-lead trial and referral configuration.
 Exact next command:
 
 ```powershell
@@ -406,6 +406,56 @@ npm run bna:run:next
 
 Continue automatically with `REQ-20260621-905` / Batch 9E CRM Contacts UX.
 <!-- batch-9D:end -->
+
+<!-- batch-9E:start -->
+## Batch 9E Handoff
+
+CRM Contacts UX is deployed and live-verified.
+
+- Requirement: `REQ-20260621-905`
+- Implementation status: `verified_live`
+- Implementation commit:
+  `b2371cdc5a58fabb70ba1e764ead9dbe3d0eb7e8`
+- Final pushed/deployed commit:
+  `35db6c0e876243e61e7bce2f94db787a44626f06`
+- Railway deployment:
+  `bf53e21c-a793-4af8-8630-a0e855d857c7`
+- Key files:
+  `public/operations.html`, `server.js`, `package.json`,
+  `scripts/smoke-one-time-crm-contacts-ux-live.mjs`,
+  `tests/operations-contacts-intake-cleanup.test.js`,
+  `tests/operations-module-scoping.test.js`,
+  `tests/one-time-communications-workspace.test.js`
+- Focused Batch 9E tests: 15 passed, 0 failed.
+- Action watchdog: PASS.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+- Focused One Time CRM Contacts UX live smoke:
+  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+- Guardrails:
+  One Time parent leads are selected-workspace scoped; private BNA
+  goals/check-ins/admin notes/school-only data are absent; CRM rows remain
+  no-send/gated; no email, WhatsApp, payment, external CRM, GHL/LeadConnector,
+  DNS, billing, bulk campaign, or external-account write occurred.
+
+Known unrelated test caveat:
+
+- Full `npm test` still fails stale/unrelated assertions in
+  `tests/agent-control-center.test.js`,
+  `tests/developer-tester-ticket-capture.test.js`, and
+  `tests/ui-01-public-operations-shell.test.js`. Do not treat those as Batch
+  9E blockers unless the next batch explicitly owns those areas.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-906` / Batch 9F warm-lead trial and
+referral configuration. Do not perform live charges, invoice credits, or
+campaign sends.
+<!-- batch-9E:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

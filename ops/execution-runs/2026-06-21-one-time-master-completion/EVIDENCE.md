@@ -998,3 +998,91 @@ Focused live smoke covered:
 - No contact, tag, email, WhatsApp, external CRM, GHL/LeadConnector, billing,
   or local import write.
 <!-- batch-9D:end -->
+
+<!-- batch-9E:start -->
+## Batch 9E Evidence - CRM Contacts UX
+
+Requirement: `REQ-20260621-905`
+
+Status: done / deployed / verified live
+
+Implementation evidence:
+
+- Operations One Time CRM Contacts UX, CRM Contacts tab, scoped counts,
+  no-send/dedupe/source/communications columns, and guarded direct actions:
+  `public/operations.html`
+- Selected workspace/project parent-lead scoping and project metadata readback:
+  `server.js`
+- Focused live smoke script and package command:
+  `scripts/smoke-one-time-crm-contacts-ux-live.mjs`, `package.json`
+- Focused tests:
+  `tests/operations-contacts-intake-cleanup.test.js`,
+  `tests/operations-module-scoping.test.js`, and
+  `tests/one-time-communications-workspace.test.js`
+
+Implemented behavior:
+
+- Operations passes `workspaceDataProjectFilters()` into `api.getParentLeads`.
+- `/api/bna/parent-leads` honors selected workspace/project query scope using
+  `appendRequestedProjectScopeCondition`.
+- Provider Contacts has a CRM Contacts tab and count for One Time scoped rows.
+- The CRM table combines scoped One Time parent leads, product-interest leads,
+  and member/access rows.
+- Each row surfaces record status, source/status, no-send state,
+  dedupe/review state, communication linkage, next action, and a direct action
+  cell.
+- Duplicate email/phone keys inside the One Time scoped dataset are marked for
+  duplicate contact review.
+- Product-interest and member rows stay no-send and route to internal review
+  surfaces only.
+- Private BNA goals, check-ins, admin notes, and school-only student data are
+  explicitly excluded from the One Time Contacts copy and scoped fetch path.
+
+Verification and live evidence:
+
+- PASS `node --test tests/operations-contacts-intake-cleanup.test.js tests/operations-module-scoping.test.js tests/one-time-communications-workspace.test.js`
+  with 15/15 tests passing.
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-crm-contacts-ux-live.mjs`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run watchdog:actions`
+- PASS `npm run railway:doctor` after final deployment
+  `bf53e21c-a793-4af8-8630-a0e855d857c7`.
+- PASS standard live smoke:
+  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+- PASS focused One Time CRM Contacts UX live smoke:
+  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+
+Deployment and live evidence:
+
+- Implementation commit: `b2371cdc5a58fabb70ba1e764ead9dbe3d0eb7e8`
+- Final pushed/deployed commit:
+  `35db6c0e876243e61e7bce2f94db787a44626f06`
+- Railway deployment:
+  `bf53e21c-a793-4af8-8630-a0e855d857c7`
+- Focused live smoke counts:
+  88 scoped One Time parent leads, 88 rows with returned
+  `project_key=one_time_mishnah_class`, and 94 scoped contact communications.
+
+Guardrails:
+
+- No email send, WhatsApp send, payment write, external CRM write, GHL,
+  GoHighLevel, LeadConnector, DNS mutation, billing write, bulk campaign, or
+  external-account write.
+- Focused smoke records scoped counts and UI markers only; it intentionally
+  avoids raw contact bodies and raw private notes.
+- The first Railway deploy was run from a clean detached worktree at
+  `b2371cdc5a58fabb70ba1e764ead9dbe3d0eb7e8`; after a newer pushed commit
+  landed, the final deploy was rerun from a clean detached worktree at
+  `35db6c0e876243e61e7bce2f94db787a44626f06`.
+
+Known unrelated QA caveat:
+
+- Full `npm test` is not currently green because stale/unrelated assertions
+  fail in `tests/agent-control-center.test.js`,
+  `tests/developer-tester-ticket-capture.test.js`, and
+  `tests/ui-01-public-operations-shell.test.js`. The Batch 9E focused tests,
+  syntax checks, action watchdog, deployment doctor, standard live smoke, and
+  focused live smoke all passed.
+<!-- batch-9E:end -->

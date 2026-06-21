@@ -1471,18 +1471,43 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "in_progress",
-      "implementation_status": "implementation_started",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "evidence": [
+        "public/operations.html",
+        "server.js",
+        "package.json",
+        "scripts/smoke-one-time-crm-contacts-ux-live.mjs",
+        "tests/operations-contacts-intake-cleanup.test.js",
+        "tests/operations-module-scoping.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "verification": [
+        "PASS node --test tests/operations-contacts-intake-cleanup.test.js tests/operations-module-scoping.test.js tests/one-time-communications-workspace.test.js (15/15)",
+        "PASS node --check server.js",
+        "PASS node --check scripts/smoke-one-time-crm-contacts-ux-live.mjs",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS git diff --check with LF/CRLF warnings only",
+        "PASS npm run watchdog:actions",
+        "PASS npm run railway:doctor for deployment bf53e21c-a793-4af8-8630-a0e855d857c7",
+        "PASS npm run app:smoke -> ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-crm-contacts-ux -> ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md",
+        "KNOWN unrelated full npm test failures remain in agent-control/developer-tester/UI topbar stale assertions, outside Batch 9E focused paths"
+      ],
+      "implementation_commit": "35db6c0e876243e61e7bce2f94db787a44626f06",
+      "pushed_commit": "35db6c0e876243e61e7bce2f94db787a44626f06",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment bf53e21c-a793-4af8-8630-a0e855d857c7 reached SUCCESS for deployed commit 35db6c0e876243e61e7bce2f94db787a44626f06",
+        "ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T17:12:20+03:00",
+      "updated_at": "2026-06-21T17:25:39+03:00",
       "id": "REQ-20260621-905",
       "title": "CRM Contacts UX",
       "expected_result": "Operations Contacts UX organizes One Time leads/members with scoped communication, lead, no-send, and dedupe state.",
@@ -1502,8 +1527,12 @@
         "public/operations.html",
         "server.js",
         "tests/operations-contacts-intake-cleanup.test.js",
-        "tests/one-time-communications-workspace.test.js"
-      ]
+        "tests/one-time-communications-workspace.test.js",
+        "package.json",
+        "scripts/smoke-one-time-crm-contacts-ux-live.mjs"
+      ],
+      "deployed_commit": "35db6c0e876243e61e7bce2f94db787a44626f06",
+      "deployment_id": "bf53e21c-a793-4af8-8630-a0e855d857c7"
     },
     {
       "source_id": "RAW-20260621-002",

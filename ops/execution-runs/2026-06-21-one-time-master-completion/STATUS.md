@@ -431,3 +431,36 @@ live smokes:
 
 Next unblocked child: `REQ-20260621-905` CRM Contacts UX.
 <!-- batch-9D:end -->
+
+<!-- batch-9E:start -->
+## Batch 9E - CRM Contacts UX
+
+Status: done / deployed / verified live
+
+Operations Contacts for the Rabbi/One Time workspace now has a first-party CRM
+Contacts tab and review table. The UX combines scoped parent leads, One Time
+product-interest leads, and member/access rows into one read-only review
+surface with explicit record status, source/status, no-send state,
+dedupe/review state, local communication linkage, next action, and guarded
+direct actions.
+
+The `/api/bna/parent-leads` route now honors the selected workspace/project
+query scope and returns project metadata for verification. Operations passes
+the selected `workspaceDataProjectFilters()` into parent-lead loading, so an
+unscoped admin switching into One Time does not load BNA school leads into the
+One Time contacts surface.
+
+The final PR head `35db6c0e876243e61e7bce2f94db787a44626f06` was deployed
+from a clean detached worktree to Railway deployment
+`bf53e21c-a793-4af8-8630-a0e855d857c7`. Standard live smoke and focused One
+Time CRM Contacts UX smoke passed. The focused smoke verified 88 scoped One
+Time parent leads, 94 scoped contact communications, the deployed UX markers,
+and the absence of raw contact bodies in the report.
+
+Guardrails: no email send, WhatsApp send, payment write, external CRM write,
+GHL/LeadConnector runtime, raw private contact dump, or BNA private
+goals/check-ins/admin notes in the One Time Contacts UX.
+
+Next unblocked child: `REQ-20260621-906` warm-lead trial and referral
+configuration.
+<!-- batch-9E:end -->

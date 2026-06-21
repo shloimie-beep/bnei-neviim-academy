@@ -25036,3 +25036,44 @@ route is read-only and Operations Apply Import remains disabled.
 
 Next: continue automatically with Batch 9E / `REQ-20260621-905` CRM Contacts
 UX.
+
+## 2026-06-21T17:25:39+03:00 - One Time Master Completion Batch 9E CRM Contacts UX
+
+Closed `REQ-20260621-905` for PR #5. Operations Contacts for the One Time /
+Rabbi workspace now exposes a scoped CRM Contacts tab that organizes parent
+leads, product-interest leads, and member/access rows with visible record
+status, source/status, no-send state, dedupe/review state, local communication
+linkage, next action, and guarded direct actions.
+
+Parent-lead loading now passes the selected workspace/project filters from
+Operations, and `/api/bna/parent-leads` honors requested workspace/project
+scope with project-key readback. This prevents an unscoped admin viewing One
+Time from loading BNA school leads into the One Time CRM Contacts UX.
+
+Implementation commit `b2371cdc5a58fabb70ba1e764ead9dbe3d0eb7e8` was pushed,
+then the branch advanced to final PR head
+`35db6c0e876243e61e7bce2f94db787a44626f06`, which was deployed from a clean
+detached worktree to Railway deployment
+`bf53e21c-a793-4af8-8630-a0e855d857c7`.
+
+Verification passed: focused 15/15 Contacts/scoping/One Time communications
+tests, server and focused-smoke syntax checks, tracked secret audit, diff
+check, action watchdog, Railway doctor, standard live smoke
+`ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`, and focused CRM
+Contacts UX live smoke
+`ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`.
+Focused live smoke verified 88 scoped One Time parent leads and 94 scoped
+contact communications without recording raw contact bodies or private notes.
+
+Guardrails: no email send, WhatsApp send, payment write, external CRM write,
+GHL/GoHighLevel/LeadConnector runtime, DNS mutation, billing write, bulk
+campaign, or external-account write was performed. Private BNA goals,
+check-ins, admin notes, and school-only student data remain absent from One
+Time Contacts.
+
+Known unrelated QA caveat: full `npm test` still fails stale assertions in
+agent-control, developer-tester ticket capture, and UI-01 Operations topbar
+tests. Batch 9E focused tests and live release gate passed.
+
+Next: continue automatically with Batch 9F / `REQ-20260621-906` warm-lead
+trial and referral configuration.

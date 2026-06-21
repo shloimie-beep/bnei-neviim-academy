@@ -654,3 +654,57 @@ Deployment-safety notes:
   failed before the current readiness route was deployed. After `aedb04aa`
   reached production, the full readiness/UI/import preview smoke passed.
 <!-- batch-9D:end -->
+
+<!-- batch-9E:start -->
+## Batch 9E Test Results
+
+Recorded after One Time CRM Contacts UX, scoped parent-lead readback, CRM
+Contacts tab/direct review actions, and focused live-smoke implementation:
+
+- PASS `node --test tests/operations-contacts-intake-cleanup.test.js tests/operations-module-scoping.test.js tests/one-time-communications-workspace.test.js`
+  with 15/15 tests passing.
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-crm-contacts-ux-live.mjs`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run watchdog:actions`
+- PASS `npm run railway:doctor` after final Railway deployment
+  `bf53e21c-a793-4af8-8630-a0e855d857c7`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+- PASS `npm run app:smoke:one-time-crm-contacts-ux`,
+  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+
+Focused test coverage:
+
+- Operations parent-lead loading passes selected workspace/project filters.
+- `/api/bna/parent-leads` uses requested project scope and returns project key
+  metadata for verification.
+- One Time CRM Contacts UX exposes source/status, no-send, dedupe/review, and
+  communications state.
+- CRM rows cover parent leads, product-interest leads, and member/access rows.
+- Private BNA goals, check-ins, admin notes, and school-only data are excluded
+  from the One Time Contacts UX.
+
+Focused live smoke covered:
+
+- Production health and Operations login through the standard app smoke.
+- Scoped One Time parent-leads API with 88 returned leads and 88 returned
+  `project_key=one_time_mishnah_class` rows.
+- Scoped One Time contact-communications API with 94 returned records.
+- Deployed Operations CRM Contacts UX marker, requirement ID, heading,
+  no-send guardrail copy, privacy guardrail copy, dedupe/review state, and
+  scoped parent-lead fetch marker.
+
+Intermediate/known failures recorded:
+
+- Initial standard and focused live-smoke attempts failed before app access
+  because this PR worktree does not contain local `OPS_USERNAME` and
+  `OPS_PASSWORD`; reruns loaded the existing local BNA `.env.local` into the
+  process environment and passed.
+- Full `npm test` still fails unrelated/stale assertions in
+  `tests/agent-control-center.test.js`,
+  `tests/developer-tester-ticket-capture.test.js`, and
+  `tests/ui-01-public-operations-shell.test.js`. The Batch 9E focused suite
+  and live release gate passed.
+<!-- batch-9E:end -->

@@ -257,6 +257,35 @@ GHL/LeadConnector forbidden runtime guardrails. No contact, tag, email,
 WhatsApp, external CRM, GHL/LeadConnector, billing, or local import write was
 performed.
 
+## Batch 9E
+
+- Deployment ID: `bf53e21c-a793-4af8-8630-a0e855d857c7`
+- Deployed commit: `35db6c0e876243e61e7bce2f94db787a44626f06`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T14-24-23-135Z-live-app-smoke.md`
+- Focused One Time CRM Contacts UX live smoke: PASS,
+  `ops/live-smokes/2026-06-21T14-24-22-149Z-one-time-crm-contacts-ux-live-smoke.md`
+
+Deployment was run from a clean detached worktree so the unrelated
+uncommitted blog JSON files in the main worktree were not included in the
+bundle. An initial deploy at `b2371cdc5a58fabb70ba1e764ead9dbe3d0eb7e8`
+reached Railway deployment `b3d9d893-a719-402d-a279-c9f4ed53b620`; after the
+branch advanced to `35db6c0e876243e61e7bce2f94db787a44626f06`, the app was
+redeployed and live-smoked again. The final active deployment is
+`bf53e21c-a793-4af8-8630-a0e855d857c7`.
+
+Focused live smoke verified the scoped parent-leads API, scoped contact
+communications API, CRM Contacts UX marker and requirement ID, no-send
+guardrail copy, private-BNA-data guardrail copy, dedupe/review state, and
+scoped parent-lead fetch marker. It recorded only scoped counts and UI markers;
+no raw contact bodies or private notes were written to the report.
+
+No email send, WhatsApp send, payment write, external CRM write, GHL,
+GoHighLevel, LeadConnector, DNS mutation, billing write, bulk campaign, or
+external-account write was performed.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`

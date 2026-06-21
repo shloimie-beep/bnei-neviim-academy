@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-06-21T14:24:22.149Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Scoped One Time parent leads API responds",
+      "ok": true,
+      "detail": "88 scoped leads"
+    },
+    {
+      "name": "Scoped One Time contact communications API responds",
+      "ok": true,
+      "detail": "94 scoped communications"
+    },
+    {
+      "name": "Operations ships CRM Contacts UX markers",
+      "ok": true,
+      "detail": "CRM Contacts panel and scope markers shipped"
+    }
+  ],
+  "parent_leads_count": 88,
+  "parent_leads_with_project_key": 88,
+  "contact_communications_count": 94
+}
