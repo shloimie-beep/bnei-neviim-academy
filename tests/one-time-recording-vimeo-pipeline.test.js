@@ -41,11 +41,17 @@ test('recording pipeline preview covers REQ-20260619-308 without writes', () => 
   }, { config: configuredVideoHosting });
 
   assert.equal(preview.requirement_id, 'REQ-20260619-308');
-  assert.equal(preview.status, 'needs_operator_decision');
+  assert.equal(preview.status, 'manual_vimeo_ready');
   assert.equal(preview.preview_only, true);
   assert.equal(preview.external_write_performed, false);
   assert.equal(preview.production_mutation_performed, false);
-  assert.equal(Object.values(preview.gates).every((value) => value === false), true);
+  assert.equal(preview.gates.manual_vimeo_attach_enabled, true);
+  assert.equal(preview.gates.member_library_publish_route_enabled, true);
+  assert.equal(preview.gates.member_library_unpublish_route_enabled, true);
+  assert.equal(preview.gates.api_upload_enabled, false);
+  assert.equal(preview.gates.provider_publish_enabled, false);
+  assert.equal(preview.gates.delete_enabled, false);
+  assert.equal(preview.gates.notification_send_enabled, false);
   assert.deepEqual(
     preview.sections.map((section) => section.key),
     [
@@ -62,20 +68,32 @@ test('recording pipeline preview covers REQ-20260619-308 without writes', () => 
   );
   assert.equal(preview.summary.recording_files_seen, 3);
   assert.equal(preview.summary.audio_only_files_seen, 1);
+  assert.equal(preview.summary.manual_vimeo_ready, true);
+  assert.equal(preview.summary.automated_upload_enabled, false);
   assert.equal(preview.preferred_file.local_file_ref, 'speaker-share');
   assert.equal(preview.transcript_summary.status, 'ready_for_review');
+  assert.equal(preview.manual_vimeo_workflow.status, 'manual_vimeo_ready');
+  assert.equal(preview.manual_vimeo_workflow.url_validation.vimeo_id, '123456789');
+  assert.deepEqual(preview.manual_vimeo_workflow.missing_metadata, []);
+  assert.equal(preview.automated_upload_readiness.feature_flag_enabled, false);
+  assert.equal(preview.automated_upload_readiness.api_upload_enabled, false);
+  assert.equal(preview.publication_lifecycle.states.some((state) => state.state === 'member_library_publication'), true);
+  assert.equal(preview.publication_lifecycle.supports.multiple_recording_files, true);
   assert.equal(preview.publication.vimeo_id_present, true);
-  assert.equal(preview.publication.publish_enabled, false);
-  assert.equal(preview.publication.unpublish_enabled, false);
+  assert.equal(preview.publication.first_party_publish_route_enabled, true);
+  assert.equal(preview.publication.member_library_publish_enabled, true);
+  assert.equal(preview.publication.provider_publish_enabled, false);
+  assert.equal(preview.publication.unpublish_enabled, true);
   assert.equal(preview.publication.delete_enabled, false);
   assert.equal(preview.retention.source_delete_allowed, false);
+  assert.equal(preview.entitlement_watch_progress.member_visibility_enabled, true);
   assert.equal(preview.entitlement_watch_progress.watch_progress_write_enabled, false);
   assert.match(preview.blockers.join(' '), /Never publish directly from a webhook/);
   assert.doesNotMatch(JSON.stringify(preview), /vimeo-secret-token/);
   assert.doesNotMatch(JSON.stringify(preview), /vimeo-client-secret/);
 });
 
-test('publication and retention previews keep publish and delete disabled', () => {
+test('publication and retention previews allow approval-gated member publish while provider delete stays disabled', () => {
   const publication = videoHosting.buildVimeoPublicationPreview({
     vimeo_url: 'https://player.vimeo.com/video/987654321',
     title: 'Approved class draft',
@@ -93,9 +111,12 @@ test('publication and retention previews keep publish and delete disabled', () =
   assert.equal(publication.requirement_id, 'REQ-20260619-308');
   assert.equal(publication.preview_only, true);
   assert.equal(publication.publication.vimeo_id_present, true);
-  assert.equal(publication.publication.publish_enabled, false);
-  assert.equal(publication.publication.unpublish_enabled, false);
+  assert.equal(publication.publication.first_party_publish_route_enabled, true);
+  assert.equal(publication.publication.member_library_publish_enabled, true);
+  assert.equal(publication.publication.provider_publish_enabled, false);
+  assert.equal(publication.publication.unpublish_enabled, true);
   assert.equal(publication.publication.delete_enabled, false);
+  assert.equal(publication.publication.member_visibility_enabled, true);
   assert.equal(publication.publication.checks.transcript_summary_saved, true);
   assert.equal(retention.requirement_id, 'REQ-20260619-308');
   assert.equal(retention.retention.delete_enabled, false);
@@ -118,7 +139,21 @@ test('Operations One Time Library shows no-write recording Vimeo readiness', () 
   assert.match(operations, /data-one-time-recording-vimeo-readiness/);
   assert.match(operations, /REQ-20260619-308/);
   assert.match(operations, /Recording \/ Vimeo Pipeline/);
-  assert.match(operations, /No provider webhook, recording fetch, Vimeo upload, publish, unpublish, delete, member visibility, watch-progress write, notification send, or portal publish runs from this panel/);
+  assert.match(operations, /manual mode ready, automated upload disabled/);
+  assert.match(operations, /Manual Vimeo URL attachment and approval-gated first-party member-library publish run through the Class Package Manager/);
+  assert.match(operations, /No provider webhook, recording fetch, Vimeo upload, provider publish, provider unpublish, provider delete, watch-progress write, notification send, or external portal publish runs from this panel/);
+  [
+    'authenticated Vimeo user',
+    'account owner',
+    'upload scope',
+    'upload capability',
+    'storage/quota',
+    'privacy default',
+    'allowed embed domains',
+    'callback URL',
+    'token state',
+    'last verification',
+  ].forEach((label) => assert.match(operations, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))));
   assert.match(operations, /Never publish directly from a webhook/);
 });
 

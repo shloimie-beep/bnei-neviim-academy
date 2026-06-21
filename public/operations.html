@@ -24248,7 +24248,8 @@
             await runOneTimeManagerAction(event, 'Previewing One Time class package...', async () => {
                 const result = await api.previewOneTimeClassPackage(classSessionId, {});
                 const assetCount = Number(result?.package?.assets?.length || 0);
-                return `Previewed package #${Number(classSessionId)} with ${assetCount} linked asset${assetCount === 1 ? '' : 's'}.`;
+                const pipelineStatus = result?.recording_pipeline?.status || 'preview_ready';
+                return `Previewed package #${Number(classSessionId)} with ${assetCount} linked asset${assetCount === 1 ? '' : 's'}; recording/Vimeo status ${pipelineStatus}.`;
             });
         }
 
@@ -24516,6 +24517,10 @@
                         <label>Date<input name="class_date" type="date"></label>
                         <label>Media provider<select name="media_provider">${oneTimeSelectOptions(ONE_TIME_CLASS_MEDIA_PROVIDERS, 'manual_url')}</select></label>
                         <label>Vimeo/manual hosted URL<input name="media_url" placeholder="https://"></label>
+                        <label>Masechta<input name="masechta" placeholder="Berachos"></label>
+                        <label>Perek<input name="perek" placeholder="1"></label>
+                        <label>Mishnah range<input name="mishnah_range" placeholder="1-3"></label>
+                        <label>Duration seconds<input name="duration_seconds" type="number" min="0" step="1" placeholder="3600"></label>
                         <label>Thumbnail URL<input name="thumbnail_url" placeholder="https://"></label>
                         <label>Transcript status<select name="transcript_status">${oneTimeSelectOptions(ONE_TIME_TRANSCRIPT_STATUSES, 'draft')}</select></label>
                         <label>Description<textarea name="description" rows="3"></textarea></label>
@@ -24548,6 +24553,8 @@
                         <div class="content-status-stack">
                             <span class="content-topic-chip">${escapeHtml(item.package_status || 'draft')}</span>
                             <span class="content-topic-chip">${escapeHtml(item.media_provider || 'manual_url')}</span>
+                            ${item.masechta ? `<span class="content-topic-chip">${escapeHtml(item.masechta)} ${escapeHtml(item.perek || '')}${item.mishnah_range ? `:${escapeHtml(item.mishnah_range)}` : ''}</span>` : ''}
+                            ${item.duration_seconds ? `<span class="content-topic-chip">${Math.round(Number(item.duration_seconds) / 60)} min</span>` : ''}
                             ${publishedItem ? '<span class="content-topic-chip">member visible</span>' : '<span class="content-topic-chip">member hidden</span>'}
                         </div>
                     </div>
@@ -24559,6 +24566,10 @@
                         <label>Provider<select name="media_provider">${oneTimeSelectOptions(ONE_TIME_CLASS_MEDIA_PROVIDERS, item.media_provider || 'manual_url')}</select></label>
                         <label>Vimeo/manual hosted URL<input name="media_url" value="${escapeHtml(item.media_url || '')}" placeholder="https://"></label>
                         <label>Vimeo ID<input name="vimeo_id" value="${escapeHtml(item.vimeo_id || '')}"></label>
+                        <label>Masechta<input name="masechta" value="${escapeHtml(item.masechta || '')}" placeholder="Berachos"></label>
+                        <label>Perek<input name="perek" value="${escapeHtml(item.perek || '')}" placeholder="1"></label>
+                        <label>Mishnah range<input name="mishnah_range" value="${escapeHtml(item.mishnah_range || '')}" placeholder="1-3"></label>
+                        <label>Duration seconds<input name="duration_seconds" type="number" min="0" step="1" value="${escapeHtml(item.duration_seconds || '')}"></label>
                         <label>Thumbnail URL<input name="thumbnail_url" value="${escapeHtml(item.thumbnail_url || '')}" placeholder="https://"></label>
                         <label>Description<textarea name="description" rows="3">${escapeHtml(item.description || '')}</textarea></label>
                         <label>Transcript notes<textarea name="transcript_notes" rows="3">${escapeHtml(item.transcript_notes || '')}</textarea></label>
@@ -24972,9 +24983,23 @@
                     ['Transcript and summary', transcriptReady && summaryReady ? 'Review ready' : 'Needs source text', 'Transcript and summary must be saved before publication approval.'],
                     ['Retry and dead letter', 'Local contract', 'Retry, dead-letter, and idempotency keys are defined without mutating provider or member-library state.'],
                     ['Review and correction', 'Local contract', 'Rabbi/operator correction, approval, and rejection states are internal review states only.'],
-                    ['Manual/API Vimeo modes', 'Needs decision', 'Manual Vimeo ID review is supported; API upload remains disabled pending owner token, plan, and approval.'],
-                    ['Publish, unpublish, delete', 'Blocked', 'Never publish directly from a webhook; publish, unpublish, and deletion need explicit approval and smoke proof.'],
-                    ['Entitlement and watch progress', 'Local contract', 'Member visibility and watch-progress writes stay disabled until publication is approved and smoked.'],
+                    ['Manual/API Vimeo modes', 'Manual ready', 'Manual Vimeo URL attachment and first-party member-library publishing are usable with the approval phrase; API upload remains disabled pending owner token, plan, quota, folder, privacy, embed domains, and upload smoke approval.'],
+                    ['Publish, unpublish, delete', 'Approval gated', 'Never publish directly from a webhook; first-party publish/unpublish uses the Class Package Manager and explicit approval phrase while provider deletion remains blocked.'],
+                    ['Entitlement and watch progress', 'Publish ready / progress blocked', 'Member visibility is enabled only after approved first-party publication; watch-progress writes stay future-scoped.'],
+                ],
+                automatedUploadSetup: [
+                    'authenticated Vimeo user',
+                    'account owner',
+                    'plan',
+                    'upload scope',
+                    'upload capability',
+                    'storage/quota',
+                    'folder',
+                    'privacy default',
+                    'allowed embed domains',
+                    'callback URL',
+                    'token state',
+                    'last verification',
                 ],
             };
         }
@@ -24984,8 +25009,8 @@
             return `
                 <section class="one-time-approval-packet" data-one-time-recording-vimeo-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time recording Vimeo readiness">
                     <strong>Recording / Vimeo Pipeline</strong>
-                    <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
-                    <p>No provider webhook, recording fetch, Vimeo upload, publish, unpublish, delete, member visibility, watch-progress write, notification send, or portal publish runs from this panel.</p>
+                    <span>${escapeHtml(state.requirementId)} / manual mode ready, automated upload disabled</span>
+                    <p>Manual Vimeo URL attachment and approval-gated first-party member-library publish run through the Class Package Manager. No provider webhook, recording fetch, Vimeo upload, provider publish, provider unpublish, provider delete, watch-progress write, notification send, or external portal publish runs from this panel.</p>
                     <div class="classroom-board-metrics">
                         ${renderClassroomMetric(state.summary.classPackages, 'Class packages')}
                         ${renderClassroomMetric(state.summary.transcriptReady, 'Transcripts')}
@@ -24995,6 +25020,9 @@
                     <div class="task-actions" style="margin:10px 0 12px;">
                         <button class="task-action" type="button" onclick="openBnaHelperWithPrompt('Create the One Time Vimeo upload setup task. Include authenticated Vimeo user, account owner, plan, upload scope/capability, storage/quota, folder, privacy default, allowed embed domains, callback URL, token state, idempotent upload job, retry policy, playback verification, and no real upload without explicit authorization.')">Preview Upload setup</button>
                         <button class="task-action" type="button" onclick="openBnaHelperWithPrompt('Create the One Time recording retry/dead-letter setup task. Include source recording ID, transcript/summary state, idempotency key, retry reason, rollback path, audit log, and confirmation that no publish or delete occurs from retry.')">Retry setup</button>
+                    </div>
+                    <div class="content-topic-row" aria-label="Automated Vimeo upload setup blockers">
+                        ${state.automatedUploadSetup.map(item => `<span class="content-topic-chip">${escapeHtml(item)}</span>`).join('')}
                     </div>
                     <div class="one-time-output-grid">
                         ${state.sections.map(([title, status, body]) => `

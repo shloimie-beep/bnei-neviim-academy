@@ -154,6 +154,64 @@
       white-space: nowrap;
     }
 
+    .library-toolbar {
+      display: none;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .library-toolbar.visible {
+      display: grid;
+      grid-template-columns: minmax(180px, 320px) minmax(0, 1fr);
+    }
+
+    .filter-rail {
+      display: flex;
+      gap: 8px;
+      min-width: 0;
+      overflow-x: auto;
+      padding: 2px 0 8px;
+      scrollbar-width: thin;
+      white-space: nowrap;
+    }
+
+    .filter-rail button {
+      flex: 0 0 auto;
+      min-height: 36px;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .filter-rail button[aria-pressed="true"] {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .library-group {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .library-group-title {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .library-results {
+      display: grid;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
     .library-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -208,6 +266,60 @@
       margin: 0;
       color: var(--muted);
       line-height: 1.5;
+    }
+
+    .metadata-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 0;
+    }
+
+    .metadata-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 0 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .progress-shell {
+      display: grid;
+      gap: 6px;
+    }
+
+    .progress-bar {
+      overflow: hidden;
+      height: 8px;
+      border-radius: 999px;
+      background: #e5e7ef;
+    }
+
+    .progress-bar span {
+      display: block;
+      height: 100%;
+      width: var(--progress, 0%);
+      background: var(--accent);
+    }
+
+    .progress-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .progress-actions button {
+      min-height: 34px;
+      padding: 0 10px;
+      color: var(--accent);
+      background: #fff;
+      border-color: var(--line);
+      font-size: 13px;
     }
 
     .asset-list {
@@ -266,6 +378,10 @@
         align-items: flex-start;
         flex-direction: column;
       }
+
+      .library-toolbar.visible {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -287,6 +403,13 @@
     </form>
     <div class="status" id="status"></div>
     <section class="classroom-strip" id="classroomStrip" aria-live="polite"></section>
+    <section class="library-toolbar" id="libraryToolbar" aria-label="Library filters">
+      <label>
+        Search
+        <input id="librarySearch" autocomplete="off" placeholder="Title, Masechta, Perek">
+      </label>
+      <div class="filter-rail" id="filterRail" role="tablist" aria-label="Member library filters"></div>
+    </section>
     <section class="library-grid" id="libraryGrid" aria-live="polite"></section>
   </main>
 
@@ -298,6 +421,22 @@
     const grid = document.getElementById('libraryGrid');
     const memberMeta = document.getElementById('memberMeta');
     const classroomStrip = document.getElementById('classroomStrip');
+    const libraryToolbar = document.getElementById('libraryToolbar');
+    const librarySearch = document.getElementById('librarySearch');
+    const filterRail = document.getElementById('filterRail');
+    let currentPayload = null;
+    let activeFilter = 'all';
+    let searchTerm = '';
+
+    const filters = [
+      ['all', 'All'],
+      ['recent', 'Recently Added'],
+      ['continue', 'Continue Watching'],
+      ['masechta', 'Masechta'],
+      ['perek', 'Perek'],
+      ['review', 'Review'],
+      ['completed', 'Completed'],
+    ];
 
     function escapeHtml(value) {
       return String(value || '')
@@ -328,30 +467,119 @@
       return '<div class="media-placeholder">Media link available below</div>';
     }
 
-    function renderLibrary(payload) {
-      const access = payload.member_library?.access || {};
-      const items = payload.member_library?.items || [];
-      const classroom = payload.classroom || {};
-      memberMeta.textContent = access.member_label ? `${access.member_label} | ${String(access.tier || '').replace(/_/g, ' ')}` : 'Member library';
-      classroomStrip.classList.add('visible');
-      classroomStrip.innerHTML = `
-        <p>Classroom: ${Number((classroom.calendar_items || []).length)} calendar item${Number((classroom.calendar_items || []).length) === 1 ? '' : 's'}, ${Number((classroom.threads || []).length)} Rabbi thread${Number((classroom.threads || []).length) === 1 ? '' : 's'}, ${Number((classroom.leaderboard || []).length)} leaderboard row${Number((classroom.leaderboard || []).length) === 1 ? '' : 's'}.</p>
-        <a href="/one-time-classroom?code=${encodeURIComponent(codeInput.value.trim())}">Open Classroom</a>
-      `;
-      if (!items.length) {
-        grid.innerHTML = '<div class="empty-state">No published library items are visible for this access code.</div>';
-        return;
-      }
-      grid.innerHTML = items.map((item) => `
+    function progressKey(item) {
+      return `one_time_member_library_progress_${Number(item.id || item.class_session_id || 0)}`;
+    }
+
+    function itemProgress(item) {
+      const stored = Number(localStorage.getItem(progressKey(item)) || item.watch_progress_percent || 0);
+      if (!Number.isFinite(stored)) return 0;
+      return Math.max(0, Math.min(100, Math.round(stored)));
+    }
+
+    function setItemProgress(itemId, percent) {
+      const items = currentPayload?.member_library?.items || [];
+      const item = items.find((entry) => Number(entry.id) === Number(itemId));
+      if (!item) return;
+      localStorage.setItem(progressKey(item), String(Math.max(0, Math.min(100, Number(percent) || 0))));
+      renderLibraryItems();
+    }
+
+    function formatDuration(seconds) {
+      const total = Number(seconds || 0);
+      if (!Number.isFinite(total) || total <= 0) return '';
+      const minutes = Math.round(total / 60);
+      if (minutes < 60) return `${minutes} min`;
+      const hours = Math.floor(minutes / 60);
+      const remainder = minutes % 60;
+      return `${hours}h${remainder ? ` ${remainder}m` : ''}`;
+    }
+
+    function metadataChips(item) {
+      return [
+        item.masechta,
+        item.perek ? `Perek ${item.perek}` : '',
+        item.mishnah_range ? `Mishnah ${item.mishnah_range}` : '',
+        item.class_date ? formatDate(item.class_date) : '',
+        item.duration_seconds ? formatDuration(item.duration_seconds) : '',
+        item.review_state === 'review_ready' ? 'Review ready' : '',
+      ].filter(Boolean);
+    }
+
+    function filteredItems(items) {
+      const query = searchTerm.toLowerCase();
+      return items.filter((item) => {
+        const progress = itemProgress(item);
+        const haystack = [
+          item.title,
+          item.description,
+          item.masechta,
+          item.perek,
+          item.mishnah_range,
+        ].join(' ').toLowerCase();
+        if (query && !haystack.includes(query)) return false;
+        if (activeFilter === 'continue') return progress > 0 && progress < 95;
+        if (activeFilter === 'completed') return progress >= 95;
+        if (activeFilter === 'review') return item.review_state === 'review_ready' || (item.assets || []).length > 0;
+        return true;
+      }).sort((a, b) => {
+        if (activeFilter === 'recent') return String(b.published_at || b.class_date || '').localeCompare(String(a.published_at || a.class_date || ''));
+        return String(b.class_date || b.published_at || '').localeCompare(String(a.class_date || a.published_at || ''));
+      });
+    }
+
+    function groupItems(items) {
+      if (!['masechta', 'perek'].includes(activeFilter)) return [{ title: '', items }];
+      const groups = new Map();
+      items.forEach((item) => {
+        const title = activeFilter === 'masechta'
+          ? (item.masechta || 'Unassigned Masechta')
+          : `${item.masechta || 'Unassigned'} / Perek ${item.perek || 'Unassigned'}`;
+        if (!groups.has(title)) groups.set(title, []);
+        groups.get(title).push(item);
+      });
+      return Array.from(groups.entries()).map(([title, groupItemsValue]) => ({ title, items: groupItemsValue }));
+    }
+
+    function renderFilterRail(items) {
+      const counts = {
+        all: items.length,
+        recent: items.length,
+        continue: items.filter((item) => {
+          const progress = itemProgress(item);
+          return progress > 0 && progress < 95;
+        }).length,
+        masechta: new Set(items.map((item) => item.masechta).filter(Boolean)).size,
+        perek: new Set(items.map((item) => `${item.masechta || ''}:${item.perek || ''}`).filter((value) => value !== ':')).size,
+        review: items.filter((item) => item.review_state === 'review_ready' || (item.assets || []).length > 0).length,
+        completed: items.filter((item) => itemProgress(item) >= 95).length,
+      };
+      filterRail.innerHTML = filters.map(([key, label]) => `
+        <button type="button" role="tab" aria-pressed="${activeFilter === key ? 'true' : 'false'}" onclick="setLibraryFilter('${key}')">${escapeHtml(label)} ${Number(counts[key] || 0)}</button>
+      `).join('');
+    }
+
+    function renderLibraryCard(item) {
+      const progress = itemProgress(item);
+      const chips = metadataChips(item);
+      return `
         <article class="library-card">
           <div class="media-frame">${mediaMarkup(item)}</div>
           <div class="card-body">
             <div>
               <h2 class="card-title">${escapeHtml(item.title)}</h2>
-              ${item.class_date ? `<div class="status">${escapeHtml(formatDate(item.class_date))}</div>` : ''}
+              ${chips.length ? `<p class="metadata-row">${chips.map((chip) => `<span class="metadata-chip">${escapeHtml(chip)}</span>`).join('')}</p>` : ''}
             </div>
             ${item.description ? `<p class="card-description">${escapeHtml(item.description)}</p>` : ''}
-            ${item.media_url ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener">Open Media</a>` : ''}
+            <div class="progress-shell" aria-label="Watch progress">
+              <div class="progress-bar" style="--progress:${progress}%"><span></span></div>
+              <div class="status">${progress}% complete</div>
+              <div class="progress-actions">
+                ${item.media_url ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener">Open Media</a>` : ''}
+                <button type="button" onclick="setItemProgress(${Number(item.id)}, 50)">Continue Watching</button>
+                <button type="button" onclick="setItemProgress(${Number(item.id)}, 100)">Mark Complete</button>
+              </div>
+            </div>
             ${(item.assets || []).length ? `
               <ul class="asset-list">
                 ${item.assets.map((asset) => `
@@ -361,7 +589,52 @@
             ` : ''}
           </div>
         </article>
+      `;
+    }
+
+    function renderLibraryItems() {
+      const items = currentPayload?.member_library?.items || [];
+      renderFilterRail(items);
+      const visibleItems = filteredItems(items);
+      if (!visibleItems.length) {
+        grid.className = 'library-grid';
+        grid.innerHTML = '<div class="empty-state">No published library items match this view.</div>';
+        return;
+      }
+      const groups = groupItems(visibleItems);
+      if (groups.length === 1 && !groups[0].title) {
+        grid.className = 'library-grid';
+        grid.innerHTML = groups[0].items.map(renderLibraryCard).join('');
+        return;
+      }
+      grid.className = 'library-results';
+      grid.innerHTML = groups.map((group) => `
+        <section class="library-group">
+          <h2 class="library-group-title">${escapeHtml(group.title)}</h2>
+          <div class="library-grid">${group.items.map(renderLibraryCard).join('')}</div>
+        </section>
       `).join('');
+    }
+
+    window.setLibraryFilter = function setLibraryFilter(key) {
+      activeFilter = filters.some(([filterKey]) => filterKey === key) ? key : 'all';
+      renderLibraryItems();
+    };
+
+    window.setItemProgress = setItemProgress;
+
+    function renderLibrary(payload) {
+      currentPayload = payload;
+      const access = payload.member_library?.access || {};
+      const classroom = payload.classroom || {};
+      memberMeta.textContent = access.member_label ? `${access.member_label} | ${String(access.tier || '').replace(/_/g, ' ')}` : 'Member library';
+      classroomStrip.classList.add('visible');
+      libraryToolbar.classList.add('visible');
+      classroomStrip.innerHTML = `
+        <p>Classroom: ${Number((classroom.calendar_items || []).length)} calendar item${Number((classroom.calendar_items || []).length) === 1 ? '' : 's'}, ${Number((classroom.threads || []).length)} Rabbi thread${Number((classroom.threads || []).length) === 1 ? '' : 's'}, ${Number((classroom.leaderboard || []).length)} leaderboard row${Number((classroom.leaderboard || []).length) === 1 ? '' : 's'}.</p>
+        <a href="/one-time-classroom?code=${encodeURIComponent(codeInput.value.trim())}">Open Classroom</a>
+      `;
+      renderLibraryItems();
     }
 
     async function loadLibrary(code) {
@@ -382,7 +655,9 @@
         statusEl.textContent = '';
         renderLibrary(payload);
       } catch (error) {
+        currentPayload = null;
         memberMeta.textContent = 'Access code required';
+        libraryToolbar.classList.remove('visible');
         grid.innerHTML = '';
         statusEl.textContent = error.message || 'Could not open library.';
         statusEl.className = 'status error';
@@ -394,6 +669,11 @@
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       loadLibrary(codeInput.value);
+    });
+
+    librarySearch.addEventListener('input', (event) => {
+      searchTerm = event.target.value || '';
+      renderLibraryItems();
     });
 
     const params = new URLSearchParams(window.location.search);

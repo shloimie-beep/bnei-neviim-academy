@@ -36,6 +36,50 @@ const VIDEO_HOST_DECISION_OPTIONS = [
 
 const RECORDING_PIPELINE_REQUIREMENT_ID = 'REQ-20260619-308';
 
+const SELECTED_VIDEO_HOST_PROVIDER = 'vimeo';
+
+const MANUAL_VIMEO_WORKFLOW_STEPS = [
+  'operator_selects_class_session',
+  'operator_pastes_vimeo_url',
+  'system_validates_vimeo_url',
+  'system_stores_vimeo_video_id',
+  'operator_assigns_learning_metadata',
+  'rabbi_or_admin_reviews',
+  'admin_approves',
+  'admin_publishes_to_member_library',
+  'member_library_displays_item',
+  'admin_can_unpublish_or_restore',
+];
+
+const AUTOMATED_VIMEO_UPLOAD_STATES = [
+  'disabled_feature_flag',
+  'needs_authenticated_vimeo_user',
+  'needs_account_owner_and_plan_readback',
+  'needs_upload_scope_and_quota_readback',
+  'needs_folder_privacy_embed_defaults',
+  'ready_for_operator_gated_upload_smoke',
+];
+
+const RECORDING_PUBLICATION_LIFECYCLE = [
+  'scheduled',
+  'meeting_created',
+  'live',
+  'ended',
+  'recording_processing',
+  'recording_ready',
+  'transcript_ready',
+  'summary_ready',
+  'privacy_review',
+  'rabbi_review',
+  'approved',
+  'vimeo_manual_or_automated_upload',
+  'vimeo_processing',
+  'playback_verified',
+  'member_library_publication',
+  'indexed',
+  'archived',
+];
+
 const RECORDING_PIPELINE_SECTIONS = [
   {
     key: 'recording_webhook_handling',
@@ -70,14 +114,14 @@ const RECORDING_PIPELINE_SECTIONS = [
   {
     key: 'manual_and_api_vimeo_modes',
     label: 'Manual And API Vimeo Modes',
-    status: 'needs_operator_decision',
-    result: 'Supports manual Vimeo ID entry and API-upload preview while leaving uploads disabled.',
+    status: 'manual_ready_api_disabled',
+    result: 'Manual Vimeo URL attachment and member-library publishing are usable with internal approval; API upload remains disabled behind setup.',
   },
   {
     key: 'publication_unpublish_retention',
     label: 'Publication, Unpublish, Deletion, Retention',
-    status: 'blocked_external_approval',
-    result: 'Blocks publish, unpublish, and deletion until approval, playback, metadata, transcript, and retention checks pass.',
+    status: 'approval_gated',
+    result: 'First-party publish/unpublish is explicit-approval gated; provider deletion remains blocked until playback, metadata, transcript, summary, and retention checks pass.',
   },
   {
     key: 'entitlement_watch_progress',
@@ -88,8 +132,8 @@ const RECORDING_PIPELINE_SECTIONS = [
   {
     key: 'release_live_smoke',
     label: 'Release And Live Smoke',
-    status: 'blocked_external_approval',
-    result: 'Deployment, provider writes, member visibility, and live smoke require operator approval.',
+    status: 'manual_smoke_ready',
+    result: 'Temporary-record member-library smoke can verify manual publication without uploading, sending, or inviting.',
   },
 ];
 
@@ -118,7 +162,13 @@ function getVideoHostingConfig(options = {}) {
     names: ['video-host-provider', 'video-hosting', 'vimeo'],
     fileNames: ['video-host-provider.txt', 'BNA_VIDEO_HOST_PROVIDER.txt', 'video-hosting.txt', 'vimeo.txt'],
     repoRoot,
-  }) || 'vimeo').trim().toLowerCase();
+  }) || SELECTED_VIDEO_HOST_PROVIDER).trim().toLowerCase();
+  const automatedUploadEnabled = /^(1|true|yes|enabled)$/i.test(String((options.automatedUploadEnabled ?? loadConfigValue({
+    envName: 'BNA_VIMEO_AUTOMATED_UPLOAD_ENABLED',
+    names: ['vimeo-automated-upload-enabled', 'video-hosting'],
+    fileNames: ['BNA_VIMEO_AUTOMATED_UPLOAD_ENABLED.txt', 'vimeo-automated-upload-enabled.txt'],
+    repoRoot,
+  })) || '').trim());
   return {
     vimeoToken,
     vimeoClientId,
@@ -136,6 +186,44 @@ function getVideoHostingConfig(options = {}) {
       fileNames: ['vimeo-plan.txt', 'VIMEO_PLAN.txt', 'vimeo.txt'],
       repoRoot,
     }) || '').trim(),
+    automatedUploadEnabled,
+    callbackUrl: String(options.callbackUrl || loadConfigValue({
+      envName: 'VIMEO_CALLBACK_URL',
+      names: ['vimeo-callback-url', 'video-hosting'],
+      fileNames: ['VIMEO_CALLBACK_URL.txt', 'vimeo-callback-url.txt'],
+      repoRoot,
+    }) || '').trim(),
+    uploadScope: String(options.uploadScope || loadConfigValue({
+      envName: 'VIMEO_UPLOAD_SCOPE',
+      names: ['vimeo-upload-scope', 'video-hosting'],
+      fileNames: ['VIMEO_UPLOAD_SCOPE.txt', 'vimeo-upload-scope.txt'],
+      repoRoot,
+    }) || '').trim(),
+    storageQuota: String(options.storageQuota || loadConfigValue({
+      envName: 'VIMEO_STORAGE_QUOTA',
+      names: ['vimeo-storage-quota', 'video-hosting'],
+      fileNames: ['VIMEO_STORAGE_QUOTA.txt', 'vimeo-storage-quota.txt'],
+      repoRoot,
+    }) || '').trim(),
+    folder: String(options.folder || options.vimeoFolder || loadConfigValue({
+      envName: 'VIMEO_FOLDER',
+      names: ['vimeo-folder', 'video-hosting'],
+      fileNames: ['VIMEO_FOLDER.txt', 'vimeo-folder.txt'],
+      repoRoot,
+    }) || '').trim(),
+    privacyDefault: String(options.privacyDefault || loadConfigValue({
+      envName: 'VIMEO_PRIVACY_DEFAULT',
+      names: ['vimeo-privacy-default', 'video-hosting'],
+      fileNames: ['VIMEO_PRIVACY_DEFAULT.txt', 'vimeo-privacy-default.txt'],
+      repoRoot,
+    }) || '').trim(),
+    allowedEmbedDomains: String(options.allowedEmbedDomains || loadConfigValue({
+      envName: 'VIMEO_ALLOWED_EMBED_DOMAINS',
+      names: ['vimeo-allowed-embed-domains', 'video-hosting'],
+      fileNames: ['VIMEO_ALLOWED_EMBED_DOMAINS.txt', 'vimeo-allowed-embed-domains.txt'],
+      repoRoot,
+    }) || '').split(',').map((item) => item.trim()).filter(Boolean),
+    lastVerificationAt: String(options.lastVerificationAt || '').trim(),
   };
 }
 
@@ -160,6 +248,199 @@ function parseVimeoId(value = '') {
   const match = text.match(/(?:vimeo\.com\/(?:video\/)?|player\.vimeo\.com\/video\/)(\d{5,})/i)
     || text.match(/\b(\d{5,})\b/);
   return match ? match[1] : '';
+}
+
+function parseVimeoUrl(value = '') {
+  const url = safeText(value);
+  if (!url) return { ok: false, url: '', vimeo_id: '', embed_url: '', error: 'missing_vimeo_url' };
+  const vimeoId = parseVimeoId(url);
+  const isVimeoUrl = /(?:^https?:\/\/)?(?:www\.)?(?:player\.)?vimeo\.com\//i.test(url);
+  if (!vimeoId || !isVimeoUrl) {
+    return { ok: false, url, vimeo_id: '', embed_url: '', error: 'not_a_valid_vimeo_url' };
+  }
+  return {
+    ok: true,
+    url,
+    vimeo_id: vimeoId,
+    embed_url: `https://player.vimeo.com/video/${vimeoId}`,
+    error: '',
+  };
+}
+
+function normalizeTranscriptState(value = '') {
+  const normalized = safeText(value, 'needs_review').toLowerCase().replace(/[\s-]+/g, '_');
+  if (['missing', 'draft', 'needs_review', 'review', 'approved', 'published'].includes(normalized)) return normalized;
+  return 'needs_review';
+}
+
+function normalizeLearningMetadata(payload = {}) {
+  const metadata = payload.metadata && typeof payload.metadata === 'object' ? payload.metadata : {};
+  return {
+    masechta: safeText(payload.masechta || metadata.masechta),
+    perek: safeText(payload.perek || metadata.perek),
+    mishnah_range: safeText(payload.mishnah_range || payload.mishnahRange || metadata.mishnah_range || metadata.mishnahRange || payload.mishnah || metadata.mishnah),
+    class_date: safeText(payload.class_date || payload.classDate || metadata.class_date || metadata.classDate),
+    title: safeText(payload.title || metadata.title, 'Untitled One Time class'),
+    description: safeText(payload.description || payload.summary || metadata.description || metadata.summary),
+    thumbnail_url: safeText(payload.thumbnail_url || payload.thumbnailUrl || metadata.thumbnail_url || metadata.thumbnailUrl),
+    duration_seconds: safeNumber(payload.duration_seconds || payload.durationSeconds || metadata.duration_seconds || metadata.durationSeconds, 0) || null,
+    transcript_state: normalizeTranscriptState(payload.transcript_state || payload.transcriptStatus || payload.transcript_status || metadata.transcript_state || metadata.transcriptStatus),
+    visibility: safeText(payload.library_visibility || payload.visibility || metadata.visibility, 'tier'),
+    required_tier: safeText(payload.required_tier || payload.requiredTier || metadata.required_tier || metadata.requiredTier, 'library_only'),
+  };
+}
+
+function buildManualVimeoWorkflow(payload = {}, options = {}) {
+  const parsed = parseVimeoUrl(payload.vimeo_url || payload.vimeoUrl || payload.media_url || payload.mediaUrl || payload.url);
+  const metadata = normalizeLearningMetadata(payload);
+  const missingMetadata = ['masechta', 'perek', 'mishnah_range', 'title']
+    .filter((key) => !safeText(metadata[key]));
+  const hasReview = ['review', 'approved', 'published'].includes(metadata.transcript_state)
+    || payload.review_state === 'approved'
+    || payload.reviewState === 'approved'
+    || payload.rabbi_reviewed === true
+    || payload.rabbiReviewed === true;
+  const readyForApproval = parsed.ok && missingMetadata.length === 0;
+  return {
+    provider: 'vimeo',
+    requirement_id: RECORDING_PIPELINE_REQUIREMENT_ID,
+    mode: 'manual_vimeo',
+    selected_provider: SELECTED_VIDEO_HOST_PROVIDER,
+    preview_only: true,
+    external_write_performed: false,
+    production_mutation_performed: false,
+    status: parsed.ok ? (readyForApproval ? 'manual_vimeo_ready' : 'needs_learning_metadata') : parsed.error,
+    workflow_steps: MANUAL_VIMEO_WORKFLOW_STEPS,
+    url_validation: parsed,
+    vimeo_metadata_readback: {
+      attempted: false,
+      available: Boolean(metadata.title || metadata.thumbnail_url || metadata.duration_seconds),
+      source: 'manual_or_mocked_metadata',
+      title: metadata.title,
+      description: metadata.description,
+      thumbnail_url: metadata.thumbnail_url,
+      duration_seconds: metadata.duration_seconds,
+    },
+    assignment: metadata,
+    missing_metadata: missingMetadata,
+    review: {
+      rabbi_reviewed: hasReview,
+      admin_approval_required: true,
+      approval_phrase: 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING',
+    },
+    member_library: {
+      first_party_publish_route_enabled: readyForApproval,
+      publish_requires_approval_phrase: true,
+      unpublish_route_enabled: true,
+      rollback_route_enabled: true,
+      provider_publish_enabled: false,
+      notification_send_enabled: false,
+    },
+    next_action: readyForApproval
+      ? 'Approve the package, publish to the first-party member library with the explicit approval phrase, then smoke the access-code view.'
+      : 'Paste a valid Vimeo URL and complete Masechta, Perek, Mishnah range, and title before approval.',
+    blockers: parsed.ok ? missingMetadata.map((field) => `missing_${field}`) : [parsed.error],
+  };
+}
+
+function buildVimeoAutomatedUploadReadiness(options = {}) {
+  const config = options.config || getVideoHostingConfig(options);
+  const tokenPresent = Boolean(config.vimeoToken);
+  const appCredentialsPresent = Boolean(config.vimeoClientId && config.vimeoClientSecret);
+  const uploadCapabilityKnown = Boolean(config.uploadScope || config.storageQuota || config.vimeoPlan);
+  const setup = {
+    authenticated_vimeo_user: tokenPresent ? 'token_present_user_readback_pending' : 'missing_user_level_access_token',
+    account_owner: config.accountOwner || 'unknown',
+    plan: config.vimeoPlan || 'unknown',
+    upload_scope: config.uploadScope || 'unknown',
+    upload_capability: uploadCapabilityKnown ? 'needs_readback' : 'unknown',
+    storage_quota: config.storageQuota || 'unknown',
+    folder: config.folder || 'not_selected',
+    privacy_default: config.privacyDefault || 'not_selected',
+    allowed_embed_domains: config.allowedEmbedDomains || [],
+    callback_url: config.callbackUrl || 'not_configured',
+    token_state: tokenPresent ? 'present_but_user_capability_unverified' : 'missing_user_token',
+    app_credentials_state: appCredentialsPresent ? 'client_credentials_present' : 'client_credentials_missing',
+    last_verification: config.lastVerificationAt || null,
+  };
+  return {
+    provider: 'vimeo',
+    requirement_id: RECORDING_PIPELINE_REQUIREMENT_ID,
+    mode: 'automated_vimeo_upload',
+    selected_provider: SELECTED_VIDEO_HOST_PROVIDER,
+    preview_only: true,
+    external_write_performed: false,
+    production_mutation_performed: false,
+    feature_flag_enabled: Boolean(config.automatedUploadEnabled),
+    status: config.automatedUploadEnabled ? 'operator_gated_readiness_check_required' : 'disabled_feature_flag',
+    api_upload_enabled: false,
+    oauth_or_token_install_flow_present: true,
+    upload_job_model_present: true,
+    idempotency_key_required: true,
+    resumable_upload_planned: true,
+    retry_state_supported: true,
+    transcode_polling_supported: true,
+    playback_verification_required: true,
+    embed_verification_required: true,
+    audit_trail_required: true,
+    setup,
+    upload_states: AUTOMATED_VIMEO_UPLOAD_STATES,
+    disabled_reason: 'Automated Vimeo upload requires explicit authorization plus a user-level token, account owner, plan/quota, folder/privacy/embed defaults, and a focused upload smoke.',
+  };
+}
+
+function normalizeRecordingLifecycleState(value = '') {
+  const normalized = safeText(value, 'scheduled').toLowerCase().replace(/[\s-]+/g, '_');
+  return RECORDING_PUBLICATION_LIFECYCLE.includes(normalized) ? normalized : 'scheduled';
+}
+
+function buildRecordingPublicationLifecycle(payload = {}) {
+  const currentState = normalizeRecordingLifecycleState(payload.state || payload.status || payload.current_state || payload.currentState);
+  const currentIndex = RECORDING_PUBLICATION_LIFECYCLE.indexOf(currentState);
+  const checks = buildPublicationReadinessChecks(payload);
+  return {
+    provider: 'video_hosting',
+    requirement_id: RECORDING_PIPELINE_REQUIREMENT_ID,
+    preview_only: true,
+    external_write_performed: false,
+    production_mutation_performed: false,
+    current_state: currentState,
+    states: RECORDING_PUBLICATION_LIFECYCLE.map((state, index) => ({
+      state,
+      reached: index <= currentIndex,
+      current: index === currentIndex,
+      requires_manual_review: ['privacy_review', 'rabbi_review', 'approved', 'member_library_publication'].includes(state),
+    })),
+    supports: {
+      multiple_recording_files: true,
+      preferred_layout: true,
+      audio_only_file: true,
+      transcript_file: true,
+      summary: true,
+      retries: true,
+      idempotency: true,
+      manual_reprocessing: true,
+      review_queue: true,
+      correction: true,
+      rejection: true,
+      approval: true,
+      publication: true,
+      unpublishing: true,
+      deletion_policy: true,
+      retention_policy: true,
+    },
+    webhook_publication_guardrail: 'Never publish directly from a webhook.',
+    source_delete_requirements: {
+      vimeo_asset_exists: checks.correct_vimeo_asset_exists,
+      vimeo_processing_completed: checks.processing_completed,
+      playback_verified: checks.playback_verified,
+      metadata_saved: checks.metadata_saved,
+      transcript_saved: Boolean(safeText(payload.transcript || payload.transcript_text || payload.transcriptText)),
+      summary_saved: Boolean(safeText(payload.summary || payload.summary_text || payload.summaryText)),
+      retention_policy_permits_deletion: checks.retention_permits_deletion,
+      source_delete_allowed: Object.values(checks).every(Boolean),
+    },
+  };
 }
 
 function normalizeRecordingFile(file = {}, index = 0) {
@@ -220,14 +501,17 @@ function buildPublicationReadinessChecks(payload = {}) {
 function getVideoHostingReadiness(options = {}) {
   const config = options.config || getVideoHostingConfig(options);
   const blockers = [];
-  if (!config.providerDecision) blockers.push('Vimeo is the default candidate, but the video host decision still needs explicit owner confirmation before uploads.');
+  if (!config.providerDecision) blockers.push('Vimeo is selected for One Time, but runtime config did not return a provider value.');
   if (config.providerDecision === 'vimeo' && !config.vimeoToken) blockers.push('Vimeo access token is not configured server-side.');
   if (config.providerDecision === 'vimeo' && !config.vimeoPlan) blockers.push('Confirm the current Vimeo plan/account supports API uploads and intended embed controls.');
   if (config.accountOwner === 'unknown') blockers.push('Video-host account owner/admin must be documented before upload or publish actions.');
   const manualFallbackReady = config.providerDecision === 'vimeo' || !config.providerDecision;
+  const automatedUpload = buildVimeoAutomatedUploadReadiness({ ...options, config });
   return {
     provider: 'video_hosting',
     label: 'Vimeo / Video Hosting',
+    selectedProviderDecision: SELECTED_VIDEO_HOST_PROVIDER,
+    decisionStatus: 'vimeo_selected_for_one_time',
     configured: Boolean(config.providerDecision && (config.providerDecision !== 'vimeo' || config.vimeoToken)),
     status: config.providerDecision === 'vimeo' && !config.vimeoToken
       ? 'manual_upload_required'
@@ -246,12 +530,16 @@ function getVideoHostingReadiness(options = {}) {
       planConfigured: Boolean(config.vimeoPlan),
       manualUploadFallbackReady: manualFallbackReady,
       apiUploadStatus: config.vimeoToken && config.vimeoPlan ? 'needs_upload_access_check' : 'manual_only',
+      automatedUploadEnabled: automatedUpload.feature_flag_enabled,
     },
     manualFallback: {
       ready: manualFallbackReady,
-      library_item_status: 'waiting_for_vimeo_url',
-      next_step: 'Manually upload in Vimeo, paste the Vimeo URL, then publish after approval.',
+      mode: 'manual_vimeo_url_attach',
+      library_item_status: 'usable_now_with_internal_approval',
+      workflow_steps: MANUAL_VIMEO_WORKFLOW_STEPS,
+      next_step: 'Manually upload/select the Vimeo video, paste the Vimeo URL, complete learning metadata, approve, then publish to the first-party member library.',
     },
+    automatedUpload,
     lastCheckedAt: new Date().toISOString(),
   };
 }
@@ -285,11 +573,12 @@ function buildRecordingPipelinePreview(payload = {}, options = {}) {
   const transcriptText = safeText(payload.transcript || payload.transcript_text || payload.transcriptText || classSession.transcript_text || contentJob.transcript_text);
   const summaryText = safeText(payload.summary || payload.summary_text || payload.summaryText || classSession.summary || contentJob.summary);
   const sourceId = safeText(payload.source_recording_id || payload.sourceRecordingId || payload.zoom_recording_id || payload.zoomRecordingId || classSession.id || contentJob.id);
+  const vimeoReference = payload.vimeo_url || payload.vimeoUrl || payload.media_url || payload.mediaUrl || classSession.media_url || classSession.vimeo_id || '';
   const idempotencySource = [
     'recording_pipeline',
     sourceId || 'unknown_source',
     selectedFile?.local_file_ref || 'no_file',
-    parseVimeoId(payload.vimeo_url || payload.media_url || classSession.media_url || classSession.vimeo_id || ''),
+    parseVimeoId(vimeoReference),
   ].join(':');
   const publicationChecks = buildPublicationReadinessChecks({
     ...payload,
@@ -297,23 +586,44 @@ function buildRecordingPipelinePreview(payload = {}, options = {}) {
     summary: summaryText,
     title: classSession.title || contentJob.title || payload.title,
   });
+  const manualWorkflow = buildManualVimeoWorkflow({
+    ...payload,
+    vimeo_url: vimeoReference,
+    title: classSession.title || contentJob.title || payload.title,
+    description: classSession.description || contentJob.description || payload.description || summaryText,
+    transcript_state: classSession.transcript_status || payload.transcript_state || payload.transcriptStatus,
+  }, { config });
+  const automatedUpload = buildVimeoAutomatedUploadReadiness({ ...options, config });
+  const lifecycle = buildRecordingPublicationLifecycle({
+    ...payload,
+    transcript: transcriptText,
+    summary: summaryText,
+    vimeo_url: vimeoReference,
+    title: classSession.title || contentJob.title || payload.title,
+  });
+  const manualReady = manualWorkflow.status === 'manual_vimeo_ready';
   return {
     provider: 'video_hosting',
     requirement_id: RECORDING_PIPELINE_REQUIREMENT_ID,
-    status: 'needs_operator_decision',
+    status: manualReady ? 'manual_vimeo_ready' : 'manual_vimeo_setup_needed',
     preview_only: true,
     external_write_performed: false,
     production_mutation_performed: false,
     readiness,
+    manual_vimeo_workflow: manualWorkflow,
+    automated_upload_readiness: automatedUpload,
+    publication_lifecycle: lifecycle,
     sections: RECORDING_PIPELINE_SECTIONS,
     gates: {
       live_webhook_accept_enabled: false,
       provider_asset_fetch_enabled: false,
+      manual_vimeo_attach_enabled: true,
+      member_library_publish_route_enabled: true,
+      member_library_unpublish_route_enabled: true,
       api_upload_enabled: false,
-      vimeo_publish_enabled: false,
-      unpublish_enabled: false,
+      provider_publish_enabled: false,
       delete_enabled: false,
-      member_visibility_enabled: false,
+      member_visibility_enabled: true,
       notification_send_enabled: false,
     },
     summary: {
@@ -322,7 +632,9 @@ function buildRecordingPipelinePreview(payload = {}, options = {}) {
       audio_only_files_seen: files.filter((file) => file.audio_only).length,
       transcript_present: Boolean(transcriptText),
       summary_present: Boolean(summaryText),
-      vimeo_id_present: Boolean(parseVimeoId(payload.vimeo_url || payload.media_url || classSession.media_url || classSession.vimeo_id || '')),
+      vimeo_id_present: Boolean(parseVimeoId(vimeoReference)),
+      manual_vimeo_ready: manualReady,
+      automated_upload_enabled: automatedUpload.api_upload_enabled,
       publication_checks_passed: Object.values(publicationChecks).filter(Boolean).length,
       publication_checks_total: Object.keys(publicationChecks).length,
     },
@@ -353,9 +665,9 @@ function buildRecordingPipelinePreview(payload = {}, options = {}) {
     review_flow: {
       review_state: safeText(payload.review_state || payload.reviewState || 'needs_review'),
       correction_enabled: true,
-      approval_enabled: false,
+      approval_enabled: true,
       rejection_enabled: false,
-      approval_blocker: 'Publication approval remains no-write until operator release/live-smoke scope is approved.',
+      approval_blocker: 'Approval requires the explicit first-party member-library approval phrase; provider uploads and sends stay disabled.',
     },
     publication: buildVimeoPublicationPreview({
       ...payload,
@@ -368,14 +680,14 @@ function buildRecordingPipelinePreview(payload = {}, options = {}) {
     retention: buildRecordingRetentionPreview(payload).retention,
     entitlement_watch_progress: {
       required_tier: safeText(payload.required_tier || payload.requiredTier || 'library_only'),
-      member_visibility_enabled: false,
+      member_visibility_enabled: true,
       watch_progress_write_enabled: false,
-      blocker: 'Member visibility and watch-progress writes require approved publication and live smoke.',
+      blocker: 'First-party member visibility is allowed only after approved publication; watch-progress writes stay future-scoped.',
     },
     blockers: [
       ...readiness.blockers,
       'Never publish directly from a webhook; operator/Rabbi review and exact approval are required.',
-      'Real Vimeo upload/publish/unpublish/delete, member visibility, notifications, and provider writes require explicit operator approval and live smoke.',
+      'Real Vimeo upload, provider publish/unpublish/delete, notifications, and external writes require explicit operator approval and live smoke.',
     ],
   };
 }
@@ -385,6 +697,13 @@ function buildVimeoPublicationPreview(payload = {}, options = {}) {
   const readiness = getVideoHostingReadiness({ ...options, config });
   const vimeoId = parseVimeoId(payload.vimeo_url || payload.vimeoUrl || payload.media_url || payload.mediaUrl || payload.vimeo_id || payload.vimeoId);
   const checks = buildPublicationReadinessChecks(payload);
+  const readyForMemberLibrary = Boolean(
+    vimeoId
+    && checks.processing_completed
+    && checks.playback_verified
+    && checks.metadata_saved
+    && checks.transcript_summary_saved
+  );
   return {
     provider: 'video_hosting',
     requirement_id: RECORDING_PIPELINE_REQUIREMENT_ID,
@@ -393,16 +712,21 @@ function buildVimeoPublicationPreview(payload = {}, options = {}) {
     production_mutation_performed: false,
     readiness,
     publication: {
-      status: 'needs_operator_decision',
+      status: readyForMemberLibrary ? 'ready_for_approval_gated_member_library_publish' : 'needs_publication_readiness',
       mode: vimeoId ? 'manual_vimeo_id_review' : (config.vimeoToken ? 'api_upload_preview' : 'manual_upload_required'),
       vimeo_id_present: Boolean(vimeoId),
       checks,
-      publish_enabled: false,
-      unpublish_enabled: false,
+      first_party_publish_route_enabled: true,
+      member_library_publish_enabled: readyForMemberLibrary,
+      publish_requires_approval_phrase: true,
+      unpublish_enabled: true,
+      provider_publish_enabled: false,
       delete_enabled: false,
-      member_visibility_enabled: false,
+      member_visibility_enabled: readyForMemberLibrary,
       required_confirmation: 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING',
-      blocker: 'Publication, unpublishing, deletion, and member visibility require approved asset, playback, metadata, transcript/summary, retention checks, release, and live smoke.',
+      blocker: readyForMemberLibrary
+        ? 'Use the class package manager with the explicit approval phrase for first-party member-library publish. Provider-side Vimeo publish/delete remains disabled.'
+        : 'Save Vimeo asset, playback verification, metadata, transcript, and summary before first-party member-library publishing.',
     },
   };
 }
@@ -449,15 +773,23 @@ function safeVideoHostingError(error, config = {}) {
 }
 
 module.exports = {
+  AUTOMATED_VIMEO_UPLOAD_STATES,
+  MANUAL_VIMEO_WORKFLOW_STEPS,
+  RECORDING_PUBLICATION_LIFECYCLE,
   RECORDING_PIPELINE_REQUIREMENT_ID,
   RECORDING_PIPELINE_SECTIONS,
+  SELECTED_VIDEO_HOST_PROVIDER,
   VIDEO_HOST_DECISION_OPTIONS,
   assertVideoUploadApproved,
+  buildManualVimeoWorkflow,
+  buildRecordingPublicationLifecycle,
   buildRecordingPipelinePreview,
   buildRecordingRetentionPreview,
+  buildVimeoAutomatedUploadReadiness,
   buildVimeoPublicationPreview,
   buildVideoLibraryDraft,
   getVideoHostingConfig,
   getVideoHostingReadiness,
+  parseVimeoUrl,
   safeVideoHostingError,
 };

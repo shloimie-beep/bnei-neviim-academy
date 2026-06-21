@@ -22,6 +22,10 @@ test('One Time class sessions are the package anchor with additive publishing co
     'media_url',
     'vimeo_id',
     'thumbnail_url',
+    'masechta',
+    'perek',
+    'mishnah_range',
+    'duration_seconds',
     'transcript_status',
     'transcript_notes',
     'source_sheet_draft',
@@ -114,6 +118,10 @@ test('Operations UI exposes class package management without external upload or 
   assert.match(operationsHtml, /function renderOneTimeClassManagerPanel/);
   assert.match(operationsHtml, /Class Package Manager/);
   assert.match(operationsHtml, /Vimeo\/manual hosted URL/);
+  assert.match(operationsHtml, /name="masechta"/);
+  assert.match(operationsHtml, /name="perek"/);
+  assert.match(operationsHtml, /name="mishnah_range"/);
+  assert.match(operationsHtml, /name="duration_seconds"/);
   assert.match(operationsHtml, /APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING/);
   assert.match(operationsHtml, /destination.*member_library/s);
   const manager = sliceBetween(operationsHtml, 'function renderOneTimeClassManagerPanel', 'function renderOneTimeContentLibraryPanel');
@@ -124,6 +132,16 @@ test('Public member page uses the safe access-code API and does not expose admin
   assert.match(memberLibraryHtml, /One Time Member Library/);
   assert.match(memberLibraryHtml, /\/api\/member-library\?code=/);
   assert.match(memberLibraryHtml, /player\.vimeo\.com\/video/);
+  assert.match(memberLibraryHtml, /filter-rail/);
+  assert.match(memberLibraryHtml, /Recently Added/);
+  assert.match(memberLibraryHtml, /Continue Watching/);
+  assert.match(memberLibraryHtml, /Masechta/);
+  assert.match(memberLibraryHtml, /Perek/);
+  assert.match(memberLibraryHtml, /Review/);
+  assert.match(memberLibraryHtml, /Completed/);
+  assert.match(memberLibraryHtml, /metadata-chip/);
+  assert.match(memberLibraryHtml, /watch_progress_percent/);
+  assert.match(memberLibraryHtml, /setItemProgress/);
   assert.match(memberLibraryHtml, /Open Media/);
   assert.match(memberLibraryHtml, /asset\.file_url/);
   assert.doesNotMatch(memberLibraryHtml, /approval_flag|approved_by|rollback_metadata|transcript_notes|private_admin_only|package_status|bna_students|goal board|accounting/i);

@@ -13,6 +13,11 @@ ALTER TABLE bna_access_grants
   ADD CONSTRAINT bna_access_grants_tier_key_check
   CHECK (tier_key IN ('library_only', 'live_library', 'library_live_low_touch', 'interactive_zoom', 'vip_high_touch'));
 
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS masechta TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS perek TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS mishnah_range TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
+
 CREATE TABLE IF NOT EXISTS bna_product_programs (
   id BIGSERIAL PRIMARY KEY,
   project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,

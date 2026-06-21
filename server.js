@@ -13869,6 +13869,10 @@ ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS media_provider TEXT DEFA
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS media_url TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS vimeo_id TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS thumbnail_url TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS masechta TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS perek TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS mishnah_range TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_status TEXT DEFAULT 'draft';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_notes TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS source_sheet_draft TEXT;
@@ -25203,6 +25207,10 @@ function oneTimeClassSessionView(row = {}) {
     media_url: mediaUrl || '',
     vimeo_id: row.vimeo_id || parseVimeoId(mediaUrl),
     thumbnail_url: row.thumbnail_url || '',
+    masechta: row.masechta || '',
+    perek: row.perek || '',
+    mishnah_range: row.mishnah_range || '',
+    duration_seconds: row.duration_seconds ? Number(row.duration_seconds) : null,
     transcript_text: row.transcript_text || '',
     transcript_status: normalizeOneTimeTranscriptStatus(row.transcript_status),
     transcript_notes: row.transcript_notes || '',
@@ -25295,6 +25303,10 @@ function buildOneTimeClassPackage(classSession, assets = [], libraryItems = []) 
     media_url: session.media_url,
     vimeo_id: session.vimeo_id,
     thumbnail_url: session.thumbnail_url,
+    masechta: session.masechta,
+    perek: session.perek,
+    mishnah_range: session.mishnah_range,
+    duration_seconds: session.duration_seconds,
     transcript: {
       status: session.transcript_status,
       text: session.transcript_text,
@@ -25332,6 +25344,10 @@ function buildMemberLibraryItemSnapshot(packageView = {}) {
     media_url: packageView.media_url || '',
     vimeo_id: packageView.vimeo_id || '',
     thumbnail_url: packageView.thumbnail_url || '',
+    masechta: packageView.masechta || '',
+    perek: packageView.perek || '',
+    mishnah_range: packageView.mishnah_range || '',
+    duration_seconds: packageView.duration_seconds || null,
     assets: safeAssets,
     source_sheet_draft: packageView.source_sheet_draft || '',
     transcript_status: packageView.transcript?.status || 'draft',
@@ -25352,6 +25368,13 @@ function oneTimeMemberLibraryPublicView(row = {}) {
     media_url: item.media_url || snapshot.media_url || '',
     vimeo_id: item.vimeo_id || snapshot.vimeo_id || '',
     thumbnail_url: item.thumbnail_url || snapshot.thumbnail_url || '',
+    masechta: snapshot.masechta || '',
+    perek: snapshot.perek || '',
+    mishnah_range: snapshot.mishnah_range || '',
+    duration_seconds: snapshot.duration_seconds || null,
+    watch_progress_seconds: 0,
+    watch_progress_percent: 0,
+    review_state: snapshot.transcript_status === 'approved' ? 'review_ready' : 'needs_review',
     assets: assets
       .filter((asset) => asset && asset.status !== 'archived')
       .filter((asset) => ['worksheet', 'source_sheet', 'example', 'other'].includes(asset.asset_type))
@@ -67475,13 +67498,15 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
     const thumbnailUrl = oneTimeOptionalUrl(body.thumbnail_url || body.thumbnailUrl || '', 'thumbnail_url');
     const mediaProvider = normalizeOneTimeMediaProvider(mediaUrl, body.media_provider || body.mediaProvider);
     const vimeoId = limitText(body.vimeo_id || body.vimeoId || parseVimeoId(mediaUrl), 80) || null;
+    if (mediaProvider === 'vimeo' && mediaUrl && !vimeoId) return res.status(400).json({ error: 'A valid Vimeo URL or Vimeo ID is required for Vimeo media.' });
     const actor = oneTimeActor(req, body);
     const inserted = (await pool.query(
       `INSERT INTO bna_class_sessions (
          project_id, class_date, title, description, summary, media_provider, media_url,
-         vimeo_id, thumbnail_url, transcript_text, transcript_status, transcript_notes,
+         vimeo_id, thumbnail_url, masechta, perek, mishnah_range, duration_seconds,
+         transcript_text, transcript_status, transcript_notes,
          source_sheet_draft, package_status, updated_by, updated_at
-       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
+       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULLIF($13, 0), $14, $15, $16, $17, $18, $19, NOW())
        RETURNING *`,
       [
         project.id,
@@ -67493,6 +67518,10 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
         mediaUrl,
         vimeoId,
         thumbnailUrl,
+        limitText(body.masechta || '', 120) || null,
+        limitText(body.perek || '', 80) || null,
+        limitText(body.mishnah_range || body.mishnahRange || '', 120) || null,
+        Math.max(0, Number(body.duration_seconds || body.durationSeconds || 0) || 0),
         oneTimeLongText(body.transcript_text || body.transcript || '', 60000) || null,
         normalizeOneTimeTranscriptStatus(body.transcript_status || body.transcriptStatus || 'draft'),
         oneTimeLongText(body.transcript_notes || body.transcriptNotes || '', 8000) || null,
@@ -67544,6 +67573,10 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
     if (body.description !== undefined) setField('description', oneTimeLongText(body.description, 5000) || null);
     if (body.summary !== undefined) setField('summary', oneTimeLongText(body.summary, 5000) || null);
     if (body.thumbnail_url !== undefined || body.thumbnailUrl !== undefined) setField('thumbnail_url', oneTimeOptionalUrl(body.thumbnail_url || body.thumbnailUrl || '', 'thumbnail_url'));
+    if (body.masechta !== undefined) setField('masechta', limitText(body.masechta || '', 120) || null);
+    if (body.perek !== undefined) setField('perek', limitText(body.perek || '', 80) || null);
+    if (body.mishnah_range !== undefined || body.mishnahRange !== undefined) setField('mishnah_range', limitText(body.mishnah_range || body.mishnahRange || '', 120) || null);
+    if (body.duration_seconds !== undefined || body.durationSeconds !== undefined) setField('duration_seconds', Math.max(0, Number(body.duration_seconds || body.durationSeconds || 0) || 0) || null);
     if (body.transcript_text !== undefined || body.transcript !== undefined) setField('transcript_text', oneTimeLongText(body.transcript_text || body.transcript || '', 60000) || null);
     if (body.transcript_status !== undefined || body.transcriptStatus !== undefined) setField('transcript_status', normalizeOneTimeTranscriptStatus(body.transcript_status || body.transcriptStatus));
     if (body.transcript_notes !== undefined || body.transcriptNotes !== undefined) setField('transcript_notes', oneTimeLongText(body.transcript_notes || body.transcriptNotes || '', 8000) || null);
@@ -67554,9 +67587,11 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
         ? oneTimeOptionalUrl(body.media_url || body.mediaUrl || body.source_media_url || '', 'media_url')
         : existing.media_url || existing.source_media_url || null;
       const mediaProvider = normalizeOneTimeMediaProvider(mediaUrl, body.media_provider || body.mediaProvider || existing.media_provider);
+      const vimeoId = limitText(body.vimeo_id || body.vimeoId || parseVimeoId(mediaUrl), 80) || null;
+      if (mediaProvider === 'vimeo' && mediaUrl && !vimeoId) return res.status(400).json({ error: 'A valid Vimeo URL or Vimeo ID is required for Vimeo media.' });
       setField('media_url', mediaUrl);
       setField('media_provider', mediaProvider);
-      setField('vimeo_id', limitText(body.vimeo_id || body.vimeoId || parseVimeoId(mediaUrl), 80) || null);
+      setField('vimeo_id', vimeoId);
     }
     setField('updated_by', oneTimeActor(req, body));
     fields.push('updated_at = NOW()');
@@ -67669,15 +67704,29 @@ app.post('/api/bna/one-time/classes/:id/package-preview', requireAdmin, async (r
     const assets = await getOneTimeAssetsForClass(session.id);
     const libraryItems = await getOneTimeLibraryItemsForClass(session.id);
     const packageView = buildOneTimeClassPackage(session, assets, libraryItems);
+    const recordingPipeline = videoHostingIntegration.buildRecordingPipelinePreview({
+      class_session: packageView.class_session,
+      vimeo_url: packageView.media_url || packageView.vimeo_id || '',
+      metadata: {
+        masechta: packageView.masechta,
+        perek: packageView.perek,
+        mishnah_range: packageView.mishnah_range,
+      },
+      transcript: packageView.transcript?.text || '',
+      summary: packageView.description || '',
+      processing_completed: Boolean(packageView.vimeo_id || packageView.media_url),
+      playback_verified: Boolean(packageView.vimeo_id || packageView.media_url),
+      retention_permits_deletion: false,
+    }, { config: videoHostingRuntimeConfig });
     const event = await logOneTimePublishEvent({
       projectId: project.id,
       classSessionId: session.id,
       action: 'preview',
       actor: oneTimeActor(req, body),
-      afterState: { package_preview: packageView },
+      afterState: { package_preview: packageView, recording_pipeline: recordingPipeline },
       notes: 'Admin package preview only; no member-library publish ran.',
     });
-    res.json({ success: true, package: packageView, event });
+    res.json({ success: true, package: packageView, recording_pipeline: recordingPipeline, event });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
