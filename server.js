@@ -73631,13 +73631,13 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   const normalizedTaskView = String(task_view || '').trim().toLowerCase();
   const normalizedDecisionView = String(decision_view || '').trim().toLowerCase();
   const ownerTextSql = `LOWER(COALESCE(assigned_to, '') || ' ' || COALESCE(decision_owner, '') || ' ' || COALESCE(waiting_on, ''))`;
-  const scopeTextSql = `LOWER(COALESCE(project_key, '') || ' ' || COALESCE(project_name, '') || ' ' || COALESCE(project_short_name, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(display_title, '') || ' ' || COALESCE(summary, '') || ' ' || COALESCE(notes, '') || ' ' || COALESCE(raw_message, '') || ' ' || COALESCE(original_raw_message, ''))`;
+  const scopeTextSql = `LOWER(COALESCE(resolved_project_key, '') || ' ' || COALESCE(resolved_project_name, '') || ' ' || COALESCE(resolved_project_short_name, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(display_title, '') || ' ' || COALESCE(summary, '') || ' ' || COALESCE(notes, '') || ' ' || COALESCE(raw_message, '') || ' ' || COALESCE(original_raw_message, ''))`;
   const archivedSql = `(COALESCE(stage, '') IN ('archive', 'archived') OR archived_at IS NOT NULL OR duplicate_archived_at IS NOT NULL OR decision_hidden_at IS NOT NULL)`;
   const taskViewWhere = {
     mine: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
     my_tasks: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
-    one_time: `(status_bucket <> 'done' AND (project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
-    one_time_tasks: `(status_bucket <> 'done' AND (project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
+    one_time: `(status_bucket <> 'done' AND (resolved_project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
+    one_time_tasks: `(status_bucket <> 'done' AND (resolved_project_key = 'one_time_mishnah_class' OR ${scopeTextSql} ~ '(one[ _-]?time|mishn|rabbi|scheller|sheller)'))`,
     codex_queue: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
     codex_agent_work: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
     blocked: `status_bucket = 'pending'`,
@@ -73674,8 +73674,11 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
       SELECT
         t.*,
         p.project_key,
+        p.project_key AS resolved_project_key,
         p.name AS project_name,
-        p.short_name AS project_short_name
+        p.name AS resolved_project_name,
+        p.short_name AS project_short_name,
+        p.short_name AS resolved_project_short_name
       FROM bna_tasks t
       LEFT JOIN bna_projects p ON p.id = t.project_id
       WHERE ${where.join(' AND ')}
