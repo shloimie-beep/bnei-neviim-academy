@@ -25007,3 +25007,32 @@ send, billing, deploy, or external-account write was performed.
 
 Next: continue automatically with Batch 9D / `REQ-20260621-904` CRM import and
 deduplication using inventory IDs/hashes instead of raw spreadsheet dumps.
+
+## 2026-06-21T16:58:52+03:00 - One Time Master Completion Batch 9D CRM Import And Deduplication
+
+Closed `REQ-20260621-904` for PR #5. The first-party contact import preview
+now scopes duplicate lookup and dedupe keys to the resolved One Time
+workspace/project, attaches metadata-only source inventory references, strips
+raw source rows from responses, keeps warm leads no-send until approval, and
+blocks commit/import until explicit operator approval.
+
+Implementation commit `aedb04aade8d518427b9f4df011c8b5a9d07f306` was pushed
+and deployed to Railway deployment
+`4919c095-6301-4806-a712-0d64b4d01850`.
+
+Verification passed: `node --check server.js`, focused smoke syntax, 21/21
+communications/import/inventory/workspace tests plus 29/29 readiness/UI
+regression tests after the final PR-head commit, tracked secret audit, diff
+check, Railway doctor/poll, standard live smoke
+`ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`, and focused CRM
+import/dedupe live smoke
+`ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`.
+
+Guardrails: focused live smoke submitted synthetic `.invalid` rows only; no raw
+spreadsheet rows, private exports, contact import write, local write, external
+CRM write, GHL/LeadConnector runtime/write, email send, WhatsApp send, billing
+write, DNS mutation, or external-account write was performed. The readiness
+route is read-only and Operations Apply Import remains disabled.
+
+Next: continue automatically with Batch 9E / `REQ-20260621-905` CRM Contacts
+UX.

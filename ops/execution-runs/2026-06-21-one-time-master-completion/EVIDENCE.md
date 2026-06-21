@@ -927,11 +927,20 @@ Implementation evidence:
   `contactImportDedupeKey`, scoped duplicate lookup, raw `source_row` stripping,
   preview-only import policy, no-send flags, no local write, no external write,
   and forbidden GHL/LeadConnector runtime metadata.
+- One Time CRM import readiness in `server.js`:
+  `oneTimeCrmImportPreviewReadiness`, metadata-only inventory summary,
+  candidate source list, current scoped lead counts, dedupe policy, and
+  read-only `/api/bna/one-time/crm-import-preview` route.
+- Operations UI in `public/operations.html`:
+  `renderOneTimeCrmImportPreviewPanel`, candidate source cards, One Time scoped
+  counts, Preview Mapping navigation, Open Import Decision navigation, and
+  disabled Apply Import with explicit approval blocker.
 - Focused live smoke script:
   `scripts/smoke-one-time-crm-import-dedupe-live.mjs`.
 - Focused tests:
   `tests/communications-screening-import-ui.test.js`,
   `tests/downloads-spreadsheet-inventory.test.js`,
+  `tests/one-time-product-system.test.js`,
   `tests/one-time-communications-workspace.test.js`,
   `tests/communications-integrations-contract.test.js`, and
   `tests/assistant-portal-communications-contract.test.js`.
@@ -943,7 +952,7 @@ Implemented behavior:
 - Duplicate lookup is constrained to the resolved One Time project/workspace.
 - Preview rows carry scoped deterministic dedupe keys, dedupe basis metadata,
   and omit raw source rows.
-- Preview responses are dry-run/no-send with
+- Preview responses and One Time readiness responses are dry-run/no-send with
   `external_write_performed: false`, `external_crm_write_performed: false`, and
   `local_write_performed: false`.
 - Warm leads remain no-send until explicit approval; commit remains blocked
@@ -952,28 +961,32 @@ Implemented behavior:
   external runtimes in guardrail metadata.
 - The Batch 9C Rabbi Scheller follower inventory source is referenced by
   metadata/hash only; raw spreadsheet rows and private exports remain absent.
+- Current CRM counts are scoped to the One Time project and do not return
+  contact values or raw spreadsheet content.
 
 Verification and live evidence:
 
 - PASS `node --check server.js`
 - PASS `node --check scripts/smoke-one-time-crm-import-dedupe-live.mjs`
 - PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js`
-- PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js`
+- PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-product-system.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js`
 - PASS `node scripts/audit-secrets.mjs`
 - PASS `git diff --check` with line-ending warnings only
 - Implementation/pushed/deployed commit:
-  `5858f658ea4f3dccd5c3662f044764764d23582d`
+  `aedb04aade8d518427b9f4df011c8b5a9d07f306`
 - Railway deployment:
-  `45bc61bb-0178-4bd3-bad2-70e3738412df`
+  `4919c095-6301-4806-a712-0d64b4d01850`
 - Railway doctor/poll:
   PASS, deployment status `SUCCESS`
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T13-56-35-415Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`
 - Focused One Time CRM import/dedupe live smoke:
-  `ops/live-smokes/2026-06-21T13-58-04-300Z-one-time-crm-import-dedupe-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`
 
 Focused live smoke covered:
 
+- Read-only `/api/bna/one-time/crm-import-preview` readiness route.
+- Operations CRM Import Preview panel with disabled Apply Import.
 - Operations login and authenticated live preview POST to
   `/api/bna/contact-imports/preview`.
 - Synthetic `.invalid` CSV rows only.

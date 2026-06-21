@@ -1169,7 +1169,7 @@
       ],
       "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910. Child REQ-20260621-902 is terminal blocked on transcription credential; continue with unblocked children.",
       "blocker_owner": "Codex",
-      "blocker_next_action": "Continue with child requirement REQ-20260621-904, CRM import and deduplication."
+      "blocker_next_action": "Continue with child requirement REQ-20260621-905, CRM Contacts UX."
     },
     {
       "source_id": "RAW-20260621-002",
@@ -1397,28 +1397,39 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "in_progress",
-      "implementation_status": "local_verified",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md"
       ],
       "verification": [
         "node --check server.js",
         "node --check scripts/smoke-one-time-crm-import-dedupe-live.mjs",
-        "node --test tests/communications-screening-import-ui.test.js tests/one-time-product-system.test.js",
+        "node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-product-system.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js",
         "npm run bna:run:validate",
         "node scripts/audit-secrets.mjs",
-        "git diff --check"
+        "git diff --check",
+        "npm run railway:doctor",
+        "Railway deployment poll PASS deployment 4919c095-6301-4806-a712-0d64b4d01850 SUCCESS",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-crm-import-dedupe"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
+      "pushed_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:57:20+03:00",
+      "updated_at": "2026-06-21T17:04:18+03:00",
       "id": "REQ-20260621-904",
       "title": "CRM import and deduplication",
       "expected_result": "First-party One Time CRM import/dedupe can safely ingest approved warm leads without external CRM writes or cross-workspace bleed.",
@@ -1427,7 +1438,7 @@
       ],
       "category": "crm_import_dedupe",
       "batch_id": "batch-9D",
-      "next_action": "Commit and push Batch 9D, deploy the safe app-visible changes, then run npm run app:smoke and npm run app:smoke:one-time-crm-import-dedupe.",
+      "next_action": "Continue with REQ-20260621-905 CRM Contacts UX.",
       "acceptance_criteria": [
         "imports are workspace/project scoped",
         "dedupe preserves audit history",
@@ -1437,11 +1448,18 @@
       "implementation_files": [
         "server.js",
         "public/operations.html",
+        "package.json",
         "scripts/smoke-one-time-crm-import-dedupe-live.mjs",
         "tests/communications-screening-import-ui.test.js",
-        "tests/one-time-product-system.test.js",
-        "scripts/import-one-time-subscribers.mjs"
-      ]
+        "tests/one-time-product-system.test.js"
+      ],
+      "deployed_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
+      "deployment_id": "4919c095-6301-4806-a712-0d64b4d01850",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md"
+      ],
+      "closeout_summary": "Scoped first-party preview/dedupe plus One Time CRM readiness route and Operations panel deployed and live-smoked with metadata-only source refs, no raw source rows, no-send warm leads, disabled apply, and no local/external/GHL writes."
     },
     {
       "source_id": "RAW-20260621-002",

@@ -233,6 +233,30 @@ spreadsheet rows, contact values, private exports, import writes, external
 sends, billing actions, DNS/account changes, GHL runtime, or deployment action
 was performed.
 
+## Batch 9D
+
+- Deployment ID: `4919c095-6301-4806-a712-0d64b4d01850`
+- Deployed commit: `aedb04aade8d518427b9f4df011c8b5a9d07f306`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`
+- Focused One Time CRM import/dedupe live smoke: PASS,
+  `ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`aedb04aade8d518427b9f4df011c8b5a9d07f306` so the unrelated uncommitted blog
+data files in the main worktree were not included in the bundle.
+
+Focused live smoke verified the deployed read-only readiness route, Operations
+CRM Import Preview panel, authenticated preview route with synthetic `.invalid`
+rows, metadata-only source inventory reference `DL-SHEET-f93f34d98e`, One Time
+scope, scoped dedupe keys, no raw `source_row` echo, `commit_blocked: true`,
+no-send, no local write, no external write, no external CRM write, and
+GHL/LeadConnector forbidden runtime guardrails. No contact, tag, email,
+WhatsApp, external CRM, GHL/LeadConnector, billing, or local import write was
+performed.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`

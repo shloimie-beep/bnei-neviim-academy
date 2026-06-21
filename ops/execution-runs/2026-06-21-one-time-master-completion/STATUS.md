@@ -1,6 +1,6 @@
 # Status
 
-Status as of 2026-06-21T16:22:25+03:00.
+Status as of 2026-06-21T17:04:18+03:00.
 
 Batch 0 and Batch 1 are done locally. The successor run is the single active
 run. The execution CLI now validates structured requirements, reports the next
@@ -407,21 +407,27 @@ generic contact-import preview endpoint attaches metadata-only source inventory
 references, computes scoped dedupe keys, strips raw source rows from preview
 responses, and keeps every preview row no-send/no-local-write/no-external-write.
 
+The One Time product system now exposes a read-only CRM import readiness
+payload and direct `/api/bna/one-time/crm-import-preview` route. Operations >
+Provider Workspace > Tiers renders a CRM Import Preview panel with candidate
+source cards, scoped counts, Preview Mapping/Open Import Decision actions, and
+a disabled Apply Import action with the exact approval blocker.
+
 Duplicate lookup is constrained to the resolved workspace/project, preview
 responses carry `import_policy.mode: preview_only`, warm leads remain no-send
 until operator approval, and GHL/GoHighLevel/LeadConnector remain explicitly
 forbidden inactive runtimes. The focused live smoke submitted only synthetic
-`.invalid` rows and verified that no raw `source_row` data, local writes,
-external writes, external CRM writes, sends, billing records, or GHL records
-were produced.
+`.invalid` rows and verified the readiness route, Operations panel, no raw
+`source_row` data, no local writes, no external writes, no external CRM writes,
+no sends, no billing records, and no GHL records.
 
 The implementation was committed and pushed at
-`5858f658ea4f3dccd5c3662f044764764d23582d`, deployed from a clean detached
-worktree to Railway deployment `45bc61bb-0178-4bd3-bad2-70e3738412df`, and
-verified by standard plus focused live smokes:
+`aedb04aade8d518427b9f4df011c8b5a9d07f306`, deployed to Railway deployment
+`4919c095-6301-4806-a712-0d64b4d01850`, and verified by standard plus focused
+live smokes:
 
-- `ops/live-smokes/2026-06-21T13-56-35-415Z-live-app-smoke.md`
-- `ops/live-smokes/2026-06-21T13-58-04-300Z-one-time-crm-import-dedupe-live-smoke.md`
+- `ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`
+- `ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`
 
 Next unblocked child: `REQ-20260621-905` CRM Contacts UX.
 <!-- batch-9D:end -->

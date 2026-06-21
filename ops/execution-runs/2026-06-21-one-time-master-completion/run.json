@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T16:57:20+03:00",
+  "updated_at": "2026-06-21T17:04:18+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -21,13 +21,13 @@
     "pr_branch": "codex/agent-control-center-20260619",
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
     "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
-    "latest_pushed_head": "0e1f586b7e7880ca9a2d65f57339d88e15794179",
-    "latest_deployed_commit": "23e16a126f6e7461858b5701f2dbd2ba719a35c7"
+    "latest_pushed_head": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
+    "latest_deployed_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306"
   },
   "current_batch": {
-    "batch_id": "batch-9D",
-    "requirement_id": "REQ-20260621-904",
-    "title": "CRM import and deduplication",
-    "status": "local_verified_pending_commit_push_deploy"
+    "batch_id": "batch-9E",
+    "requirement_id": "REQ-20260621-905",
+    "title": "CRM Contacts UX",
+    "status": "not_started"
   }
 }

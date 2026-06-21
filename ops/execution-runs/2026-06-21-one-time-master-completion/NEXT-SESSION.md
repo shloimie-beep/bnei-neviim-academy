@@ -371,6 +371,42 @@ deduplication, using the inventory IDs/hashes as source references instead of
 raw spreadsheet dumps.
 <!-- batch-9C:end -->
 
+<!-- batch-9D:start -->
+## Batch 9D Handoff
+
+CRM import and deduplication is deployed and live-verified.
+
+- Requirement: `REQ-20260621-904`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `aedb04aade8d518427b9f4df011c8b5a9d07f306`
+- Railway deployment:
+  `4919c095-6301-4806-a712-0d64b4d01850`
+- Key files:
+  `server.js`, `public/operations.html`, `package.json`,
+  `scripts/smoke-one-time-crm-import-dedupe-live.mjs`,
+  `tests/communications-screening-import-ui.test.js`,
+  `tests/one-time-product-system.test.js`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`
+- Focused One Time CRM import/dedupe live smoke:
+  `ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`
+- Guardrails:
+  readiness route is read-only, Operations Apply Import is disabled,
+  metadata-only source inventory refs, synthetic live smoke rows only, no raw
+  spreadsheet row echo, warm leads no-send until approval, commit blocked, no
+  local import write, no external CRM write, no GHL/LeadConnector runtime, no
+  email/WhatsApp send, and no billing write.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-905` / Batch 9E CRM Contacts UX.
+<!-- batch-9D:end -->
+
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff
 

@@ -599,21 +599,23 @@ Intermediate focused live-smoke failures recorded:
 ## Batch 9D Test Results
 
 Recorded after scoped CRM import preview/dedupe hardening and focused
-live-smoke script updates:
+readiness/UI live-smoke script updates:
 
 - PASS `node --check server.js`
 - PASS `node --check scripts/smoke-one-time-crm-import-dedupe-live.mjs`
 - PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js`
-- PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js`
-  with 21/21 tests passing.
+- PASS `node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-product-system.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js`
+  with 29/29 tests passing.
 
 Focused Batch 9D test result:
 
-- Tests: 21 passed, 0 failed.
+- Tests: 29 passed, 0 failed.
 - Covered: contact import preview remains preview-only; source inventory
   metadata is attached; scoped dedupe helper and keys exist; raw source rows are
   stripped; warm leads remain no-send until approval; external CRM writes remain
-  false; GHL/LeadConnector are forbidden runtimes only; existing One Time
+  false; GHL/LeadConnector are forbidden runtimes only; One Time product
+  readiness exposes the CRM import preview route/payload; Operations renders
+  the CRM Import Preview panel with disabled Apply Import; existing One Time
   communications, integration, and assistant portal contracts still pass.
 
 Closeout checks:
@@ -621,18 +623,20 @@ Closeout checks:
 - PASS `node scripts/audit-secrets.mjs`
 - PASS `git diff --check` with line-ending warnings only
 - PASS `npm run railway:doctor` before deployment
-- PASS clean detached deploy-worktree deployment to Railway deployment
-  `45bc61bb-0178-4bd3-bad2-70e3738412df`
+- PASS Railway deployment readback for current PR-head deployment
+  `4919c095-6301-4806-a712-0d64b4d01850`
 - PASS Railway deployment poll for
-  `45bc61bb-0178-4bd3-bad2-70e3738412df`, status `SUCCESS`
+  `4919c095-6301-4806-a712-0d64b4d01850`, status `SUCCESS`
 - PASS `npm run railway:doctor` after deployment
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T13-56-35-415Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`
 - PASS `npm run app:smoke:one-time-crm-import-dedupe`,
-  `ops/live-smokes/2026-06-21T13-58-04-300Z-one-time-crm-import-dedupe-live-smoke.md`
+  `ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`
 
 Focused live smoke covered:
 
+- Read-only One Time CRM import readiness route.
+- Operations CRM Import Preview panel and disabled Apply Import action.
 - Authenticated production contact-import preview route.
 - Synthetic `.invalid` rows only, 2 preview rows.
 - Metadata-only source inventory reference `DL-SHEET-f93f34d98e`.
@@ -644,10 +648,9 @@ Focused live smoke covered:
 Deployment-safety notes:
 
 - Deployment was run from a clean detached worktree at
-  `5858f658ea4f3dccd5c3662f044764764d23582d`, because the main worktree still
+  `aedb04aade8d518427b9f4df011c8b5a9d07f306`, because the main worktree still
   contained unrelated uncommitted public data files.
-- An intermediate focused smoke attempt failed after a local, uncommitted smoke
-  edit probed `/api/bna/one-time/crm-import-preview`. That route is not part of
-  Batch 9D. The smoke was restored to the committed Batch 9D contract and the
-  rerun passed.
+- An intermediate focused smoke attempt against the earlier `5858f658` subset
+  failed before the current readiness route was deployed. After `aedb04aa`
+  reached production, the full readiness/UI/import preview smoke passed.
 <!-- batch-9D:end -->
