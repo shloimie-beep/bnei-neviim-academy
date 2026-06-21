@@ -782,16 +782,22 @@ readiness flow:
 - PASS `node --check server.js`
 - PASS `node --check public/js/rabbi-member.js`
 - PASS `node --check scripts/smoke-one-time-payment-access-class-links-live.mjs`
-- PASS `node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js`
-  with 40/40 tests passing.
-- PASS `node --test tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/one-time-stripe-local-beta.test.js tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js`
-  with 60/60 tests passing.
+- PASS `node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-product-system.test.js`
+  with 48/48 tests passing.
+- PASS `node --test tests/one-time-stripe-local-beta.test.js tests/one-time-external-user-portal.test.js tests/rabbi-checkout-access.test.js`
+  with 45/45 tests passing.
 - PASS route/action registry JSON parse.
 - PASS `npm run bna:run:validate`.
 - PASS `node scripts/audit-secrets.mjs`.
 - PASS `npm run watchdog:actions`,
   `ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md`.
 - PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after final active Railway deployment
+  `ec7724a3-76b9-4858-85e2-370af327759a`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-payment-access-class-links`,
+  `ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`.
 
 Focused coverage:
 
@@ -805,4 +811,15 @@ Focused coverage:
 - Operations exposes the 9G panel, active review actions, and disabled Grant
   Access / Reveal Join Link blockers.
 - Route and action registries include the focused 9G route/actions.
+
+Focused live smoke covered:
+
+- Production payment/access/class-link route returned `REQ-20260621-907` with
+  no live charge, no checkout/payment-link creation, no automated access grant,
+  no external write, relationship-scoped class links, no raw Zoom member URL,
+  and no Zoom host/start URL.
+- Operations shipped the 9G panel marker, requirement ID, guardrail copy, and
+  disabled access/link actions.
+- The deployed member portal script does not use `session.zoom_url` and renders
+  the protected Join Class blocker.
 <!-- batch-9G:end -->

@@ -25117,3 +25117,35 @@ Verification passed: focused One Time product/Stripe tests, workspace scoping te
 Guardrails: no checkout session, live charge, payment link, subscription, invoice, invoice credit, access grant, email send, WhatsApp send, external CRM write, GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
 
 Next: continue automatically with Batch 9G / `REQ-20260621-907` payment-to-access and class-link flow.
+
+## 2026-06-21T18:13:00+03:00 - One Time Master Completion Batch 9G Payment/Access/Class Links
+
+Closed `REQ-20260621-907` for PR #5. The One Time product system now exposes
+test-mode payment-to-access readiness, approved-local-test-event access gating,
+and relationship-scoped class-link readiness without creating checkout
+sessions, live charges, payment links, subscriptions, access grants, sends,
+external CRM writes, Zoom meetings, raw member Zoom URLs, or Zoom host/start
+URLs. Operations renders the Payment / Access / Class Links panel, and the
+member portal renders a protected Join Class blocker instead of `session.zoom_url`.
+
+Implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720` was pushed
+and deployed from a clean detached worktree. Manual deployment first reached
+`a0b6dcb5-a593-41f9-9743-bcc717d41730`; final active Railway deployment
+`ec7724a3-76b9-4858-85e2-370af327759a` is `SUCCESS` and was verified by
+standard live smoke
+`ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md` plus focused
+payment/access/class-link live smoke
+`ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`.
+
+Verification passed: syntax checks, focused 48/48 and 45/45 test suites,
+route/action registry JSON parse, action watchdog, execution-run validation,
+tracked secret audit, diff check, Railway doctor, standard live smoke, and
+focused 9G live smoke.
+
+Guardrails: no checkout session, live charge, payment link, subscription,
+invoice, access grant, email send, WhatsApp send, external CRM write,
+GHL/LeadConnector runtime, Zoom meeting, Zoom registrant, raw member Zoom URL,
+host/start URL, DNS mutation, or secret exposure was performed.
+
+Next: continue automatically with Batch 9H / `REQ-20260621-908` authenticated
+questions and support-ticket bot.

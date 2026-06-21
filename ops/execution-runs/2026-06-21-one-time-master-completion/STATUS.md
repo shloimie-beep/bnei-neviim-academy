@@ -507,9 +507,9 @@ Next unblocked child: `REQ-20260621-907` payment-to-access and class-link flow.
 <!-- batch-9G:start -->
 ## Batch 9G - Payment-To-Access And Class-Link Flow
 
-Status: implementation started / locally verified / deploy pending
+Status: done / deployed / verified live
 
-Implemented the safe test-mode flow for `REQ-20260621-907`:
+Closed the safe test-mode flow for `REQ-20260621-907`:
 
 - Product-system readiness maps paid test/manual checkout state to access
   readiness without live charges, checkout sessions, payment links, or
@@ -523,8 +523,17 @@ Implemented the safe test-mode flow for `REQ-20260621-907`:
 - Member page rendering now uses protected class-link state instead of
   `session.zoom_url`.
 
-Local tests and guardrail checks passed. Next step is committing, pushing,
-deploying the safe app-visible bundle, running standard plus focused live
-smokes, and closing the requirement as `verified_live` if production matches
-the local evidence.
+Implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720` was pushed
+and deployed from a clean detached worktree. The final active Railway
+deployment is `ec7724a3-76b9-4858-85e2-370af327759a`. Railway doctor passed, standard live
+smoke passed at
+`ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md`, and focused
+payment/access/class-link live smoke passed at
+`ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`.
+
+Focused live smoke verified the production readiness API, Operations panel
+markers, no live charge, no checkout/payment-link creation, no automated access
+grant, relationship-scoped class links, no raw Zoom member URL, no Zoom
+host/start URL, and the member portal script blocker. Continue automatically
+with the next unblocked requirement after running `npm run bna:run:next`.
 <!-- batch-9G:end -->

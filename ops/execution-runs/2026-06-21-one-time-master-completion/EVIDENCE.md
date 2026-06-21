@@ -1177,7 +1177,7 @@ Guardrails:
 <!-- batch-9G:start -->
 ## Batch 9G - Payment-To-Access And Class-Link Flow
 
-Status: implementation started / locally verified / deploy pending
+Status: done / deployed / verified live
 
 Implemented the One Time test-mode payment-to-access and class-link readiness
 surface. The shared product-system helper now models paid test/manual checkout
@@ -1218,6 +1218,43 @@ Local verification:
 - PASS action watchdog:
   `ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md`
 - PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Implementation/pushed/deployed commit:
+  `62715fd68ad0956d92134560af303ba9d5fc7720`
+- Final active Railway deployment:
+  `ec7724a3-76b9-4858-85e2-370af327759a`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md`
+- Focused payment/access/class-link live smoke:
+  `ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`
+
+Deployment note:
+
+- Manual deploy from the clean detached worktree first reached Railway
+  deployment `a0b6dcb5-a593-41f9-9743-bcc717d41730`. A later Railway status
+  check showed active deployment
+  `ec7724a3-76b9-4858-85e2-370af327759a` at `SUCCESS`, so standard and focused
+  live smokes were rerun against the final active deployment and passed.
+
+Focused live smoke verified:
+
+- Production `/api/bna/one-time/payment-access-class-links` returns
+  `REQ-20260621-907`.
+- Payment state keeps live charges, checkout-session creation, payment-link
+  creation, subscriptions, and external writes disabled.
+- Access gate requires an approved local/test event and manual admin review;
+  automated access grants and real grants from this flow are disabled.
+- Class-link state requires member session plus active live grant, requires a
+  protected reference, and does not return raw Zoom join URLs or host/start
+  URLs.
+- Operations ships the Payment / Access / Class Links panel marker, requirement
+  ID, guardrail copy, disabled Grant Access action, and disabled Reveal Join
+  Link action.
+- Member portal script does not render `session.zoom_url` and instead renders
+  the protected relationship-scoped join blocker.
 
 Guardrails:
 

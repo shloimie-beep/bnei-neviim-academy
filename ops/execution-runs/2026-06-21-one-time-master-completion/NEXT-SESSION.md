@@ -1,11 +1,11 @@
 # Next Session
 
-Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F,
+Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 9C, Batch 9D, Batch 9E, Batch 9F, Batch 9G,
 Batch 11/13, and Batch 12 are deployed/live-verified or locally verified as
 appropriate on PR #5. Batch 9B is terminal blocked on hosted transcription
 credentials. Run the execution runner after this closeout commit is pushed and
 continue with the next unblocked open requirement it selects:
-`REQ-20260621-907` / Batch 9G payment-to-access and class-link flow.
+`REQ-20260621-908` / Batch 9H authenticated questions and support-ticket bot.
 Exact next command:
 
 ```powershell
@@ -452,9 +452,9 @@ Next exact action:
 npm run bna:run:next
 ```
 
-Continue automatically with `REQ-20260621-907` / Batch 9G payment-to-access and
-class-link flow. Do not perform live charges, real access grants, real Zoom
-meetings, invoice credits, or campaign sends.
+Batch 9G has now closed; use the current top-level next action rather than this
+historical Batch 9E continuation note. Do not perform live charges, real access
+grants, real Zoom meetings, invoice credits, or campaign sends.
 <!-- batch-9E:end -->
 
 <!-- batch-9F:start -->
@@ -505,10 +505,51 @@ Next exact action:
 npm run bna:run:next
 ```
 
-Continue automatically with `REQ-20260621-907` / Batch 9G payment-to-access
-and class-link flow. Do not create live charges, access grants, or real Zoom
-meetings.
+Batch 9G has now closed. Continue automatically with the next unblocked batch
+selected by the execution runner; expected next requirement is
+`REQ-20260621-908` / Batch 9H authenticated questions and support-ticket bot.
 <!-- batch-9F:end -->
+
+<!-- batch-9G:start -->
+## Batch 9G Handoff
+
+Payment-to-access and class-link readiness is deployed and live-verified.
+
+- Requirement: `REQ-20260621-907`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `62715fd68ad0956d92134560af303ba9d5fc7720`
+- Initial manual Railway deployment:
+  `a0b6dcb5-a593-41f9-9743-bcc717d41730`
+- Final active Railway deployment:
+  `ec7724a3-76b9-4858-85e2-370af327759a`
+- Key files:
+  `src/lib/bna/one-time-product-system.js`, `server.js`,
+  `public/operations.html`, `public/js/rabbi-member.js`,
+  `ops/route-registry.json`, `ops/action-registry.json`, `package.json`,
+  `scripts/smoke-one-time-payment-access-class-links-live.mjs`,
+  `tests/rabbi-checkout-access.test.js`,
+  `tests/one-time-external-user-portal.test.js`
+- Focused Batch 9G tests: 48/48 and 45/45 focused suites passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md`
+- Focused One Time payment/access/class-link live smoke:
+  `ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`
+- Guardrails:
+  test/manual payment state is read-only; no checkout session, live charge,
+  payment link, subscription, invoice, access grant, email send, WhatsApp send,
+  external CRM write, Zoom meeting, Zoom registrant, raw member Zoom URL,
+  host/start URL, DNS mutation, or secret exposure occurred.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with `REQ-20260621-908` / Batch 9H authenticated
+questions and support-ticket bot.
+<!-- batch-9G:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

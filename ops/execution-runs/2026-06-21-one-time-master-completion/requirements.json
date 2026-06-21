@@ -1633,13 +1633,16 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "in_progress",
-      "implementation_status": "verified_local",
+      "status": "done",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-9G",
         "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-9G",
-        "ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md"
+        "ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md",
+        "ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-9g"
       ],
       "verification": [
         "PASS node --check server.js",
@@ -1651,15 +1654,23 @@
         "PASS npm run bna:run:validate",
         "PASS node scripts/audit-secrets.mjs",
         "PASS npm run watchdog:actions",
-        "PASS git diff --check with line-ending warnings only"
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor after deployment ec7724a3-76b9-4858-85e2-370af327759a",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-payment-access-class-links ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
       ],
       "implementation_commit": "62715fd68ad0956d92134560af303ba9d5fc7720",
       "pushed_commit": "62715fd68ad0956d92134560af303ba9d5fc7720",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment ec7724a3-76b9-4858-85e2-370af327759a SUCCESS for deployed commit 62715fd68ad0956d92134560af303ba9d5fc7720",
+        "PASS npm run railway:doctor after deployment ec7724a3-76b9-4858-85e2-370af327759a",
+        "PASS standard live smoke ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "PASS focused live smoke ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T18:07:30+03:00",
+      "updated_at": "2026-06-21T18:13:00+03:00",
       "id": "REQ-20260621-907",
       "title": "Payment-to-access and class-link flow",
       "expected_result": "Test-mode payment/access/class-link state is modeled without live charges, access grants, or real Zoom link exposure.",
@@ -1686,7 +1697,9 @@
         "scripts/smoke-one-time-payment-access-class-links-live.mjs",
         "tests/rabbi-checkout-access.test.js",
         "tests/one-time-external-user-portal.test.js"
-      ]
+      ],
+      "deployment_id": "ec7724a3-76b9-4858-85e2-370af327759a",
+      "deployed_commit": "62715fd68ad0956d92134560af303ba9d5fc7720"
     },
     {
       "source_id": "RAW-20260621-002",

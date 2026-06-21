@@ -2,7 +2,7 @@
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
   "created_at": "2026-06-21T11:05:00+03:00",
-  "updated_at": "2026-06-21T18:07:30+03:00",
+  "updated_at": "2026-06-21T18:13:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -22,12 +22,12 @@
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
     "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
     "latest_pushed_head": "62715fd68ad0956d92134560af303ba9d5fc7720",
-    "latest_deployed_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de"
+    "latest_deployed_commit": "62715fd68ad0956d92134560af303ba9d5fc7720"
   },
   "current_batch": {
     "batch_id": "batch-9G",
     "requirement_id": "REQ-20260621-907",
     "title": "Payment-to-access and class-link flow",
-    "status": "in_progress"
+    "status": "done"
   }
 }

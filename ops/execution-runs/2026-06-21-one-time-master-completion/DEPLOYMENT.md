@@ -315,6 +315,37 @@ Deployment was run from a clean detached worktree at
 `32708bfa5aa1d673a44ed5765178081ad57dc3de` so the unrelated uncommitted blog
 JSON files in the main worktree were not included in the bundle. The later evidence-only commits were not redeployed because they do not change the app bundle.
 
+## Batch 9G
+
+- Initial manual deployment ID:
+  `a0b6dcb5-a593-41f9-9743-bcc717d41730`
+- Final active deployment ID:
+  `ec7724a3-76b9-4858-85e2-370af327759a`
+- Deployed app-visible commit:
+  `62715fd68ad0956d92134560af303ba9d5fc7720`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, final deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md`
+- Focused One Time payment/access/class-link live smoke: PASS,
+  `ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`62715fd68ad0956d92134560af303ba9d5fc7720` so the unrelated uncommitted blog
+JSON files in the main worktree were not included in the bundle. Manual upload
+first reached deployment `a0b6dcb5-a593-41f9-9743-bcc717d41730`; a later
+Railway status check showed deployment
+`ec7724a3-76b9-4858-85e2-370af327759a` active at `SUCCESS`, so standard and
+focused live smokes were rerun against that final active deployment and passed.
+
+Focused live smoke verified the production readiness endpoint, Operations
+Payment / Access / Class Links panel, disabled Grant Access and Reveal Join
+Link blockers, approved-local-test-event access gate, relationship-scoped
+class-link state, member portal protected join blocker, and no live charges,
+checkout sessions, payment links, subscriptions, access grants, email/WhatsApp
+sends, external CRM writes, Zoom meeting/registrant writes, raw member Zoom
+URLs, host/start URLs, DNS mutation, or secret exposure.
+
 ## Batch 12
 
 - Deployment ID: `b2d02f20-64a8-4183-9dba-3587d0449ef7`
