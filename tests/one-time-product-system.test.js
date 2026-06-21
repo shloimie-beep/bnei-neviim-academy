@@ -15,6 +15,11 @@ const {
   fixtureSefariaLookup,
   buildSourcePrepDraft,
   oneTimeProductReadinessView,
+  buildOneTimeProductOfferCatalog,
+  buildOneTimeAvailabilityFoundation,
+  oneTimeAppointmentIntentView,
+  defaultOneTimeAppointmentTypes,
+  buildOneTimePortalFoundations,
 } = require('../src/lib/bna/one-time-product-system');
 
 const {
@@ -150,6 +155,71 @@ test('OneTime product readiness maps product, schedule, booking, portal, and bil
   assert.match(readiness.blockers.join('\n'), /zoom_calendar_email_whatsapp_and_portal_publish_writes_require_explicit_approval/);
 });
 
+test('OneTime Batch 9/10 foundations model offers, booking, and portals without external writes', () => {
+  const offers = buildOneTimeProductOfferCatalog([]);
+  const monthly = offers.find((offer) => offer.offer_key === 'membership_67_monthly');
+  const intensive = offers.find((offer) => offer.offer_key === 'premium_masechta_intensive');
+  assert.equal(monthly.price_amount_cents, 6700);
+  assert.equal(monthly.billing_model, 'recurring_monthly');
+  assert.equal(monthly.checkout_enabled, false);
+  assert.equal(monthly.payment_links_enabled, false);
+  assert.equal(monthly.access_automation_enabled, false);
+  assert.equal(monthly.access_policy.failed_payment_state, 'failed_payment');
+  assert.equal(monthly.access_policy.grace_period_state, 'grace_period');
+  assert.equal(monthly.access_policy.cancellation_state, 'cancellation_requested');
+  assert.equal(monthly.access_policy.refund_state, 'refund_pending');
+  assert.equal(monthly.access_policy.completion_state, 'completed');
+  assert.equal(monthly.access_policy.expiration_state, 'expired');
+  assert.equal(intensive.billing_model, 'fixed_duration');
+  assert.equal(intensive.upfront_payment_supported, true);
+  assert.equal(intensive.weekly_installments_supported, true);
+  assert.equal(intensive.price_status, 'decision_pending');
+
+  const availability = buildOneTimeAvailabilityFoundation([]);
+  assert.equal(availability.exceptions_supported, true);
+  assert.equal(availability.blackout_dates_supported, true);
+  assert.equal(availability.masechta_windows_supported, true);
+  assert.equal(availability.preparation_blocks_supported, true);
+  assert.equal(availability.follow_up_blocks_supported, true);
+  assert.equal(availability.cancellations_supported, true);
+  assert.equal(availability.rescheduling_supported, true);
+  assert.equal(availability.makeup_classes_supported, true);
+  assert.equal(availability.external_write_performed, false);
+  assert.ok(availability.rules.find((rule) => rule.rule_key === 'israel_7pm_recurring'));
+
+  const appointment = oneTimeAppointmentIntentView({
+    appointment_type: 'placement_call',
+    parent_name: 'Parent',
+    parent_email: 'parent@example.com',
+    student_name: 'Student',
+    private_notes: 'internal only',
+    parent_visible_summary: 'Placement call requested.',
+    payment_required: true,
+  });
+  assert.equal(appointment.appointment_type, 'placement_call');
+  assert.equal(appointment.reminders_enabled, false);
+  assert.equal(appointment.zoom_meeting_created, false);
+  assert.equal(appointment.external_calendar_write_performed, false);
+  assert.equal(appointment.parent_confirmation_required, true);
+  assert.equal(defaultOneTimeAppointmentTypes().length, 5);
+
+  const portals = buildOneTimePortalFoundations({
+    calendar: { events: [{ id: 1 }] },
+    offers,
+    appointmentIntents: [appointment],
+    libraryItems: [{ id: 10 }],
+  });
+  assert.ok(portals.parent.sections.includes('membership_billing_access_status'));
+  assert.ok(portals.parent.sections.includes('consultation_booking'));
+  assert.ok(portals.student.sections.includes('secure_join_class_gated'));
+  assert.equal(portals.student.join_class_enabled, false);
+  assert.match(portals.student.join_class_blocker, /Zoom meeting/);
+  assert.ok(portals.provider.sections.includes('consultations_parent_communication'));
+  assert.equal(portals.parent.loaded_counts.offers, 2);
+  assert.equal(portals.parent.no_bna_student_data_by_default, true);
+  assert.equal(portals.provider.external_send_enabled, false);
+});
+
 test('Rabbi tier helper preserves existing tiers and accepts draft OneTime planning tiers', () => {
   assert.equal(normalizeRabbiTierKey('Live Plus Library'), RABBI_TIER_KEYS.LIVE_LIBRARY);
   assert.equal(normalizeRabbiTierKey('interactive zoom'), RABBI_TIER_KEYS.INTERACTIVE_ZOOM);
@@ -182,6 +252,9 @@ test('SQL migrations create OneTime product system without final pricing or exte
     'bna_program_schedules',
     'bna_program_calendar_events',
     'bna_source_prep_jobs',
+    'bna_one_time_product_offers',
+    'bna_one_time_availability_rules',
+    'bna_one_time_appointment_intents',
   ].forEach((table) => {
     assert.match(productMigration, new RegExp(`CREATE TABLE IF NOT EXISTS ${table}\\b`));
   });
@@ -200,6 +273,17 @@ test('SQL migrations create OneTime product system without final pricing or exte
   assert.match(productMigration, /'one_time_mishnah_class'/);
   assert.match(productMigration, /'mishna'/);
   assert.match(productMigration, /'\/one-time\/uk'/);
+  assert.match(productMigration, /'membership_67_monthly'/);
+  assert.match(productMigration, /'premium_masechta_intensive'/);
+  assert.match(productMigration, /6700::integer/);
+  assert.match(productMigration, /'candidate_pending_approval'/);
+  assert.match(productMigration, /'fixed_duration'/);
+  assert.match(productMigration, /'weekly_installments'/);
+  assert.match(productMigration, /bna_one_time_product_offers_key_check/);
+  assert.match(productMigration, /bna_one_time_appointment_type_check/);
+  assert.match(productMigration, /'israel_7pm_recurring'/);
+  assert.match(productMigration, /'premium_masechta_window_placeholder'/);
+  assert.match(productMigration, /'operator_decision_required'/);
   assert.match(productMigration, /'tier_pricing'/);
   assert.match(productMigration, /TIME '19:00'/);
   assert.match(productMigration, /'Asia\/Jerusalem'/);
@@ -214,7 +298,10 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
     "app.get(['/api/bna/product-leads', '/api/bna/one-time/product-leads']",
     "app.post(['/api/bna/product-leads', '/api/one-time/interest']",
     "app.get('/api/bna/one-time/calendar'",
+    "app.post('/api/bna/one-time/calendar-events'",
     "app.get('/api/one-time/calendar'",
+    "app.get('/api/bna/one-time/appointment-intents'",
+    "app.post('/api/bna/one-time/appointment-intents'",
     "app.get('/api/bna/one-time/source-prep-jobs'",
     "app.post('/api/bna/one-time/source-prep-jobs'",
   ].forEach((route) => assert.match(server, new RegExp(escapeRegex(route))));
@@ -226,6 +313,16 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /no_access_granted: true/);
   assert.match(server, /external_write_performed: false/);
   assert.match(server, /product_readiness: oneTimeProductReadinessView/);
+  assert.match(server, /product_offers: productOffers/);
+  assert.match(server, /availability,/);
+  assert.match(server, /appointment_types: defaultOneTimeAppointmentTypes/);
+  assert.match(server, /appointment_intents: appointmentRows/);
+  assert.match(server, /portal_foundations: buildOneTimePortalFoundations/);
+  assert.match(server, /no_zoom_meeting_created: true/);
+  assert.match(server, /external_calendar_write_performed: false/);
+  assert.match(server, /appointment_intents_internal_only: true/);
+  assert.match(server, /\/api\/bna\/one-time\/calendar-events/);
+  assert.match(server, /\/api\/bna\/one-time\/appointment-intents/);
   assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest', '\/one-time\/member-login'\]/);
 });
 
@@ -247,10 +344,16 @@ test('Operations provider workspace reads OneTime product system and labels pric
     'getOneTimeProductSystem',
     'getOneTimeProductCalendar',
     'getOneTimeProductLeads',
+    'createOneTimeCalendarEvent',
+    'getOneTimeAppointmentIntents',
+    'createOneTimeAppointmentIntent',
     'createOneTimeSourcePrepJob',
     'renderOneTimeProductDecisionPanel',
     'renderOneTimeProductReadinessPanel',
     'renderOneTimeProductTiersPanel',
+    'renderOneTimeProductOffersPanel',
+    'renderOneTimeAvailabilityBookingPanel',
+    'renderOneTimePortalFoundationsPanel',
     'renderOneTimeFunnelPanel',
     'renderOneTimeLeadPanel',
     'createOneTimeSourcePrepFixture',
@@ -258,10 +361,23 @@ test('Operations provider workspace reads OneTime product system and labels pric
 
   assert.match(operationsHtml, /RABBI-04 is draft\/decision-ready only/);
   assert.match(operationsHtml, /data-one-time-product-readiness/);
+  assert.match(operationsHtml, /data-one-time-product-offers/);
+  assert.match(operationsHtml, /data-one-time-availability-booking/);
+  assert.match(operationsHtml, /data-one-time-portal-foundations/);
   assert.match(operationsHtml, /REQ-20260619-306/);
   assert.match(operationsHtml, /No checkout, invoice, payment link, Zoom, external calendar, email, WhatsApp, Telegram, portal publish, or access automation is enabled/);
+  assert.match(operationsHtml, /Add Class saves an internal OneTime calendar event only/);
+  assert.match(operationsHtml, /Add Appointment/);
+  assert.match(operationsHtml, /oneTimeClassTitle/);
+  assert.match(operationsHtml, /oneTimeAppointmentType/);
+  assert.match(operationsHtml, /No Zoom meeting, reminder, charge, or external calendar write was performed/);
   assert.match(operationsHtml, /Candidate prices are review data only/);
   assert.match(operationsHtml, /Checkout disabled/);
+  assert.match(operationsHtml, /checkout disabled/);
+  assert.match(operationsHtml, /payment links disabled/);
+  assert.match(operationsHtml, /renderOneTimePortalFoundationCard\('Parent'/);
+  assert.match(operationsHtml, /renderOneTimePortalFoundationCard\('Student'/);
+  assert.match(operationsHtml, /renderOneTimePortalFoundationCard\('Provider'/);
   assert.match(operationsHtml, /fixture source-prep draft/i);
   assert.doesNotMatch(operationsHtml, /price: '\$67\/month'/);
   assert.doesNotMatch(operationsHtml, /price: '\$149\/month'/);

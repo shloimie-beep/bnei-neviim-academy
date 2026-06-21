@@ -177,3 +177,38 @@ Continue automatically with Batch 9/10 / `REQ-20260619-306` product,
 schedule, booking, portals, and billing/access foundations. Do not create live
 charges, payment links, access grants, bulk emails, or external account writes.
 <!-- batch-8:end -->
+
+<!-- batch-9-10:start -->
+## Batch 9/10 Handoff
+
+Product, scheduling, booking, and portal foundations are implemented locally
+and focused tests passed. Deployment/live-smoke evidence is still pending.
+
+- Requirement: `REQ-20260619-306`
+- Implementation status: `implemented_local`
+- Key files:
+  `src/lib/bna/one-time-product-system.js`, `server.js`,
+  `public/operations.html`,
+  `railway-migration-2026-06-16-one-time-product-system.sql`,
+  `tests/one-time-product-system.test.js`,
+  `scripts/smoke-one-time-product-booking-live.mjs`
+- Focused Batch 9/10 tests: 47 passed, 0 failed.
+- Guardrails: no live charges, payment links, invoices, access grants, Zoom
+  meetings, participant invites, email sends, WhatsApp sends, uploads, or
+  external calendar writes.
+
+Next exact actions:
+
+```powershell
+npm run bna:run:validate
+node scripts/audit-secrets.mjs
+git diff --check
+git add src/lib/bna/one-time-product-system.js server.js public/operations.html railway-migration-2026-06-16-one-time-product-system.sql tests/one-time-product-system.test.js scripts/smoke-one-time-product-booking-live.mjs ops/execution-runs/2026-06-21-one-time-master-completion
+git commit -m "Implement One Time product booking foundations"
+git push origin codex/agent-control-center-20260619
+```
+
+Then deploy the pushed commit to Railway, run standard and focused live smokes,
+record deployment ID/commit, mark `REQ-20260619-306` verified live, and continue
+automatically to the next unblocked batch.
+<!-- batch-9-10:end -->

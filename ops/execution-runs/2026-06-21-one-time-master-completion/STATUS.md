@@ -168,3 +168,26 @@ domain mutation, or provider send was performed.
 Next unblocked batch: `REQ-20260619-306` product, schedule, booking, portals,
 and billing/access foundations.
 <!-- batch-8:end -->
+
+<!-- batch-9-10:start -->
+## Batch 9/10 - Product, Scheduling, Booking, And Portal Foundations
+
+Status: implemented local / deploy pending
+
+The One Time product system now has safe internal product-offer contracts for
+the $67 monthly membership and premium Masechta intensive, with final pricing,
+payment links, checkout, invoices, refunds, and access automation explicitly
+disabled until the operator approves billing fields.
+
+The product API now returns availability rules, appointment intent templates,
+saved appointment intents, and scoped parent/student/provider portal
+foundations. Operations > Provider Workspace exposes Add Class and Add
+Appointment as real internal actions. These actions create only One Time
+calendar-event and appointment-intent records; they do not create Zoom meetings,
+send reminders, charge cards, grant access, invite participants, or write to an
+external calendar.
+
+Local focused verification passed. Next required step is commit, push, Railway
+deploy, standard live smoke, focused One Time product/booking live smoke, then
+mark `REQ-20260619-306` verified live and continue automatically.
+<!-- batch-9-10:end -->

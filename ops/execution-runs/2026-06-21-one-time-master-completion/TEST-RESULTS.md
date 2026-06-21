@@ -306,3 +306,40 @@ Intermediate failure recorded:
   passed before `RESEND_API_KEY` was propagated; the final post-propagation
   smoke above verified live key/domain readback.
 <!-- batch-8:end -->
+
+<!-- batch-9-10:start -->
+## Batch 9/10 Test Results
+
+Recorded after product-offer contracts, safe availability rules, appointment
+intent records, portal foundations, Operations Add Class/Add Appointment
+actions, and focused live-smoke script implementation:
+
+- PASS `node --check src/lib/bna/one-time-product-system.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-product-booking-live.mjs`
+- PASS `node --test tests/one-time-product-system.test.js tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-operations-ui-smoke.test.js`
+
+Focused Batch 9/10 test result:
+
+- Tests: 47 passed, 0 failed.
+- Covered: One Time product helper contracts, readiness gates, safe offer
+  catalog, availability foundation, appointment intent shape, portal
+  foundations, migration schema/seeds, scoped server routes, public no-checkout
+  One Time draft page, Operations Add Class/Add Appointment controls, and
+  existing Rabbi checkout/access/external-user portal contracts.
+
+Non-product check note:
+
+- `node --check public/operations.html` was attempted and failed with Node's
+  expected unknown `.html` extension error. The HTML is covered by the
+  Operations UI smoke tests above.
+
+Pending after commit/deploy:
+
+- `npm run bna:run:validate`
+- `node scripts/audit-secrets.mjs`
+- `git diff --check`
+- `npm run app:smoke`
+- `node scripts/smoke-one-time-product-booking-live.mjs`
+- `npm run railway:doctor`
+<!-- batch-9-10:end -->

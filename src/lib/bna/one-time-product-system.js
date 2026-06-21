@@ -24,6 +24,45 @@ const ONE_TIME_ARTIFACT_STATUSES = Object.freeze(['not_started', 'drafting', 'ne
 const ONE_TIME_CALENDAR_VIEWS = Object.freeze(['today', 'week', 'month', 'list']);
 const ONE_TIME_DECISION_STATUSES = Object.freeze(['decision_pending', 'approved', 'rejected', 'blocked']);
 const ONE_TIME_LEAD_STATUSES = Object.freeze(['new', 'reviewing', 'follow_up', 'converted', 'archived']);
+const ONE_TIME_PRODUCT_OFFER_KEYS = Object.freeze(['membership_67_monthly', 'premium_masechta_intensive']);
+const ONE_TIME_BILLING_MODELS = Object.freeze(['recurring_monthly', 'fixed_duration', 'upfront', 'weekly_installments']);
+const ONE_TIME_ACCESS_STATES = Object.freeze([
+  'pending',
+  'active',
+  'grace_period',
+  'failed_payment',
+  'past_due',
+  'cancellation_requested',
+  'cancelled',
+  'refund_pending',
+  'refunded',
+  'completed',
+  'expired',
+]);
+const ONE_TIME_AVAILABILITY_TYPES = Object.freeze([
+  'recurring',
+  'exception',
+  'blackout',
+  'masechta_window',
+  'preparation_block',
+  'follow_up_block',
+]);
+const ONE_TIME_APPOINTMENT_TYPES = Object.freeze([
+  'consultation',
+  'placement_call',
+  'parent_progress_call',
+  'student_progress_call',
+  'office_hours',
+]);
+const ONE_TIME_APPOINTMENT_STATUSES = Object.freeze([
+  'intent',
+  'pending_parent_confirmation',
+  'confirmed_internal',
+  'reschedule_requested',
+  'cancelled',
+  'no_show',
+  'completed',
+]);
 
 const ONE_TIME_CANDIDATE_PRICING = Object.freeze({
   library_live_low_touch: {
@@ -436,6 +475,285 @@ function oneTimeTierPlanningView(tierKey) {
   };
 }
 
+function normalizeOneTimeProductOfferKey(value, fallback = 'membership_67_monthly') {
+  const normalized = String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  const aliases = {
+    monthly: 'membership_67_monthly',
+    monthly_membership: 'membership_67_monthly',
+    membership: 'membership_67_monthly',
+    sixty_seven: 'membership_67_monthly',
+    '$67': 'membership_67_monthly',
+    intensive: 'premium_masechta_intensive',
+    masechta: 'premium_masechta_intensive',
+    premium: 'premium_masechta_intensive',
+  };
+  const mapped = aliases[normalized] || normalized;
+  return ONE_TIME_PRODUCT_OFFER_KEYS.includes(mapped) ? mapped : fallback;
+}
+
+function normalizeOneTimeBillingModel(value, fallback = 'recurring_monthly') {
+  const normalized = String(value || '').trim().toLowerCase().replace(/[-\s]+/g, '_');
+  const aliases = {
+    monthly: 'recurring_monthly',
+    recurring: 'recurring_monthly',
+    fixed: 'fixed_duration',
+    fixed_term: 'fixed_duration',
+    pay_upfront: 'upfront',
+    installments: 'weekly_installments',
+    weekly: 'weekly_installments',
+  };
+  const mapped = aliases[normalized] || normalized;
+  return ONE_TIME_BILLING_MODELS.includes(mapped) ? mapped : fallback;
+}
+
+function normalizeOneTimeAccessState(value, fallback = 'pending') {
+  return normalizeEnum(value, ONE_TIME_ACCESS_STATES, fallback);
+}
+
+function normalizeOneTimeAvailabilityType(value, fallback = 'recurring') {
+  return normalizeEnum(value, ONE_TIME_AVAILABILITY_TYPES, fallback);
+}
+
+function normalizeOneTimeAppointmentType(value, fallback = 'consultation') {
+  return normalizeEnum(value, ONE_TIME_APPOINTMENT_TYPES, fallback);
+}
+
+function normalizeOneTimeAppointmentStatus(value, fallback = 'intent') {
+  return normalizeEnum(value, ONE_TIME_APPOINTMENT_STATUSES, fallback);
+}
+
+function defaultOneTimeAccessPolicy() {
+  return {
+    state_keys: [...ONE_TIME_ACCESS_STATES],
+    failed_payment_state: 'failed_payment',
+    grace_period_state: 'grace_period',
+    cancellation_state: 'cancellation_requested',
+    refund_state: 'refund_pending',
+    completion_state: 'completed',
+    expiration_state: 'expired',
+    automation_enabled: false,
+    manual_review_required: true,
+  };
+}
+
+function oneTimeProductOfferView(row = {}) {
+  const offerKey = normalizeOneTimeProductOfferKey(row.offer_key || row.offerKey || row.key);
+  const billingModel = normalizeOneTimeBillingModel(row.billing_model || row.billingModel, offerKey === 'premium_masechta_intensive' ? 'fixed_duration' : 'recurring_monthly');
+  const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
+  const defaultMonthly = offerKey === 'membership_67_monthly';
+  return {
+    id: row.id ? Number(row.id) : null,
+    offer_key: offerKey,
+    title: row.title || (defaultMonthly ? '$67 monthly membership' : 'Premium Masechta intensive'),
+    billing_model: billingModel,
+    price_amount_cents: row.price_amount_cents === null || row.price_amount_cents === undefined
+      ? (defaultMonthly ? 6700 : null)
+      : Number(row.price_amount_cents),
+    currency: row.currency || 'USD',
+    price_status: row.price_status || (defaultMonthly ? 'candidate_pending_approval' : 'decision_pending'),
+    duration_weeks: row.duration_weeks === null || row.duration_weeks === undefined ? null : Number(row.duration_weeks),
+    upfront_payment_supported: row.upfront_payment_supported === true || metadata.upfront_payment_supported === true || offerKey === 'premium_masechta_intensive',
+    weekly_installments_supported: row.weekly_installments_supported === true || metadata.weekly_installments_supported === true || offerKey === 'premium_masechta_intensive',
+    access_entitlements: normalizeTierList(row.access_entitlements || metadata.access_entitlements || (defaultMonthly ? ['library_live_low_touch'] : ['interactive_zoom', 'vip_high_touch'])),
+    access_policy: {
+      ...defaultOneTimeAccessPolicy(),
+      ...(metadata.access_policy && typeof metadata.access_policy === 'object' ? metadata.access_policy : {}),
+    },
+    checkout_enabled: false,
+    payment_links_enabled: false,
+    access_automation_enabled: false,
+    requires_operator_decision: true,
+    no_live_billing_write: true,
+    no_access_grant_performed: true,
+    metadata,
+  };
+}
+
+function buildOneTimeProductOfferCatalog(rows = []) {
+  const mapped = new Map((Array.isArray(rows) ? rows : []).map((row) => {
+    const offer = oneTimeProductOfferView(row);
+    return [offer.offer_key, offer];
+  }));
+  for (const key of ONE_TIME_PRODUCT_OFFER_KEYS) {
+    if (!mapped.has(key)) mapped.set(key, oneTimeProductOfferView({ offer_key: key }));
+  }
+  return [...mapped.values()];
+}
+
+function oneTimeAvailabilityRuleView(row = {}) {
+  const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
+  return {
+    id: row.id ? Number(row.id) : null,
+    rule_key: row.rule_key || row.ruleKey || 'israel_7pm_recurring',
+    rule_type: normalizeOneTimeAvailabilityType(row.rule_type || row.ruleType),
+    title: row.title || 'Rabbi availability rule',
+    timezone: row.timezone || 'Asia/Jerusalem',
+    days_of_week: Array.isArray(row.days_of_week) ? row.days_of_week : String(row.days_of_week || 'review_needed').split(/[,\s]+/).filter(Boolean),
+    start_time_local: row.start_time_local || '19:00',
+    duration_minutes: Number(row.duration_minutes || 60),
+    capacity_min: row.capacity_min === null || row.capacity_min === undefined ? null : Number(row.capacity_min),
+    capacity_max: row.capacity_max === null || row.capacity_max === undefined ? null : Number(row.capacity_max),
+    masechta: row.masechta || metadata.masechta || '',
+    window_start: row.window_start || metadata.window_start || null,
+    window_end: row.window_end || metadata.window_end || null,
+    prep_block_minutes: Number(row.prep_block_minutes || metadata.prep_block_minutes || 0),
+    follow_up_block_minutes: Number(row.follow_up_block_minutes || metadata.follow_up_block_minutes || 0),
+    status: row.status || 'draft',
+    cancellation_policy: row.cancellation_policy || metadata.cancellation_policy || 'operator_decision_required',
+    reschedule_policy: row.reschedule_policy || metadata.reschedule_policy || 'operator_decision_required',
+    makeup_policy: row.makeup_policy || metadata.makeup_policy || 'operator_decision_required',
+    external_calendar_write_enabled: false,
+    zoom_meeting_write_enabled: false,
+    metadata,
+  };
+}
+
+function buildOneTimeAvailabilityFoundation(rows = []) {
+  const items = Array.isArray(rows) && rows.length
+    ? rows.map(oneTimeAvailabilityRuleView)
+    : [
+      oneTimeAvailabilityRuleView({
+        rule_key: 'israel_7pm_recurring',
+        rule_type: 'recurring',
+        title: 'Rabbi Ellie Scheller 7:00 PM Israel class window',
+        days_of_week: ['review_needed'],
+        start_time_local: '19:00',
+        duration_minutes: 60,
+        prep_block_minutes: 30,
+        follow_up_block_minutes: 15,
+      }),
+      oneTimeAvailabilityRuleView({
+        rule_key: 'masechta_window_placeholder',
+        rule_type: 'masechta_window',
+        title: 'Premium Masechta intensive window',
+        days_of_week: ['operator_decision_required'],
+        start_time_local: '19:00',
+        duration_minutes: 60,
+      }),
+    ];
+  return {
+    requirement_id: 'REQ-20260619-306',
+    timezone: 'Asia/Jerusalem',
+    rules: items,
+    exceptions_supported: true,
+    blackout_dates_supported: true,
+    masechta_windows_supported: true,
+    preparation_blocks_supported: true,
+    follow_up_blocks_supported: true,
+    cancellations_supported: true,
+    rescheduling_supported: true,
+    makeup_classes_supported: true,
+    external_write_performed: false,
+  };
+}
+
+function oneTimeAppointmentIntentView(row = {}) {
+  const metadata = row.metadata && typeof row.metadata === 'object' && !Array.isArray(row.metadata) ? row.metadata : {};
+  return {
+    id: row.id ? Number(row.id) : null,
+    appointment_type: normalizeOneTimeAppointmentType(row.appointment_type || row.appointmentType),
+    status: normalizeOneTimeAppointmentStatus(row.status),
+    parent_name: row.parent_name || row.parentName || '',
+    parent_email: row.parent_email || row.parentEmail || '',
+    student_name: row.student_name || row.studentName || '',
+    starts_at: row.starts_at || row.startsAt || null,
+    duration_minutes: Number(row.duration_minutes || row.durationMinutes || 30),
+    buffer_minutes: Number(row.buffer_minutes || row.bufferMinutes || 10),
+    booking_window_days: Number(row.booking_window_days || row.bookingWindowDays || 30),
+    cancellation_cutoff_hours: Number(row.cancellation_cutoff_hours || row.cancellationCutoffHours || 24),
+    entitlement_required: row.entitlement_required === true || metadata.entitlement_required === true,
+    payment_required: row.payment_required === true || metadata.payment_required === true,
+    parent_confirmation_required: row.parent_confirmation_required !== false,
+    reminders_enabled: false,
+    zoom_meeting_created: false,
+    external_calendar_write_performed: false,
+    private_notes: row.private_notes || row.privateNotes || '',
+    parent_visible_summary: row.parent_visible_summary || row.parentVisibleSummary || '',
+    metadata,
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+function defaultOneTimeAppointmentTypes() {
+  return ONE_TIME_APPOINTMENT_TYPES.map((type) => oneTimeAppointmentIntentView({
+    appointment_type: type,
+    status: 'intent',
+    duration_minutes: type === 'office_hours' ? 45 : 30,
+    buffer_minutes: 10,
+    metadata: { template_only: true },
+  }));
+}
+
+function buildOneTimePortalFoundations({ calendar = {}, offers = [], appointmentIntents = [], libraryItems = [] } = {}) {
+  const events = Array.isArray(calendar?.events) ? calendar.events : [];
+  const offerRows = Array.isArray(offers) ? offers : [];
+  const appointmentRows = Array.isArray(appointmentIntents) ? appointmentIntents : [];
+  const libraryRows = Array.isArray(libraryItems) ? libraryItems : [];
+  const shared = {
+    scoped_project_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    no_bna_student_data_by_default: true,
+    no_live_billing_write: true,
+    no_zoom_meeting_created: true,
+    external_write_performed: false,
+  };
+  return {
+    parent: {
+      ...shared,
+      sections: [
+        'next_class',
+        'calendar',
+        'attendance_lateness',
+        'current_masechta_perek_mishnah',
+        'progress',
+        'weekly_update',
+        'recordings_watch_progress',
+        'assignments_badges',
+        'rabbi_feedback',
+        'consultation_booking',
+        'membership_billing_access_status',
+      ],
+      loaded_counts: {
+        calendar_events: events.length,
+        offers: offerRows.length,
+        appointment_intents: appointmentRows.length,
+        library_items: libraryRows.length,
+      },
+    },
+    student: {
+      ...shared,
+      sections: [
+        'next_class',
+        'calendar',
+        'secure_join_class_gated',
+        'current_learning_unit',
+        'progress_assignments',
+        'recordings_continue_watching',
+        'review_plan_badges',
+        'community_private_questions',
+        'reviewed_rabbi_feedback',
+      ],
+      join_class_enabled: false,
+      join_class_blocker: 'Zoom meeting and entitlement validation are required before exposing a join URL.',
+    },
+    provider: {
+      ...shared,
+      sections: [
+        'schedule',
+        'availability',
+        'classes_members',
+        'attendance_curriculum',
+        'weekly_updates_questions',
+        'media_transcript_review',
+        'publication_approval_badges',
+        'consultations_parent_communication',
+      ],
+      provider_actions_enabled: true,
+      external_send_enabled: false,
+    },
+  };
+}
+
 function calendarRangeForView(viewValue, nowValue = new Date()) {
   const view = normalizeOneTimeCalendarView(viewValue);
   const now = nowValue instanceof Date ? new Date(nowValue.getTime()) : new Date(nowValue);
@@ -672,6 +990,12 @@ module.exports = {
   ONE_TIME_CALENDAR_VIEWS,
   ONE_TIME_DECISION_STATUSES,
   ONE_TIME_LEAD_STATUSES,
+  ONE_TIME_PRODUCT_OFFER_KEYS,
+  ONE_TIME_BILLING_MODELS,
+  ONE_TIME_ACCESS_STATES,
+  ONE_TIME_AVAILABILITY_TYPES,
+  ONE_TIME_APPOINTMENT_TYPES,
+  ONE_TIME_APPOINTMENT_STATUSES,
   ONE_TIME_DEFAULT_REGION_NOTES,
   ONE_TIME_READINESS_STATUSES,
   ONE_TIME_PRODUCT_READINESS_SECTIONS,
@@ -683,8 +1007,21 @@ module.exports = {
   normalizeOneTimeCalendarView,
   normalizeOneTimeLeadStatus,
   normalizeOneTimeAudience,
+  normalizeOneTimeProductOfferKey,
+  normalizeOneTimeBillingModel,
+  normalizeOneTimeAccessState,
+  normalizeOneTimeAvailabilityType,
+  normalizeOneTimeAppointmentType,
+  normalizeOneTimeAppointmentStatus,
   normalizeCandidatePricing,
   oneTimeTierPlanningView,
+  oneTimeProductOfferView,
+  buildOneTimeProductOfferCatalog,
+  oneTimeAvailabilityRuleView,
+  buildOneTimeAvailabilityFoundation,
+  oneTimeAppointmentIntentView,
+  defaultOneTimeAppointmentTypes,
+  buildOneTimePortalFoundations,
   calendarRangeForView,
   validateOneTimeLead,
   fixtureSefariaLookup,

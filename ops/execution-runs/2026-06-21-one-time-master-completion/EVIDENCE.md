@@ -447,3 +447,56 @@ Intermediate focused live-smoke failure recorded:
   passed the UI/no-send contract before `RESEND_API_KEY` propagation. The final
   post-propagation smoke above verified the live key/domain readback.
 <!-- batch-8:end -->
+
+<!-- batch-9-10:start -->
+## Batch 9/10 Evidence - Product, Scheduling, Booking, And Portal Foundations
+
+Requirement: `REQ-20260619-306`
+
+Status: implemented local / deploy pending
+
+Implementation evidence:
+
+- Product offer, availability, appointment intent, and portal foundation
+  contracts: `src/lib/bna/one-time-product-system.js`
+- Scoped server readback and internal create routes:
+  `server.js`
+- Forward-only schema and safe seed data:
+  `railway-migration-2026-06-16-one-time-product-system.sql`
+- Operations Provider Workspace panels and actions:
+  `public/operations.html`
+- Focused live smoke script:
+  `scripts/smoke-one-time-product-booking-live.mjs`
+- Focused tests:
+  `tests/one-time-product-system.test.js`
+
+Implemented behavior:
+
+- Product offers include `membership_67_monthly` at 6700 cents as a candidate
+  draft and `premium_masechta_intensive` as a fixed-duration decision-pending
+  offer with upfront and weekly-installment support.
+- Checkout, payment links, invoices, charges, refunds, access grants, and
+  access automation remain disabled.
+- Availability supports recurring rules, exceptions, blackout dates, Masechta
+  windows, preparation/follow-up blocks, cancellations, rescheduling, and makeup
+  classes without external calendar or Zoom writes.
+- Appointment intents support consultation, placement call, parent progress
+  call, student progress call, and office hours with buffers, booking window,
+  cancellation cutoff, parent confirmation, private notes, parent-visible
+  summary, and entitlement/payment requirement fields.
+- Operations Add Class creates an internal One Time calendar event only.
+- Operations Add Appointment creates an internal One Time appointment intent
+  only.
+- Parent, student, and provider portal foundations expose scoped section lists
+  and loaded counts without BNA student data by default; student Join Class is
+  gated until Zoom and entitlement validation are approved.
+
+Deployment and live evidence:
+
+- Implementation commit: pending.
+- Pushed commit: pending.
+- Deployed commit: pending.
+- Railway deployment: pending.
+- Standard live smoke: pending.
+- Focused One Time product/booking live smoke: pending.
+<!-- batch-9-10:end -->

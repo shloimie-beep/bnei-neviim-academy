@@ -246,8 +246,20 @@ const {
   normalizeOneTimeVisibility,
   normalizeOneTimeArtifactStatus,
   normalizeOneTimeCalendarView,
+  normalizeOneTimeAppointmentStatus,
+  normalizeOneTimeAppointmentType,
+  normalizeOneTimeAvailabilityType,
+  normalizeOneTimeBillingModel,
+  normalizeOneTimeProductOfferKey,
   normalizeCandidatePricing,
   oneTimeTierPlanningView,
+  oneTimeProductOfferView,
+  buildOneTimeProductOfferCatalog,
+  oneTimeAvailabilityRuleView,
+  buildOneTimeAvailabilityFoundation,
+  oneTimeAppointmentIntentView,
+  defaultOneTimeAppointmentTypes,
+  buildOneTimePortalFoundations,
   calendarRangeForView,
   validateOneTimeLead,
   buildSourcePrepDraft,
@@ -8403,6 +8415,8 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/integrations/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/calendar' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/calendar-events' && method === 'POST') return true;
+  if (routePath === '/api/bna/one-time/appointment-intents' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/one-time/source-prep-jobs' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/product-leads' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/one-time/product-leads' && method === 'GET') return true;
@@ -69652,6 +69666,27 @@ function oneTimeCalendarEventView(row = {}, { includePrivate = true } = {}) {
   };
 }
 
+function oneTimeOfferRowView(row = {}) {
+  return oneTimeProductOfferView({
+    ...row,
+    metadata: oneTimeProductJson(row.metadata),
+  });
+}
+
+function oneTimeAvailabilityRowView(row = {}) {
+  return oneTimeAvailabilityRuleView({
+    ...row,
+    metadata: oneTimeProductJson(row.metadata),
+  });
+}
+
+function oneTimeAppointmentRowView(row = {}) {
+  return oneTimeAppointmentIntentView({
+    ...row,
+    metadata: oneTimeProductJson(row.metadata),
+  });
+}
+
 function oneTimeSourcePrepJobView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
@@ -69792,8 +69827,12 @@ async function oneTimeProductSystemPayload(req) {
     leads,
     schedules,
     calendar,
+    offers,
+    availabilityRules,
+    appointmentIntents,
     sourcePrepJobs,
     providers,
+    libraryItems,
   ] = await Promise.all([
     rabbiTiers(project.id),
     pool.query(
@@ -69823,6 +69862,25 @@ async function oneTimeProductSystemPayload(req) {
     ),
     oneTimeCalendarRows({ projectId: project.id, view: 'week', audience: 'admin' }),
     pool.query(
+      `SELECT * FROM bna_one_time_product_offers
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY offer_key ASC`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ),
+    pool.query(
+      `SELECT * FROM bna_one_time_availability_rules
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY rule_type ASC, start_time_local ASC NULLS LAST, id ASC`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ),
+    pool.query(
+      `SELECT * FROM bna_one_time_appointment_intents
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY created_at DESC, id DESC
+       LIMIT 100`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ),
+    pool.query(
       `SELECT * FROM bna_source_prep_jobs
        WHERE project_id = $1 AND program_key = $2
        ORDER BY created_at DESC, id DESC
@@ -69830,9 +69888,20 @@ async function oneTimeProductSystemPayload(req) {
       [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
     ),
     getRabbiProviderSettings(project.id),
+    pool.query(
+      `SELECT id, title, visibility, created_at
+       FROM bna_library_items
+       WHERE project_id = $1
+       ORDER BY created_at DESC, id DESC
+       LIMIT 100`,
+      [project.id]
+    ),
   ]);
   const planningTiers = Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView);
   const scheduleViews = schedules.rows.map(oneTimeScheduleView);
+  const productOffers = buildOneTimeProductOfferCatalog(offers.rows.map(oneTimeOfferRowView));
+  const availability = buildOneTimeAvailabilityFoundation(availabilityRules.rows.map(oneTimeAvailabilityRowView));
+  const appointmentRows = appointmentIntents.rows.map(oneTimeAppointmentRowView);
   const providerReadiness = providers.map((provider) => ({
     provider: provider.provider,
     mode: provider.mode,
@@ -69851,6 +69920,16 @@ async function oneTimeProductSystemPayload(req) {
     leads: leads.rows.map(oneTimeProductLeadView),
     schedules: scheduleViews,
     calendar,
+    product_offers: productOffers,
+    availability,
+    appointment_types: defaultOneTimeAppointmentTypes(),
+    appointment_intents: appointmentRows,
+    portal_foundations: buildOneTimePortalFoundations({
+      calendar,
+      offers: productOffers,
+      appointmentIntents: appointmentRows,
+      libraryItems: libraryItems.rows,
+    }),
     source_prep_jobs: sourcePrepJobs.rows.map(oneTimeSourcePrepJobView),
     provider_readiness: providerReadiness,
     product_readiness: oneTimeProductReadinessView({
@@ -69865,6 +69944,8 @@ async function oneTimeProductSystemPayload(req) {
       public_pages_noindex: true,
       no_external_write_without_approval: true,
       no_account_grants_from_interest: true,
+      appointment_intents_internal_only: true,
+      calendar_events_do_not_create_zoom_meetings: true,
     },
   };
 }
@@ -70000,6 +70081,81 @@ app.get('/api/bna/one-time/calendar', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/bna/one-time/calendar-events', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const program = await getOneTimeProductProgram(project.id);
+    const startRaw = body.start_at || body.startAt || '';
+    const startDate = startRaw ? new Date(startRaw) : null;
+    if (startRaw && Number.isNaN(startDate.getTime())) {
+      return res.status(400).json({ error: 'A valid start_at timestamp is required when scheduling a class event.' });
+    }
+    const durationMinutes = Math.max(15, Math.min(240, Number(body.duration_minutes || body.durationMinutes || 60) || 60));
+    const endDate = startDate ? new Date(startDate.getTime() + durationMinutes * 60000) : null;
+    const requestedStatus = String(body.event_status || body.status || 'draft').trim().toLowerCase();
+    const eventStatus = ['draft', 'planned', 'completed', 'canceled'].includes(requestedStatus) ? requestedStatus : 'draft';
+    const tierEligibility = oneTimeProductArray(body.tier_eligibility || body.tierEligibility);
+    const row = (await pool.query(
+      `INSERT INTO bna_program_calendar_events (
+         project_id, program_id, program_key, title, masechta, perek, mishnah_range,
+         start_at, end_at, timezone, class_type, tier_eligibility, visibility,
+         event_status, source_sheet_status, worksheet_status, slides_status,
+         question_deadline_at, worksheet_deadline_at, zoom_url, replay_url,
+         notes, metadata, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7,
+         $8::timestamptz, $9::timestamptz, $10, $11, $12::text[], $13,
+         $14, $15, $16, $17,
+         $18::timestamptz, $19::timestamptz, NULL, NULL,
+         $20, $21::jsonb, NOW()
+       )
+       RETURNING *`,
+      [
+        project.id,
+        program?.id || null,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        limitText(body.title || body.class_title || body.classTitle || 'OneTime Mishnayos class', 220),
+        limitText(body.masechta || '', 120) || null,
+        limitText(body.perek || '', 80) || null,
+        limitText(body.mishnah_range || body.mishnahRange || '', 120) || null,
+        startDate ? startDate.toISOString() : null,
+        endDate ? endDate.toISOString() : null,
+        limitText(body.timezone || 'Asia/Jerusalem', 100),
+        limitText(body.class_type || body.classType || 'live_class', 80),
+        tierEligibility,
+        normalizeOneTimeVisibility(body.visibility || 'admin_only'),
+        eventStatus,
+        normalizeOneTimeArtifactStatus(body.source_sheet_status || body.sourceSheetStatus || 'not_started'),
+        normalizeOneTimeArtifactStatus(body.worksheet_status || body.worksheetStatus || 'not_started'),
+        normalizeOneTimeArtifactStatus(body.slides_status || body.slidesStatus || 'not_started'),
+        body.question_deadline_at || body.questionDeadlineAt || null,
+        body.worksheet_deadline_at || body.worksheetDeadlineAt || null,
+        limitText(body.notes || '', 1000) || null,
+        JSON.stringify({
+          ...oneTimeProductJson(body.metadata),
+          source: 'operations_one_time_calendar_event',
+          duration_minutes: durationMinutes,
+          no_zoom_meeting_created: true,
+          no_access_granted: true,
+          external_calendar_write_performed: false,
+          external_write_performed: false,
+        }),
+      ]
+    )).rows[0];
+    res.json({
+      success: true,
+      calendar_event: oneTimeCalendarEventView(row),
+      no_zoom_meeting_created: true,
+      external_calendar_write_performed: false,
+      external_write_performed: false,
+      message: 'OneTime class event saved internally. No Zoom meeting or external calendar write was performed.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.get('/api/one-time/calendar', async (req, res) => {
   try {
     const project = await getRabbiProject();
@@ -70012,6 +70168,104 @@ app.get('/api/one-time/calendar', async (req, res) => {
     res.json({ success: true, ...calendar, public_only: true });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/appointment-intents', requireAdmin, async (req, res) => {
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const rows = (await pool.query(
+      `SELECT *
+       FROM bna_one_time_appointment_intents
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY created_at DESC, id DESC
+       LIMIT 200`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    )).rows;
+    res.json({
+      success: true,
+      appointment_intents: rows.map(oneTimeAppointmentRowView),
+      no_zoom_meeting_created: true,
+      external_calendar_write_performed: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/one-time/appointment-intents', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const program = await getOneTimeProductProgram(project.id);
+    const startRaw = body.starts_at || body.startsAt || body.start_at || body.startAt || '';
+    const startDate = startRaw ? new Date(startRaw) : null;
+    if (startRaw && Number.isNaN(startDate.getTime())) {
+      return res.status(400).json({ error: 'A valid starts_at timestamp is required when saving an appointment intent.' });
+    }
+    const appointmentType = normalizeOneTimeAppointmentType(body.appointment_type || body.appointmentType || 'consultation');
+    const status = normalizeOneTimeAppointmentStatus(body.status || 'intent');
+    const durationMinutes = Math.max(15, Math.min(180, Number(body.duration_minutes || body.durationMinutes || 30) || 30));
+    const bufferMinutes = Math.max(0, Math.min(120, Number(body.buffer_minutes || body.bufferMinutes || 10) || 10));
+    const row = (await pool.query(
+      `INSERT INTO bna_one_time_appointment_intents (
+         project_id, program_id, program_key, appointment_type, status,
+         parent_name, parent_email, student_name, starts_at,
+         duration_minutes, buffer_minutes, booking_window_days, cancellation_cutoff_hours,
+         entitlement_required, payment_required, parent_confirmation_required,
+         reminders_enabled, zoom_meeting_created, external_calendar_write_performed,
+         private_notes, parent_visible_summary, metadata, created_by, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5,
+         $6, $7, $8, $9::timestamptz,
+         $10, $11, $12, $13,
+         $14, $15, $16,
+         FALSE, FALSE, FALSE,
+         $17, $18, $19::jsonb, $20, NOW()
+       )
+       RETURNING *`,
+      [
+        project.id,
+        program?.id || null,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        appointmentType,
+        status,
+        limitText(body.parent_name || body.parentName || '', 180) || null,
+        normalizeEmail(body.parent_email || body.parentEmail || '') || null,
+        limitText(body.student_name || body.studentName || '', 180) || null,
+        startDate ? startDate.toISOString() : null,
+        durationMinutes,
+        bufferMinutes,
+        Math.max(1, Math.min(365, Number(body.booking_window_days || body.bookingWindowDays || 30) || 30)),
+        Math.max(0, Math.min(720, Number(body.cancellation_cutoff_hours || body.cancellationCutoffHours || 24) || 24)),
+        body.entitlement_required === true || body.entitlementRequired === true,
+        body.payment_required === true || body.paymentRequired === true,
+        body.parent_confirmation_required !== false && body.parentConfirmationRequired !== false,
+        limitText(body.private_notes || body.privateNotes || '', 2000) || null,
+        limitText(body.parent_visible_summary || body.parentVisibleSummary || '', 1000) || null,
+        JSON.stringify({
+          ...oneTimeProductJson(body.metadata),
+          source: 'operations_one_time_appointment_intent',
+          no_zoom_meeting_created: true,
+          no_external_calendar_write: true,
+          no_reminders_sent: true,
+          no_charge_or_invoice: true,
+          external_write_performed: false,
+        }),
+        limitText(req.opsUser || body.created_by || body.createdBy || 'dashboard', 120),
+      ]
+    )).rows[0];
+    res.json({
+      success: true,
+      appointment_intent: oneTimeAppointmentRowView(row),
+      no_zoom_meeting_created: true,
+      external_calendar_write_performed: false,
+      external_write_performed: false,
+      message: 'OneTime appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 

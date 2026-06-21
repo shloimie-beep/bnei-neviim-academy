@@ -8057,6 +8057,9 @@
                 return this.request('GET', '/one-time/calendar' + (params.toString() ? '?' + params.toString() : ''));
             },
             getOneTimeProductLeads() { return this.request('GET', '/product-leads'); },
+            createOneTimeCalendarEvent(payload = {}) { return this.request('POST', '/one-time/calendar-events', payload); },
+            getOneTimeAppointmentIntents() { return this.request('GET', '/one-time/appointment-intents'); },
+            createOneTimeAppointmentIntent(payload = {}) { return this.request('POST', '/one-time/appointment-intents', payload); },
             createOneTimeSourcePrepJob(payload = {}) { return this.request('POST', '/one-time/source-prep-jobs', payload); },
             previewOneTimeClassroomAssignment(payload = {}) { return this.request('POST', '/one-time/classroom/assignment-preview', payload); },
             createOneTimeClassroomAssignment(payload = {}) { return this.request('POST', '/one-time/classroom/assignments', payload); },
@@ -16133,6 +16136,44 @@
             `;
         }
 
+        function oneTimeOfferPriceLabel(offer = {}) {
+            if (offer.price_amount_cents === null || offer.price_amount_cents === undefined) return 'Pricing decision pending';
+            const currency = offer.currency || 'USD';
+            const prefix = currency === 'USD' ? '$' : `${currency} `;
+            return `${prefix}${(Number(offer.price_amount_cents || 0) / 100).toFixed(2)}`;
+        }
+
+        function renderOneTimeProductOfferCard(offer = {}) {
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(offer.title || offer.offer_key || 'OneTime offer')}</div>
+                    <div class="content-card-meta">${escapeHtml(offer.offer_key || '')} &middot; ${escapeHtml(offer.billing_model || '')} &middot; ${escapeHtml(offer.price_status || 'decision_pending')}</div>
+                    <p class="event-meta">${escapeHtml(oneTimeOfferPriceLabel(offer))} ${offer.duration_weeks ? `for ${escapeHtml(offer.duration_weeks)} weeks` : ''}</p>
+                    <div class="tag-list">
+                        ${(offer.access_entitlements || []).map(entitlement => `<span class="tag">${escapeHtml(entitlement)}</span>`).join('')}
+                        ${offer.upfront_payment_supported ? '<span class="tag">upfront supported</span>' : ''}
+                        ${offer.weekly_installments_supported ? '<span class="tag">weekly installments supported</span>' : ''}
+                        <span class="tag">checkout disabled</span>
+                        <span class="tag">payment links disabled</span>
+                        <span class="tag">manual access review</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderOneTimeProductOffersPanel() {
+            const offers = oneTimeProductSystem().product_offers || [];
+            return `
+                <section class="focus-panel" data-one-time-product-offers>
+                    <div class="task-section-header"><h3>Product Offers</h3><span>${offers.length} safe drafts</span></div>
+                    <p class="settings-disabled-note">$67 monthly membership and premium Masechta intensive are represented as internal product offers. Checkout, payment links, invoices, charges, refunds, and access automation remain disabled until the operator approves final billing fields.</p>
+                    <div class="content-section-grid">
+                        ${offers.map(renderOneTimeProductOfferCard).join('') || '<div class="task-empty">No OneTime product offers loaded yet.</div>'}
+                    </div>
+                </section>
+            `;
+        }
+
         function renderOneTimeProductDecisionPanel() {
             const system = oneTimeProductSystem();
             const decisions = Array.isArray(system.decisions) ? system.decisions : [];
@@ -16200,7 +16241,7 @@
                     </div>
                     <div class="task-actions" style="margin-top:12px;">
                         <button class="task-action primary" type="button" onclick="setCurrentSection('schedule')">Add Class</button>
-                        <button class="task-action" type="button" onclick="openBnaHelperWithPrompt('Create the One Time appointment booking setup task. Include appointment type, Rabbi availability, timezone, buffers, booking window, cancellation cutoff, entitlement/payment requirement, confirmation text, reminder policy, private notes, parent-visible summary, and no Zoom meeting creation.')">Add Appointment setup</button>
+                        <button class="task-action" type="button" onclick="setCurrentSection('schedule')">Add Appointment</button>
                     </div>
                     <div class="content-section-grid" style="margin-top:14px;">
                         ${sections.map(section => `
@@ -16259,6 +16300,108 @@
             `;
         }
 
+        function renderOneTimeAvailabilityRuleCard(rule = {}) {
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(rule.title || rule.rule_key || 'Availability rule')}</div>
+                    <div class="content-card-meta">${escapeHtml(rule.rule_type || 'recurring')} &middot; ${escapeHtml(rule.timezone || 'Asia/Jerusalem')} &middot; ${escapeHtml(rule.status || 'draft')}</div>
+                    <p class="event-meta">${escapeHtml((rule.days_of_week || []).join(', ') || 'days pending')} at ${escapeHtml(rule.start_time_local || 'time pending')} for ${escapeHtml(rule.duration_minutes || 60)} minutes</p>
+                    <div class="tag-list">
+                        <span class="tag">capacity ${escapeHtml(rule.capacity_min || 'min pending')} / ${escapeHtml(rule.capacity_max || 'max pending')}</span>
+                        <span class="tag">prep ${escapeHtml(rule.prep_block_minutes || 0)}m</span>
+                        <span class="tag">follow-up ${escapeHtml(rule.follow_up_block_minutes || 0)}m</span>
+                        <span class="tag">no external calendar write</span>
+                        <span class="tag">no Zoom meeting</span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderOneTimeAppointmentIntentRow(intent = {}) {
+            return `
+                <div class="calendar-event-row">
+                    <div>
+                        <strong>${escapeHtml(intent.parent_name || intent.parent_email || intent.appointment_type || 'Appointment intent')}</strong>
+                        <div class="event-meta">${escapeHtml(intent.appointment_type || '')} &middot; ${escapeHtml(intent.status || 'intent')} &middot; ${escapeHtml(formatDateTime(intent.starts_at))}</div>
+                        <div class="event-meta">${escapeHtml(intent.student_name || 'student pending')} &middot; ${escapeHtml(intent.parent_visible_summary || intent.private_notes || 'No notes')}</div>
+                    </div>
+                    <span class="tag">internal only</span>
+                </div>
+            `;
+        }
+
+        function renderOneTimeAvailabilityBookingPanel() {
+            const system = oneTimeProductSystem();
+            const availability = system.availability || {};
+            const rules = availability.rules || [];
+            const appointmentTypes = system.appointment_types || [];
+            const intents = system.appointment_intents || [];
+            return `
+                <section class="focus-panel" data-one-time-availability-booking>
+                    <div class="task-section-header"><h3>Availability and Booking</h3><span>${rules.length} rules / ${intents.length} intents</span></div>
+                    <p class="settings-disabled-note">Availability, office hours, progress calls, placement calls, and consultation intents are stored internally. These controls do not create Zoom meetings, reminders, charges, or external calendar events.</p>
+                    <div class="content-section-grid">
+                        ${rules.map(renderOneTimeAvailabilityRuleCard).join('') || '<div class="task-empty">No availability rules loaded yet.</div>'}
+                    </div>
+                </section>
+                <section class="focus-panel">
+                    <div class="task-section-header"><h3>Add Appointment Intent</h3><span>internal record</span></div>
+                    <form class="settings-form-grid" onsubmit="createOneTimeAppointmentIntent(event)">
+                        <label>Type<select id="oneTimeAppointmentType">${(appointmentTypes.length ? appointmentTypes : [{ appointment_type: 'consultation' }, { appointment_type: 'placement_call' }, { appointment_type: 'parent_progress_call' }, { appointment_type: 'student_progress_call' }, { appointment_type: 'office_hours' }]).map(type => `<option value="${escapeHtml(type.appointment_type)}">${escapeHtml(String(type.appointment_type || '').replace(/_/g, ' '))}</option>`).join('')}</select></label>
+                        <label>Start<input id="oneTimeAppointmentStart" type="datetime-local"></label>
+                        <label>Parent<input id="oneTimeAppointmentParentName" placeholder="Parent name"></label>
+                        <label>Parent email<input id="oneTimeAppointmentParentEmail" type="email" placeholder="parent@example.com"></label>
+                        <label>Student<input id="oneTimeAppointmentStudentName" placeholder="Student name"></label>
+                        <label>Duration<input id="oneTimeAppointmentDuration" type="number" min="15" max="180" value="30"></label>
+                        <label>Buffer<input id="oneTimeAppointmentBuffer" type="number" min="0" max="120" value="10"></label>
+                        <label>Private notes<textarea id="oneTimeAppointmentPrivateNotes" rows="2" placeholder="Internal notes"></textarea></label>
+                        <label>Parent summary<textarea id="oneTimeAppointmentSummary" rows="2" placeholder="Parent-visible summary"></textarea></label>
+                        <button class="task-action primary" type="submit">Add Appointment</button>
+                    </form>
+                    <div class="calendar-event-list" style="margin-top:12px;">
+                        ${intents.slice(0, 8).map(renderOneTimeAppointmentIntentRow).join('') || '<div class="task-empty">No appointment intents saved yet.</div>'}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderOneTimePortalFoundationCard(label, foundation = {}) {
+            const counts = foundation.loaded_counts || {};
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(label)} Portal Foundation</div>
+                    <div class="content-card-meta">${escapeHtml(foundation.scoped_project_key || 'one_time_mishnah_class')} &middot; One Time scoped</div>
+                    <ul class="content-card-summary">
+                        ${(foundation.sections || []).map(section => `<li><strong>${escapeHtml(String(section).replace(/_/g, ' '))}</strong></li>`).join('')}
+                    </ul>
+                    <div class="tag-list">
+                        <span class="tag">calendar ${escapeHtml(counts.calendar_events || 0)}</span>
+                        <span class="tag">offers ${escapeHtml(counts.offers || 0)}</span>
+                        <span class="tag">appointments ${escapeHtml(counts.appointment_intents || 0)}</span>
+                        <span class="tag">library ${escapeHtml(counts.library_items || 0)}</span>
+                        ${foundation.join_class_enabled === false ? '<span class="tag">join gated</span>' : ''}
+                        <span class="tag">no BNA student data</span>
+                    </div>
+                    ${foundation.join_class_blocker ? `<p class="settings-disabled-note">${escapeHtml(foundation.join_class_blocker)}</p>` : ''}
+                </article>
+            `;
+        }
+
+        function renderOneTimePortalFoundationsPanel() {
+            const portals = oneTimeProductSystem().portal_foundations || {};
+            return `
+                <section class="focus-panel" data-one-time-portal-foundations>
+                    <div class="task-section-header"><h3>Portal Foundations</h3><span>parent / student / provider</span></div>
+                    <p class="settings-disabled-note">Parent, student, and provider portal contracts are scoped to One Time. Join Class, billing actions, invoices, and access automation remain gated until Zoom, entitlement, and billing decisions are approved.</p>
+                    <div class="content-section-grid">
+                        ${renderOneTimePortalFoundationCard('Parent', portals.parent || {})}
+                        ${renderOneTimePortalFoundationCard('Student', portals.student || {})}
+                        ${renderOneTimePortalFoundationCard('Provider', portals.provider || {})}
+                    </div>
+                </section>
+            `;
+        }
+
         function renderProviderProgramWorkspace(providers = []) {
             const provider = shellerProviderRecord(providers);
             const section = serviceProviderSection;
@@ -16302,7 +16445,7 @@
                         </section>
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
-                    ${section === 'tiers' ? `${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}` : ''}
+                    ${section === 'tiers' ? `${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}` : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}
@@ -16778,11 +16921,23 @@
             return `
                 <section class="focus-panel">
                     <div class="task-section-header"><h3>Provider Program Schedule</h3><span>${events.length} items</span></div>
-                    <p class="settings-disabled-note">Simple schedule only: next class, worksheet/source-sheet deadlines, structured question deadlines, optional class link, and access notices.</p>
+                    <p class="settings-disabled-note">Simple schedule only: next class, worksheet/source-sheet deadlines, structured question deadlines, optional class link, and access notices. Add Class saves an internal OneTime calendar event only; it does not create a Zoom meeting or external calendar event.</p>
+                    <form class="settings-form-grid" onsubmit="createOneTimeCalendarEvent(event)">
+                        <label>Class title<input id="oneTimeClassTitle" placeholder="OneTime Mishnayos class"></label>
+                        <label>Start<input id="oneTimeClassStart" type="datetime-local"></label>
+                        <label>Duration<input id="oneTimeClassDuration" type="number" min="15" max="240" value="60"></label>
+                        <label>Masechta<input id="oneTimeClassMasechta" placeholder="Berakhot"></label>
+                        <label>Perek<input id="oneTimeClassPerek" placeholder="1"></label>
+                        <label>Mishnah range<input id="oneTimeClassMishnahRange" placeholder="1:1-1:3"></label>
+                        <label>Visibility<select id="oneTimeClassVisibility"><option value="admin_only">Admin only</option><option value="parent_visible">Parent visible</option><option value="student_visible">Student visible</option><option value="public">Public</option></select></label>
+                        <label>Notes<textarea id="oneTimeClassNotes" rows="2" placeholder="Internal schedule notes"></textarea></label>
+                        <button class="task-action primary" type="submit">Add Class</button>
+                    </form>
                     <div class="calendar-event-list">
                         ${events.map(renderCalendarEventRow).join('')}
                     </div>
                 </section>
+                ${renderOneTimeAvailabilityBookingPanel()}
                 <section class="focus-panel">
                     <div class="task-section-header"><h3>Source Prep Jobs</h3><span>${sourcePrepJobs.length}</span></div>
                     <div class="content-section-grid">
@@ -16798,6 +16953,51 @@
                     <button class="task-action" type="button" onclick="createOneTimeSourcePrepFixture()">Create fixture source-prep draft</button>
                 </section>
             `;
+        }
+
+        async function createOneTimeCalendarEvent(event) {
+            event?.preventDefault?.();
+            try {
+                await api.createOneTimeCalendarEvent({
+                    title: document.getElementById('oneTimeClassTitle')?.value || 'OneTime Mishnayos class',
+                    start_at: document.getElementById('oneTimeClassStart')?.value || '',
+                    duration_minutes: Number(document.getElementById('oneTimeClassDuration')?.value || 60),
+                    masechta: document.getElementById('oneTimeClassMasechta')?.value || '',
+                    perek: document.getElementById('oneTimeClassPerek')?.value || '',
+                    mishnah_range: document.getElementById('oneTimeClassMishnahRange')?.value || '',
+                    visibility: document.getElementById('oneTimeClassVisibility')?.value || 'admin_only',
+                    notes: document.getElementById('oneTimeClassNotes')?.value || '',
+                    event_status: 'draft',
+                });
+                rabbiLaunchNotice = 'OneTime class event saved internally. No Zoom meeting or external calendar write was performed.';
+                event.target?.reset?.();
+                await refreshRabbiLaunchData();
+            } catch (error) {
+                alert(error.message || 'Could not save OneTime class event.');
+            }
+        }
+
+        async function createOneTimeAppointmentIntent(event) {
+            event?.preventDefault?.();
+            try {
+                await api.createOneTimeAppointmentIntent({
+                    appointment_type: document.getElementById('oneTimeAppointmentType')?.value || 'consultation',
+                    starts_at: document.getElementById('oneTimeAppointmentStart')?.value || '',
+                    parent_name: document.getElementById('oneTimeAppointmentParentName')?.value || '',
+                    parent_email: document.getElementById('oneTimeAppointmentParentEmail')?.value || '',
+                    student_name: document.getElementById('oneTimeAppointmentStudentName')?.value || '',
+                    duration_minutes: Number(document.getElementById('oneTimeAppointmentDuration')?.value || 30),
+                    buffer_minutes: Number(document.getElementById('oneTimeAppointmentBuffer')?.value || 10),
+                    private_notes: document.getElementById('oneTimeAppointmentPrivateNotes')?.value || '',
+                    parent_visible_summary: document.getElementById('oneTimeAppointmentSummary')?.value || '',
+                    status: 'intent',
+                });
+                rabbiLaunchNotice = 'OneTime appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.';
+                event.target?.reset?.();
+                await refreshRabbiLaunchData();
+            } catch (error) {
+                alert(error.message || 'Could not save OneTime appointment intent.');
+            }
         }
 
         async function createOneTimeSourcePrepFixture() {
