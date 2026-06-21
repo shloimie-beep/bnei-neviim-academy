@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-06-21T16:44:00.049Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Gamification readiness API is implemented and no-write",
+      "ok": true,
+      "detail": "11 automatic, 6 Rabbi-awarded"
+    },
+    {
+      "name": "Operations ships badge audit readiness panel",
+      "ok": true,
+      "detail": "Operations badge panel marker and guardrails shipped"
+    }
+  ],
+  "requirement_id": "REQ-20260619-310",
+  "status": "implemented_read_only",
+  "automatic_badges": 11,
+  "rabbi_awarded_badges": 6
+}
