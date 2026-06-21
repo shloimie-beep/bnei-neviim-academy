@@ -1,6 +1,6 @@
 # Status
 
-Status as of 2026-06-21T15:40:00+03:00.
+Status as of 2026-06-21T16:05:00+03:00.
 
 Batch 0 and Batch 1 are done locally. The successor run is the single active
 run. The execution CLI now validates structured requirements, reports the next
@@ -195,3 +195,30 @@ clearly marked internal One Time class-event and appointment-intent records.
 
 Next unblocked batch: `REQ-20260619-308` Vimeo and member-library pipeline.
 <!-- batch-9-10:end -->
+
+<!-- batch-12:start -->
+## Batch 12 - Zoom Meeting And Attendance Foundation
+
+Status: implemented local / deploy pending
+
+The existing first-party Zoom integration helper now models the credential-free
+parts of Batch 12 without creating a real Zoom meeting. It includes
+Server-to-Server OAuth token retrieval with cache support, API client
+scaffolding, meeting and registrant request builders, participant/recording/
+transcript/summary readback request builders, webhook signature verification,
+replay protection, idempotency keys, quick-ack/queued/dead-letter planning, and
+attendance reconciliation that treats dashboard clicks as non-attendance.
+
+The One Time migration now declares internal Zoom foundation tables for
+meetings, occurrences, registrants, protected join references, webhook events,
+participant events, attendance results, recording/transcript/summary assets,
+retry jobs, and audit events. Operations > Live Classes now describes the full
+no-write Zoom/attendance foundation while keeping meeting creation, registrant
+writes, live webhook attendance writes, join redirects, external sends, portal
+publishing, recording/transcript/summary reads, and attendance corrections
+disabled.
+
+Local focused verification passed. Next required step is commit, push, Railway
+deploy, standard live smoke, focused One Time Zoom/attendance live smoke, then
+mark `REQ-20260619-307` verified live and continue automatically.
+<!-- batch-12:end -->

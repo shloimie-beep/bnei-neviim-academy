@@ -40354,7 +40354,10 @@ app.get('/api/bna/integrations/zoom/status', requireAdmin, (req, res) => {
   res.json({
     success: true,
     card: zoomIntegration.getZoomReadiness({ config: zoomRuntimeConfig }),
+    api_readiness: zoomIntegration.buildZoomApiReadiness({ config: zoomRuntimeConfig }),
     automation_readiness: zoomIntegration.buildZoomSessionAutomationPreview({}, { config: zoomRuntimeConfig }),
+    workflow_foundation: zoomIntegration.buildZoomSessionWorkflowModel({}, { config: zoomRuntimeConfig }),
+    webhook_processing: zoomIntegration.buildZoomWebhookProcessingPlan({ event: 'preview' }),
   });
 });
 

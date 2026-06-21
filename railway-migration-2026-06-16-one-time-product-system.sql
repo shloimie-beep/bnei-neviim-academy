@@ -383,6 +383,214 @@ CREATE INDEX IF NOT EXISTS idx_bna_one_time_appointment_project_status
 CREATE INDEX IF NOT EXISTS idx_bna_one_time_appointment_program_type
   ON bna_one_time_appointment_intents (program_key, appointment_type, created_at DESC);
 
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_meetings (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  program_id BIGINT REFERENCES bna_product_programs(id) ON DELETE SET NULL,
+  calendar_event_id BIGINT REFERENCES bna_program_calendar_events(id) ON DELETE SET NULL,
+  live_session_id BIGINT,
+  program_key TEXT NOT NULL DEFAULT 'one_time_mishnah_class',
+  zoom_meeting_id TEXT,
+  zoom_uuid TEXT,
+  host_user TEXT,
+  status TEXT NOT NULL DEFAULT 'intent',
+  request_preview JSONB DEFAULT '{}'::jsonb,
+  security_settings JSONB DEFAULT '{}'::jsonb,
+  protected_join_policy JSONB DEFAULT '{}'::jsonb,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_zoom_meetings DROP CONSTRAINT IF EXISTS bna_one_time_zoom_meetings_status_check;
+ALTER TABLE bna_one_time_zoom_meetings
+  ADD CONSTRAINT bna_one_time_zoom_meetings_status_check
+  CHECK (status IN ('intent', 'request_built', 'created', 'cancelled', 'failed', 'archived'));
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_meetings_project
+  ON bna_one_time_zoom_meetings (project_id, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_meetings_calendar
+  ON bna_one_time_zoom_meetings (calendar_event_id);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_meetings_zoom_id
+  ON bna_one_time_zoom_meetings (zoom_meeting_id);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_occurrences (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  zoom_meeting_row_id BIGINT REFERENCES bna_one_time_zoom_meetings(id) ON DELETE CASCADE,
+  occurrence_id TEXT,
+  scheduled_start_at TIMESTAMPTZ,
+  actual_start_at TIMESTAMPTZ,
+  actual_end_at TIMESTAMPTZ,
+  status TEXT NOT NULL DEFAULT 'planned',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_occurrences_meeting
+  ON bna_one_time_zoom_occurrences (zoom_meeting_row_id, scheduled_start_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_registrants (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  zoom_meeting_row_id BIGINT REFERENCES bna_one_time_zoom_meetings(id) ON DELETE CASCADE,
+  member_id BIGINT,
+  registrant_id TEXT,
+  registrant_email TEXT,
+  registrant_status TEXT NOT NULL DEFAULT 'intent',
+  request_preview JSONB DEFAULT '{}'::jsonb,
+  join_reference_id TEXT,
+  raw_join_url_stored BOOLEAN NOT NULL DEFAULT FALSE,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_zoom_registrants DROP CONSTRAINT IF EXISTS bna_one_time_zoom_registrants_status_check;
+ALTER TABLE bna_one_time_zoom_registrants
+  ADD CONSTRAINT bna_one_time_zoom_registrants_status_check
+  CHECK (registrant_status IN ('intent', 'request_built', 'created', 'revoked', 'failed', 'archived'));
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_registrants_meeting
+  ON bna_one_time_zoom_registrants (zoom_meeting_row_id, registrant_status);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_registrants_member
+  ON bna_one_time_zoom_registrants (member_id);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_join_references (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  zoom_registrant_row_id BIGINT REFERENCES bna_one_time_zoom_registrants(id) ON DELETE CASCADE,
+  member_id BIGINT,
+  reference_status TEXT NOT NULL DEFAULT 'pending',
+  protected_reference_hash TEXT,
+  valid_from TIMESTAMPTZ,
+  valid_until TIMESTAMPTZ,
+  revoked_at TIMESTAMPTZ,
+  raw_zoom_join_url_returned BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_zoom_join_references DROP CONSTRAINT IF EXISTS bna_one_time_zoom_join_refs_status_check;
+ALTER TABLE bna_one_time_zoom_join_references
+  ADD CONSTRAINT bna_one_time_zoom_join_refs_status_check
+  CHECK (reference_status IN ('pending', 'active', 'revoked', 'expired', 'archived'));
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_join_refs_member
+  ON bna_one_time_zoom_join_references (member_id, reference_status);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_webhook_events (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  event_type TEXT NOT NULL,
+  event_id TEXT,
+  idempotency_key TEXT NOT NULL,
+  zoom_meeting_id TEXT,
+  zoom_uuid TEXT,
+  signature_status TEXT NOT NULL DEFAULT 'not_checked',
+  replay_status TEXT NOT NULL DEFAULT 'not_checked',
+  processing_status TEXT NOT NULL DEFAULT 'queued',
+  payload_summary JSONB DEFAULT '{}'::jsonb,
+  error TEXT,
+  received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  processed_at TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_one_time_zoom_webhook_idempotency
+  ON bna_one_time_zoom_webhook_events (idempotency_key);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_webhook_type_received
+  ON bna_one_time_zoom_webhook_events (event_type, received_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_participant_events (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  zoom_webhook_event_id BIGINT REFERENCES bna_one_time_zoom_webhook_events(id) ON DELETE SET NULL,
+  zoom_meeting_row_id BIGINT REFERENCES bna_one_time_zoom_meetings(id) ON DELETE SET NULL,
+  occurrence_id TEXT,
+  member_id BIGINT,
+  registrant_id TEXT,
+  participant_user_id TEXT,
+  participant_email TEXT,
+  event_type TEXT NOT NULL,
+  occurred_at TIMESTAMPTZ,
+  source TEXT NOT NULL DEFAULT 'zoom_webhook',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_participant_meeting
+  ON bna_one_time_zoom_participant_events (zoom_meeting_row_id, occurred_at);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_participant_member
+  ON bna_one_time_zoom_participant_events (member_id, occurred_at);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_attendance_results (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  zoom_meeting_row_id BIGINT REFERENCES bna_one_time_zoom_meetings(id) ON DELETE SET NULL,
+  member_id BIGINT,
+  attendance_status TEXT NOT NULL DEFAULT 'needs_review',
+  first_join_at TIMESTAMPTZ,
+  final_leave_at TIMESTAMPTZ,
+  total_duration_seconds INTEGER NOT NULL DEFAULT 0,
+  attendance_percentage INTEGER NOT NULL DEFAULT 0,
+  dashboard_click_is_attendance BOOLEAN NOT NULL DEFAULT FALSE,
+  correction_status TEXT NOT NULL DEFAULT 'none',
+  correction_reason TEXT,
+  audit_history JSONB DEFAULT '[]'::jsonb,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_zoom_attendance_results DROP CONSTRAINT IF EXISTS bna_one_time_zoom_attendance_status_check;
+ALTER TABLE bna_one_time_zoom_attendance_results
+  ADD CONSTRAINT bna_one_time_zoom_attendance_status_check
+  CHECK (attendance_status IN ('on_time', 'late', 'partial', 'absent', 'excused', 'technical_issue', 'needs_review'));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_one_time_zoom_attendance_unique
+  ON bna_one_time_zoom_attendance_results (zoom_meeting_row_id, member_id)
+  WHERE member_id IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_assets (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  zoom_meeting_row_id BIGINT REFERENCES bna_one_time_zoom_meetings(id) ON DELETE SET NULL,
+  asset_type TEXT NOT NULL,
+  provider_asset_id TEXT,
+  status TEXT NOT NULL DEFAULT 'discovered',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+ALTER TABLE bna_one_time_zoom_assets DROP CONSTRAINT IF EXISTS bna_one_time_zoom_assets_type_check;
+ALTER TABLE bna_one_time_zoom_assets
+  ADD CONSTRAINT bna_one_time_zoom_assets_type_check
+  CHECK (asset_type IN ('recording', 'audio_only', 'transcript', 'summary'));
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_assets_meeting
+  ON bna_one_time_zoom_assets (zoom_meeting_row_id, asset_type, status);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_retry_jobs (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  job_type TEXT NOT NULL,
+  idempotency_key TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'queued',
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  next_attempt_at TIMESTAMPTZ,
+  error TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_one_time_zoom_retry_idempotency
+  ON bna_one_time_zoom_retry_jobs (idempotency_key);
+
+CREATE TABLE IF NOT EXISTS bna_one_time_zoom_audit_events (
+  id BIGSERIAL PRIMARY KEY,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  actor TEXT NOT NULL DEFAULT 'system',
+  action TEXT NOT NULL,
+  target_type TEXT,
+  target_id TEXT,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_one_time_zoom_audit_project_created
+  ON bna_one_time_zoom_audit_events (project_id, created_at DESC);
+
 WITH project AS (
   SELECT id FROM bna_projects WHERE project_key = 'one_time_mishnah_class' LIMIT 1
 )

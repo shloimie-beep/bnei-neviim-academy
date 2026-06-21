@@ -368,3 +368,36 @@ Intermediate focused live-smoke failures recorded:
   external send path. The final smoke checks external-send, Zoom, and payment
   labels specifically.
 <!-- batch-9-10:end -->
+
+<!-- batch-12:start -->
+## Batch 12 Test Results
+
+Recorded after Zoom token/cache scaffolding, secure meeting/registrant request
+builders, webhook signature/replay/idempotency planning, attendance
+reconciliation, internal schema, Operations readiness copy, and focused live
+smoke script implementation:
+
+- PASS `node --check src/lib/integrations/zoom.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-zoom-attendance-live.mjs`
+- PASS `node --test tests/one-time-zoom-attendance-automation.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js`
+
+Focused Batch 12 test result:
+
+- Tests: 25 passed, 0 failed.
+- Covered: Zoom preview contract, token cache, API client readiness, secure
+  meeting request defaults, protected registrant request defaults, participant/
+  recording/transcript/summary request builders, webhook signature verification,
+  replay/idempotency/queue/dead-letter plan, attendance reconnect merging,
+  dashboard-click exclusion, workflow model, route metadata, Operations UI copy,
+  and internal Zoom foundation tables.
+
+Pending after commit/deploy:
+
+- `npm run bna:run:validate`
+- `node scripts/audit-secrets.mjs`
+- `git diff --check`
+- `npm run app:smoke`
+- `node scripts/smoke-one-time-zoom-attendance-live.mjs`
+- `npm run railway:doctor`
+<!-- batch-12:end -->

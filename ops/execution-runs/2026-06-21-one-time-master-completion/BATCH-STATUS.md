@@ -13,7 +13,7 @@
 | 8 | REQ-20260621-504 | done | Email and Resend UX deployed and live-smoked without sends. |
 | 9 | REQ-20260619-306 | done | Product, schedule, booking, and portal foundations deployed and live-smoked without charges, Zoom, sends, or external calendar writes. |
 | 11 | REQ-20260619-308 | not_started | Vimeo and member library. |
-| 12 | REQ-20260619-307 | not_started | Zoom and attendance. |
+| 12 | REQ-20260619-307 | implemented_local | Zoom and attendance foundation implemented locally; deploy/live smoke pending. |
 | 13 | REQ-20260619-308 | not_started | Recording/transcript/publication pipeline. |
 | 14 | REQ-20260619-309 | not_started | Transcript privacy. |
 | 15 | REQ-20260619-310 | not_started | Gamification. |

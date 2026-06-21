@@ -527,3 +527,57 @@ Intermediate focused live-smoke failures recorded:
   failed because the smoke over-flagged an unrelated in-app `Send` control. The
   forbidden-action check now targets external sends, Zoom, and payment actions.
 <!-- batch-9-10:end -->
+
+<!-- batch-12:start -->
+## Batch 12 Evidence - Zoom Meeting And Attendance Foundation
+
+Requirement: `REQ-20260619-307`
+
+Status: implemented local / deploy pending
+
+Implementation evidence:
+
+- Zoom API/token/cache/request-builder/webhook/attendance helpers:
+  `src/lib/integrations/zoom.js`
+- Zoom status route expanded with API readiness, workflow foundation, and
+  webhook-processing preview: `server.js`
+- Operations Live Classes Zoom readiness panel:
+  `public/operations.html`
+- Route registry metadata:
+  `ops/route-registry.json`
+- Forward-only internal Zoom foundation schema:
+  `railway-migration-2026-06-16-one-time-product-system.sql`
+- Focused live smoke script:
+  `scripts/smoke-one-time-zoom-attendance-live.mjs`
+- Focused tests:
+  `tests/one-time-zoom-attendance-automation.test.js`
+
+Implemented behavior:
+
+- Token retrieval uses Server-to-Server OAuth credentials and cache support
+  with secrets redacted from readiness output.
+- Meeting request builder enforces unique meeting per session, no PMI,
+  generated passcode path, waiting room, join-before-host disabled,
+  registration enabled, and no student host-start URL exposure.
+- Registrant request builder stages protected join references without returning
+  raw join URLs to students.
+- Report readers are modeled for participant reports, recordings, transcripts,
+  and summaries without live reads in this batch.
+- Webhook plan includes signature verification, replay protection, idempotency,
+  quick acknowledgement, queued processing, retry, and dead-letter state.
+- Attendance reconciliation ignores dashboard clicks, merges reconnects, and
+  maps Zoom join/leave data to on-time, late, partial, absent, excused, or
+  technical-issue states with audit-ready correction metadata.
+- Internal tables model Zoom meetings, occurrences, registrants, join
+  references, webhook events, participant events, attendance results, assets,
+  retry jobs, and audit events.
+
+Deployment and live evidence:
+
+- Implementation commit: pending.
+- Pushed commit: pending.
+- Deployed commit: pending.
+- Railway deployment: pending.
+- Standard live smoke: pending.
+- Focused One Time Zoom/attendance live smoke: pending.
+<!-- batch-12:end -->

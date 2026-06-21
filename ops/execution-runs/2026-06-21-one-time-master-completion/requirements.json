@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T15:40:00+03:00",
+  "updated_at": "2026-06-21T16:05:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -1006,7 +1006,7 @@
       "id": "REQ-20260619-307",
       "title": "Zoom meeting and attendance foundation",
       "expected_result": "Zoom foundation is production-ready in code without creating a real class meeting.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0012"
@@ -1021,20 +1021,32 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implemented_local",
       "can_continue_without_operator": true,
-      "next_action": "Complete API client, token caching, session models, webhook verification, attendance calculations, and mocked tests.",
+      "next_action": "Deploy Batch 12 safe app-visible Zoom/attendance foundation changes; run standard and focused live smokes; then mark verified_live and continue to the next unblocked batch.",
       "acceptance_criteria": [
         "host start URL never exposed",
         "dashboard click is not attendance",
         "webhooks idempotent and replay-protected"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --check src/lib/integrations/zoom.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-zoom-attendance-live.mjs",
+        "node --test tests/one-time-zoom-attendance-automation.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js"
+      ],
       "implementation_files": [
         "src/lib/integrations/zoom.js",
         "server.js",
-        "tests/one-time-zoom-attendance-automation.test.js"
+        "public/operations.html",
+        "ops/route-registry.json",
+        "railway-migration-2026-06-16-one-time-product-system.sql",
+        "tests/one-time-zoom-attendance-automation.test.js",
+        "scripts/smoke-one-time-zoom-attendance-live.mjs"
       ],
       "implementation_commit": "",
       "pushed_commit": "",
@@ -1042,7 +1054,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T16:05:00+03:00"
     },
     {
       "id": "REQ-20260619-308",

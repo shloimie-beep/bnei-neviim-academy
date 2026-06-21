@@ -215,3 +215,38 @@ Continue automatically with Batch 11 / `REQ-20260619-308` Vimeo and
 member-library pipeline. Do not perform a real Vimeo upload without user-level
 authorization and token.
 <!-- batch-9-10:end -->
+
+<!-- batch-12:start -->
+## Batch 12 Handoff
+
+Zoom meeting and attendance foundation is implemented locally and focused tests
+passed. Deployment/live-smoke evidence is still pending.
+
+- Requirement: `REQ-20260619-307`
+- Implementation status: `implemented_local`
+- Key files:
+  `src/lib/integrations/zoom.js`, `server.js`, `public/operations.html`,
+  `ops/route-registry.json`,
+  `railway-migration-2026-06-16-one-time-product-system.sql`,
+  `tests/one-time-zoom-attendance-automation.test.js`,
+  `scripts/smoke-one-time-zoom-attendance-live.mjs`
+- Focused Batch 12 tests: 25 passed, 0 failed.
+- Guardrails: no real Zoom meeting, registrant, webhook attendance write,
+  attendance correction, recording read, transcript read, summary read, external
+  send, portal publish, participant invite, or host-start URL exposure.
+
+Next exact actions:
+
+```powershell
+npm run bna:run:validate
+node scripts/audit-secrets.mjs
+git diff --check
+git add src/lib/integrations/zoom.js server.js public/operations.html ops/route-registry.json railway-migration-2026-06-16-one-time-product-system.sql tests/one-time-zoom-attendance-automation.test.js scripts/smoke-one-time-zoom-attendance-live.mjs ops/execution-runs/2026-06-21-one-time-master-completion
+git commit -m "Implement One Time Zoom attendance foundation"
+git push origin codex/agent-control-center-20260619
+```
+
+Then deploy the pushed commit to Railway, run standard and focused live smokes,
+record deployment ID/commit, mark `REQ-20260619-307` verified live, and continue
+automatically to the next unblocked batch.
+<!-- batch-12:end -->

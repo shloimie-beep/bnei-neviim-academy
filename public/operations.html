@@ -31859,6 +31859,7 @@
                     stagedRegistrantPreviews: liveEligibleMembers.filter(member => Boolean(member.email)).length,
                 },
                 gates: {
+                    tokenReadback: false,
                     meetingCreate: false,
                     registrantWrite: false,
                     joinRedirect: false,
@@ -31866,11 +31867,13 @@
                     correctionWrite: false,
                 },
                 sections: [
+                    ['API client and token cache', 'Local contract', 'Server-to-Server OAuth token retrieval, caching, retry, rate-limit handling, host readback, and license readiness are modeled; no token is exposed in the UI.'],
+                    ['Meeting request builder', 'Local contract', 'Unique per-session meeting payloads disable PMI, generate a passcode, enable waiting room and registration, and keep host start URLs out of student responses.'],
                     ['Session creation preview', 'Preview ready', 'Meeting payloads can be staged locally; no Zoom meeting is created.'],
-                    ['Registrant staging', 'Local contract', 'Eligible live_plus_library members can be counted for preview; no Zoom registrant is created.'],
-                    ['Join redirect', 'Local contract', 'Member portal access rules are documented; no live redirect is enabled here.'],
-                    ['Webhook attendance preview', 'Preview ready', 'Participant events can be mapped to attendance drafts; no live webhook is accepted.'],
-                    ['Correction pipeline', 'Local contract', 'Operations can draft review corrections; no attendance row is changed by this readiness panel.'],
+                    ['Registrant and join references', 'Local contract', 'Eligible live_plus_library members can be staged with protected join references; no Zoom registrant is created and raw join URLs stay server-side.'],
+                    ['Webhook security', 'Local contract', 'Signature verification, replay protection, idempotency, quick acknowledgement, queued processing, retry, and dead-letter states are modeled for later live webhooks.'],
+                    ['Attendance reconciliation', 'Local contract', 'Dashboard clicks are not attendance; Zoom join/leave events are merged across reconnects and mapped to on-time, late, partial, absent, excused, or technical-issue states with audit-ready corrections.'],
+                    ['Recording/report readers', 'Local contract', 'Participant report, recording, transcript, and summary readers are modeled for mocked readback only; no cloud recording or transcript write runs here.'],
                     ['Release and live smoke', 'Blocked', 'Real Zoom writes require operator approval, DEC-20260619-304, release, and live smoke proof.'],
                 ],
             };
@@ -31882,7 +31885,7 @@
             return `
                     <section class="focus-panel" data-one-time-zoom-automation-readiness aria-label="Zoom attendance automation readiness">
                         <div class="task-section-header"><h3>Zoom Attendance Automation</h3><span>${escapeHtml(state.requirementId)}</span></div>
-                        <div class="settings-disabled-note">Local preview only. No Zoom meeting, registrant, webhook attendance write, join redirect, external send, portal publish, or attendance correction is enabled by this panel.</div>
+                        <div class="settings-disabled-note">Local preview only. No Zoom meeting, registrant, webhook attendance write, join redirect, external send, portal publish, recording read/write, transcript read/write, summary read/write, or attendance correction is enabled by this panel.</div>
                         <div class="task-overview-grid">
                             ${renderMetricButton('Scheduled', state.summary.scheduledSessions, 'Scheduled or live sessions available for local preview.', '')}
                             ${renderMetricButton('Zoom links', state.summary.sessionsWithZoomLink, 'Sessions with a manually stored Zoom link or meeting ID.', '')}
