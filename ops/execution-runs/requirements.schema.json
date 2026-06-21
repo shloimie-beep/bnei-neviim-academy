@@ -17,6 +17,82 @@
     "updated_at": {
       "type": "string"
     },
+    "git_refs": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "expected_branch": { "type": "string" },
+        "branch": { "type": "string" },
+        "current_branch": { "type": "string" },
+        "expected_head": { "type": "string" },
+        "head": { "type": "string" },
+        "current_head": { "type": "string" },
+        "expected_remote_head": { "type": "string" },
+        "remote_head": { "type": "string" },
+        "current_remote_head": { "type": "string" },
+        "pr_number": { "type": ["integer", "string"] },
+        "pr_url": { "type": "string" },
+        "pr_branch": { "type": "string" }
+      }
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source_id",
+          "captured_at",
+          "content_fingerprint",
+          "privacy_classification",
+          "workspace",
+          "project",
+          "source_type"
+        ],
+        "additionalProperties": true,
+        "properties": {
+          "source_id": { "type": "string", "minLength": 1 },
+          "source_path": { "type": "string" },
+          "connector_id": { "type": "string" },
+          "captured_at": { "type": "string", "minLength": 1 },
+          "content_fingerprint": { "type": "string", "minLength": 1 },
+          "privacy_classification": { "type": "string", "minLength": 1 },
+          "workspace": { "type": "string", "minLength": 1 },
+          "project": { "type": "string", "minLength": 1 },
+          "source_type": { "type": "string", "minLength": 1 }
+        },
+        "anyOf": [
+          { "required": ["source_path"] },
+          { "required": ["connector_id"] }
+        ]
+      }
+    },
+    "source_statements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["statement_id", "source_statement"],
+        "properties": {
+          "statement_id": { "type": "string", "minLength": 1 },
+          "source_id": { "type": "string" },
+          "source_statement": { "type": "string", "minLength": 1 },
+          "requirement_id": { "type": "string" },
+          "existing_requirement_id": { "type": "string" },
+          "mapped_requirement_id": { "type": "string" },
+          "classification": { "type": "string" },
+          "mapping_classification": { "type": "string" }
+        }
+      }
+    },
+    "source_statement_matrix": {
+      "type": ["string", "object"]
+    },
+    "source_statement_matrices": {
+      "type": "array",
+      "items": {
+        "type": ["string", "object"]
+      }
+    },
     "requirements": {
       "type": "array",
       "items": {
@@ -67,6 +143,12 @@
           "blocker": {
             "type": "string"
           },
+          "blocker_owner": {
+            "type": "string"
+          },
+          "blocker_next_action": {
+            "type": "string"
+          },
           "evidence": {
             "type": "array",
             "items": {
@@ -82,6 +164,20 @@
             }
           },
           "verification": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "implementation_evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "acceptance_criteria": {
             "type": "array",
             "items": {
               "type": "string",

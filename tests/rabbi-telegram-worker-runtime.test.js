@@ -26,6 +26,7 @@ test('Railway dispatcher maps Rabbi worker selector to the scoped Telegram scrip
   const starter = read('scripts/railway-start.mjs');
 
   assert.match(starter, /BNA_RAILWAY_PROCESS/);
+  assert.match(starter, /\['telegram-academy', \{ command: 'npm', args: \['run', 'telegram:kimi'\] \}\]/);
   assert.match(starter, /\['telegram-rabbi', \{ command: 'npm', args: \['run', 'telegram:rabbi'\] \}\]/);
   assert.match(starter, /\['web', \{ command: 'node', args: \['server\.js'\] \}\]/);
 });

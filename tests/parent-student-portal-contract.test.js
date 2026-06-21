@@ -168,7 +168,8 @@ test('parent portal uses login, calendar navigation, help, and scoped visible st
   assert.match(parentHtml, /parentPortalSidebar/);
   assert.match(parentHtml, /data-parent-section-select/);
   assert.match(parentHtml, /data-parent-section-panel/);
-  assert.match(parentHtml, /activeParentSection = 'home'/);
+  assert.match(parentHtml, /activeParentSection = initialParentSection\(\)/);
+  assert.match(parentHtml, /params\.get\('section'\)/);
   assert.match(parentHtml, /\{ id: 'home', label: t\('home'\)/);
   assert.match(parentHtml, /const childLabel = counts\.children === 1 \? t\('myChild'\) : t\('myChildren'\)/);
   assert.match(parentHtml, /\{ id: 'children', label: childLabel/);
@@ -197,7 +198,12 @@ test('parent portal uses login, calendar navigation, help, and scoped visible st
   assert.match(parentHtml, /data-parent-help-form/);
   assert.match(parentHtml, /\/api\/parent-portal\/help/);
   assert.match(parentHtml, /data-student-login-form/);
+  assert.match(parentHtml, /data-student-name/);
   assert.match(parentHtml, /studentLoginSettings/);
+  assert.match(parentHtml, /studentLoginFor/);
+  assert.match(parentHtml, /studentLoginChildCopy/);
+  assert.match(parentHtml, /saveStudentLoginFor/);
+  assert.match(parentHtml, /studentLoginSavedFor/);
   assert.match(parentHtml, /studentPasswordNeverShown/);
   assert.match(parentHtml, /studentAccessFallback/);
   assert.match(parentHtml, /data-student-open="\$\{studentId\}"/);

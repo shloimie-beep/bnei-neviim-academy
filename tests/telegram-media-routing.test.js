@@ -108,6 +108,35 @@ test('server has non-Content recording intake parser endpoint', () => {
   assert.match(server, /recordingSourceContext\(job\)/);
 });
 
+test('Drive-backed mixed recordings normalize raw-intake source channel to drive', () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+
+  assert.match(server, /function normalizeRawIntakeSourceChannel/);
+  assert.match(server, /normalizeRawIntakeSourceChannel\(source_channel \|\| source_type \|\| 'manual'\)/);
+  assert.match(server, /source_channel: job\.source_type \|\| sourceType/);
+  assert.match(server, /channel === 'class_recording' && \/drive\|google\/i\.test\(rawValue\)\) return 'drive'/);
+});
+
+test('content recording filing does not trust AI-only agent job labels', () => {
+  const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
+  const guard = server.slice(
+    server.indexOf('function contentRecordingTaskIsExplicitSystemWork'),
+    server.indexOf('async function fileTaskIntakeItem')
+  );
+
+  assert.match(guard, /CONTENT_RECORDING_SYSTEM_WORK_PATTERN\.test\(text\)/);
+  assert.match(guard, /CONTENT_RECORDING_ACTION_PATTERN\.test\(text\) \|\| CONTENT_RECORDING_BUILD_INTENT_PATTERN\.test\(text\)/);
+  assert.doesNotMatch(guard, /payload\.next_action/);
+  assert.doesNotMatch(guard, /payload\.agent_executable === true/);
+  assert.doesNotMatch(guard, /payload\.task_kind/);
+  assert.match(server, /const suppressAgentInference = input\.agent_executable === false/);
+  assert.match(server, /suppressAgentInference && isAgentAssignee\(assignedTo\)/);
+  assert.match(server, /explicitTaskKind: suppressAgentInference \? null/);
+  assert.match(server, /suppress_agent_inference: recordingReviewTask/);
+  assert.match(server, /!assignedTo && !waitingOn && explicitItemType !== 'decision' && !suppressAgentInference/);
+  assert.match(server, /All those together does not equal AI|CONTENT_RECORDING_BUILD_INTENT_PATTERN/);
+});
+
 test('mixed recording parser preserves absent Torah scores as zero percent daily rows', () => {
   const server = fs.readFileSync(path.join(__dirname, '..', 'server.js'), 'utf8');
 

@@ -45,6 +45,7 @@ test('core Telegram/UI operations are present in the registry', () => {
     'move_task_workspace',
     'create_calendar_event',
     'create_provider_class_session',
+    'create_provider_classroom_draft',
     'show_today_plan',
     'show_child_calendar',
     'create_report_problem_ticket',
@@ -395,6 +396,16 @@ test('Telegram routes normal operations to typed actions before Codex', () => {
   assert.equal(classroomTopicRoute.inputs.topic_name, 'Week 1');
   assert.equal(classroomTopicRoute.inputs.course_name, 'Mishnayos');
   assert.match(classroomTopicRoute.inputs.material_title, /Parsha review/);
+  const providerClassroomRoute = classifyTelegramActionRequest({
+    text: 'Start an 8-class Rabbi Scheller learning community where students reply privately to the Rabbi and he publishes selected questions',
+  });
+  assert.equal(providerClassroomRoute.action_id, 'create_provider_classroom_draft');
+  assert.equal(providerClassroomRoute.dry_run, true);
+  assert.equal(providerClassroomRoute.inputs.class_count, 8);
+  assert.equal(providerClassroomRoute.inputs.student_to_teacher_replies, true);
+  assert.equal(providerClassroomRoute.inputs.student_to_student_chat_enabled, false);
+  assert.equal(providerClassroomRoute.inputs.teacher_moderation_required, true);
+  assert.equal(providerClassroomRoute.inputs.public_display_enabled, true);
 });
 
 test('Telegram routes code/development work to Codex instead of normal operation actions', () => {
@@ -1572,6 +1583,32 @@ test('provider schedule action stays in provider workspace and separate from BNA
   assert.equal(result.preview.preview.source, 'provider_program');
 });
 
+test('provider classroom draft action captures setup plan without external writes', async () => {
+  const preview = await runAction({
+    action_id: 'create_provider_classroom_draft',
+    source: 'telegram',
+    dry_run: true,
+    inputs: {
+      title: 'Rabbi Scheller private Q&A classroom',
+      raw_prompt: 'Start an 8-class Rabbi Scheller community where students reply privately and selected answers publish.',
+      class_count: 8,
+      workspace_key: 'rabbi_sheller_provider',
+      public_display_enabled: true,
+    },
+    actor: { user_id: 'provider-local', role: 'provider_admin', workspace_id: 'rabbi_sheller_provider' },
+  });
+  assert.equal(preview.success, true);
+  assert.equal(preview.executed, false);
+  assert.equal(preview.preview.provider_classroom_draft_created, false);
+  assert.equal(preview.preview.setup_plan.class_count, 8);
+  assert.equal(preview.preview.setup_plan.student_to_teacher_replies, true);
+  assert.equal(preview.preview.setup_plan.student_to_student_chat_enabled, false);
+  assert.equal(preview.preview.setup_plan.teacher_moderation_required, true);
+  assert.equal(preview.preview.no_google_classroom_write_performed, true);
+  assert.equal(preview.preview.external_write_performed, false);
+  assert.equal(preview.preview.no_payment_or_access_grant_performed, true);
+});
+
 test('launch calendar batch preview plans One Time weeks without writes', async () => {
   const preview = await runAction({
     action_id: 'calendar_batch_launch_plan_preview',
@@ -1766,6 +1803,7 @@ test('action registry artifacts are generated for UI button mapping', () => {
   assert.ok(actionsJson.some((action) => action.action_id === 'google_business_list_locations_preview'));
   assert.ok(actionsJson.some((action) => action.action_id === 'calendar_batch_launch_plan_preview'));
   assert.ok(actionsJson.some((action) => action.action_id === 'classroom_topic_material_preview'));
+  assert.ok(actionsJson.some((action) => action.action_id === 'create_provider_classroom_draft'));
   assert.ok(actionsJson.some((action) => action.action_id === 'preview_social_schedule_package'));
   assert.ok(actionsJson.some((action) => action.action_id === 'retitle_task_naturally'));
   assert.ok(actionsJson.some((action) => action.action_id === 'add_decision_option'));
@@ -1784,6 +1822,7 @@ test('action registry artifacts are generated for UI button mapping', () => {
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'google_business_list_locations_preview'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'calendar_batch_launch_plan_preview'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'classroom_topic_material_preview'));
+  assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'create_provider_classroom_draft'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'preview_social_schedule_package'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'retitle_task_naturally'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'add_decision_option'));
@@ -1802,6 +1841,7 @@ test('action registry artifacts are generated for UI button mapping', () => {
   assert.match(buttonMap, /google_business_list_locations_preview/);
   assert.match(buttonMap, /calendar_batch_launch_plan_preview/);
   assert.match(buttonMap, /classroom_topic_material_preview/);
+  assert.match(buttonMap, /create_provider_classroom_draft/);
   assert.match(buttonMap, /preview_social_schedule_package/);
   assert.match(buttonMap, /retitle_task_naturally/);
   assert.match(buttonMap, /add_decision_option/);

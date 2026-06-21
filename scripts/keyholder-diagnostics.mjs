@@ -12,6 +12,7 @@ const defaultRepoRoot = path.resolve(__dirname, '..');
 export const KEYHOLDER_FILES = [
   {
     name: 'openai-api-key.txt',
+    aliases: ['openaiv2.txt'],
     label: 'OpenAI API key',
     repo_secret: '.secrets/openai-api-key.txt',
     env_name: 'OPENAI_API_KEY',
@@ -131,11 +132,16 @@ export function inspectKeyholder(options = {}) {
   const repoRoot = options.repoRoot || defaultRepoRoot;
   const keyholderExists = fs.existsSync(keyholderDir);
   const files = KEYHOLDER_FILES.map((entry) => {
-    const keyholder = inspectFile(path.join(keyholderDir, entry.name));
+    const keyholderCandidates = [entry.name, ...(entry.aliases || [])].map((name) => ({
+      name,
+      ...inspectFile(path.join(keyholderDir, name)),
+    }));
+    const keyholder = keyholderCandidates.find((candidate) => candidate.present) || keyholderCandidates[0];
     const repoSecret = inspectFile(path.join(repoRoot, entry.repo_secret));
     return {
       ...entry,
       keyholder,
+      keyholder_candidates: keyholderCandidates,
       repo_secret_present: repoSecret.present,
       repo_secret_fingerprint: repoSecret.fingerprint,
       matches_repo_secret: Boolean(
@@ -171,7 +177,9 @@ function renderMarkdown(report) {
   for (const file of report.files) {
     lines.push(`### ${file.name}`);
     lines.push(`- label: ${file.label}`);
+    if (file.aliases?.length) lines.push(`- aliases: ${file.aliases.join(', ')}`);
     lines.push(`- optional: ${Boolean(file.optional)}`);
+    lines.push(`- selected_keyholder_file: ${file.keyholder.name || file.name}`);
     lines.push(`- keyholder exists: ${file.keyholder.exists}`);
     lines.push(`- keyholder present: ${file.keyholder.present}`);
     lines.push(`- length: ${file.keyholder.length}`);

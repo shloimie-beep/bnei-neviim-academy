@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import crypto from 'crypto';
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { spawnSync } from 'child_process';
 import { fileURLToPath } from 'url';
@@ -11,6 +12,10 @@ const repoRoot = path.resolve(__dirname, '..');
 const secretsDir = path.join(repoRoot, '.secrets');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const reportDir = path.join(repoRoot, 'ops', 'qa-runs');
+
+function defaultKeyholderDir() {
+  return process.env.BNA_KEYHOLDER_DIR || path.join(process.env.USERPROFILE || os.homedir(), 'BNA-Keyholder');
+}
 
 function timestamp() {
   return new Date().toISOString().replace(/[:.]/g, '-');
@@ -35,6 +40,13 @@ function readRawFile(filePath) {
   } catch {
     return '';
   }
+}
+
+function redactDiagnosticText(value) {
+  return String(value || '')
+    .replace(/sk-[A-Za-z0-9_*.-]{6,}/g, '[redacted-openai-key]')
+    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, 'Bearer [redacted]')
+    .replace(/(api[_-]?key|token|secret|password|authorization)\s*[:=]\s*[^\s"',}]+/gi, '$1=[redacted]');
 }
 
 function normalizeCandidate(rawValue) {
@@ -183,7 +195,7 @@ async function requestJson({ url, key, method = 'GET', body = null }) {
     x_request_id: response.headers.get('x-request-id') || response.headers.get('openai-request-id') || '',
     error_type: json?.error?.type || '',
     error_code: json?.error?.code || '',
-    error_message: json?.error?.message || (response.ok ? '' : text.slice(0, 240)),
+    error_message: redactDiagnosticText(json?.error?.message || (response.ok ? '' : text.slice(0, 240))),
   };
 }
 
@@ -221,6 +233,9 @@ function renderMarkdown(report) {
 
 async function main() {
   const envLocal = parseEnvFile(envLocalPath);
+  const keyholderDir = defaultKeyholderDir();
+  const keyholderOpenaiV2Raw = readRawFile(path.join(keyholderDir, 'openaiv2.txt'));
+  const keyholderOpenaiRaw = readRawFile(path.join(keyholderDir, 'openai-api-key.txt'));
   const fileRaw = readRawFile(path.join(secretsDir, 'openai-api-key.txt'));
   const envRaw = process.env.OPENAI_API_KEY || '';
   const envLocalRaw = envLocal.OPENAI_API_KEY || '';
@@ -229,14 +244,18 @@ async function main() {
 
   const normalizedSources = [
     { name: 'process.env:OPENAI_API_KEY', normalized: normalizeCandidate(envRaw) },
+    { name: 'keyholder:openaiv2.txt', normalized: normalizeCandidate(keyholderOpenaiV2Raw) },
+    { name: 'keyholder:openai-api-key.txt', normalized: normalizeCandidate(keyholderOpenaiRaw) },
     { name: '.secrets/openai-api-key.txt', normalized: normalizeCandidate(fileRaw) },
     { name: '.env.local:OPENAI_API_KEY', normalized: normalizeCandidate(envLocalRaw) },
   ];
   const sourceReports = normalizedSources.map((source) => sourceReport(source.name, source.normalized.raw));
   const selected = selectedCandidate([
-    normalizedSources[1],
     normalizedSources[0],
+    normalizedSources[1],
     normalizedSources[2],
+    normalizedSources[3],
+    normalizedSources[4],
   ]);
   const selectedKey = selected?.normalized.normalized || '';
 
@@ -245,6 +264,7 @@ async function main() {
     ok: false,
     selected_source: selected?.name || '',
     sources: sourceReports,
+    keyholder_dir: keyholderDir,
     env_file_equality: Boolean(
       normalizedSources[0].normalized.normalized &&
       normalizedSources[1].normalized.normalized &&

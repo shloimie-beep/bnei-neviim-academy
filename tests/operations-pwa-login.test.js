@@ -16,20 +16,36 @@ test('Operations login installs and resumes as the Operations PWA', () => {
   assert.match(loginHtml, /<link rel="manifest" href="\/operations-manifest\.json">/);
   assert.equal(operationsManifest.id, '/operations');
   assert.equal(operationsManifest.start_url, '/operations?source=ops-pwa');
+  assert.equal(operationsManifest.scope, '/operations');
+  assert.equal(operationsManifest.icons[0].src, '/icons/operations-icon.svg');
   assert.equal(operationsManifest.background_color, '#f8f5ee');
-  assert.match(serviceWorker, /bna-public-v9/);
+  assert.match(serviceWorker, /bna-public-v10/);
 });
 
 test('public and parent installs do not open Operations', () => {
   assert.equal(publicManifest.start_url, '/?source=public-pwa');
   assert.equal(parentManifest.id, '/parent');
   assert.equal(parentManifest.start_url, '/parent?source=parent-pwa');
+  assert.equal(parentManifest.scope, '/parent');
+  assert.equal(parentManifest.icons[0].src, '/icons/parent-icon.svg');
   assert.match(parentHtml, /<link rel="manifest" href="\/parent-manifest\.json">/);
-  assert.match(serviceWorker, /\/parent-manifest\.json/);
+  assert.doesNotMatch(serviceWorker, /\/parent-manifest\.json/);
+  assert.doesNotMatch(serviceWorker, /\/operations-manifest\.json/);
+  assert.match(serviceWorker, /PRIVATE_APP_PREFIXES/);
+  assert.match(serviceWorker, /isPrivateAppPath\(url\.pathname\)/);
   assert.match(publicIndexHtml, /<title>Bnei Nevi'im Academy \| Torah Learning for Boys<\/title>/);
-  assert.match(publicIndexHtml, /href="\/operations" class="nav-link" data-i18n="navOperations"/);
+  assert.doesNotMatch(publicIndexHtml, /href="\/operations-login\.html" class="nav-link" data-i18n="navOperations"/);
+  assert.doesNotMatch(publicIndexHtml, /navOperations/);
   assert.doesNotMatch(publicIndexHtml, /redirectStandaloneLaunchToOperations|\/operations\?source=pwa/);
   assert.doesNotMatch(serverJs, /source === 'pwa'[\s\S]{0,120}res\.redirect\('\/'\)/);
+});
+
+test('public navigation keeps Operations out of prospect-facing menus', () => {
+  const siteNav = fs.readFileSync('public/js/bna-site-nav.js', 'utf8');
+  assert.doesNotMatch(siteNav, /operationsLogin/);
+  assert.doesNotMatch(siteNav, /\/operations-login\.html/);
+  assert.match(siteNav, /Advertise your program for free/);
+  assert.match(publicIndexHtml, /Advertise your program for free/);
 });
 
 test('Operations login preserves only safe Operations return paths', () => {

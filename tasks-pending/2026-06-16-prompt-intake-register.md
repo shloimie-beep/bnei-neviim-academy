@@ -12,5 +12,6 @@ Next steps:
 
 - Re-run `npm run prompts:audit` after new Downloads files, Codex attachments, or prompt zips are added.
 - Convert unmapped prompt sources into tasks, blocked records, or superseded records.
+- Use `tasks-pending/_template-ramble-intake.md` for future ramble-derived Codex handoffs.
 - Close stale ledger-only starts with terminal status based on proof, blocker, or supersession.
 - Keep secret-bearing files in the BNA keyholder; this register must not store raw secret values.

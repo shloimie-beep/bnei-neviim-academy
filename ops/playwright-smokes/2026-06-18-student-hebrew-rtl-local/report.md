@@ -1,0 +1,227 @@
+# Student Hebrew/RTL Portal Audit Smoke
+
+- Base URL: `http://127.0.0.1:8096`
+- Student path: `/student/login`
+- Fixture access code: `fixture-student-hebrew-rtl-audit`
+- Result: PASS
+- Scope: student portal login auto-open, overview, calendar, goals, assignments, questions, documents, student helper, and parent-message/account help sections in Hebrew RTL.
+- Guardrail: all `/api/student-portal` reads were fulfilled with synthetic fixture data; all write endpoints were blocked and no checkoff/message/save action was clicked.
+
+## Screenshots
+
+- `mobile-hebrew-overview.png`
+- `mobile-hebrew-calendar.png`
+- `mobile-hebrew-goals.png`
+- `mobile-hebrew-assignments.png`
+- `mobile-hebrew-questions.png`
+- `mobile-hebrew-documents.png`
+- `mobile-hebrew-bot.png`
+- `mobile-hebrew-help_account.png`
+- `desktop-hebrew-overview.png`
+- `desktop-hebrew-calendar.png`
+- `desktop-hebrew-questions.png`
+
+## Checks
+
+- PASS mobile-hebrew: document lang is he
+- PASS mobile-hebrew: document direction is rtl
+- PASS mobile-hebrew: html data-language is he
+- PASS mobile-hebrew: body data-language is he
+- PASS mobile-hebrew: body has lang-he class
+- PASS mobile-hebrew: Hebrew preference persisted
+- PASS mobile-hebrew: fixture access code persisted only on student page
+- PASS mobile-hebrew: Hebrew toggle is active
+- PASS mobile-hebrew: overview includes active Hebrew goal title
+- PASS mobile-hebrew: WhatsApp Rabbi button is localized in Hebrew
+- PASS mobile-hebrew: overview does not show hardcoded English WhatsApp label
+- PASS mobile-hebrew/overview: rendered Hebrew characters
+- PASS mobile-hebrew/overview: rendered text is not mojibake
+- PASS mobile-hebrew/overview: rendered Hebrew student display name
+- PASS mobile-hebrew/overview: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/overview: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/overview: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/overview: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/overview: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/overview: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/overview: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/overview: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/overview: did not expose private pattern /billing/i
+- PASS mobile-hebrew/overview: did not expose private pattern /payment/i
+- PASS mobile-hebrew/overview: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/overview: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew: calendar defaults to list view
+- PASS mobile-hebrew: calendar drawer renders Hebrew-visible detail
+- PASS mobile-hebrew/calendar: rendered Hebrew characters
+- PASS mobile-hebrew/calendar: rendered text is not mojibake
+- PASS mobile-hebrew/calendar: rendered Hebrew student display name
+- PASS mobile-hebrew/calendar: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /billing/i
+- PASS mobile-hebrew/calendar: did not expose private pattern /payment/i
+- PASS mobile-hebrew/calendar: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/calendar: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew/goals: rendered Hebrew characters
+- PASS mobile-hebrew/goals: rendered text is not mojibake
+- PASS mobile-hebrew/goals: rendered Hebrew student display name
+- PASS mobile-hebrew/goals: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/goals: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/goals: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/goals: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/goals: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/goals: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/goals: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/goals: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/goals: did not expose private pattern /billing/i
+- PASS mobile-hebrew/goals: did not expose private pattern /payment/i
+- PASS mobile-hebrew/goals: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/goals: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew: assignment worksheet body renders in Hebrew
+- PASS mobile-hebrew/assignments: rendered Hebrew characters
+- PASS mobile-hebrew/assignments: rendered text is not mojibake
+- PASS mobile-hebrew/assignments: rendered Hebrew student display name
+- PASS mobile-hebrew/assignments: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /billing/i
+- PASS mobile-hebrew/assignments: did not expose private pattern /payment/i
+- PASS mobile-hebrew/assignments: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/assignments: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew: question answer label is localized
+- PASS mobile-hebrew: Sefaria source uses Hebrew ref when available
+- PASS mobile-hebrew: question card does not show hardcoded English answer label
+- PASS mobile-hebrew/questions: rendered Hebrew characters
+- PASS mobile-hebrew/questions: rendered text is not mojibake
+- PASS mobile-hebrew/questions: rendered Hebrew student display name
+- PASS mobile-hebrew/questions: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/questions: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/questions: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/questions: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/questions: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/questions: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/questions: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/questions: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/questions: did not expose private pattern /billing/i
+- PASS mobile-hebrew/questions: did not expose private pattern /payment/i
+- PASS mobile-hebrew/questions: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/questions: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew/documents: rendered Hebrew characters
+- PASS mobile-hebrew/documents: rendered text is not mojibake
+- PASS mobile-hebrew/documents: rendered Hebrew student display name
+- PASS mobile-hebrew/documents: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/documents: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/documents: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/documents: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/documents: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/documents: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/documents: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/documents: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/documents: did not expose private pattern /billing/i
+- PASS mobile-hebrew/documents: did not expose private pattern /payment/i
+- PASS mobile-hebrew/documents: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/documents: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew/bot: rendered Hebrew characters
+- PASS mobile-hebrew/bot: rendered text is not mojibake
+- PASS mobile-hebrew/bot: rendered Hebrew student display name
+- PASS mobile-hebrew/bot: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/bot: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/bot: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/bot: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/bot: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/bot: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/bot: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/bot: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/bot: did not expose private pattern /billing/i
+- PASS mobile-hebrew/bot: did not expose private pattern /payment/i
+- PASS mobile-hebrew/bot: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/bot: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew/help_account: rendered Hebrew characters
+- PASS mobile-hebrew/help_account: rendered text is not mojibake
+- PASS mobile-hebrew/help_account: rendered Hebrew student display name
+- PASS mobile-hebrew/help_account: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /password_hash/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /refresh_token/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /student_access_code/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /billing/i
+- PASS mobile-hebrew/help_account: did not expose private pattern /payment/i
+- PASS mobile-hebrew/help_account: html does not overflow horizontally (390/390)
+- PASS mobile-hebrew/help_account: body does not overflow horizontally (390/390)
+- PASS mobile-hebrew: no page runtime errors
+- PASS mobile-hebrew: no console errors
+- PASS desktop-hebrew: document lang is he
+- PASS desktop-hebrew: document direction is rtl
+- PASS desktop-hebrew: html data-language is he
+- PASS desktop-hebrew: body data-language is he
+- PASS desktop-hebrew: body has lang-he class
+- PASS desktop-hebrew: Hebrew preference persisted
+- PASS desktop-hebrew: fixture access code persisted only on student page
+- PASS desktop-hebrew: Hebrew toggle is active
+- PASS desktop-hebrew: overview includes active Hebrew goal title
+- PASS desktop-hebrew: WhatsApp Rabbi button is localized in Hebrew
+- PASS desktop-hebrew: overview does not show hardcoded English WhatsApp label
+- PASS desktop-hebrew/overview: rendered Hebrew characters
+- PASS desktop-hebrew/overview: rendered text is not mojibake
+- PASS desktop-hebrew/overview: rendered Hebrew student display name
+- PASS desktop-hebrew/overview: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS desktop-hebrew/overview: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS desktop-hebrew/overview: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS desktop-hebrew/overview: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS desktop-hebrew/overview: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS desktop-hebrew/overview: did not expose private pattern /password_hash/i
+- PASS desktop-hebrew/overview: did not expose private pattern /refresh_token/i
+- PASS desktop-hebrew/overview: did not expose private pattern /student_access_code/i
+- PASS desktop-hebrew/overview: did not expose private pattern /billing/i
+- PASS desktop-hebrew/overview: did not expose private pattern /payment/i
+- PASS desktop-hebrew/overview: html does not overflow horizontally (1366/1366)
+- PASS desktop-hebrew/overview: body does not overflow horizontally (1366/1366)
+- PASS desktop-hebrew: calendar defaults to week view
+- PASS desktop-hebrew: calendar drawer renders Hebrew-visible detail
+- PASS desktop-hebrew/calendar: rendered Hebrew characters
+- PASS desktop-hebrew/calendar: rendered text is not mojibake
+- PASS desktop-hebrew/calendar: rendered Hebrew student display name
+- PASS desktop-hebrew/calendar: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /password_hash/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /refresh_token/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /student_access_code/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /billing/i
+- PASS desktop-hebrew/calendar: did not expose private pattern /payment/i
+- PASS desktop-hebrew/calendar: html does not overflow horizontally (1366/1366)
+- PASS desktop-hebrew/calendar: body does not overflow horizontally (1366/1366)
+- PASS desktop-hebrew: question answer label is localized
+- PASS desktop-hebrew: Sefaria source uses Hebrew ref when available
+- PASS desktop-hebrew: question card does not show hardcoded English answer label
+- PASS desktop-hebrew/questions: rendered Hebrew characters
+- PASS desktop-hebrew/questions: rendered text is not mojibake
+- PASS desktop-hebrew/questions: rendered Hebrew student display name
+- PASS desktop-hebrew/questions: did not expose private pattern /PRIVATE_PARENT_EMAIL_SENTINEL/i
+- PASS desktop-hebrew/questions: did not expose private pattern /PRIVATE_PHONE_SENTINEL/i
+- PASS desktop-hebrew/questions: did not expose private pattern /ADMIN_ONLY_SENTINEL/i
+- PASS desktop-hebrew/questions: did not expose private pattern /OTHER_STUDENT_SENTINEL/i
+- PASS desktop-hebrew/questions: did not expose private pattern /PRIVATE_PARENT_NOTE_SENTINEL/i
+- PASS desktop-hebrew/questions: did not expose private pattern /password_hash/i
+- PASS desktop-hebrew/questions: did not expose private pattern /refresh_token/i
+- PASS desktop-hebrew/questions: did not expose private pattern /student_access_code/i
+- PASS desktop-hebrew/questions: did not expose private pattern /billing/i
+- PASS desktop-hebrew/questions: did not expose private pattern /payment/i
+- PASS desktop-hebrew/questions: html does not overflow horizontally (1366/1366)
+- PASS desktop-hebrew/questions: body does not overflow horizontally (1366/1366)
+- PASS desktop-hebrew: no page runtime errors
+- PASS desktop-hebrew: no console errors

@@ -516,6 +516,22 @@
       ]
     },
     {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
       "action_id": "calendar_batch_launch_plan_preview",
       "label": "Preview launch calendar plan",
       "category": "calendar",
@@ -1053,6 +1069,22 @@
       ]
     },
     {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
       "action_id": "calendar_batch_launch_plan_preview",
       "label": "Preview launch calendar plan",
       "category": "calendar",
@@ -1428,6 +1460,22 @@
       "related_routes": [
         "/operations?view=communications",
         "/parent"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
       ]
     },
     {
@@ -1874,6 +1922,35 @@
       ]
     },
     {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "open_internal_calendar",
+      "label": "Open internal calendar",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Internal calendar"
+      ],
+      "related_routes": [
+        "/operations?view=tasks&section=schedule",
+        "/operations?view=calendar"
+      ]
+    },
+    {
       "action_id": "sync_google_calendar",
       "label": "Sync Google Calendar",
       "category": "calendar",
@@ -1994,6 +2071,22 @@
       ],
       "related_routes": [
         "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
       ]
     },
     {
@@ -3046,6 +3139,38 @@
       ]
     }
   ],
+  "community": [
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    }
+  ],
   "assignments": [
     {
       "action_id": "sync_google_classroom",
@@ -3188,22 +3313,6 @@
       ],
       "related_routes": [
         "/parent"
-      ]
-    }
-  ],
-  "community": [
-    {
-      "action_id": "post_community_message",
-      "label": "Post community message",
-      "category": "communications",
-      "approval_required": false,
-      "ui_button_labels": [
-        "Post Community Message"
-      ],
-      "related_routes": [
-        "/operations?view=communications",
-        "/parent",
-        "/provider"
       ]
     }
   ],

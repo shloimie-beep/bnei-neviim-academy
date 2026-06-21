@@ -19,6 +19,29 @@ done.
   `verified`, `failed`, `archived`, or `superseded`.
 - Closed statuses need evidence. App-visible or server-visible closed statuses
   also need deployment/live evidence unless the item is explicitly blocked.
+- `blocked` and `needs_operator_decision` rows need `blocker`,
+  `blocker_owner`, and `blocker_next_action`.
+
+## Source Mapping
+
+Every broad ramble, GPT packet, audit package, Drive source, or connector input
+must be registered as a source before requirements are closed.
+
+Each registered source needs:
+
+- source ID;
+- repo source path or connector ID;
+- timestamp;
+- content fingerprint;
+- privacy classification;
+- workspace;
+- project;
+- source type.
+
+Every captured source statement must map to one active requirement, an existing
+requirement, or an explicit excluded/unrelated classification. For large
+packets, keep the statement-level matrix in a separate JSON file and point the
+active run at it through `source_statement_matrices`.
 
 ## Current-State Comparison
 
@@ -65,6 +88,14 @@ A requirement is not complete until the execution run records:
 `done` means evidence exists. `blocked` means the blocker and next action are
 specific enough for the next session to resume.
 
+Deployment evidence must be positive proof for live-required closed work.
+Phrases such as "not deployed", "deployment withheld", "dry-run only", or
+"operator rule" can explain a blocker, but they cannot be the only deployment
+evidence for a `done`, `already_satisfied`, or `verified` live-required row.
+
+Evidence entries that are repo paths must exist. Do not point a completed
+requirement at a missing file.
+
 ## NEXT-SESSION Handoff
 
 Every active run with remaining work must have `NEXT-SESSION.md`.
@@ -77,6 +108,14 @@ The handoff must include:
 - the next safe command or inspection step;
 - commands that must not be run yet;
 - the prompt to use after required external input arrives.
+
+If work remains, `NEXT-SESSION.md` must name at least one open requirement ID.
+A handoff that only says to continue later is stale.
+
+There must be only one active execution run under `ops/execution-runs/`. If the
+active pointer, branch, HEAD, remote HEAD, or PR reference is recorded in
+`requirements.json`, `npm run bna:run:validate` must confirm it still matches
+the local checkout.
 
 ## Independent Verification
 

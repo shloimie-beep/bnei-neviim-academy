@@ -18,6 +18,8 @@ test('canonical workspace/person/household schema is bootstrapped idempotently',
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_households/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_household_members/);
   assert.match(server, /ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS workspace_type/);
+  assert.match(server, /ALTER TABLE bna_workspaces DROP CONSTRAINT IF EXISTS bna_workspaces_type_check/);
+  assert.match(server, /CHECK \(type IN \('super_admin', 'school', 'family', 'service_provider', 'household', 'provider', 'project', 'community'\)\)/);
   assert.match(server, /const CANONICAL_WORKSPACE_TYPES = new Set\(\['school', 'service_provider', 'family'\]\)/);
   assert.match(server, /const WORKSPACE_CONTEXT_TYPES = new Set\(\['super_admin'\]\)/);
   assert.match(server, /const WORKSPACE_TYPE_COMPATIBILITY_ALIASES = Object\.freeze/);

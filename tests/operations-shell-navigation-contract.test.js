@@ -23,11 +23,13 @@ test('Operations shell exposes workspace selector, sidebar drilldown, and mobile
 });
 
 test('Operations module toolbar includes first-class Agents navigation', () => {
-  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
+  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'platform_suite',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
   assert.match(operations, /function renderModuleToolbar/);
   assert.match(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"/);
   assert.match(operations, /agents: \(\) => canUseView\('agents'\) \? \{/);
   assert.match(operations, /id: 'agents'[\s\S]*label: 'Agents'[\s\S]*action: "switchView\('agents'\)"/);
+  assert.match(operations, /platform_suite: \(\) => canUseView\('platform_suite'\) \? \{/);
+  assert.match(operations, /id: 'platform_suite'[\s\S]*label: navById\.get\('platform_suite'\)\?\.label \|\| 'Platform Suite'[\s\S]*action: "switchView\('platform_suite'\)"/);
   assert.match(operations, /currentView === 'agents'/);
   assert.match(operations, /AGENT_RUN_TABS/);
   assert.match(server, /const platformAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents'/);

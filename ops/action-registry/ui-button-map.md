@@ -252,6 +252,20 @@
 - Buttons: New Class Session
 - Approval required: no
 
+## create_provider_classroom_draft
+- Label: Create provider classroom draft
+- Category: provider
+- Page contexts: provider_workspace, community, calendar, settings, telegram, bot
+- Buttons: Create Classroom Draft, Start Classroom Setup
+- Approval required: no
+
+## open_internal_calendar
+- Label: Open internal calendar
+- Category: calendar
+- Page contexts: tasks, calendar
+- Buttons: Internal calendar
+- Approval required: no
+
 ## sync_google_calendar
 - Label: Sync Google Calendar
 - Category: calendar

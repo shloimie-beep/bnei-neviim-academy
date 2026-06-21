@@ -1,0 +1,13 @@
+{
+  "key": "one_time",
+  "name": "One Time Mishnah Class",
+  "short_name": "One Time",
+  "workspace_key": "one_time_mishnah_class",
+  "project_key": "one_time_mishnah_class",
+  "audience": "partner_mishnah_program",
+  "workspace_profile": "service_provider",
+  "primary_color": "#214f4b",
+  "accent_color": "#c8902e",
+  "secrets_included": false,
+  "external_write_performed": false
+}

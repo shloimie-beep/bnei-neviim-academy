@@ -51,13 +51,14 @@ test('contact pipeline and source-sheet rambles have separate routing cues', () 
   assert.match(leadCapture, /pipeline created from contacts/);
   assert.match(server, /Build interested-parent pipeline in Contacts/);
   assert.match(server, /Build source-sheet research workflow for student questions/);
-  assert.match(server, /Clarify Signup Intake in Contacts/);
+  assert.match(server, /Clean Contacts signup review lane/);
   assert.match(server, /hasInterestedParentLeadCaptureIntent\(text\) && !hasContactLeadPipelineBuildIntent\(text\)/);
   assert.match(operations, /const RESEARCH_TASK_CATEGORIES = new Set/);
-  assert.match(operations, /const TASK_LANE_IDS = \['decisions', 'pending', 'tasks', 'schedule', 'done', 'activity'\]/);
-  assert.match(operations, /\{ id: 'agent_working', label: 'Agent Working' \}/);
+  assert.match(operations, /const TASK_LANE_IDS = \['decisions', 'tasks', 'codex_queue', 'pending', 'schedule', 'done_activity'\]/);
+  assert.match(operations, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
+  assert.doesNotMatch(operations, /\{ id: 'agent_working', label: 'Agent Working' \}/);
   assert.doesNotMatch(operations, /waiting_shloimie|waiting_sheller|waiting_access|Ready for Codex/);
-  assert.match(operations, /\{ id: 'intake', label: 'Signup Intake' \}/);
+  assert.match(operations, /\{ id: 'intake', label: 'Signup Review' \}/);
 });
 
 test('generic BNA source-sheet work does not route to One Time Mishnah project', () => {

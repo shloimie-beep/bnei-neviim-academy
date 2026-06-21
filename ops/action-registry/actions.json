@@ -1998,6 +1998,119 @@
     "failure_message": "Provider class session could not be created."
   },
   {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "raw_prompt",
+      "provider_id",
+      "provider_name",
+      "workspace_key",
+      "class_count",
+      "community_dialogue_style",
+      "student_access",
+      "display_rules",
+      "message_permissions",
+      "student_to_teacher_replies",
+      "student_to_student_chat_enabled",
+      "teacher_moderation_required",
+      "public_display_enabled"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/provider",
+      "/operations?view=settings&section=provider_onboarding",
+      "/operations?view=community",
+      "/one-time-classroom"
+    ],
+    "ui_button_labels": [
+      "Create Classroom Draft",
+      "Start Classroom Setup"
+    ],
+    "telegram_intent_examples": [
+      "Start a provider classroom with 8 classes and private Rabbi Q&A",
+      "Create a learning community draft for this provider"
+    ],
+    "action_id": "create_provider_classroom_draft",
+    "label": "Create provider classroom draft",
+    "description": "Create a first-party provider classroom/community setup draft from natural language.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "community",
+      "calendar",
+      "settings",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "provider.createClassroomDraft",
+    "audit_log_event": "provider_classroom_draft_created",
+    "success_message": "Provider classroom setup draft created.",
+    "failure_message": "Provider classroom setup draft could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=tasks&section=schedule",
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Internal calendar"
+    ],
+    "telegram_intent_examples": [
+      "Open the internal calendar"
+    ],
+    "action_id": "open_internal_calendar",
+    "label": "Open internal calendar",
+    "description": "Navigate from task schedule surfaces to the internal Operations calendar without external sync.",
+    "category": "calendar",
+    "page_contexts": [
+      "tasks",
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "ui.openOperationsView",
+    "audit_log_event": "operations_calendar_navigation_opened",
+    "success_message": "Internal calendar opened.",
+    "failure_message": "Internal calendar could not be opened."
+  },
+  {
     "required_inputs": [],
     "optional_inputs": [],
     "validation": {},

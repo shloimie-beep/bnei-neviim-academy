@@ -2423,6 +2423,152 @@ function classroomTopicMaterialPreview(inputs = {}, context = {}) {
   };
 }
 
+function normalizeBooleanInput(value, fallback = false) {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'boolean') return value;
+  const text = String(value).trim().toLowerCase();
+  if (['true', '1', 'yes', 'y', 'enabled', 'on'].includes(text)) return true;
+  if (['false', '0', 'no', 'n', 'disabled', 'off'].includes(text)) return false;
+  return fallback;
+}
+
+function normalizeClassCount(value) {
+  const number = Number(String(value || '').match(/\d+/)?.[0] || 0);
+  if (!Number.isFinite(number) || number <= 0) return null;
+  return Math.max(1, Math.min(number, 52));
+}
+
+async function createProviderClassroomDraft(inputs = {}, context = {}) {
+  const rawPrompt = compactText(inputs.raw_prompt || inputs.prompt || inputs.notes || inputs.description || '', 2000);
+  const title = compactText(inputs.title || titleFromBody(rawPrompt, 'Provider classroom setup draft'), 180);
+  if (!title) throw new Error('title is required');
+  const workspaceKey = normalizeWorkspace(inputs.workspace_key || inputs.workspace || context.actor?.workspace_id || WORKSPACES.RABBI_SHELLER_PROVIDER);
+  const classCount = normalizeClassCount(inputs.class_count || inputs.classCount || inputs.classes || rawPrompt);
+  const communityDialogueStyle = compactText(
+    inputs.community_dialogue_style || inputs.dialogue_style || inputs.community_style || 'Rabbi/teacher-led Q&A with private student replies',
+    240
+  );
+  const studentAccess = compactText(
+    inputs.student_access || inputs.access_model || 'Provider-managed member/student access; BNA admin review before grants',
+    240
+  );
+  const displayRules = compactText(
+    inputs.display_rules || inputs.display_policy || 'Teacher-approved posts and responses only; internal classroom first',
+    280
+  );
+  const messagePermissions = compactText(
+    inputs.message_permissions || inputs.permissions || 'Students may reply privately to the teacher; no student-to-student chat unless explicitly enabled',
+    300
+  );
+  const plan = {
+    title,
+    workspace_key: workspaceKey,
+    provider_id: inputs.provider_id || inputs.providerId || null,
+    provider_name: compactText(inputs.provider_name || inputs.providerName || '', 180) || null,
+    status: 'draft',
+    class_count: classCount,
+    community_dialogue_style: communityDialogueStyle,
+    student_access: studentAccess,
+    display_rules: displayRules,
+    message_permissions: messagePermissions,
+    student_to_teacher_replies: normalizeBooleanInput(inputs.student_to_teacher_replies, true),
+    student_to_student_chat_enabled: normalizeBooleanInput(inputs.student_to_student_chat_enabled, false),
+    teacher_moderation_required: normalizeBooleanInput(inputs.teacher_moderation_required, true),
+    public_display_enabled: normalizeBooleanInput(inputs.public_display_enabled, false),
+  };
+  const setupQuestions = [
+    classCount ? null : 'How many classes or weeks should this classroom start with?',
+    inputs.community_dialogue_style || inputs.dialogue_style ? null : 'Should the dialogue style be Rabbi Q&A, assignment replies, discussion prompts, or announcements only?',
+    inputs.student_access ? null : 'Who should receive student/member access in the first draft?',
+    inputs.display_rules ? null : 'Which parts may appear on the public/community display after teacher approval?',
+    inputs.message_permissions ? null : 'Should any student-to-student chat ever be allowed, or only private replies to the teacher?',
+  ].filter(Boolean);
+  const preview = {
+    provider_classroom_draft_created: false,
+    executed: false,
+    draft_record_type: 'bna_tasks',
+    no_google_classroom_write_performed: true,
+    external_write_performed: false,
+    live_send_performed: false,
+    no_payment_or_access_grant_performed: true,
+    setup_plan: plan,
+    setup_questions: setupQuestions,
+    next_step: setupQuestions.length
+      ? 'Ask the provider the remaining setup questions, then save the draft for BNA review.'
+      : 'Review the provider classroom draft and create class/session/content records when approved.',
+  };
+  if (context.dryRun) return preview;
+
+  const notes = [
+    rawPrompt ? `Raw prompt: ${rawPrompt}` : '',
+    `Class count: ${classCount || 'needs provider answer'}`,
+    `Dialogue style: ${communityDialogueStyle}`,
+    `Student access: ${studentAccess}`,
+    `Display rules: ${displayRules}`,
+    `Message permissions: ${messagePermissions}`,
+    `Student-to-teacher replies: ${plan.student_to_teacher_replies ? 'enabled' : 'disabled'}`,
+    `Student-to-student chat: ${plan.student_to_student_chat_enabled ? 'enabled' : 'disabled'}`,
+    `Teacher moderation required: ${plan.teacher_moderation_required ? 'yes' : 'no'}`,
+    `Public display: ${plan.public_display_enabled ? 'teacher-approved public/community display allowed' : 'off until approved'}`,
+    setupQuestions.length ? `Open setup questions:\n- ${setupQuestions.join('\n- ')}` : '',
+  ].filter(Boolean).join('\n');
+
+  const taskInputs = {
+    title,
+    raw_text: rawPrompt || title,
+    notes,
+    summary: `Provider classroom/community setup draft for ${plan.provider_name || workspaceKey}.`,
+    stage: 'assigned',
+    category: 'community_setup',
+    urgency: 'this_week',
+    assigned_to: 'Shloimie',
+    project_key: workspaceKey === WORKSPACES.RABBI_SHELLER_PROVIDER ? ONE_TIME_PROJECT_KEY : workspaceKey,
+    source: context.source || 'telegram',
+    created_by: context.actor?.user_id || 'action_registry',
+    task_kind: 'provider_classroom_draft',
+    ai_parsed: {
+      parser: 'action-registry',
+      action_id: 'create_provider_classroom_draft',
+      provider_id: plan.provider_id,
+      workspace_key: workspaceKey,
+      setup_plan: plan,
+      setup_questions: setupQuestions,
+      no_external_write: true,
+    },
+  };
+  let task = null;
+  if (context.helpers?.createTaskFromText) {
+    task = await context.helpers.createTaskFromText(taskInputs);
+  } else if (context.db) {
+    const result = await context.db.query(
+      `INSERT INTO bna_tasks (
+         title, notes, summary, stage, category, urgency, source,
+         created_by, assigned_to, task_kind, ai_parsed
+       ) VALUES (
+         $1, $2, $3, 'assigned', 'community_setup', 'this_week', $4,
+         $5, 'Shloimie', 'provider_classroom_draft', $6::jsonb
+       )
+       RETURNING *`,
+      [
+        title,
+        notes,
+        taskInputs.summary,
+        normalizeTaskSource(context.source || inputs.source || 'telegram'),
+        context.actor?.user_id || 'action_registry',
+        JSON.stringify(taskInputs.ai_parsed),
+      ]
+    );
+    task = result.rows[0] || null;
+  }
+  return {
+    ...preview,
+    provider_classroom_draft_created: Boolean(task),
+    executed: Boolean(task),
+    task_id: task?.id || null,
+    task,
+  };
+}
+
 async function createTicket(inputs = {}, context = {}) {
   const description = String(inputs.message || inputs.description || inputs.body || '').trim();
   if (!description) throw new Error('message is required');
@@ -3360,6 +3506,8 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return connectorGuardedResult('google_classroom', inputs, context);
     case 'classroom.topicMaterialPreview':
       return classroomTopicMaterialPreview(inputs, context);
+    case 'provider.createClassroomDraft':
+      return createProviderClassroomDraft(inputs, context);
     case 'googleDrive.findFilePreview':
       return googleDrivePreview('find_file', inputs, context);
     case 'googleDrive.createDocPreview':

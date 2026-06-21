@@ -50,6 +50,11 @@ const STUDENT_SCOPE_TOOLS = new Set([
   'request_missing_input',
 ]);
 
+const ADMIN_ONLY_PROVIDER_SECRET_TOOLS = new Set([
+  'save_provider_api_key',
+  'rotate_provider_api_key',
+]);
+
 function normalizeProjectKey(value = '') {
   const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
   if (['bna', 'bnei_neviim', 'bnei_neviim_academy', 'school'].includes(normalized)) return 'bna';
@@ -128,6 +133,9 @@ function helperPermissionForTool(tool, context = {}, args = {}) {
     if (requestedWorkspace && scopedWorkspace && requestedWorkspace !== scopedWorkspace) {
       return { allowed: false, reason: 'permission_denied: workspace scope mismatch' };
     }
+    if (ADMIN_ONLY_PROVIDER_SECRET_TOOLS.has(tool.name)) {
+      return { allowed: false, reason: 'permission_denied: provider helper cannot use admin/private BNA tools' };
+    }
     if (TASK_SCOPE_TOOLS.has(tool.name)) return { allowed: true };
     return { allowed: false, reason: 'permission_denied: scoped users can use only task, decision, Codex queue, report, and safe integration setup tools' };
   }
@@ -137,6 +145,9 @@ function helperPermissionForTool(tool, context = {}, args = {}) {
     const scopedProviderId = scope.providerId || scope.provider_id || context.providerId || context.pageContext?.workspace?.providerId || '';
     if (requestedProviderId && scopedProviderId && String(requestedProviderId) !== String(scopedProviderId)) {
       return { allowed: false, reason: 'permission_denied: provider scope mismatch' };
+    }
+    if (ADMIN_ONLY_PROVIDER_SECRET_TOOLS.has(tool.name)) {
+      return { allowed: false, reason: 'permission_denied: provider helper cannot use admin/private BNA tools' };
     }
     if (PROVIDER_SCOPE_TOOLS.has(tool.name)) return { allowed: true };
     return { allowed: false, reason: 'permission_denied: provider helper cannot use admin/private BNA tools' };
@@ -170,6 +181,7 @@ function visibleHelperTools(tools = [], context = {}) {
 }
 
 module.exports = {
+  ADMIN_ONLY_PROVIDER_SECRET_TOOLS,
   PARENT_SCOPE_TOOLS,
   PROVIDER_SCOPE_TOOLS,
   STUDENT_SCOPE_TOOLS,

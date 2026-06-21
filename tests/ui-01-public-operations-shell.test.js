@@ -98,7 +98,7 @@ test('UI-01 Operations topbar has useful chips and a single visible helper entry
     assert.match(operations, new RegExp(label));
   }
   assert.match(operations, /function operationsTopbarStatusChips/);
-  assert.match(operations, /platform: \['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'\]/);
+  assert.match(operations, /platform: \['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'\]/);
   assert.match(operations, /Ask \/ Search/);
   assert.match(operations, /data-bna-helper-open="true"/);
   assert.equal((operations.match(/data-bna-helper-open="true"/g) || []).length, 2);

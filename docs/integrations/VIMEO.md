@@ -18,6 +18,9 @@ Scope: One Time Mishnah Class video library, upload planning, embed planning, an
   - read-only `/me` auth check
   - read-only folder/listing helpers
   - no-write upload intent preview
+  - no-write recording/transcript/summary/Vimeo pipeline preview for `REQ-20260619-308`
+  - no-write publication readiness preview
+  - no-write retention/deletion preview
   - manual Vimeo URL attachment preview
 - External writes remain blocked unless an explicit future approval gate is passed.
 
@@ -50,4 +53,10 @@ Needed before writes:
 ## Local Acceptance
 
 - Readiness checks may run with mocks or server-side test credentials.
-- Upload, privacy, folder, and webhook writes are not enabled by this follow-up batch.
+- Recording webhook handling, file selection, transcript/summary readiness,
+  review/correction/approval states, manual Vimeo ID review, API upload
+  readiness, publication, unpublishing, deletion, entitlement, and watch
+  progress are modeled as no-write previews.
+- Upload, privacy, folder, publication, unpublishing, deletion, entitlement,
+  watch-progress, notification, member-library publish, and webhook writes are
+  not enabled by this follow-up batch.

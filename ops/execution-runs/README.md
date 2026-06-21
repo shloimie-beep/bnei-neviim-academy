@@ -33,3 +33,10 @@ Each run folder must contain:
 
 `requirements.json` is the machine-readable source. The markdown files are for
 human inspection and handoff.
+
+For broad source packets, `requirements.json` may also include `sources`,
+`source_statements`, `source_statement_matrices`, and `git_refs`. Validation
+fails when captured statements are unmapped, source metadata is incomplete,
+repo evidence paths are missing, live-required closed rows only contain
+withheld deployment text, blocker rows lack owner/next action, multiple runs are
+active, or `NEXT-SESSION.md` does not name open work.

@@ -325,14 +325,15 @@ INSERT INTO bna_product_tiers (
   project_id, tier_key, display_name, description, price_amount_cents, currency,
   billing_interval, access_scopes, status, sort_order, metadata, updated_at
 )
-SELECT id, 'library_only', 'Video Library', 'Recorded Mishnayos library access.', NULL,
+SELECT id, 'library_only', 'Video Library', 'Recorded OneTime Mishnayos library access.', 6700,
        'USD', 'month', ARRAY['library'], 'active', 10,
-       '{"seeded_by":"rabbi_checkout_access_migration","launch_mode":"preview"}'::jsonb, NOW()
+       '{"seeded_by":"rabbi_checkout_access_migration","launch_mode":"preview","price_source":"REQ-20260616-030","payment_link_status":"placeholder_until_provider_key"}'::jsonb, NOW()
 FROM project
 ON CONFLICT (project_id, tier_key)
 DO UPDATE SET
   display_name = COALESCE(NULLIF(bna_product_tiers.display_name, ''), EXCLUDED.display_name),
   description = COALESCE(bna_product_tiers.description, EXCLUDED.description),
+  price_amount_cents = COALESCE(bna_product_tiers.price_amount_cents, EXCLUDED.price_amount_cents),
   access_scopes = EXCLUDED.access_scopes,
   sort_order = EXCLUDED.sort_order,
   updated_at = NOW();
@@ -344,14 +345,15 @@ INSERT INTO bna_product_tiers (
   project_id, tier_key, display_name, description, price_amount_cents, currency,
   billing_interval, access_scopes, status, sort_order, metadata, updated_at
 )
-SELECT id, 'live_library', 'Live + Library', 'Live Zoom classes plus recorded Mishnayos library access.', NULL,
+SELECT id, 'live_library', 'Live + Library', 'Live class access plus the recorded OneTime Mishnayos library.', 14900,
        'USD', 'month', ARRAY['library','live'], 'active', 20,
-       '{"seeded_by":"rabbi_checkout_access_migration","launch_mode":"preview"}'::jsonb, NOW()
+       '{"seeded_by":"rabbi_checkout_access_migration","launch_mode":"preview","price_source":"REQ-20260616-030","payment_link_status":"placeholder_until_provider_key"}'::jsonb, NOW()
 FROM project
 ON CONFLICT (project_id, tier_key)
 DO UPDATE SET
   display_name = COALESCE(NULLIF(bna_product_tiers.display_name, ''), EXCLUDED.display_name),
   description = COALESCE(bna_product_tiers.description, EXCLUDED.description),
+  price_amount_cents = COALESCE(bna_product_tiers.price_amount_cents, EXCLUDED.price_amount_cents),
   access_scopes = EXCLUDED.access_scopes,
   sort_order = EXCLUDED.sort_order,
   updated_at = NOW();
@@ -439,15 +441,15 @@ INSERT INTO bna_project_public_pages (
   project_id, page_key, route_path, title, status, allow_public_replacement,
   content, metadata, updated_at
 )
-SELECT id, 'rabbi_landing', '/rabbi', 'One Time Mishnayos Preview', 'preview', FALSE,
+SELECT id, 'rabbi_landing', '/rabbi', 'OneTimeOneTime - Rabbi Eli Scheller', 'preview', FALSE,
        '{
-          "hero_title":"One Time Mishnayos",
-          "hero_subtitle":"Preview membership page for Rabbi Elie Scheller classes.",
-          "hero_note":"Preview mode only. This does not replace the BNA homepage.",
-          "image_placeholders":["Rabbi teaching image","Mishnayos library image","Live class image"],
+          "hero_title":"OneTimeOneTime",
+          "hero_subtitle":"Stories, Mishnayos learning, and moderated group calls for children, now wired as a BNA service-provider landing and membership preview.",
+          "hero_note":"Preview mode only. The BNA homepage is not replaced.",
+          "image_placeholders":["OneTimeOneTime hero preview","Mishnayos library preview","Moderated live group call preview"],
           "sections":[
-            {"title":"Video Library","body":"Recorded classes and source material after review."},
-            {"title":"Live + Library","body":"Live Zoom class access plus the video library."}
+            {"title":"Video Library","body":"Recorded OneTime Mishnayos library access."},
+            {"title":"Live + Library","body":"Live class access plus the recorded OneTime Mishnayos library."}
           ]
         }'::jsonb,
        '{"seeded_by":"rabbi_checkout_access_migration","public_replacement_blocked":true}'::jsonb,
@@ -456,12 +458,21 @@ FROM project
 ON CONFLICT (project_id, page_key)
 DO UPDATE SET
   route_path = EXCLUDED.route_path,
-  title = COALESCE(NULLIF(bna_project_public_pages.title, ''), EXCLUDED.title),
+  title = CASE
+    WHEN COALESCE(bna_project_public_pages.title, '') IN ('', 'One Time Mishnayos Preview', 'One Time Mishnayos')
+      THEN EXCLUDED.title
+    ELSE bna_project_public_pages.title
+  END,
   status = CASE
     WHEN bna_project_public_pages.status IN ('approved', 'published') THEN bna_project_public_pages.status
     ELSE 'preview'
   END,
   allow_public_replacement = COALESCE(bna_project_public_pages.allow_public_replacement, FALSE),
+  content = CASE
+    WHEN COALESCE(bna_project_public_pages.content->>'hero_title', '') IN ('', 'One Time Mishnayos', 'One Time Mishnayos Preview')
+      THEN EXCLUDED.content
+    ELSE bna_project_public_pages.content
+  END,
   metadata = COALESCE(bna_project_public_pages.metadata, '{}'::jsonb)
     || jsonb_build_object('public_replacement_blocked', true),
   updated_at = NOW();

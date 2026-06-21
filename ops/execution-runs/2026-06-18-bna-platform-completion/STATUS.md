@@ -1,9 +1,142 @@
 # Status
 
-Current status: release closeout is partially complete and validated. The
-approved Railway deployment and focused live smokes have passed for the
-release-gated local work. The run still has external blockers for the audit
-package and remaining provider-owner setup.
+Current status: One Time master recovery local execution is terminal through
+`REQ-20260619-314`. Local verification is green; commit/push/PR/deploy/Railway
+doctor/live smoke and the remaining provider-owner setup remain explicitly
+operator-gated.
+
+2026-06-19 One Time master recovery Batch 14 checkpoint:
+
+- `REQ-20260619-314` final verification, commit, push, deploy, and live smoke
+  loop is terminal as `needs_operator_decision`.
+- Final local repair/verification work kept provider API key helper tools
+  admin-only for scoped helpers, aligned the default Operations allowedViews
+  fallback with the Agents module, and updated stale tests to the current
+  Agents toolbar/auth contract.
+- Full local verification passed: `npm test` 901/901, focused RBAC/final-
+  surface suites, syntax checks, active-run validation, JSON/ledger parse,
+  tracked secret audit, and watchdog audit.
+- `npm run smoke:local -- --skip-tests --no-env-file` was attempted and
+  stopped before server start because `DATABASE_URL`, `OPS_USERNAME`, and
+  `OPS_PASSWORD` were intentionally unavailable with env-file loading
+  disabled.
+- Watchdog gap was repaired by adding
+  `tasks-pending/2026-06-19-website-ramble-correction-audit.md`; final
+  watchdog report `ops/watchdog-audits/2026-06-19T12-00-watchdog-audit.md`
+  passed with severity `ok` and finding_count `0`.
+- No commit, push, PR update, deploy, Railway doctor, production smoke,
+  authenticated live role smoke, screenshots, production DB mutation,
+  domain/DNS action, billing, Zoom/Vimeo/Buffer/Sefaria action, source corpus
+  mutation, portal publication, or external send was performed.
+- Remaining next action is operator approval of the exact release scope:
+  stage/commit/push/PR, Railway deploy/doctor, live smoke identities/routes,
+  screenshot capture, and live BNA-vs-One-Time data-isolation proof.
+
+2026-06-19 One Time master recovery Batch 13 checkpoint:
+
+- `REQ-20260619-313` One Time deployment, domain, and Option B readiness is
+  terminal as `needs_operator_decision`.
+- Local implementation added `ops/one-time-mishnah/option-b-deployment-
+  readiness.json`, `ops/one-time-mishnah/one-time-option-b-deployment-
+  readiness.md`, and `tests/one-time-deployment-readiness.test.js`.
+- The readiness packet covers Option B architecture, deployment profile,
+  identity map, database installation identity guard, schema-vs-seed
+  separation, Railway runbook, cost worksheet, asset ownership register,
+  domain/DNS checklist, rollback plan, backup plan, staging smoke plan, and
+  production launch plan.
+- Focused deployment readiness verification passed 6/6.
+- No deploy, live smoke, Railway resource creation, database create/attach,
+  Railway variable write, DNS/domain change, production DB mutation, external
+  send, billing, GHL, or external connector write was performed.
+- Exact next requirement is `REQ-20260619-314` final verification, commit,
+  push, deploy, and live smoke loop.
+
+2026-06-19 One Time master recovery Batch 12 checkpoint:
+
+- `REQ-20260619-312` Sefaria and scoped study assistant readiness is terminal
+  as `needs_operator_decision`.
+- Local implementation added `src/lib/bna/study-assistant-readiness.js`, an
+  approved source-version metadata contract, content hashing without body
+  return, scoped retrieval previews, restricted/raw/cross-student blockers,
+  additive source-version and study-assistant audit schema, a protected
+  readiness route, route registry coverage, and a no-write Operations
+  readiness panel.
+- The existing One Time classroom bot remains disabled pending explicit
+  operator approval; no answer generation or unrestricted AI chat was enabled.
+- Focused verification passed: syntax checks, study assistant 6/6,
+  parent/public-helper/transcript privacy 34/34, classroom/community 14/14,
+  and Operations scoping/UI 7/7.
+- No deploy, live smoke, production DB mutation, Sefaria/API ingestion,
+  arbitrary translation merge, source corpus mutation, assistant answer
+  generation, portal publication, raw transcript retrieval, cross-student
+  retrieval enablement, billing, DNS/Railway propagation, GHL, or external
+  connector write was performed.
+- Exact next requirement is `REQ-20260619-313` One Time deployment, domain, and
+  Option B readiness.
+
+2026-06-19 One Time master recovery Batch 11 checkpoint:
+
+- `REQ-20260619-311` community and moderation workflow is terminal as
+  `needs_operator_decision`.
+- Local implementation added a community moderation helper, private question
+  review draft, private-to-public anonymization preview, additive audit/history
+  schema fields, moderation event table, protected readiness route, route
+  registry row, and a no-write Operations readiness panel.
+- Existing member responses remain hidden/review-only with
+  `visible_to_classroom: false`, screening flags, and no unrestricted
+  student-to-student messaging.
+- Focused verification passed: syntax checks, community workflow 8/8,
+  classroom/community neighbor 18/18, Operations scoping/UI 7/7, and
+  WS11/parent/badge 16/16.
+- No deploy, live smoke, production DB mutation, public/member community
+  publication, external notification, deletion purge, unrestricted student
+  messaging enablement, billing, DNS/Railway propagation, GHL, or external
+  connector write was performed.
+- Exact next requirement is `REQ-20260619-312` Sefaria and scoped study
+  assistant readiness.
+
+2026-06-19 One Time master recovery Batch 10 checkpoint:
+
+- `REQ-20260619-310` server-side gamification and badge auditing is terminal
+  as `needs_operator_decision`.
+- Local implementation added automatic/Rabbi-awarded badge catalogs,
+  configurable thresholds, stable idempotency keys, source evidence,
+  parent-safe explanations, reversal drafts, badge audit schema, a protected
+  readiness route, and a no-write Operations badge audit panel.
+- Public One Time classroom no longer renders a ranked public points
+  leaderboard; it renders Approved Participation from `participation_summary`
+  and keeps the member-safe `leaderboard` payload empty.
+- Focused verification passed: syntax checks, gamification/badge 13/13,
+  WS11/parent/forum 15/15, classroom policy 11/11, and Operations scoping/UI
+  7/7.
+- No deploy, live smoke, production DB mutation, live badge award,
+  Rabbi-awarded badge write, badge reversal, parent/student notification,
+  automatic access grant, prize/coupon/credit, public individual leaderboard,
+  billing, DNS/Railway propagation, GHL, or external connector write was
+  performed.
+- Exact next requirement is `REQ-20260619-311` community and moderation
+  workflow.
+
+2026-06-19 One Time master recovery Batch 9 checkpoint:
+
+- `REQ-20260619-309` transcript privacy and knowledge scoping is terminal as
+  `needs_operator_decision`.
+- Local implementation added `src/lib/bna/transcript-privacy.js`, a protected
+  no-write readiness route, route-registry coverage, and a Transcript Privacy /
+  Knowledge Scope panel in Operations.
+- The local contract covers transcript version metadata, timestamped segment
+  and speaker confidence metadata, privacy classes, student matching/review
+  states, audience-scoped retrieval previews, public-helper raw transcript
+  guardrails, and live-release blockers.
+- Focused verification passed: syntax checks, transcript privacy 6/6, public
+  helper/privacy 19/19, classroom/portal/content 37/37, Operations scoping/UI
+  7/7, and Zoom/Vimeo regression 11/11.
+- No deploy, live smoke, production DB mutation, raw transcript import,
+  transcript publication, vector/public-helper corpus mutation, cross-student
+  retrieval enablement, portal publish, send, billing, DNS/Railway propagation,
+  GHL, or external connector write was performed.
+- Exact next requirement is `REQ-20260619-310` server-side gamification and
+  badge auditing.
 
 2026-06-19 credential-and-meeting-intake closeout:
 
@@ -565,3 +698,257 @@ Still open after manual browser proof:
   approval or owner action.
 - No meeting creation, video upload, email send, deployment, production DB
   mutation, or production env mutation was performed.
+
+## 2026-06-19T12:05:00+03:00 - One Time Master Recovery Batch 0
+
+- Raw packet preserved as `raw-input/RAW-20260619-005-one-time-master-recovery-backlog-ui-launch.md`.
+- Register created as `tasks-pending/2026-06-19-one-time-master-recovery-register.md`.
+- Master reconciliation matrix created as `ops/one-time-mishnah/master-backlog-reconciliation.md` and `ops/one-time-mishnah/master-backlog-reconciliation.json`.
+- Preflight verified branch `codex/agent-control-center-20260619` at `cae87855f1e140668741cb2eeba90dc9dd68abf9`, PR #5 open/draft, Railway deployment `f9921a2d-d614-44df-88c0-392d810ddebd`, active run validation, secret audit, diff check, and production live app smoke.
+- No application runtime, production data, external account, DNS, email, WhatsApp, Zoom, Vimeo, billing, or deploy write was performed in this Batch 0 artifact pass.
+
+## 2026-06-19T12:45:00+03:00 - One Time Master Recovery Batch 1
+
+- `REQ-20260619-301` is done locally.
+- Hardened `scripts/bna-execution-run.mjs` so validation now checks registered
+  source metadata, statement matrix mapping, positive live deployment evidence,
+  repo evidence path existence, blocker owner/next action, git refs, duplicate
+  active runs, and stale `NEXT-SESSION.md` handoffs.
+- Extended validator tests in `tests/bna-execution-run.test.js` to cover the
+  new pass/fail cases.
+- Updated `ops/execution-runs/requirements.schema.json`,
+  `docs/BNA-RAMBLE-TO-DONE.md`, `BNA-START-HERE.md`, the Codex
+  implementation/verification templates, and `ops/execution-runs/README.md`.
+- Added active-run source metadata for `RAW-20260619-005`, pointed the run at
+  `ops/one-time-mishnah/master-backlog-reconciliation.json`, and added explicit
+  owner/next-action fields for open blocker rows.
+- No app runtime change, production data mutation, deploy, live smoke, external
+  send, billing, DNS, Zoom, Vimeo, or new Railway resource action was performed.
+- Next exact requirement: `REQ-20260619-302` read-only task and Decision census.
+
+## 2026-06-19T12:58:00+03:00 - One Time Master Recovery Batch 2
+
+- `REQ-20260619-302` is terminal as `needs_operator_decision`.
+- Added `scripts/task-decision-census.mjs` and
+  `tests/task-decision-census.test.js`.
+- Ran a read-only live/API task census against `/api/bna/tasks`; 792 tasks were
+  read and no production write was performed.
+- Redacted report:
+  `ops/task-decision-census/2026-06-19T09-29-03-110Z-task-decision-census.md`.
+- Census summary: Decisions 18, Tasks 336, Codex Queue 6, Pending 153,
+  Calendar 19, Done / Activity 260.
+- Dry-run cleanup plan: 57 duplicate groups, 64 findings, 121 reversible
+  approval-gated cleanup actions.
+- Private household/family/student/parent/person scope keys were fingerprinted
+  in the generated evidence.
+- Production cleanup apply is blocked on operator approval for the exact action
+  family to apply.
+- Next exact requirement: `REQ-20260619-303` One Time workspace users, roles,
+  and authorization model.
+
+## 2026-06-19T13:08:00+03:00 - One Time Master Recovery Batch 3
+
+- `REQ-20260619-303` is terminal as `needs_operator_decision`.
+- Added canonical One Time role contract helper
+  `src/lib/bna/one-time-role-model.js` with compatibility mappings for Rabbi
+  Elie Scheller as `workspace_owner`, Shloimie as scoped
+  `workspace_manager`, and Shloimie's platform-super-admin metadata.
+- Decorated Operations identities in `server.js` with canonical role labels
+  while preserving existing `project_owner` / `project_manager` route roles.
+- Added canonical membership metadata to the One Time seed and exposed
+  canonical role fields in auth/membership payloads.
+- Updated `public/operations.html` so existing Users/Access and workspace badge
+  UI prefer canonical role labels when present.
+- Updated `docs/architecture/workspace-community-provider-role-map.md` with the
+  canonical role table and no-write persistence gate.
+- Added negative/contract coverage for cross-workspace user reads, owner
+  protection, permanent removal gating, parent-child scope, student enrollment
+  scope, and no-write role-change audit preview.
+- Focused local verification passed, including the local Playwright One Time
+  Operations UI smoke.
+- No deployment, production DB mutation, invite/remove/deactivate persistence,
+  external send, billing, DNS, Zoom, Vimeo, or Railway resource action was
+  performed. Release/live smoke and any real external-access persistence remain
+  blocked on explicit operator approval.
+- Next exact requirement: `REQ-20260619-304` Operations UI and shared design
+  system remediation.
+
+## 2026-06-19 - One Time Master Recovery Batch 4
+
+- `REQ-20260619-304` is terminal as `needs_operator_decision`.
+- Added a credential-free current-state UI/design-system delta audit:
+  `scripts/one-time-ui-design-delta-audit.mjs`.
+- Added focused audit tests:
+  `tests/one-time-ui-design-delta-audit.test.js`.
+- Generated current no-write audit evidence:
+  `ops/ui-audits/2026-06-19-one-time-ui-design-delta/audit.md` and
+  `audit.json`.
+- Required surfaces passed source/evidence coverage: Operations overview,
+  Tasks/Decisions, Contacts, Communications, WhatsApp, Email, Community,
+  Content, Live Classes, Schedule, Integrations, Settings, Agents, One Time
+  public pages, Parent portal, Student portal, Provider portal, Member library,
+  and Classroom.
+- Current local UI/design contracts passed for top toolbar, module toolbar,
+  mobile toolbar scrolling, tappable/wrapping actions, fixed filter dropdowns,
+  cards/lists/loading/empty/error states, page overflow guard, and shared portal
+  mobile shells.
+- Remaining warning: admin/debug-adjacent raw JSON presentations remain in
+  advanced panels and should be polished or explicitly accepted later.
+- Blocking decision: the full authenticated Operations audit package is blocked
+  until local storage state is created with `npm run ops:audit:auth` and the
+  operator approves the authenticated `npm run ops:audit` / release live-smoke
+  path.
+- No deployment, production DB mutation, external write, broad crawl,
+  authenticated crawl, external send, billing, DNS, Zoom, Vimeo, or Railway
+  resource action was performed.
+- Next exact requirement: `REQ-20260619-305` first-party communications
+  workspace for WhatsApp and email.
+
+## 2026-06-19 - One Time Master Recovery Batch 5
+
+- `REQ-20260619-305` is terminal as `needs_operator_decision`.
+- Updated `public/operations.html` so the WhatsApp/WAPI phonebook workspace has
+  explicit three-pane desktop semantics, mobile list/conversation/details jump
+  controls, back-to-list navigation, sticky local action area, workspace/linked
+  record details, and no-send local correction actions.
+- Updated Communications > Email with a first-party operator workspace covering
+  sender/domain/recipient/confirmation readiness gates, local draft editor
+  fields for from identity, reply-to, recipients, subject, template,
+  workspace/project, related record, and body preview, plus locked send controls.
+- Updated `server.js` and `src/lib/integrations/resend-client.js` so local
+  Resend email drafts preserve reply-to metadata and approved sends can pass
+  `reply_to` through the existing `SEND_RESEND_EMAIL` approval-gated path.
+- Added `tests/one-time-communications-workspace.test.js` to pin the One Time
+  WhatsApp/email operator UX and no-send/approval contracts.
+- Focused local communications tests passed 26/26 and local Operations
+  smoke/layout tests passed 16/16.
+- No deployment, live smoke, production DB mutation, email send, WhatsApp send,
+  DNS/Railway propagation, WAPI outbound use, billing, Zoom, Vimeo, Buffer,
+  GHL, or external-account write was performed.
+- Blocking decision: operator must approve release/live smoke for app-visible
+  changes and separately approve exact Resend sender/domain/DNS/Railway or
+  WAPI/WhatsApp/email send tests before any external send/write.
+- Next exact requirement: `REQ-20260619-306` One Time product, schedule,
+  booking, portal, and billing readiness.
+
+## 2026-06-19 - One Time Master Recovery Batch 6
+
+- `REQ-20260619-306` is terminal as `needs_operator_decision`.
+- Added a safe local One Time product readiness contract in
+  `src/lib/bna/one-time-product-system.js` covering product model, schedule
+  and cohorts, consultation booking, parent portal, student portal, provider
+  portal, and billing/access gates.
+- The admin product-system API now returns `product_readiness` from
+  `/api/bna/one-time/product-system` using already-loaded tier, provider,
+  schedule, and calendar state.
+- Operations now renders a `Product Readiness` panel inside the existing Rabbi
+  / One Time launch and tiers surfaces, including explicit no-checkout,
+  no-invoice, no-payment-link, no-Zoom, no-send, and no-portal-publish gates.
+- Focused product verification passed 7/7, adjacent checkout/classroom/portal
+  verification passed 68/68, and local Operations smoke/layout verification
+  passed 16/16.
+- No deployment, live smoke, production DB mutation, checkout, charge, invoice,
+  payment link, subscription, access automation, Zoom/calendar write, portal
+  publish, email/WhatsApp/Telegram send, billing provider write, or external
+  account write was performed.
+- Blocking decision: operator must approve release/live smoke for app-visible
+  changes and separately approve the billing provider of record, refund/
+  cancellation/failed-payment policy, real schedule/booking rules, Zoom/
+  calendar writes, portal publishing, and any external sends before live
+  execution.
+- Next exact requirement: `REQ-20260619-307` Zoom attendance and session
+  automation.
+
+## 2026-06-19 - One Time Master Recovery Batch 7
+
+- `REQ-20260619-307` is terminal as `needs_operator_decision`.
+- Added safe local Zoom automation helpers in `src/lib/integrations/zoom.js`
+  for session automation preview, registrant staging preview, join redirect
+  guardrails, webhook attendance preview, and attendance correction drafts.
+- Added protected no-write admin API routes for session automation preview,
+  webhook attendance preview, and attendance correction preview. The existing
+  live meeting creation route remains blocked.
+- Operations now renders a `Zoom Attendance Automation` readiness panel in the
+  One Time Live Classes view with explicit no-meeting, no-registrant,
+  no-webhook-write, no-redirect, no-send, no-portal-publish, and no-attendance-
+  mutation copy.
+- Focused Zoom automation verification passed 6/6, integration/live-class
+  verification passed 18/18, Operations scoping/UI verification passed 7/7,
+  adjacent checkout/classroom/portal verification passed 68/68, and product/
+  Drive verification passed 11/11.
+- No deployment, live smoke, production DB mutation, Zoom meeting creation,
+  Zoom registrant write, live webhook acceptance, join redirect exposure,
+  attendance mutation, external send, portal publish, billing, DNS/Railway,
+  Vimeo, GHL, or external-account write was performed.
+- Blocking decision: operator must approve release/live smoke for the
+  app-visible/API Zoom automation changes and separately approve
+  `DEC-20260619-304` before any real Zoom meeting creation, registrant write,
+  live webhook acceptance, join redirect exposure, attendance mutation,
+  external send, or portal publish.
+- Next exact requirement: `REQ-20260619-308` recording, transcript, summary,
+  and Vimeo publication pipeline.
+
+## 2026-06-19 - One Time Master Recovery Batch 8
+
+- `REQ-20260619-308` is terminal as `needs_operator_decision`.
+- Added safe local recording/Vimeo helpers in
+  `src/lib/integrations/video-hosting.js` for recording pipeline preview,
+  publication readiness preview, and retention/deletion preview.
+- Added protected no-write admin API routes for recording pipeline,
+  publication, and retention previews. The existing video upload route remains
+  blocked.
+- Operations now renders a `Recording / Vimeo Pipeline` readiness panel inside
+  the One Time Library workspace with explicit no-provider-webhook,
+  no-recording-fetch, no-upload, no-publish, no-unpublish, no-delete,
+  no-member-visibility, no-watch-progress-write, no-notification-send, and
+  no-portal-publish copy.
+- Focused recording/Vimeo verification passed 5/5, integration/live-class/
+  provider-secret verification passed 23/23, Operations content/UI
+  verification passed 11/11, and adjacent product/Drive/classroom verification
+  passed 17/17.
+- No deployment, live smoke, production DB mutation, provider webhook
+  acceptance, recording fetch, Vimeo upload, publish, unpublish, delete,
+  member visibility, watch-progress write, notification send, portal publish,
+  billing, DNS/Railway, GHL, or external-account write was performed.
+- Blocking decision: operator must approve release/live smoke for the
+  app-visible/API recording/Vimeo changes and separately approve Vimeo
+  user-level upload/library access or a manual Vimeo ID policy before any real
+  provider webhook, recording fetch, upload, publish, unpublish, delete,
+  member visibility, watch-progress write, notification send, or portal publish.
+- Next exact requirement: `REQ-20260619-309` transcript privacy and knowledge
+  scoping.
+
+## 2026-06-19 - One Time Master Recovery Batch 12
+
+- `REQ-20260619-312` is terminal as `needs_operator_decision`.
+- Added safe local Sefaria/study-assistant readiness helper in
+  `src/lib/bna/study-assistant-readiness.js` for approved source-version
+  metadata, SHA-256 content hashes, no-body-return previews, scoped retrieval
+  decisions, restricted/raw/cross-student blocks, and disabled launch gates.
+- Added additive local schema for One Time source versions and study assistant
+  audit events. The schema records metadata, permissions, scope, approval,
+  citation/licensing state, and `source_text_returned: false`; it does not add
+  assistant answer generation or source body publication.
+- Added protected no-write admin API route
+  `/api/bna/one-time/study-assistant-readiness`; the existing One Time
+  classroom bot remains disabled pending explicit operator approval.
+- Operations now renders a `Sefaria / Study Assistant Readiness` panel inside
+  the One Time Library workspace with explicit no-unrestricted-AI-chat,
+  no-Sefaria/API-ingestion, no-translation-merge, no-corpus-mutation,
+  no-raw-transcript-retrieval, no-cross-student-retrieval, no-portal-publish,
+  and no-answer-generation copy.
+- Focused study-assistant verification passed 6/6, parent/public-helper/
+  transcript privacy verification passed 34/34, classroom/community
+  verification passed 14/14, and Operations scoping/UI verification passed 7/7.
+- No deployment, live smoke, production DB mutation, Sefaria/API ingestion,
+  arbitrary translation merge, source corpus mutation, assistant answer
+  generation, portal publication, raw transcript retrieval, cross-student
+  retrieval enablement, billing, DNS/Railway, GHL, or external-account write
+  was performed.
+- Blocking decision: operator must approve release/live smoke and separately
+  approve source licensing, citation verification, Rabbi approval policy,
+  scoped retrieval readback, transcript privacy proof, Sefaria/API ingestion
+  policy, and assistant launch scope before enabling any live study assistant
+  behavior.
+- Next exact requirement: `REQ-20260619-313` One Time deployment, domain, and
+  Option B readiness.

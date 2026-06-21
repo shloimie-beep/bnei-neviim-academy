@@ -1,26 +1,60 @@
 const RABBI_PAGE_KEY = 'rabbi_landing';
+const RABBI_DEFAULT_TITLE = 'OneTimeOneTime - Rabbi Eli Scheller';
+const LEGACY_RABBI_TITLES = new Set([
+  'One Time Mishnayos Preview',
+  'One Time Mishnayos',
+]);
 
 function defaultRabbiLandingContent() {
   return {
-    hero_title: 'One Time Mishnayos',
-    hero_subtitle: 'A preview membership page for Rabbi Elie Scheller classes.',
-    hero_note: 'Preview mode: checkout and member access can be tested without replacing the BNA public homepage.',
+    hero_title: 'OneTimeOneTime',
+    hero_subtitle: 'Stories, Mishnayos learning, and moderated group calls for children, now wired as a BNA service-provider landing and membership preview.',
+    hero_note: 'Preview mode only. The BNA homepage is not replaced.',
     image_placeholders: [
-      'Rabbi teaching image',
-      'Mishnayos library image',
-      'Live class image',
+      'OneTimeOneTime hero preview',
+      'Mishnayos library preview',
+      'Moderated live group call preview',
     ],
     sections: [
       {
         title: 'Video Library',
-        body: 'Recorded classes and source material, published after review.',
+        body: 'Recorded OneTime Mishnayos library access.',
       },
       {
         title: 'Live + Library',
-        body: 'Live Zoom access plus the recorded library when live membership is active.',
+        body: 'Live class access plus the recorded OneTime Mishnayos library.',
       },
     ],
   };
+}
+
+function normalizeRabbiLandingContent(content = {}) {
+  const defaults = defaultRabbiLandingContent();
+  const normalized = content && typeof content === 'object'
+    ? { ...defaults, ...content }
+    : { ...defaults };
+  if (
+    !normalized.hero_title
+    || normalized.hero_title === 'One Time Mishnayos'
+    || normalized.hero_title === 'One Time Mishnayos Preview'
+  ) {
+    normalized.hero_title = defaults.hero_title;
+  }
+  if (
+    !normalized.hero_subtitle
+    || normalized.hero_subtitle === 'A preview membership page for Rabbi Elie Scheller classes.'
+    || normalized.hero_subtitle === 'Preview membership page for Rabbi Elie Scheller classes.'
+  ) {
+    normalized.hero_subtitle = defaults.hero_subtitle;
+  }
+  if (
+    !normalized.hero_note
+    || normalized.hero_note === 'Preview mode: checkout and member access can be tested without replacing the BNA public homepage.'
+    || normalized.hero_note === 'Preview mode only. This does not replace the BNA homepage.'
+  ) {
+    normalized.hero_note = defaults.hero_note;
+  }
+  return normalized;
 }
 
 function publicReplacementAllowed({ page = {}, env = process.env } = {}) {
@@ -34,12 +68,12 @@ function rabbiPageView(row = {}) {
     id: row.id ? Number(row.id) : null,
     page_key: row.page_key || RABBI_PAGE_KEY,
     route_path: row.route_path || '/rabbi',
-    title: row.title || 'One Time Mishnayos Preview',
+    title: !row.title || LEGACY_RABBI_TITLES.has(row.title) ? RABBI_DEFAULT_TITLE : row.title,
     status: row.status || 'preview',
     allow_public_replacement: row.allow_public_replacement === true,
     approved_by: row.approved_by || '',
     approved_at: row.approved_at || null,
-    content: row.content || defaultRabbiLandingContent(),
+    content: normalizeRabbiLandingContent(row.content),
     metadata: row.metadata || {},
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
@@ -48,7 +82,9 @@ function rabbiPageView(row = {}) {
 
 module.exports = {
   RABBI_PAGE_KEY,
+  RABBI_DEFAULT_TITLE,
   defaultRabbiLandingContent,
+  normalizeRabbiLandingContent,
   publicReplacementAllowed,
   rabbiPageView,
 };

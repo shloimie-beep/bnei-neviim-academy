@@ -24,6 +24,30 @@
 - Rabbi Sheller / One Time: first provider workspace, separated from BNA Academy
   unless explicit cross-enrollment exists.
 
+## Canonical Role Names
+
+The live database still accepts older compatibility values in some columns, so
+canonical roles are attached through identity and membership metadata before
+the role-column migration is safe.
+
+| Canonical role | Compatibility values | Scope |
+| --- | --- | --- |
+| `platform_super_admin` | `super_admin`, platform `owner` | All workspaces; only role that can permanently remove One Time workspace users. |
+| `workspace_owner` | `project_owner`, `owner`, `rabbi` | Own provider workspace; Rabbi Elie Scheller for One Time. |
+| `workspace_admin` | `one_time_admin`, `admin`, `project admin` | Own provider workspace; delegated admin. |
+| `workspace_manager` | `project_manager`, `manager`, `project admin` | Own provider workspace; Shloimie scoped One Time manager login. |
+| `provider_staff` | `service_provider`, `teacher`, `provider_staff` | Assigned provider/class records only. |
+| `parent` | `parent` | Linked child and approved One Time parent/member records only. |
+| `student` | `student`, `child` | Own enrollment/student-safe records only. |
+
+For One Time, `src/lib/bna/one-time-role-model.js` is the current role contract:
+Rabbi Elie Scheller is `workspace_owner` for
+`rabbi_sheller_provider` / `one_time_mishnah_class`; Shloimie has the platform
+`platform_super_admin` identity and the scoped One Time manager/admin
+compatibility role. Live invite, deactivate, remove, and role-change writes
+remain approval-gated; the implemented contract and UI preview are no-write
+readback until persistence is explicitly approved.
+
 ## Object Matrix
 
 Legend: V=view, C=create, E=edit, A=archive/delete, M=message, P=approve,

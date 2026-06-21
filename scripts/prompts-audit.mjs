@@ -18,6 +18,8 @@ const outputHandoffPath = path.join(repoRoot, 'tasks-pending', `${today}-prompt-
 const ledgerPath = path.join(repoRoot, 'ops', 'agent-task-ledger.jsonl');
 const changelogPath = path.join(repoRoot, 'ops', 'agent-changelog.md');
 const tasksPath = path.join(repoRoot, 'TASKS.md');
+const rambleTemplatePath = path.join(repoRoot, 'tasks-pending', '_template-ramble-intake.md');
+const rambleCorrectionAuditPath = path.join(repoRoot, 'tasks-pending', `${today}-website-ramble-correction-audit.md`);
 
 const PROMPT_EXTENSIONS = new Set(['.md', '.markdown', '.txt', '.prompt']);
 const SCAN_EXTENSIONS = new Set([...PROMPT_EXTENSIONS]);
@@ -27,17 +29,18 @@ const RECENT_LOCAL_SOURCE_SINCE = Date.parse(process.env.PROMPT_AUDIT_SINCE || '
 
 const WORKSTREAM_RULES = [
   ['WATCHDOG', /ramble watchdog|self[- ]healing operating system|watchdog audit|watchdog-rules|run_watchdog_audit|system watchdog/i],
+  ['RAMBLE-PROTOCOL', /ramble protocol|raw input queue|bna_raw_intake|ramble intake|_template-ramble-intake|website ramble correction|raw capture|raw queue|distilled filing|misfiled ramble|codex ownership and ramble cleanup|build everything|natural conversation first|telegram reply mode|planning[- ]mode|prompt refinement|telegram ingestion miss audit|custom gpt instructions|ramble router|goal[_ -]mode[_ -]execution[_ -]packet|bna_goal_mode_execution_packet|goal[-_ ]mode correction/i],
   ['PROMPT-INTAKE', /prompt intake|prompt ingestion|prompts?:audit|prompt register|downloads prompt/i],
   ['OPERATING-GOALS', /operating goals|durable operating|goal register/i],
   ['THURSDAY-ACCESS', /thursday access|blocked until thursday|owner access session/i],
-  ['UI-01', /\bUI[-_ ]?01\b|ui[ -]brand|operations layout|header\/footer|mobile.*ui|public.*operations shell/i],
-  ['OPS-02', /\bOPS[-_ ]?02\b|operations workflows|lanes|calendar|task routing|decision lifecycle|pending access/i],
-  ['HELPER-03', /\bHELPER[-_ ]?03\b|scoped.*helper|natural[- ]language helper|bna helper/i],
-  ['RABBI-04', /\bRABBI[-_ ]?04\b|one ?time.*product|rabbi scheller|mishnayos product|7pm.*class/i],
-  ['INT-05', /\bINT[-_ ]?05\b|integration|integrations|zoom|vimeo|stripe|resend|buffer|wapi|godaddy|secret storage/i],
-  ['COMMUNITY-06', /\bCOMMUNITY[-_ ]?06\b|course|gamification|parent progress|mishnayos community|worksheet/i],
+  ['UI-01', /\bUI[-_ ]?01\b|ui[ -]brand|operations layout|header\/footer|mobile.*ui|public.*operations shell|website slider and telegram context|learning moments|learning progress update|progress bar in public\/index\.html|public website.*logo|favicon|app icon|whatsapp link preview|not secure|weird check mark/i],
+  ['OPS-02', /\bOPS[-_ ]?02\b|operations workflows|lanes|calendar|task routing|decision lifecycle|pending access|bna telegram \+ accountability audit|bna dashboard restructure|task ui cleanup|content prompt studio|weekly newsletter review|bna content repurposing pipeline|drive raw intake|whatsapp draft generated|content job|warm leads|compact task filters|telegram intent plan|comment.*requeue|research section/i],
+  ['HELPER-03', /\bHELPER[-_ ]?03\b|scoped.*helper|natural[- ]language helper|bna helper|openai smoke|openai sidekick/i],
+  ['RABBI-04', /\bRABBI[-_ ]?04\b|one ?time.*product|one time external user|one time.*ticketing|one time.*portal|rabbi scheller|mishnayos product|7pm.*class/i],
+  ['INT-05', /\bINT[-_ ]?05\b|integration|integrations|zoom|vimeo|stripe|resend|buffer|wapi|godaddy|secret storage|payment reminder controls|payment reminders|railway auth and deploy audit|railway auth|railway token|railway-token|railway redeploy|railway custom-domain/i],
+  ['COMMUNITY-06', /\bCOMMUNITY[-_ ]?06\b|course|gamification|parent progress|mishnayos community|worksheet|student accountability \+ telegram task actions|student match buttons|telegram goal board api audit|goal board fields|speaker diarization|student question|student section|student profile|accountability profile|qstudio|device-control|device control|allowlist|inner dialogue|learning communities|respecting each other|source-sheet class packet/i],
   ['MASTER-07', /\bMASTER[-_ ]?07\b|parallel closeout|orchestrator|source[- ]of[- ]truth closeout/i],
-  ['WS01-WS11', /\bWS(?:0[1-9]|1[01])\b|ws01|ws11|full ws closeout|parent-managed student/i],
+  ['WS01-WS11', /\bWS(?:0[1-9]|1[01])\b|ws01|ws11|full ws closeout|parent-managed student|parent\/student dashboard|july registration/i],
   ['FAMILY-CLEANUP', /family accountability|legacy family|home accountability/i],
 ];
 
@@ -302,9 +305,9 @@ function loadLedgerRows() {
   return fs.readFileSync(ledgerPath, 'utf8')
     .split(/\r?\n/)
     .filter(Boolean)
-    .map((line) => {
+    .map((line, index) => {
       try {
-        return JSON.parse(line);
+        return { ...JSON.parse(line), _line: index + 1 };
       } catch {
         return null;
       }
@@ -336,12 +339,15 @@ function ledgerWorkstreamKey(row = {}) {
 }
 
 function terminalLedgerStage(row = {}) {
-  const raw = String(row.stage || row.status || row.event || '').toLowerCase();
+  const raw = `${row.stage || ''} ${row.status || ''} ${row.event || ''} ${row.notes || ''}`.toLowerCase();
   if (/deployed|live.*verified|completed_deployed/.test(raw)) return 'deployed_verified';
   if (/done|completed|workstream_done/.test(raw) && /local|followup|required|pending/i.test(`${row.stage || ''} ${row.notes || ''}`)) return 'local_verified';
   if (/done|completed/.test(raw)) return 'done_verified';
   if (/blocked/.test(raw)) return 'blocked';
   if (/audit_completed|diagnosis_completed/.test(raw)) return 'mapped';
+  if (/superseded|closed|stale_ledger_closed/.test(raw)) return 'superseded';
+  if (/implemented_verified|progress_verified|task_verified|research_verified|local_artifact|local_fix|planning_brief_completed/.test(raw)) return 'local_verified';
+  if (/task_implemented|metadata_cleaned|task_clarified|live_data_updated|source_sheet_followup_sent|ramble_captured/.test(raw)) return 'done_verified';
   if (/started|running|progress/.test(raw)) return 'in_progress';
   return '';
 }
@@ -398,7 +404,11 @@ function extractPathProofs(text = '') {
 }
 
 function blockerFromText(text = '') {
-  const line = String(text || '').split(/\r?\n/).find((candidate) => /\b(blocked|blocker|remaining|pending|needs|need from|external)\b/i.test(candidate));
+  const line = String(text || '').split(/\r?\n/).find((candidate) => {
+    if (!/\b(blocked|blocker|remaining|pending|needs|need from|external)\b/i.test(candidate)) return false;
+    return !/\b(blocked:\s*none|blocked only if blocked|blocked only when something actually blocks progress|no blocker|no blockers|if blocked)\b/i.test(candidate)
+      && !/^\s*[-*#\s]*blocked:\s*$/i.test(candidate);
+  });
   return line ? compactText(redactSecrets(line.replace(/^[-*#\s]+/, '')), 320) : '';
 }
 
@@ -419,12 +429,14 @@ function nextActionFromText(text = '', status = '') {
 function statusForSource({ text, key, linkedLedger, duplicateStatus }) {
   if (duplicateStatus) return duplicateStatus;
   const lower = String(text || '').toLowerCase();
+  const hasFalseBlockedLanguage = /\b(blocked:\s*none|blocked only if blocked|blocked only when something actually blocks progress|no blocker|no blockers|if blocked)\b/.test(lower);
   const ledgerStage = linkedLedger ? terminalLedgerStage(linkedLedger) : '';
-  if (/deployed|railway doctor|live smoke|live-smoked|deployment `/.test(lower)) return 'deployed_verified';
+  if (/deployed|railway doctor|live smoke|live-smoked|smoke-tested live|deployment `/.test(lower)) return 'deployed_verified';
   if (ledgerStage) return ledgerStage;
   if (/local implementation verified|locally implemented|local verification passed|npm test .*pass/.test(lower)) return 'local_verified';
-  if (/blocked|blocker|pending credentials|pending access|needs .*access/.test(lower)) return 'blocked';
+  if (!hasFalseBlockedLanguage && /blocked|blocker|pending credentials|pending access|needs .*access/.test(lower)) return 'blocked';
   if (/mapped|audit completed|diagnosis complete|classified/.test(lower)) return 'mapped';
+  if (/\b(completed|implemented|verified|smoke tests? passed|fixes applied)\b/.test(lower)) return 'done_verified';
   if (key === 'PROMPT-INTAKE' || key === 'OPERATING-GOALS') return 'in_progress';
   return 'seen';
 }
@@ -457,6 +469,7 @@ function goalIdsForWorkstream(key = '') {
   const map = {
     WATCHDOG: ['GOAL-009'],
     'PROMPT-INTAKE': ['GOAL-002', 'GOAL-009'],
+    'RAMBLE-PROTOCOL': ['GOAL-002', 'GOAL-009'],
     'OPERATING-GOALS': ['GOAL-009'],
     'HELPER-03': ['GOAL-001'],
     'OPS-02': ['GOAL-002', 'GOAL-009'],
@@ -531,6 +544,7 @@ function buildRecords() {
       next_action: '',
       duplicate_group: '',
       duplicate_of: '',
+      _status_text: text,
     };
   });
 
@@ -573,15 +587,16 @@ function buildRecords() {
     const ledger = record.linked_ledger_records[0] || null;
     const duplicateStatus = record.duplicate_of ? 'superseded' : '';
     record.status = statusForSource({
-      text: `${record.detected_title}\n${record.raw_goal_summary}\n${record.blocker}`,
+      text: `${record.detected_title}\n${record.raw_goal_summary}\n${record.blocker}\n${record._status_text || ''}`,
       key: record.workstream_key,
       linkedLedger: ledger,
       duplicateStatus,
     });
     record.next_action = nextActionFromText(`${record.raw_goal_summary}\n${record.blocker}`, record.status);
-    if (!record.next_action && !record.linked_task_ids.length && !record.linked_proof_files.length) {
+    if (!record.next_action && !record.linked_task_ids.length && !record.linked_proof_files.length && !record.linked_goal_ids.length) {
       record.next_action = 'Map this prompt source to a task, proof path, or terminal status.';
     }
+    delete record._status_text;
   }
 
   return rawRecords.sort((a, b) => (
@@ -603,8 +618,13 @@ function parseActiveTasksWithoutSource() {
 
 function staleLedgerRecords() {
   const rows = loadLedgerRows();
+  const closedLines = new Set(rows.flatMap((row) => [
+    ...(Array.isArray(row.closes_ledger_lines) ? row.closes_ledger_lines : []),
+    row.closes_ledger_line,
+  ]).map(Number).filter(Number.isFinite));
   const latest = new Map();
   for (const row of rows) {
+    if (closedLines.has(Number(row._line))) continue;
     const key = `${row.cycle_id || ''}|${row.workstream_id || row.title || ''}`;
     if (!key.trim()) continue;
     latest.set(key, row);
@@ -613,7 +633,7 @@ function staleLedgerRecords() {
   return [...latest.values()]
     .filter((row) => {
       const stamp = Date.parse(row.recorded_at || row.timestamp || '');
-      const stage = String(row.stage || row.status || row.event || '').toLowerCase();
+      const stage = terminalLedgerStage(row);
       return stamp && stamp < cutoffMs && /started|running|in_progress/.test(stage);
     })
     .map((row) => ({
@@ -636,11 +656,25 @@ function writeOutputs(records) {
     byWorkstream.get(record.workstream_key).push(record);
   }
   const promptsWithoutProof = records
-    .filter((record) => !record.linked_task_ids.length && !record.linked_proof_files.length && !['superseded', 'done_verified', 'deployed_verified'].includes(record.status))
+    .filter((record) => {
+      if (['superseded', 'done_verified', 'deployed_verified'].includes(record.status)) return false;
+      return !record.linked_task_ids.length
+        && !record.linked_proof_files.length
+        && !record.linked_goal_ids.length
+        && !record.linked_decision_ids.length
+        && !record.linked_pending_ids.length;
+    })
     .slice(0, 40);
   const tasksWithoutSource = parseActiveTasksWithoutSource();
   const stale = staleLedgerRecords();
   const secretRisks = records.filter((record) => record.secret_risk !== 'none');
+  const rambleProtocolSources = records.filter((record) => record.workstream_key === 'RAMBLE-PROTOCOL');
+  const rambleProtocolMissing = [
+    fs.existsSync(rambleTemplatePath) ? '' : 'tasks-pending/_template-ramble-intake.md',
+    fs.existsSync(rambleCorrectionAuditPath) ? '' : `tasks-pending/${today}-website-ramble-correction-audit.md`,
+    fs.existsSync(path.join(repoRoot, 'raw-input', 'README.md')) ? '' : 'raw-input/README.md',
+    fs.existsSync(path.join(repoRoot, 'railway-migration-2026-06-16-raw-intake-queue.sql')) ? '' : 'railway-migration-2026-06-16-raw-intake-queue.sql',
+  ].filter(Boolean);
 
   const lines = [
     `# Prompt Intake Register - ${today}`,
@@ -657,6 +691,8 @@ function writeOutputs(records) {
     `- Prompt sources without linked task/proof path: ${promptsWithoutProof.length}`,
     `- Active TASKS.md rows without obvious prompt/source pointer: ${tasksWithoutSource.length}`,
     `- Stale ledger starts needing terminal closeout: ${stale.length}`,
+    `- Ramble protocol sources: ${rambleProtocolSources.length}`,
+    `- Ramble protocol required files missing: ${rambleProtocolMissing.length}`,
     '',
     '## Workstreams',
     '',
@@ -712,6 +748,22 @@ function writeOutputs(records) {
   }
   lines.push('');
 
+  lines.push('## Ramble Protocol Hardening');
+  lines.push('');
+  if (!rambleProtocolSources.length) {
+    lines.push('- No dedicated ramble protocol sources found.');
+  } else {
+    for (const record of rambleProtocolSources.slice(0, 20)) {
+      lines.push(`- ${record.status}: ${record.detected_title} (${record.source_path})`);
+    }
+  }
+  if (rambleProtocolMissing.length) {
+    lines.push(`- Missing required file(s): ${rambleProtocolMissing.join(', ')}`);
+  } else {
+    lines.push('- Required ramble template and website correction audit files are present.');
+  }
+  lines.push('');
+
   const summary = linesWithSingleTrailingNewline(lines);
   fs.writeFileSync(outputSummaryPath, summary);
   ensureDir(path.dirname(outputAuditPath));
@@ -732,6 +784,7 @@ function writeOutputs(records) {
     '',
     '- Re-run `npm run prompts:audit` after new Downloads files, Codex attachments, or prompt zips are added.',
     '- Convert unmapped prompt sources into tasks, blocked records, or superseded records.',
+    '- Use `tasks-pending/_template-ramble-intake.md` for future ramble-derived Codex handoffs.',
     '- Close stale ledger-only starts with terminal status based on proof, blocker, or supersession.',
     '- Keep secret-bearing files in the BNA keyholder; this register must not store raw secret values.',
     '',

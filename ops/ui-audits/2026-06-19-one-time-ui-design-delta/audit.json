@@ -1,0 +1,339 @@
+{
+  "generated_at": "2026-06-19T09:53:36.350Z",
+  "requirement_id": "REQ-20260619-304",
+  "status": "needs_operator_decision",
+  "external_write_performed": false,
+  "production_mutation_performed": false,
+  "authenticated_crawl_performed": false,
+  "broad_crawl_performed": false,
+  "required_surfaces": [
+    {
+      "id": "operations_overview",
+      "label": "Operations overview",
+      "marker": "dashboard",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "operations_tasks",
+      "label": "Operations tasks and decisions",
+      "marker": "tasks",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "contacts",
+      "label": "Contacts",
+      "marker": "contacts",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "communications",
+      "label": "Communications",
+      "marker": "communications",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "label": "WhatsApp",
+      "marker": "communications",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "email",
+      "label": "Email",
+      "marker": "communications",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "community",
+      "label": "Community",
+      "marker": "community",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "content",
+      "label": "Content",
+      "marker": "content",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "live_classes",
+      "label": "Live Classes",
+      "marker": "live_classes",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "schedule",
+      "label": "Schedule",
+      "marker": "calendar",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "integrations",
+      "label": "Integrations",
+      "marker": "integrations",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "settings",
+      "label": "Settings",
+      "marker": "settings",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "agents",
+      "label": "Agents",
+      "marker": "agents",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "one_time_public",
+      "label": "One Time public pages",
+      "marker": "public/one-time",
+      "status": "pass",
+      "evidence": [
+        "public/one-time"
+      ]
+    },
+    {
+      "id": "parent_portal",
+      "label": "Parent portal",
+      "marker": "public/parent.html",
+      "status": "pass",
+      "evidence": [
+        "public/parent.html"
+      ]
+    },
+    {
+      "id": "student_portal",
+      "label": "Student portal",
+      "marker": "public/student.html",
+      "status": "pass",
+      "evidence": [
+        "public/student.html"
+      ]
+    },
+    {
+      "id": "provider_portal",
+      "label": "Provider portal",
+      "marker": "public/provider.html",
+      "status": "pass",
+      "evidence": [
+        "public/provider.html"
+      ]
+    },
+    {
+      "id": "member_library",
+      "label": "Member library",
+      "marker": "members",
+      "status": "pass",
+      "evidence": [
+        "public/operations.html"
+      ]
+    },
+    {
+      "id": "classroom",
+      "label": "Classroom",
+      "marker": "one-time-classroom.html",
+      "status": "pass",
+      "evidence": [
+        "public/one-time-classroom.html"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "ops/ui-audits/2026-06-16-ui-closeout.md",
+        "ops/ui-audits/2026-06-16/"
+      ],
+      "id": "prior_ui_closeout_available",
+      "title": "Prior UI closeout proof is available"
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json"
+      ],
+      "id": "current_one_time_smoke_available",
+      "title": "Current One Time Operations UI smoke evidence exists"
+    },
+    {
+      "status": "blocked",
+      "severity": "medium",
+      "evidence": [
+        ".runtime/auth/operations-storage-state.json"
+      ],
+      "id": "ops_audit_storage_state",
+      "title": "Authenticated Operations audit storage state",
+      "details": "Full authenticated ops:audit crawl is blocked until a local Operations storage state is created through npm run ops:audit:auth."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "top_toolbar_contract",
+      "title": "Top toolbar contract",
+      "details": "Operations keeps a branded topbar with workspace context."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "module_toolbar_contract",
+      "title": "Module toolbar contract",
+      "details": "Operations exposes a stable module toolbar with data IDs for testing and navigation."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "module_toolbar_mobile_scroll",
+      "title": "Module toolbar mobile scroll",
+      "details": "Module toolbar scrolls horizontally on smaller screens instead of forcing page overflow."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/css/bna-app-shell.css"
+      ],
+      "id": "button_tap_target_contract",
+      "title": "Button tap target and wrapping contract",
+      "details": "Shared shell CSS gives Operations actions mobile-safe height and wrapping behavior."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "filter_dropdown_contract",
+      "title": "Filter dropdown contract",
+      "details": "Filter menus are fixed-position, high z-index overlays and use shared toggle behavior."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "cards_lists_states",
+      "title": "Cards, lists, empty, loading, and error states",
+      "details": "Operations defines shared list/card surfaces and basic loading, error, and empty states."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/css/bna-app-shell.css"
+      ],
+      "id": "horizontal_overflow_guard",
+      "title": "Horizontal overflow guard",
+      "details": "Page-level horizontal overflow is hidden while tables may intentionally scroll."
+    },
+    {
+      "status": "pass",
+      "severity": "info",
+      "evidence": [
+        "public/parent.html",
+        "public/student.html",
+        "public/provider.html"
+      ],
+      "id": "portal_mobile_shells",
+      "title": "Portal mobile shells",
+      "details": "Parent, student, and provider portals use the shared BNA shell classes."
+    },
+    {
+      "status": "warn",
+      "severity": "low",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "raw_json_review",
+      "title": "Raw JSON review",
+      "details": "Admin/debug-adjacent JSON presentations remain in advanced panels and should be reviewed in a future UI polish pass.",
+      "findings": [
+        "/<pre class=\"event-meta\">\\$\\{escapeHtml\\(JSON\\.stringify/",
+        "/<textarea name=\"permissions\"[\\s\\S]*JSON\\.stringify/"
+      ]
+    }
+  ],
+  "blockers": [
+    {
+      "status": "blocked",
+      "severity": "medium",
+      "evidence": [
+        ".runtime/auth/operations-storage-state.json"
+      ],
+      "id": "ops_audit_storage_state",
+      "title": "Authenticated Operations audit storage state",
+      "details": "Full authenticated ops:audit crawl is blocked until a local Operations storage state is created through npm run ops:audit:auth."
+    }
+  ],
+  "warnings": [
+    {
+      "status": "warn",
+      "severity": "low",
+      "evidence": [
+        "public/operations.html"
+      ],
+      "id": "raw_json_review",
+      "title": "Raw JSON review",
+      "details": "Admin/debug-adjacent JSON presentations remain in advanced panels and should be reviewed in a future UI polish pass.",
+      "findings": [
+        "/<pre class=\"event-meta\">\\$\\{escapeHtml\\(JSON\\.stringify/",
+        "/<textarea name=\"permissions\"[\\s\\S]*JSON\\.stringify/"
+      ]
+    }
+  ],
+  "next_requirement": "REQ-20260619-305"
+}

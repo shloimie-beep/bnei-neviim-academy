@@ -445,6 +445,7 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
     ['requirement', output.requirements],
     ['task', output.tasks],
     ['decision', output.decisions],
+    ['calendar_event', output.calendar_events],
     ['ticket', output.tickets],
     ['open_question', output.open_questions],
     ['memory_candidate', output.memory_candidates],
@@ -505,7 +506,7 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
       if (!item.metadata || typeof item.metadata !== 'object') item.metadata = {};
       if (!item.expected_result) item.expected_result = item.done_definition || item.next_action || item.summary || `Satisfy ${title}`;
       if (!item.done_definition) item.done_definition = item.expected_result;
-      if (!item.target_lane) item.target_lane = type === 'decision' || type === 'open_question' ? 'Decisions' : type === 'memory_candidate' ? 'Memory' : 'Tasks';
+      if (!item.target_lane) item.target_lane = type === 'decision' || type === 'open_question' ? 'Decisions' : type === 'calendar_event' ? 'Calendar' : type === 'memory_candidate' ? 'Memory' : 'Tasks';
       if (!item.verification_method) item.verification_method = 'Inspect the affected workflow, run the relevant check, and record evidence or a blocker.';
       if (item.needs_review === undefined) item.needs_review = Number(item.confidence || 0.8) < 0.85;
     });
@@ -695,6 +696,24 @@ function deterministicParse(input = {}) {
           target_lane: 'Alerts',
         }, 0.88));
       }
+    }
+
+    if (!ambiguousWorkspaceRouting && (
+      /\b(calendar|schedule|scheduled|reschedule|event|meeting|appointment|class\s+(?:at|on)|session\s+(?:at|on)|due\s+(?:date|by|on))\b/i.test(text)
+      || (/\b(today|tomorrow|tonight|next\s+(?:sunday|monday|tuesday|wednesday|thursday|friday|shabbos|shabbat|week))\b/i.test(text)
+        && /\b(class|session|meeting|lesson|event|calendar)\b/i.test(text))
+    )) {
+      output.calendar_events.push(makeStructuredLaneItem('calendar_event', fragment, index, {
+        title: titleFromActionText(text, 'Calendar item'),
+        source_time_text: sourceQuote(text, 180),
+        scheduling_status: 'draft_needs_confirmation',
+        external_write_performed: false,
+        metadata: {
+          scheduling_status: 'draft_needs_confirmation',
+          external_write_performed: false,
+        },
+        target_lane: 'Calendar',
+      }, 0.8));
     }
 
     if (/\b(api|integration|credential|oauth|resend|buffer|vimeo|zoom|stripe|dns|godaddy|wapi|whapi|google drive)\b/i.test(text)) {

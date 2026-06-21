@@ -223,13 +223,13 @@
       border-radius: 8px;
       padding: 10px;
     }
-    .leaderboard-row {
+    .participation-row {
       display: grid;
       grid-template-columns: 36px minmax(0, 1fr) auto;
       gap: 10px;
       align-items: center;
     }
-    .rank {
+    .participation-marker {
       width: 30px;
       height: 30px;
       display: grid;
@@ -281,11 +281,11 @@
       <div class="hero">
         <div class="hero-copy">
           <h1>Mishnah Classroom</h1>
-          <p>Follow the class videos by Seder, see what is scheduled, ask source-grounded questions, and respond to Rabbi-reviewed prompts without an open student chat.</p>
+          <p>Follow the class videos by Seder, see what is scheduled, and respond to Rabbi-reviewed prompts without an open student chat.</p>
           <div class="pill-row">
             <span class="pill">Internal calendar</span>
             <span class="pill">Approved questions</span>
-            <span class="pill">Source-grounded bot</span>
+            <span class="pill">Private replies</span>
             <span class="pill">Rabbi moderation</span>
           </div>
         </div>
@@ -325,9 +325,9 @@
           </section>
           <section class="span-4">
             <div class="section-title">
-              <h2>Leaderboard</h2>
+              <h2>Approved Participation</h2>
             </div>
-            <div id="leaderboardList" class="item-list"></div>
+            <div id="participationList" class="item-list"></div>
           </section>
         </div>
 
@@ -340,12 +340,17 @@
           </section>
           <section class="span-6">
             <div class="section-title">
-              <h2>Source Bot</h2>
+              <h2>Reply Queue</h2>
             </div>
-            <div class="bot-panel">
-              <textarea id="botQuestion" placeholder="Ask about your assignments, Zoom eligibility, or the approved class sources."></textarea>
-              <button class="primary" id="askBot" type="button">Ask</button>
-              <div id="botAnswer" class="bot-answer">Answers stay inside approved One Time classroom sources.</div>
+            <div class="item-list">
+              <article class="item">
+                <strong>Private first</strong>
+                <p>Students respond to Rabbi/admin threads below. Replies stay in review until Rabbi/admin chooses the next step.</p>
+              </article>
+              <article class="item">
+                <strong>No open chat</strong>
+                <p>Teacher-led discussion can be featured after review, but students do not publish directly to a public feed.</p>
+              </article>
             </div>
           </section>
         </div>
@@ -373,12 +378,9 @@
       todayVideo: document.getElementById('todayVideo'),
       calendarList: document.getElementById('calendarList'),
       curriculumList: document.getElementById('curriculumList'),
-      leaderboardList: document.getElementById('leaderboardList'),
+      participationList: document.getElementById('participationList'),
       topQuestions: document.getElementById('topQuestions'),
       threadList: document.getElementById('threadList'),
-      botQuestion: document.getElementById('botQuestion'),
-      botAnswer: document.getElementById('botAnswer'),
-      askBot: document.getElementById('askBot'),
     };
 
     function escapeHtml(value) {
@@ -459,16 +461,16 @@
       }).join('') : '<div class="empty">Curriculum units are not available yet.</div>';
     }
 
-    function renderLeaderboard() {
-      const rows = state.classroom?.leaderboard || [];
-      els.leaderboardList.innerHTML = rows.length ? rows.map((row) => `
-        <div class="item leaderboard-row">
-          <span class="rank">${Number(row.rank || 0)}</span>
+    function renderApprovedParticipation() {
+      const rows = state.classroom?.participation_summary || [];
+      els.participationList.innerHTML = rows.length ? rows.map((row) => `
+        <div class="item participation-row">
+          <span class="participation-marker">OK</span>
           <div>
             <strong>${escapeHtml(row.actor_label || 'Approved participant')}</strong>
             <p>${Number(row.approved_questions || 0)} questions / ${Number(row.approved_responses || 0)} responses / ${Number(row.rabbi_featured || 0)} featured</p>
           </div>
-          <strong>${Number(row.points || 0)}</strong>
+          <strong>Reviewed</strong>
         </div>
       `).join('') : '<div class="empty">Approved participation will appear after review.</div>';
     }
@@ -511,7 +513,7 @@
       renderToday();
       renderCalendar();
       renderCurriculum();
-      renderLeaderboard();
+      renderApprovedParticipation();
       renderTopQuestions();
       renderThreads();
       els.content.classList.remove('hidden');
@@ -563,29 +565,6 @@
         status.textContent = error.message;
       } finally {
         button.disabled = false;
-      }
-    });
-
-    els.askBot.addEventListener('click', async () => {
-      const message = els.botQuestion.value.trim();
-      if (!message) return;
-      els.askBot.disabled = true;
-      els.botAnswer.textContent = 'Checking approved classroom sources...';
-      try {
-        const response = await fetch('/api/one-time-classroom/bot', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code: state.code, message }),
-        });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || 'Bot unavailable');
-        const sources = (data.reply?.sources || []).map((source) => source.title || `${source.kind} #${source.id}`).filter(Boolean);
-        els.botAnswer.textContent = `${data.reply?.body || ''}${sources.length ? `\n\nSources: ${sources.join('; ')}` : ''}`;
-      } catch (error) {
-        els.botAnswer.textContent = error.message;
-      } finally {
-        els.askBot.disabled = false;
       }
     });
 

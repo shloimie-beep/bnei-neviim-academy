@@ -44,8 +44,8 @@
 
   function renderHero() {
     const content = state.site?.content || {};
-    $('heroTitle').textContent = content.hero_title || 'One Time Mishnayos';
-    $('heroSubtitle').textContent = content.hero_subtitle || 'Preview membership page for Rabbi Elie Scheller classes.';
+    $('heroTitle').textContent = content.hero_title || 'OneTimeOneTime';
+    $('heroSubtitle').textContent = content.hero_subtitle || 'Stories, Mishnayos learning, and moderated group calls for children, now wired as a BNA service-provider landing and membership preview.';
     $('previewBanner').hidden = !state.previewMode;
   }
 
@@ -62,6 +62,14 @@
     }
     container.innerHTML = state.tiers.map((tier) => {
       const scopes = (tier.access_scopes || []).join(' + ') || 'library';
+      const checkout = tier.checkout || {};
+      const stripeReady = Boolean(checkout.stripe_price_configured || checkout.stripe_payment_link_url);
+      const greenReady = Boolean(checkout.green_invoice_item_configured || checkout.green_invoice_payment_link_url);
+      const checkoutReady = Boolean(stripeReady || greenReady);
+      const statusClass = checkoutReady ? 'ready' : 'blocked';
+      const statusText = checkoutReady
+        ? 'Payment link configured'
+        : 'Payment setup blocked: add a Stripe or Green Invoice link in Operations';
       return `
         <article class="tier-card">
           <div>
@@ -69,10 +77,13 @@
             <h3>${escapeHtml(tier.display_name)}</h3>
             <p>${escapeHtml(tier.description)}</p>
           </div>
-          <div class="tier-price">${escapeHtml(money(tier.price_amount_cents, tier.currency))}<span>/${escapeHtml(tier.billing_interval || 'month')}</span></div>
+          <div class="tier-row">
+            <div class="tier-price">${escapeHtml(money(tier.price_amount_cents, tier.currency))}<span>/${escapeHtml(tier.billing_interval || 'month')}</span></div>
+            <span class="setup-status ${statusClass}">${escapeHtml(statusText)}</span>
+          </div>
           <div class="tier-actions">
-            <button type="button" onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'stripe')">Stripe checkout</button>
-            <button type="button" onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'green_invoice')">GreenInvoice checkout</button>
+            <button class="primary" type="button" ${stripeReady ? `onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'stripe')"` : 'disabled'}>Stripe checkout</button>
+            <button type="button" ${greenReady ? `onclick="RabbiLaunch.checkout('${escapeHtml(tier.tier_key)}', 'green_invoice')"` : 'disabled'}>Green Invoice checkout</button>
           </div>
         </article>
       `;

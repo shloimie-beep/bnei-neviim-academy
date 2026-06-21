@@ -217,7 +217,7 @@ test('provider onboarding integrations foundation exposes intake, public index, 
   assert.match(server, /google_business_profile_url/);
   assert.match(server, /google_place_id/);
   assert.match(serviceProviders, /\/api\/providers/);
-  assert.match(serviceProviders, /Become a Service Provider/);
+  assert.match(serviceProviders, /Advertise your program for free/);
   assert.match(providerJoin, /cta_preference/);
   assert.match(providerJoin, /services_offered/);
   assert.match(providerJoin, /community_affiliation/);

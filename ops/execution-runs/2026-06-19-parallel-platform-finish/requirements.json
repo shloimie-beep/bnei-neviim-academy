@@ -1,0 +1,127 @@
+{
+  "run_id": "2026-06-19-parallel-platform-finish",
+  "title": "Parallel Platform Finish",
+  "updated_at": "2026-06-19T16:55:00+03:00",
+  "linked_prior_run": "ops/execution-runs/2026-06-18-bna-platform-completion/",
+  "parallel_run_id": "PARALLEL-20260619-001",
+  "checkpoint": {
+    "branch": "checkpoint/20260619-platform-completion",
+    "commit": "b2fd5039990ee1cb370a49d4475a7763fb8548b7",
+    "tag": "checkpoint-parallel-20260619-001"
+  },
+  "git_refs": {
+    "branch": "integration/20260619-platform-finish",
+    "checkpoint_commit": "b2fd5039990ee1cb370a49d4475a7763fb8548b7",
+    "checkpoint_tag": "checkpoint-parallel-20260619-001"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260619-900",
+      "source_path": "C:\\Users\\User\\.codex\\attachments\\26d908ae-b058-4929-bc3d-31092d67ea8b\\pasted-text.txt",
+      "captured_at": "2026-06-19T15:40:21+03:00",
+      "content_fingerprint": "prompt-00-coordinator-local-checkpoint-contracts-worktrees",
+      "privacy_classification": "internal_coordination",
+      "workspace": "BNA",
+      "project": "parallel-platform-finish",
+      "source_type": "codex_attachment"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260619-400",
+      "title": "Create coordinator checkpoint, contracts, ownership map, runtime state, and worker worktrees",
+      "expected_result": "Prompt 00 ends with a local checkpoint commit/tag, linked run, coordination folder, contracts, file ownership map, external gates, runtime status files, and four isolated worker worktrees created from the checkpoint commit.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/README.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/COORDINATION.json",
+        "ops/parallel-runs/PARALLEL-20260619-001/CONTRACTS.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/FILE-OWNERSHIP.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/MERGE-ORDER.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/DECISIONS-AND-EXTERNAL-GATES.md",
+        "ops/execution-runs/2026-06-19-parallel-platform-finish/TEST-RESULTS.md"
+      ],
+      "notes": "Checkpoint commit b2fd5039990ee1cb370a49d4475a7763fb8548b7 and tag checkpoint-parallel-20260619-001 preserve the local platform completion state. Worktrees start from that checkpoint and use outside-Git runtime status files."
+    },
+    {
+      "id": "REQ-20260619-401",
+      "title": "W1 core platform backend and data",
+      "expected_result": "W1 completes tenancy/workspace/RBAC, domain models, services/migrations, and negative isolation tests in owned paths, with shared-entrypoint needs recorded in W1 INTEGRATION.md.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W1/EVIDENCE.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W1/TEST-RESULTS.md",
+        "tests/platform-core/platform-core-migration-contract.test.js",
+        "tests/platform-core/platform-core-rbac.test.js",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-TEST-RESULTS.md"
+      ],
+      "notes": "Merged into integration branch and verified through focused W1 tests plus full npm test."
+    },
+    {
+      "id": "REQ-20260619-402",
+      "title": "W2 SaaS UI and product experience",
+      "expected_result": "W2 completes a polished responsive role/module-aware UI shell and product screens in owned paths, with mobile/accessibility/browser tests and shared-entrypoint needs recorded in W2 INTEGRATION.md.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W2/EVIDENCE.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W2/TEST-RESULTS.md",
+        "tests/platform-ui/platform-ui-contract.test.js",
+        "tests/platform-ui/platform-ui-playwright-smoke.mjs",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-PLAYWRIGHT.md"
+      ],
+      "notes": "Mounted into canonical Operations Platform Suite view and verified through isolated and mocked canonical Playwright acceptance."
+    },
+    {
+      "id": "REQ-20260619-403",
+      "title": "W3 ramble queue, parser, agent loop, content prompt",
+      "expected_result": "W3 completes Drive/local intake contracts, parent prompt queue visibility, deduping parser, Decisions/task routing, agent-run verification loop, and WhatsApp prompt flow in owned paths.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W3/EVIDENCE.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W3/TEST-RESULTS.md",
+        "tests/ingestion/w3-intake-source.test.js",
+        "tests/ingestion/w3-parser-queue.test.js",
+        "tests/ingestion/w3-whatsapp-prompt.test.js",
+        "tests/agent-control/w3-closed-loop.test.js",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-TEST-RESULTS.md"
+      ],
+      "notes": "Merged into integration branch; ramble and prompt queue package scripts pass."
+    },
+    {
+      "id": "REQ-20260619-404",
+      "title": "W4 One Time partner instance and integrations",
+      "expected_result": "W4 completes One Time split-ready configuration, branding, duplicate-repo audit, and Vimeo/Zoom/Resend local adapters/readiness docs/mocks without external mutations.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W4/EVIDENCE.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/workers/W4/TEST-RESULTS.md",
+        "tests/instances/w4-onetime-instance.test.js",
+        "tests/integrations/w4-onetime-readiness.test.js",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-MIGRATION-PLAN.md"
+      ],
+      "notes": "Worker branch had no delta, so Prompt 05 completed the local W4 package on the integration branch."
+    },
+    {
+      "id": "REQ-20260619-405",
+      "title": "Prompt 05 final shared-file integration",
+      "expected_result": "Prompt 05 merges worker branches in order, applies shared-file requests once, runs full validation, and keeps external gates blocked until approved.",
+      "status": "done",
+      "live_required": false,
+      "evidence": [
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-STATUS.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-EVIDENCE.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-TEST-RESULTS.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-PLAYWRIGHT.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/FINAL-RELEASE-CHECKLIST.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
+        "ops/watchdog-audits/2026-06-19T13-55-watchdog-audit.md"
+      ],
+      "notes": "Full local validation passed. Release, deployment, production DB, live smoke, DNS, provider writes, and secret propagation remain external/operator gates."
+    }
+  ]
+}

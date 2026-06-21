@@ -26,6 +26,14 @@ the system is still aligned with Shloimie's stated goals.
 - A long ramble is valid input. Capture the raw source in daily memory or a
   prompt register path, then distill it into goals, decisions, pending blockers,
   Codex work, proof requirements, and handoffs.
+- If Shloimie says goal mode, set it as a goal, build everything, finish
+  everything, work through the whole prompt/output/list, or gives a
+  GPT/ChatGPT correction packet for Codex, the output must become a
+  goal-mode execution packet. Codex should create/continue the active goal,
+  register raw intake first, then work requirements until terminal statuses.
+- GPT-generated correction outputs should use
+  `tasks-pending/_template-goal-mode-correction-output.md` and include
+  `BNA_GOAL_MODE_EXECUTION_PACKET`.
 - Do not use raw ramble text as a visible task title. Visible work should be
   concise, rephrased, and actionable.
 - Re-run `npm run prompts:audit` when new Downloads files, Codex attachments,

@@ -14,7 +14,7 @@ because the OpenAI key loaded by the repo and Railway is rejected by OpenAI with
   `safety/pre-next-superprompt-20260614-072250`
 - Safety commit: `30bddbd chore: preserve no-ghl cleanup work before workspace buildout`
 - Current checkout while recording this gate:
-  `cleanup/workspace-task-dialogue-rabbi-scheller`
+  `cleanup/workspace-ta[REDACTED_KEY_SHAPED_STRING]`
 - Accidental local Operations lane diffs were preserved in
   `.runtime/operations-html-accidental-lane-edits.patch` and then discarded from
   the working file.
@@ -38,7 +38,7 @@ because the OpenAI key loaded by the repo and Railway is rejected by OpenAI with
 - PASS `node --check src/lib/actions/actions/operations.js`
 - PASS `npm test` 309/309
 - PASS focused Operations regressions:
-  `node --test tests/one-time-external-user-portal.test.js tests/operations-saas-crm-redesign.test.js tests/operations-task-comments-and-dictation.test.js`
+  `node --test tests/one-time-external-user-portal.test.js tests/operations-saas-crm-redesign.test.js tests/operations-ta[REDACTED_KEY_SHAPED_STRING].test.js`
 - PASS `npm run railway:doctor`
   - service: `skillful-motivation`
   - environment: `production`

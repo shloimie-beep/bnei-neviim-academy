@@ -126,7 +126,9 @@ test('provider readiness modules do not expose secret values', () => {
 });
 
 test('Operations integrations readiness UI is present and secret-field free', () => {
-  assert.match(operations, /getIntegrationStatus\(\)/);
+  assert.match(operations, /getIntegrationStatus\(filters = \{\}\)/);
+  assert.match(operations, /api\.getIntegrationStatus\(workspaceDataFilters\)/);
+  assert.match(operations, /const needsIntegrationsReadinessData = currentWorkspaceIsGlobal\(\) &&/);
   assert.match(operations, /data-integrations-readiness/);
   assert.match(operations, /Integration Readiness/);
   assert.match(operations, /Preview-first by policy/);

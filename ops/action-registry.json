@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-17",
+  "updated_at": "2026-06-19",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -246,6 +246,21 @@
       "test": {
         "type": "unit_and_static",
         "expected_result": "POST /api/bna/project-meetings/one-time-drive-brief/preview returns dry_run=true and Operations exposes only the preview action, not production mutation."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-PLATFORM-SUITE-NAV",
+      "label": "Platform Suite",
+      "surface": "operations",
+      "route": "/operations?view=platform_suite",
+      "selector_hint": "ops sidebar/module toolbar Platform Suite navigation",
+      "expected_behavior": "Opens the mounted Platform UI suite with scoped BNA or One Time fixture data and no external writes.",
+      "permission": "super_admin/project_owner/project_admin",
+      "status": "active",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "Operations platform_suite view mounts [data-platform-ui-root] across desktop and mobile viewports without exposing secret values or live provider mutation controls."
       },
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
     }
