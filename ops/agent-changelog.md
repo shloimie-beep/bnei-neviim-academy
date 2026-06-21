@@ -24820,3 +24820,33 @@ or raw provider payload exposure was performed.
 
 Next: continue automatically with Batch 8 / `REQ-20260621-504` Email and
 Resend UX, without live sends.
+
+## 2026-06-21T15:07:30+03:00 - One Time Master Completion Batch 8 Email/Resend UX Live Closeout
+
+Completed `REQ-20260621-504` and closed the first-party communications parent
+`REQ-20260619-305` for PR #5.
+
+Implemented and deployed Email/Resend UX guards: Operations Email and
+Communications Settings now separate provider API readiness, sender identity,
+domain readiness, recipient/workspace scope, DNS tasks, webhook-event
+readback, and the exact `SEND_RESEND_EMAIL` gate. Resend webhook processing now
+uses raw-body Svix verification, stores safe first-party event summaries, and
+hides raw payloads by default. The sender/domain Decision is recorded at
+`ops/one-time-mishnah/resend-sender-domain-decision.md`.
+
+Deployed commit `fdd39bf327356675f8006bcc4ce04425061ef57e` to Railway
+deployment `a8acf1b4-be28-4f51-b4db-2085a01cc02d`.
+
+Verification passed: focused Email/Resend/provider-env tests 19/19,
+`npm run bna:run:validate`, tracked secret audit, Railway deploy poll, standard
+live app smoke `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`,
+and focused Email/Resend UX live smoke
+`ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`.
+
+Guardrails: no live email send, DNS verification/mutation, provider write,
+bulk campaign, raw private email-body storage, billing, Zoom, Vimeo, Buffer
+publish, or external-account write was performed.
+
+Next: continue automatically with Batch 9/10 / `REQ-20260619-306` product,
+schedule, booking, portals, and billing/access foundations without live
+charges or external writes.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T14:47:27+03:00",
+  "updated_at": "2026-06-21T15:07:30+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -683,7 +683,7 @@
       "id": "REQ-20260619-305",
       "title": "First-party communications parent requirement",
       "expected_result": "Communications UX is usable, workspace-scoped, and no-send by default.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0008",
@@ -699,9 +699,9 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "implementation_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "WhatsApp child is deployed and live-verified; continue to Batch 8 / REQ-20260621-504 Email and Resend UX.",
+      "next_action": "Complete. Continue to Batch 9/10 / REQ-20260619-306 product, schedule, booking, portals, and billing/access foundations.",
       "acceptance_criteria": [
         "WhatsApp child verified",
         "Email child verified"
@@ -711,24 +711,40 @@
         "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md",
         "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.json",
-        "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md"
+        "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
       ],
       "verification": [
         "Batch 7 WhatsApp child verified live; Batch 8 Email/Resend child remains.",
-        "npm run app:smoke:whatsapp-ux"
+        "npm run app:smoke:whatsapp-ux",
+        "node --test tests/resend-client.test.js tests/communications-integrations-contract.test.js tests/one-time-communications-workspace.test.js tests/provider-env-railway-propagate.test.js",
+        "npm run app:smoke",
+        "npm run app:smoke:email-resend-ux"
       ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
         "ops/communications/wapi-crm-audit-and-plan.md"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "pushed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T14:47:27+03:00"
+      "updated_at": "2026-06-21T15:07:30+03:00",
+      "deployed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "deployment_id": "a8acf1b4-be28-4f51-b4db-2085a01cc02d",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260621-503",
@@ -820,7 +836,7 @@
       "id": "REQ-20260621-504",
       "title": "Email and Resend UX",
       "expected_result": "Email operations are usable without live sends and Resend readiness is separated from sender/domain readiness.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0009"
@@ -835,31 +851,67 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Start Batch 8: complete email operations workspace without live sends, Resend domain/status/DNS readback, webhook verification/storage, and one sender/domain Decision.",
+      "next_action": "Complete. Continue to Batch 9/10 / REQ-20260619-306 product, schedule, booking, portals, and billing/access foundations.",
       "acceptance_criteria": [
         "send disabled",
         "domain list/status readable",
         "webhook route tested with mocks",
         "one sender/domain Decision exists"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "docs/integrations/RESEND.md",
+        "ops/one-time-mishnah/resend-sender-domain-decision.md",
+        "ops/one-time-mishnah/resend-sender-domain-decision.json",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/integrations/resend-client.js",
+        "node --check server.js",
+        "node --check scripts/smoke-email-resend-ux-live.mjs",
+        "node --check scripts/provider-env-railway-propagate.mjs",
+        "node --test tests/resend-client.test.js tests/communications-integrations-contract.test.js tests/one-time-communications-workspace.test.js tests/provider-env-railway-propagate.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run app:smoke",
+        "npm run app:smoke:email-resend-ux"
+      ],
       "implementation_files": [
         "docs/integrations/RESEND.md",
         "src/lib/integrations/resend-client.js",
         "server.js",
         "public/operations.html",
-        "tests/resend-client.test.js"
+        "tests/resend-client.test.js",
+        "scripts/provider-env-railway-propagate.mjs",
+        "scripts/smoke-email-resend-ux-live.mjs",
+        "ops/one-time-mishnah/resend-sender-domain-decision.md",
+        "ops/one-time-mishnah/resend-sender-domain-decision.json",
+        "tests/communications-integrations-contract.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/provider-env-railway-propagate.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "pushed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T14:43:30+03:00"
+      "updated_at": "2026-06-21T15:07:30+03:00",
+      "deployment_id": "a8acf1b4-be28-4f51-b4db-2085a01cc02d",
+      "deployed_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-306",
@@ -882,7 +934,7 @@
       ],
       "implementation_status": "not_started",
       "can_continue_without_operator": true,
-      "next_action": "Complete configurable products, schedule/availability, booking, parent/student/provider portals, and billing/access states.",
+      "next_action": "Start Batch 9/10: complete configurable products, schedule/availability, booking intent records, parent/student/provider portals, and billing/access states without live charges.",
       "acceptance_criteria": [
         "no guessed final pricing entitlements",
         "booking intent records created",
@@ -904,7 +956,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T15:07:30+03:00"
     },
     {
       "id": "REQ-20260619-307",
