@@ -334,12 +334,37 @@ Non-product check note:
   expected unknown `.html` extension error. The HTML is covered by the
   Operations UI smoke tests above.
 
-Pending after commit/deploy:
+Post-deploy checks:
 
-- `npm run bna:run:validate`
-- `node scripts/audit-secrets.mjs`
-- `git diff --check`
-- `npm run app:smoke`
-- `node scripts/smoke-one-time-product-booking-live.mjs`
-- `npm run railway:doctor`
+- PASS `npm run bna:run:validate`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check`
+- PASS `npm run railway:doctor` after Railway deployment
+  `8c20ae67-9acc-43f2-b77d-c10fcd425d73`
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md`
+- PASS focused One Time product/booking live smoke,
+  `ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md`
+
+Focused live smoke confirmed:
+
+- Product offers, availability, appointment types, appointment intents, and
+  portal foundations are readable from production.
+- A clearly marked internal One Time class event can be created and read back.
+- A clearly marked internal One Time appointment intent can be created and read
+  back.
+- Operations schedule UI renders Add Class and Add Appointment controls at
+  1440px and 390px without page-level horizontal overflow.
+- No external write, Zoom meeting, payment, invoice, access grant, email,
+  WhatsApp, participant invite, or upload was performed.
+
+Intermediate focused live-smoke failures recorded:
+
+- `ops/live-smokes/2026-06-21T12-36-42-823Z-one-time-product-booking-live-smoke.md`
+  failed on a selector visibility assumption after the native appointment type
+  select was enhanced and hidden by the app.
+- `ops/live-smokes/2026-06-21T12-38-15-716Z-one-time-product-booking-live-smoke.md`
+  failed because the smoke treated an unrelated in-app `Send` control as a live
+  external send path. The final smoke checks external-send, Zoom, and payment
+  labels specifically.
 <!-- batch-9-10:end -->

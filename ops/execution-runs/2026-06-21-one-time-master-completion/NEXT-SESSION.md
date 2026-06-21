@@ -181,11 +181,15 @@ charges, payment links, access grants, bulk emails, or external account writes.
 <!-- batch-9-10:start -->
 ## Batch 9/10 Handoff
 
-Product, scheduling, booking, and portal foundations are implemented locally
-and focused tests passed. Deployment/live-smoke evidence is still pending.
+Product, scheduling, booking, and portal foundations are deployed and
+live-verified.
 
 - Requirement: `REQ-20260619-306`
-- Implementation status: `implemented_local`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `45ed36787ca519819a1adfb8f372267d96330a64`
+- Railway deployment:
+  `8c20ae67-9acc-43f2-b77d-c10fcd425d73`
 - Key files:
   `src/lib/bna/one-time-product-system.js`, `server.js`,
   `public/operations.html`,
@@ -193,6 +197,10 @@ and focused tests passed. Deployment/live-smoke evidence is still pending.
   `tests/one-time-product-system.test.js`,
   `scripts/smoke-one-time-product-booking-live.mjs`
 - Focused Batch 9/10 tests: 47 passed, 0 failed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md`
+- Focused One Time product/booking live smoke:
+  `ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md`
 - Guardrails: no live charges, payment links, invoices, access grants, Zoom
   meetings, participant invites, email sends, WhatsApp sends, uploads, or
   external calendar writes.
@@ -200,15 +208,10 @@ and focused tests passed. Deployment/live-smoke evidence is still pending.
 Next exact actions:
 
 ```powershell
-npm run bna:run:validate
-node scripts/audit-secrets.mjs
-git diff --check
-git add src/lib/bna/one-time-product-system.js server.js public/operations.html railway-migration-2026-06-16-one-time-product-system.sql tests/one-time-product-system.test.js scripts/smoke-one-time-product-booking-live.mjs ops/execution-runs/2026-06-21-one-time-master-completion
-git commit -m "Implement One Time product booking foundations"
-git push origin codex/agent-control-center-20260619
+npm run bna:run:next
 ```
 
-Then deploy the pushed commit to Railway, run standard and focused live smokes,
-record deployment ID/commit, mark `REQ-20260619-306` verified live, and continue
-automatically to the next unblocked batch.
+Continue automatically with Batch 11 / `REQ-20260619-308` Vimeo and
+member-library pipeline. Do not perform a real Vimeo upload without user-level
+authorization and token.
 <!-- batch-9-10:end -->

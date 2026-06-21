@@ -192,14 +192,14 @@ async function collectUiState({ appUrl, cookie, width }) {
     await page.waitForSelector('.ops-app-shell', { timeout: 30000 });
     await page.waitForSelector('[data-one-time-availability-booking]', { timeout: 30000 });
     await page.waitForSelector('#oneTimeClassTitle', { timeout: 30000 });
-    await page.waitForSelector('#oneTimeAppointmentType', { timeout: 30000 });
+    await page.waitForSelector('#oneTimeAppointmentType', { state: 'attached', timeout: 30000 });
     await page.waitForTimeout(2000);
     const state = await page.evaluate(() => {
       const text = document.body.textContent.replace(/\s+/g, ' ').trim();
       const enabledSendOrZoomButtons = Array.from(document.querySelectorAll('button'))
         .filter((button) => !button.disabled)
         .map((button) => button.textContent.trim().replace(/\s+/g, ' '))
-        .filter((label) => /send|zoom|charge|invoice|payment link/i.test(label));
+        .filter((label) => /send email|send whatsapp|send reminder|zoom|charge|invoice|payment link/i.test(label));
       return {
         has_schedule_form: Boolean(document.querySelector('#oneTimeClassTitle')),
         has_appointment_form: Boolean(document.querySelector('#oneTimeAppointmentType')),

@@ -453,7 +453,7 @@ Intermediate focused live-smoke failure recorded:
 
 Requirement: `REQ-20260619-306`
 
-Status: implemented local / deploy pending
+Status: done / deployed / verified live
 
 Implementation evidence:
 
@@ -493,10 +493,37 @@ Implemented behavior:
 
 Deployment and live evidence:
 
-- Implementation commit: pending.
-- Pushed commit: pending.
-- Deployed commit: pending.
-- Railway deployment: pending.
-- Standard live smoke: pending.
-- Focused One Time product/booking live smoke: pending.
+- Implementation commit: `45ed36787ca519819a1adfb8f372267d96330a64`
+- Pushed commit: `45ed36787ca519819a1adfb8f372267d96330a64`
+- Deployed commit: `45ed36787ca519819a1adfb8f372267d96330a64`
+- Railway deployment: `8c20ae67-9acc-43f2-b77d-c10fcd425d73`
+- Railway doctor/poll: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md`
+- Focused One Time product/booking live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md`
+
+Focused live smoke covered:
+
+- Product offers readable with the $67 monthly membership and premium Masechta
+  intensive contracts.
+- Availability readable with the 7pm Israel rule.
+- Parent/student/provider portal foundations readable, with student Join Class
+  gated.
+- Internal class-event creation and readback.
+- Internal appointment-intent creation and readback.
+- Operations schedule UI at 1440px and 390px with no page-level horizontal
+  overflow.
+- No payment, invoice, email, WhatsApp, Zoom meeting, access grant,
+  participant invite, upload, or external calendar write.
+
+Intermediate focused live-smoke failures recorded:
+
+- `ops/live-smokes/2026-06-21T12-36-42-823Z-one-time-product-booking-live-smoke.md`
+  failed because the smoke waited for a native select to be visible after the
+  app's select enhancer intentionally hid it. The smoke now waits for DOM
+  attachment.
+- `ops/live-smokes/2026-06-21T12-38-15-716Z-one-time-product-booking-live-smoke.md`
+  failed because the smoke over-flagged an unrelated in-app `Send` control. The
+  forbidden-action check now targets external sends, Zoom, and payment actions.
 <!-- batch-9-10:end -->

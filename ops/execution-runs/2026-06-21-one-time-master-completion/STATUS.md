@@ -1,6 +1,6 @@
 # Status
 
-Status as of 2026-06-21T14:47:27+03:00.
+Status as of 2026-06-21T15:40:00+03:00.
 
 Batch 0 and Batch 1 are done locally. The successor run is the single active
 run. The execution CLI now validates structured requirements, reports the next
@@ -172,7 +172,7 @@ and billing/access foundations.
 <!-- batch-9-10:start -->
 ## Batch 9/10 - Product, Scheduling, Booking, And Portal Foundations
 
-Status: implemented local / deploy pending
+Status: done / deployed / verified live
 
 The One Time product system now has safe internal product-offer contracts for
 the $67 monthly membership and premium Masechta intensive, with final pricing,
@@ -187,7 +187,11 @@ calendar-event and appointment-intent records; they do not create Zoom meetings,
 send reminders, charge cards, grant access, invite participants, or write to an
 external calendar.
 
-Local focused verification passed. Next required step is commit, push, Railway
-deploy, standard live smoke, focused One Time product/booking live smoke, then
-mark `REQ-20260619-306` verified live and continue automatically.
+Focused local verification passed. The safe app-visible changes were pushed at
+`45ed36787ca519819a1adfb8f372267d96330a64`, deployed to Railway deployment
+`8c20ae67-9acc-43f2-b77d-c10fcd425d73`, and verified by standard plus focused
+One Time product/booking live smokes. The focused live smoke created only
+clearly marked internal One Time class-event and appointment-intent records.
+
+Next unblocked batch: `REQ-20260619-308` Vimeo and member-library pipeline.
 <!-- batch-9-10:end -->

@@ -159,3 +159,28 @@ Prior focused smoke failure during the same batch:
   passed the UI/no-send contract before `RESEND_API_KEY` propagation; the final
   post-propagation deployment and smoke above verified the live key readback.
 
+## Batch 9/10
+
+- Deployment ID: `8c20ae67-9acc-43f2-b77d-c10fcd425d73`
+- Deployed commit: `45ed36787ca519819a1adfb8f372267d96330a64`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md`
+- Focused One Time product/booking live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md`
+
+Focused live smoke verified production product-offer readback, availability
+readback, portal foundation readback, internal class-event creation, internal
+appointment-intent creation, Operations schedule rendering at 1440px and 390px,
+and no page-level horizontal overflow. No payment, invoice, email, WhatsApp,
+Zoom meeting, access grant, participant invite, upload, or external calendar
+write was performed.
+
+Prior focused smoke-script failures during the same batch:
+
+- `ops/live-smokes/2026-06-21T12-36-42-823Z-one-time-product-booking-live-smoke.md`
+  failed because the smoke expected a native enhanced select to remain visible.
+- `ops/live-smokes/2026-06-21T12-38-15-716Z-one-time-product-booking-live-smoke.md`
+  failed because the smoke over-flagged an unrelated in-app `Send` control.
+

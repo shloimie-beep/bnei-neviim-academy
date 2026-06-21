@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T16:10:00+03:00",
+  "updated_at": "2026-06-21T15:40:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -934,7 +934,7 @@
       "id": "REQ-20260619-306",
       "title": "Product, scheduling, booking, portals, and billing foundations",
       "expected_result": "One Time product, schedule, booking, portals, and billing/access foundations are usable without live charges.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0010"
@@ -949,9 +949,9 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "implemented_local",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Deploy Batch 9/10 safe app-visible product, schedule, booking, and portal foundation changes; run standard and focused live smokes; then mark verified_live and continue to the next unblocked batch.",
+      "next_action": "Complete. Continue to Batch 11 / REQ-20260619-308 Vimeo and member-library pipeline without automated upload authorization.",
       "acceptance_criteria": [
         "no guessed final pricing entitlements",
         "booking intent records created",
@@ -959,13 +959,22 @@
       ],
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.json"
       ],
       "verification": [
         "node --check src/lib/bna/one-time-product-system.js",
         "node --check server.js",
         "node --check scripts/smoke-one-time-product-booking-live.mjs",
-        "node --test tests/one-time-product-system.test.js tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-operations-ui-smoke.test.js"
+        "node --test tests/one-time-product-system.test.js tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-operations-ui-smoke.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node scripts/smoke-one-time-product-booking-live.mjs"
       ],
       "implementation_files": [
         "src/lib/bna/one-time-product-system.js",
@@ -975,13 +984,23 @@
         "tests/one-time-product-system.test.js",
         "scripts/smoke-one-time-product-booking-live.mjs"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
+      "pushed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:10:00+03:00"
+      "updated_at": "2026-06-21T15:40:00+03:00",
+      "deployed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
+      "deployment_id": "8c20ae67-9acc-43f2-b77d-c10fcd425d73",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-307",
