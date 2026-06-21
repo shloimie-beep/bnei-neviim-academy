@@ -404,4 +404,11 @@ Closeout checks:
   `ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`
 - PASS `node scripts/smoke-one-time-zoom-attendance-live.mjs`,
   `ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`
+
+Intermediate focused live-smoke failure recorded:
+
+- `ops/live-smokes/2026-06-21T12-54-52-064Z-one-time-zoom-attendance-live-smoke.md`
+  failed on a smoke-script false positive: safe Zoom status field names were
+  treated as secret exposure. The passing rerun checks only secret-like field
+  values and Zoom start-token patterns.
 <!-- batch-12:end -->

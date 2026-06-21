@@ -584,6 +584,13 @@ Deployment and live evidence:
 - Focused One Time Zoom/attendance live smoke: PASS,
   `ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`
 
+Intermediate focused live-smoke failure recorded:
+
+- `ops/live-smokes/2026-06-21T12-54-52-064Z-one-time-zoom-attendance-live-smoke.md`
+  failed because the smoke-script secret check matched safe status field names
+  such as `host_start_url_returned_to_students`. The script now checks actual
+  secret-like values and Zoom start-token patterns instead.
+
 Focused live smoke covered:
 
 - Authenticated Zoom status/readiness readback without exposing secret-like

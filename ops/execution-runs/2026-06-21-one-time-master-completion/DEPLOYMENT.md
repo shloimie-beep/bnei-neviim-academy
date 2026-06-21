@@ -203,3 +203,10 @@ attendance correction, recording read, transcript read, summary read, external
 send, portal publish, participant invite, or host-start URL exposure was
 performed.
 
+Prior focused smoke-script failure during the same batch:
+
+- `ops/live-smokes/2026-06-21T12-54-52-064Z-one-time-zoom-attendance-live-smoke.md`
+  failed because the smoke over-flagged safe Zoom status field names as secret
+  exposure. The final smoke checks actual secret-like values and Zoom
+  start-token patterns.
+

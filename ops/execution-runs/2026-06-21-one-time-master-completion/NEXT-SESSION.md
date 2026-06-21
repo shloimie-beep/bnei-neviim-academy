@@ -249,7 +249,6 @@ Next exact actions:
 npm run bna:run:next
 ```
 
-Then apply the latest One Time revenue-launch/parser follow-up prompt by adding
-the manual Vimeo workflow, disabled automated-upload readiness, and
-recording/publication pipeline for `REQ-20260619-308`.
+Then implement the manual Vimeo workflow, disabled automated-upload readiness,
+and recording/publication pipeline for `REQ-20260619-308`.
 <!-- batch-12:end -->
