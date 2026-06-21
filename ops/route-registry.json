@@ -530,6 +530,20 @@
       "canonical_target": "/api/bna/one-time/trial-referral-config",
       "security_expectation": "Readiness only: no checkout creation, live card charge, payment link, invoice, invoice credit, email/WhatsApp send, external CRM write, or access grant automation is enabled.",
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/bna/one-time/payment-access-class-links",
+      "surface": "operations_api_one_time_payment_access_class_links",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_test_mode_payment_access_and_class_link_readiness_without_charge_grant_or_raw_zoom_url",
+      "privacy_risk": "critical",
+      "canonical_target": "/api/bna/one-time/payment-access-class-links",
+      "security_expectation": "Readiness only: no live charge, checkout session, payment link, subscription, automated access grant, receipt/welcome send, external CRM write, raw member Zoom URL, or Zoom host/start URL is enabled.",
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
     }
   ]
 }

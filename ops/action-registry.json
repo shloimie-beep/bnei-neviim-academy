@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-19",
+  "updated_at": "2026-06-21",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -246,6 +246,68 @@
       "test": {
         "type": "unit_and_static",
         "expected_result": "POST /api/bna/project-meetings/one-time-drive-brief/preview returns dry_run=true and Operations exposes only the preview action, not production mutation."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
+      "label": "Review Checkouts",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS\"]",
+      "expected_behavior": "Navigates to the Rabbi launch/checkout review panel without creating checkout sessions, payment links, charges, or access grants.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify the payment/access panel ships without no-write guardrail regressions."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS",
+      "label": "Review Class Links",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS\"]",
+      "expected_behavior": "Navigates to the live classes review surface without exposing member join URLs or Zoom host/start URLs.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify class-link visibility remains relationship scoped."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED",
+      "label": "Grant Access",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED\"]",
+      "expected_behavior": "Remains disabled until an approved local/test payment event and manual admin confirmation exist; this panel never performs a real access grant.",
+      "permission": "super_admin/project_admin",
+      "status": "disabled",
+      "disabled_reason": "Requires approved local/test payment event and manual admin confirmation.",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify automated_access_grants_enabled=false."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED",
+      "label": "Reveal Join Link",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED\"]",
+      "expected_behavior": "Remains disabled until a relationship-scoped protected join reference is approved; raw Zoom join URLs and host/start URLs are never exposed.",
+      "permission": "super_admin/project_admin",
+      "status": "disabled",
+      "disabled_reason": "Requires relationship-scoped protected join reference; raw Zoom host/start URLs are never exposed.",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify raw_zoom_join_url_returned_to_members=false and zoom_host_start_url_returned=false."
       },
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
     },

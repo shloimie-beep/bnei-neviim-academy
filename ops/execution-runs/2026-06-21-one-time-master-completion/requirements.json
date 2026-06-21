@@ -1633,8 +1633,8 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
       "evidence": [],
       "verification": [],
@@ -1644,7 +1644,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T17:56:20+03:00",
       "id": "REQ-20260621-907",
       "title": "Payment-to-access and class-link flow",
       "expected_result": "Test-mode payment/access/class-link state is modeled without live charges, access grants, or real Zoom link exposure.",

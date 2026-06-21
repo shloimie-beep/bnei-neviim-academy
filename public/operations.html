@@ -8051,6 +8051,7 @@
             getOneTimeClassroom() { return this.request('GET', '/one-time/classroom'); },
             getOneTimeProductSystem() { return this.request('GET', '/one-time/product-system'); },
             getOneTimeTrialReferralConfig() { return this.request('GET', '/one-time/trial-referral-config'); },
+            getOneTimePaymentAccessClassLinks() { return this.request('GET', '/one-time/payment-access-class-links'); },
             getOneTimeCrmImportPreview() { return this.request('GET', '/one-time/crm-import-preview'); },
             getOneTimeCommunityModerationReadiness() { return this.request('GET', '/one-time/community-moderation-readiness'); },
             getOneTimeStudyAssistantReadiness() { return this.request('GET', '/one-time/study-assistant-readiness'); },
@@ -16601,6 +16602,92 @@
             `;
         }
 
+        function oneTimePaymentAccessClassLinks() {
+            return oneTimeProductSystem().payment_access_class_links || {};
+        }
+
+        function renderOneTimePaymentAccessPanel() {
+            const config = oneTimePaymentAccessClassLinks();
+            const payment = config.payment_state || {};
+            const access = config.access_gate || {};
+            const classLink = config.class_link_scope || {};
+            const guardrails = config.guardrails || {};
+            const records = config.records || {};
+            const blockers = Array.isArray(config.blockers) ? config.blockers : [];
+            return `
+                <section class="focus-panel" data-one-time-payment-access-class-links data-requirement-id="${escapeHtml(config.requirement_id || 'REQ-20260621-907')}" aria-label="One Time payment to access and class link readiness">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>Payment / Access / Class Links</h3>
+                            <p class="notification-lock-note">Test-mode readiness only. Payment state does not create live charges; access requires an approved local/test event; class links are relationship scoped; Zoom host/start URLs are never exposed.</p>
+                        </div>
+                        <span>${escapeHtml(config.status || 'local_contract_present')}</span>
+                    </div>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Checkouts', payment.checkout_count || 0, 'Checkout records observed for readiness only; no checkout session is created here.', '')}
+                        ${renderMetricButton('Test Paid', payment.test_paid_checkout_count || 0, 'Paid test/manual rows eligible only for manual review.', '')}
+                        ${renderMetricButton('Active Grants', access.active_grant_count || 0, 'Existing grants counted; this panel does not create one.', '')}
+                        ${renderMetricButton('Class Sessions', classLink.live_scoped_session_count || 0, 'Live-scoped class links must stay relationship and entitlement gated.', '')}
+                    </div>
+                    <div class="content-section-grid" style="margin-top:14px;">
+                        <article class="content-card">
+                            <div class="content-card-title">Payment state</div>
+                            <div class="content-card-meta">${escapeHtml(payment.policy_key || 'one_time_test_payment_to_access_v1')} &middot; ${escapeHtml(payment.required_provider_mode || 'test')} mode</div>
+                            <ul class="content-card-summary">
+                                <li><strong>Required status</strong><span>${escapeHtml(payment.required_status || 'paid')}</span></li>
+                                <li><strong>Allowed sources</strong><span>${escapeHtml((payment.allowed_sources || ['stripe_test_webhook', 'green_invoice_test_webhook', 'manual_admin_test_override']).join(', '))}</span></li>
+                                <li><strong>Live charges</strong><span>${guardrails.live_charges_enabled ? 'enabled' : 'disabled'}</span></li>
+                                <li><strong>Payment links</strong><span>${guardrails.payment_link_creation_enabled ? 'enabled' : 'disabled'}</span></li>
+                            </ul>
+                        </article>
+                        <article class="content-card">
+                            <div class="content-card-title">Access grant gate</div>
+                            <div class="content-card-meta">${escapeHtml(access.policy_key || 'one_time_approved_test_event_access_v1')}</div>
+                            <ul class="content-card-summary">
+                                <li><strong>Approved event</strong><span>${access.approved_local_test_event_required ? 'required' : 'not required'}</span></li>
+                                <li><strong>Admin review</strong><span>${access.manual_admin_review_required ? 'required' : 'not required'}</span></li>
+                                <li><strong>Automation</strong><span>${access.automated_access_grants_enabled ? 'enabled' : 'disabled'}</span></li>
+                                <li><strong>Welcome / receipt send</strong><span>${access.send_welcome_or_receipt_enabled ? 'enabled' : 'disabled'}</span></li>
+                            </ul>
+                        </article>
+                        <article class="content-card">
+                            <div class="content-card-title">Class link scope</div>
+                            <div class="content-card-meta">${escapeHtml(classLink.policy_key || 'one_time_relationship_scoped_class_link_v1')}</div>
+                            <ul class="content-card-summary">
+                                <li><strong>Relationship scope</strong><span>${escapeHtml(classLink.relationship_scope || 'member_session_and_active_live_grant')}</span></li>
+                                <li><strong>Active live grant</strong><span>${classLink.active_live_grant_required ? 'required' : 'not required'}</span></li>
+                                <li><strong>Protected reference</strong><span>${classLink.protected_reference_required ? 'required' : 'not required'}</span></li>
+                                <li><strong>Host/start URL</strong><span>${classLink.zoom_host_start_url_returned ? 'returned' : 'never returned'}</span></li>
+                            </ul>
+                        </article>
+                        <article class="content-card">
+                            <div class="content-card-title">Observed records</div>
+                            <div class="content-card-meta">read-only census</div>
+                            <ul class="content-card-summary">
+                                <li><strong>Checkout previews</strong><span>${escapeHtml((records.checkouts || []).length)}</span></li>
+                                <li><strong>Access previews</strong><span>${escapeHtml((records.access_grants || []).length)}</span></li>
+                                <li><strong>Class-link previews</strong><span>${escapeHtml((records.class_link_sessions || []).length)}</span></li>
+                                <li><strong>External write</strong><span>${guardrails.external_write_performed ? 'reported' : 'none'}</span></li>
+                            </ul>
+                        </article>
+                    </div>
+                    <div class="task-actions" style="margin-top:14px;">
+                        <button class="task-action" type="button" data-action-id="ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS" onclick="setCurrentSection('launch')">Review Checkouts</button>
+                        <button class="task-action" type="button" data-action-id="ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS" onclick="switchView('live_classes')">Review Class Links</button>
+                        <button class="task-action" type="button" data-action-id="ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED" disabled aria-disabled="true" title="Requires approved local/test payment event and manual admin confirmation.">Grant Access</button>
+                        <button class="task-action" type="button" data-action-id="ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED" disabled aria-disabled="true" title="Requires relationship-scoped protected join reference; raw Zoom host/start URLs are never exposed.">Reveal Join Link</button>
+                    </div>
+                    <div class="tag-list" style="margin-top:12px;">
+                        <span class="tag">live charges ${guardrails.live_charges_enabled ? 'enabled' : 'disabled'}</span>
+                        <span class="tag">access automation ${guardrails.automated_access_grants_enabled ? 'enabled' : 'disabled'}</span>
+                        <span class="tag">raw Zoom member URL ${guardrails.raw_zoom_join_url_returned_to_members ? 'returned' : 'blocked'}</span>
+                        <span class="tag">host/start URL ${guardrails.zoom_host_start_url_returned ? 'returned' : 'never exposed'}</span>
+                    </div>
+                    ${blockers.length ? `<p class="settings-disabled-note" style="margin-top:12px;">Blockers: ${escapeHtml(blockers.join(' / '))}</p>` : ''}
+                </section>
+            `;
+        }
+
         function renderOneTimeProductDecisionPanel() {
             const system = oneTimeProductSystem();
             const decisions = Array.isArray(system.decisions) ? system.decisions : [];
@@ -16930,7 +17017,7 @@
                         </section>
                     ` : ''}
                     ${section === 'launch' ? renderRabbiLaunchPanel() : ''}
-                    ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
+                    ${section === 'tiers' ? `${renderOneTimeTrialReferralPanel()}${renderOneTimePaymentAccessPanel()}${renderOneTimeProductOffersPanel()}${renderOneTimeProductTiersPanel()}${renderOneTimeProductReadinessPanel()}${renderOneTimePortalFoundationsPanel()}${renderOneTimeFunnelPanel()}${renderOneTimeLeadPanel()}${renderOneTimeCrmImportPreviewPanel()}` : ''}
                     ${section === 'schedule' ? renderProviderSchedulePanel() : ''}
                     ${section === 'worksheets' ? renderProviderWorksheetPanel() : ''}
                     ${section === 'questions' ? renderProviderQuestionPanel() : ''}
@@ -17009,6 +17096,7 @@
                 </section>
                 ${renderOneTimeProductDecisionPanel()}
                 ${renderOneTimeTrialReferralPanel()}
+                ${renderOneTimePaymentAccessPanel()}
                 ${renderOneTimeProductReadinessPanel()}
 
                 <section class="focus-panel">

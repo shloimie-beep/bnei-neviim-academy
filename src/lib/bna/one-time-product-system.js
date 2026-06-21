@@ -85,6 +85,16 @@ const ONE_TIME_REFERRAL_CREDIT_POLICY_DEFAULTS = Object.freeze({
   activation_trigger: 'first_successful_paid_cycle',
 });
 
+const ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS = Object.freeze({
+  payment_policy_key: 'one_time_test_payment_to_access_v1',
+  access_policy_key: 'one_time_approved_test_event_access_v1',
+  class_link_policy_key: 'one_time_relationship_scoped_class_link_v1',
+  required_paid_status: 'paid',
+  required_provider_mode: 'test',
+  required_access_source: 'approved_local_test_event',
+  required_class_scope: 'live',
+});
+
 const ONE_TIME_CANDIDATE_PRICING = Object.freeze({
   library_live_low_touch: {
     currency: 'USD',
@@ -816,6 +826,144 @@ function buildOneTimeTrialReferralConfiguration({
   };
 }
 
+function oneTimeCheckoutRecordView(row = {}) {
+  return {
+    id: row.id ? Number(row.id) : null,
+    member_id: row.member_id ? Number(row.member_id) : null,
+    tier_key: normalizeOneTimeTierKey(row.tier_key || row.tierKey || 'library_live_low_touch'),
+    provider: row.provider || 'manual',
+    provider_mode: row.provider_mode || row.providerMode || 'test',
+    status: row.status || 'pending',
+    source: row.source || '',
+    amount_cents: row.amount_cents === null || row.amount_cents === undefined ? null : Number(row.amount_cents),
+    currency: row.currency || 'USD',
+    paid_at: row.paid_at || null,
+    external_write_performed: row.external_write_performed === true,
+  };
+}
+
+function oneTimeAccessGrantRecordView(row = {}) {
+  const scopes = Array.isArray(row.scopes)
+    ? row.scopes
+    : String(row.scopes || '').split(/[,;\s]+/);
+  return {
+    id: row.id ? Number(row.id) : null,
+    member_id: row.member_id ? Number(row.member_id) : null,
+    checkout_record_id: row.checkout_record_id ? Number(row.checkout_record_id) : null,
+    payment_event_id: row.payment_event_id ? Number(row.payment_event_id) : null,
+    tier_key: normalizeOneTimeTierKey(row.tier_key || row.tierKey || 'library_live_low_touch'),
+    scopes: Array.from(new Set(scopes.map((scope) => String(scope || '').trim().toLowerCase()).filter(Boolean))),
+    status: row.status || 'pending',
+    source: row.source || '',
+    starts_at: row.starts_at || null,
+    expires_at: row.expires_at || null,
+    external_write_performed: row.external_write_performed === true,
+  };
+}
+
+function oneTimeClassLinkSessionView(row = {}) {
+  const requiredScope = String(row.required_scope || row.requiredScope || ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_class_scope);
+  const hasRawJoinUrl = Boolean(row.zoom_url || row.join_url || row.meeting_url);
+  return {
+    id: row.id ? Number(row.id) : null,
+    title: row.title || '',
+    status: row.status || 'scheduled',
+    start_at: row.start_at || null,
+    required_scope: requiredScope,
+    relationship_scope: 'member_session_and_active_live_grant',
+    protected_reference_required: true,
+    raw_join_url_present_for_admin_setup: hasRawJoinUrl,
+    raw_zoom_join_url_returned_to_member: false,
+    zoom_host_start_url_returned: false,
+    student_visible_url_returned: false,
+  };
+}
+
+function buildOneTimePaymentAccessClassLinkConfiguration({
+  checkouts = [],
+  accessGrants = [],
+  liveSessions = [],
+} = {}) {
+  const checkoutRows = (Array.isArray(checkouts) ? checkouts : []).map(oneTimeCheckoutRecordView);
+  const grantRows = (Array.isArray(accessGrants) ? accessGrants : []).map(oneTimeAccessGrantRecordView);
+  const sessionRows = (Array.isArray(liveSessions) ? liveSessions : []).map(oneTimeClassLinkSessionView);
+  const paidCheckoutRows = checkoutRows.filter((checkout) => checkout.status === ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_paid_status);
+  const testPaidCheckoutRows = paidCheckoutRows.filter((checkout) => checkout.provider_mode === ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_provider_mode || checkout.provider === 'manual');
+  const activeGrantRows = grantRows.filter((grant) => grant.status === 'active');
+  const liveScopedSessions = sessionRows.filter((session) => session.required_scope === ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_class_scope);
+  return {
+    requirement_id: 'REQ-20260621-907',
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: ONE_TIME_PRODUCT_PROGRAM_KEY,
+    status: 'local_contract_present',
+    mode: 'test_local_only',
+    payment_state: {
+      policy_key: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.payment_policy_key,
+      required_status: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_paid_status,
+      required_provider_mode: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_provider_mode,
+      allowed_sources: ['stripe_test_webhook', 'green_invoice_test_webhook', 'manual_admin_test_override'],
+      checkout_count: checkoutRows.length,
+      paid_checkout_count: paidCheckoutRows.length,
+      test_paid_checkout_count: testPaidCheckoutRows.length,
+      live_charges_enabled: false,
+      checkout_session_creation_enabled: false,
+      payment_link_creation_enabled: false,
+      external_write_performed: false,
+    },
+    access_gate: {
+      policy_key: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.access_policy_key,
+      required_event: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_access_source,
+      approved_local_test_event_required: true,
+      manual_admin_review_required: true,
+      active_grant_count: activeGrantRows.length,
+      grant_count: grantRows.length,
+      automated_access_grants_enabled: false,
+      real_access_grant_performed_by_this_flow: false,
+      send_welcome_or_receipt_enabled: false,
+      external_write_performed: false,
+    },
+    class_link_scope: {
+      policy_key: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.class_link_policy_key,
+      relationship_scope: 'member_session_and_active_live_grant',
+      member_session_required: true,
+      active_live_grant_required: true,
+      required_scope: ONE_TIME_PAYMENT_ACCESS_CLASS_LINK_DEFAULTS.required_class_scope,
+      session_count: sessionRows.length,
+      live_scoped_session_count: liveScopedSessions.length,
+      raw_zoom_join_url_returned_to_members: false,
+      zoom_host_start_url_returned: false,
+      admin_notes_returned_to_members: false,
+      protected_reference_required: true,
+    },
+    records: {
+      checkouts: checkoutRows.slice(0, 25),
+      access_grants: grantRows.slice(0, 25),
+      class_link_sessions: sessionRows.slice(0, 25),
+    },
+    guardrails: {
+      live_charges_enabled: false,
+      checkout_session_creation_enabled: false,
+      payment_link_creation_enabled: false,
+      subscription_creation_enabled: false,
+      invoice_credit_enabled: false,
+      automated_access_grants_enabled: false,
+      real_access_grant_performed_by_this_flow: false,
+      raw_zoom_join_url_returned_to_members: false,
+      zoom_host_start_url_returned: false,
+      email_send_enabled: false,
+      whatsapp_send_enabled: false,
+      external_crm_write_enabled: false,
+      external_write_performed: false,
+    },
+    blockers: [
+      'trusted_test_payment_event_required_before_access_grant',
+      'member_session_and_active_live_grant_required_before_class_link_visibility',
+      'protected_join_reference_required_before_member_visible_class_link',
+      'zoom_host_start_url_must_never_be_returned_to_members',
+    ],
+  };
+}
+
 function oneTimeProductOfferView(row = {}) {
   const offerKey = normalizeOneTimeProductOfferKey(row.offer_key || row.offerKey || row.key);
   const billingModel = normalizeOneTimeBillingModel(row.billing_model || row.billingModel, offerKey === 'premium_masechta_intensive' ? 'fixed_duration' : 'recurring_monthly');
@@ -1314,5 +1462,9 @@ module.exports = {
   buildOneTimeReferralCreditPolicy,
   oneTimeReferralRecordView,
   buildOneTimeTrialReferralConfiguration,
+  oneTimeCheckoutRecordView,
+  oneTimeAccessGrantRecordView,
+  oneTimeClassLinkSessionView,
+  buildOneTimePaymentAccessClassLinkConfiguration,
   oneTimeProductReadinessView,
 };

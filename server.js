@@ -266,6 +266,7 @@ const {
   oneTimePolicyAcceptanceRecordView,
   oneTimeReferralRecordView,
   buildOneTimeTrialReferralConfiguration,
+  buildOneTimePaymentAccessClassLinkConfiguration,
   oneTimeProductReadinessView,
 } = require('./src/lib/bna/one-time-product-system');
 const {
@@ -8414,6 +8415,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/question-moderation' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/product-system' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/trial-referral-config' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/payment-access-class-links' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/crm-import-preview' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
@@ -69027,7 +69029,10 @@ function rabbiLibraryItemView(row = {}) {
 
 function rabbiLiveSessionView(row = {}, scopes = null) {
   const activeScopes = Array.isArray(scopes) ? scopes : null;
-  const canSeeZoom = activeScopes ? activeScopes.includes(row.required_scope || 'live') : true;
+  const memberScoped = Array.isArray(scopes);
+  const requiredScope = row.required_scope || 'live';
+  const canSeeClassLink = activeScopes ? activeScopes.includes(requiredScope) : true;
+  const hasRawZoomUrl = Boolean(row.zoom_url);
   return {
     id: row.id ? Number(row.id) : null,
     project_id: row.project_id ? Number(row.project_id) : null,
@@ -69036,12 +69041,24 @@ function rabbiLiveSessionView(row = {}, scopes = null) {
     start_at: row.start_at || null,
     end_at: row.end_at || null,
     timezone: row.timezone || 'Asia/Jerusalem',
-    zoom_url: canSeeZoom ? row.zoom_url || '' : '',
-    required_scope: row.required_scope || 'live',
+    zoom_url: memberScoped ? '' : row.zoom_url || '',
+    required_scope: requiredScope,
     status: row.status || 'scheduled',
     recording_url: row.recording_status === 'published' ? row.recording_url || '' : '',
     recording_status: row.recording_status || 'none',
     notes: activeScopes ? '' : row.notes || '',
+    class_link: {
+      relationship_scope: 'member_session_and_active_live_grant',
+      available: canSeeClassLink && hasRawZoomUrl,
+      status: canSeeClassLink
+        ? (hasRawZoomUrl ? 'protected_reference_required' : 'pending_internal_class_link')
+        : 'live_access_required',
+      required_scope: requiredScope,
+      url: '',
+      raw_zoom_join_url_returned: false,
+      zoom_host_start_url_returned: false,
+      protected_reference_required: true,
+    },
     metadata: rabbiJson(row.metadata),
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
@@ -70225,6 +70242,9 @@ async function oneTimeProductSystemPayload(req) {
     promotionPolicies,
     acceptanceRows,
     referralRows,
+    checkoutRows,
+    accessGrantRows,
+    liveSessionRows,
   ] = await Promise.all([
     rabbiTiers(project.id),
     pool.query(
@@ -70312,6 +70332,30 @@ async function oneTimeProductSystemPayload(req) {
        LIMIT 50`,
       [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
     ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_checkout_records
+       WHERE project_id = $1
+       ORDER BY created_at DESC NULLS LAST, id DESC
+       LIMIT 100`,
+      [project.id]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_access_grants
+       WHERE project_id = $1
+       ORDER BY created_at DESC NULLS LAST, id DESC
+       LIMIT 100`,
+      [project.id]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_live_sessions
+       WHERE project_id = $1
+       ORDER BY start_at ASC NULLS LAST, created_at DESC NULLS LAST, id DESC
+       LIMIT 100`,
+      [project.id]
+    ).catch(() => ({ rows: [] })),
   ]);
   const planningTiers = Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView);
   const scheduleViews = schedules.rows.map(oneTimeScheduleView);
@@ -70332,6 +70376,11 @@ async function oneTimeProductSystemPayload(req) {
     promotion_policies: promotionPolicyViews,
     promotion_policy_count: promotionPolicyViews.length,
   };
+  const paymentAccessClassLinks = buildOneTimePaymentAccessClassLinkConfiguration({
+    checkouts: checkoutRows.rows,
+    accessGrants: accessGrantRows.rows,
+    liveSessions: liveSessionRows.rows,
+  });
   const stripeLocalBeta = stripeIntegration.buildOneTimeStripeLocalBetaPlan({
     trial_referral_config: trialReferralConfig,
   }, { config: stripeRuntimeConfig });
@@ -70357,6 +70406,7 @@ async function oneTimeProductSystemPayload(req) {
     trial_referral_config: trialReferralConfig,
     trial_referral_policies: promotionPolicyViews,
     stripe_local_beta: stripeLocalBeta,
+    payment_access_class_links: paymentAccessClassLinks,
     availability,
     appointment_types: defaultOneTimeAppointmentTypes(),
     appointment_intents: appointmentRows,
@@ -70406,6 +70456,25 @@ app.get('/api/bna/one-time/trial-referral-config', requireAdmin, async (req, res
       stripe_local_beta: system.stripe_local_beta,
       live_charges_enabled: false,
       real_invoice_credits_enabled: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/payment-access-class-links', requireAdmin, async (req, res) => {
+  try {
+    const system = await oneTimeProductSystemPayload(req);
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      payment_access_class_links: system.payment_access_class_links,
+      live_charges_enabled: false,
+      automated_access_grants_enabled: false,
+      raw_zoom_join_url_returned_to_members: false,
+      zoom_host_start_url_returned: false,
       external_write_performed: false,
     });
   } catch (err) {

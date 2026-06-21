@@ -30,6 +30,9 @@ const {
   publicReplacementAllowed,
   rabbiPageView,
 } = require('../src/lib/bna/rabbi-site');
+const {
+  buildOneTimePaymentAccessClassLinkConfiguration,
+} = require('../src/lib/bna/one-time-product-system');
 
 const server = fs.readFileSync('server.js', 'utf8');
 const migration = fs.readFileSync('railway-migration-2026-06-15-rabbi-checkout-access.sql', 'utf8');
@@ -219,7 +222,9 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/request-login/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/library/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/live-sessions/);
-  assert.doesNotMatch(publicRabbiMemberJs, /zoom_url.*state\.member\?\.has_live_access/s);
+  assert.match(publicRabbiMemberJs, /Secure Join Class is relationship-scoped/);
+  assert.match(publicRabbiMemberJs, /host\/start URLs are never exposed/);
+  assert.doesNotMatch(publicRabbiMemberJs, /session\.zoom_url/);
 
   assert.match(operationsHtml, /Launch \/ Checkout/);
   assert.match(operationsHtml, /function renderRabbiLaunchPanel/);
@@ -228,4 +233,35 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.match(operationsHtml, /needsRabbiLaunchData/);
   assert.match(operationsHtml, /APPROVE_RABBI_PUBLIC_REPLACEMENT_PREVIEW/);
   assert.match(operationsHtml, /Create Test Member \/ Grant/);
+});
+
+test('One Time payment-to-access and class-link readiness stays test-mode and protects Zoom links', () => {
+  const readiness = buildOneTimePaymentAccessClassLinkConfiguration({
+    checkouts: [
+      { id: 1, member_id: 2, tier_key: 'live_library', provider: 'stripe', provider_mode: 'test', status: 'paid', amount_cents: 6700 },
+      { id: 2, member_id: 3, tier_key: 'library_only', provider: 'stripe', provider_mode: 'live', status: 'paid', amount_cents: 6700 },
+    ],
+    accessGrants: [
+      { id: 7, member_id: 2, checkout_record_id: 1, tier_key: 'live_library', scopes: ['library', 'live'], status: 'active', source: 'approved_local_test_event' },
+    ],
+    liveSessions: [
+      { id: 10, title: 'Mishnah live', required_scope: 'live', status: 'scheduled', zoom_url: 'https://zoom.us/j/123' },
+    ],
+  });
+
+  assert.equal(readiness.requirement_id, 'REQ-20260621-907');
+  assert.equal(readiness.payment_state.live_charges_enabled, false);
+  assert.equal(readiness.payment_state.test_paid_checkout_count, 1);
+  assert.equal(readiness.access_gate.approved_local_test_event_required, true);
+  assert.equal(readiness.access_gate.automated_access_grants_enabled, false);
+  assert.equal(readiness.class_link_scope.relationship_scope, 'member_session_and_active_live_grant');
+  assert.equal(readiness.class_link_scope.raw_zoom_join_url_returned_to_members, false);
+  assert.equal(readiness.class_link_scope.zoom_host_start_url_returned, false);
+  assert.equal(readiness.records.class_link_sessions[0].raw_join_url_present_for_admin_setup, true);
+  assert.equal(readiness.records.class_link_sessions[0].raw_zoom_join_url_returned_to_member, false);
+  assert.match(server, /app\.get\('\/api\/bna\/one-time\/payment-access-class-links'/);
+  assert.match(operationsHtml, /data-one-time-payment-access-class-links/);
+  assert.match(operationsHtml, /REQ-20260621-907/);
+  assert.match(operationsHtml, /Payment state does not create live charges/);
+  assert.match(operationsHtml, /Reveal Join Link/);
 });

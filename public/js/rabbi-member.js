@@ -82,7 +82,9 @@
       <article class="member-item">
         <h3>${escapeHtml(session.title)}</h3>
         <p>${escapeHtml(session.start_at ? new Date(session.start_at).toLocaleString() : 'Time pending')}</p>
-        ${session.zoom_url ? `<a href="${escapeHtml(session.zoom_url)}" target="_blank" rel="noopener">Join live class</a>` : '<span>Live access required or Zoom link pending</span>'}
+        ${session.class_link?.available
+          ? '<button type="button" disabled title="Protected join reference pending">Join Class</button><p>Secure Join Class is relationship-scoped and disabled until the approved Zoom/entitlement handoff is active; host/start URLs are never exposed.</p>'
+          : `<span>${escapeHtml(session.class_link?.status === 'live_access_required' ? 'Live access is required before a protected class link can be shown.' : 'Protected class link pending.')}</span>`}
       </article>
     `).join('');
   }

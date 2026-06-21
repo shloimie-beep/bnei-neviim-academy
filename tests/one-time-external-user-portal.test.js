@@ -6,6 +6,9 @@ const serverJs = fs.readFileSync('server.js', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const driveScript = fs.readFileSync('scripts/setup-one-time-partnership-drive.mjs', 'utf8');
 const telegramBridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+const routeRegistry = fs.readFileSync('ops/route-registry.json', 'utf8');
+const actionRegistry = fs.readFileSync('ops/action-registry.json', 'utf8');
+const packageJson = fs.readFileSync('package.json', 'utf8');
 
 test('One Time login is promoted to a scoped external admin workspace', () => {
   assert.match(serverJs, /const platformAllowedViews = \[[\s\S]*'agents'[\s\S]*'admin'[\s\S]*'settings'[\s\S]*\]/);
@@ -456,6 +459,29 @@ test('One Time Drive/social ingestion map is backend-scoped and login-gated', ()
   assert.match(operationsHtml, /Login Release Guard/);
   assert.match(driveScript, /ONE_TIME_APP_ACCESS_READINESS = \{/);
   assert.match(driveScript, /app_access_readiness: ONE_TIME_APP_ACCESS_READINESS/);
+});
+
+test('One Time payment/access/class-link readiness is backend-scoped and no-write', () => {
+  assert.match(serverJs, /buildOneTimePaymentAccessClassLinkConfiguration/);
+  assert.match(serverJs, /payment_access_class_links: paymentAccessClassLinks/);
+  assert.match(serverJs, /app\.get\('\/api\/bna\/one-time\/payment-access-class-links'/);
+  assert.match(serverJs, /raw_zoom_join_url_returned_to_members: false/);
+  assert.match(serverJs, /zoom_host_start_url_returned: false/);
+  assert.match(operationsHtml, /function renderOneTimePaymentAccessPanel/);
+  assert.match(operationsHtml, /data-one-time-payment-access-class-links/);
+  assert.match(operationsHtml, /Payment state does not create live charges/);
+  assert.match(operationsHtml, /access requires an approved local\/test event/);
+  assert.match(operationsHtml, /Zoom host\/start URLs are never exposed/);
+  assert.match(operationsHtml, /Grant Access/);
+  assert.match(operationsHtml, /Reveal Join Link/);
+  assert.match(operationsHtml, /ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED/);
+  assert.match(operationsHtml, /ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED/);
+  assert.match(routeRegistry, /operations_api_one_time_payment_access_class_links/);
+  assert.match(routeRegistry, /without_charge_grant_or_raw_zoom_url/);
+  assert.match(actionRegistry, /ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS/);
+  assert.match(actionRegistry, /ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED/);
+  assert.match(actionRegistry, /ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED/);
+  assert.match(packageJson, /app:smoke:one-time-payment-access-class-links/);
 });
 
 test('Workflow R organic winner to paid ad card documents approval-gated ad promotion before spend', () => {
