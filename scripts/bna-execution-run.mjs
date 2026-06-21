@@ -51,7 +51,75 @@ const REQUIRED_RUN_FILES = [
   'TEST-RESULTS.md',
   'DEPLOYMENT.md',
   'NEXT-SESSION.md',
+  'BATCH-STATUS.md',
   'run.json'
+];
+
+const STRUCTURED_REQUIREMENT_FIELDS = [
+  'source_id',
+  'source_statement_ids',
+  'source_path',
+  'workspace_key',
+  'project_key',
+  'owner',
+  'category',
+  'priority',
+  'batch_id',
+  'depends_on',
+  'implementation_status',
+  'can_continue_without_operator',
+  'next_action',
+  'acceptance_criteria',
+  'evidence',
+  'verification',
+  'implementation_files',
+  'deployment_required',
+  'updated_at'
+];
+
+const OPTIONAL_STRUCTURED_REQUIREMENT_FIELDS = [
+  'blocker',
+  'blocker_owner',
+  'blocker_next_action',
+  'implementation_commit',
+  'pushed_commit',
+  'pull_request',
+  'deployment_id',
+  'deployed_commit',
+  'live_smoke',
+  'superseded_by'
+];
+
+const DOCUMENTATION_ONLY_CATEGORIES = new Set([
+  'audit',
+  'backlog',
+  'documentation',
+  'deployment_readiness',
+  'evidence',
+  'preflight',
+  'protocol',
+  'reconciliation',
+  'run_control'
+]);
+
+const IMPLEMENTATION_FILE_PREFIXES = [
+  'migrations/',
+  'package.json',
+  'public/',
+  'railway',
+  'scripts/',
+  'server.js',
+  'src/',
+  'tests/'
+];
+
+const INTERNAL_HANDOFF_PREFIXES = [
+  'ops/execution-runs/',
+  'ops/system-audits/',
+  'ops/ui-audits/',
+  'ops/watchdog-audits/',
+  'raw-input/',
+  'tasks-pending/'
 ];
 
 const DEFAULT_BLOCKER =
@@ -116,6 +184,77 @@ function textArray(value) {
   return Array.isArray(value)
     ? value.map((item) => String(item || '').trim()).filter(Boolean)
     : [];
+}
+
+function textValues(value) {
+  if (Array.isArray(value)) {
+    return textArray(value);
+  }
+  const text = String(value || '').trim();
+  return text ? [text] : [];
+}
+
+function hasOwn(object, field) {
+  return Object.prototype.hasOwnProperty.call(object || {}, field);
+}
+
+function normalizeRepoPath(value) {
+  return String(value || '').trim().replace(/^`|`$/g, '').replaceAll('\\', '/');
+}
+
+function isClosedStatus(status) {
+  return CLOSED_STATUSES.has(status);
+}
+
+function isWorkRemainingStatus(status) {
+  return WORK_REMAINS_STATUSES.has(status);
+}
+
+function hasImplementationFile(files = []) {
+  return textArray(files).some((filePath) => {
+    const normalized = normalizeRepoPath(filePath);
+    return IMPLEMENTATION_FILE_PREFIXES.some(
+      (prefix) => normalized === prefix || normalized.startsWith(prefix)
+    );
+  });
+}
+
+function isInternalHandoffPath(value) {
+  const normalized = normalizeRepoPath(value);
+  return INTERNAL_HANDOFF_PREFIXES.some(
+    (prefix) => normalized === prefix || normalized.startsWith(prefix)
+  );
+}
+
+function canonicalTaskKey(row = {}) {
+  if (!row || typeof row !== 'object' || Array.isArray(row)) {
+    return '';
+  }
+  const direct =
+    row.canonical_task_id ||
+    row.canonical_task_key ||
+    row.canonical_key ||
+    row.duplicate_fingerprint ||
+    row.fingerprint;
+  if (nonEmptyText(direct)) {
+    return String(direct).trim();
+  }
+
+  const parts = [
+    row.workspace_key,
+    row.project_key,
+    row.source_id || row.related_raw_id,
+    row.source_statement_id || row.source_statement,
+    row.canonical_action || row.action || row.title,
+    row.related_entity || row.related_record_id || row.target_file || row.target_route,
+    row.requirement_id
+  ].map((part) => String(part || '').trim().toLowerCase());
+
+  if (parts.filter(Boolean).length < 4) {
+    return '';
+  }
+
+  return parts.join('|');
 }
 
 function isNonEmptyFile(filePath) {
@@ -191,11 +330,17 @@ function validateEvidencePaths(requirement, root, errors) {
 }
 
 function validateDeploymentEvidence(requirement, errors) {
-  if (!requirement.live_required || !LIVE_CLOSED_STATUSES.has(requirement.status)) {
+  const requiresDeployment = Boolean(requirement.live_required || requirement.deployment_required);
+  if (!requiresDeployment || !LIVE_CLOSED_STATUSES.has(requirement.status)) {
     return;
   }
 
-  const deploymentEntries = textArray(requirement.deployment_evidence);
+  const deploymentEntries = [
+    ...textArray(requirement.deployment_evidence),
+    ...textValues(requirement.live_smoke),
+    ...textValues(requirement.deployment_id),
+    ...textValues(requirement.deployed_commit)
+  ];
   if (!deploymentEntries.length) {
     errors.push(`${requirement.id}: live-required closed requirement requires deployment/live evidence.`);
     return;
@@ -209,6 +354,37 @@ function validateDeploymentEvidence(requirement, errors) {
   if (!positiveEntries.length || onlyPlaceholders) {
     errors.push(
       `${requirement.id}: deployment/live evidence must include positive deploy or live-smoke proof, not only withheld/not-deployed text.`
+    );
+  }
+}
+
+function validateDeploymentCommitOrder(root, requirement, errors, warnings) {
+  if (!LIVE_CLOSED_STATUSES.has(requirement.status)) {
+    return;
+  }
+
+  const implementationCommit = String(requirement.implementation_commit || '').trim();
+  const deployedCommit = String(requirement.deployed_commit || '').trim();
+  if (!implementationCommit || !deployedCommit) {
+    return;
+  }
+
+  try {
+    execFileSync('git', ['merge-base', '--is-ancestor', implementationCommit, deployedCommit], {
+      cwd: root,
+      stdio: 'ignore'
+    });
+  } catch (error) {
+    const implementationExists = runGit(root, ['cat-file', '-e', `${implementationCommit}^{commit}`]);
+    const deployedExists = runGit(root, ['cat-file', '-e', `${deployedCommit}^{commit}`]);
+    if (implementationExists === null || deployedExists === null) {
+      warnings.push(
+        `${requirement.id}: could not verify implementation/deployed commit order because one commit is unavailable locally.`
+      );
+      return;
+    }
+    errors.push(
+      `${requirement.id}: deployment evidence references deployed_commit ${deployedCommit}, which does not contain implementation_commit ${implementationCommit}.`
     );
   }
 }
@@ -263,6 +439,7 @@ function validateGitRefs(root, requirementsDoc, runJson, errors, warnings) {
   const expectedHead = refs.expected_head || refs.head || refs.current_head || null;
   const expectedRemoteHead =
     refs.expected_remote_head || refs.remote_head || refs.current_remote_head || null;
+  const remoteBranch = refs.remote_branch || refs.pr_branch || null;
 
   if (refs.expected_branch && refs.current_branch && refs.expected_branch !== refs.current_branch) {
     errors.push(`git_refs: stale branch reference ${refs.current_branch}; expected ${refs.expected_branch}.`);
@@ -294,7 +471,9 @@ function validateGitRefs(root, requirementsDoc, runJson, errors, warnings) {
     warnings.push('git_refs: could not verify current HEAD because git is unavailable.');
   }
 
-  const actualRemoteHead = runGit(root, ['rev-parse', '@{u}']);
+  const actualRemoteHead = remoteBranch
+    ? runGit(root, ['rev-parse', `origin/${remoteBranch}`])
+    : runGit(root, ['rev-parse', '@{u}']);
   if (expectedRemoteHead && actualRemoteHead && actualRemoteHead !== expectedRemoteHead) {
     errors.push(
       `git_refs: remote head ${expectedRemoteHead} is stale; upstream head is ${actualRemoteHead}.`
@@ -307,8 +486,8 @@ function validateGitRefs(root, requirementsDoc, runJson, errors, warnings) {
     errors.push(`git_refs: PR URL does not match pr_number ${refs.pr_number}.`);
   }
 
-  if (refs.pr_branch && actualBranch && refs.pr_branch !== actualBranch) {
-    errors.push(`git_refs: PR branch ${refs.pr_branch} is stale; current branch is ${actualBranch}.`);
+  if (refs.pr_head_branch && refs.pr_branch && refs.pr_head_branch !== refs.pr_branch) {
+    errors.push(`git_refs: stale PR branch reference ${refs.pr_head_branch}; expected ${refs.pr_branch}.`);
   }
 }
 
@@ -563,6 +742,52 @@ function validateRequirement(requirement, index, seenIds, errors, root) {
     errors.push(`${label}: expected_result is required.`);
   }
 
+  for (const field of STRUCTURED_REQUIREMENT_FIELDS) {
+    if (!hasOwn(requirement, field)) {
+      errors.push(`${label}: structured requirement field ${field} is required.`);
+    }
+  }
+
+  for (const field of OPTIONAL_STRUCTURED_REQUIREMENT_FIELDS) {
+    if (!hasOwn(requirement, field)) {
+      continue;
+    }
+    if (field === 'superseded_by' && requirement.status === 'superseded' && !nonEmptyText(requirement[field])) {
+      errors.push(`${label}: superseded requirements require superseded_by.`);
+    }
+  }
+
+  for (const arrayField of [
+    'source_statement_ids',
+    'depends_on',
+    'acceptance_criteria',
+    'evidence',
+    'verification',
+    'implementation_files'
+  ]) {
+    if (hasOwn(requirement, arrayField) && !Array.isArray(requirement[arrayField])) {
+      errors.push(`${label}: ${arrayField} must be an array.`);
+    }
+  }
+
+  if (
+    hasOwn(requirement, 'can_continue_without_operator') &&
+    typeof requirement.can_continue_without_operator !== 'boolean'
+  ) {
+    errors.push(`${label}: can_continue_without_operator must be boolean.`);
+  }
+
+  if (hasOwn(requirement, 'deployment_required') && typeof requirement.deployment_required !== 'boolean') {
+    errors.push(`${label}: deployment_required must be boolean.`);
+  }
+
+  if (root && nonEmptyText(requirement.source_path)) {
+    const sourcePath = extractRepoEvidencePath(root, requirement.source_path);
+    if (sourcePath && !fs.existsSync(sourcePath.absolute)) {
+      errors.push(`${label}: source_path does not exist: ${sourcePath.display}`);
+    }
+  }
+
   if (!VALID_STATUSES.has(requirement.status)) {
     errors.push(`${label}: invalid status "${requirement.status}".`);
     return;
@@ -575,8 +800,8 @@ function validateRequirement(requirement, index, seenIds, errors, root) {
     if (!String(requirement.blocker_owner || '').trim()) {
       errors.push(`${label}: ${requirement.status} requirements require blocker_owner.`);
     }
-    if (!String(requirement.blocker_next_action || '').trim()) {
-      errors.push(`${label}: ${requirement.status} requirements require blocker_next_action.`);
+    if (!String(requirement.blocker_next_action || requirement.next_action || '').trim()) {
+      errors.push(`${label}: ${requirement.status} requirements require blocker_next_action or next_action.`);
     }
   }
 
@@ -596,6 +821,118 @@ function validateRequirement(requirement, index, seenIds, errors, root) {
   }
 
   validateDeploymentEvidence(requirement, errors);
+}
+
+function validateRequirementRelationships(root, requirements, errors, warnings) {
+  const byId = new Map();
+  for (const requirement of requirements) {
+    if (requirement?.id) {
+      byId.set(requirement.id, requirement);
+    }
+  }
+
+  for (const requirement of requirements) {
+    if (!requirement || typeof requirement !== 'object' || Array.isArray(requirement)) {
+      continue;
+    }
+
+    const dependsOn = textArray(requirement.depends_on);
+    for (const dependencyId of dependsOn) {
+      const dependency = byId.get(dependencyId);
+      if (!dependency) {
+        errors.push(`${requirement.id}: depends_on references unknown requirement ${dependencyId}.`);
+        continue;
+      }
+      if (isClosedStatus(requirement.status) && !isClosedStatus(dependency.status)) {
+        errors.push(
+          `${requirement.id}: cannot be ${requirement.status} while dependency ${dependencyId} is ${dependency.status}.`
+        );
+      }
+    }
+
+    if (
+      LIVE_CLOSED_STATUSES.has(requirement.status) &&
+      (requirement.live_required || requirement.deployment_required) &&
+      nonEmptyText(requirement.implementation_commit) &&
+      !nonEmptyText(requirement.pushed_commit)
+    ) {
+      errors.push(`${requirement.id}: app-visible closed requirement has implementation_commit but no pushed_commit.`);
+    }
+
+    const category = String(requirement.category || '').trim().toLowerCase();
+    const docOnlyAllowed = DOCUMENTATION_ONLY_CATEGORIES.has(category);
+    const implementationFiles = textArray(requirement.implementation_files);
+    const docOnlyImplementation =
+      implementationFiles.length > 0 && !hasImplementationFile(implementationFiles);
+    const looksLikeImplementation =
+      requirement.live_required ||
+      requirement.deployment_required ||
+      /implement|portal|ui|server|api|cleanup|roles|users|communications|email|whatsapp|zoom|vimeo|task|decision/i.test(
+        `${requirement.category || ''} ${requirement.title || ''}`
+      );
+
+    if (
+      LIVE_CLOSED_STATUSES.has(requirement.status) &&
+      looksLikeImplementation &&
+      docOnlyImplementation &&
+      !docOnlyAllowed
+    ) {
+      errors.push(`${requirement.id}: implementation requirement contains documentation/evidence files only.`);
+    }
+
+    if (
+      requirement.live_required &&
+      LIVE_CLOSED_STATUSES.has(requirement.status) &&
+      /local(ly)?\s+(complete|verified|done).*live|live.*local(ly)?\s+(complete|verified|done)/i.test(
+        [...textArray(requirement.evidence), String(requirement.implementation_status || '')].join(' ')
+      )
+    ) {
+      errors.push(`${requirement.id}: local implementation is described as live completion.`);
+    }
+
+    validateDeploymentCommitOrder(root, requirement, errors, warnings);
+  }
+}
+
+function validateCanonicalTasks(requirementsDoc, errors) {
+  const taskGroups = [];
+  if (Array.isArray(requirementsDoc?.tasks)) {
+    taskGroups.push(...requirementsDoc.tasks.map((task) => ({ task, source: 'tasks' })));
+  }
+  if (Array.isArray(requirementsDoc?.canonical_tasks)) {
+    taskGroups.push(...requirementsDoc.canonical_tasks.map((task) => ({ task, source: 'canonical_tasks' })));
+  }
+
+  const seen = new Map();
+  for (const [index, { task, source }] of taskGroups.entries()) {
+    const key = canonicalTaskKey(task);
+    if (key) {
+      if (seen.has(key)) {
+        errors.push(
+          `${source}[${index}]: duplicate canonical task key ${key}; first seen at ${seen.get(key)}.`
+        );
+      } else {
+        seen.set(key, `${source}[${index}]`);
+      }
+    }
+
+    const visible =
+      task?.visible === true ||
+      task?.user_visible === true ||
+      task?.default_visible === true ||
+      task?.target_lane === 'tasks' ||
+      task?.lane === 'tasks';
+    const pathValues = [
+      task?.source_path,
+      task?.related_path,
+      task?.handoff_path,
+      task?.evidence_path,
+      ...(Array.isArray(task?.evidence_paths) ? task.evidence_paths : [])
+    ];
+    if (visible && pathValues.some((value) => isInternalHandoffPath(value))) {
+      errors.push(`${source}[${index}]: internal handoff file appears as a visible user Task.`);
+    }
+  }
 }
 
 export function validateExecutionRun(rootInput = process.cwd(), runInput = null) {
@@ -655,6 +992,8 @@ export function validateExecutionRun(rootInput = process.cwd(), runInput = null)
   requirements.forEach((requirement, index) => {
     validateRequirement(requirement, index, seenIds, errors, context.root);
   });
+  validateRequirementRelationships(context.root, requirements, errors, warnings);
+  validateCanonicalTasks(requirementsDoc, errors);
 
   const sourceMetadataRequired =
     Boolean(requirementsDoc) &&
@@ -733,6 +1072,136 @@ function printValidation(result) {
   return true;
 }
 
+function dependenciesAreClosed(requirement, requirementsById) {
+  return textArray(requirement.depends_on).every((dependencyId) => {
+    const dependency = requirementsById.get(dependencyId);
+    return dependency && isClosedStatus(dependency.status);
+  });
+}
+
+function nextUnblockedRequirement(requirements) {
+  const requirementsById = new Map(
+    requirements.filter((requirement) => requirement?.id).map((requirement) => [requirement.id, requirement])
+  );
+
+  return requirements.find((requirement) => {
+    if (!requirement || !isWorkRemainingStatus(requirement.status)) {
+      return false;
+    }
+    if (BLOCKER_STATUSES.has(requirement.status)) {
+      return false;
+    }
+    if (requirement.can_continue_without_operator === false) {
+      return false;
+    }
+    return dependenciesAreClosed(requirement, requirementsById);
+  });
+}
+
+function printNext(result) {
+  const ok = printValidation(result);
+  if (!ok) {
+    return false;
+  }
+
+  const next = nextUnblockedRequirement(result.requirements);
+  if (!next) {
+    console.log('\nNext unblocked executable batch: none');
+    return true;
+  }
+
+  console.log('\nNext unblocked executable batch:');
+  console.log(`- batch_id: ${next.batch_id || '(none)'}`);
+  console.log(`- requirement: ${next.id} ${next.status}: ${next.title}`);
+  if (next.next_action) {
+    console.log(`- next_action: ${next.next_action}`);
+  }
+  return true;
+}
+
+function printExternalBlockers(result) {
+  const ok = printValidation(result);
+  if (!ok) {
+    return false;
+  }
+
+  const blockers = result.requirements.filter((requirement) => BLOCKER_STATUSES.has(requirement.status));
+  console.log('\nRemaining external blockers:');
+  if (!blockers.length) {
+    console.log('- none');
+    return true;
+  }
+
+  for (const requirement of blockers) {
+    console.log(`- ${requirement.id}: ${requirement.title}`);
+    console.log(`  owner: ${requirement.blocker_owner || '(missing)'}`);
+    console.log(`  blocker: ${requirement.blocker || '(missing)'}`);
+    console.log(`  next_action: ${requirement.blocker_next_action || requirement.next_action || '(missing)'}`);
+  }
+  return true;
+}
+
+function sourceCoverage(requirementsDoc = {}) {
+  const counts = new Map();
+  const statements = Array.isArray(requirementsDoc.source_statements)
+    ? requirementsDoc.source_statements
+    : [];
+  for (const statement of statements) {
+    const classification = String(statement.classification || 'unclassified').trim() || 'unclassified';
+    counts.set(classification, (counts.get(classification) || 0) + 1);
+  }
+  return { statements, counts };
+}
+
+function printSourceCoverage(result) {
+  const ok = printValidation(result);
+  if (!ok) {
+    return false;
+  }
+
+  const requirementsPath = path.join(result.runDir, 'requirements.json');
+  const localErrors = [];
+  const requirementsDoc = readJson(requirementsPath, localErrors, 'requirements.json') || {};
+  const coverage = sourceCoverage(requirementsDoc);
+  console.log('\nSource coverage report:');
+  console.log(`- source statements: ${coverage.statements.length}`);
+  for (const [classification, count] of [...coverage.counts.entries()].sort()) {
+    console.log(`- ${classification}: ${count}`);
+  }
+  const unmapped = coverage.statements.filter((statement) => {
+    const mappedRequirementId =
+      statement.requirement_id || statement.existing_requirement_id || statement.mapped_requirement_id;
+    const classification = String(statement.classification || '').trim().toLowerCase();
+    return !mappedRequirementId && !SOURCE_EXCLUSION_CLASSIFICATIONS.has(classification);
+  });
+  console.log(`- unmapped executable statements: ${unmapped.length}`);
+  return true;
+}
+
+function printStaleEvidence(result) {
+  const staleErrors = result.errors.filter((error) =>
+    /evidence path does not exist|deployment\/live evidence|withheld\/not-deployed|local implementation is described as live|stale|older|does not contain implementation_commit/i.test(
+      error
+    )
+  );
+
+  if (!staleErrors.length) {
+    const ok = printValidation(result);
+    if (!ok) {
+      return false;
+    }
+    console.log('\nStale evidence detection: none');
+    return true;
+  }
+
+  printValidation(result);
+  console.log('\nStale evidence detection:');
+  for (const error of staleErrors) {
+    console.log(`- ${error}`);
+  }
+  return false;
+}
+
 function createRun(options) {
   const root = path.resolve(options.root);
   const today = new Date().toISOString().slice(0, 10);
@@ -766,6 +1235,7 @@ function createRun(options) {
     'TEST-RESULTS.md': `# Test Results\n\nRecord commands and results.\n`,
     'DEPLOYMENT.md': `# Deployment\n\nRecord deploy/live-smoke proof or blockers.\n`,
     'NEXT-SESSION.md': `# Next Session\n\nRecord exact resume steps while work remains.\n`,
+    'BATCH-STATUS.md': `# Batch Status\n\nRecord each batch, requirement ID, status, and next action.\n`,
     'run.json': JSON.stringify(
       {
         run_id: id,
@@ -819,6 +1289,15 @@ function printResume(result) {
   const openRequirements = result.requirements.filter((requirement) =>
     WORK_REMAINS_STATUSES.has(requirement.status)
   );
+  const next = nextUnblockedRequirement(result.requirements);
+  if (next) {
+    console.log('\nNext unblocked executable batch:');
+    console.log(`- ${next.batch_id || '(none)'} / ${next.id}: ${next.title}`);
+    console.log(`- next_action: ${next.next_action || '(none)'}`);
+  } else {
+    console.log('\nNext unblocked executable batch: none');
+  }
+
   if (openRequirements.length) {
     console.log('\nOpen requirements:');
     for (const requirement of openRequirements) {
@@ -838,6 +1317,10 @@ Usage:
   node scripts/bna-execution-run.mjs status [--run <path>] [--root <repo-root>]
   node scripts/bna-execution-run.mjs validate [--run <path>] [--root <repo-root>]
   node scripts/bna-execution-run.mjs resume [--run <path>] [--root <repo-root>]
+  node scripts/bna-execution-run.mjs next [--run <path>] [--root <repo-root>]
+  node scripts/bna-execution-run.mjs blockers [--run <path>] [--root <repo-root>]
+  node scripts/bna-execution-run.mjs source-coverage [--run <path>] [--root <repo-root>]
+  node scripts/bna-execution-run.mjs stale-evidence [--run <path>] [--root <repo-root>]
 `);
 }
 
@@ -867,7 +1350,19 @@ function main() {
     return;
   }
 
-  if (!['status', 'validate', 'resume'].includes(options.command)) {
+  const validationCommands = new Set([
+    'status',
+    'validate',
+    'resume',
+    'next',
+    'next-batch',
+    'blockers',
+    'external-blockers',
+    'source-coverage',
+    'stale-evidence'
+  ]);
+
+  if (!validationCommands.has(options.command)) {
     console.error(`Unknown command: ${options.command}`);
     printHelp();
     process.exitCode = 2;
@@ -875,7 +1370,20 @@ function main() {
   }
 
   const result = validateExecutionRun(options.root, options.run);
-  const ok = options.command === 'resume' ? printResume(result) : printValidation(result);
+  let ok;
+  if (options.command === 'resume') {
+    ok = printResume(result);
+  } else if (options.command === 'next' || options.command === 'next-batch') {
+    ok = printNext(result);
+  } else if (options.command === 'blockers' || options.command === 'external-blockers') {
+    ok = printExternalBlockers(result);
+  } else if (options.command === 'source-coverage') {
+    ok = printSourceCoverage(result);
+  } else if (options.command === 'stale-evidence') {
+    ok = printStaleEvidence(result);
+  } else {
+    ok = printValidation(result);
+  }
   process.exitCode = ok ? 0 : 1;
 }
 

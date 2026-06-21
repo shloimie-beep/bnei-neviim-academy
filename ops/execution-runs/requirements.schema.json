@@ -93,11 +93,43 @@
         "type": ["string", "object"]
       }
     },
+    "tasks": {
+      "type": "array",
+      "items": { "type": "object", "additionalProperties": true }
+    },
+    "canonical_tasks": {
+      "type": "array",
+      "items": { "type": "object", "additionalProperties": true }
+    },
     "requirements": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "title", "status", "expected_result"],
+        "required": [
+          "id",
+          "title",
+          "source_id",
+          "source_statement_ids",
+          "source_path",
+          "workspace_key",
+          "project_key",
+          "owner",
+          "category",
+          "priority",
+          "batch_id",
+          "depends_on",
+          "status",
+          "implementation_status",
+          "can_continue_without_operator",
+          "next_action",
+          "acceptance_criteria",
+          "evidence",
+          "verification",
+          "implementation_files",
+          "deployment_required",
+          "updated_at",
+          "expected_result"
+        ],
         "additionalProperties": false,
         "properties": {
           "id": {
@@ -131,6 +163,56 @@
             "type": "string",
             "minLength": 1
           },
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_statement_ids": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "source_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "workspace_key": {
+            "type": "string",
+            "minLength": 1
+          },
+          "project_key": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "category": {
+            "type": "string",
+            "minLength": 1
+          },
+          "priority": {
+            "type": "string",
+            "minLength": 1
+          },
+          "batch_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "implementation_status": {
+            "type": "string",
+            "minLength": 1
+          },
+          "can_continue_without_operator": {
+            "type": "boolean"
+          },
+          "next_action": {
+            "type": "string",
+            "minLength": 1
+          },
           "source": {
             "type": "string"
           },
@@ -148,6 +230,45 @@
           },
           "blocker_next_action": {
             "type": "string"
+          },
+          "implementation_files": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "implementation_commit": {
+            "type": "string"
+          },
+          "pushed_commit": {
+            "type": "string"
+          },
+          "pull_request": {
+            "type": "string"
+          },
+          "deployment_required": {
+            "type": "boolean"
+          },
+          "deployment_id": {
+            "type": "string"
+          },
+          "deployed_commit": {
+            "type": "string"
+          },
+          "live_smoke": {
+            "type": ["string", "array"],
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "superseded_by": {
+            "type": "string"
+          },
+          "updated_at": {
+            "type": "string",
+            "minLength": 1
           },
           "evidence": {
             "type": "array",

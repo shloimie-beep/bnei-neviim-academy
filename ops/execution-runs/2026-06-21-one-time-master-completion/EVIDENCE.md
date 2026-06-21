@@ -18,3 +18,21 @@
   `node scripts/audit-secrets.mjs` passed with 0 tracked secret-risk files.
 - Diff hygiene:
   `git diff --check` passed with LF/CRLF warnings only.
+
+## Batch 1
+
+- Protocol docs and templates:
+  `AGENTS.md`, `BNA-START-HERE.md`, `docs/BNA-RAMBLE-TO-DONE.md`,
+  `templates/BNA-CODEX-IMPLEMENTATION-PROMPT.md`,
+  `templates/BNA-CODEX-VERIFICATION-PROMPT.md`,
+  `tasks-pending/_template-ramble-intake.md`,
+  `tasks-pending/_template-goal-mode-correction-output.md`, and
+  `tasks-pending/2026-06-16-prompt-intake-register.md`.
+- Execution runner and schema:
+  `scripts/bna-execution-run.mjs`,
+  `ops/execution-runs/requirements.schema.json`, and
+  `tests/bna-execution-run.test.js`.
+- Intake schema:
+  `src/lib/bna/intake-schema.js`.
+- Task lifecycle pointer:
+  `TASKS.md`.

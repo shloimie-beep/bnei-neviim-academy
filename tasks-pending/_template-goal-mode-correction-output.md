@@ -32,8 +32,8 @@ Write the concrete objective Codex should create/continue as the active goal.
 
 ## Requirements
 
-| ID | Requirement | Source quote | Expected result | Affected area | Verification | Status |
-|---|---|---|---|---|---|---|
+| ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 ## Suggested Batches
 
@@ -42,8 +42,8 @@ Write the concrete objective Codex should create/continue as the active goal.
 
 ## Human Or External Blockers
 
-| ID | Blocker | Requirement IDs | Needed from Shloimie/external system | Safe next action |
-|---|---|---|---|---|
+| ID | Blocker/Decision | Requirement IDs | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required |
+|---|---|---|---|---|---|---|---|---|
 
 ## Closeout Rules For Codex
 
@@ -55,6 +55,10 @@ Write the concrete objective Codex should create/continue as the active goal.
 - Append `ops/agent-changelog.md` for implemented, verified, deployed,
   blocked, failed, or archived work.
 - Update the requirement register final audit after each batch.
+- Use `npm run bna:run:next` and continue the next unblocked batch
+  automatically after each verified checkpoint.
+- Do not convert raw prompts, internal handoffs, audit output, or duplicate
+  parser fan-out into default visible user Tasks.
 - Run focused tests and then broader tests/audits proportional to blast radius.
 - Run `npm run watchdog:audit` after major ramble-derived closeouts.
 - Do not mark the goal complete until all requirements are terminal and proof
