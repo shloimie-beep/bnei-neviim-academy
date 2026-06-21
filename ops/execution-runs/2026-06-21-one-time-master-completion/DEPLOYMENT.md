@@ -49,3 +49,18 @@ Prior failed checks during the same batch:
 - First focused workspace-user smoke queried `/health`; the deployed app uses
   `/api/health`. The smoke was corrected and rerun successfully.
 
+## Batch 5
+
+- Deployment ID: `9c31c21f-143e-46f3-b95d-2b458a848d9f`
+- Deployed commit: `90da952bf3a0c57ce60b4532e193f869a677df47`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md`
+- Focused visible-action live smoke: PASS,
+  `ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md`
+
+Focused live smoke verified production health, task/decision action controls,
+One Time class/session/appointment/video setup controls, integration setup
+controls, and removal of the old generic placeholder handlers.
+

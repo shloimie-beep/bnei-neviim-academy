@@ -119,6 +119,12 @@ setup-path changes:
 - PASS `node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/workspace-user-role-management.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/action-registry-telegram-ui-bot.test.js`
 - PASS `node --check server.js`
 - PASS `git diff --check` with line-ending warnings only.
+- PASS `npm run railway:doctor` after Railway deployment
+  `9c31c21f-143e-46f3-b95d-2b458a848d9f`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md`.
+- PASS focused One Time visible-action live smoke,
+  `ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md`.
 
 Focused combined test result:
 
@@ -127,4 +133,7 @@ Focused combined test result:
   and endpoint mapping, placeholder removal, external-write gates, existing
   watchdog action registry, Operations UI smoke, module scoping, workspace user
   actions, and Telegram/UI action registry behavior.
+- Live covered: production health, Operations task/decision action markers,
+  One Time class/session/appointment/video setup controls, integration setup
+  controls, and absence of the old generic placeholder handlers.
 <!-- batch-5:end -->

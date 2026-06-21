@@ -70,7 +70,7 @@ Next unblocked batch: `REQ-20260621-502` visible action coverage.
 <!-- batch-5:start -->
 ## Batch 5 - Visible Action Coverage
 
-Status: implemented / verified local / pending deployment
+Status: done / verified live
 
 Created the One Time action coverage registry and report, mapped required
 visible controls to handlers/endpoints/setup paths, and removed generic
@@ -79,7 +79,10 @@ Task/Decision creation now has visible Add Task and Create Decision actions,
 One Time class/library controls use explicit labels, and gated appointment,
 Vimeo upload, and recording retry controls open exact setup prompts.
 
-Focused verification passed with 52 tests. Next step: commit, push, deploy the
-safe app-visible Operations UI changes, run standard and focused live action
-coverage smokes, then continue to Batch 6 Operations UI/design correction.
+Focused verification passed with 52 tests. The safe app-visible Operations UI
+changes were pushed at `90da952bf3a0c57ce60b4532e193f869a677df47`, deployed to
+Railway deployment `9c31c21f-143e-46f3-b95d-2b458a848d9f`, and verified by
+standard plus focused visible-action live smokes.
+
+Next unblocked batch: `REQ-20260619-304` Operations UI/design correction.
 <!-- batch-5:end -->

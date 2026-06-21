@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T08:38:33.874Z",
+  "updated_at": "2026-06-21T13:12:30+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -528,7 +528,7 @@
       "id": "REQ-20260621-502",
       "title": "Visible action registry and dead-button coverage",
       "expected_result": "Every visible action is working, disabled with a setup/blocker path, or intentionally informational.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0006"
@@ -543,9 +543,9 @@
       "depends_on": [
         "REQ-20260619-303"
       ],
-      "implementation_status": "verified_local",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Commit and push Batch 5 visible action coverage, deploy app-visible UI changes, and run focused live action coverage smoke.",
+      "next_action": "Complete. Continue to Batch 6 / REQ-20260619-304 Operations UI and design-system correction.",
       "acceptance_criteria": [
         "One Time action coverage Markdown and JSON exist.",
         "Required visible action labels map to working handlers, setup paths, or gated blockers.",
@@ -557,13 +557,18 @@
         "ops/action-registry/one-time-action-coverage.md",
         "ops/action-registry/one-time-action-coverage.json",
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
-        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md"
       ],
       "verification": [
         "node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js",
         "node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/workspace-user-role-management.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/action-registry-telegram-ui-bot.test.js",
         "node --check server.js",
-        "git diff --check"
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "focused one-time-visible-actions live smoke"
       ],
       "implementation_files": [
         "ops/action-registry/one-time-action-coverage.md",
@@ -571,15 +576,25 @@
         "public/operations.html",
         "tests/one-time-action-coverage.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
+      "pushed_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T15:35:00+03:00",
+      "updated_at": "2026-06-21T13:12:30+03:00",
       "blocker": "",
-      "blocker_owner": ""
+      "blocker_owner": "",
+      "deployment_id": "9c31c21f-143e-46f3-b95d-2b458a848d9f",
+      "deployed_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-304",

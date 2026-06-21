@@ -7,7 +7,7 @@
 | 2 | REQ-20260621-501 | done | Current master reconciliation refresh. |
 | 3 | REQ-20260619-302 | done | Production cleanup applied; default Task/Decision views deployed and live-smoked. |
 | 4 | REQ-20260619-303 | done | Workspace user and role model deployed and live-smoked. |
-| 5 | REQ-20260621-502 | verified_local | Visible action coverage implemented; deployment/live smoke pending. |
+| 5 | REQ-20260621-502 | done | Visible action coverage deployed and live-smoked. |
 | 6 | REQ-20260619-304 | not_started | Operations UI/design. |
 | 7 | REQ-20260621-503 | not_started | WhatsApp UX. |
 | 8 | REQ-20260621-504 | not_started | Email and Resend UX. |

@@ -141,8 +141,7 @@ Focused live smoke confirmed:
 <!-- batch-5:start -->
 ## Batch 5 Evidence
 
-Visible action coverage is locally implemented and ready for app-visible
-deployment.
+Visible action coverage is implemented, pushed, deployed, and live-verified.
 
 - One Time action coverage report:
   `ops/action-registry/one-time-action-coverage.md`
@@ -152,6 +151,16 @@ deployment.
   `public/operations.html`
 - Automated coverage tests:
   `tests/one-time-action-coverage.test.js`
+- Implementation/pushed commit:
+  `90da952bf3a0c57ce60b4532e193f869a677df47`
+- Railway deployment:
+  `9c31c21f-143e-46f3-b95d-2b458a848d9f`
+- Deployed commit:
+  `90da952bf3a0c57ce60b4532e193f869a677df47`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md`
+- Focused visible-action live smoke:
+  `ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md`
 
 Implemented behavior:
 
@@ -168,4 +177,7 @@ Implemented behavior:
   setup prompts instead of silently failing.
 - External-write controls remain no-send, preview-only, setup-only, disabled, or
   exact-approval gated.
+- Production HTML was checked for the changed task/decision, One Time class,
+  session, appointment, video setup, integration setup, and helper setup-path
+  controls, and for removal of the old generic placeholder handlers.
 <!-- batch-5:end -->

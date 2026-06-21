@@ -1,6 +1,6 @@
 # Next Session
 
-Continue `REQ-20260621-502`: visible action coverage and no-dead-buttons
+Continue `REQ-20260619-304`: Operations UI and design-system correction
 deployment/live verification. The implementation is locally verified; commit,
 push, deploy, and live-smoke the app-visible Operations changes. Exact next
 command:
@@ -58,23 +58,25 @@ Workspace user and role implementation is deployed and live-verified:
 - Focused workspace-user live smoke:
   `ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md`
 
-Continue automatically with Batch 5 action coverage.
+Continue automatically with Batch 6 Operations UI/design correction.
 <!-- batch-4:end -->
 
 <!-- batch-5:start -->
 ## Batch 5 Handoff
 
-Visible action coverage is locally verified but not yet deployed in this
-handoff state.
+Visible action coverage is deployed and live-verified.
 
-Exact next commands:
+- Implementation/pushed commit:
+  `90da952bf3a0c57ce60b4532e193f869a677df47`
+- Railway deployment:
+  `9c31c21f-143e-46f3-b95d-2b458a848d9f`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md`
+- Focused visible-action live smoke:
+  `ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md`
 
-```powershell
-npm run bna:run:validate
-node scripts/audit-secrets.mjs
-git diff --check
-```
-
-Then commit, push, deploy, and run standard plus focused live action coverage
-smokes.
+Next exact batch: Batch 6 / `REQ-20260619-304`. Use the existing UI audit
+harness, fix Operations side-panel/top-filter separation, horizontal filter
+rails, sticky module toolbars, button consistency, cards/lists, and responsive
+behavior, then capture before/after evidence.
 <!-- batch-5:end -->
