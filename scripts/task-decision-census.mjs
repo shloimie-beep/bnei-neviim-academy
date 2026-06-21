@@ -18,6 +18,26 @@ export const TASK_DECISION_LANES = [
   'done_activity'
 ];
 
+export const TASK_DEFAULT_VIEWS = [
+  { id: 'my_tasks', label: 'My Tasks', description: 'Open work owned by Shloimie/operator roles.' },
+  { id: 'one_time_tasks', label: 'One Time Tasks', description: 'Open One Time Mishnah Class work only.' },
+  { id: 'codex_agent_work', label: 'Codex / Agent Work', description: 'Machine work and observable agent jobs.' },
+  { id: 'blocked', label: 'Blocked', description: 'Open work blocked by a human or external account/system.' },
+  { id: 'due_soon', label: 'Due Soon', description: 'Open work due within seven days.' },
+  { id: 'calendar', label: 'Calendar', description: 'Open work with a planned or due date.' },
+  { id: 'completed_activity', label: 'Completed / Activity', description: 'Closed work and recent task activity.' },
+  { id: 'archived', label: 'Archived', description: 'Reversible archive, duplicate, or hidden records.' }
+];
+
+export const DECISION_DEFAULT_VIEWS = [
+  { id: 'needs_my_decision', label: 'Needs My Decision', description: 'Open Decisions owned by Shloimie/operator roles.' },
+  { id: 'needs_rabbi_scheller', label: 'Needs Rabbi Scheller', description: 'Open Decisions owned by Rabbi Ellie Scheller or provider staff.' },
+  { id: 'needs_external_owner', label: 'Needs External Owner', description: 'Open Decisions blocked by an outside account, credential, legal, billing, DNS, or platform owner.' },
+  { id: 'decided', label: 'Decided', description: 'Decisions with a selected outcome or terminal lifecycle status.' },
+  { id: 'superseded', label: 'Superseded', description: 'Duplicate, stale, or replaced Decision records.' },
+  { id: 'archived', label: 'Archived', description: 'Hidden or archived Decision records.' }
+];
+
 const TERMINAL_STAGES = new Set(['done', 'archive', 'archived', 'complete', 'completed']);
 const MACHINE_AGENT_STATUSES = new Set([
   'queued',
@@ -74,6 +94,22 @@ function lower(value) {
   return nonEmpty(value).toLowerCase();
 }
 
+function normalizeKeyFragment(value, fallback = 'unknown') {
+  const normalized = lower(value)
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return normalized || fallback;
+}
+
+function firstNonEmpty(...values) {
+  for (const value of values) {
+    const text = nonEmpty(value);
+    if (text) return text;
+  }
+  return '';
+}
+
 function normalizedStage(task = {}) {
   const stage = lower(task.stage || task.workflow_status);
   const aliases = {
@@ -109,13 +145,18 @@ function taskText(task = {}) {
     taskTitle(task),
     task.summary,
     task.notes,
+    task.cleaned_summary,
     task.next_action,
+    task.next_action_label,
     task.blocked_reason,
     task.waiting_on,
     task.assigned_to,
     task.decision_owner,
     task.source,
-    task.source_channel
+    task.source_channel,
+    task.source_context,
+    task.raw_message,
+    task.original_raw_message
   ]
     .filter(Boolean)
     .join('\n');
@@ -132,7 +173,7 @@ function titleKey(task = {}) {
 }
 
 function workspaceKey(task = {}) {
-  return nonEmpty(task.workspace_key || task.workspace || task.workspace_slug || task.project_key || task.project || 'unknown');
+  return nonEmpty(task.workspace_key || task.workspace || task.workspace_slug || 'unknown');
 }
 
 function projectKey(task = {}) {
@@ -192,6 +233,17 @@ function isPendingAccessTask(task = {}) {
   );
 }
 
+function isArchivedTask(task = {}) {
+  const stage = normalizedStage(task);
+  return Boolean(
+    task.archived_at ||
+    task.duplicate_archived_at ||
+    task.decision_hidden_at ||
+    stage === 'archive' ||
+    stage === 'archived'
+  );
+}
+
 export function canonicalTaskLane(task = {}) {
   if (isDoneTask(task)) return 'done_activity';
   if (isDecisionTask(task)) return 'decisions';
@@ -199,6 +251,187 @@ export function canonicalTaskLane(task = {}) {
   if (isPendingAccessTask(task)) return 'pending';
   if (isCalendarTask(task)) return 'calendar';
   return 'tasks';
+}
+
+function parseDateMs(value) {
+  const parsed = Date.parse(value || '');
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function latestMeaningfulActivityAt(task = {}) {
+  return firstNonEmpty(
+    task.last_activity_at,
+    task.latest_activity_event_at,
+    task.last_comment_at,
+    task.updated_at,
+    task.completed_at,
+    task.verified_at,
+    task.created_at
+  ) || null;
+}
+
+function bucketAgeFromDate(value, generatedAt = new Date().toISOString()) {
+  const start = parseDateMs(value);
+  const end = parseDateMs(generatedAt);
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return 'unknown';
+  const days = Math.max(0, Math.floor((end - start) / (24 * 60 * 60 * 1000)));
+  if (days < 1) return '0d';
+  if (days <= 2) return '1_2d';
+  if (days <= 7) return '3_7d';
+  if (days <= 30) return '8_30d';
+  if (days <= 90) return '31_90d';
+  return '90d_plus';
+}
+
+function knownOwnerKey(value = '') {
+  const owner = lower(value);
+  if (!owner) return '';
+  if (/shloimie|operator|manager|platform/.test(owner)) return 'shloimie_platform_operator';
+  if (/rabbi|scheller|sheller|provider/.test(owner)) return 'rabbi_ellie_scheller';
+  if (/codex|agent|automation|system|openai|kimi/.test(owner)) return 'codex_agent';
+  if (/external|account|credential|dns|domain|legal|billing|payment|railway|resend|vimeo|zoom|stripe|whapi|wapi|whatsapp/.test(owner)) return 'external_owner';
+  return '';
+}
+
+function ownerKey(task = {}) {
+  const owner = firstNonEmpty(task.assigned_to, task.decision_owner, task.waiting_on, task.owner, task.owner_name);
+  const known = knownOwnerKey(owner);
+  if (known) return known;
+  return owner ? `owner:${textFingerprint(owner)}` : 'unassigned';
+}
+
+function sourceId(task = {}) {
+  return firstNonEmpty(
+    task.source_id,
+    task.sourceId,
+    task.source_message_id,
+    task.source_chat_id,
+    task.raw_input_id,
+    task.intake_parse_run_id,
+    task.intake_parse_item_id,
+    task.source_context?.source_id,
+    task.source_context?.sourceId
+  );
+}
+
+function sourceStatement(task = {}) {
+  return firstNonEmpty(
+    task.source_statement,
+    task.source_statement_id,
+    task.source_statement_ids,
+    task.original_raw_message,
+    task.raw_message,
+    task.source_text,
+    task.source_context?.statement_id,
+    task.source_context?.statement,
+    task.notes,
+    taskTitle(task)
+  );
+}
+
+function requirementKey(task = {}) {
+  return normalizeKeyFragment(firstNonEmpty(
+    task.requirement_id,
+    task.requirementId,
+    task.requirement,
+    task.source_context?.requirement_id,
+    task.source_context?.requirementId
+  ), 'none');
+}
+
+function targetFileRoute(task = {}) {
+  return normalizeKeyFragment(firstNonEmpty(
+    task.target_file,
+    task.target_route,
+    task.route,
+    task.url_path,
+    task.source_context?.target_file,
+    task.source_context?.target_route
+  ), 'none');
+}
+
+function canonicalAction(task = {}) {
+  return normalizeKeyFragment(firstNonEmpty(
+    task.action_key,
+    task.canonical_action,
+    task.next_action,
+    task.next_action_label,
+    task.what,
+    titleKey(task)
+  ), 'unknown_action');
+}
+
+function redactedEntityKey(type, value) {
+  const text = nonEmpty(value);
+  return text ? `${type}:${textFingerprint(text)}` : '';
+}
+
+function relatedEntityKey(task = {}) {
+  return firstNonEmpty(
+    redactedEntityKey('contact', task.contact_id || task.contactId || task.lead_id),
+    redactedEntityKey('student', task.student_id || task.studentId),
+    redactedEntityKey('parent', task.parent_id || task.parentId || task.household_id),
+    redactedEntityKey('provider', task.provider_id || task.providerId),
+    redactedEntityKey('ticket', task.ticket_id || task.ticketId),
+    redactedEntityKey('person', task.owner_person_id || task.person_id),
+    'none'
+  );
+}
+
+export function deterministicTaskDedupeKey(task = {}) {
+  const basis = [
+    normalizeKeyFragment(workspaceKey(task)),
+    normalizeKeyFragment(projectKey(task)),
+    sourceId(task) ? `source:${normalizeKeyFragment(sourceId(task))}` : `statement:${textFingerprint(sourceStatement(task))}`,
+    canonicalAction(task),
+    relatedEntityKey(task),
+    requirementKey(task),
+    targetFileRoute(task)
+  ].join('::');
+  return textFingerprint(basis);
+}
+
+function taskRequirementKey(task = {}) {
+  const key = requirementKey(task);
+  return key === 'none' ? 'none' : key;
+}
+
+function agentRunKey(task = {}) {
+  return firstNonEmpty(
+    task.latest_agent_job_id,
+    task.agent_job_id,
+    task.agent_run_id,
+    task.agent_ledger_ref,
+    task.ledger_ref
+  ) ? `agent_run:${textFingerprint(firstNonEmpty(task.latest_agent_job_id, task.agent_job_id, task.agent_run_id, task.agent_ledger_ref, task.ledger_ref))}` : 'none';
+}
+
+function statusKey(task = {}) {
+  if (isArchivedTask(task)) return 'archived';
+  if (isDoneTask(task)) return 'done';
+  return normalizeKeyFragment(firstNonEmpty(task.decision_status, task.workflow_status, task.status_detail, normalizedStage(task), canonicalTaskLane(task)));
+}
+
+function contactKey(task = {}) {
+  return redactedEntityKey('contact', task.contact_id || task.contactId || task.lead_id) || 'none';
+}
+
+function studentKey(task = {}) {
+  return redactedEntityKey('student', task.student_id || task.studentId) || 'none';
+}
+
+function providerKey(task = {}) {
+  return redactedEntityKey('provider', task.provider_id || task.providerId || task.provider_key) || 'none';
+}
+
+function taskLooksOneTime(task = {}) {
+  const scope = `${workspaceKey(task)} ${projectKey(task)} ${taskText(task)}`.toLowerCase();
+  return /one[_\s-]?time|mishn|rabbi[_\s-]?(sheller|scheller)|ellie\s+scheller/.test(scope);
+}
+
+function taskLooksBna(task = {}) {
+  const scope = `${workspaceKey(task)} ${projectKey(task)} ${taskText(task)}`.toLowerCase();
+  return /\bbna\b|bnei\s+neviim|yeshiva|school|tuition|parent|student record|accounting/.test(scope);
 }
 
 function countBy(items, getter) {
@@ -219,15 +452,30 @@ function redactedTaskRef(task = {}) {
     project: redactedScopeKey(projectKey(task)),
     lane: canonicalTaskLane(task),
     stage: normalizedStage(task),
+    status: statusKey(task),
     task_kind: normalizedTaskKind(task),
     item_type: normalizedItemType(task),
-    assigned_to: nonEmpty(task.assigned_to || ''),
+    owner: ownerKey(task),
     agent_status: nonEmpty(task.agent_status || ''),
+    source: sourceId(task) ? `source:${textFingerprint(sourceId(task))}` : 'none',
+    requirement: taskRequirementKey(task),
+    agent_run: agentRunKey(task),
+    contact: contactKey(task),
+    student: studentKey(task),
+    provider: providerKey(task),
+    duplicate_fingerprint: deterministicTaskDedupeKey(task),
+    canonical_action_fingerprint: textFingerprint(canonicalAction(task)),
+    age_bucket: bucketAgeFromDate(task.created_at),
+    last_activity_bucket: bucketAgeFromDate(latestMeaningfulActivityAt(task)),
+    latest_meaningful_activity_at: latestMeaningfulActivityAt(task),
+    blocker: nonEmpty(task.blocked_reason || task.waiting_on || ''),
+    next_action: nonEmpty(task.next_action || task.next_action_label || ''),
+    due_date: task.due_date || null,
     updated_at: task.updated_at || null
   };
 }
 
-function detectViolations(task = {}) {
+function detectViolations(task = {}, context = {}) {
   const lane = canonicalTaskLane(task);
   const stage = normalizedStage(task);
   const kind = normalizedTaskKind(task);
@@ -291,6 +539,76 @@ function detectViolations(task = {}) {
       recommendation: 'Attach proof links or verification notes, or reopen if proof is missing.'
     });
   }
+  if (!sourceId(task) && !nonEmpty(task.source || task.source_context || task.original_raw_message || task.raw_message)) {
+    violations.push({
+      type: 'no_source_record',
+      severity: 'medium',
+      recommendation: 'Attach source provenance or archive as non-actionable history.'
+    });
+  }
+  if (!nonEmpty(task.workspace_id || task.workspace_key || task.workspace || task.project_key || task.project_id)) {
+    violations.push({
+      type: 'unscoped_record',
+      severity: 'high',
+      recommendation: 'Attach the task to exactly one workspace/project or quarantine it from default views.'
+    });
+  }
+  if (!nonEmpty(task.project_id || task.project_key || task.project)) {
+    violations.push({
+      type: 'orphaned_record',
+      severity: 'medium',
+      recommendation: 'Attach a project, archive as provenance, or link to the canonical requirement.'
+    });
+  }
+  if (!isDoneTask(task) && ownerKey(task) === 'unassigned') {
+    violations.push({
+      type: 'no_owner_record',
+      severity: 'medium',
+      recommendation: 'Assign an owner or move the item out of default active views.'
+    });
+  }
+  if (/^(please|i need|i want|can you|we need|do this|everything|all of this)\b/i.test(title) || /\n/.test(title)) {
+    violations.push({
+      type: 'raw_prompt_title_visible',
+      severity: 'medium',
+      recommendation: 'Distill the visible title and keep raw wording only as provenance.'
+    });
+  }
+  if (isMachineTask(task) && !isDoneTask(task) && bucketAgeFromDate(latestMeaningfulActivityAt(task), context.generated_at) === '90d_plus') {
+    violations.push({
+      type: 'stale_machine_work',
+      severity: 'medium',
+      recommendation: 'Close, retry, or convert stale machine work into a human Decision with one blocker owner.'
+    });
+  }
+  if (!isDoneTask(task) && /\b(local complete|completed locally|local verification passed|implementation complete)\b/i.test(text)) {
+    violations.push({
+      type: 'local_complete_still_active',
+      severity: 'medium',
+      recommendation: 'Move to Completed only with proof/deploy context, or keep active with the exact remaining action.'
+    });
+  }
+  if (!isArchivedTask(task) && isDoneTask(task) && (kind === 'pending_access' || ['pending', 'blocked', 'waiting'].includes(stage))) {
+    violations.push({
+      type: 'completed_shown_pending',
+      severity: 'medium',
+      recommendation: 'Normalize the terminal status so completed work is not displayed as active Pending/Blocked.'
+    });
+  }
+  if (workspaceKey(task) === 'rabbi_sheller_provider' && projectKey(task) !== 'one_time_mishnah_class' && taskLooksBna(task)) {
+    violations.push({
+      type: 'bna_record_in_one_time',
+      severity: 'high',
+      recommendation: 'Re-scope the BNA record away from One Time defaults after backup/export.'
+    });
+  }
+  if (projectKey(task) !== 'one_time_mishnah_class' && workspaceKey(task) !== 'rabbi_sheller_provider' && taskLooksOneTime(task)) {
+    violations.push({
+      type: 'one_time_record_in_bna',
+      severity: 'high',
+      recommendation: 'Re-scope the One Time record to rabbi_sheller_provider / one_time_mishnah_class.'
+    });
+  }
 
   return violations;
 }
@@ -299,21 +617,32 @@ function duplicateGroups(tasks = []) {
   const groups = new Map();
   for (const task of tasks) {
     if (isDoneTask(task)) continue;
-    const key = [workspaceKey(task), projectKey(task), canonicalTaskLane(task), titleKey(task)].join('::');
-    if (!titleKey(task) || titleKey(task).length < 12) continue;
+    const key = deterministicTaskDedupeKey(task);
+    const action = canonicalAction(task);
+    if (!action || action.length < 8) continue;
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(task);
   }
   return [...groups.entries()]
     .filter(([, group]) => group.length > 1)
     .map(([key, group]) => ({
-      group_key_fingerprint: textFingerprint(key),
+      group_key_fingerprint: key,
       lane: canonicalTaskLane(group[0]),
       workspace: redactedScopeKey(workspaceKey(group[0])),
       project: redactedScopeKey(projectKey(group[0])),
       count: group.length,
       task_ids: group.map((task) => task.id ?? task.task_id).filter(Boolean),
       title_fingerprints: [...new Set(group.map((task) => textFingerprint(taskTitle(task))))],
+      source_fingerprints: [...new Set(group.map((task) => sourceId(task) ? textFingerprint(sourceId(task)) : textFingerprint(sourceStatement(task))))],
+      stable_key_basis: [
+        'workspace',
+        'project',
+        'source_id_or_statement',
+        'canonical_action',
+        'related_entity',
+        'requirement_id',
+        'target_file_or_route'
+      ],
       dry_run_action: 'archive_or_link_duplicates_after_operator_review'
     }));
 }
@@ -338,7 +667,19 @@ function buildCleanupPlan({ violations = [], duplicate_groups = [] } = {}) {
       internal_brief_visible_as_task: 'quarantine_internal_brief_card',
       audit_or_source_file_visible_as_task: 'move_audit_source_item_to_history_or_evidence',
       visible_title_not_distilled: 'rewrite_visible_title_preserve_raw_provenance',
-      done_without_visible_proof_marker: 'attach_proof_or_reopen'
+      done_without_visible_proof_marker: 'attach_proof_or_reopen',
+      no_source_record: 'attach_source_or_archive_as_history',
+      unscoped_record: 'quarantine_until_workspace_scope_is_set',
+      orphaned_record: 'attach_project_or_quarantine',
+      no_owner_record: 'assign_owner_or_archive',
+      raw_prompt_title_visible: 'distill_title_preserve_raw_provenance',
+      stale_machine_work: 'close_retry_or_convert_to_decision',
+      local_complete_still_active: 'add_deploy_context_or_restore_active_next_action',
+      completed_shown_pending: 'normalize_terminal_status',
+      bna_record_in_one_time: 'reclassify_bna_record_out_of_one_time',
+      one_time_record_in_bna: 'reclassify_one_time_record_into_one_time_scope',
+      repeated_parser_fan_out: 'collapse_parser_fan_out_to_canonical_task',
+      repeated_decision: 'archive_duplicate_decisions_keep_canonical'
     };
     plan.push({
       action: actionByType[violation.type] || 'review_item',
@@ -354,13 +695,53 @@ function buildCleanupPlan({ violations = [], duplicate_groups = [] } = {}) {
 export function buildTaskDecisionCensus({ tasks = [], generated_at = new Date().toISOString(), source = 'unknown', warnings = [] } = {}) {
   const redactedTasks = tasks.map(redactedTaskRef);
   const violations = tasks.flatMap((task) =>
-    detectViolations(task).map((violation) => ({
+    detectViolations(task, { generated_at }).map((violation) => ({
       ...violation,
       task: redactedTaskRef(task)
     }))
   );
   const duplicate_groups = duplicateGroups(tasks);
+  for (const group of duplicate_groups) {
+    if (group.lane === 'decisions') {
+      violations.push({
+        type: 'repeated_decision',
+        severity: 'high',
+        recommendation: 'Keep one canonical Decision and archive/link duplicate Decision cards.',
+        task: {
+          task_id: group.task_ids[0] || null,
+          lane: group.lane,
+          workspace: group.workspace,
+          duplicate_fingerprint: group.group_key_fingerprint
+        }
+      });
+    }
+    if (group.source_fingerprints.length === 1 && group.count > 2) {
+      violations.push({
+        type: 'repeated_parser_fan_out',
+        severity: 'high',
+        recommendation: 'Collapse repeated parser fan-out into one canonical executable requirement and archive duplicates.',
+        task: {
+          task_id: group.task_ids[0] || null,
+          lane: group.lane,
+          workspace: group.workspace,
+          duplicate_fingerprint: group.group_key_fingerprint
+        }
+      });
+    }
+  }
   const cleanup_plan = buildCleanupPlan({ violations, duplicate_groups });
+  const beforeCounts = {
+    tasks_seen: tasks.length,
+    by_lane: countBy(redactedTasks, (task) => task.lane),
+    by_workspace: countBy(redactedTasks, (task) => task.workspace),
+    by_project: countBy(redactedTasks, (task) => task.project),
+    violations: countBy(violations, (violation) => violation.type),
+    duplicate_groups: duplicate_groups.length
+  };
+  const contamination = {
+    bna_records_in_one_time: violations.filter((violation) => violation.type === 'bna_record_in_one_time').length,
+    one_time_records_in_bna: violations.filter((violation) => violation.type === 'one_time_record_in_bna').length
+  };
 
   return {
     generated_at,
@@ -370,22 +751,71 @@ export function buildTaskDecisionCensus({ tasks = [], generated_at = new Date().
     counts: {
       by_lane: countBy(redactedTasks, (task) => task.lane),
       by_stage: countBy(redactedTasks, (task) => task.stage),
+      by_status: countBy(redactedTasks, (task) => task.status),
       by_task_kind: countBy(redactedTasks, (task) => task.task_kind),
       by_item_type: countBy(redactedTasks, (task) => task.item_type),
       by_agent_status: countBy(redactedTasks, (task) => task.agent_status || 'none'),
       by_workspace: countBy(redactedTasks, (task) => task.workspace),
-      by_project: countBy(redactedTasks, (task) => task.project)
+      by_project: countBy(redactedTasks, (task) => task.project),
+      by_source: countBy(redactedTasks, (task) => task.source),
+      by_owner: countBy(redactedTasks, (task) => task.owner),
+      by_requirement: countBy(redactedTasks, (task) => task.requirement),
+      by_agent_run: countBy(redactedTasks, (task) => task.agent_run),
+      by_contact: countBy(redactedTasks, (task) => task.contact),
+      by_student: countBy(redactedTasks, (task) => task.student),
+      by_provider: countBy(redactedTasks, (task) => task.provider),
+      by_duplicate_fingerprint: countBy(redactedTasks, (task) => task.duplicate_fingerprint),
+      by_age: countBy(redactedTasks, (task) => task.age_bucket),
+      by_last_activity: countBy(redactedTasks, (task) => task.last_activity_bucket)
     },
+    default_task_views: TASK_DEFAULT_VIEWS,
+    default_decision_views: DECISION_DEFAULT_VIEWS,
+    card_contract: [
+      'concise title',
+      'owner',
+      'workspace',
+      'project',
+      'priority',
+      'status',
+      'next action',
+      'blocker',
+      'source',
+      'due date',
+      'latest meaningful activity',
+      'direct action'
+    ],
     default_view_rules: [
-      'Decisions: item_type/task_kind decision, decision_required, or stage needs_decision.',
-      'Tasks: human-doable work that is neither blocked, done, decision, nor machine-owned.',
-      'Codex Queue: Codex/agent/system work and agent_job rows, including queued/running/failed machine states.',
-      'Pending: human or external blockers only, with blocker owner and next action.',
-      'Done / Activity: done/archive/history rows with proof or verification notes.'
+      'My Tasks: open work assigned to or waiting on Shloimie/operator roles.',
+      'One Time Tasks: open rabbi_sheller_provider / one_time_mishnah_class records only.',
+      'Codex / Agent Work: Codex/agent/system work and agent_job rows, including queued/running/failed machine states.',
+      'Blocked: human or external blockers only, with blocker owner and next action.',
+      'Due Soon: open work due within seven days.',
+      'Calendar: open work with due_date or planned_at.',
+      'Completed / Activity: done/archive/history rows with proof or verification notes.',
+      'Archived: archived, hidden, or duplicate-archived rows excluded from default active views.'
     ],
     duplicate_groups,
     violations,
     cleanup_plan,
+    cleanup_behavior: {
+      mode: 'dry_run_only_no_production_mutation',
+      backup_export_evidence: 'ops/one-time-mishnah/task-decision-production-census.json',
+      dry_run_plan: cleanup_plan,
+      before_counts: beforeCounts,
+      after_counts_if_applied_now: beforeCounts,
+      no_private_parent_student_data_deleted: true,
+      rollback_plan: [
+        'Export affected bna_tasks rows before any approved mutation.',
+        'Apply only reversible archive/quarantine/reclassification fields.',
+        'Restore archived_at, duplicate_archived_at, decision_hidden_at, task_kind, stage, project_id, workspace_id, owner, and source fields from the backup export if rollback is needed.',
+        'Never hard-delete source provenance, comments, parent/student records, payments, communications, or private notes.'
+      ],
+      workspace_isolation_checks: {
+        bna_records_in_one_time: contamination.bna_records_in_one_time,
+        one_time_records_in_bna: contamination.one_time_records_in_bna,
+        passed: contamination.bna_records_in_one_time === 0 && contamination.one_time_records_in_bna === 0
+      }
+    },
     warnings
   };
 }
@@ -487,7 +917,7 @@ function markdownTableRow(values = []) {
 
 export function censusMarkdown(census = {}) {
   const lines = [
-    '# Task And Decision Census',
+    '# One Time Task And Decision Production Census',
     '',
     `Generated: ${census.generated_at}`,
     `Source: ${census.source}`,
@@ -497,6 +927,42 @@ export function censusMarkdown(census = {}) {
     '## Lane Counts',
     '',
     ...TASK_DECISION_LANES.map((lane) => `- ${lane}: ${Number(census.counts?.by_lane?.[lane] || 0)}`),
+    '',
+    '## Audit Dimensions',
+    '',
+    '- workspace',
+    '- project',
+    '- source',
+    '- owner',
+    '- status',
+    '- requirement',
+    '- agent run',
+    '- contact',
+    '- student',
+    '- provider',
+    '- duplicate fingerprint',
+    '- age',
+    '- last activity',
+    '',
+    '## Default Task Views',
+    '',
+    markdownTableRow(['View', 'Description']),
+    markdownTableRow(['---', '---']),
+    ...(census.default_task_views?.length
+      ? census.default_task_views.map((view) => markdownTableRow([view.label, view.description]))
+      : [markdownTableRow(['none', ''])]),
+    '',
+    '## Default Decision Views',
+    '',
+    markdownTableRow(['View', 'Description']),
+    markdownTableRow(['---', '---']),
+    ...(census.default_decision_views?.length
+      ? census.default_decision_views.map((view) => markdownTableRow([view.label, view.description]))
+      : [markdownTableRow(['none', ''])]),
+    '',
+    '## Card Contract',
+    '',
+    ...(census.card_contract || []).map((field) => `- ${field}`),
     '',
     '## Warnings',
     '',
@@ -508,8 +974,8 @@ export function censusMarkdown(census = {}) {
     '',
     '## Duplicate Groups',
     '',
-    markdownTableRow(['Group fingerprint', 'Lane', 'Workspace', 'Project', 'Count', 'Task IDs', 'Dry-run action']),
-    markdownTableRow(['---', '---', '---', '---', '---', '---', '---']),
+    markdownTableRow(['Group fingerprint', 'Lane', 'Workspace', 'Project', 'Count', 'Task IDs', 'Source fingerprints', 'Dry-run action']),
+    markdownTableRow(['---', '---', '---', '---', '---', '---', '---', '---']),
     ...(census.duplicate_groups?.length
       ? census.duplicate_groups.map((group) =>
           markdownTableRow([
@@ -519,10 +985,11 @@ export function censusMarkdown(census = {}) {
             group.project,
             group.count,
             group.task_ids.join(', '),
+            (group.source_fingerprints || []).join(', '),
             group.dry_run_action
           ])
         )
-      : [markdownTableRow(['none', '', '', '', '0', '', ''])]),
+      : [markdownTableRow(['none', '', '', '', '0', '', '', ''])]),
     '',
     '## Violations',
     '',
@@ -557,6 +1024,23 @@ export function censusMarkdown(census = {}) {
         )
       : [markdownTableRow(['none', '', '', '', ''])]),
     '',
+    '## Before Counts',
+    '',
+    `- tasks seen: ${Number(census.cleanup_behavior?.before_counts?.tasks_seen || 0)}`,
+    `- duplicate groups: ${Number(census.cleanup_behavior?.before_counts?.duplicate_groups || 0)}`,
+    `- violation types: ${Object.keys(census.cleanup_behavior?.before_counts?.violations || {}).length}`,
+    '',
+    '## After Counts',
+    '',
+    '- dry run only: no production mutation was applied in this census.',
+    `- after-count snapshot if applied now: ${Number(census.cleanup_behavior?.after_counts_if_applied_now?.tasks_seen || 0)} tasks seen`,
+    '',
+    '## Workspace Isolation',
+    '',
+    `- BNA records in One Time: ${Number(census.cleanup_behavior?.workspace_isolation_checks?.bna_records_in_one_time || 0)}`,
+    `- One Time records in BNA: ${Number(census.cleanup_behavior?.workspace_isolation_checks?.one_time_records_in_bna || 0)}`,
+    `- Passed: ${census.cleanup_behavior?.workspace_isolation_checks?.passed ? 'yes' : 'no'}`,
+    '',
     '## Reversible Apply Workflow',
     '',
     '- This report is read-only and does not apply cleanup.',
@@ -572,14 +1056,27 @@ export function censusMarkdown(census = {}) {
 function writeCensus(census, { root = repoRoot } = {}) {
   const stamp = String(census.generated_at || new Date().toISOString()).replace(/[:.]/g, '-');
   const dir = path.join(root, 'ops', 'task-decision-census');
+  const oneTimeDir = path.join(root, 'ops', 'one-time-mishnah');
   fs.mkdirSync(dir, { recursive: true });
+  fs.mkdirSync(oneTimeDir, { recursive: true });
   const jsonPath = path.join(dir, `${stamp}-task-decision-census.json`);
   const mdPath = path.join(dir, `${stamp}-task-decision-census.md`);
   const latestPath = path.join(dir, 'latest.json');
+  const oneTimeJsonPath = path.join(oneTimeDir, 'task-decision-production-census.json');
+  const oneTimeMdPath = path.join(oneTimeDir, 'task-decision-production-census.md');
   fs.writeFileSync(jsonPath, `${JSON.stringify(census, null, 2)}\n`);
   fs.writeFileSync(latestPath, `${JSON.stringify(census, null, 2)}\n`);
-  fs.writeFileSync(mdPath, censusMarkdown(census));
-  return { jsonPath, mdPath, latestPath };
+  fs.writeFileSync(oneTimeJsonPath, `${JSON.stringify(census, null, 2)}\n`);
+  const markdown = censusMarkdown(census);
+  fs.writeFileSync(mdPath, markdown);
+  fs.writeFileSync(oneTimeMdPath, markdown);
+  return {
+    jsonPath: oneTimeJsonPath,
+    mdPath: oneTimeMdPath,
+    latestPath,
+    timestampedJsonPath: jsonPath,
+    timestampedMdPath: mdPath
+  };
 }
 
 async function main() {

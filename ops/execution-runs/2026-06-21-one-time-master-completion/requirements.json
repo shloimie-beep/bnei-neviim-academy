@@ -371,7 +371,7 @@
       "id": "REQ-20260619-302",
       "title": "Production Task and Decision cleanup",
       "expected_result": "Default Task and Decision views are relevant, deduped, scoped, and backed by reversible cleanup evidence.",
-      "status": "not_started",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0004"
@@ -386,31 +386,66 @@
       "depends_on": [
         "REQ-20260621-501"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Create fresh census, backup/export, dry-run plan, reversible cleanup, server-side filters, and tests.",
+      "next_action": "Complete. Continue to Batch 4 / REQ-20260619-303 workspace users and roles.",
       "acceptance_criteria": [
         "census exists",
         "cleanup report exists",
         "default views exclude unrelated records",
         "tests pass"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
+      "evidence": [
         "ops/one-time-mishnah/task-decision-production-census.md",
         "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json"
+      ],
+      "verification": [
+        "node --check scripts/task-decision-census.mjs",
+        "node --check scripts/task-decision-production-cleanup.mjs",
+        "node --check server.js",
+        "node --test tests/task-decision-census.test.js tests/task-decision-production-cleanup.test.js tests/operations-task-queue-visibility.test.js tests/operations-task-comments-and-dictation.test.js tests/workspace-task-no-stale-agent.test.js tests/telegram-ramble-routing-regression.test.js",
+        "node scripts/task-decision-census.mjs --limit=1000",
+        "node scripts/task-decision-production-cleanup.mjs --limit=1000 --apply"
+      ],
+      "implementation_files": [
+        "scripts/task-decision-census.mjs",
+        "scripts/task-decision-production-cleanup.mjs",
+        "ops/one-time-mishnah/task-decision-production-census.md",
+        "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json",
         "server.js",
         "public/operations.html",
-        "tests/task-decision-census.test.js"
+        "tests/task-decision-census.test.js",
+        "tests/task-decision-production-cleanup.test.js",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/operations-task-comments-and-dictation.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "tests/telegram-ramble-routing-regression.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "c90c007c",
+      "pushed_commit": "f8a2fd62",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T13:23:00+03:00",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md"
+      ],
+      "deployed_commit": "f8a2fd62",
+      "deployment_id": "89967278-38dc-49f3-a70d-4536c59f82f6"
     },
     {
       "id": "REQ-20260619-303",

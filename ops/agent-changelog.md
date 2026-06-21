@@ -24794,3 +24794,433 @@ mutation, DNS/domain change, live email, Vimeo upload, Zoom mutation, Resend
 send/domain mutation, secret propagation, or external-account write was
 performed. Authenticated live/local Operations smoke remains gated by operator
 credentials and release approval.
+
+## 2026-06-20T20:48:00+03:00 - One Time Local Beta Hardening Run Registered
+
+Registered the new local-only hardening run
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/` with
+`REQ-20260619-406` through `REQ-20260619-424`, preserved raw prompt
+`RAW-20260620-001`, marked the prior parallel run inactive, and created the
+required current-version and active-queue reconciliation artifacts.
+
+Hardened `scripts/task-queue-reconciler.mjs` so no-live dry-runs use durable
+repo evidence before suggesting a duplicate app-wide UI brand-shell backfill;
+the follow-up dry-run reports zero actions and records the repo-evidence note.
+
+Verification passed: active run validation, JSON parse, queue audit no-live
+baseline, `node --check scripts/task-queue-reconciler.mjs`, focused
+`tests/task-queue-reconciler.test.js` 7/7, and no-live task reconciler dry-run
+with `Actions: 0`.
+
+Guardrails: no deploy, DNS, Railway mutation, production database mutation,
+live task mutation, live email, live payment, provider mutation, push, PR, or
+external-account write was performed. Full local test, browser acceptance, and
+synthetic One Time pilot remain open.
+
+## 2026-06-20T20:52:35+03:00 - One Time Local Beta Role And Product Contracts
+
+Completed the local doc/config/test slice for `REQ-20260619-408` and
+`REQ-20260619-409`.
+
+Added explicit One Time instance contracts for visible human roles, portal
+scope, prompt hierarchy, configurable `$67` primary offer, future 20-student
+cohort, 3 scholarship seats, class-ingestion flow, and provider-directory
+consent/privacy guardrails in `src/platform/instances/one-time.js`.
+
+Created required product/integration artifacts:
+`docs/product/one-time-pilot-product-model.md`,
+`docs/product/one-time-roles-and-portals.md`,
+`docs/product/one-time-class-course-ingestion.md`,
+`docs/product/provider-directory-and-consent.md`, and
+`docs/integrations/STRIPE.md`. Added honest not-run-yet placeholders for
+`PLAYWRIGHT.md` and `SYNTHETIC-E2E.md` under the active execution run.
+
+Verification passed: `node --check src/platform/instances/one-time.js`,
+focused One Time local beta product contract tests 5/5, existing W4 instance
+and One Time role/auth tests 12/12, active run validation, run JSON parse, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no deploy, live browser smoke, Railway mutation, production
+database mutation, DNS/domain action, live Stripe action, live email, live Zoom
+or Vimeo mutation, provider mutation, push, PR, or external-account write was
+performed.
+
+## 2026-06-20T20:56:39+03:00 - One Time Local Beta Stripe Mock Flow
+
+Completed `REQ-20260619-416` for the local-only One Time beta hardening run.
+Added a no-write Stripe local beta mock module for `$67` checkout previews,
+mock payment events, paid enrollment, idempotent duplicate handling,
+failed/expired/canceled no-grant behavior, and refund-review state. Extended
+One Time integration readiness so Stripe appears beside Vimeo, Zoom, and
+Resend with live charge/product/price/checkout/refund actions blocked.
+
+Verification passed: `node --check
+src/platform/integrations/stripe-local-beta.js`, `node --check
+src/platform/integrations/readiness.js`, and `node --test
+tests/one-time-stripe-local-beta.test.js
+tests/integrations/w4-onetime-readiness.test.js` with 6/6 passing.
+Post-closeout verification also passed the nearby One Time focused suite
+23/23, active run validation with `done: 4`, `in_progress: 3`,
+`not_started: 12`, run JSON plus ledger JSONL parse with 1278 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no live Stripe checkout, product, price, payment link,
+subscription, charge, refund, payout, webhook endpoint mutation, deploy,
+Railway mutation, production database mutation, DNS/domain action, live email,
+provider mutation, push, PR, or external-account write was performed.
+
+## 2026-06-20T21:01:02+03:00 - One Time Class Course Ingestion Preview
+
+Completed `REQ-20260619-412` for the local-only One Time beta hardening run.
+Added a preview-only natural-language class/course ingestion builder that turns
+One Time class commands into local course, module, lesson, class-session,
+video-reference, worksheet/resource, parent/student role-update, decision,
+task, and review-item drafts while preserving raw/source provenance and
+idempotent draft IDs.
+
+Verification passed: `node --check
+src/platform/ingestion/one-time-class-course-builder.js` and `node --test
+tests/one-time-class-course-ingestion.test.js` with 3/3 passing.
+Post-closeout verification also passed the focused One Time local beta suite
+14/14, active run validation with `done: 5`, `in_progress: 2`,
+`not_started: 12`, run JSON plus ledger JSONL parse with 1279 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no database write, Google Classroom write, video upload, external
+publish, parent/student send, live integration mutation, deploy, Railway
+mutation, production database mutation, DNS/domain action, push, PR, or
+external-account write was performed.
+
+## 2026-06-20T21:04:16+03:00 - One Time Provider Consent Controls
+
+Completed `REQ-20260619-415` for the local-only One Time beta hardening run.
+Added a preview-only provider directory consent/privacy review that allows only
+provider-supplied public profile fields when required consent is present, blocks
+private student/parent data and prohibited commercial uses, keeps referrals
+adult-reviewed, and suppresses advertising/analytics monetization under the
+paid privacy plan.
+
+Verification passed: `node --check
+src/platform/domain/provider-directory-consent.js`, `node --check
+src/platform/domain/index.js`, and `node --test
+tests/one-time-provider-directory-consent.test.js` with 3/3 passing.
+Post-closeout verification also passed the focused provider/One Time suite
+29/29, active run validation with `done: 6`, `in_progress: 1`,
+`not_started: 12`, run JSON plus ledger JSONL parse with 1280 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no database write, public listing publish, provider message,
+referral send, advertising activation, analytics export, billing action,
+deploy, Railway mutation, production database mutation, DNS/domain action,
+push, PR, or external-account write was performed.
+
+## 2026-06-20T21:07:07+03:00 - One Time Resend Local Outbox
+
+Completed `REQ-20260619-417` for the local-only One Time beta hardening run.
+Added a preview-only Resend local outbox for One Time/Rabbi emails with
+transactional and marketing templates, suppression handling, service and
+marketing consent gates, unsubscribe placeholders, readiness/domain blockers,
+idempotent draft IDs, and explicit no-send/no-external-write proof.
+
+Verification passed: `node --check
+src/platform/integrations/resend-local-outbox.js` and `node --test
+tests/one-time-resend-local-outbox.test.js` with 3/3 passing.
+Post-closeout verification also passed the focused One Time integration suite
+14/14, active run validation with `done: 7`, `in_progress: 1`,
+`not_started: 11`, run JSON plus ledger JSONL parse with 1281 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no live Resend API call, email send, fallback send, DNS/domain
+mutation, unsubscribe mutation, database write, deploy, Railway mutation,
+production database mutation, push, PR, or external-account write was
+performed.
+
+## 2026-06-20T21:13:50+03:00 - One Time Media Pipeline Preview
+
+Completed `REQ-20260619-413` for the local-only One Time beta hardening run.
+Added a preview-only media pipeline for Zoom recordings, Vimeo assets, and
+approved drop-folder videos. It produces One Time class-session handoff,
+attendance/minutes preview, Zoom correction drafts, scoped video references,
+member-library drafts, worksheet/material handoff, privacy-review routing, and
+Vimeo/Zoom readiness cards while keeping all live media/provider writes
+blocked.
+
+Verification passed: `node --check
+src/platform/integrations/media-local-pipeline.js`, `node --test
+tests/one-time-media-local-pipeline.test.js` with 4/4 passing, and the focused
+media/integration suite
+`tests/one-time-media-local-pipeline.test.js
+tests/one-time-zoom-attendance-automation.test.js
+tests/provider-integrations-secret-storage.test.js
+tests/integrations/w4-onetime-readiness.test.js` with 17/17 passing.
+Post-closeout verification also passed active run validation with `done: 8`,
+`in_progress: 1`, `not_started: 10`, run JSON plus ledger JSONL parse with
+1282 lines, and `git diff --check` with line-ending warnings only.
+
+Guardrails: no video upload, Vimeo publication mutation, Zoom meeting create,
+Zoom webhook acceptance, attendance write, Drive permission write, Drive file
+copy, member-library publish, parent/student notification send, deploy,
+Railway mutation, production database mutation, DNS/domain action, push, PR,
+or external-account write was performed.
+
+## 2026-06-20T21:21:33+03:00 - One Time Queue And Operations IA Visibility
+
+Completed `REQ-20260619-407` for the local-only One Time beta hardening run.
+Closed the remaining queue/Operations IA visibility gap: the no-live
+reconciler keeps durable repo evidence from becoming duplicate tasks,
+Operations task rendering separates Decisions, Pending/Blocked, Tasks, Codex
+Queue, Calendar, and Done / Activity, and the old `/api/bna/pending-briefs`
+route now returns a redacted compatibility payload instead of exposing
+`tasks-pending/*.md` as operator-facing briefs.
+
+Verification passed: `node --check server.js` and `node --test
+tests/operations-task-queue-visibility.test.js tests/task-decision-census.test.js
+tests/one-time-external-user-portal.test.js` with 40/40 passing. Local
+Playwright smoke rendered `/operations?view=tasks` on desktop `1366x900` and
+mobile `390x844`, saved screenshots and a JSON report under the active run
+evidence folder, and confirmed no Planned/Pending/Implementation Brief labels
+or `tasks-pending/*.md` paths were visible. A local API check of
+`/api/bna/pending-briefs` returned `briefs: 0`, `source_dir:
+internal_handoffs_redacted`, and canonical Queue Health routing.
+Post-closeout verification also passed active run validation with `done: 9`,
+`not_started: 10`, run JSON plus ledger JSONL parse with 1283 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no deploy, live database mutation, production database mutation,
+DNS/domain action, external send, provider mutation, push, PR, external-account
+write, visible `tasks-pending` operator lane, or browser-smoke session-write
+login path was used.
+
+## 2026-06-20T21:34:47+03:00 - One Time UI Responsive Acceptance
+
+Completed `REQ-20260619-410` for the local-only One Time beta hardening run.
+Ran local desktop/mobile Playwright acceptance across public home, One Time
+offer, Rabbi preview, parent, student, provider, and Operations task surfaces.
+Fixed the Rabbi mobile overflow regression in `public/rabbi.html` by
+constraining hero/banner widths and mobile text/action wrapping.
+
+Verification passed: local Playwright UI acceptance 14/14 route/viewport
+checks, mobile `/rabbi` overflow probe after the fix with document/body width
+390px on a 390px viewport, `npm run watchdog:ui --
+--base-url=http://127.0.0.1:8080` with zero findings, `node --check
+server.js`, and the focused UI/portal suite
+`tests/operations-task-queue-visibility.test.js
+tests/one-time-focused-landing.test.js
+tests/parent-student-polish-contract.test.js
+tests/provider-index-mvp.test.js tests/operations-pwa-login.test.js` with
+26/26 passing. Post-closeout validation passed with `done: 10`,
+`not_started: 9`, and work still remaining.
+
+Guardrails: no deploy, Railway mutation, production database mutation,
+DNS/domain action, live email, live payment, provider mutation, push, PR,
+external-account write, or Operations session-write login path was used. The
+temporary local browser-proof server was stopped after verification.
+
+## 2026-06-20T21:38:49+03:00 - One Time Announcements-First Community
+
+Completed `REQ-20260619-411` for the local-only One Time beta hardening run.
+Added a preview-only announcements-first community contract for One Time:
+announcements, reminders, and approved links are the primary community surface;
+participant replies are muted in the feed, routed to Rabbi/admin private
+review, and never returned as raw private text; student-to-student private chat
+stays disabled.
+
+Verification passed: `node --check
+src/platform/community/announcements-first.js`, `node --check
+src/platform/instances/one-time.js`, and the focused community/classroom suite
+`tests/one-time-announcements-first-community.test.js
+tests/one-time-community-moderation-workflow.test.js
+tests/one-time-classroom-calendar-community-bot.test.js
+tests/one-time-local-beta-product-contract.test.js` with 24/24 passing.
+Post-closeout validation passed with `done: 11`, `not_started: 8`, and work
+still remaining.
+
+Guardrails: no open forum, member thread creation, student-to-student private
+chat, raw private reply preview, member-visible reply publication, portal
+notification, email, Telegram, WhatsApp, Buffer/social post, database publish
+write, deploy, Railway mutation, production database mutation, push, PR, or
+external-account write was performed.
+
+## 2026-06-20T21:43:47+03:00 - One Time Progress Rewards Snapshot
+
+Completed `REQ-20260619-414` for the local-only One Time beta hardening run.
+Added a local One Time progress/rewards model with seed/test data for
+attendance minutes, course progress, milestones, parent-safe achievements, and
+neutral reward-review eligibility. The snapshot exposes student, parent,
+provider, and public readback views with student-only, linked-student, workspace
+student, and aggregate-only privacy boundaries.
+
+Verification passed: `node --check
+src/platform/progress/one-time-progress.js`, `node --check
+src/platform/instances/one-time.js`, and the focused progress/reward suite
+`tests/one-time-progress-rewards-local-beta.test.js
+tests/one-time-gamification-badge-audit.test.js
+tests/parent-progress-privacy.test.js tests/platform-core/platform-core-services.test.js
+tests/ws11-community-model-contract.test.js` with 25/25 passing. One Time
+instance/product regression coverage also passed 10/10. Post-closeout
+validation passed with `done: 12`, `not_started: 7`, and work still remaining.
+
+Guardrails: no attendance write, progress write, reward award, badge award,
+parent/student notification, prize, coupon, credit, payment credit, public
+individual leaderboard, private admin note readback, guardian contact readback,
+deploy, Railway mutation, production database mutation, push, PR, or
+external-account write was performed.
+
+## 2026-06-20T21:47:45+03:00 - One Time Startup Seed Reset
+
+Completed `REQ-20260619-418` for the local-only One Time beta hardening run.
+Added a dedicated local One Time beta CLI and package scripts for dry-run
+`plan`, `seed`, `smoke`, and `reset` workflows. The workflow reports
+dependency status, synthetic local auth guidance, production-like environment
+detection, and explicit no-production/no-external-write guardrails. Writable
+mode is limited to `.runtime/one-time-local-beta` manifests and only runs when
+`--write` is explicitly passed.
+
+Verification passed: `node --check scripts/one-time-local-beta.mjs`, `node
+--test tests/one-time-local-beta-startup-reset.test.js
+tests/one-time-local-beta-product-contract.test.js
+tests/one-time-progress-rewards-local-beta.test.js` with 15/15 passing, plus
+`npm run onetime:local:plan`, `npm run onetime:local:seed`, `npm run
+onetime:local:smoke`, and `npm run onetime:local:reset` in dry-run mode.
+Post-closeout validation passed with `done: 13`, `not_started: 6`, and work
+still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email, live payment, Zoom/Vimeo mutation, Telegram send, WhatsApp send,
+Buffer/social post, push, PR, external-account write, or hidden credential
+dependency was introduced.
+
+## 2026-06-20T21:53:05+03:00 - One Time Reliability Security Registry Audit
+
+Completed `REQ-20260619-419` for the local-only One Time beta hardening run.
+Registered the One Time public, member-login, regional alias, interest-intake,
+and API routes with explicit access, privacy, and no-external-write
+expectations. Added a local hardening audit that checks route/action registry
+coverage, required package watchdog scripts, migration safety, local beta file
+secret scans, no active GHL runtime, and local preview/performance guardrails.
+
+Verification passed: `node --check scripts/one-time-local-hardening-audit.mjs`,
+`node --test tests/one-time-local-hardening-audit.test.js
+tests/operations-task-queue-visibility.test.js
+tests/one-time-local-beta-startup-reset.test.js` with 12/12 passing, `npm run
+onetime:local:audit` with all 14 checks true, and `node
+scripts/one-time-local-hardening-audit.mjs --json --write-report`, which wrote
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/evidence/req419-local-hardening-audit.json`.
+Post-closeout validation passed with `done: 14`, `not_started: 5`, and work
+still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, provider mutation, push, PR, external-account
+write, active GHL runtime, secret commit, checkout creation, or access grant was
+performed.
+
+## 2026-06-20T21:59:19+03:00 - One Time Full Local Test Watchdog Gates
+
+Completed `REQ-20260619-420` for the local-only One Time beta hardening run.
+Full local automated gates passed: syntax checks for `server.js`,
+`scripts/one-time-local-beta.mjs`, and
+`scripts/one-time-local-hardening-audit.mjs`; full `npm test` passed 988/988;
+tracked secret audit passed across 3360 paths with 0 findings; One Time local
+audit passed all 14 checks; One Time local smoke passed all 8 checks with
+`write_performed: false`.
+
+The watchdog bundle initially surfaced stale provenance hygiene findings. Codex
+repaired them with
+`tasks-pending/2026-06-20-website-ramble-correction-audit.md`,
+`raw-input/RAW-20260618-002-operations-ui-audit-harness-redacted-pointer.md`,
+and `raw-input/RAW-20260617-020-telegram-row-redacted-pointer.md` without
+copying private raw message bodies into the repo. Final `npm run watchdog:all`
+passed with severity `ok` and zero findings across goal audit, links, actions,
+route security, raw-intake drift, content routing, and communications alerts.
+Browser-backed UI watchdog and visual baseline watchdog also passed with zero
+findings. Post-closeout validation passed with `done: 15`, `not_started: 4`,
+and work still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, provider mutation, push, PR, external-account
+write, or private raw body copy was performed. A temporary local server was
+started on port 8080 for local watchdog/browser proof only.
+
+## 2026-06-20T22:06:01+03:00 - One Time Browser Acceptance
+
+Completed `REQ-20260619-421` for the local-only One Time beta hardening run.
+Playwright browser acceptance now lives in
+`scripts/one-time-browser-acceptance.mjs` and passed 8 local journeys with
+screenshots and JSON proof: desktop/mobile One Time offer, Israel and UK
+aliases, interest form submission, member-login safe entry, Rabbi preview, and
+public calendar privacy.
+
+The browser run found and fixed a route mismatch: `/one-time/member-login` was
+registered as a member-login alias but served the public offer page. `server.js`
+now serves that alias through `public/rabbi-member.html`, and
+`tests/one-time-local-hardening-audit.test.js` includes a regression check.
+Verification passed: `node --check server.js`, focused route/privacy tests
+10/10, `node --check scripts/one-time-browser-acceptance.mjs`, and
+`node scripts/one-time-browser-acceptance.mjs` with `success: true` and
+`result_count: 8`. Post-closeout validation passed with `done: 16`,
+`not_started: 3`, and work still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, provider mutation, push, PR, or external-account
+write was performed. The interest form created only local first-party review
+lead data and returned no checkout, no send, no access grant, and no external
+write.
+
+## 2026-06-20T22:10:33+03:00 - One Time Synthetic Pilot
+
+Completed `REQ-20260619-422` for the local-only One Time beta hardening run.
+Added `scripts/one-time-synthetic-pilot.mjs`, `npm run onetime:local:pilot`,
+and `tests/one-time-synthetic-pilot.test.js`. The synthetic pilot composes the
+existing local contracts into one end-to-end scenario covering signup and
+enrollment, class ingestion, attendance, media library handoff, announcements,
+progress, rewards, Resend email mocks, Stripe payment mocks, and admin
+closeout.
+
+Verification passed: `node --check scripts/one-time-synthetic-pilot.mjs`,
+focused synthetic/local One Time suites 27/27, `npm run onetime:local:pilot`
+with 10/10 stages covered, no missing stages, and no write violations, and
+`node scripts/one-time-synthetic-pilot.mjs --json --write-report`, which wrote
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/evidence/req422-synthetic-pilot.json`.
+Post-closeout validation passed with `done: 17`, `not_started: 2`, and work
+still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, Zoom/Vimeo mutation, Drive permission write,
+member-library publish, access grant write, push, PR, or external-account write
+was performed. The temporary local server used for browser proof was stopped.
+
+## 2026-06-20T22:13:09+03:00 - One Time Release Gate Documentation
+
+Completed `REQ-20260619-423` for the local-only One Time beta hardening run.
+Added `docs/releases/2026-06-20-one-time-local-beta-release-gate.md` and
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/RELEASE-GATE.md`,
+and updated `DEPLOYMENT.md`. The gate documents current branch/head, local
+verification evidence, candidate release notes, commit/push/PR/deploy
+readiness, required operator decisions, and external release blockers.
+
+Verification passed by file inspection and run validation. The release gate
+records that no staging, commit, push, PR, Railway deploy, Railway doctor, live
+smoke, production database mutation, DNS change, live email, live payment,
+provider mutation, member-library publish, access grant, or external-account
+write was performed. Post-closeout validation passed with `done: 18`,
+`not_started: 1`, and work still remaining.
+
+## 2026-06-20T22:21:00+03:00 - One Time Final Local Closeout
+
+Completed `REQ-20260619-424` for the local-only One Time beta hardening run.
+All 19 requirements now have terminal `done` status and evidence, the execution
+run is marked locally inactive, and `FINAL-AUDIT.md`, `STATUS.md`,
+`EVIDENCE.md`, `TEST-RESULTS.md`, `NEXT-SESSION.md`, `RELEASE-GATE.md`, and
+`DEPLOYMENT.md` record the closed local state.
+
+Final gates passed: syntax checks for 5 core files, focused product route test
+7/7, full `npm test` 990/990, tracked secret audit with 3360 paths and 0
+findings, full watchdog bundle with zero findings, One Time local audit 14/14,
+synthetic pilot 10/10 with no write violations, and execution run validation
+with `done: 19` and `Work remains: no`.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, Zoom/Vimeo/Drive provider mutation,
+member-library publish, access grant write, git stage, commit, push, PR, or
+external-account write was performed. Future release actions require explicit
+operator approval.

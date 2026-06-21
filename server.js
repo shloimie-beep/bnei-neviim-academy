@@ -73535,18 +73535,19 @@ app.get('/api/bna/one-time/roadmap', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/pending-briefs', requireAdmin, (req, res) => {
   try {
-    const briefs = listPendingBriefs(req);
-    const lifecycle_counts = briefs.reduce((counts, brief) => {
-      const key = brief.lifecycle_stage || 'planned';
-      counts[key] = (counts[key] || 0) + 1;
-      return counts;
-    }, { planned: 0, implementing: 0, verified: 0, deployed: 0 });
-
     res.json({
       success: true,
-      briefs,
-      lifecycle_counts,
-      source_dir: 'tasks-pending',
+      briefs: [],
+      lifecycle_counts: { planned: 0, implementing: 0, verified: 0, deployed: 0 },
+      archived: true,
+      source_dir: 'internal_handoffs_redacted',
+      canonical_status_source: '/api/bna/ops/queue-health',
+      message: 'tasks-pending/*.md files are internal Codex handoffs and are not exposed as operator task lanes.',
+      guardrails: [
+        'no_tasks_pending_file_enumeration',
+        'no_pending_briefs_operator_lane',
+        'use_queue_health_for_agent_lifecycle',
+      ],
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -73565,6 +73566,8 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     item_type,
     task_kind,
     status_bucket,
+    task_view,
+    decision_view,
     assigned_to,
     waiting_on,
     decision_owner,
@@ -73626,6 +73629,45 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   if (/^(1|true|yes)$/i.test(String(stale_only || ''))) {
     outerWhere.push('is_stale = true');
   }
+  const normalizedTaskView = String(task_view || '').trim().toLowerCase();
+  const normalizedDecisionView = String(decision_view || '').trim().toLowerCase();
+  const ownerTextSql = `LOWER(COALESCE(assigned_to, '') || ' ' || COALESCE(decision_owner, '') || ' ' || COALESCE(waiting_on, ''))`;
+  const scopeTextSql = `LOWER(COALESCE(resolved_project_key, '') || ' ' || COALESCE(resolved_project_name, '') || ' ' || COALESCE(resolved_project_short_name, '') || ' ' || COALESCE(title, '') || ' ' || COALESCE(display_title, '') || ' ' || COALESCE(summary, '') || ' ' || COALESCE(notes, '') || ' ' || COALESCE(raw_message, '') || ' ' || COALESCE(original_raw_message, ''))`;
+  const archivedSql = `(COALESCE(stage, '') IN ('archive', 'archived') OR archived_at IS NOT NULL OR duplicate_archived_at IS NOT NULL OR decision_hidden_at IS NOT NULL)`;
+  const taskViewWhere = {
+    mine: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    my_tasks: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    one_time: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
+    one_time_tasks: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
+    codex_queue: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
+    codex_agent_work: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
+    blocked: `status_bucket = 'pending'`,
+    pending: `status_bucket = 'pending'`,
+    due_soon: `(status_bucket <> 'done' AND due_date IS NOT NULL AND due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days')`,
+    calendar: `(status_bucket <> 'done' AND (due_date IS NOT NULL OR planned_at IS NOT NULL))`,
+    schedule: `(status_bucket <> 'done' AND (due_date IS NOT NULL OR planned_at IS NOT NULL))`,
+    completed_activity: `status_bucket = 'done'`,
+    done_activity: `status_bucket = 'done'`,
+    completed: `status_bucket = 'done'`,
+    archived: archivedSql,
+    archive: archivedSql
+  };
+  if (normalizedTaskView && normalizedTaskView !== 'all' && taskViewWhere[normalizedTaskView]) {
+    outerWhere.push(taskViewWhere[normalizedTaskView]);
+  }
+  const decisionViewWhere = {
+    needs_my_decision: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
+    needs_rabbi: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(rabbi|scheller|sheller|provider)')`,
+    needs_rabbi_scheller: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(rabbi|scheller|sheller|provider)')`,
+    needs_external: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(external|credential|account|dns|domain|legal|billing|payment|railway|resend|vimeo|zoom|stripe|wapi|whapi|whatsapp)')`,
+    needs_external_owner: `(status_bucket = 'decisions' AND ${ownerTextSql} ~ '(external|credential|account|dns|domain|legal|billing|payment|railway|resend|vimeo|zoom|stripe|wapi|whapi|whatsapp)')`,
+    decided: `(status_bucket = 'done' OR COALESCE(decision_status, '') IN ('done', 'decided') OR COALESCE(decision_outcome, '') <> '')`,
+    superseded: `(COALESCE(decision_status, '') = 'stale' OR duplicate_of_task_id IS NOT NULL OR canonical_task_id IS NOT NULL)`,
+    archived: archivedSql
+  };
+  if (normalizedDecisionView && normalizedDecisionView !== 'all' && decisionViewWhere[normalizedDecisionView]) {
+    outerWhere.push(decisionViewWhere[normalizedDecisionView]);
+  }
   const limitParam = addParam(taskLimit);
 
   const query = `
@@ -73633,8 +73675,11 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
       SELECT
         t.*,
         p.project_key,
+        p.project_key AS resolved_project_key,
         p.name AS project_name,
-        p.short_name AS project_short_name
+        p.name AS resolved_project_name,
+        p.short_name AS project_short_name,
+        p.short_name AS resolved_project_short_name
       FROM bna_tasks t
       LEFT JOIN bna_projects p ON p.id = t.project_id
       WHERE ${where.join(' AND ')}
@@ -75543,7 +75588,7 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 });
@@ -75553,7 +75598,7 @@ app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'rabbi.html'));
 });
 
-app.get(['/rabbi-member', '/rabbi/member'], (req, res) => {
+app.get(['/rabbi-member', '/rabbi/member', '/one-time/member-login'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'rabbi-member.html'));
 });

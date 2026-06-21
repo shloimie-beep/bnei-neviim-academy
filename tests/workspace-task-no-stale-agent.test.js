@@ -6,10 +6,12 @@ const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 
 test('workspace task UI exposes primary lanes and owner filters', () => {
-  assert.match(operationsHtml, /const TASK_LANE_IDS = \['decisions', 'tasks', 'codex_queue', 'pending', 'schedule', 'done_activity'\]/);
-  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
+  assert.match(operationsHtml, /const TASK_LANE_IDS = TASK_SUBTABS\.map\(tab => tab\.id\)/);
+  assert.match(operationsHtml, /\{ id: 'mine', label: 'My Tasks' \}/);
+  assert.match(operationsHtml, /\{ id: 'one_time', label: 'One Time Tasks' \}/);
+  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex \/ Agent Work' \}/);
   assert.match(operationsHtml, /\{ id: 'pending', label: 'Blocked' \}/);
-  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done \/ Activity' \}/);
+  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Completed \/ Activity' \}/);
   assert.match(operationsHtml, /\{ id: 'assigned_shloimie', label: 'Me \/ Shloimie' \}/);
   assert.doesNotMatch(operationsHtml, /\{ id: 'agent_working', label: 'Agent Working' \}/);
   assert.doesNotMatch(operationsHtml, /\{ id: 'stale', label: 'Stale' \}/);

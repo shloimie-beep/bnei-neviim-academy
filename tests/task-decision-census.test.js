@@ -124,3 +124,100 @@ test('task decision census flags pending and decision records that lack actionab
   assert.ok(census.cleanup_plan.some((item) => item.action === 'add_blocker_owner_next_action_or_return_to_tasks'));
   assert.ok(census.cleanup_plan.some((item) => item.action === 'move_machine_work_to_codex_queue_or_create_decision'));
 });
+
+test('task decision census exposes required default views, card contract, and audit dimensions', async () => {
+  const {
+    buildTaskDecisionCensus,
+    TASK_DEFAULT_VIEWS,
+    DECISION_DEFAULT_VIEWS
+  } = await loadModule();
+  const census = buildTaskDecisionCensus({
+    source: 'fixture',
+    tasks: [
+      {
+        id: 30,
+        title: 'Create One Time member-library blocker Decision',
+        workspace_key: 'rabbi_sheller_provider',
+        project_key: 'one_time_mishnah_class',
+        source_id: 'RAW-1',
+        requirement_id: 'REQ-1',
+        assigned_to: 'Shloimie',
+        contact_id: 99,
+        student_id: 22,
+        provider_id: 7,
+        due_date: '2026-06-24',
+        created_at: '2026-06-21T08:00:00+03:00',
+        updated_at: '2026-06-21T09:00:00+03:00'
+      }
+    ]
+  });
+
+  assert.deepEqual(TASK_DEFAULT_VIEWS.map((view) => view.label), [
+    'My Tasks',
+    'One Time Tasks',
+    'Codex / Agent Work',
+    'Blocked',
+    'Due Soon',
+    'Calendar',
+    'Completed / Activity',
+    'Archived'
+  ]);
+  assert.deepEqual(DECISION_DEFAULT_VIEWS.map((view) => view.label), [
+    'Needs My Decision',
+    'Needs Rabbi Scheller',
+    'Needs External Owner',
+    'Decided',
+    'Superseded',
+    'Archived'
+  ]);
+  for (const dimension of [
+    'by_workspace',
+    'by_project',
+    'by_source',
+    'by_owner',
+    'by_status',
+    'by_requirement',
+    'by_agent_run',
+    'by_contact',
+    'by_student',
+    'by_provider',
+    'by_duplicate_fingerprint',
+    'by_age',
+    'by_last_activity'
+  ]) {
+    assert.ok(census.counts[dimension], `${dimension} should be present`);
+  }
+  assert.ok(census.card_contract.includes('latest meaningful activity'));
+  assert.equal(census.cleanup_behavior.mode, 'dry_run_only_no_production_mutation');
+  assert.equal(census.cleanup_behavior.no_private_parent_student_data_deleted, true);
+});
+
+test('task decision census uses a stable deterministic dedupe key from provenance and target fields', async () => {
+  const { deterministicTaskDedupeKey, buildTaskDecisionCensus } = await loadModule();
+  const base = {
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    source_id: 'RAW-20260619-1',
+    source_statement: 'Attach Vimeo URL to session',
+    action_key: 'attach_vimeo_video',
+    contact_id: 12,
+    requirement_id: 'REQ-20260619-306',
+    target_route: '/operations/content/library'
+  };
+  const first = { ...base, id: 41, title: 'Attach the Vimeo URL' };
+  const second = { ...base, id: 42, title: 'Please add this video to the member library now' };
+
+  assert.equal(deterministicTaskDedupeKey(first), deterministicTaskDedupeKey(second));
+
+  const census = buildTaskDecisionCensus({ source: 'fixture', tasks: [first, second] });
+  assert.equal(census.duplicate_groups.length, 1);
+  assert.deepEqual(census.duplicate_groups[0].stable_key_basis, [
+    'workspace',
+    'project',
+    'source_id_or_statement',
+    'canonical_action',
+    'related_entity',
+    'requirement_id',
+    'target_file_or_route'
+  ]);
+});

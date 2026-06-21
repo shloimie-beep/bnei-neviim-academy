@@ -1,22 +1,19 @@
 # Next Session
 
-Continue `REQ-20260621-501`: refresh the One Time master backlog
-reconciliation. Exact next command:
+Continue `REQ-20260619-303`: workspace users and roles. Exact next command:
 
 ```powershell
-npm run bna:run:resume
+npm run bna:run:next
 ```
 
-Then inspect and reconcile:
+Then implement Batch 4:
 
-- `ops/one-time-mishnah/master-backlog-reconciliation.md`
-- `ops/one-time-mishnah/master-backlog-reconciliation.json`
-- `ops/one-time-mishnah/next-master-backlog-input.md`
-- `ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/RECONCILIATION.md`
-- `ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json`
-- `tasks-pending/*`
-- `raw-input/*`
-- current requirements, tests, migrations, production-safe evidence, and open PR context
+- complete workspace membership model;
+- scope Rabbi Ellie Scheller to One Time only;
+- retain Shloimie platform super-admin and intentional workspace switching;
+- implement scoped Users screen and role/member management actions;
+- add negative authorization tests for cross-workspace users, tasks, Decisions,
+  messages, and recordings.
 
 Do not run external sends, billing, DNS, real Zoom meeting creation, real Vimeo
 upload/publication, hard deletes, or PR merge.
@@ -32,3 +29,16 @@ Exact next command:
 npm run bna:run:next
 ```
 <!-- batch-2:end -->
+
+<!-- batch-3:start -->
+## Batch 3 Handoff
+
+Production cleanup has already been applied through reversible task APIs:
+
+- 5 One Time records re-scoped into One Time.
+- 1 internal handoff card quarantined.
+- 139 non-private duplicate One Time pending fan-out records archived against a canonical task.
+- Final live census shows workspace isolation passed.
+
+Batch 3 is deployed and live-verified. Continue to Batch 4.
+<!-- batch-3:end -->

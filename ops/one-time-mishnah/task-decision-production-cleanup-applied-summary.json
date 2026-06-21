@@ -1,0 +1,1224 @@
+{
+  "generated_at": "2026-06-21T09:01:44.814Z",
+  "source": "live_api:/api/bna/tasks plus local cleanup console evidence",
+  "read_only_summary": true,
+  "apply_waves": [
+    {
+      "wave": 1,
+      "mode": "applied",
+      "planned": 144,
+      "applied": 144,
+      "failed": 0,
+      "action_counts": {
+        "reclassify_one_time_record": 4,
+        "quarantine_internal_handoff": 1,
+        "archive_duplicate_task": 139
+      }
+    },
+    {
+      "wave": 2,
+      "mode": "applied",
+      "planned": 1,
+      "applied": 1,
+      "failed": 0,
+      "action_counts": {
+        "reclassify_one_time_record": 1
+      }
+    }
+  ],
+  "total_applied": 145,
+  "observed_after_state": {
+    "duplicate_archive_rows": 139,
+    "internal_handoff_quarantine_rows": 1,
+    "reclassified_one_time_rows_observed": 5,
+    "workspace_isolation": {
+      "bna_records_in_one_time": 0,
+      "one_time_records_in_bna": 0,
+      "passed": true
+    },
+    "lane_counts": {
+      "decisions": 16,
+      "pending": 14,
+      "tasks": 406,
+      "calendar": 18,
+      "codex_queue": 6,
+      "done_activity": 404
+    },
+    "duplicate_groups_remaining": 12,
+    "violation_counts": {
+      "visible_title_not_distilled": 53,
+      "raw_prompt_title_visible": 8,
+      "unscoped_record": 29,
+      "orphaned_record": 29,
+      "no_owner_record": 199,
+      "internal_brief_visible_as_task": 12,
+      "repeated_parser_fan_out": 4
+    }
+  },
+  "rollback_handles": {
+    "reclassified_one_time_records": [
+      {
+        "task_id": 556,
+        "project_key": "one_time_mishnah_class",
+        "stage": "needs_decision",
+        "task_kind": "task"
+      },
+      {
+        "task_id": 921,
+        "project_key": "one_time_mishnah_class",
+        "stage": "assigned",
+        "task_kind": "agent_job"
+      },
+      {
+        "task_id": 892,
+        "project_key": "one_time_mishnah_class",
+        "stage": "assigned",
+        "task_kind": "task"
+      },
+      {
+        "task_id": 415,
+        "project_key": "one_time_mishnah_class",
+        "stage": "done",
+        "task_kind": "history"
+      },
+      {
+        "task_id": 1079,
+        "project_key": "one_time_mishnah_class",
+        "stage": "done",
+        "task_kind": "history"
+      }
+    ],
+    "quarantined_internal_handoffs": [
+      {
+        "task_id": 280,
+        "stage": "archive",
+        "task_kind": "history",
+        "project_key": "one_time_mishnah_class"
+      }
+    ],
+    "archived_duplicate_records": [
+      {
+        "task_id": 820,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 819,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 818,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 817,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 815,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 814,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 813,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 812,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 811,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 810,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 809,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 808,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 805,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 804,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 803,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 802,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 800,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 799,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 798,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 797,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 794,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 793,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 792,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 791,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 790,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 789,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 788,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 786,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 785,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 784,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 783,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 782,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 781,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 780,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 779,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 778,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 777,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 775,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 774,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 773,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 772,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 770,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 769,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 768,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 767,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 766,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 764,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 763,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 762,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 761,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 760,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 759,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 758,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 757,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 756,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 755,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 753,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 751,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 750,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 749,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 748,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 747,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 745,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 744,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 743,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 742,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 741,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 740,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 739,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 738,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 736,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 735,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 734,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 733,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 732,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 731,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 730,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 729,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 728,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 727,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 726,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 725,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 724,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 723,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 721,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 719,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 718,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 717,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 716,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 715,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 714,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 712,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 711,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 709,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 708,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 707,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 706,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 705,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 703,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 702,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 701,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 700,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 699,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 698,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 695,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 694,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 693,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 691,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 690,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 689,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 688,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 687,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 684,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 683,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 682,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 680,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 679,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 678,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 675,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 674,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 673,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 672,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 671,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 670,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 669,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 668,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 667,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 666,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 665,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 664,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 662,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 661,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 660,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 656,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 655,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 654,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 651,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 650,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      },
+      {
+        "task_id": 649,
+        "canonical_task_id": 822,
+        "duplicate_of_task_id": 822,
+        "stage": "archive",
+        "task_kind": "pending_access",
+        "project_key": "one_time_mishnah_class"
+      }
+    ]
+  },
+  "safety": {
+    "hard_delete_used": false,
+    "parent_student_payment_or_communication_records_mutated": false,
+    "reversible_fields_only": true,
+    "notes": [
+      "Duplicate archives can be rolled back by clearing archived_at, duplicate_archived_at, duplicate_of_task_id, canonical_task_id, and duplicate_reason for the listed duplicate task IDs.",
+      "One Time reclassifications can be rolled back by restoring the prior project scope for the listed task IDs if approved.",
+      "Internal handoff quarantine can be rolled back by restoring the prior stage/task_kind for the listed task ID if approved."
+    ]
+  }
+}

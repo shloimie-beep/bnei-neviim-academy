@@ -49,3 +49,36 @@
 - Production mutations: 0
 - External writes: 0
 <!-- batch-2:end -->
+
+<!-- batch-3:start -->
+## Batch 3 Evidence
+
+- Live Task/Decision production census:
+  `ops/one-time-mishnah/task-decision-production-census.md`
+- Live Task/Decision production census machine output:
+  `ops/one-time-mishnah/task-decision-production-census.json`
+- Reversible cleanup dry-run/apply report:
+  `ops/one-time-mishnah/task-decision-production-cleanup.md`
+- Reversible cleanup machine output:
+  `ops/one-time-mishnah/task-decision-production-cleanup.json`
+- Applied cleanup summary:
+  `ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md`
+- Applied cleanup summary machine output:
+  `ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json`
+
+Live cleanup applied through existing authenticated Task APIs:
+
+- Wave 1: 144 planned, 144 applied, 0 failed.
+- Wave 2: 1 planned, 1 applied, 0 failed.
+- Total applied: 145 reversible task-row actions.
+- Action counts: 5 One Time re-scopes, 1 internal handoff quarantine, 139 duplicate archives.
+- Hard deletes: 0.
+- Parent/student/payment/communication record mutations: 0.
+- Final isolation: 0 BNA records in One Time and 0 One Time records in BNA.
+- Deployed commit: `f8a2fd62`
+- Railway deployment: `89967278-38dc-49f3-a70d-4536c59f82f6`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md`
+- Focused Batch 3 live smoke:
+  `ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md`
+<!-- batch-3:end -->
