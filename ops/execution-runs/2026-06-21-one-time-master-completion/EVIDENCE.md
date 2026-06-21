@@ -691,3 +691,104 @@ Focused live smoke covered:
   recording read, transcript read, summary read, external send, portal publish,
   participant invite, or host-start URL exposure.
 <!-- batch-12:end -->
+
+<!-- batch-11-13:start -->
+## Batch 11/13 Evidence - Vimeo, Member Library, Recording, Transcript, And Publication Pipeline
+
+Requirement: `REQ-20260619-308`
+
+Status: done / deployed / verified live
+
+Implementation evidence:
+
+- Vimeo selected-provider/readiness/manual workflow/automated upload and
+  publication lifecycle helpers:
+  `src/lib/integrations/video-hosting.js`
+- One Time class package, asset, package-preview, member-preview,
+  approve-library, publish-library, rollback, library-smoke, and package
+  metadata routes: `server.js`
+- Operations Class Package Manager and Vimeo/recording readiness UI:
+  `public/operations.html`
+- Member library horizontal filters, grouping, metadata, assets, and local
+  watch-progress UI: `public/member-library.html`
+- Forward-only class-session metadata columns:
+  `railway-migration-2026-06-16-one-time-product-system.sql`
+- Vimeo direction and setup documentation:
+  `docs/integrations/VIMEO.md`,
+  `docs/integrations/onetime-vimeo-zoom-resend-readiness.md`
+- Focused live smoke script:
+  `scripts/smoke-one-time-vimeo-member-library-live.mjs`
+- Focused tests:
+  `tests/one-time-recording-vimeo-pipeline.test.js`,
+  `tests/one-time-member-library.test.js`
+
+Implemented behavior:
+
+- Vimeo is the recorded One Time video-hosting direction.
+- Manual Vimeo URL validation extracts and persists the Vimeo video ID.
+- Class packages persist Masechta, Perek, Mishnah range, class date, duration,
+  thumbnail, transcript state, description, summary, source-sheet draft, and
+  source assets.
+- Review, approval, publish, smoke/member visibility, rollback, and package
+  archive paths are real first-party actions.
+- Automated Vimeo upload readiness is visible but disabled until a user-level
+  token and account details are authorized.
+- Automated upload foundation models token/setup, idempotency, resumable upload,
+  progress, retry/failure, title/description/privacy/folder update, transcode
+  polling, thumbnail retrieval, playback/embed verification, final Vimeo ID
+  storage, and audit trail without enabling real upload.
+- Recording/publication lifecycle supports scheduled through archive states,
+  review queues, reprocessing/retry, correction, rejection, approval,
+  publication, unpublish, retention policy, and deletion gates.
+- Member library filters render horizontally and include grouping, duration,
+  progress, continue-watching, assets, empty/loading/error states, and mobile
+  behavior.
+
+Deployment and live evidence:
+
+- Implementation commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Pushed commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Deployed commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Railway deployment: `b2e4ce9b-658b-4713-92a3-431795a66808`
+- Railway doctor/poll: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+- Focused One Time Vimeo/member-library live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+
+Focused live smoke covered:
+
+- Authenticated video-hosting status/readiness readback with Vimeo selected,
+  manual fallback ready, automated API upload disabled, lifecycle present, and
+  no secret-like values exposed.
+- Temporary One Time class package creation with Vimeo URL, validated Vimeo ID,
+  Masechta/Perek/Mishnah metadata, duration, thumbnail, and approved transcript
+  state.
+- Source asset attachment, package-preview manual Vimeo readiness, member
+  preview, approval, publish to smoke-scoped library visibility/tier, rollback
+  of the library item, member-library smoke rollback, and archive of the
+  temporary class.
+- Operations content/library UI at 1440px and 390px without page-level
+  horizontal overflow.
+- Public member-library filter/grouping/progress UI at 1440px and 390px with
+  horizontal filter rail behavior.
+
+Cleanup and safety evidence:
+
+- Follow-up production API check found
+  `active_unarchived_codex_vimeo_smoke_classes: 0`.
+- No Vimeo upload, provider publish/unpublish/delete, OAuth exchange, email,
+  WhatsApp, payment, Zoom meeting, participant invite, real member access
+  grant, DNS, or external portal write was performed.
+
+Intermediate live-smoke failures recorded:
+
+- `ops/live-smokes/2026-06-21T13-21-13-527Z-one-time-vimeo-member-library-live-smoke.md`
+  failed because the smoke omitted the `smoke` tier when checking preview
+  visibility; the app correctly hid the smoke item until the smoke sent a
+  matching tier.
+- `ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md`
+  failed because the smoke targeted the legacy content section name instead of
+  `section=one_time_library`; the final smoke targeted the deployed panel and
+  passed.
+<!-- batch-11-13:end -->

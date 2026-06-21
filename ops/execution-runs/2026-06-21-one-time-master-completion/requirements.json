@@ -1729,7 +1729,7 @@
       "id": "REQ-20260619-308",
       "title": "Vimeo, member-library, recording, transcript, and publication pipeline",
       "expected_result": "Manual Vimeo member-library pipeline works now; automated upload waits on user token; recordings never publish directly from webhook.",
-      "status": "in_progress",
+      "status": "done",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0011"
@@ -1742,34 +1742,67 @@
       "priority": "P1",
       "batch_id": "batch-11-13",
       "depends_on": [
-        "REQ-20260619-307",
-        "REQ-20260621-910"
+        "REQ-20260619-307"
       ],
-      "implementation_status": "implementation_started",
+      "implementation_status": "verified_live",
       "can_continue_without_operator": true,
-      "next_action": "Implement manual Vimeo workflow, member-library filters/metadata, disabled automated upload readiness, and recording/publication lifecycle states without real uploads or external writes.",
+      "next_action": "Continue to the next unblocked requirement selected by the execution runner; automated Vimeo upload still requires the operator/user-level Vimeo authorization decision before real uploads.",
       "acceptance_criteria": [
         "manual Vimeo URL validation",
         "review/approve/publish/unpublish states",
         "upload feature flag disabled",
         "retention gates enforced"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "docs/integrations/VIMEO.md",
+        "docs/integrations/onetime-vimeo-zoom-resend-readiness.md",
+        "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-21-13-527Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/integrations/video-hosting.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-vimeo-member-library-live.mjs",
+        "node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js",
+        "node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-checkout-access.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node scripts/smoke-one-time-vimeo-member-library-live.mjs"
+      ],
       "implementation_files": [
-        "src/lib/integrations/vimeo.js",
         "src/lib/integrations/video-hosting.js",
         "server.js",
         "public/operations.html",
-        "tests/one-time-recording-vimeo-pipeline.test.js"
+        "public/member-library.html",
+        "railway-migration-2026-06-16-one-time-product-system.sql",
+        "docs/integrations/VIMEO.md",
+        "docs/integrations/onetime-vimeo-zoom-resend-readiness.md",
+        "scripts/smoke-one-time-vimeo-member-library-live.mjs",
+        "tests/one-time-recording-vimeo-pipeline.test.js",
+        "tests/one-time-member-library.test.js"
       ],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "implementation_commit": "37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92",
+      "pushed_commit": "37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Railway deployment b2e4ce9b-658b-4713-92a3-431795a66808 deployed commit 37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92 with status SUCCESS",
+        "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md"
+      ],
       "live_required": true,
-      "updated_at": "2026-06-21T16:35:00+03:00"
+      "updated_at": "2026-06-21T16:35:00+03:00",
+      "deployment_id": "b2e4ce9b-658b-4713-92a3-431795a66808",
+      "deployed_commit": "37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260619-309",

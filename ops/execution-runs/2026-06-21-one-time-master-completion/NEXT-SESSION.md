@@ -1,9 +1,11 @@
 # Next Session
 
-Batches 0-8, Batch 9/10, and Batch 12 are deployed and live-verified on PR #5.
-The execution runner selects `batch-11-13` / `REQ-20260619-308` as the next
-unblocked executable workstream: Vimeo, member-library, recording, transcript,
-and publication pipeline.
+Batches 0-8, Batch 9/10 base slice, Batch 9A, Batch 11/13, and Batch 12 are
+deployed and live-verified on PR #5. Batch 11/13 closed
+`REQ-20260619-308`; run the execution runner after this closeout commit is
+pushed and continue with the next unblocked open requirement it selects, such
+as `REQ-20260619-309` transcript privacy or `REQ-20260621-902` today's
+class-upload trace if its dependencies are satisfied.
 Exact next command:
 
 ```powershell
@@ -293,3 +295,47 @@ npm run bna:run:next
 Continue automatically with `REQ-20260621-902` / Batch 9B today's class-upload
 trace.
 <!-- batch-9A:end -->
+
+<!-- batch-11-13:start -->
+## Batch 11/13 Handoff
+
+Vimeo, member-library, recording, transcript, and publication pipeline is
+deployed and live-verified.
+
+- Requirement: `REQ-20260619-308`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Railway deployment:
+  `b2e4ce9b-658b-4713-92a3-431795a66808`
+- Key files:
+  `src/lib/integrations/video-hosting.js`, `server.js`,
+  `public/operations.html`, `public/member-library.html`,
+  `railway-migration-2026-06-16-one-time-product-system.sql`,
+  `docs/integrations/VIMEO.md`,
+  `docs/integrations/onetime-vimeo-zoom-resend-readiness.md`,
+  `tests/one-time-recording-vimeo-pipeline.test.js`,
+  `tests/one-time-member-library.test.js`,
+  `scripts/smoke-one-time-vimeo-member-library-live.mjs`
+- Focused Batch 11/13 tests: 25 passed, 0 failed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+- Focused One Time Vimeo/member-library live smoke:
+  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+- Guardrails: no Vimeo upload, provider publish/unpublish/delete, OAuth
+  exchange, email send, WhatsApp send, payment, Zoom meeting, participant
+  invite, real member access grant, DNS, or external portal write.
+
+Remaining external Vimeo account action:
+
+- Automated Vimeo upload remains disabled until an authenticated Vimeo user,
+  account owner, plan/quota, upload scope/capability, folder, privacy default,
+  allowed embed domains, callback URL, and user-level token are approved and
+  installed.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-11-13:end -->

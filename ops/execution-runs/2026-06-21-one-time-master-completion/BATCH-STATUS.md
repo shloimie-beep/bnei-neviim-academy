@@ -22,9 +22,9 @@
 | 9H | REQ-20260621-908 | not_started | Authenticated questions and support-ticket bot. |
 | 9I | REQ-20260621-909 | not_started | Test identities and mock data. |
 | 9J | REQ-20260621-910 | not_started | Agent Mode end-to-end acceptance. |
-| 11 | REQ-20260619-308 | in_progress | Vimeo and member library manual workflow, disabled automated-upload readiness, and recording/publication states. |
+| 11 | REQ-20260619-308 | done | Manual Vimeo member-library workflow, disabled automated-upload readiness, and recording/publication states deployed and live-smoked. |
 | 12 | REQ-20260619-307 | done | Zoom and attendance foundation deployed and live-smoked without creating meetings, registrants, attendance writes, recording reads, transcript reads, summary reads, sends, or portal publishing. |
-| 13 | REQ-20260619-308 | in_progress | Recording/transcript/publication pipeline is bundled with Batch 11 under the shared requirement. |
+| 13 | REQ-20260619-308 | done | Recording/transcript/publication lifecycle and retention gates bundled with Batch 11 under the shared requirement. |
 | 14 | REQ-20260619-309 | not_started | Transcript privacy. |
 | 15 | REQ-20260619-310 | not_started | Gamification. |
 | 16 | REQ-20260619-311 | not_started | Community. |

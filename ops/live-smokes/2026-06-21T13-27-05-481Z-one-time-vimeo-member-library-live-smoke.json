@@ -1,0 +1,133 @@
+{
+  "started_at": "2026-06-21T13:27:05.481Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 724,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "manual Vimeo API workflow",
+      "ok": true,
+      "duration_ms": 3378,
+      "data": {
+        "selected_provider": "vimeo",
+        "manual_ready": true,
+        "automated_upload_enabled": false,
+        "created_class_id": 453,
+        "published_item_id": 7,
+        "rolled_back": true,
+        "class_archived": true,
+        "smoke_visible_before": 1,
+        "smoke_visible_after": 0
+      }
+    },
+    {
+      "name": "operations content library ui 1440px",
+      "ok": true,
+      "duration_ms": 4884,
+      "data": {
+        "width": 1440,
+        "state": {
+          "has_readiness_panel": true,
+          "has_class_manager": true,
+          "has_manual_ready_copy": true,
+          "has_setup_fields": true,
+          "has_metadata_inputs": true,
+          "has_approval_phrase": true,
+          "page_overflow": false,
+          "client_width": 1440,
+          "scroll_width": 1440
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "operations content library ui 390px",
+      "ok": true,
+      "duration_ms": 4842,
+      "data": {
+        "width": 390,
+        "state": {
+          "has_readiness_panel": true,
+          "has_class_manager": true,
+          "has_manual_ready_copy": true,
+          "has_setup_fields": true,
+          "has_metadata_inputs": true,
+          "has_approval_phrase": true,
+          "page_overflow": false,
+          "client_width": 390,
+          "scroll_width": 390
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "member library filters ui 1440px",
+      "ok": true,
+      "duration_ms": 906,
+      "data": {
+        "width": 1440,
+        "state": {
+          "toolbar_visible": true,
+          "filters_horizontal": true,
+          "filter_scrolls": true,
+          "has_all_filters": true,
+          "has_grouping": true,
+          "has_progress": true,
+          "page_overflow": false,
+          "client_width": 1440,
+          "scroll_width": 1440
+        },
+        "console_errors": []
+      }
+    },
+    {
+      "name": "member library filters ui 390px",
+      "ok": true,
+      "duration_ms": 928,
+      "data": {
+        "width": 390,
+        "state": {
+          "toolbar_visible": true,
+          "filters_horizontal": true,
+          "filter_scrolls": true,
+          "has_all_filters": true,
+          "has_grouping": true,
+          "has_progress": true,
+          "page_overflow": false,
+          "client_width": 390,
+          "scroll_width": 390
+        },
+        "console_errors": []
+      }
+    }
+  ],
+  "summary": {
+    "vimeo_selected": true,
+    "manual_vimeo_ready": true,
+    "automated_upload_enabled": false,
+    "temporary_class_created": true,
+    "temporary_class_archived": true,
+    "temporary_item_published": true,
+    "temporary_item_rolled_back": true,
+    "member_library_smoke_rolled_back": true,
+    "operations_widths_checked": [
+      1440,
+      390
+    ],
+    "member_library_widths_checked": [
+      1440,
+      390
+    ]
+  }
+}

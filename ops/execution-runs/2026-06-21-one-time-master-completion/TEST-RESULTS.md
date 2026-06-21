@@ -449,3 +449,69 @@ Intermediate focused live-smoke failure recorded:
   treated as secret exposure. The passing rerun checks only secret-like field
   values and Zoom start-token patterns.
 <!-- batch-12:end -->
+
+<!-- batch-11-13:start -->
+## Batch 11/13 Test Results
+
+Recorded after manual Vimeo workflow, member-library filters/metadata,
+automated upload readiness, recording/publication lifecycle, Operations UI,
+member-library UI, and focused live-smoke script implementation:
+
+- PASS `node --check src/lib/integrations/video-hosting.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-one-time-vimeo-member-library-live.mjs`
+- PASS `node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js`
+- PASS `node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-checkout-access.test.js`
+
+Focused Batch 11/13 test result:
+
+- Tests: 25 passed, 0 failed.
+- Covered: Vimeo selected-provider decision, manual URL parsing, manual
+  workflow readiness, automated upload disabled feature flag, automated setup
+  checklist, publication lifecycle states, provider-publish guardrails,
+  member-library metadata fields, horizontal filters/grouping/progress UI,
+  Operations class-package controls, and existing One Time product/access
+  contracts.
+
+Closeout checks:
+
+- PASS `npm run bna:run:validate`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check` with line-ending warnings only in the main worktree
+- PASS clean detached deploy-worktree focused tests using `NODE_PATH` from the
+  main workspace
+- PASS clean detached deploy-worktree `node scripts/audit-secrets.mjs`
+- PASS clean detached deploy-worktree `git diff --check`
+- PASS `npm run railway:doctor` after Railway deployment
+  `b2e4ce9b-658b-4713-92a3-431795a66808`
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+- PASS `node scripts/smoke-one-time-vimeo-member-library-live.mjs`,
+  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+- PASS read-only production cleanup check:
+  `active_unarchived_codex_vimeo_smoke_classes: 0`
+
+Deployment-safety notes:
+
+- The deploy was run from a clean detached worktree at
+  `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`, because the main worktree
+  contained unrelated unstaged files that were not part of this batch.
+- The first clean-worktree focused test attempt failed only because the clean
+  deploy worktree had no local `node_modules`; rerun with the main workspace
+  `NODE_PATH` passed.
+- The first deploy command attempt failed before upload because the clean
+  worktree did not contain `.secrets`; rerun using the local keyholder Railway
+  token path succeeded.
+- The first standard app-smoke attempt failed before app access because the PR
+  worktree did not contain `OPS_USERNAME`/`OPS_PASSWORD`; rerun after loading
+  the local keyholder env file passed.
+
+Intermediate focused live-smoke failures recorded:
+
+- `ops/live-smokes/2026-06-21T13-21-13-527Z-one-time-vimeo-member-library-live-smoke.md`
+  failed because the smoke omitted the `smoke` tier in the member-preview
+  request; the application correctly kept the smoke item hidden.
+- `ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md`
+  failed because the smoke targeted the old content-section query instead of
+  the deployed `one_time_library` section.
+<!-- batch-11-13:end -->

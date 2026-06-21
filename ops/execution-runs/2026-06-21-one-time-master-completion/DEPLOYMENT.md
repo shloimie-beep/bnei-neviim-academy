@@ -228,3 +228,32 @@ Prior focused smoke-script failure during the same batch:
   exposure. The final smoke checks actual secret-like values and Zoom
   start-token patterns.
 
+## Batch 11/13
+
+- Deployment ID: `b2e4ce9b-658b-4713-92a3-431795a66808`
+- Deployed commit: `37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md`
+- Focused One Time Vimeo/member-library live smoke: PASS,
+  `ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md`
+
+Focused live smoke verified production video-hosting status/readiness with
+Vimeo selected, manual fallback ready, automated upload disabled, no
+secret-like values, temporary class package creation with Vimeo metadata,
+source asset attachment, package preview, member preview, approval,
+smoke-scoped publish, library rollback, member-library smoke rollback,
+temporary class archive, Operations rendering at 1440px and 390px, and public
+member-library filter/grouping/progress rendering at 1440px and 390px. No
+Vimeo upload, provider publish/unpublish/delete, OAuth exchange, email,
+WhatsApp, payment, Zoom meeting, participant invite, real member access grant,
+DNS, or external portal write was performed.
+
+Prior focused smoke-script failures during the same batch:
+
+- `ops/live-smokes/2026-06-21T13-21-13-527Z-one-time-vimeo-member-library-live-smoke.md`
+  failed because the smoke omitted the smoke-tier access context.
+- `ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md`
+  failed because the smoke targeted the legacy content section.
+

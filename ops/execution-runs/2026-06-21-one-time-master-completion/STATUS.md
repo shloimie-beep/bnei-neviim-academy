@@ -276,3 +276,47 @@ Vimeo, member-library, recording, transcript, and publication pipeline. Manual
 Vimeo mode must be usable now; automated upload remains disabled behind setup
 and authorization gates.
 <!-- batch-12:end -->
+
+<!-- batch-11-13:start -->
+## Batch 11/13 - Vimeo, Member Library, Recording, Transcript, And Publication Pipeline
+
+Status: done / deployed / verified live
+
+Vimeo is now recorded as the selected One Time video-hosting direction while
+manual Vimeo mode remains the usable production path. Operations can create or
+update class packages with a Vimeo URL, validated Vimeo ID, Masechta, Perek,
+Mishnah range, class date, duration, thumbnail, transcript state, source
+assets, review state, approval, publish, unpublish/rollback, and member-library
+visibility/tier controls.
+
+Automated Vimeo upload is implemented only as readiness and workflow
+foundation behind a disabled feature flag. The setup screen states the exact
+remaining external requirements: authenticated Vimeo user, account owner, plan,
+upload scope and capability, storage/quota, folder, privacy default, allowed
+embed domains, callback URL, token state, and last verification. No real Vimeo
+upload, provider publish/unpublish/delete, OAuth exchange, or external account
+write was performed.
+
+The member library now has horizontal filters for All, Recently Added, Continue
+Watching, Masechta, Perek, Review, and Completed, with Masechta/Perek grouping,
+class metadata, duration, assets, local continue-watching progress, empty
+states, loading states, and mobile-safe filter scrolling.
+
+The recording/publication pipeline now models the safe lifecycle from scheduled
+through recording/transcript/summary readiness, privacy review, Rabbi review,
+approval, Vimeo manual/automated upload states, playback verification,
+member-library publication, indexing, archive, retries, rejection, unpublish,
+retention checks, and deletion gates. Webhook-originated material is not
+published directly.
+
+Focused local verification passed. The implementation commit
+`37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92` was pushed, deployed to Railway
+deployment `b2e4ce9b-658b-4713-92a3-431795a66808`, and verified by standard
+plus focused live smokes. The focused live smoke created only a temporary
+smoke-scoped class package and smoke-scoped library item, then rolled back the
+library item and archived the temporary class. A follow-up production API check
+found zero unarchived `Codex Vimeo Smoke` classes.
+
+Next: run `npm run bna:run:next` after the closeout evidence commit is pushed
+and continue with the next unblocked requirement selected by the runner.
+<!-- batch-11-13:end -->
