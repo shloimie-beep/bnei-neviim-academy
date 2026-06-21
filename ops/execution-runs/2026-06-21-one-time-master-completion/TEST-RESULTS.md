@@ -247,3 +247,52 @@ Intermediate failure recorded:
   live smoke passed without changing runtime behavior or weakening the
   no-send/raw-payload checks.
 <!-- batch-7:end -->
+
+<!-- batch-8:start -->
+## Batch 8 Test Results
+
+Recorded after Email/Resend readiness UX, webhook verification/storage, sender
+domain Decision, recipient-scope guard, and no-send controls:
+
+- PASS `node --check src/lib/integrations/resend-client.js`
+- PASS `node --check server.js`
+- PASS `node --check scripts/smoke-email-resend-ux-live.mjs`
+- PASS `node --check scripts/provider-env-railway-propagate.mjs`
+- PASS `node --test tests/resend-client.test.js tests/communications-integrations-contract.test.js tests/one-time-communications-workspace.test.js tests/provider-env-railway-propagate.test.js`
+- PASS `npm run bna:run:validate`
+- PASS `node scripts/audit-secrets.mjs`
+- PASS `git diff --check`
+- PASS Railway deployment poll after Railway deployment
+  `a8acf1b4-be28-4f51-b4db-2085a01cc02d`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`.
+- PASS focused Email/Resend UX live smoke via
+  `npm run app:smoke:email-resend-ux`,
+  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`.
+
+Focused Email/Resend test result:
+
+- Tests: 19 passed, 0 failed.
+- Covered: Resend readiness, no-send approval gate, webhook Svix signature
+  verification, safe mocked webhook storage, domain/status/event readback
+  contracts, Operations Email/Resend UI markers, provider/sender/domain
+  separation, recipient-scope guard, and Resend API-key propagation independent
+  from sender/domain readiness.
+
+Focused live smoke confirmed:
+
+- Production health and Operations login succeeded.
+- Resend health response separates provider, sender, domain, and send gates.
+- Resend domain endpoint is readable or safely blocked without exposing secrets.
+- Resend webhook events endpoint hides raw payload by default.
+- Communications > Email and Communications > Settings render at 1024px and
+  390px with no page overflow.
+- Email send controls remain disabled unless exact readiness conditions pass.
+
+Intermediate failure recorded:
+
+- `ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md`
+  failed on the Communications > Settings integration-panel selector. The live
+  app still had a placeholder there, so the subtab was wired to the real
+  communications integration panel and the final focused smoke passed.
+<!-- batch-8:end -->

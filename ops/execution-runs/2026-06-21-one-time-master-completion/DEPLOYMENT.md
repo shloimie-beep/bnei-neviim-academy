@@ -130,3 +130,28 @@ Prior focused smoke-script failures during the same batch:
 - `ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md`
   repeated the visible-state wait issue before the attached-state rerun passed.
 
+## Batch 8
+
+- Deployment ID: `a8acf1b4-be28-4f51-b4db-2085a01cc02d`
+- Deployed commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`
+- Focused Email/Resend UX live smoke: PASS,
+  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+
+Focused live smoke verified production health, Resend provider/sender/domain
+readiness separation, domain endpoint safe readback/blocker behavior, webhook
+event readback with raw payload hidden by default, Communications > Email and
+Communications > Settings rendering at 1024px and 390px, disabled send
+controls, and no page-level horizontal overflow. No email send, DNS
+verification/mutation, provider write, or external write was performed.
+
+Prior focused smoke failure during the same batch:
+
+- `ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md`
+  failed because Communications > Settings still rendered the placeholder lane.
+  The deployed UI was corrected to render the real communications integration
+  panel there, then redeployed and smoke-tested successfully.
+

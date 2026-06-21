@@ -50,7 +50,7 @@ test('One Time email lane exposes draft, readiness, recipient, and approval gate
   assert.match(operations, /id="commEmailHtml"/);
   assert.match(operations, /name="html"/);
   assert.match(operations, /formValue\('html', 'commEmailHtml'\)/);
-  assert.match(operations, /form\?\.querySelector\?\(\`\[name="\$\{name\}"\]\`\)/);
+  assert.match(operations, /querySelector\?\.\(`\[name="\$\{name\}"\]`\)/);
   assert.match(operations, /data-email-send-gates/);
   assert.match(operations, /function emailDraftCanRequestSend/);
   assert.match(operations, /Send locked/);

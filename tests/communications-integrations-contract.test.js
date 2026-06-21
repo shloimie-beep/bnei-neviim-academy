@@ -52,6 +52,10 @@ test('Operations UI renders Communications integrations without exposing secret 
   assert.match(operations, /Provider connection/);
   assert.match(operations, /Sender identity/);
   assert.match(operations, /Send locked/);
+  assert.match(operations, /id="commIntegrationEmailHtml"/);
+  assert.match(operations, /name="html"/);
+  assert.equal((operations.match(/id="commEmailTo"/g) || []).length, 1);
+  assert.equal((operations.match(/id="commEmailText"/g) || []).length, 1);
   assert.doesNotMatch(operations, /BUFFER_API_KEY/);
   assert.doesNotMatch(operations, /RESEND_API_KEY/);
 });

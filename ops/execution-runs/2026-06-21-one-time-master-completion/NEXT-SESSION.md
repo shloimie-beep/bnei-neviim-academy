@@ -1,7 +1,8 @@
 # Next Session
 
-Continue `REQ-20260621-504`: Email and Resend UX. Batch 7 WhatsApp UX is
-deployed and live-verified. Start Batch 8 without live email sends.
+Continue `REQ-20260619-306`: product, schedule, booking, portals, and
+billing/access foundations. Batch 8 Email/Resend UX is deployed and
+live-verified without live email sends.
 Exact next command:
 
 ```powershell
@@ -134,3 +135,39 @@ npm run bna:run:next
 Continue automatically with Batch 8 / `REQ-20260621-504` Email and Resend UX.
 Do not send live email.
 <!-- batch-7:end -->
+
+<!-- batch-8:start -->
+## Batch 8 Handoff
+
+Email and Resend UX is deployed and live-verified.
+
+- Requirement: `REQ-20260621-504`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `fdd39bf327356675f8006bcc4ce04425061ef57e`
+- Railway deployment:
+  `a8acf1b4-be28-4f51-b4db-2085a01cc02d`
+- Key files:
+  `public/operations.html`, `server.js`,
+  `src/lib/integrations/resend-client.js`,
+  `scripts/provider-env-railway-propagate.mjs`,
+  `scripts/smoke-email-resend-ux-live.mjs`,
+  `docs/integrations/RESEND.md`
+- Sender/domain Decision:
+  `ops/one-time-mishnah/resend-sender-domain-decision.md`
+- Focused Email/Resend tests: 19 passed, 0 failed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`
+- Focused Email/Resend UX live smoke:
+  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+
+Continue automatically with Batch 9/10 / `REQ-20260619-306` product,
+schedule, booking, portals, and billing/access foundations. Do not create live
+charges, payment links, access grants, bulk emails, or external account writes.
+<!-- batch-8:end -->

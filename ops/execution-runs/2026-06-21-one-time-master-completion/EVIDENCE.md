@@ -356,3 +356,84 @@ Intermediate focused live-smoke failures recorded:
   repeated the same visible-state wait issue before the attached-state smoke
   rerun passed.
 <!-- batch-7:end -->
+
+<!-- batch-8:start -->
+## Batch 8 Evidence - Email and Resend UX
+
+Requirement: `REQ-20260621-504`
+
+Status: done / deployed / verified live
+
+Implementation evidence:
+
+- Operations Email/Resend UI, disabled send controls, webhook-event readback,
+  and Communications > Settings integration panel:
+  `public/operations.html`
+- Resend health, domain/status/events, webhook, draft, send, DNS, and recipient
+  scope server paths:
+  `server.js`
+- Resend client readiness, send approval, Svix webhook verification, safe event
+  summary storage, and mocked webhook processing:
+  `src/lib/integrations/resend-client.js`
+- Resend API-key versus sender/domain Railway propagation split:
+  `scripts/provider-env-railway-propagate.mjs`
+- Focused live smoke script:
+  `scripts/smoke-email-resend-ux-live.mjs`
+- Integration handoff:
+  `docs/integrations/RESEND.md`
+- Sender/domain Decision:
+  `ops/one-time-mishnah/resend-sender-domain-decision.md`
+- Focused tests:
+  `tests/resend-client.test.js`,
+  `tests/communications-integrations-contract.test.js`,
+  `tests/one-time-communications-workspace.test.js`, and
+  `tests/provider-env-railway-propagate.test.js`
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md`
+- Focused Email/Resend UX live smoke:
+  `ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md`
+
+Deployment and live evidence:
+
+- Implementation commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
+- Pushed commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
+- Deployed commit: `fdd39bf327356675f8006bcc4ce04425061ef57e`
+- Railway deployment: `a8acf1b4-be28-4f51-b4db-2085a01cc02d`
+- Railway doctor/poll: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS
+- Focused Email/Resend UX live smoke: PASS
+
+Implemented behavior:
+
+- Email operations are usable as local drafts/readbacks without live sends.
+- Provider API readiness is separate from sender identity and domain readiness.
+- Domain list/status endpoints are readable or return safe setup blockers.
+- Webhook events require Resend Svix signatures and raw request body
+  verification when the signing secret is configured.
+- Webhook processing stores safe event summaries, not raw email bodies, and the
+  readback endpoint hides payload by default.
+- Recipient draft creation rejects known cross-workspace/project recipient
+  conflicts.
+- `DEC-RESEND-SENDER-DOMAIN-IDENTITY` exists for the sender/domain/from/reply-to
+  decision.
+- Resend API-key propagation is independent from sender/domain propagation.
+
+Live smoke covered:
+
+- Production health and Operations login.
+- Resend readiness shape, including configured, connected, sender, domain,
+  domain verification, and send gate booleans.
+- Resend domain endpoint safe readback/blocker behavior.
+- Resend webhook events endpoint with raw payload hidden by default.
+- Live Communications > Email rendering at 1024px and 390px.
+- Communications > Settings Resend panel rendering at 1024px and 390px.
+- Disabled email send controls and no page-level horizontal overflow.
+
+Intermediate focused live-smoke failure recorded:
+
+- `ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md`
+  failed because the smoke expected the communications integration panel in
+  Communications > Settings while the live app still rendered a placeholder
+  there. The UI was corrected to render the real panel from that subtab, then
+  redeployed and rerun successfully.
+<!-- batch-8:end -->

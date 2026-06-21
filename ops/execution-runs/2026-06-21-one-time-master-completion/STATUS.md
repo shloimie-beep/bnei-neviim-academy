@@ -135,3 +135,32 @@ performed.
 
 Next unblocked batch: `REQ-20260621-504` Email and Resend UX.
 <!-- batch-7:end -->
+
+<!-- batch-8:start -->
+## Batch 8 - Email and Resend UX
+
+Status: done / deployed / verified live
+
+Operations Communications > Email and Communications > Settings now expose
+first-party Email/Resend readiness without sending email. Provider API
+readiness, sender identity, domain readiness, recipient/workspace scope, DNS
+tasks, webhook event readback, and the exact `SEND_RESEND_EMAIL` confirmation
+gate are separated in the UI. The visible send controls remain disabled unless
+the draft is reviewed, scoped, send-ready, and explicitly confirmed.
+
+The Resend webhook route now uses raw-body Svix-header verification, stores a
+safe first-party event summary in `bna_resend_webhook_events`, updates local
+email communication/email-log rows when message IDs match, and keeps raw
+provider payloads hidden by default. Resend API-key propagation is separated
+from sender/domain readiness so a key can be installed without inventing a
+sender domain.
+
+Focused local verification passed. The safe app-visible changes were pushed at
+`fdd39bf327356675f8006bcc4ce04425061ef57e`, deployed to Railway deployment
+`a8acf1b4-be28-4f51-b4db-2085a01cc02d`, and verified by standard plus focused
+Email/Resend UX live smokes. No email send, DNS verification/mutation, provider
+write, or external write was performed.
+
+Next unblocked batch: `REQ-20260619-306` product, schedule, booking, portals,
+and billing/access foundations.
+<!-- batch-8:end -->

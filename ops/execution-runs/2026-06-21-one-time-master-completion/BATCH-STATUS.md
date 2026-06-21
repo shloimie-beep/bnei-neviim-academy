@@ -10,7 +10,7 @@
 | 5 | REQ-20260621-502 | done | Visible action coverage deployed and live-smoked. |
 | 6 | REQ-20260619-304 | done | Operations UI/design correction deployed and live-smoked. |
 | 7 | REQ-20260621-503 | done | WhatsApp UX deployed and live-smoked without sends or external writes. |
-| 8 | REQ-20260621-504 | not_started | Email and Resend UX. |
+| 8 | REQ-20260621-504 | done | Email and Resend UX deployed and live-smoked without sends. |
 | 9 | REQ-20260619-306 | not_started | Product, schedule, booking, portals. |
 | 11 | REQ-20260619-308 | not_started | Vimeo and member library. |
 | 12 | REQ-20260619-307 | not_started | Zoom and attendance. |
