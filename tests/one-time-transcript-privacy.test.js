@@ -6,6 +6,7 @@ const transcriptPrivacy = require('../src/lib/bna/transcript-privacy');
 
 const server = fs.readFileSync('server.js', 'utf8');
 const operations = fs.readFileSync('public/operations.html', 'utf8');
+const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
 const publicHelperRetrieval = fs.readFileSync('src/lib/bna/public-helper-retrieval.js', 'utf8');
 
@@ -28,6 +29,7 @@ const sampleSegments = [
     review_state: 'approved',
     privacy_class: 'student_private',
     student_id: 7,
+    enrollment_id: 77,
     match_method: 'roster_email',
     match_confidence: 0.94,
   },
@@ -37,8 +39,22 @@ const sampleSegments = [
     review_state: 'rabbi_approved',
     privacy_class: 'parent_visible',
     student_id: 7,
+    enrollment_id: 77,
     match_method: 'manual_review',
     match_confidence: 1,
+    reviewed_feedback: 'Reviewed Rabbi feedback card.',
+  },
+  {
+    segment_ref: 'guessed-student-eight',
+    text: 'Voice guessed student eight content.',
+    review_state: 'approved',
+    privacy_class: 'student_private',
+    student_id: 8,
+    enrollment_id: 88,
+    speaker_label: 'Maybe student eight',
+    speaker_confidence: 0.99,
+    match_method: 'guessed_speaker_label',
+    match_confidence: 0.99,
   },
   {
     segment_ref: 'staff-private',
@@ -70,6 +86,8 @@ test('transcript privacy policy filters segments by audience without returning t
   assert.equal(studentEight.find((segment) => segment.segment_ref === 'student-seven-private').allowed, false);
   assert.equal(parentSeven.find((segment) => segment.segment_ref === 'parent-seven-visible').allowed, true);
   assert.equal(parentSeven.find((segment) => segment.segment_ref === 'student-seven-private').allowed, false);
+  assert.equal(studentEight.find((segment) => segment.segment_ref === 'guessed-student-eight').allowed, false);
+  assert.equal(studentEight.find((segment) => segment.segment_ref === 'guessed-student-eight').reason, 'guessed_speaker_identity_not_student_data');
   assert.equal(staff.find((segment) => segment.segment_ref === 'staff-private').allowed, true);
   assert.equal(staff.find((segment) => segment.segment_ref === 'raw-needs-review').allowed, true);
   assert.equal(staff.find((segment) => segment.segment_ref === 'excluded-segment').allowed, false);
@@ -79,6 +97,25 @@ test('transcript privacy policy filters segments by audience without returning t
   });
   assert.doesNotMatch(JSON.stringify(studentSeven), /Student seven privately asked/);
   assert.doesNotMatch(JSON.stringify(staff), /Staff-only note/);
+  assert.doesNotMatch(JSON.stringify(studentEight), /Voice guessed student eight content/);
+});
+
+test('release policy requires enrollment context and blocks guessed speaker identity', () => {
+  const policy = transcriptPrivacy.buildTranscriptReleasePolicy({ segments: sampleSegments });
+  const guessed = policy.segments.find((segment) => segment.segment_ref === 'guessed-student-eight');
+  const privateSeven = policy.segments.find((segment) => segment.segment_ref === 'student-seven-private');
+  const parentSeven = policy.segments.find((segment) => segment.segment_ref === 'parent-seven-visible');
+
+  assert.equal(policy.requirement_id, 'REQ-20260619-309');
+  assert.equal(policy.match_confidence_threshold, 0.92);
+  assert.equal(policy.raw_text_returned, false);
+  assert.equal(policy.transcript_body_returned, false);
+  assert.equal(policy.summary.guessed_speaker_blocks, 1);
+  assert.equal(guessed.can_map_to_student_record, false);
+  assert.equal(guessed.manual_review_required, true);
+  assert.ok(guessed.review_reasons.includes('guessed_speaker_identity_not_student_data'));
+  assert.equal(privateSeven.can_map_to_student_record, true);
+  assert.equal(parentSeven.can_expose_to_parent, true);
 });
 
 test('knowledge retrieval policy blocks raw dumps and cross-student leakage', () => {
@@ -113,11 +150,12 @@ test('transcript privacy readiness covers REQ-20260619-309 sections and gates', 
   });
 
   assert.equal(readiness.requirement_id, 'REQ-20260619-309');
-  assert.equal(readiness.status, 'needs_operator_decision');
+  assert.equal(readiness.status, 'implemented_read_only');
   assert.equal(readiness.preview_only, true);
   assert.equal(readiness.external_write_performed, false);
   assert.equal(readiness.production_mutation_performed, false);
   assert.equal(Object.values(readiness.gates).every((value) => value === false), true);
+  assert.equal(readiness.gates.guessed_speaker_to_student_record_enabled, false);
   assert.deepEqual(
     readiness.sections.map((section) => section.key),
     [
@@ -132,11 +170,13 @@ test('transcript privacy readiness covers REQ-20260619-309 sections and gates', 
   );
   assert.equal(readiness.summary.classes_seen, 1);
   assert.equal(readiness.summary.segments_seen, sampleSegments.length);
-  assert.equal(readiness.summary.privacy_counts.student_private, 1);
+  assert.equal(readiness.summary.privacy_counts.student_private, 2);
   assert.equal(readiness.summary.privacy_counts.parent_visible, 1);
   assert.equal(readiness.summary.needs_review_segments, 1);
+  assert.equal(readiness.summary.guessed_speaker_blocks, 1);
   assert.equal(readiness.retrieval_examples.public.allowed_segments, 1);
-  assert.match(readiness.blockers.join(' '), /Production public privacy smoke/);
+  assert.equal(readiness.blockers.length, 0);
+  assert.match(readiness.guardrails.join(' '), /Speaker labels and voice guesses are never enough/);
   assert.doesNotMatch(JSON.stringify(readiness), /Student seven privately asked/);
 });
 
@@ -148,6 +188,11 @@ test('server exposes protected transcript privacy readiness while member-safe cl
     "routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET'",
     "transcript_text: memberSafe ? '' : session.transcript_text",
     "transcript_notes: memberSafe ? '' : session.transcript_notes",
+    "transcript_segments: memberSafe ? [] : session.transcript_segments",
+    "transcript_review_state TEXT DEFAULT 'needs_review'",
+    "transcript_segments JSONB DEFAULT '[]'",
+    "transcript_release_audit JSONB DEFAULT '{}'",
+    'transcript_body_returned: false',
   ].forEach((snippet) => assert.ok(server.includes(snippet), snippet));
 });
 
@@ -156,8 +201,10 @@ test('Operations One Time Library shows no-write transcript privacy readiness', 
   assert.match(operations, /data-one-time-transcript-privacy-readiness/);
   assert.match(operations, /Transcript Privacy \/ Knowledge Scope/);
   assert.match(operations, /REQ-20260619-309/);
-  assert.match(operations, /No raw unreviewed transcript, staff-private note, student-private segment, cross-student question\/feedback, or public helper raw transcript dump is exposed by this panel/);
+  assert.match(operations, /guessed speaker identity/);
+  assert.match(operations, /Live smoke ready/);
   assert.match(operations, /Student and parent views can only resolve their own approved private segments/);
+  assert.equal(packageJson.scripts['app:smoke:one-time-transcript-privacy'], 'node scripts/smoke-one-time-transcript-privacy-live.mjs');
 });
 
 test('route registry and public helper retrieval keep transcript privacy scoped', () => {
@@ -168,6 +215,7 @@ test('route registry and public helper retrieval keep transcript privacy scoped'
   assert.equal(row.public_allowed, false);
   assert.equal(row.privacy_risk, 'critical');
   assert.match(row.security_expectation, /no raw transcript body/i);
+  assert.match(row.security_expectation, /guessed speaker identity cannot become student data/i);
   assert.match(row.security_expectation, /cross-student\/private retrieval remains blocked/i);
   assert.match(publicHelperRetrieval, /SAFE_TRANSCRIPT_STATUSES/);
   assert.match(publicHelperRetrieval, /bounded retrieval, not exhaustive transcript training/);

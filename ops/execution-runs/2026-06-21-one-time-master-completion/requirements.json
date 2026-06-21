@@ -2136,7 +2136,7 @@
       "id": "REQ-20260619-309",
       "title": "Transcript privacy",
       "expected_result": "Transcript content cannot expose one child to another and raw guessed speaker identity is never treated as reviewed student data.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0013"
@@ -2151,9 +2151,9 @@
       "depends_on": [
         "REQ-20260619-308"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "next_action": "Complete transcript versioning, visibility classes, speaker confidence, matching/review rules, and tests.",
+      "next_action": "Implement transcript release policy, no-guessed-speaker student matching, storage fields, Operations readiness, focused tests, and read-only live smoke.",
       "acceptance_criteria": [
         "confidence thresholds enforced",
         "manual review for uncertain mapping",
@@ -2172,7 +2172,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T19:22:00+03:00"
     },
     {
       "id": "REQ-20260619-310",

@@ -25757,6 +25757,8 @@
             const transcriptSources = sources.filter(item => String(item.transcript_text || item.transcript || '').trim());
             const normalizedSources = sources.filter(item => String(item.transcript_notes || item.summary || item.normalized_text || '').trim());
             const approvedSources = sources.filter(item => approvedStates.includes(normalizeState(item.transcript_status || item.package_status || item.review_state)));
+            const segmentList = sources.flatMap(item => Array.isArray(item.transcript_segments) ? item.transcript_segments : []);
+            const guessedSpeakerBlocks = segmentList.filter(segment => ['speaker_label', 'guessed_speaker_label', 'voice_guess', 'llm_guess', 'name_mentioned'].includes(normalizeState(segment.match_method || segment.matchMethod))).length;
             const privacyCounts = privacyClasses.reduce((acc, key) => {
                 acc[key] = sources.filter(item => normalizeState(item.privacy_class || item.transcript_privacy_class || '') === key).length;
                 return acc;
@@ -25774,16 +25776,17 @@
                     normalizedSignals: normalizedSources.length,
                     approvedSignals: approvedSources.length,
                     reviewNeeded,
+                    guessedSpeakerBlocks,
                     privacyCounts,
                 },
                 sections: [
                     ['Transcript versions', 'Local contract', 'Raw, normalized, corrected, and Rabbi-approved versions are tracked as states; raw bodies are not rendered here.'],
-                    ['Segments, speakers, confidence', 'Local contract', 'Timestamped segment, speaker label, speaker confidence, student match, and match confidence fields are modeled for review.'],
+                    ['Segments, speakers, confidence', 'Implemented', 'Timestamped segment, speaker label, speaker confidence, match method, student match, and match confidence fields are modeled for review.'],
                     ['Privacy classes', 'Local contract', 'provider_general, cohort_general, student_private, parent_visible, staff_private, excluded, and needs_review are explicit classes.'],
-                    ['Student matching and review', reviewNeeded ? 'Needs review' : 'Review ready', 'Uncertain student matches require enrollment context, confidence thresholds, and manual review before retrieval.'],
+                    ['Student matching and review', reviewNeeded || guessedSpeakerBlocks ? 'Needs review' : 'Review ready', 'Uncertain student matches require enrollment context, accepted match method, confidence threshold, and manual review; guessed speaker labels are never student data.'],
                     ['Retrieval boundaries', 'Preview ready', 'Student and parent views can only resolve their own approved private segments; cross-student retrieval stays blocked.'],
                     ['Public helper guardrails', 'Preview ready', 'Public helper context can use only reviewed safe snippets, never raw unreviewed transcript dumps.'],
-                    ['Audit and release', 'Blocked', 'Deploy, production public privacy smoke, and live retrieval readback require explicit operator approval.'],
+                    ['Audit and release', 'Live smoke ready', 'Read-only production smoke verifies no raw body, no guessed student mapping, and no cross-student retrieval without external writes.'],
                 ],
             };
         }
@@ -25794,12 +25797,13 @@
                 <section class="one-time-approval-packet" data-one-time-transcript-privacy-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time transcript privacy readiness">
                     <strong>Transcript Privacy / Knowledge Scope</strong>
                     <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
-                    <p>No raw unreviewed transcript, staff-private note, student-private segment, cross-student question/feedback, or public helper raw transcript dump is exposed by this panel.</p>
+                    <p>No raw unreviewed transcript, staff-private note, student-private segment, guessed speaker identity, cross-student question/feedback, or public helper raw transcript dump is exposed by this panel.</p>
                     <div class="classroom-board-metrics">
                         ${renderClassroomMetric(state.summary.sources, 'Sources')}
                         ${renderClassroomMetric(state.summary.rawTranscriptSignals, 'Transcript refs')}
                         ${renderClassroomMetric(state.summary.approvedSignals, 'Approved')}
                         ${renderClassroomMetric(state.summary.reviewNeeded, 'Need review')}
+                        ${renderClassroomMetric(state.summary.guessedSpeakerBlocks, 'Guess blocks')}
                     </div>
                     <div class="content-topic-row" aria-label="Transcript privacy classes">
                         ${Object.entries(state.summary.privacyCounts).map(([key, value]) => `

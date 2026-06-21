@@ -129,6 +129,8 @@ const {
 } = require('./src/lib/bna/public-helper-retrieval');
 const {
   buildTranscriptPrivacyReadiness,
+  normalizeTranscriptPrivacyClass,
+  normalizeTranscriptReviewState,
 } = require('./src/lib/bna/transcript-privacy');
 const {
   buildCommunityModerationReadiness,
@@ -13930,6 +13932,12 @@ ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS mishnah_range TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_status TEXT DEFAULT 'draft';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_notes TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_review_state TEXT DEFAULT 'needs_review';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_privacy_class TEXT DEFAULT 'needs_review';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_segments JSONB DEFAULT '[]';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_versions JSONB DEFAULT '{}';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_glossary JSONB DEFAULT '[]';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_release_audit JSONB DEFAULT '{}';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS source_sheet_draft TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS package_status TEXT DEFAULT 'draft';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS updated_by TEXT;
@@ -18502,6 +18510,17 @@ function parseJsonArrayMaybe(value) {
     .split(/\r?\n|;/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function parseJsonObjectMaybe(value) {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) return value;
+  if (Array.isArray(value)) return { items: value };
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {}
+  return {};
 }
 
 function normalizeDecisionOptions(value) {
@@ -25228,6 +25247,18 @@ function oneTimeLongText(value = '', max = 20000) {
   return String(value || '').trim().slice(0, max);
 }
 
+function oneTimeJsonField(value, fallback) {
+  if (value === undefined || value === null || value === '') return JSON.stringify(fallback);
+  if (typeof value === 'string') {
+    try {
+      return JSON.stringify(JSON.parse(value));
+    } catch {
+      return JSON.stringify(fallback);
+    }
+  }
+  return JSON.stringify(value);
+}
+
 function oneTimeOptionalUrl(value = '', fieldName = 'hosted URL') {
   return hostedHttpUrl(value || '', fieldName, { required: false });
 }
@@ -25280,6 +25311,12 @@ function oneTimeClassSessionView(row = {}) {
     transcript_text: row.transcript_text || '',
     transcript_status: normalizeOneTimeTranscriptStatus(row.transcript_status),
     transcript_notes: row.transcript_notes || '',
+    transcript_review_state: normalizeTranscriptReviewState(row.transcript_review_state || row.transcript_status || 'needs_review'),
+    transcript_privacy_class: normalizeTranscriptPrivacyClass(row.transcript_privacy_class || 'needs_review'),
+    transcript_segments: parseJsonArrayMaybe(row.transcript_segments),
+    transcript_versions: parseJsonObjectMaybe(row.transcript_versions),
+    transcript_glossary: parseJsonArrayMaybe(row.transcript_glossary),
+    transcript_release_audit: parseJsonObjectMaybe(row.transcript_release_audit),
     source_sheet_draft: row.source_sheet_draft || '',
     package_status: normalizeOneTimePackageStatus(row.package_status),
     updated_by: row.updated_by || '',
@@ -25813,6 +25850,10 @@ async function getOneTimeClassroomData({ db = pool, memberLibrary = null, member
       ...session,
       transcript_text: memberSafe ? '' : session.transcript_text,
       transcript_notes: memberSafe ? '' : session.transcript_notes,
+      transcript_segments: memberSafe ? [] : session.transcript_segments,
+      transcript_versions: memberSafe ? {} : session.transcript_versions,
+      transcript_glossary: memberSafe ? [] : session.transcript_glossary,
+      transcript_release_audit: memberSafe ? {} : session.transcript_release_audit,
       member_library_item: memberItems.find((item) => Number(item.class_session_id) === Number(session.id)) || null,
     }));
   const todayKey = getTodayDateInTimeZone();
@@ -67659,8 +67700,10 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
          project_id, class_date, title, description, summary, media_provider, media_url,
          vimeo_id, thumbnail_url, masechta, perek, mishnah_range, duration_seconds,
          transcript_text, transcript_status, transcript_notes,
+         transcript_review_state, transcript_privacy_class, transcript_segments,
+         transcript_versions, transcript_glossary, transcript_release_audit,
          source_sheet_draft, package_status, updated_by, updated_at
-       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULLIF($13, 0), $14, $15, $16, $17, $18, $19, NOW())
+       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULLIF($13, 0), $14, $15, $16, $17, $18, $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, $24, $25, NOW())
        RETURNING *`,
       [
         project.id,
@@ -67679,6 +67722,12 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
         oneTimeLongText(body.transcript_text || body.transcript || '', 60000) || null,
         normalizeOneTimeTranscriptStatus(body.transcript_status || body.transcriptStatus || 'draft'),
         oneTimeLongText(body.transcript_notes || body.transcriptNotes || '', 8000) || null,
+        normalizeTranscriptReviewState(body.transcript_review_state || body.transcriptReviewState || body.review_state || body.reviewState || 'needs_review'),
+        normalizeTranscriptPrivacyClass(body.transcript_privacy_class || body.transcriptPrivacyClass || body.privacy_class || body.privacyClass || 'needs_review'),
+        oneTimeJsonField(body.transcript_segments || body.transcriptSegments || [], []),
+        oneTimeJsonField(body.transcript_versions || body.transcriptVersions || {}, {}),
+        oneTimeJsonField(body.transcript_glossary || body.transcriptGlossary || [], []),
+        oneTimeJsonField(body.transcript_release_audit || body.transcriptReleaseAudit || {}, {}),
         oneTimeLongText(body.source_sheet_draft || body.sourceSheetDraft || '', 60000) || null,
         normalizeOneTimePackageStatus(body.package_status || body.packageStatus || 'draft'),
         actor,
@@ -67718,6 +67767,10 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
       values.push(value);
       fields.push(`${field} = $${values.length}`);
     };
+    const setJsonField = (field, value) => {
+      values.push(value);
+      fields.push(`${field} = $${values.length}::jsonb`);
+    };
     if (body.title !== undefined) {
       const title = limitText(body.title || '', 240);
       if (!title) return res.status(400).json({ error: 'title cannot be blank' });
@@ -67734,6 +67787,12 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
     if (body.transcript_text !== undefined || body.transcript !== undefined) setField('transcript_text', oneTimeLongText(body.transcript_text || body.transcript || '', 60000) || null);
     if (body.transcript_status !== undefined || body.transcriptStatus !== undefined) setField('transcript_status', normalizeOneTimeTranscriptStatus(body.transcript_status || body.transcriptStatus));
     if (body.transcript_notes !== undefined || body.transcriptNotes !== undefined) setField('transcript_notes', oneTimeLongText(body.transcript_notes || body.transcriptNotes || '', 8000) || null);
+    if (body.transcript_review_state !== undefined || body.transcriptReviewState !== undefined || body.review_state !== undefined || body.reviewState !== undefined) setField('transcript_review_state', normalizeTranscriptReviewState(body.transcript_review_state || body.transcriptReviewState || body.review_state || body.reviewState));
+    if (body.transcript_privacy_class !== undefined || body.transcriptPrivacyClass !== undefined || body.privacy_class !== undefined || body.privacyClass !== undefined) setField('transcript_privacy_class', normalizeTranscriptPrivacyClass(body.transcript_privacy_class || body.transcriptPrivacyClass || body.privacy_class || body.privacyClass));
+    if (body.transcript_segments !== undefined || body.transcriptSegments !== undefined) setJsonField('transcript_segments', oneTimeJsonField(body.transcript_segments || body.transcriptSegments || [], []));
+    if (body.transcript_versions !== undefined || body.transcriptVersions !== undefined) setJsonField('transcript_versions', oneTimeJsonField(body.transcript_versions || body.transcriptVersions || {}, {}));
+    if (body.transcript_glossary !== undefined || body.transcriptGlossary !== undefined) setJsonField('transcript_glossary', oneTimeJsonField(body.transcript_glossary || body.transcriptGlossary || [], []));
+    if (body.transcript_release_audit !== undefined || body.transcriptReleaseAudit !== undefined) setJsonField('transcript_release_audit', oneTimeJsonField(body.transcript_release_audit || body.transcriptReleaseAudit || {}, {}));
     if (body.source_sheet_draft !== undefined || body.sourceSheetDraft !== undefined) setField('source_sheet_draft', oneTimeLongText(body.source_sheet_draft || body.sourceSheetDraft || '', 60000) || null);
     if (body.package_status !== undefined || body.packageStatus !== undefined) setField('package_status', normalizeOneTimePackageStatus(body.package_status || body.packageStatus));
     if (body.media_url !== undefined || body.mediaUrl !== undefined || body.source_media_url !== undefined || body.media_provider !== undefined || body.mediaProvider !== undefined || body.vimeo_id !== undefined || body.vimeoId !== undefined) {
@@ -70573,8 +70632,21 @@ app.get('/api/bna/one-time/transcript-privacy', requireAdmin, async (req, res) =
   try {
     await assertRabbiAdminAccess(req);
     const classroom = await getOneTimeClassroomData({ db: pool, memberSafe: false });
+    const classes = classroom.classes || [];
+    const storedSegments = classes.flatMap((session) => {
+      const segments = Array.isArray(session.transcript_segments) ? session.transcript_segments : [];
+      return segments.map((segment, index) => ({
+        ...segment,
+        segment_ref: segment.segment_ref || segment.segmentRef || `class_session:${session.id}:segment:${index + 1}`,
+        source_recording_ref: segment.source_recording_ref || segment.sourceRecordingRef || `class_session:${session.id}`,
+        source_transcript_ref: segment.source_transcript_ref || segment.sourceTranscriptRef || (session.content_job_id ? `content_job:${session.content_job_id}` : ''),
+        privacy_class: segment.privacy_class || segment.privacyClass || session.transcript_privacy_class,
+        review_state: segment.review_state || segment.reviewState || session.transcript_review_state,
+      }));
+    });
     const readiness = buildTranscriptPrivacyReadiness({
-      classes: classroom.classes || [],
+      classes,
+      segments: storedSegments,
       example_student_id: req.query.student_id || req.query.studentId || null,
     });
     res.json({
@@ -70583,6 +70655,9 @@ app.get('/api/bna/one-time/transcript-privacy', requireAdmin, async (req, res) =
       workspace_key: 'rabbi_sheller_provider',
       transcript_privacy: readiness,
       raw_transcript_text_returned: false,
+      transcript_body_returned: false,
+      production_mutation_performed: false,
+      external_write_performed: false,
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });

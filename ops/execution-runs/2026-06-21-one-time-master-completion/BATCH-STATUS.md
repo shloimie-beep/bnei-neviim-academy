@@ -11,7 +11,7 @@
 | 6 | REQ-20260619-304 | done | Operations UI/design correction deployed and live-smoked. |
 | 7 | REQ-20260621-503 | done | WhatsApp UX deployed and live-smoked without sends or external writes. |
 | 8 | REQ-20260621-504 | done | Email and Resend UX deployed and live-smoked without sends. |
-| 9 parent | REQ-20260619-306 | in_progress | Parent reopened as an umbrella for the revenue-launch/parser follow-up. Do not mark complete until child requirements 9A-9J are terminal. |
+| 9 parent | REQ-20260619-306 | done | Parent umbrella closed for all currently possible credential-free work; child 9B remains isolated on hosted transcription credentials and does not block unrelated batches. |
 | 9A | REQ-20260621-901 | done | Source-envelope classifier and mixed-context parser routing deployed and live-smoked with a dry-run synthetic parse. |
 | 9B | REQ-20260621-902 | blocked | Today's class-upload trace reached live source job #78, but transcription/parse is blocked by the hosted transcription credential returning `401 invalid_credential`; content-job notes were sanitized and focused smoke verified no parse run was created. |
 | 9C | REQ-20260621-903 | done | Downloads spreadsheet inventory generated with redacted metadata/schema signals only: 203 files inventoried, 56 import candidates, no raw rows or private exports committed, no GHL runtime added. |
@@ -25,7 +25,7 @@
 | 11 | REQ-20260619-308 | done | Manual Vimeo member-library workflow, disabled automated-upload readiness, and recording/publication states deployed and live-smoked. |
 | 12 | REQ-20260619-307 | done | Zoom and attendance foundation deployed and live-smoked without creating meetings, registrants, attendance writes, recording reads, transcript reads, summary reads, sends, or portal publishing. |
 | 13 | REQ-20260619-308 | done | Recording/transcript/publication lifecycle and retention gates bundled with Batch 11 under the shared requirement. |
-| 14 | REQ-20260619-309 | not_started | Transcript privacy. |
+| 14 | REQ-20260619-309 | in_progress | Transcript privacy implementation started: release-policy checks, no-guessed-speaker student matching, storage fields, Operations readiness, focused tests, and read-only live smoke. |
 | 15 | REQ-20260619-310 | not_started | Gamification. |
 | 16 | REQ-20260619-311 | not_started | Community. |
 | 17 | REQ-20260619-312 | not_started | Sefaria/study assistant. |

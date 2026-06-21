@@ -77,6 +77,7 @@
     "app:smoke:one-time-authenticated-support": "node scripts/smoke-one-time-authenticated-support-live.mjs",
     "app:smoke:one-time-test-identities": "node scripts/smoke-one-time-test-identities-live.mjs",
     "app:smoke:one-time-agent-mode-acceptance": "node scripts/smoke-one-time-agent-mode-acceptance-live.mjs",
+    "app:smoke:one-time-transcript-privacy": "node scripts/smoke-one-time-transcript-privacy-live.mjs",
     "app:smoke:final-register-surfaces": "node scripts/smoke-final-register-surfaces-live.mjs",
     "app:smoke:developer-tester-ticket": "node scripts/smoke-developer-tester-ticket-live.mjs",
     "app:smoke:public-navigation-positioning": "node scripts/smoke-public-navigation-positioning-live.mjs",
