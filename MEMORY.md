@@ -1757,6 +1757,26 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   pricing, checkout buttons, unverified claims, account grants, billing actions,
   sends, Google/Drive writes, Zoom writes, Buffer publishing, and external CRM
   writes until the relevant human decisions are approved.
+- As of `RAW-20260621-002`, One Time launch work is for BNA and One Time /
+  Rabbi Ellie Scheller only, not standalone SaaS/reseller/white-label
+  self-service. First-party CRM remains the active direction; GHL,
+  GoHighLevel, LeadConnector, and LeadConnectorHQ stay inactive runtime.
+- The One Time revenue-launch test-mode default is an approved warm-lead
+  30-day trial requiring payment method, then $67/month renewal with exact
+  renewal date/amount, pre-renewal reminder, one introductory trial per
+  eligible person/household/payment identity, offer version, and acceptance
+  timestamp. Do not perform live charges or bulk sends without explicit later
+  approval.
+- One Time referral credit should activate only after the referred customer
+  completes the first successful paid billing cycle after any trial; prevent
+  self-referral, duplicates, multiple credits for one referred customer, and
+  activation after failed/refunded payment. Real invoice credits are disabled
+  in the current implementation wave.
+- Current cancellation/refund intent: customers may cancel future renewal;
+  processed payments are generally not discretionary refunds, with exceptions
+  possible for duplicate/incorrect charge, provider-cancelled class without
+  suitable makeup/credit, and legal requirements. Final customer-facing legal
+  wording is `DEC-20260621-901` and does not block test-mode implementation.
 - Provider Index settings should stay organized as Public Provider Index,
   Provider Plans, Provider Entitlements, Provider Onboarding, and Commercial
   Models; launch copy should keep `Free for now` visible until Shloimie changes

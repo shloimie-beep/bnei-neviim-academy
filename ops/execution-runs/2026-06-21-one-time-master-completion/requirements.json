@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T16:05:00+03:00",
+  "updated_at": "2026-06-21T16:35:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -53,6 +53,16 @@
       "workspace": "rabbi_sheller_provider",
       "project": "one_time_mishnah_class",
       "source_type": "google_drive_dry_run_parse"
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "captured_at": "2026-06-21T16:05:00+03:00",
+      "content_fingerprint": "sha256:5d894fba7eb9427956a2c808a84a7c91310a23aa7fe3dbaa7dbb8ae83c7c5e9e",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_attachment"
     }
   ],
   "source_statements": [
@@ -180,6 +190,139 @@
       "source_id": "RAW-20260621-001",
       "source_statement": "Run final verification, push PR #5 branch, deploy safe bundle, smoke production, and leave only genuine external actions.",
       "requirement_id": "REQ-20260619-314",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0001",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Record the product scope: BNA and One Time/Rabbi Ellie Scheller only, not standalone SaaS or generic reseller onboarding.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0002",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Use the stated operating priority: privacy/auth, reliable intake, CRM/leads, email campaigns, payment/trial/access, class links, community questions, authenticated support, beta QA, Vimeo/Zoom, then advanced gamification/study bot.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0003",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Keep complex setup admin-first and build only essential customer-facing actions such as signup, auth, payment method/cancel renewal, class/library, private/community questions, support tickets, and appropriate progress/communications.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0004",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Keep BNA and One Time data private and workspace/relationship-scoped, including tickets, questions, recordings, class links, and transcripts.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0005",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Authenticated users may open support tickets through the bot without receiving unrestricted Mishnah study bot access.",
+      "requirement_id": "REQ-20260621-908",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0006",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Implement configurable warm-lead 30-day trial with card required, $67 monthly renewal, exact renewal date/amount, reminder, one-introductory-trial rule, offer version, and no live charge/bulk send without approval.",
+      "requirement_id": "REQ-20260621-906",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0007",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Implement configurable referral credit model that activates only after the referred customer completes the first successful paid billing cycle after trial, prevents abuse, and does not apply real invoice credits in this wave.",
+      "requirement_id": "REQ-20260621-906",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0008",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Record cancellation/refund intent, store policy versions and acceptances, and create one operator Decision for final customer-facing legal wording without blocking test-mode implementation.",
+      "requirement_id": "REQ-20260621-906",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0009",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Split parent REQ-20260619-306 into child requirements and do not mark the parent complete until all required children are terminal.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0010",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Sub-batch 9A must add a first-pass source-envelope classifier so one global keyword does not incorrectly scope every fragment of a mixed source.",
+      "requirement_id": "REQ-20260621-901",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0011",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Source envelopes must include source metadata, hash, filename/title, channel, upload/source date, uploader, language, default workspace/project/context type, confidence, privacy level, parser version, and processing status.",
+      "requirement_id": "REQ-20260621-901",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0012",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Title and filename set a strong default context, such as Dratler family meeting, Rabbi Scheller class, Operations ramble, or One Time meeting, while local segments may override it.",
+      "requirement_id": "REQ-20260621-901",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0013",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for today's class-upload trace.",
+      "requirement_id": "REQ-20260621-902",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0014",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for Downloads spreadsheet inventory.",
+      "requirement_id": "REQ-20260621-903",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0015",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for CRM import and deduplication.",
+      "requirement_id": "REQ-20260621-904",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0016",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for CRM Contacts UX.",
+      "requirement_id": "REQ-20260621-905",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0017",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for payment-to-access and class-link flow.",
+      "requirement_id": "REQ-20260621-907",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0018",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for test identities and mock data.",
+      "requirement_id": "REQ-20260621-909",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0019",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for Agent Mode end-to-end acceptance.",
+      "requirement_id": "REQ-20260621-910",
       "classification": "missing"
     }
   ],
@@ -934,10 +1077,15 @@
       "id": "REQ-20260619-306",
       "title": "Product, scheduling, booking, portals, and billing foundations",
       "expected_result": "One Time product, schedule, booking, portals, and billing/access foundations are usable without live charges.",
-      "status": "done",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
-        "STMT-20260621-001-0010"
+        "STMT-20260621-001-0010",
+        "STMT-20260621-002-0001",
+        "STMT-20260621-002-0002",
+        "STMT-20260621-002-0003",
+        "STMT-20260621-002-0004",
+        "STMT-20260621-002-0009"
       ],
       "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
       "workspace_key": "rabbi_sheller_provider",
@@ -949,20 +1097,24 @@
       "depends_on": [
         "REQ-20260619-304"
       ],
-      "implementation_status": "verified_live",
-      "can_continue_without_operator": true,
-      "next_action": "Complete. Continue to Batch 11 / REQ-20260619-308 Vimeo and member-library pipeline without automated upload authorization.",
+      "implementation_status": "split_child_requirements_active",
+      "can_continue_without_operator": false,
+      "next_action": "Complete child requirements REQ-20260621-901 through REQ-20260621-910; do not mark the parent complete until every required child is done, already satisfied, blocked, needs operator decision, failed, or archived.",
       "acceptance_criteria": [
         "no guessed final pricing entitlements",
         "booking intent records created",
-        "portals scoped and usable"
+        "portals scoped and usable",
+        "child requirements REQ-20260621-901 through REQ-20260621-910 have terminal statuses",
+        "parent remains open until parser, CRM, trial/referral, payment/access, support/questions, beta data, and Agent Mode acceptance are closed or blocked with evidence"
       ],
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
         "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
-        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.json"
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.json",
+        "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md"
       ],
       "verification": [
         "node --check src/lib/bna/one-time-product-system.js",
@@ -994,12 +1146,476 @@
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T15:40:00+03:00",
+      "updated_at": "2026-06-21T16:05:00+03:00",
       "deployed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
       "deployment_id": "8c20ae67-9acc-43f2-b77d-c10fcd425d73",
       "live_smoke": [
         "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md"
+      ],
+      "child_requirement_ids": [
+        "REQ-20260621-901",
+        "REQ-20260621-902",
+        "REQ-20260621-903",
+        "REQ-20260621-904",
+        "REQ-20260621-905",
+        "REQ-20260621-906",
+        "REQ-20260621-907",
+        "REQ-20260621-908",
+        "REQ-20260621-909",
+        "REQ-20260621-910"
+      ],
+      "blocker": "Parent umbrella only; executable work is tracked in child requirements REQ-20260621-901 through REQ-20260621-910.",
+      "blocker_owner": "Codex",
+      "blocker_next_action": "Continue with the first unblocked child requirement, starting at REQ-20260621-901."
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-901",
+      "title": "Source-envelope and mixed-context parser v2",
+      "expected_result": "Parser v2 creates a source envelope before item parsing and keeps local fragment scope from being overwritten by a single global keyword.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0010",
+        "STMT-20260621-002-0011",
+        "STMT-20260621-002-0012"
+      ],
+      "category": "parser",
+      "batch_id": "batch-9A",
+      "next_action": "Implement source-envelope classifier, title/default context rules, local segment override metadata, and parser tests.",
+      "acceptance_criteria": [
+        "source envelope includes required metadata fields",
+        "supported context types include class_recording, family_meeting, provider_meeting, operations_ramble, crm_spreadsheet, content_recording, mixed, and unknown_needs_review",
+        "title/filename creates a strong but overridable default workspace/project/context",
+        "mixed-context examples do not globally mis-scope local Operations, One Time, BNA, family, class, private question, or content fragments"
+      ],
+      "implementation_files": [
+        "src/platform/ingestion/intake-source.js",
+        "src/platform/ingestion/canonical-parser.js",
+        "src/lib/bna/intake-parser.js",
+        "server.js",
+        "tests/ingestion/w3-intake-source.test.js",
+        "tests/intake-parser-workspace-ambiguity.test.js",
+        "tests/telegram-media-routing.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-902",
+      "title": "Today's class-upload trace",
+      "expected_result": "The current class upload path has traceable raw intake, source envelope, parse run, item routing, and review evidence.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0013"
+      ],
+      "category": "class_upload_trace",
+      "batch_id": "batch-9B",
+      "next_action": "Trace the latest class upload from source capture through parse/run/review surfaces and record proof or blockers.",
+      "acceptance_criteria": [
+        "raw/source provenance exists",
+        "parse run and item routing are inspectable",
+        "workspace/project scope is explicit",
+        "private material is not exposed cross-workspace"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "scripts/telegram-kimi-bridge.mjs",
+        "tests/telegram-media-routing.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-903",
+      "title": "Downloads spreadsheet inventory",
+      "expected_result": "Relevant Downloads spreadsheets are inventoried without committing private exports or secrets, and import candidates are classified.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0014"
+      ],
+      "category": "spreadsheet_inventory",
+      "batch_id": "batch-9C",
+      "next_action": "Inventory Downloads spreadsheet candidates with hashes/redacted metadata and identify CRM import sources.",
+      "acceptance_criteria": [
+        "inventory avoids raw private exports",
+        "spreadsheet type and source are classified",
+        "import candidates have blockers/next actions",
+        "no GHL runtime added"
+      ],
+      "implementation_files": [
+        "ops/one-time-mishnah/",
+        "scripts/import-one-time-subscribers.mjs",
+        "tests/one-time-drive-brief-ingestion.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-904",
+      "title": "CRM import and deduplication",
+      "expected_result": "First-party One Time CRM import/dedupe can safely ingest approved warm leads without external CRM writes or cross-workspace bleed.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0015"
+      ],
+      "category": "crm_import_dedupe",
+      "batch_id": "batch-9D",
+      "next_action": "Implement or harden first-party CRM import preview/dedupe with no-send/no-external-write metadata.",
+      "acceptance_criteria": [
+        "imports are workspace/project scoped",
+        "dedupe preserves audit history",
+        "warm leads stay no-send until approval",
+        "GHL/LeadConnector remain inactive"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "scripts/import-one-time-subscribers.mjs",
+        "tests/one-time-communications-workspace.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-905",
+      "title": "CRM Contacts UX",
+      "expected_result": "Operations Contacts UX organizes One Time leads/members with scoped communication, lead, no-send, and dedupe state.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0016"
+      ],
+      "category": "crm_contacts_ux",
+      "batch_id": "batch-9E",
+      "next_action": "Expose safe One Time CRM/contact views and actions without external sends or CRM writes.",
+      "acceptance_criteria": [
+        "contacts are workspace scoped",
+        "lead source/status and no-send state are visible",
+        "dedupe/review states are explicit",
+        "private BNA data is absent from One Time"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "tests/operations-contacts-intake-cleanup.test.js",
+        "tests/one-time-communications-workspace.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-906",
+      "title": "Warm-lead trial and referral configuration",
+      "expected_result": "Warm-lead trial, referral credit, policy-version, and acceptance records are configurable in test/local mode without live charges or invoice credits.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0006",
+        "STMT-20260621-002-0007",
+        "STMT-20260621-002-0008"
+      ],
+      "category": "trial_referral_config",
+      "batch_id": "batch-9F",
+      "next_action": "Implement configurable launch promotion and referral model with policy-version acceptance storage and a legal wording Decision.",
+      "acceptance_criteria": [
+        "30-day trial/$67 renewal defaults are configurable",
+        "card-required and one-intro-trial rules are modeled",
+        "referral activates only after first successful paid cycle",
+        "real invoice credits and charges remain disabled",
+        "legal wording Decision exists"
+      ],
+      "implementation_files": [
+        "src/lib/integrations/stripe.js",
+        "src/lib/bna/one-time-product-system.js",
+        "server.js",
+        "public/operations.html",
+        "tests/one-time-stripe-local-beta.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-907",
+      "title": "Payment-to-access and class-link flow",
+      "expected_result": "Test-mode payment/access/class-link state is modeled without live charges, access grants, or real Zoom link exposure.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0017"
+      ],
+      "category": "payment_access_class_links",
+      "batch_id": "batch-9G",
+      "next_action": "Connect test-mode payment state to access/class-link readiness with confirmation gates and scoped portal visibility.",
+      "acceptance_criteria": [
+        "payment state does not create live charges",
+        "access grants require approved local/test event",
+        "class links are relationship scoped",
+        "Zoom host/start URL never exposed"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/parent.html",
+        "public/student.html",
+        "public/operations.html",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-external-user-portal.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-908",
+      "title": "Authenticated questions and support-ticket bot",
+      "expected_result": "Authenticated users can open scoped support tickets and private/community questions without exposing other users or internal notes.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0005"
+      ],
+      "category": "questions_support_bot",
+      "batch_id": "batch-9H",
+      "next_action": "Harden authenticated question/support-ticket flows for workspace/page/user context, ticket numbers, staff replies, and private notifications.",
+      "acceptance_criteria": [
+        "user and workspace are authenticated",
+        "tickets/questions are relationship scoped",
+        "staff internal notes are hidden",
+        "support bot is not unrestricted Mishnah study bot"
+      ],
+      "implementation_files": [
+        "server.js",
+        "scripts/telegram-kimi-bridge.mjs",
+        "public/operations.html",
+        "tests/developer-tester-ticket-capture.test.js",
+        "tests/one-time-community-moderation-workflow.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-909",
+      "title": "Test identities and mock data",
+      "expected_result": "Realistic beta test identities and mock data exercise BNA/One Time privacy, auth, CRM, payment/access, class links, questions, and support without using real private exports.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0018"
+      ],
+      "category": "beta_mock_data",
+      "batch_id": "batch-9I",
+      "next_action": "Create or update safe TEST-prefixed identities/mock fixtures and cleanup/readback checks.",
+      "acceptance_criteria": [
+        "TEST-prefixed and cleanup-ready",
+        "no real private exports committed",
+        "workspace privacy cases covered",
+        "negative auth cases covered"
+      ],
+      "implementation_files": [
+        "tests/one-time-synthetic-pilot.test.js",
+        "scripts/platform-synthetic-e2e.mjs",
+        "server.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "not_started",
+      "implementation_status": "not_started",
+      "can_continue_without_operator": true,
+      "evidence": [],
+      "verification": [],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "id": "REQ-20260621-910",
+      "title": "Agent Mode end-to-end acceptance",
+      "expected_result": "Agent Mode acceptance can exercise the launch flow end to end in test mode with evidence, no external writes, and clear remaining blockers.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0019"
+      ],
+      "category": "agent_mode_acceptance",
+      "batch_id": "batch-9J",
+      "next_action": "Run/build Agent Mode acceptance over parser, CRM, trial/referral, access/class links, tickets/questions, and beta data without external writes.",
+      "acceptance_criteria": [
+        "acceptance flow has evidence artifacts",
+        "no live charges or sends",
+        "no external CRM/GHL writes",
+        "remaining blockers are explicit"
+      ],
+      "implementation_files": [
+        "src/lib/bna/agent-control.js",
+        "scripts/platform-synthetic-e2e.mjs",
+        "tests/agent-control-api-readback.test.js"
       ]
     },
     {
@@ -1019,7 +1635,7 @@
       "priority": "P1",
       "batch_id": "batch-12",
       "depends_on": [
-        "REQ-20260619-306"
+        "REQ-20260621-504"
       ],
       "implementation_status": "verified_live",
       "can_continue_without_operator": true,
@@ -1080,7 +1696,7 @@
       "id": "REQ-20260619-308",
       "title": "Vimeo, member-library, recording, transcript, and publication pipeline",
       "expected_result": "Manual Vimeo member-library pipeline works now; automated upload waits on user token; recordings never publish directly from webhook.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0011"
@@ -1093,12 +1709,12 @@
       "priority": "P1",
       "batch_id": "batch-11-13",
       "depends_on": [
-        "REQ-20260619-306",
-        "REQ-20260619-307"
+        "REQ-20260619-307",
+        "REQ-20260621-910"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "next_action": "Make manual Vimeo workflow fully usable and automated upload readiness disabled behind feature flag; complete recording/publication states.",
+      "next_action": "Implement manual Vimeo workflow, member-library filters/metadata, disabled automated upload readiness, and recording/publication lifecycle states without real uploads or external writes.",
       "acceptance_criteria": [
         "manual Vimeo URL validation",
         "review/approve/publish/unpublish states",
@@ -1120,7 +1736,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T16:35:00+03:00"
     },
     {
       "id": "REQ-20260619-309",

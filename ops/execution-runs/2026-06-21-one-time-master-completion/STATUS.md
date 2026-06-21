@@ -113,7 +113,8 @@ and focused Operations filter-rail live smoke passed. Next unblocked batch:
 <!-- batch-7:start -->
 ## Batch 7 - WhatsApp UX
 
-Status: done / deployed / verified live
+Status: base slice deployed / verified live; parent requirement reopened for
+new child requirements
 
 The existing first-party WAPI/Whapi workspace was extended rather than
 replaced. Operations Communications > WhatsApp now keeps the desktop
@@ -172,7 +173,8 @@ and billing/access foundations.
 <!-- batch-9-10:start -->
 ## Batch 9/10 - Product, Scheduling, Booking, And Portal Foundations
 
-Status: done / deployed / verified live
+Status: base slice deployed / verified live; parent requirement reopened for
+new child requirements
 
 The One Time product system now has safe internal product-offer contracts for
 the $67 monthly membership and premium Masechta intensive, with final pricing,
@@ -193,7 +195,12 @@ Focused local verification passed. The safe app-visible changes were pushed at
 One Time product/booking live smokes. The focused live smoke created only
 clearly marked internal One Time class-event and appointment-intent records.
 
-Next unblocked batch: `REQ-20260619-308` Vimeo and member-library pipeline.
+The base product/booking slice remains deployed and live-verified. The latest
+`RAW-20260621-002` revenue-launch/parser follow-up split parent
+`REQ-20260619-306` into child requirements `REQ-20260621-901` through
+`REQ-20260621-910`; do not mark the parent complete until those children are
+terminal. Next unblocked child: `REQ-20260621-901` source-envelope and
+mixed-context parser v2.
 <!-- batch-9-10:end -->
 
 <!-- batch-12:start -->

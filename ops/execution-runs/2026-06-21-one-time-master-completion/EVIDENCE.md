@@ -453,7 +453,8 @@ Intermediate focused live-smoke failure recorded:
 
 Requirement: `REQ-20260619-306`
 
-Status: done / deployed / verified live
+Status: base slice deployed / verified live; parent requirement reopened for
+new child requirements
 
 Implementation evidence:
 
@@ -526,6 +527,15 @@ Intermediate focused live-smoke failures recorded:
 - `ops/live-smokes/2026-06-21T12-38-15-716Z-one-time-product-booking-live-smoke.md`
   failed because the smoke over-flagged an unrelated in-app `Send` control. The
   forbidden-action check now targets external sends, Zoom, and payment actions.
+
+Follow-up split:
+
+- `RAW-20260621-002` split parent `REQ-20260619-306` into child requirements
+  `REQ-20260621-901` through `REQ-20260621-910`.
+- Parent `REQ-20260619-306` must remain open until those child requirements
+  reach terminal statuses with evidence or explicit blockers.
+- Decision packet:
+  `ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md`
 <!-- batch-9-10:end -->
 
 <!-- batch-12:start -->

@@ -249,6 +249,6 @@ Next exact actions:
 npm run bna:run:next
 ```
 
-Then implement the manual Vimeo workflow, disabled automated-upload readiness,
-and recording/publication pipeline for `REQ-20260619-308`.
+Then continue with `REQ-20260621-901` / Batch 9A source-envelope and
+mixed-context parser v2 from `RAW-20260621-002`.
 <!-- batch-12:end -->

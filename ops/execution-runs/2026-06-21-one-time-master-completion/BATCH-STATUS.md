@@ -11,10 +11,20 @@
 | 6 | REQ-20260619-304 | done | Operations UI/design correction deployed and live-smoked. |
 | 7 | REQ-20260621-503 | done | WhatsApp UX deployed and live-smoked without sends or external writes. |
 | 8 | REQ-20260621-504 | done | Email and Resend UX deployed and live-smoked without sends. |
-| 9 | REQ-20260619-306 | done | Product, schedule, booking, and portal foundations deployed and live-smoked without charges, Zoom, sends, or external calendar writes. |
-| 11 | REQ-20260619-308 | not_started | Vimeo and member library. |
+| 9 parent | REQ-20260619-306 | in_progress | Parent reopened as an umbrella for the revenue-launch/parser follow-up. Do not mark complete until child requirements 9A-9J are terminal. |
+| 9A | REQ-20260621-901 | not_started | Source-envelope and mixed-context parser v2. |
+| 9B | REQ-20260621-902 | not_started | Today's class-upload trace. |
+| 9C | REQ-20260621-903 | not_started | Downloads spreadsheet inventory. |
+| 9D | REQ-20260621-904 | not_started | CRM import and deduplication. |
+| 9E | REQ-20260621-905 | not_started | CRM Contacts UX. |
+| 9F | REQ-20260621-906 | not_started | Warm-lead trial and referral configuration. |
+| 9G | REQ-20260621-907 | not_started | Payment-to-access and class-link flow. |
+| 9H | REQ-20260621-908 | not_started | Authenticated questions and support-ticket bot. |
+| 9I | REQ-20260621-909 | not_started | Test identities and mock data. |
+| 9J | REQ-20260621-910 | not_started | Agent Mode end-to-end acceptance. |
+| 11 | REQ-20260619-308 | in_progress | Vimeo and member library manual workflow, disabled automated-upload readiness, and recording/publication states. |
 | 12 | REQ-20260619-307 | done | Zoom and attendance foundation deployed and live-smoked without creating meetings, registrants, attendance writes, recording reads, transcript reads, summary reads, sends, or portal publishing. |
-| 13 | REQ-20260619-308 | not_started | Recording/transcript/publication pipeline. |
+| 13 | REQ-20260619-308 | in_progress | Recording/transcript/publication pipeline is bundled with Batch 11 under the shared requirement. |
 | 14 | REQ-20260619-309 | not_started | Transcript privacy. |
 | 15 | REQ-20260619-310 | not_started | Gamification. |
 | 16 | REQ-20260619-311 | not_started | Community. |

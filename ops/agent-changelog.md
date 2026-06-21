@@ -24890,3 +24890,27 @@ account write was performed.
 Next: register the latest One Time revenue-launch/parser follow-up prompt,
 split `REQ-20260619-306` into child requirements, and continue with the first
 unblocked child batch.
+
+## 2026-06-21T16:05:00+03:00 - One Time Revenue Launch / Parser V2 Follow-Up Registered
+
+Preserved the new prompt as `RAW-20260621-002` and registered its durable
+decisions plus Batch 9 child requirements in the active execution run.
+
+Parent `REQ-20260619-306` is now an open umbrella requirement and must not be
+marked complete until child requirements `REQ-20260621-901` through
+`REQ-20260621-910` reach terminal statuses. The first executable child is
+`REQ-20260621-901` source-envelope and mixed-context parser v2.
+
+Recorded the product/revenue decisions in
+`ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md` and
+`MEMORY.md`, including the no-standalone-SaaS scope, admin-first boundary,
+first-party CRM direction, no-GHL runtime, warm-lead trial defaults, referral
+credit model, cancellation/refund intent, and legal wording Decision
+`DEC-20260621-901`.
+
+Verification passed: active run validation, `npm run bna:run:next` selecting
+`REQ-20260621-901`, and JSON parse checks for the run and decision packet.
+
+Guardrails: no app runtime change, no deploy, no production data mutation, no
+live charge, no invoice credit, no bulk email send, no external CRM/GHL write,
+no DNS/account mutation, and no private spreadsheet/export committed.
