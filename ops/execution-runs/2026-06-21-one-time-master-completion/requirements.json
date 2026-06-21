@@ -429,13 +429,13 @@
         "tests/workspace-task-no-stale-agent.test.js",
         "tests/telegram-ramble-routing-regression.test.js"
       ],
-      "implementation_commit": "05f3dcd9",
+      "implementation_commit": "c90c007c",
       "pushed_commit": "",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T13:08:00+03:00",
+      "updated_at": "2026-06-21T13:10:00+03:00",
       "live_smoke": []
     },
     {
