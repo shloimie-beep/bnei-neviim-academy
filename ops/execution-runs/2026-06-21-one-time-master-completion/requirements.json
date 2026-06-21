@@ -1634,17 +1634,32 @@
         "REQ-20260621-504"
       ],
       "status": "in_progress",
-      "implementation_status": "implementation_started",
+      "implementation_status": "verified_local",
       "can_continue_without_operator": true,
-      "evidence": [],
-      "verification": [],
-      "implementation_commit": "",
-      "pushed_commit": "",
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-9G",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-9G",
+        "ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check public/js/rabbi-member.js",
+        "PASS node --check scripts/smoke-one-time-payment-access-class-links-live.mjs",
+        "PASS node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js (40/40)",
+        "PASS focused product/Operations/workspace suite (60/60)",
+        "PASS route/action registry JSON parse",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS npm run watchdog:actions",
+        "PASS git diff --check with line-ending warnings only"
+      ],
+      "implementation_commit": "62715fd68ad0956d92134560af303ba9d5fc7720",
+      "pushed_commit": "62715fd68ad0956d92134560af303ba9d5fc7720",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T17:56:20+03:00",
+      "updated_at": "2026-06-21T18:07:30+03:00",
       "id": "REQ-20260621-907",
       "title": "Payment-to-access and class-link flow",
       "expected_result": "Test-mode payment/access/class-link state is modeled without live charges, access grants, or real Zoom link exposure.",
@@ -1661,10 +1676,14 @@
         "Zoom host/start URL never exposed"
       ],
       "implementation_files": [
+        "src/lib/bna/one-time-product-system.js",
         "server.js",
-        "public/parent.html",
-        "public/student.html",
+        "public/js/rabbi-member.js",
         "public/operations.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "package.json",
+        "scripts/smoke-one-time-payment-access-class-links-live.mjs",
         "tests/rabbi-checkout-access.test.js",
         "tests/one-time-external-user-portal.test.js"
       ]

@@ -503,3 +503,28 @@ rerun passed.
 
 Next unblocked child: `REQ-20260621-907` payment-to-access and class-link flow.
 <!-- batch-9F:end -->
+
+<!-- batch-9G:start -->
+## Batch 9G - Payment-To-Access And Class-Link Flow
+
+Status: implementation started / locally verified / deploy pending
+
+Implemented the safe test-mode flow for `REQ-20260621-907`:
+
+- Product-system readiness maps paid test/manual checkout state to access
+  readiness without live charges, checkout sessions, payment links, or
+  subscriptions.
+- Access readiness requires an approved local/test event and manual admin
+  review; automated access grants remain disabled.
+- Class-link readiness is scoped to member/session plus active live grant, and
+  raw member Zoom URLs plus Zoom host/start URLs are blocked.
+- Operations renders the Payment / Access / Class Links panel in the One Time
+  provider workspace.
+- Member page rendering now uses protected class-link state instead of
+  `session.zoom_url`.
+
+Local tests and guardrail checks passed. Next step is committing, pushing,
+deploying the safe app-visible bundle, running standard plus focused live
+smokes, and closing the requirement as `verified_live` if production matches
+the local evidence.
+<!-- batch-9G:end -->

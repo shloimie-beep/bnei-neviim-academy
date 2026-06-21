@@ -18,7 +18,7 @@
 | 9D | REQ-20260621-904 | done | Scoped first-party CRM import/dedupe preview, readiness route, and Operations preview panel deployed and live-smoked with metadata-only inventory refs, no raw source rows, no-send warm leads, and no local/external/GHL writes. |
 | 9E | REQ-20260621-905 | done | One Time CRM Contacts UX deployed and live-smoked: workspace-scoped contacts/leads/members, visible source/status/no-send/dedupe state, direct review actions, private BNA data absent, no sends or external CRM writes. |
 | 9F | REQ-20260621-906 | done | Warm-lead 30-day trial, $67 renewal, card-required/one-intro-trial rules, referral-after-first-paid-cycle model, policy-version acceptance storage, legal wording Decision, Operations panel, Stripe local-beta no-write guardrails, focused tests, and smoke script deployed in Railway deployment `12249b2b-f11c-44b0-b9fa-ba75c511c633` and live-smoked without charges, invoice credits, sends, access grants, or external CRM writes. |
-| 9G | REQ-20260621-907 | in_progress | Payment-to-access and class-link flow implementation started; adding a read-only test-mode readiness contract with no charges, access grants, real Zoom links, or external writes. |
+| 9G | REQ-20260621-907 | in_progress | Payment-to-access and class-link flow is locally verified in implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720`; deploy and live smoke are pending. |
 | 9H | REQ-20260621-908 | not_started | Authenticated questions and support-ticket bot. |
 | 9I | REQ-20260621-909 | not_started | Test identities and mock data. |
 | 9J | REQ-20260621-910 | not_started | Agent Mode end-to-end acceptance. |

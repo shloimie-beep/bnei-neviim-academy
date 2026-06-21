@@ -772,3 +772,37 @@ Intermediate/known failures recorded:
   smoke was rerun with platform Operations credentials and passed at
   `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md`.
 <!-- batch-9F:end -->
+
+<!-- batch-9G:start -->
+## Batch 9G Test Results
+
+Recorded after local implementation of the payment-to-access and class-link
+readiness flow:
+
+- PASS `node --check server.js`
+- PASS `node --check public/js/rabbi-member.js`
+- PASS `node --check scripts/smoke-one-time-payment-access-class-links-live.mjs`
+- PASS `node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js`
+  with 40/40 tests passing.
+- PASS `node --test tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/one-time-stripe-local-beta.test.js tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js`
+  with 60/60 tests passing.
+- PASS route/action registry JSON parse.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md`.
+- PASS `git diff --check` with line-ending warnings only.
+
+Focused coverage:
+
+- Test-mode payment state exposes checkout counts and paid-test counts without
+  checkout session creation, payment links, subscriptions, or live charges.
+- Access grants require an approved local/test event and manual admin review;
+  automated access-grant creation remains disabled.
+- Class links are scoped to member/session plus active live grant readiness.
+- Member responses use protected class-link state and do not render
+  `session.zoom_url`.
+- Operations exposes the 9G panel, active review actions, and disabled Grant
+  Access / Reveal Join Link blockers.
+- Route and action registries include the focused 9G route/actions.
+<!-- batch-9G:end -->

@@ -1173,3 +1173,61 @@ Guardrails:
   invoice credit, email send, WhatsApp send, access grant, external CRM write,
   GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
 <!-- batch-9F:end -->
+
+<!-- batch-9G:start -->
+## Batch 9G - Payment-To-Access And Class-Link Flow
+
+Status: implementation started / locally verified / deploy pending
+
+Implemented the One Time test-mode payment-to-access and class-link readiness
+surface. The shared product-system helper now models paid test/manual checkout
+state, approved-local-test-event access gating, and relationship-scoped class
+link visibility without creating charges, payment links, subscriptions, access
+grants, sends, external CRM writes, Zoom meetings, raw member Zoom URLs, or
+Zoom host/start URLs.
+
+Implemented files:
+
+- Readiness helper and row views:
+  `src/lib/bna/one-time-product-system.js`
+- Product-system payload, member-scoped class-link sanitization, and focused
+  `/api/bna/one-time/payment-access-class-links` route:
+  `server.js`
+- Operations Payment / Access / Class Links panel with active review actions
+  and disabled Grant Access / Reveal Join Link blockers:
+  `public/operations.html`
+- Member page rendering uses protected class-link state instead of
+  `session.zoom_url`:
+  `public/js/rabbi-member.js`
+- Route/action registry and focused live-smoke command:
+  `ops/route-registry.json`, `ops/action-registry.json`, `package.json`,
+  `scripts/smoke-one-time-payment-access-class-links-live.mjs`
+- Focused tests:
+  `tests/rabbi-checkout-access.test.js`,
+  `tests/one-time-external-user-portal.test.js`
+
+Local verification:
+
+- PASS focused 9G/Rabbi/external-user suite: 40/40 tests.
+- PASS broader focused product/Operations/workspace suite: 60/60 tests.
+- PASS syntax checks for `server.js`, `public/js/rabbi-member.js`, and the
+  focused 9G live-smoke script.
+- PASS route/action registry JSON parse.
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS action watchdog:
+  `ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md`
+- PASS `git diff --check` with line-ending warnings only.
+
+Guardrails:
+
+- No live charge, checkout session, payment link, subscription, invoice,
+  invoice credit, access grant, email send, WhatsApp send, external CRM write,
+  Zoom meeting, Zoom registrant, join redirect, DNS change, or secret exposure
+  was performed.
+- Existing access grants and checkouts are counted as read-only evidence only;
+  the readiness route does not mutate them.
+- Member-facing class links are represented as protected relationship-scoped
+  readiness state. Raw Zoom join URLs and Zoom host/start URLs are not returned
+  to members.
+<!-- batch-9G:end -->
