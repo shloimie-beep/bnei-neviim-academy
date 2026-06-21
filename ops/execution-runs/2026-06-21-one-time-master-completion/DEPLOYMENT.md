@@ -532,3 +532,33 @@ Intermediate standard smoke caveat:
   expectation. The final standard smoke rerun used full Ops credentials and
   passed.
 
+## Batch 16
+
+- Railway deployment ID: `44220c69-fdb0-4796-96fc-80d39771e244`
+- Deployed app commit: `be7e46ae9fefd2ea9f31c403c114b008ec7fc899`
+- Latest pushed branch evidence before closeout:
+  `c098a0ca22c13deafee67040f92c924384c27a1e`
+- Service/environment: `skillful-motivation / production`
+- Railway doctor/poll after deploy: PASS, deployment status `SUCCESS`
+- Standard live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`
+- Focused community live smoke: PASS,
+  `ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`
+
+Deployment was run from a clean detached worktree at
+`be7e46ae9fefd2ea9f31c403c114b008ec7fc899`, so the unrelated uncommitted blog
+JSON files and older browser-smoke artifact changes in the main worktree were
+not included in the bundle.
+
+Focused live smoke verified the production community moderation readiness
+route, `implemented_read_only` status, body-free no-write flags, no blockers,
+six-step private-to-public workflow, disabled public promotion writes, disabled
+unrestricted student messaging, and Operations readiness panel copy. No
+community thread/message write, approval, parent-visible message, public post,
+staff note, notification, delete purge, send, charge, Zoom/Vimeo/Google/DNS
+mutation, external CRM/GHL write, or secret exposure was performed.
+
+Initial standard/focused smoke attempts failed before authenticated app access
+because this PR worktree did not contain `.env.local`. Reruns with the
+established local env file loaded into the process passed.
+

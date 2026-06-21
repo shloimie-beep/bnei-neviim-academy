@@ -738,10 +738,43 @@ Gamification is deployed and live-verified.
 Next exact action:
 
 ```powershell
-# Continue Batch 16 / REQ-20260619-311 Community
-npm run bna:run:status
+# Continue the next unblocked batch after Batch 16
+npm run bna:run:next
 ```
 <!-- batch-15:end -->
+
+<!-- batch-16:start -->
+## Batch 16 Handoff
+
+Community is deployed and live-verified.
+
+- Requirement: `REQ-20260619-311`
+- Implementation status: `verified_live`
+- Implementation/pushed/deployed commit:
+  `be7e46ae9fefd2ea9f31c403c114b008ec7fc899`
+- Railway deployment:
+  `44220c69-fdb0-4796-96fc-80d39771e244`
+- Key files:
+  `src/lib/bna/community-moderation.js`, `public/operations.html`,
+  `scripts/smoke-one-time-community-live.mjs`,
+  `tests/one-time-community-moderation-workflow.test.js`
+- Focused community/action tests: 14/14 passed.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`
+- Focused community live smoke:
+  `ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`
+- Guardrails:
+  no community thread/message write, approval, parent-visible message, public
+  post, staff note, notification, delete purge, unrestricted student direct
+  messaging, send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL
+  write, or secret exposure occurred during smoke.
+
+Next exact action:
+
+```powershell
+npm run bna:run:next
+```
+<!-- batch-16:end -->
 
 <!-- batch-11-13:start -->
 ## Batch 11/13 Handoff

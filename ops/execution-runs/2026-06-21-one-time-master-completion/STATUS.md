@@ -751,13 +751,31 @@ Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-16:start -->
 ## Batch 16 - Community
 
-`REQ-20260619-311` is in progress with local implementation and focused
-verification complete. The community readiness contract is now
-`implemented_read_only`, the Operations panel exposes no-write private-safe
-workflow state, and the focused live smoke script is ready for deployment
-verification.
+Status: done / deployed / verified live
 
-Remaining steps: commit, push, deploy the safe app-visible bundle, run
-Railway doctor, run standard app smoke and focused community live smoke, then
-record final deployment evidence and continue to Batch 17.
+Closed `REQ-20260619-311` by completing the One Time community moderation
+workflow. The community readiness route now reports `implemented_read_only`,
+private questions stay body-free and private-first, report/flag flow is
+implemented, parent-visible and staff-only visibility states remain separate,
+and the private-to-public workflow preserves linked versions while keeping
+public promotion writes disabled.
+
+Implementation/pushed/deployed commit:
+`be7e46ae9fefd2ea9f31c403c114b008ec7fc899`. Railway deployment
+`44220c69-fdb0-4796-96fc-80d39771e244` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`, and
+focused Batch 16 live smoke passed at
+`ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`.
+
+Local verification passed: syntax checks, 14/14 focused community/action
+tests, action/security watchdogs, execution-run validation, tracked secret
+audit, and diff check with line-ending warnings only.
+
+Guardrails: focused smoke was read-only; no community thread/message write,
+approval, parent-visible message, public post, staff note, notification,
+delete purge, unrestricted student direct messaging, send, charge,
+Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+performed.
+
+Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-16:end -->

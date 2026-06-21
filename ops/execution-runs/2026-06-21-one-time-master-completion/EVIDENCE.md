@@ -1639,7 +1639,7 @@ Guardrails:
 <!-- batch-16:start -->
 ## Batch 16 - Community
 
-Status: implementation complete locally / deployment pending
+Status: done / deployed / verified live
 
 Implemented `REQ-20260619-311` community moderation readiness as a no-write,
 private-safe workflow. The contract now reports `implemented_read_only`, keeps
@@ -1674,7 +1674,37 @@ Local verification:
 
 Deployment and live evidence:
 
-- Pending after implementation commit/push.
+- Implementation/pushed/deployed commit:
+  `be7e46ae9fefd2ea9f31c403c114b008ec7fc899`
+- Latest branch evidence commit before closeout:
+  `c098a0ca22c13deafee67040f92c924384c27a1e`
+- Railway deployment:
+  `44220c69-fdb0-4796-96fc-80d39771e244`
+- Railway doctor after deploy: PASS, deployment status `SUCCESS`.
+- Standard live smoke:
+  `ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`
+- Focused community live smoke:
+  `ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`
+
+Focused live smoke verified:
+
+- The production community moderation route returns `REQ-20260619-311`,
+  `implemented_read_only`, no-write flags, no blockers, body-free readiness,
+  and no unrestricted student messaging.
+- The private-to-public workflow exposes all six required steps and keeps
+  public promotion writes disabled.
+- Rabbi announcements, cohort discussions, private questions, parent-visible
+  holds, staff-only notes, report/flag flow, private-to-public anonymization,
+  no-unrestricted-messaging policy, and audit release readiness are present.
+- Operations renders the community readiness panel, implemented no-write copy,
+  private-to-public workflow, no-unrestricted-messaging guardrail, and
+  `Live smoke ready` state.
+
+Intermediate smoke caveat:
+
+- The first standard/focused smoke attempts failed before making authenticated
+  app requests because this PR worktree did not contain `.env.local`.
+  The reruns loaded the established local env file into the process and passed.
 
 Guardrails:
 

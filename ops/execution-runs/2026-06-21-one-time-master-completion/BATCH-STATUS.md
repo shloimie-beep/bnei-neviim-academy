@@ -27,7 +27,7 @@
 | 13 | REQ-20260619-308 | done | Recording/transcript/publication lifecycle and retention gates bundled with Batch 11 under the shared requirement. |
 | 14 | REQ-20260619-309 | done | Transcript privacy deployed and live-smoked in Railway deployment `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`: version/review/storage fields, body-free readiness route, no-guessed-speaker student mapping, confidence/manual-review policy, member-safe redaction, Operations panel, focused tests, and read-only live smoke passed without transcript body exposure, corpus mutation, sends, billing, Zoom/Vimeo/Google/DNS mutation, or CRM writes. |
 | 15 | REQ-20260619-310 | done | Gamification deployed and live-smoked in Railway deployment `b6f0a4de-2857-4de0-9053-be0c74c7ab74`: event-driven automatic badges use per-badge rules, Rabbi-awarded badges have an audited admin/Rabbi award route, manual reversal requires a reason and audit event, readiness is no-write, and no public individual leaderboard, prizes/credits, access grants, sends, charges, or external writes are enabled. |
-| 16 | REQ-20260619-311 | in_progress | Implementing no-write community moderation readiness, private-to-public anonymization workflow, report/flag flow, and focused live smoke. |
+| 16 | REQ-20260619-311 | done | Community moderation readiness deployed and live-smoked: private-safe no-write workflow, private-to-public anonymized preview, report/flag flow, audit history, and no unrestricted student direct messaging. |
 | 17 | REQ-20260619-312 | not_started | Sefaria/study assistant. |
 | 18 | REQ-20260619-313 | needs_operator_decision | Separate paid infrastructure/DNS remains external. |
 | 19 | REQ-20260619-314 | not_started | Final verification and release. |

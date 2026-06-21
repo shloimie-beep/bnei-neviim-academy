@@ -66,6 +66,16 @@ If resuming after that closeout, do not repeat Batch 14 or Batch 15. Continue
 Batch 16 / `REQ-20260619-311` community unless a newer run file says
 otherwise.
 
+At 2026-06-21T19:56:00+03:00, Batch 16 / `REQ-20260619-311`
+was deployed and live-verified in Railway deployment
+`44220c69-fdb0-4796-96fc-80d39771e244`. The deployed app commit was
+`be7e46ae9fefd2ea9f31c403c114b008ec7fc899`.
+
+If resuming after that closeout, do not repeat Batch 14, Batch 15, or Batch
+16. Run `npm run bna:run:next` and continue Batch 17 /
+`REQ-20260619-312` Sefaria and study-assistant readiness unless a newer run
+file says otherwise.
+
 ## Guardrails
 
 Do not run external sends, billing, DNS mutations, paid infrastructure

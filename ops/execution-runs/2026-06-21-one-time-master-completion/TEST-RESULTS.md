@@ -897,6 +897,12 @@ Recorded for `REQ-20260621-909` test identities and mock data:
 - PASS `node scripts/audit-secrets.mjs`.
 - PASS `git diff --check` with line-ending warnings only.
 - PASS `npm run railway:doctor` after deployment
+  `44220c69-fdb0-4796-96fc-80d39771e244`.
+- PASS `npm run app:smoke`,
+  `ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`.
+- PASS `npm run app:smoke:one-time-community`,
+  `ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`.
+- PASS `npm run railway:doctor` after deployment
   `5751098c-2095-4d24-97db-712aba136915`.
 - PASS `npm run app:smoke`,
   `ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`.
@@ -1080,4 +1086,7 @@ Focused coverage:
 - Unrestricted student-to-student private messaging, unreviewed publication,
   deletion without history, external notifications, and public promotion writes
   remain disabled.
+- Initial smoke attempts failed locally before app access because the PR
+  worktree did not have `.env.local`; reruns with the established local env
+  file loaded into the process passed.
 <!-- batch-16:end -->
