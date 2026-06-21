@@ -50,7 +50,7 @@ test('developer tester ticket context records page and device proof without priv
     'redactValue',
   ].forEach((needle) => assert.ok(server.includes(needle), needle));
 
-  const sourceContext = server.match(/function universalAssistantSourceContext[\s\S]*?\n}\n\nasync function loadAssistantContext/)?.[0] || '';
+  const sourceContext = server.match(/function universalAssistantSourceContext[\s\S]*?async function loadAssistantContext/)?.[0] || '';
   assert.match(sourceContext, /actor_type:\s*actorType/);
   assert.match(sourceContext, /page_path:\s*developerTester \? limitText\(redactValue\(pagePath\), 700\) : pagePath/);
 });
@@ -89,8 +89,8 @@ test('developer tester assistant avoids fake workspace foreign keys', () => {
     'AND NOT EXISTS (SELECT 1 FROM bna_projects p WHERE p.id = at.workspace_id)',
     "workspace = { id: null, key: project.project_key",
     'project_id, workspace_id, actor_type',
-    'project?.id || null,\n      project?.id || null,',
     'SET workspace_id = $2',
     'context.project?.id || null',
   ].forEach((needle) => assert.ok(server.includes(needle), needle));
+  assert.match(server, /project\?\.id \|\| null,\s+project\?\.id \|\| null,/);
 });

@@ -73,6 +73,7 @@
     "app:smoke:one-time-crm-contacts-ux": "node scripts/smoke-one-time-crm-contacts-ux-live.mjs",
     "app:smoke:one-time-trial-referral": "node scripts/smoke-one-time-trial-referral-live.mjs",
     "app:smoke:one-time-payment-access-class-links": "node scripts/smoke-one-time-payment-access-class-links-live.mjs",
+    "app:smoke:one-time-authenticated-support": "node scripts/smoke-one-time-authenticated-support-live.mjs",
     "app:smoke:final-register-surfaces": "node scripts/smoke-final-register-surfaces-live.mjs",
     "app:smoke:developer-tester-ticket": "node scripts/smoke-developer-tester-ticket-live.mjs",
     "app:smoke:public-navigation-positioning": "node scripts/smoke-public-navigation-positioning-live.mjs",

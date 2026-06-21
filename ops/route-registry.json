@@ -286,6 +286,45 @@
       "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
     },
     {
+      "route": "/api/rabbi/member/support-tickets",
+      "surface": "one_time_member_support",
+      "access": "private",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_without_member_token",
+      "expected_logged_in_behavior": "list_or_create_only_the_authenticated_member_scoped_support_tickets",
+      "privacy_risk": "high",
+      "security_expectation": "Requires a valid One Time member session token; returns ticket numbers and project-visible staff replies only, with no source context or internal notes.",
+      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/rabbi/member/support-tickets/:id",
+      "surface": "one_time_member_support_detail",
+      "access": "private",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_without_member_token",
+      "expected_logged_in_behavior": "load_only_the_authenticated_member_scoped_support_ticket",
+      "privacy_risk": "high",
+      "security_expectation": "Requires ticket source_context member_id and relationship_scope match; hides source context and internal/operator-only comments.",
+      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
+      "route": "/api/rabbi/member/questions",
+      "surface": "one_time_member_private_questions",
+      "access": "private",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_without_member_token",
+      "expected_logged_in_behavior": "list_or_create_only_the_authenticated_member_private_questions",
+      "privacy_risk": "high",
+      "security_expectation": "Stores private questions for staff review only; no forum post, member feed, external send, source context, or internal review notes are returned.",
+      "related_goal_ids": ["GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
       "route": "/member-library",
       "surface": "one_time_member_library",
       "access": "private",

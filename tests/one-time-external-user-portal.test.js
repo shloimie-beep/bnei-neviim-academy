@@ -4,6 +4,8 @@ const test = require('node:test');
 
 const serverJs = fs.readFileSync('server.js', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
+const publicRabbiMemberHtml = fs.readFileSync('public/rabbi-member.html', 'utf8');
+const publicRabbiMemberJs = fs.readFileSync('public/js/rabbi-member.js', 'utf8');
 const driveScript = fs.readFileSync('scripts/setup-one-time-partnership-drive.mjs', 'utf8');
 const telegramBridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
 const routeRegistry = fs.readFileSync('ops/route-registry.json', 'utf8');
@@ -76,8 +78,45 @@ test('support tickets are persisted separately from project tasks with comments 
   assert.match(serverJs, /app\.get\('\/api\/bna\/support-tickets'/);
   assert.match(serverJs, /app\.post\('\/api\/bna\/support-tickets'/);
   assert.match(serverJs, /app\.patch\('\/api\/bna\/support-tickets\/:id'/);
+  assert.ok(serverJs.includes("ticket_number: id ? (row.ticket_number || `OT-SUP-"), 'support ticket view should expose OT-SUP ticket numbers');
   assert.match(serverJs, /maybeCreateTaskForSupportTicket/);
   assert.match(serverJs, /Support ticket #\$\{ticket\.id\}/);
+});
+
+test('One Time member support tickets and private questions are authenticated, scoped, and sanitized', () => {
+  [
+    "app.get('/api/rabbi/member/support-tickets'",
+    "app.post('/api/rabbi/member/support-tickets'",
+    "app.get('/api/rabbi/member/support-tickets/:id'",
+    "app.get('/api/rabbi/member/questions'",
+    "app.post('/api/rabbi/member/questions'",
+    'rabbiMemberFromSessionToken(bearerOrBodyToken(req))',
+    "source_context->>'member_id'",
+    "source_context->>'relationship_scope' = 'one_time_member_project_ticket'",
+    "member_id = $2",
+    'memberSupportTicketView',
+    'memberQuestionSubmissionView',
+    "support_bot_mode: 'ticket_only'",
+    'unrestricted_mishnah_study_bot: false',
+    'staff_internal_notes_returned: false',
+    'source_context_returned: false',
+    'internal_notes_returned: false',
+    'no_public_forum: true',
+    'no_member_feed: true',
+  ].forEach((needle) => assert.ok(serverJs.includes(needle), needle));
+
+  assert.match(publicRabbiMemberHtml, /id="questionForm"/);
+  assert.match(publicRabbiMemberHtml, /id="supportForm"/);
+  assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/questions/);
+  assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/support-tickets/);
+  assert.match(publicRabbiMemberJs, /question_number/);
+  assert.match(publicRabbiMemberJs, /ticket_number/);
+  assert.match(routeRegistry, /"route": "\/api\/rabbi\/member\/support-tickets"/);
+  assert.match(routeRegistry, /"route": "\/api\/rabbi\/member\/questions"/);
+  assert.match(routeRegistry, /hides source context and internal\/operator-only comments/);
+  assert.match(actionRegistry, /ACTION-ONETIME-MEMBER-PRIVATE-QUESTION/);
+  assert.match(actionRegistry, /ACTION-ONETIME-MEMBER-SUPPORT-TICKET/);
+  assert.match(packageJson, /"app:smoke:one-time-authenticated-support"/);
 });
 
 test('One Time proposal workflow tasks are seeded idempotently with schedule fields', () => {
@@ -657,6 +696,10 @@ test('Rabbi Telegram bridge captures support tickets and requires an allowed cha
   assert.match(telegramBridge, /\/api\/bna\/support-tickets/);
   assert.match(telegramBridge, /support_ticket_created/);
   assert.match(telegramBridge, /supportTicketsCreated/);
+  assert.match(telegramBridge, /support_bot_mode: 'ticket_only'/);
+  assert.match(telegramBridge, /unrestricted_mishnah_study_bot: false/);
+  assert.match(telegramBridge, /ticket_number: ticket\.ticket_number/);
+  assert.match(telegramBridge, /Filed in Support: \$\{ticketNumber\}/);
   assert.match(telegramBridge, /TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER/);
   assert.match(telegramBridge, /scoped bot requires TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER/);
 });

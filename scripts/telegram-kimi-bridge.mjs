@@ -4359,7 +4359,20 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
       reporter_name: config.agentDisplayName || 'Rabbi Elie Scheller',
       reporter_role: 'external_user',
       project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
-      source_context: { chat_id: chatId, message_id: messageId, bridge_profile: config.bridgeProfile },
+      source_context: {
+        chat_id: chatId,
+        message_id: messageId,
+        bridge_profile: config.bridgeProfile,
+        authenticated_user: true,
+        workspace_key: 'rabbi_sheller_provider',
+        project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+        page_path: 'telegram',
+        relationship_scope: 'one_time_external_admin_project_ticket',
+        support_bot_mode: 'ticket_only',
+        unrestricted_mishnah_study_bot: false,
+        no_send: true,
+        external_write_performed: false,
+      },
     });
     const ticket = result?.ticket || result;
     if (ticket?.id) {
@@ -4370,6 +4383,7 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
         chat_id: chatId,
         message_id: messageId,
         support_ticket_id: ticket.id,
+        ticket_number: ticket.ticket_number || `OT-SUP-${String(ticket.id).padStart(6, '0')}`,
         related_task_id: ticket.related_task_id || result?.task?.id || null,
         title: ticket.title,
         severity: ticket.severity,
@@ -4384,7 +4398,7 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
       eventsCreated: 0,
       commentsCreated: 0,
       supportTicketsCreated: ticket?.id ? 1 : 0,
-      supportTickets: ticket?.id ? [ticket] : [],
+      supportTickets: ticket?.id ? [{ ...ticket, ticket_number: ticket.ticket_number || `OT-SUP-${String(ticket.id).padStart(6, '0')}` }] : [],
     };
   }
 
@@ -5269,7 +5283,8 @@ function captureSummaryText(captureSummary = {}) {
       .slice(0, 3);
     if (visibleTickets.length) {
       for (const ticket of visibleTickets) {
-        lines.push(`Filed in Support: #${ticket.id} ${ticket.title || 'ticket'}.`);
+        const ticketNumber = ticket.ticket_number || `OT-SUP-${String(ticket.id).padStart(6, '0')}`;
+        lines.push(`Filed in Support: ${ticketNumber} ${ticket.title || 'ticket'}.`);
       }
     } else {
       lines.push(`Filed in Team: ${captureSummary.supportTicketsCreated} ticket(s).`);

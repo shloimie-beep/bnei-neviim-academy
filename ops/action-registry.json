@@ -145,6 +145,36 @@
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014"]
     },
     {
+      "action_id": "ACTION-ONETIME-MEMBER-PRIVATE-QUESTION",
+      "label": "Submit Question",
+      "surface": "one_time_member_entry",
+      "route": "/rabbi-member",
+      "selector_hint": "#questionForm button[type=\"submit\"]",
+      "expected_behavior": "Creates an authenticated member-scoped private question review record only; no forum post, member feed, external send, or unrestricted study bot answer.",
+      "permission": "member",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "POST /api/rabbi/member/questions requires a member session token and returns a sanitized question number without internal notes or source context."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-SUPPORT-TICKET",
+      "label": "Open Ticket",
+      "surface": "one_time_member_entry",
+      "route": "/rabbi-member",
+      "selector_hint": "#supportForm button[type=\"submit\"]",
+      "expected_behavior": "Creates an authenticated member-scoped support ticket with ticket-only bot metadata; no external notification or cross-member data is returned.",
+      "permission": "member",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "POST /api/rabbi/member/support-tickets requires a member session token, returns OT-SUP ticket numbers, hides source context/internal notes, and sets unrestricted_mishnah_study_bot=false."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-003", "GOAL-CORE-006", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
       "action_id": "ACTION-AGENT-RUN-PREPARE",
       "label": "Prepare Agent Run",
       "surface": "operations_agent_control_center",

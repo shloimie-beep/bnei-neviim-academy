@@ -94,12 +94,20 @@
       font-weight: 800;
     }
 
-    input {
+    input,
+    select,
+    textarea {
       min-height: 42px;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 10px 12px;
       font: inherit;
+      background: #fff;
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
     }
 
     button,
@@ -114,6 +122,8 @@
       text-decoration: none;
       display: inline-flex;
       width: fit-content;
+      align-items: center;
+      gap: 6px;
     }
 
     .content-stack {
@@ -127,6 +137,44 @@
     }
 
     .member-item a { background: var(--blue); margin-top: 8px; }
+
+    .member-meta,
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fffaf0;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 16px;
+    }
+
+    .split-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .reply-list {
+      border-top: 1px solid var(--line);
+      margin-top: 12px;
+      padding-top: 10px;
+      display: grid;
+      gap: 8px;
+    }
 
     .notice {
       margin-top: 14px;
@@ -142,6 +190,7 @@
 
     @media (max-width: 820px) {
       main { grid-template-columns: 1fr; }
+      .split-fields { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -177,9 +226,51 @@
         <h2>Live Sessions</h2>
         <div id="sessionList" class="member-list"></div>
       </div>
+      <div class="panel">
+        <span class="eyebrow">Private Questions</span>
+        <h2>Ask the Rabbi</h2>
+        <form id="questionForm" class="form-grid">
+          <label>Topic <input id="questionTopic" type="text" maxlength="160" autocomplete="off"></label>
+          <label>Question <textarea id="questionBody" maxlength="2500" required></textarea></label>
+          <button type="submit">Submit Question</button>
+        </form>
+        <div id="questionList" class="member-list"></div>
+      </div>
+      <div class="panel">
+        <span class="eyebrow">Support</span>
+        <h2>Open a Ticket</h2>
+        <form id="supportForm" class="form-grid">
+          <label>Title <input id="supportTitle" type="text" maxlength="180" autocomplete="off" required></label>
+          <label>Details <textarea id="supportDescription" maxlength="1500"></textarea></label>
+          <div class="split-fields">
+            <label>Category
+              <select id="supportCategory">
+                <option value="access">Access</option>
+                <option value="login">Login</option>
+                <option value="payment">Payment</option>
+                <option value="link">Link</option>
+                <option value="recording">Recording</option>
+                <option value="worksheet">Worksheet</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+            <label>Severity
+              <select id="supportSeverity">
+                <option value="normal">Normal</option>
+                <option value="low">Low</option>
+                <option value="high">High</option>
+                <option value="blocking">Blocking</option>
+              </select>
+            </label>
+          </div>
+          <button type="submit">Open Ticket</button>
+        </form>
+        <div id="supportList" class="member-list"></div>
+      </div>
     </section>
   </main>
 
+  <script src="/js/app-select.js"></script>
   <script src="/js/rabbi-member.js"></script>
 </body>
 </html>

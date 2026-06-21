@@ -11165,6 +11165,17 @@ CREATE TABLE IF NOT EXISTS bna_support_tickets (
   reporter_role TEXT,
   assigned_to TEXT,
   source TEXT NOT NULL DEFAULT 'dashboard' CHECK (source IN ('dashboard', 'telegram', 'api', 'system')),
+  ticket_number TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  requester_user_key TEXT,
+  requester_email TEXT,
+  requester_display_name TEXT,
+  requester_role TEXT,
+  page_path TEXT,
+  authenticated_context JSONB DEFAULT '{}',
+  notification_state TEXT DEFAULT 'internal_only',
+  staff_reply_state TEXT DEFAULT 'internal_only',
   related_task_id INTEGER REFERENCES bna_tasks(id) ON DELETE SET NULL,
   source_context JSONB DEFAULT '{}',
   created_by TEXT DEFAULT 'system',
@@ -11179,6 +11190,9 @@ CREATE TABLE IF NOT EXISTS bna_support_ticket_comments (
   author TEXT NOT NULL DEFAULT 'system',
   body TEXT NOT NULL,
   visibility TEXT NOT NULL DEFAULT 'project' CHECK (visibility IN ('internal', 'operator', 'project')),
+  requester_visible BOOLEAN NOT NULL DEFAULT FALSE,
+  staff_reply BOOLEAN NOT NULL DEFAULT FALSE,
+  notification_state TEXT DEFAULT 'internal_only',
   source TEXT NOT NULL DEFAULT 'dashboard' CHECK (source IN ('dashboard', 'telegram', 'api', 'system')),
   source_context JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -11199,6 +11213,32 @@ ALTER TABLE bna_support_ticket_comments DROP CONSTRAINT IF EXISTS bna_support_ti
 ALTER TABLE bna_support_ticket_comments
   ADD CONSTRAINT bna_support_ticket_comments_source_check
   CHECK (source IN ('dashboard', 'telegram', 'api', 'system', 'web_assistant'));
+
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS ticket_number TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS workspace_key TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS project_key TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_user_key TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_email TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_display_name TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_role TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS page_path TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS authenticated_context JSONB DEFAULT '{}';
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS notification_state TEXT DEFAULT 'internal_only';
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS staff_reply_state TEXT DEFAULT 'internal_only';
+ALTER TABLE bna_support_ticket_comments ADD COLUMN IF NOT EXISTS requester_visible BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_support_ticket_comments ADD COLUMN IF NOT EXISTS staff_reply BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_support_ticket_comments ADD COLUMN IF NOT EXISTS notification_state TEXT DEFAULT 'internal_only';
+UPDATE bna_support_tickets
+   SET ticket_number = 'OT-SUP-' || LPAD(id::text, 6, '0')
+ WHERE ticket_number IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_support_tickets_ticket_number_unique
+  ON bna_support_tickets (ticket_number)
+  WHERE ticket_number IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_support_tickets_requester_email
+  ON bna_support_tickets (lower(requester_email))
+  WHERE requester_email IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_support_ticket_comments_requester_visible
+  ON bna_support_ticket_comments (ticket_id, requester_visible, created_at);
 `;
 
 const createTicketCompatibilityViewsSQL = `
@@ -71990,6 +72030,257 @@ app.get('/api/rabbi/member/live-sessions', async (req, res) => {
   }
 });
 
+app.get('/api/rabbi/member/support-tickets', async (req, res) => {
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_support_tickets
+       WHERE project_id = $1
+         AND source_context->>'member_id' = $2
+         AND source_context->>'relationship_scope' = 'one_time_member_project_ticket'
+       ORDER BY COALESCE(updated_at, created_at) DESC, id DESC
+       LIMIT 80`,
+      [auth.project.id, String(auth.member.id)]
+    );
+    const ids = result.rows.map((ticket) => ticket.id).filter(Boolean);
+    const comments = ids.length ? (await pool.query(
+      `SELECT *
+       FROM bna_support_ticket_comments
+       WHERE ticket_id = ANY($1::int[])
+         AND visibility = 'project'
+       ORDER BY created_at ASC, id ASC`,
+      [ids]
+    )).rows : [];
+    const commentsByTicket = new Map();
+    comments.forEach((comment) => {
+      const key = Number(comment.ticket_id);
+      if (!commentsByTicket.has(key)) commentsByTicket.set(key, []);
+      commentsByTicket.get(key).push(comment);
+    });
+    res.json({
+      success: true,
+      member: publicMemberView(auth.member, auth.grants),
+      relationship_scope: 'one_time_member_project_ticket',
+      support_bot_mode: 'ticket_only',
+      unrestricted_mishnah_study_bot: false,
+      tickets: result.rows.map((row) => memberSupportTicketView(row, commentsByTicket.get(Number(row.id)) || [])),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/rabbi/member/support-tickets', async (req, res) => {
+  const body = req.body || {};
+  const title = limitText(String(body.title || '').trim(), 180);
+  const description = limitText(String(body.description || body.body || '').trim(), 1500);
+  if (!title && !description) {
+    return res.status(400).json({ success: false, error: 'title or description is required' });
+  }
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const sourceContext = memberSupportSourceContext(req, auth, body, {
+      relationship_scope: 'one_time_member_project_ticket',
+      page_path: limitText(redactValue(body.page_path || body.pagePath || '/rabbi-member'), 700),
+    });
+    const result = await pool.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, title, description, severity, status, category,
+         reporter_name, reporter_role, assigned_to, source,
+         workspace_key, project_key, requester_user_key, requester_email,
+         requester_display_name, requester_role, page_path, authenticated_context,
+         notification_state, staff_reply_state, source_context, created_by
+       )
+       VALUES (
+         $1, $2, $3, $4, 'open', $5, $6, 'one_time_member', 'Shloimie', 'api',
+         'rabbi_sheller_provider', $7, $8, $9,
+         $10, 'one_time_member', $11, $12::jsonb,
+         'staff_review_pending', 'internal_only', $13::jsonb, 'member_portal'
+       )
+       RETURNING *`,
+      [
+        auth.project.id,
+        title || description.slice(0, 160),
+        description || null,
+        safeSupportTicketSeverity(body.severity || 'normal'),
+        safeSupportTicketCategory(body.category || 'other'),
+        limitText(auth.member.display_name || auth.member.name || auth.member.email || 'One Time member', 160),
+        auth.project.project_key,
+        String(auth.member.id),
+        normalizeEmail(auth.member.email || '') || null,
+        limitText(auth.member.display_name || auth.member.name || auth.member.email || 'One Time member', 160),
+        sourceContext.page_path || null,
+        JSON.stringify({
+          authenticated: true,
+          auth_source: 'rabbi_member_session_token',
+          workspace_key: 'rabbi_sheller_provider',
+          project_key: auth.project.project_key,
+          member_id: auth.member.id,
+          member_email_present: Boolean(normalizeEmail(auth.member.email || '')),
+          page_path: sourceContext.page_path || null,
+          raw_access_code_stored: false,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        JSON.stringify(sourceContext),
+      ]
+    );
+    let ticket = supportTicketView(result.rows[0]);
+    if (ticket.id && !result.rows[0].ticket_number) {
+      ticket = supportTicketView((await pool.query(
+        `UPDATE bna_support_tickets
+         SET ticket_number = 'OT-SUP-' || LPAD(id::text, 6, '0'),
+             updated_at = NOW()
+         WHERE id = $1
+           AND ticket_number IS NULL
+         RETURNING *`,
+        [ticket.id]
+      )).rows[0] || ticket);
+    }
+    await createInAppNotification({
+      eventType: 'member_support_ticket_created',
+      projectId: auth.project.id,
+      workspaceKey: workspaceKeyForProject(auth.project.project_key),
+      recipientLabel: 'Shloimie',
+      recipientRole: 'operator',
+      title: `${ticket.ticket_number}: ${ticket.title}`,
+      body: limitText(ticket.description || 'Review the member support ticket.', 900),
+      priority: ticket.severity === 'blocking' ? 'urgent' : ticket.severity === 'high' ? 'high' : 'normal',
+      relatedType: 'support_ticket',
+      relatedId: ticket.id,
+      sourceTable: 'bna_support_tickets',
+      sourceId: ticket.id,
+      sourceContext: {
+        source: 'one_time_member_support_ticket',
+        member_id: auth.member.id,
+        relationship_scope: 'one_time_member_project_ticket',
+        support_bot_mode: 'ticket_only',
+        unrestricted_mishnah_study_bot: false,
+        no_send: true,
+        external_write_performed: false,
+      },
+      createdBy: 'member_portal',
+    }).catch((error) => console.error('Member support ticket notification error:', error));
+    res.json({
+      success: true,
+      ticket: memberSupportTicketView(ticket, []),
+      support_bot_mode: 'ticket_only',
+      unrestricted_mishnah_study_bot: false,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/rabbi/member/support-tickets/:id', async (req, res) => {
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const ticket = (await pool.query(
+      `SELECT *
+       FROM bna_support_tickets
+       WHERE id = $1
+         AND project_id = $2
+         AND source_context->>'member_id' = $3
+         AND source_context->>'relationship_scope' = 'one_time_member_project_ticket'
+       LIMIT 1`,
+      [req.params.id, auth.project.id, String(auth.member.id)]
+    )).rows[0];
+    if (!ticket) return res.status(404).json({ success: false, error: 'Support ticket not found' });
+    const comments = (await pool.query(
+      `SELECT *
+       FROM bna_support_ticket_comments
+       WHERE ticket_id = $1
+         AND visibility = 'project'
+       ORDER BY created_at ASC, id ASC`,
+      [ticket.id]
+    )).rows;
+    res.json({
+      success: true,
+      ticket: memberSupportTicketView(ticket, comments),
+      support_bot_mode: 'ticket_only',
+      unrestricted_mishnah_study_bot: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/rabbi/member/questions', async (req, res) => {
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_one_time_question_reviews
+       WHERE project_id = $1
+         AND member_id = $2
+       ORDER BY COALESCE(updated_at, created_at) DESC, id DESC
+       LIMIT 80`,
+      [auth.project.id, String(auth.member.id)]
+    );
+    res.json({
+      success: true,
+      member: publicMemberView(auth.member, auth.grants),
+      relationship_scope: 'one_time_member_private_question',
+      no_public_forum: true,
+      no_member_feed: true,
+      no_send: true,
+      external_write_performed: false,
+      questions: result.rows.map(memberQuestionSubmissionView),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/rabbi/member/questions', async (req, res) => {
+  const body = req.body || {};
+  const questionText = limitText(String(body.question_text || body.question || body.body || '').trim(), 2500);
+  if (!questionText) return res.status(400).json({ success: false, error: 'question_text is required' });
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const topic = limitText(String(body.topic || 'Private member question').trim(), 160);
+    const sourceContext = memberSupportSourceContext(req, auth, body, {
+      relationship_scope: 'one_time_member_private_question',
+      no_public_forum: true,
+      no_member_feed: true,
+      page_path: limitText(redactValue(body.page_path || body.pagePath || '/rabbi-member'), 700),
+    });
+    const result = await pool.query(
+      `INSERT INTO bna_one_time_question_reviews (
+         project_id, member_id, submitter_label, question_text, topic,
+         privacy_notes, review_status, assigned_to, waiting_on,
+         next_action_label, source_context, public_visible, member_visible,
+         forum_post_created, no_send, external_write_performed, created_by
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, 'needs_review', 'Rabbi Elie Scheller', 'rabbi_review',
+               'Review private member question', $7::jsonb, FALSE, FALSE, FALSE, TRUE, FALSE, 'member_portal')
+       RETURNING *`,
+      [
+        auth.project.id,
+        String(auth.member.id),
+        limitText(auth.member.display_name || auth.member.name || auth.member.email || 'Private member', 160),
+        questionText,
+        topic || 'Private member question',
+        'Member-submitted private One Time question. Staff notes stay hidden unless an approved member-visible reply is added.',
+        JSON.stringify(sourceContext),
+      ]
+    );
+    res.json({
+      success: true,
+      question: memberQuestionSubmissionView(result.rows[0]),
+      no_public_forum: true,
+      no_member_feed: true,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
 app.post('/api/webhooks/green-invoice/rabbi', async (req, res) => {
   try {
     const project = await getRabbiProject();
@@ -74138,11 +74429,102 @@ function safeSupportTicketSource(value) {
 }
 
 function supportTicketView(row = {}) {
+  const id = row.id ? Number(row.id) : null;
   return {
     ...row,
+    ticket_number: id ? (row.ticket_number || `OT-SUP-${String(id).padStart(6, '0')}`) : '',
     source_context: row.source_context && typeof row.source_context === 'object'
       ? row.source_context
       : parseJsonMaybe(row.source_context) || {},
+  };
+}
+
+function memberSupportTicketView(row = {}, comments = []) {
+  const ticket = supportTicketView(row);
+  const visibleComments = (Array.isArray(comments) ? comments : [])
+    .filter((comment) => String(comment.visibility || 'project') === 'project')
+    .map((comment) => ({
+      id: comment.id ? Number(comment.id) : null,
+      author: limitText(comment.author || 'Staff', 120),
+      body: limitText(comment.body || '', 1200),
+      created_at: comment.created_at || null,
+    }));
+  return {
+    id: ticket.id ? Number(ticket.id) : null,
+    ticket_number: ticket.ticket_number,
+    title: limitText(ticket.title || 'Support ticket', 180),
+    description: limitText(ticket.description || '', 900),
+    status: safeSupportTicketStatus(ticket.status),
+    severity: safeSupportTicketSeverity(ticket.severity),
+    category: safeSupportTicketCategory(ticket.category),
+    relationship_scope: 'one_time_member_project_ticket',
+    member_scoped: true,
+    other_user_data_returned: false,
+    staff_internal_notes_returned: false,
+    source_context_returned: false,
+    no_send: true,
+    external_write_performed: false,
+    private_notification: {
+      status: SUPPORT_TICKET_PROCESSED_STATUSES.has(safeSupportTicketStatus(ticket.status))
+        ? 'processed_notification_draft_available_to_staff'
+        : 'staff_review_pending',
+      no_send: true,
+      external_write_performed: false,
+    },
+    staff_replies: visibleComments,
+    created_at: ticket.created_at || null,
+    updated_at: ticket.updated_at || null,
+  };
+}
+
+function memberQuestionSubmissionView(row = {}) {
+  const id = row.id ? Number(row.id) : null;
+  const staffReplyVisible = row.member_visible === true && String(row.review_notes || '').trim();
+  return {
+    id,
+    question_number: id ? `OT-Q-${String(id).padStart(6, '0')}` : '',
+    title: limitText(row.title || row.topic || 'Private question', 180),
+    topic: limitText(row.topic || '', 160),
+    question_preview: limitText(row.question_text || '', 520),
+    review_status: row.review_status || 'needs_review',
+    relationship_scope: 'one_time_member_private_question',
+    member_scoped: true,
+    no_public_forum: true,
+    no_member_feed: true,
+    no_send: row.no_send !== false,
+    external_write_performed: row.external_write_performed === true,
+    public_visible: false,
+    forum_post_created: false,
+    other_user_data_returned: false,
+    internal_notes_returned: false,
+    source_context_returned: false,
+    staff_reply_available: Boolean(staffReplyVisible),
+    staff_reply: staffReplyVisible ? limitText(row.review_notes, 1200) : '',
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+function memberSupportSourceContext(req, auth, body = {}, extra = {}) {
+  const pagePath = limitText(redactValue(body.page_path || body.pagePath || body.current_route || body.currentRoute || ''), 700);
+  const pageUrl = limitText(redactValue(body.page_url || body.pageUrl || ''), 900);
+  return {
+    authenticated_user: true,
+    actor_type: 'one_time_member',
+    member_id: auth.member.id,
+    member_email: normalizeEmail(auth.member.email || ''),
+    member_name: limitText(auth.member.display_name || auth.member.name || '', 160),
+    project_key: auth.project.project_key,
+    workspace_key: 'rabbi_sheller_provider',
+    relationship_scope: extra.relationship_scope || 'one_time_member_project',
+    page_path: pagePath || null,
+    page_url: pageUrl || null,
+    support_bot_mode: 'ticket_only',
+    unrestricted_mishnah_study_bot: false,
+    raw_access_code_stored: false,
+    no_send: true,
+    external_write_performed: false,
+    ...(extra && typeof extra === 'object' ? extra : {}),
   };
 }
 
@@ -74196,6 +74578,7 @@ function supportTicketProcessedNotificationRecipient(ticket = {}) {
   return normalizeEmail(
     context.actor_email ||
     context.parent_email ||
+    context.member_email ||
     context.email ||
     context.reporter_email ||
     context.requester_email ||

@@ -183,6 +183,11 @@ test('server exposes scoped Rabbi admin, public, member, and webhook routes', ()
     "app.get('/api/rabbi/member/session'",
     "app.get('/api/rabbi/member/library'",
     "app.get('/api/rabbi/member/live-sessions'",
+    "app.get('/api/rabbi/member/support-tickets'",
+    "app.post('/api/rabbi/member/support-tickets'",
+    "app.get('/api/rabbi/member/support-tickets/:id'",
+    "app.get('/api/rabbi/member/questions'",
+    "app.post('/api/rabbi/member/questions'",
     "app.post('/api/webhooks/green-invoice/rabbi'",
   ].forEach((route) => assert.match(server, new RegExp(escapeRegex(route))));
 
@@ -222,6 +227,12 @@ test('public preview pages and Operations launch panel keep Rabbi launch separat
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/request-login/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/library/);
   assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/live-sessions/);
+  assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/questions/);
+  assert.match(publicRabbiMemberJs, /\/api\/rabbi\/member\/support-tickets/);
+  assert.match(publicRabbiMemberHtml, /id="questionForm"/);
+  assert.match(publicRabbiMemberHtml, /id="supportForm"/);
+  assert.match(publicRabbiMemberHtml, /Private Questions/);
+  assert.match(publicRabbiMemberHtml, /Open a Ticket/);
   assert.match(publicRabbiMemberJs, /Secure Join Class is relationship-scoped/);
   assert.match(publicRabbiMemberJs, /host\/start URLs are never exposed/);
   assert.doesNotMatch(publicRabbiMemberJs, /session\.zoom_url/);

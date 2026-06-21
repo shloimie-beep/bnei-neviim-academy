@@ -4,6 +4,8 @@
     member: null,
     library: [],
     sessions: [],
+    questions: [],
+    supportTickets: [],
     notice: '',
   };
 
@@ -89,11 +91,65 @@
     `).join('');
   }
 
+  function renderQuestions() {
+    const node = $('questionList');
+    if (!node) return;
+    if (!state.member) {
+      node.innerHTML = '<div class="soft-panel">Open a member session to submit private questions.</div>';
+      return;
+    }
+    if (!state.questions.length) {
+      node.innerHTML = '<div class="soft-panel">No private questions have been submitted yet.</div>';
+      return;
+    }
+    node.innerHTML = state.questions.map((question) => `
+      <article class="member-item">
+        <div class="badge-row">
+          <span class="badge">${escapeHtml(question.question_number || 'Question')}</span>
+          <span class="badge">${escapeHtml((question.review_status || 'needs_review').replace(/_/g, ' '))}</span>
+        </div>
+        <h3>${escapeHtml(question.title || question.topic || 'Private question')}</h3>
+        <p>${escapeHtml(question.question_preview || '')}</p>
+        ${question.staff_reply_available ? `<div class="reply-list"><strong>Rabbi reply</strong><p>${escapeHtml(question.staff_reply || '')}</p></div>` : ''}
+      </article>
+    `).join('');
+  }
+
+  function renderSupportTickets() {
+    const node = $('supportList');
+    if (!node) return;
+    if (!state.member) {
+      node.innerHTML = '<div class="soft-panel">Open a member session to create support tickets.</div>';
+      return;
+    }
+    if (!state.supportTickets.length) {
+      node.innerHTML = '<div class="soft-panel">No support tickets are open.</div>';
+      return;
+    }
+    node.innerHTML = state.supportTickets.map((ticket) => {
+      const replies = Array.isArray(ticket.staff_replies) ? ticket.staff_replies : [];
+      return `
+        <article class="member-item">
+          <div class="badge-row">
+            <span class="badge">${escapeHtml(ticket.ticket_number || 'Ticket')}</span>
+            <span class="badge">${escapeHtml((ticket.status || 'open').replace(/_/g, ' '))}</span>
+            <span class="badge">${escapeHtml(ticket.category || 'support')}</span>
+          </div>
+          <h3>${escapeHtml(ticket.title || 'Support ticket')}</h3>
+          <p>${escapeHtml(ticket.description || '')}</p>
+          ${replies.length ? `<div class="reply-list">${replies.map((reply) => `<p><strong>${escapeHtml(reply.author || 'Staff')}</strong><br>${escapeHtml(reply.body || '')}</p>`).join('')}</div>` : ''}
+        </article>
+      `;
+    }).join('');
+  }
+
   function renderAll() {
     renderNotice();
     renderMember();
     renderLibrary();
     renderSessions();
+    renderQuestions();
+    renderSupportTickets();
   }
 
   async function requestLogin(event) {
@@ -136,14 +192,18 @@
       return;
     }
     try {
-      const [sessionData, libraryData, liveData] = await Promise.all([
+      const [sessionData, libraryData, liveData, questionData, supportData] = await Promise.all([
         api('/api/rabbi/member/session'),
         api('/api/rabbi/member/library'),
         api('/api/rabbi/member/live-sessions'),
+        api('/api/rabbi/member/questions'),
+        api('/api/rabbi/member/support-tickets'),
       ]);
-      state.member = sessionData.member || libraryData.member || liveData.member || null;
+      state.member = sessionData.member || libraryData.member || liveData.member || questionData.member || supportData.member || null;
       state.library = libraryData.items || [];
       state.sessions = liveData.live_sessions || [];
+      state.questions = questionData.questions || [];
+      state.supportTickets = supportData.tickets || [];
     } catch (error) {
       state.notice = error.message || 'Could not load member access.';
       state.token = '';
@@ -152,8 +212,78 @@
     renderAll();
   }
 
+  async function submitQuestion(event) {
+    event?.preventDefault?.();
+    if (!state.token) {
+      state.notice = 'Open a member session before submitting a question.';
+      renderAll();
+      return;
+    }
+    const body = $('questionBody')?.value || '';
+    const topic = $('questionTopic')?.value || '';
+    if (!body.trim()) return;
+    try {
+      state.notice = 'Submitting private question...';
+      renderNotice();
+      const data = await api('/api/rabbi/member/questions', {
+        method: 'POST',
+        body: JSON.stringify({
+          topic,
+          question_text: body,
+          page_path: window.location.pathname,
+        }),
+      });
+      if (data.question) state.questions = [data.question, ...state.questions];
+      if ($('questionBody')) $('questionBody').value = '';
+      if ($('questionTopic')) $('questionTopic').value = '';
+      state.notice = data.question?.question_number
+        ? `Private question ${data.question.question_number} submitted.`
+        : 'Private question submitted.';
+    } catch (error) {
+      state.notice = error.message || 'Could not submit private question.';
+    }
+    renderAll();
+  }
+
+  async function submitSupportTicket(event) {
+    event?.preventDefault?.();
+    if (!state.token) {
+      state.notice = 'Open a member session before creating a support ticket.';
+      renderAll();
+      return;
+    }
+    const title = $('supportTitle')?.value || '';
+    const description = $('supportDescription')?.value || '';
+    if (!title.trim() && !description.trim()) return;
+    try {
+      state.notice = 'Opening support ticket...';
+      renderNotice();
+      const data = await api('/api/rabbi/member/support-tickets', {
+        method: 'POST',
+        body: JSON.stringify({
+          title,
+          description,
+          category: $('supportCategory')?.value || 'other',
+          severity: $('supportSeverity')?.value || 'normal',
+          page_path: window.location.pathname,
+        }),
+      });
+      if (data.ticket) state.supportTickets = [data.ticket, ...state.supportTickets];
+      if ($('supportTitle')) $('supportTitle').value = '';
+      if ($('supportDescription')) $('supportDescription').value = '';
+      state.notice = data.ticket?.ticket_number
+        ? `Support ticket ${data.ticket.ticket_number} opened.`
+        : 'Support ticket opened.';
+    } catch (error) {
+      state.notice = error.message || 'Could not open support ticket.';
+    }
+    renderAll();
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     $('loginForm')?.addEventListener('submit', requestLogin);
+    $('questionForm')?.addEventListener('submit', submitQuestion);
+    $('supportForm')?.addEventListener('submit', submitSupportTicket);
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {

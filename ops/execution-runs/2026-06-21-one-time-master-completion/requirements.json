@@ -1715,8 +1715,8 @@
       "depends_on": [
         "REQ-20260621-504"
       ],
-      "status": "not_started",
-      "implementation_status": "not_started",
+      "status": "in_progress",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
       "evidence": [],
       "verification": [],
@@ -1726,7 +1726,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T16:05:00+03:00",
+      "updated_at": "2026-06-21T18:24:00+03:00",
       "id": "REQ-20260621-908",
       "title": "Authenticated questions and support-ticket bot",
       "expected_result": "Authenticated users can open scoped support tickets and private/community questions without exposing other users or internal notes.",
