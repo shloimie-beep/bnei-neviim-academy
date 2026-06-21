@@ -1221,8 +1221,10 @@ Local verification:
 
 Deployment and live evidence:
 
-- Implementation/pushed/deployed commit:
+- Implementation/pushed commit:
   `62715fd68ad0956d92134560af303ba9d5fc7720`
+- Deployed commit:
+  `53c66d204604ac94801a33bfa4c29306bdedb83b`
 - Final active Railway deployment:
   `ec7724a3-76b9-4858-85e2-370af327759a`
 - Railway doctor after deploy: PASS, deployment status `SUCCESS`.

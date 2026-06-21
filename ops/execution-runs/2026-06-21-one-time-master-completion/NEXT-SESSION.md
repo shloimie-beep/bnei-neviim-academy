@@ -517,8 +517,10 @@ Payment-to-access and class-link readiness is deployed and live-verified.
 
 - Requirement: `REQ-20260621-907`
 - Implementation status: `verified_live`
-- Implementation/pushed/deployed commit:
+- Implementation/pushed commit:
   `62715fd68ad0956d92134560af303ba9d5fc7720`
+- Deployed commit:
+  `53c66d204604ac94801a33bfa4c29306bdedb83b`
 - Initial manual Railway deployment:
   `a0b6dcb5-a593-41f9-9743-bcc717d41730`
 - Final active Railway deployment:

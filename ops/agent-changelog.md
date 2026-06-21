@@ -25128,8 +25128,9 @@ external CRM writes, Zoom meetings, raw member Zoom URLs, or Zoom host/start
 URLs. Operations renders the Payment / Access / Class Links panel, and the
 member portal renders a protected Join Class blocker instead of `session.zoom_url`.
 
-Implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720` was pushed
-and deployed from a clean detached worktree. Manual deployment first reached
+Implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720` was pushed.
+The safe bundle was deployed from clean detached worktree commit
+`53c66d204604ac94801a33bfa4c29306bdedb83b`. Manual deployment first reached
 `a0b6dcb5-a593-41f9-9743-bcc717d41730`; final active Railway deployment
 `ec7724a3-76b9-4858-85e2-370af327759a` is `SUCCESS` and was verified by
 standard live smoke

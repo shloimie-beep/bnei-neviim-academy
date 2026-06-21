@@ -322,7 +322,7 @@ JSON files in the main worktree were not included in the bundle. The later evide
 - Final active deployment ID:
   `ec7724a3-76b9-4858-85e2-370af327759a`
 - Deployed app-visible commit:
-  `62715fd68ad0956d92134560af303ba9d5fc7720`
+  `53c66d204604ac94801a33bfa4c29306bdedb83b`
 - Service/environment: `skillful-motivation / production`
 - Railway doctor/poll after deploy: PASS, final deployment status `SUCCESS`
 - Standard live smoke: PASS,
@@ -331,7 +331,7 @@ JSON files in the main worktree were not included in the bundle. The later evide
   `ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`
 
 Deployment was run from a clean detached worktree at
-`62715fd68ad0956d92134560af303ba9d5fc7720` so the unrelated uncommitted blog
+`53c66d204604ac94801a33bfa4c29306bdedb83b` so the unrelated uncommitted blog
 JSON files in the main worktree were not included in the bundle. Manual upload
 first reached deployment `a0b6dcb5-a593-41f9-9743-bcc717d41730`; a later
 Railway status check showed deployment

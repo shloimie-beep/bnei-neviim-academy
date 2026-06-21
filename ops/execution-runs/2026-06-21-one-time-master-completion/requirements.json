@@ -1664,7 +1664,7 @@
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
-        "Railway deployment ec7724a3-76b9-4858-85e2-370af327759a SUCCESS for deployed commit 62715fd68ad0956d92134560af303ba9d5fc7720",
+        "Railway deployment ec7724a3-76b9-4858-85e2-370af327759a SUCCESS for deployed commit 53c66d204604ac94801a33bfa4c29306bdedb83b",
         "PASS npm run railway:doctor after deployment ec7724a3-76b9-4858-85e2-370af327759a",
         "PASS standard live smoke ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
         "PASS focused live smoke ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
@@ -1699,7 +1699,11 @@
         "tests/one-time-external-user-portal.test.js"
       ],
       "deployment_id": "ec7724a3-76b9-4858-85e2-370af327759a",
-      "deployed_commit": "62715fd68ad0956d92134560af303ba9d5fc7720"
+      "deployed_commit": "53c66d204604ac94801a33bfa4c29306bdedb83b",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
+      ]
     },
     {
       "source_id": "RAW-20260621-002",
