@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-21T17:53:00+03:00",
+  "updated_at": "2026-06-21T19:45:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -2243,16 +2243,19 @@
       "evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
-        "ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.json",
-        "ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md",
-        "ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.json"
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.json",
+        "ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.json"
       ],
       "verification": [
         "node --check src/lib/bna/gamification.js",
         "node --check server.js",
         "node --check scripts/smoke-one-time-gamification-live.mjs",
-        "node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js tests/one-time-action-coverage.test.js",
+        "node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js",
+        "node --test tests/one-time-operations-ui-smoke.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js",
         "npm run watchdog:actions",
         "npm run watchdog:security",
         "npm run bna:run:validate",
@@ -2272,32 +2275,34 @@
         "tests/gamification-events.test.js",
         "tests/one-time-gamification-badge-audit.test.js",
         "ops/watchdog-audits/2026-06-21T16-34-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-21T16-38-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-38-watchdog-security-routes.md"
       ],
-      "implementation_commit": "39b5db0ea0fb154db8aaf2e69735a40b981a59fc",
-      "pushed_commit": "39b5db0ea0fb154db8aaf2e69735a40b981a59fc",
+      "implementation_commit": "68e62775a0f0414427e6b5e6a592022c78d84742",
+      "pushed_commit": "93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_required": true,
       "deployment_evidence": [
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
-        "Railway deployment dcc60355-48fa-4a16-8cd2-5d05c3e8622c SUCCESS for deployed commit 39b5db0ea0fb154db8aaf2e69735a40b981a59fc",
-        "ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md"
+        "Railway deployment b6f0a4de-2857-4de0-9053-be0c74c7ab74 SUCCESS for deployed app commit 68e62775a0f0414427e6b5e6a592022c78d84742",
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md"
       ],
       "live_required": true,
-      "updated_at": "2026-06-21T19:40:00+03:00",
-      "deployment_id": "dcc60355-48fa-4a16-8cd2-5d05c3e8622c",
-      "deployed_commit": "39b5db0ea0fb154db8aaf2e69735a40b981a59fc",
+      "updated_at": "2026-06-21T19:45:00+03:00",
+      "deployment_id": "b6f0a4de-2857-4de0-9053-be0c74c7ab74",
+      "deployed_commit": "68e62775a0f0414427e6b5e6a592022c78d84742",
       "live_smoke": [
-        "ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md",
-        "ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md"
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md"
       ]
     },
     {
       "id": "REQ-20260619-311",
       "title": "Community",
       "expected_result": "Community is moderated, private-safe, auditable, and has no unrestricted student direct messaging.",
-      "status": "not_started",
+      "status": "in_progress",
       "source_id": "RAW-20260621-001",
       "source_statement_ids": [
         "STMT-20260621-001-0015"
@@ -2312,9 +2317,9 @@
       "depends_on": [
         "REQ-20260619-306"
       ],
-      "implementation_status": "not_started",
+      "implementation_status": "implementation_started",
       "can_continue_without_operator": true,
-      "next_action": "Complete announcements, moderated cohort discussions, private questions, parent visibility, staff notes, report/flag flow, and private-to-public workflow.",
+      "next_action": "Implement and verify no-write community moderation readiness, private-to-public anonymization workflow, report/flag flow, and Operations/live-smoke evidence.",
       "acceptance_criteria": [
         "private-to-public workflow preserves original/published link",
         "no identifying data published",
@@ -2333,7 +2338,7 @@
       "deployment_required": true,
       "deployment_evidence": [],
       "live_required": true,
-      "updated_at": "2026-06-21T11:05:00+03:00"
+      "updated_at": "2026-06-21T19:45:00+03:00"
     },
     {
       "id": "REQ-20260619-312",

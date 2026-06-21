@@ -1564,14 +1564,18 @@ Status: done / deployed / verified live
 Implemented `REQ-20260619-310` gamification completion. Server-side event
 creation now awards automatic badges through the shared per-badge evaluator
 instead of broad event-type/points matching. Rabbi-awarded badges remain
-review-gated. Manual badge reversal now requires a reason and writes a badge
-audit event. The readiness route and Operations panel remain read-only.
+review-gated and can be awarded only through an audited admin/Rabbi endpoint
+with student scope, source evidence, and a human reason. Manual badge reversal
+now requires a reason and writes a badge audit event. The readiness route and
+Operations panel remain read-only.
 
 Implemented files:
 
 - Badge policy and readiness: `src/lib/bna/gamification.js`
 - Event-driven badge award path, manual reversal route, route allowlist:
   `server.js`
+- Rabbi-awarded badge audit route:
+  `server.js`, `ops/route-registry.json`
 - Operations badge readiness copy: `public/operations.html`
 - Route/package/smoke registration:
   `ops/route-registry.json`, `package.json`,
@@ -1584,11 +1588,12 @@ Local verification:
 
 - PASS syntax checks for `src/lib/bna/gamification.js`, `server.js`, and
   `scripts/smoke-one-time-gamification-live.mjs`.
-- PASS focused gamification/community/action suite: 29/29.
+- PASS focused gamification suite: 13/13.
+- PASS adjacent Operations/model/privacy suite: 12/12.
 - PASS `npm run watchdog:actions`:
-  `ops/watchdog-audits/2026-06-21T16-34-watchdog-action-audit.md`
+  `ops/watchdog-audits/2026-06-21T16-38-watchdog-action-audit.md`
 - PASS `npm run watchdog:security`:
-  `ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md`
+  `ops/watchdog-audits/2026-06-21T16-38-watchdog-security-routes.md`
 - PASS `npm run bna:run:validate`.
 - PASS tracked secret audit.
 - PASS `git diff --check` with line-ending warnings only.
@@ -1596,14 +1601,19 @@ Local verification:
 Deployment and live evidence:
 
 - Implementation/pushed/deployed commit:
-  `39b5db0ea0fb154db8aaf2e69735a40b981a59fc`
+  `68e62775a0f0414427e6b5e6a592022c78d84742`
+- Docs/status closeout commit:
+  `93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c`
 - Railway deployment:
-  `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`
+  `b6f0a4de-2857-4de0-9053-be0c74c7ab74`
 - Railway doctor after deploy: PASS, deployment status `SUCCESS`.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`
 - Focused gamification live smoke:
-  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`
+  `ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`
+- Intermediate standard smoke with scoped One Time credentials failed before
+  final rerun:
+  `ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md`
 
 Focused live smoke verified:
 
@@ -1611,7 +1621,8 @@ Focused live smoke verified:
   `implemented_read_only`, no-write flags, 11 automatic badges, 6
   Rabbi-awarded badges, and no blockers.
 - Event-driven automatic badge pipeline and manual reversal pipeline are
-  reported as implemented.
+  reported as implemented; Rabbi-awarded badge writes require the separate
+  audited admin/Rabbi route.
 - The readiness route does not award badges, reverse badges, notify anyone,
   grant access, create prizes/credits, or enable a public individual
   leaderboard.
@@ -1624,3 +1635,50 @@ Guardrails:
   charge, external CRM/GHL write, Zoom/Vimeo/Google/DNS mutation, or secret
   exposure was performed.
 <!-- batch-15:end -->
+
+<!-- batch-16:start -->
+## Batch 16 - Community
+
+Status: implementation complete locally / deployment pending
+
+Implemented `REQ-20260619-311` community moderation readiness as a no-write,
+private-safe workflow. The contract now reports `implemented_read_only`, keeps
+public promotion writes disabled, and exposes the complete private-to-public
+review path: private student submission, Rabbi/moderator review, reviewer edit
+or anonymization, visibility selection, linked original/published versions, and
+no identifying private data publication.
+
+Implemented files:
+
+- Community moderation contract:
+  `src/lib/bna/community-moderation.js`
+- Operations readiness panel and copy:
+  `public/operations.html`
+- Focused live smoke:
+  `scripts/smoke-one-time-community-live.mjs`
+- Package and tests:
+  `package.json`, `tests/one-time-community-moderation-workflow.test.js`
+
+Local verification:
+
+- PASS syntax checks for `src/lib/bna/community-moderation.js`, `server.js`,
+  and `scripts/smoke-one-time-community-live.mjs`.
+- PASS focused community/action suite: 14/14.
+- PASS `npm run watchdog:actions`:
+  `ops/watchdog-audits/2026-06-21T16-48-watchdog-action-audit.md`
+- PASS `npm run watchdog:security`:
+  `ops/watchdog-audits/2026-06-21T16-48-watchdog-security-routes.md`
+- PASS `npm run bna:run:validate`.
+- PASS tracked secret audit.
+- PASS `git diff --check` with line-ending warnings only.
+
+Deployment and live evidence:
+
+- Pending after implementation commit/push.
+
+Guardrails:
+
+- No community thread, message, approval, parent-visible message, public post,
+  staff note, notification, send, charge, Zoom/Vimeo/Google/DNS mutation,
+  external CRM/GHL write, delete purge, or secret exposure was performed.
+<!-- batch-16:end -->

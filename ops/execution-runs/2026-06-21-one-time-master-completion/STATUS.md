@@ -718,17 +718,25 @@ Closed `REQ-20260619-310` by completing the One Time badge/gamification
 workflow. Automatic badge awards now use the shared event-driven per-badge
 evaluator, configurable thresholds, active-badge suppression, stable
 idempotency keys, source-event evidence, and badge audit events. Rabbi-awarded
-badges remain review-gated. Manual badge reversal now requires a reversal
-reason and writes an audit event.
+badges are available only through an audited admin/Rabbi award route that
+requires student scope, a Rabbi-awarded badge slug, source evidence, and a
+human reason. Manual badge reversal now requires a reversal reason and writes
+an audit event.
 
-Implementation/pushed/deployed commit:
-`39b5db0ea0fb154db8aaf2e69735a40b981a59fc`. Railway deployment
-`dcc60355-48fa-4a16-8cd2-5d05c3e8622c` reached `SUCCESS`. Standard live smoke
-passed at `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`, and
+Final app implementation/pushed/deployed commit:
+`68e62775a0f0414427e6b5e6a592022c78d84742`. Docs/status closeout was pushed
+at `93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c`. Railway deployment
+`b6f0a4de-2857-4de0-9053-be0c74c7ab74` reached `SUCCESS`. Standard live smoke
+passed at `ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`, and
 focused Batch 15 live smoke passed at
-`ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`.
+`ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`.
+An intermediate standard smoke
+`ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md` failed because it
+used scoped One Time credentials against the full `/me` expectation; the final
+rerun used full Ops credentials and passed.
 
-Local verification passed: syntax checks, 29/29 focused tests,
+Local verification passed: syntax checks, 13/13 focused gamification tests,
+12/12 adjacent UI/model/privacy tests,
 action/security watchdogs, execution-run validation, tracked secret audit, and
 diff check with line-ending warnings only.
 
@@ -739,3 +747,17 @@ exposure was performed.
 
 Next unblocked requirement: run `npm run bna:run:next`.
 <!-- batch-15:end -->
+
+<!-- batch-16:start -->
+## Batch 16 - Community
+
+`REQ-20260619-311` is in progress with local implementation and focused
+verification complete. The community readiness contract is now
+`implemented_read_only`, the Operations panel exposes no-write private-safe
+workflow state, and the focused live smoke script is ready for deployment
+verification.
+
+Remaining steps: commit, push, deploy the safe app-visible bundle, run
+Railway doctor, run standard app smoke and focused community live smoke, then
+record final deployment evidence and continue to Batch 17.
+<!-- batch-16:end -->

@@ -710,20 +710,26 @@ Gamification is deployed and live-verified.
 
 - Requirement: `REQ-20260619-310`
 - Implementation status: `verified_live`
-- Implementation/pushed/deployed commit:
-  `39b5db0ea0fb154db8aaf2e69735a40b981a59fc`
+- Final app implementation/pushed/deployed commit:
+  `68e62775a0f0414427e6b5e6a592022c78d84742`
+- Docs/status closeout commit:
+  `93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c`
 - Railway deployment:
-  `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`
+  `b6f0a4de-2857-4de0-9053-be0c74c7ab74`
 - Key files:
   `src/lib/bna/gamification.js`, `server.js`,
   `public/operations.html`, `scripts/smoke-one-time-gamification-live.mjs`,
   `tests/gamification-events.test.js`,
   `tests/one-time-gamification-badge-audit.test.js`
-- Focused tests: 29/29 passed.
+- Focused gamification tests: 13/13 passed.
+- Adjacent UI/model/privacy tests: 12/12 passed.
 - Standard live smoke:
-  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`
 - Focused gamification live smoke:
-  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`
+  `ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`
+- Intermediate standard smoke with scoped One Time credentials failed before
+  final rerun:
+  `ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md`
 - Guardrails:
   no badge award, badge reversal, notification, access grant, prize/coupon/
   credit, public individual leaderboard, send, charge, Zoom/Vimeo/Google/DNS
@@ -732,7 +738,8 @@ Gamification is deployed and live-verified.
 Next exact action:
 
 ```powershell
-npm run bna:run:next
+# Continue Batch 16 / REQ-20260619-311 Community
+npm run bna:run:status
 ```
 <!-- batch-15:end -->
 

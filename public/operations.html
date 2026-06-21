@@ -25850,15 +25850,16 @@
                 sections: [
                     ['Rabbi announcements', 'Teacher controlled', 'Rabbi/admin announcements stay as teacher-led threads, not participant broadcasts.'],
                     ['Cohort discussions', 'Moderated', 'Approved discussion is cohort/member scoped and still requires review before visibility changes.'],
-                    ['Private questions', pending.length ? 'Needs review' : 'Private first', 'Student/member questions submit privately and remain hidden until Rabbi/admin review.'],
+                    ['Private questions', pending.length ? 'Needs review' : 'Implemented private-first', 'Student/member questions submit privately and remain hidden until Rabbi/admin review.'],
                     ['Parent-visible communication', parentHolds.length ? 'Safety holds present' : 'Guarded', 'Safety flags can move an item to parent hold without exposing it to the cohort.'],
                     ['Staff-only notes', 'Guarded', 'Staff-only visibility is modeled separately from parent, cohort, and public surfaces.'],
                     ['Moderated posting', 'Guarded', 'Unreviewed posts, temporary holds, and flagged items cannot auto-publish.'],
-                    ['Edit and deletion history', 'Local contract', 'Original, edited, published, anonymized, edit-history, and deletion-history fields are required for review traceability.'],
-                    ['Report / flag flow', reportFlags.length ? 'Flags present' : 'Preview ready', 'Contact info, direct-chat requests, unsafe language, and private identifiers stay in the moderation queue.'],
-                    ['Private-to-public anonymization', publicAnonymized.length ? 'Reviewed previews' : 'Blocked until review', 'Public promotion requires an edited anonymized version and stores original/published versions.'],
+                    ['Edit and deletion history', 'Implemented', 'Original, edited, published, anonymized, edit-history, and deletion-history fields are required for review traceability.'],
+                    ['Report / flag flow', reportFlags.length ? 'Flags present' : 'Implemented guarded', 'Contact info, direct-chat requests, unsafe language, and private identifiers stay in the moderation queue.'],
+                    ['Private-to-public workflow', 'Implemented preview-only', 'Student submits privately, Rabbi/moderator reviews, reviewer edits or anonymizes, visibility is selected, and original/published versions remain linked.'],
+                    ['Private-to-public anonymization', publicAnonymized.length ? 'Reviewed previews' : 'Implemented preview-only', 'Public promotion requires an edited anonymized version, stores original/published versions, and blocks identifying private data.'],
                     ['No unrestricted messaging', 'Policy', 'No unrestricted student-to-student private messaging is enabled.'],
-                    ['Audit and release', 'Blocked', 'Public/member publication changes, notifications, deletion purge, and production smoke require explicit operator approval.'],
+                    ['Audit and release', 'Live smoke ready', 'Read-only production smoke is safe; public/member publication writes, notifications, and deletion purge still require a separate approval path.'],
                 ],
             };
         }
@@ -25868,8 +25869,8 @@
             return `
                 <section class="one-time-approval-packet" data-one-time-community-moderation-readiness data-requirement-id="${escapeHtml(state.requirementId)}" aria-label="One Time community moderation readiness">
                     <strong>Community / Moderation Workflow</strong>
-                    <span>${escapeHtml(state.requirementId)} / no-write readiness</span>
-                    <p>No unrestricted student-to-student messaging, public/member-visible post publication, external notification, temporary-hold enforcement, delete purge, or anonymized public promotion runs from this panel.</p>
+                    <span>${escapeHtml(state.requirementId)} / implemented no-write readiness</span>
+                    <p>No unrestricted student-to-student messaging, public/member-visible post publication, external notification, temporary-hold enforcement, delete purge, or anonymized public promotion write runs from this panel. The private-to-public workflow is implemented as a linked-version, anonymized preview path.</p>
                     <div class="classroom-board-metrics">
                         ${renderClassroomMetric(state.summary.threads, 'Threads')}
                         ${renderClassroomMetric(state.summary.privateQuestions, 'Private queue')}

@@ -56,9 +56,15 @@ At 2026-06-21T19:27:20+03:00, Batch 14 / `REQ-20260619-309`
 was deployed and live-verified in Railway deployment
 `7feae8ec-f34f-4e33-9e2d-9dcb479b1f14`.
 
-If resuming after that closeout, do not repeat Batch 14. Run
-`npm run bna:run:next` and continue the next unblocked executable batch the
-runner returns.
+At 2026-06-21T19:45:00+03:00, Batch 15 / `REQ-20260619-310`
+was deployed and live-verified in Railway deployment
+`b6f0a4de-2857-4de0-9053-be0c74c7ab74`. The final app commit was
+`68e62775a0f0414427e6b5e6a592022c78d84742`; the docs/status closeout commit
+was `93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c`.
+
+If resuming after that closeout, do not repeat Batch 14 or Batch 15. Continue
+Batch 16 / `REQ-20260619-311` community unless a newer run file says
+otherwise.
 
 ## Guardrails
 

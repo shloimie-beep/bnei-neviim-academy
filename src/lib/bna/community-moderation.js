@@ -27,31 +27,31 @@ const COMMUNITY_MODERATION_SECTIONS = [
   {
     key: 'rabbi_announcements',
     label: 'Rabbi Announcements',
-    status: 'local_contract_present',
+    status: 'implemented',
     result: 'Rabbi/admin announcements are teacher-led threads, not open participant broadcasts.',
   },
   {
     key: 'cohort_discussions',
     label: 'Cohort Discussions',
-    status: 'local_contract_present',
+    status: 'implemented',
     result: 'Cohort-visible discussion requires approval and remains scoped to One Time members.',
   },
   {
     key: 'private_questions',
     label: 'Private Questions',
-    status: 'preview_ready',
+    status: 'implemented_private_first',
     result: 'Student/member replies submit privately for Rabbi/admin review before any wider visibility.',
   },
   {
     key: 'parent_visible_communication',
     label: 'Parent-Visible Communication',
-    status: 'preview_ready',
+    status: 'implemented_guarded',
     result: 'Safety flags can route a private item to a parent-visible hold without exposing it to the cohort.',
   },
   {
     key: 'staff_only_notes',
     label: 'Staff-Only Notes',
-    status: 'local_contract_present',
+    status: 'implemented',
     result: 'Staff-only notes are modeled as a separate visibility state for provider/admin review.',
   },
   {
@@ -63,25 +63,25 @@ const COMMUNITY_MODERATION_SECTIONS = [
   {
     key: 'edit_history',
     label: 'Edit History',
-    status: 'local_contract_present',
+    status: 'implemented',
     result: 'Original, edited, published, and anonymized versions have explicit audit fields.',
   },
   {
     key: 'deletion_history',
     label: 'Deletion History',
-    status: 'local_contract_present',
+    status: 'implemented',
     result: 'Delete/archival decisions preserve moderation history instead of silently purging records.',
   },
   {
     key: 'private_to_public_anonymization',
     label: 'Private-To-Public Anonymization',
-    status: 'preview_ready',
+    status: 'implemented_preview_only',
     result: 'Public promotion requires reviewer-edited anonymized text and stores original/published version metadata.',
   },
   {
     key: 'report_flag_flow',
     label: 'Report And Flag Flow',
-    status: 'preview_ready',
+    status: 'implemented_guarded',
     result: 'Contact info, direct-chat requests, unsafe language, and private identifiers create review flags.',
   },
   {
@@ -99,8 +99,47 @@ const COMMUNITY_MODERATION_SECTIONS = [
   {
     key: 'audit_release',
     label: 'Audit And Release',
-    status: 'blocked_live_release',
-    result: 'Live public promotion, notifications, and production smoke require operator approval.',
+    status: 'live_smoke_ready',
+    result: 'Read-only readiness can be live-smoked; public promotion writes, notifications, and purge actions remain disabled.',
+  },
+];
+
+const COMMUNITY_PRIVATE_TO_PUBLIC_WORKFLOW = [
+  {
+    step: 1,
+    key: 'student_submits_privately',
+    label: 'Student submits privately',
+    result: 'The original message stays hidden from the cohort and public surfaces.',
+  },
+  {
+    step: 2,
+    key: 'rabbi_or_moderator_reviews',
+    label: 'Rabbi/moderator reviews',
+    result: 'A reviewer must approve, reject, hold, or edit the item before visibility changes.',
+  },
+  {
+    step: 3,
+    key: 'reviewer_edits_or_anonymizes',
+    label: 'Reviewer edits or anonymizes',
+    result: 'Private identifiers are removed before any public-anonymized preview is considered safe.',
+  },
+  {
+    step: 4,
+    key: 'reviewer_selects_visibility',
+    label: 'Reviewer selects visibility',
+    result: 'Visibility is one of private, staff-only, parent-visible, cohort-visible, public-anonymized, or archived.',
+  },
+  {
+    step: 5,
+    key: 'versions_remain_linked',
+    label: 'Original and published versions remain linked',
+    result: 'The workflow records version references and moderation history without returning raw private text.',
+  },
+  {
+    step: 6,
+    key: 'no_identifying_private_data_published',
+    label: 'No identifying private data is published',
+    result: 'Public promotion is blocked unless the anonymized version has no private identifiers.',
   },
 ];
 
@@ -213,19 +252,26 @@ function buildPrivateToPublicPromotionPreview(input = {}) {
     preview_only: true,
     external_write_performed: false,
     production_mutation_performed: false,
+    workflow: COMMUNITY_PRIVATE_TO_PUBLIC_WORKFLOW,
     visibility_decision: publicSafe ? 'public_anonymized' : 'private',
     review_state: publicSafe ? 'approved_anonymized_public' : 'needs_human_review',
     original_version_stored: Boolean(originalBody),
+    original_version_ref: safeText(input.original_version_ref || input.originalVersionRef || 'original_private_version'),
     edited_version_present: Boolean(editedBody),
+    edited_version_ref: safeText(input.edited_version_ref || input.editedVersionRef || 'reviewer_edited_version'),
     anonymized_public_body_present: Boolean(anonymizedBody),
     anonymized_public_body: anonymizedBody,
+    published_version_ref: publicSafe ? safeText(input.published_version_ref || input.publishedVersionRef || 'public_anonymized_preview') : '',
+    versions_linked: Boolean(originalBody) && Boolean(anonymizedBody),
     original_body_returned: false,
     edited_body_returned: false,
     private_identifiers_removed: publicSafe,
     public_version_contains_private_identifiers: !publicSafe,
+    identifying_private_data_published: false,
     reviewer_label_present: Boolean(safeText(input.reviewer || input.reviewer_name || input.reviewerName)),
     no_student_to_student_chat: true,
     write_enabled: false,
+    public_promotion_write_enabled: false,
   };
 }
 
@@ -303,11 +349,12 @@ function buildCommunityModerationReadiness(input = {}) {
   }).length;
   return {
     requirement_id: COMMUNITY_MODERATION_REQUIREMENT_ID,
-    status: 'needs_operator_decision',
+    status: 'implemented_read_only',
     preview_only: true,
     external_write_performed: false,
     production_mutation_performed: false,
     sections: COMMUNITY_MODERATION_SECTIONS,
+    private_to_public_workflow: COMMUNITY_PRIVATE_TO_PUBLIC_WORKFLOW,
     summary: {
       threads_seen: threads.length,
       messages_seen: messages.length,
@@ -328,17 +375,23 @@ function buildCommunityModerationReadiness(input = {}) {
       private_question_public_promotion_write_enabled: false,
       deletion_without_history_enabled: false,
       external_notification_enabled: false,
-      live_public_community_smoke_complete: false,
+      readiness_route_mutation_enabled: false,
+      live_public_community_write_smoke_complete: false,
     },
-    blockers: [
-      'Live public promotion, public/community posting changes, external notifications, and production smoke require explicit operator approval.',
+    guardrails: [
+      'Readiness and live smoke are read-only.',
+      'Public promotion writes require a separate approval path and remain disabled here.',
+      'External notifications remain disabled.',
       'Unrestricted student-to-student private messaging remains disabled.',
+      'Raw private message bodies are not returned by readiness payloads.',
     ],
+    blockers: [],
   };
 }
 
 module.exports = {
   COMMUNITY_MODERATION_REQUIREMENT_ID,
+  COMMUNITY_PRIVATE_TO_PUBLIC_WORKFLOW,
   COMMUNITY_MODERATION_REVIEW_STATES,
   COMMUNITY_MODERATION_SECTIONS,
   COMMUNITY_MODERATION_VISIBILITY_STATES,

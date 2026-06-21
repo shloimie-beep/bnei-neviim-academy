@@ -49,7 +49,10 @@ test('private-to-public promotion preview stores version metadata and redacts id
 
   assert.equal(preview.requirement_id, 'REQ-20260619-311');
   assert.equal(preview.preview_only, true);
+  assert.equal(Array.isArray(preview.workflow), true);
+  assert.equal(preview.workflow.length, 6);
   assert.equal(preview.original_version_stored, true);
+  assert.equal(preview.versions_linked, true);
   assert.equal(preview.edited_version_present, true);
   assert.equal(preview.anonymized_public_body_present, true);
   assert.equal(preview.original_body_returned, false);
@@ -58,7 +61,9 @@ test('private-to-public promotion preview stores version metadata and redacts id
   assert.equal(preview.review_state, 'approved_anonymized_public');
   assert.equal(preview.private_identifiers_removed, true);
   assert.equal(preview.public_version_contains_private_identifiers, false);
+  assert.equal(preview.identifying_private_data_published, false);
   assert.equal(preview.write_enabled, false);
+  assert.equal(preview.public_promotion_write_enabled, false);
   assert.match(preview.anonymized_public_body, /\[name redacted\]/);
   assert.match(preview.anonymized_public_body, /\[email redacted\]/);
   assert.doesNotMatch(JSON.stringify(preview), /Mendy Cohen/);
@@ -95,11 +100,23 @@ test('community moderation readiness covers required sections and no-write gates
   });
 
   assert.equal(readiness.requirement_id, 'REQ-20260619-311');
-  assert.equal(readiness.status, 'needs_operator_decision');
+  assert.equal(readiness.status, 'implemented_read_only');
   assert.equal(readiness.preview_only, true);
   assert.equal(readiness.external_write_performed, false);
   assert.equal(readiness.production_mutation_performed, false);
   assert.equal(Object.values(readiness.gates).every((value) => value === false), true);
+  assert.equal(Array.isArray(readiness.private_to_public_workflow), true);
+  assert.deepEqual(
+    readiness.private_to_public_workflow.map((step) => step.key),
+    [
+      'student_submits_privately',
+      'rabbi_or_moderator_reviews',
+      'reviewer_edits_or_anonymizes',
+      'reviewer_selects_visibility',
+      'versions_remain_linked',
+      'no_identifying_private_data_published',
+    ]
+  );
   assert.deepEqual(
     readiness.sections.map((section) => section.key),
     [
@@ -126,7 +143,9 @@ test('community moderation readiness covers required sections and no-write gates
   assert.equal(readiness.summary.edit_history_records, 1);
   assert.equal(readiness.summary.delete_history_records, 1);
   assert.equal(readiness.summary.report_flag_records, 1);
-  assert.match(readiness.blockers.join(' '), /Unrestricted student-to-student private messaging remains disabled/);
+  assert.deepEqual(readiness.blockers, []);
+  assert.match(readiness.guardrails.join(' '), /Unrestricted student-to-student private messaging remains disabled/);
+  assert.equal(readiness.sections.find((section) => section.key === 'audit_release').status, 'live_smoke_ready');
 });
 
 test('server declares community moderation schema, audit trail, route, and scoped allowlist', () => {
@@ -170,9 +189,22 @@ test('Operations shows no-write community moderation readiness panel', () => {
   assert.match(operations, /data-one-time-community-moderation-readiness/);
   assert.match(operations, /REQ-20260619-311/);
   assert.match(operations, /Community \/ Moderation Workflow/);
-  assert.match(operations, /No unrestricted student-to-student messaging, public\/member-visible post publication, external notification, temporary-hold enforcement, delete purge, or anonymized public promotion runs from this panel/);
+  assert.match(operations, /No unrestricted student-to-student messaging, public\/member-visible post publication, external notification, temporary-hold enforcement, delete purge, or anonymized public promotion write runs from this panel/);
   assert.match(operations, /Rabbi announcements/);
+  assert.match(operations, /Private-to-public workflow/);
+  assert.match(operations, /Live smoke ready/);
   assert.match(operations, /Private-to-public anonymization/);
+});
+
+test('package exposes focused community live smoke script', () => {
+  const packageJson = fs.readFileSync('package.json', 'utf8');
+  const smokeScript = fs.readFileSync('scripts/smoke-one-time-community-live.mjs', 'utf8');
+  assert.match(packageJson, /"app:smoke:one-time-community": "node scripts\/smoke-one-time-community-live\.mjs"/);
+  assert.match(smokeScript, /community-moderation-readiness/);
+  assert.match(smokeScript, /implemented_read_only/);
+  assert.match(smokeScript, /unrestricted_student_messaging_enabled === false/);
+  assert.match(smokeScript, /public_promotion_write_enabled/);
+  assert.doesNotMatch(smokeScript, /one-time\/classroom\/threads|threads\/:\{id\}\/responses|classroom\/messages\/.*\/review/);
 });
 
 test('public classroom keeps private replies and no active bot surface', () => {

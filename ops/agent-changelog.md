@@ -25267,16 +25267,21 @@ DNS mutation, external CRM/GHL write, or secret exposure occurred.
 Closed `REQ-20260619-310` for PR #5. Updated the server-side badge pipeline so
 automatic badge awards use the shared per-badge event evaluator and stable
 idempotency keys instead of broad event-type/points matching. Rabbi-awarded
-badges remain review-gated, and manual badge reversal now requires a reversal
+badges now require the audited admin/Rabbi award route with student scope,
+source evidence, and a human reason; manual badge reversal requires a reversal
 reason and writes a badge audit event.
 
-Commit `39b5db0ea0fb154db8aaf2e69735a40b981a59fc` was pushed and deployed from
-a clean detached worktree. Railway deployment
-`dcc60355-48fa-4a16-8cd2-5d05c3e8622c` reached `SUCCESS`; Railway doctor
-passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`; focused
+Final app commit `68e62775a0f0414427e6b5e6a592022c78d84742` was pushed and
+deployed from a clean detached worktree. Docs/status closeout commit
+`93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c` was pushed afterward. Railway
+deployment `b6f0a4de-2857-4de0-9053-be0c74c7ab74` reached `SUCCESS`; Railway
+doctor passed. Standard live smoke passed at
+`ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`; focused
 gamification smoke passed at
-`ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`.
+`ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`.
+An intermediate standard smoke failed with scoped One Time credentials before
+the final full-Ops-credential rerun passed:
+`ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md`.
 
 No public individual leaderboard, negative points, prize/coupon/credit, access
 grant, external notification, send, charge, Zoom/Vimeo/Google/DNS mutation,

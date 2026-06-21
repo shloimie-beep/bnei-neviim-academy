@@ -1005,21 +1005,30 @@ Recorded for `REQ-20260619-310` gamification:
 - PASS `node --check src/lib/bna/gamification.js`
 - PASS `node --check server.js`
 - PASS `node --check scripts/smoke-one-time-gamification-live.mjs`
-- PASS `node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js tests/one-time-action-coverage.test.js`
-  with 29/29 tests passing.
+- PASS `node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js`
+  with 13/13 tests passing.
+- PASS `node --test tests/one-time-operations-ui-smoke.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js`
+  with 12/12 tests passing.
 - PASS `npm run watchdog:actions`,
-  `ops/watchdog-audits/2026-06-21T16-34-watchdog-action-audit.md`.
+  `ops/watchdog-audits/2026-06-21T16-38-watchdog-action-audit.md`.
 - PASS `npm run watchdog:security`,
-  `ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md`.
+  `ops/watchdog-audits/2026-06-21T16-38-watchdog-security-routes.md`.
 - PASS `npm run bna:run:validate`.
 - PASS `node scripts/audit-secrets.mjs`.
 - PASS `git diff --check` with line-ending warnings only.
 - PASS `npm run railway:doctor` after deployment
-  `dcc60355-48fa-4a16-8cd2-5d05c3e8622c`.
+  `b6f0a4de-2857-4de0-9053-be0c74c7ab74`.
 - PASS `npm run app:smoke`,
-  `ops/live-smokes/2026-06-21T16-38-40-947Z-live-app-smoke.md`.
+  `ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`.
 - PASS `npm run app:smoke:one-time-gamification`,
-  `ops/live-smokes/2026-06-21T16-39-30-966Z-one-time-gamification-live-smoke.md`.
+  `ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`.
+
+Intermediate caveat:
+
+- `npm run app:smoke` first failed at
+  `ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md` because the run
+  used scoped One Time credentials against the full `/me` standard-smoke
+  expectation. The final rerun used full Ops credentials and passed.
 
 Focused coverage:
 
@@ -1027,8 +1036,48 @@ Focused coverage:
   approved events, existing active badge suppression, and stable idempotency.
 - `createGamificationEvent` uses the same automatic evaluator before writing
   badge/audit rows.
+- The Rabbi-awarded badge route requires a Rabbi-awarded badge slug, source
+  evidence, student scope, and a human reason before writing a local badge and
+  audit event.
 - Manual reversal route requires `reversal_reason`, updates badge status, and
   writes a badge audit event.
-- Rabbi-awarded badges remain human-review gated.
+- Rabbi-awarded badges remain human-review gated and are not automatically
+  granted.
 - Readiness and Operations panel remain no-write and public leaderboard-free.
 <!-- batch-15:end -->
+
+<!-- batch-16:start -->
+## Batch 16 Test Results
+
+Recorded for `REQ-20260619-311` community moderation:
+
+- PASS `node --check src/lib/bna/community-moderation.js`
+- PASS `node --check scripts/smoke-one-time-community-live.mjs`
+- PASS `node --check server.js`
+- PASS `node --test tests/one-time-community-moderation-workflow.test.js`
+  with 9/9 tests passing.
+- PASS `node --test tests/one-time-action-coverage.test.js tests/one-time-community-moderation-workflow.test.js`
+  with 14/14 tests passing.
+- PASS `npm run watchdog:actions`,
+  `ops/watchdog-audits/2026-06-21T16-48-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`,
+  `ops/watchdog-audits/2026-06-21T16-48-watchdog-security-routes.md`.
+- PASS `npm run bna:run:validate`.
+- PASS `node scripts/audit-secrets.mjs`.
+- PASS `git diff --check` with line-ending warnings only.
+
+Focused coverage:
+
+- Community readiness now reports `implemented_read_only` and no blockers.
+- Private question intake stays private-first, body-free in readiness payloads,
+  and flags contact info, direct-chat requests, unsafe language, and private
+  identifiers.
+- Private-to-public workflow records the six required steps, links original,
+  edited, and public-preview versions, and keeps public promotion writes
+  disabled.
+- Operations shows implemented no-write readiness, the private-to-public
+  workflow, report/flag flow, and `Live smoke ready` state.
+- Unrestricted student-to-student private messaging, unreviewed publication,
+  deletion without history, external notifications, and public promotion writes
+  remain disabled.
+<!-- batch-16:end -->
