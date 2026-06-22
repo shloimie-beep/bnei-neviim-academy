@@ -61,6 +61,16 @@ if ($usingProjectToken) {
 Write-Host ""
 Write-Host "Current Railway link:" -ForegroundColor Cyan
 Invoke-Railway status
+$statusJson = $null
+try {
+  $statusJson = railway status --json 2>$null | ConvertFrom-Json
+} catch {
+  $statusJson = $null
+}
+$railwayProjectId = $env:RAILWAY_PROJECT_ID
+if (-not $railwayProjectId -and $statusJson -and $statusJson.id) {
+  $railwayProjectId = $statusJson.id
+}
 
 $railwayService = $env:RAILWAY_SERVICE_NAME
 if (-not $railwayService) { $railwayService = "skillful-motivation" }
@@ -74,7 +84,7 @@ Invoke-Railway service status --service $railwayService --environment $railwayEn
 Write-Host ""
 Write-Host "Preparing deploy bundle..." -ForegroundColor Cyan
 
-$deployRoot = Join-Path $repoRoot ".deploy-railway"
+$deployRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("bna-railway-deploy-" + [System.Guid]::NewGuid().ToString("N"))
 if (Test-Path $deployRoot) {
   Remove-Item -LiteralPath $deployRoot -Recurse -Force
 }
@@ -222,6 +232,13 @@ Write-Host ""
 Write-Host "Uploading current local code to Railway..." -ForegroundColor Cyan
 Push-Location $deployRoot
 try {
+  if ($railwayProjectId) {
+    Invoke-Railway link `
+      --project $railwayProjectId `
+      --environment $railwayEnvironment `
+      --service $railwayService `
+      --json
+  }
   Invoke-Railway -AllowUploadTimeout up -d `
     --service $railwayService `
     --environment $railwayEnvironment `
