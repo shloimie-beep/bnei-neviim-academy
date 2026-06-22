@@ -57,4 +57,3 @@ Landing page checklist:
 - Vimeo automated upload.
 - Hosted transcription retry.
 - Separate Railway provisioning or DNS hookup.
-- Shared Railway deploy unless the existing shared app target is approved and safe.

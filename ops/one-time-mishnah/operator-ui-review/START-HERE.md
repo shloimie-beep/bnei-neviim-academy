@@ -1,8 +1,8 @@
 # Shared One Time UI Review Start Here
 
-Status: refreshed for Shloimie UI/workflow review on the existing shared app codebase after the Phase 2 brand pass.
+Status: live on the existing shared app for Shloimie UI/workflow review after the Phase 2 brand pass.
 
-No Railway provisioning, service creation, DNS hookup, PR merge, or unrelated `skillful-motivation` topology change is part of this packet.
+No Railway provisioning, service creation/deletion, DNS hookup, PR merge, or unrelated `skillful-motivation` topology change is part of this packet. The existing shared `skillful-motivation` web service was redeployed only to publish the current review UI.
 
 ## Review Base URL
 
@@ -94,4 +94,3 @@ The parent, student, provider and classroom review links use synthetic `TEST-` r
 - Automated Vimeo upload: blocked until user-level Vimeo authorization and upload policy are approved.
 - Separate One Time Railway instance and `app.onetimeonetime.com`: intentionally paused for now.
 - Hosted transcription `REQ-20260621-902`: still blocked on valid hosted transcription credential after previous `401 invalid_credential`.
-- Shared live deploy remains blocked unless the existing shared app Railway target is explicitly approved/relinked; do not create a new Railway project/service/database or touch unrelated topology.

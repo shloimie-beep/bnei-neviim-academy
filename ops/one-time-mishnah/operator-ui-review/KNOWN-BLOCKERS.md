@@ -3,7 +3,7 @@
 ## Not Part Of This Review Run
 
 - No Railway project/service/database creation.
-- No `skillful-motivation` service changes.
+- No `skillful-motivation` topology changes, service creation/deletion, or DNS changes. The existing shared web service was redeployed only for this review UI.
 - No DNS hookup for `app.onetimeonetime.com`.
 - No PR merge.
 - No live email, live charge, real WhatsApp, real Zoom meeting, real Vimeo upload, or external CRM write.
@@ -18,7 +18,6 @@
 | Vimeo automated upload | Manual/sample Vimeo reference is reviewable. | Approve/install a user-level Vimeo token and upload policy. |
 | Hosted transcription | `REQ-20260621-902` remains blocked by prior `401 invalid_credential`. | Provide/rotate the hosted transcription credential, then reprocess content job #78. |
 | Separate One Time instance | Provisioning is paused by operator instruction. | Resume `REQ-20260619-313` only after this shared UI review pass. |
-| Shared live deploy | Previous Railway CLI state was linked to the wrong One Time project/service, while the operator instruction forbids touching unrelated shared topology. | Approve/relink the existing shared app deploy target, or provide a safe project token/session for the current shared service before redeploying PR #5. |
 
 ## Known Review Limitations
 
