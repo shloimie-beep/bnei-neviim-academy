@@ -175,6 +175,20 @@
       min-height: 140px;
     }
     .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .video-embed {
+      aspect-ratio: 16 / 9;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #111;
+      min-height: 220px;
+    }
+    .video-embed iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
     .item-list { display: grid; gap: 10px; }
     .item {
       border: 1px solid var(--line);
@@ -305,7 +319,7 @@
 
       <div id="classroomContent" class="hidden">
         <div class="grid">
-          <section class="span-8">
+          <section id="worksheets" class="span-8">
             <div class="section-title">
               <div>
                 <h2>Today / Live</h2>
@@ -409,6 +423,10 @@
       return item?.member_library_item?.media_url || item?.media_url || '';
     }
 
+    function classEmbedUrl(item) {
+      return item?.member_library_item?.embed_url || item?.embed_url || '';
+    }
+
     function renderThumb(item) {
       const thumbnail = item?.member_library_item?.thumbnail_url || item?.thumbnail_url || '';
       return `<div class="thumb">${thumbnail ? `<img src="${escapeHtml(thumbnail)}" alt="">` : '<span>Video</span>'}</div>`;
@@ -421,8 +439,18 @@
         return;
       }
       const media = classMediaUrl(item);
+      const embed = classEmbedUrl(item);
       els.todayVideo.innerHTML = `
-        ${renderThumb(item)}
+        ${embed ? `
+          <div class="video-embed">
+            <iframe
+              src="${escapeHtml(embed)}"
+              title="${escapeHtml(item.title || 'One Time lesson video')}"
+              loading="lazy"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
+        ` : renderThumb(item)}
         <div>
           <h3>${escapeHtml(item.title || 'Today video')}</h3>
           <p>${escapeHtml(item.description || item.summary || 'Class video and materials appear here after review.')}</p>
@@ -430,8 +458,9 @@
             <span>${escapeHtml(item.class_date || 'No date')}</span>
             <span>${escapeHtml(item.media_provider || 'manual')}</span>
             <span>${escapeHtml(item.package_status || 'published')}</span>
+            <span>Captions/transcript: ${escapeHtml(item.transcript_status || 'pending review')}</span>
           </div>
-          ${media ? `<p><a href="${escapeHtml(media)}" target="_blank" rel="noopener"><button type="button" class="primary">Open Video</button></a></p>` : ''}
+          ${media ? `<p><a href="${escapeHtml(media)}" target="_blank" rel="noopener"><button type="button">Fallback Vimeo Link</button></a></p>` : ''}
         </div>
       `;
     }

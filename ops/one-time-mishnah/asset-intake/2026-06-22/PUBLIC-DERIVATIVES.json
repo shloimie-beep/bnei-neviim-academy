@@ -1,0 +1,100 @@
+[
+  {
+    "use": "Public hero video",
+    "asset_id": "",
+    "repo_derivative_path": "Vimeo stream 1158542993?h=daa31d3417",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Public hero poster",
+    "asset_id": "A0120",
+    "repo_derivative_path": "public/images/one-time/teaching/promo-stage-still-01.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Alternate hero still",
+    "asset_id": "A0121",
+    "repo_derivative_path": "public/images/one-time/teaching/promo-stage-still-02.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Worldwide locations slideshow",
+    "asset_id": "",
+    "repo_derivative_path": "",
+    "rights_status": "crowd_needs_review",
+    "source": "private review only"
+  },
+  {
+    "use": "As seen across the Jewish world visual proof section",
+    "asset_id": "A0123",
+    "repo_derivative_path": "public/images/one-time/press/torahanytime-logo.png",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Founder/Rabbi portrait near the bottom",
+    "asset_id": "A0119",
+    "repo_derivative_path": "public/images/one-time/brand/onetime-hero-vertical.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Small circular/square Rabbi avatar",
+    "asset_id": "A0119",
+    "repo_derivative_path": "public/images/one-time/brand/onetime-hero-vertical.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Live-shiur section image",
+    "asset_id": "A0122",
+    "repo_derivative_path": "public/images/one-time/teaching/promo-stage-still-03.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Worksheets/accountability section image",
+    "asset_id": "",
+    "repo_derivative_path": "",
+    "rights_status": "unknown_needs_review",
+    "source": "private review only"
+  },
+  {
+    "use": "Video-library section image",
+    "asset_id": "A0120",
+    "repo_derivative_path": "public/images/one-time/teaching/promo-stage-still-01.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Social Open Graph image",
+    "asset_id": "A0119",
+    "repo_derivative_path": "public/images/one-time/social/one-time-og-20260622.jpg",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Mobile hero fallback",
+    "asset_id": "A0119",
+    "repo_derivative_path": "public/images/one-time/brand/onetime-hero-vertical.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Email header image",
+    "asset_id": "A0121",
+    "repo_derivative_path": "public/images/one-time/teaching/promo-stage-still-02.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  },
+  {
+    "use": "Member-library thumbnail set",
+    "asset_id": "A0120",
+    "repo_derivative_path": "public/images/one-time/teaching/promo-stage-still-01.webp",
+    "rights_status": "approved_public",
+    "source": "existing approved repo asset"
+  }
+]

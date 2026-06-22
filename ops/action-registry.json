@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-21T18:56:00+03:00",
+  "updated_at": "2026-06-22T20:00:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -126,16 +126,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
-      "label": "Join the Live Shiur",
+      "label": "Start 30 Days Free",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS\"].button.primary",
-      "expected_behavior": "Opens the TEST-only classroom/live-shiur review route; does not create checkout, send messages, create a Zoom meeting, or grant access.",
+      "selector_hint": "a[href=\"#signup\"].button.primary",
+      "expected_behavior": "Scrolls to the first-party interest form for a 30-day-free trial request; does not create checkout, send messages, create a Zoom meeting, or grant access.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Primary CTA points to the TEST-only classroom review route and no payment, send, Zoom creation, or access grant fires."
+        "expected_result": "Primary CTA points to #signup and no payment, send, Zoom creation, or access grant fires."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -144,17 +144,56 @@
       ]
     },
     {
+      "action_id": "ACTION-ONETIME-WATCH-RABBI-CTA",
+      "label": "Watch Rabbi Scheller",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "a[href=\"#watch-rabbi\"].button.ghost",
+      "expected_behavior": "Scrolls to the embedded public Vimeo promo without exposing private member-library videos or TEST review links.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Secondary CTA targets #watch-rabbi and public page embeds Vimeo 1158542993 only for the public promo."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CAMPAIGN-TIMER-READBACK",
+      "label": "Read Campaign Timer",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-countdown]",
+      "expected_behavior": "Reads /api/one-time/campaign for server time and the configured deadline; if no deadline is configured it shows an operator-decision state instead of a fake reset timer.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_guarded",
+        "expected_result": "/api/one-time/campaign is read-only and exposes ONE_TIME_CAMPAIGN_DEADLINE_AT dependency without external writes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-ONETIME-INTEREST-FORM",
-      "label": "Save join interest",
+      "label": "Request 30-Day Trial",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
       "selector_hint": "#interestForm button[type=\"submit\"]",
-      "expected_behavior": "Creates a first-party OneTime interest lead for review only; no checkout, external send, or access grant.",
+      "expected_behavior": "Creates a first-party OneTime interest lead with explicit consent for review only; no checkout, external send, live charge, or access grant.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "api_guarded",
-        "expected_result": "Posts only to /api/one-time/interest and returns a no-checkout/no-send confirmation."
+        "expected_result": "Posts only to /api/one-time/interest after consent and returns a no-checkout/no-send/no-access-grant confirmation."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
@@ -181,6 +220,46 @@
         "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-START",
+      "label": "Start View as Rabbi",
+      "surface": "operations_api_one_time_view_as_rabbi_start",
+      "route": "/api/bna/one-time/view-as-rabbi/start",
+      "selector_hint": "POST /api/bna/one-time/view-as-rabbi/start",
+      "expected_behavior": "Platform super-admin receives a short-lived signed read-only One Time provider preview URL for Rabbi Elie Scheller only.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Endpoint requires all-scope admin identity, returns read_only=true, and performs no provider/member write."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-EXIT",
+      "label": "Exit View as Rabbi",
+      "surface": "one_time_provider_view_as_rabbi",
+      "route": "/provider.html?review=one-time&view_as_rabbi=<signed>",
+      "selector_hint": "#oneTimeExitViewAs",
+      "expected_behavior": "Ends the local read-only view-as preview session and returns the operator to the normal One Time provider review view.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_guarded",
+        "expected_result": "Banner exit posts only to /api/bna/one-time/view-as-rabbi/end with the signed token and no provider/member mutation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
       ]
     },
     {

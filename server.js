@@ -9799,6 +9799,55 @@ app.get('/api/one-time/instance-config', (req, res) => {
   });
 });
 
+function oneTimeCampaignConfig(now = new Date()) {
+  const startAt = String(process.env.ONE_TIME_CAMPAIGN_START_AT || '').trim();
+  const deadlineAt = String(process.env.ONE_TIME_CAMPAIGN_DEADLINE_AT || '').trim();
+  const timeZone = String(process.env.ONE_TIME_CAMPAIGN_TIME_ZONE || 'Asia/Jerusalem').trim();
+  const offerKey = String(process.env.ONE_TIME_CAMPAIGN_OFFER_KEY || 'one-time-30-day-free-trial').trim();
+  const startMs = startAt ? Date.parse(startAt) : NaN;
+  const deadlineMs = deadlineAt ? Date.parse(deadlineAt) : NaN;
+  const deadlineConfigured = Number.isFinite(deadlineMs);
+  const startConfigured = Number.isFinite(startMs);
+  const nowMs = now.getTime();
+  const active = deadlineConfigured && (!startConfigured || nowMs >= startMs) && nowMs < deadlineMs;
+  const expired = deadlineConfigured && nowMs >= deadlineMs;
+  return {
+    campaign_key: 'one-time-worldwide-mishnayos-launch',
+    offer_key: offerKey,
+    headline: '30 DAYS TO JOIN - START WITH 30 DAYS FREE',
+    start_at: startConfigured ? new Date(startMs).toISOString() : '',
+    deadline_at: deadlineConfigured ? new Date(deadlineMs).toISOString() : '',
+    time_zone: timeZone,
+    server_now: now.toISOString(),
+    deadline_configured: deadlineConfigured,
+    start_configured: startConfigured,
+    active,
+    expired,
+    editable_by: 'platform_super_admin',
+    audit_required_for_changes: true,
+    status: deadlineConfigured ? (expired ? 'expired' : active ? 'active' : 'scheduled') : 'needs_operator_decision',
+    decision: deadlineConfigured ? null : {
+      id: 'DEC-20260622-ONE-TIME-CAMPAIGN-DEADLINE',
+      missing_information: 'Exact campaign launch timestamp and 30-day enrollment deadline.',
+      owner: 'Shloimie / One Time launch owner',
+      recommended_option: 'Set ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY in the approved environment before public launch.',
+      alternatives: ['Keep the page in deadline-pending mode until launch approval is ready.'],
+      consequence: 'The page will not show a fake/resetting countdown.',
+      exact_next_action: 'Approve the launch timestamp and install the four ONE_TIME_CAMPAIGN_* variables.',
+    },
+    external_write_performed: false,
+    secrets_included: false,
+  };
+}
+
+app.get('/api/one-time/campaign', (req, res) => {
+  res.json({
+    success: true,
+    campaign: oneTimeCampaignConfig(new Date()),
+    external_write_performed: false,
+  });
+});
+
 function oneTimeSharedReviewDataForRequest(req) {
   const host = req.get('host') || 'localhost:3000';
   const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
@@ -9807,11 +9856,205 @@ function oneTimeSharedReviewDataForRequest(req) {
   });
 }
 
+function oneTimeViewAsSigningSecret() {
+  return String(
+    process.env.ONE_TIME_VIEW_AS_SECRET ||
+    process.env.SESSION_SECRET ||
+    process.env.CRON_SECRET ||
+    DATABASE_URL ||
+    'one-time-view-as-local'
+  );
+}
+
+function base64UrlEncode(value) {
+  return Buffer.from(JSON.stringify(value)).toString('base64url');
+}
+
+function base64UrlDecode(value) {
+  return JSON.parse(Buffer.from(String(value || ''), 'base64url').toString('utf8'));
+}
+
+function signOneTimeViewAsPayload(payload) {
+  const encoded = base64UrlEncode(payload);
+  const signature = crypto
+    .createHmac('sha256', oneTimeViewAsSigningSecret())
+    .update(encoded)
+    .digest('base64url');
+  return `${encoded}.${signature}`;
+}
+
+function verifyOneTimeViewAsToken(token = '') {
+  const [encoded, signature] = String(token || '').split('.');
+  if (!encoded || !signature) return null;
+  const expected = crypto
+    .createHmac('sha256', oneTimeViewAsSigningSecret())
+    .update(encoded)
+    .digest('base64url');
+  if (
+    expected.length !== signature.length ||
+    !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+  ) {
+    return null;
+  }
+  const payload = base64UrlDecode(encoded);
+  if (!payload?.exp || Date.now() > Number(payload.exp)) return null;
+  if (payload.workspace_key !== 'rabbi_sheller_provider' || payload.target_role !== 'workspace_owner') return null;
+  return payload;
+}
+
+function oneTimeViewAsSessionView(payload, req) {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  return {
+    mode: 'view_as_rabbi',
+    banner: 'You are viewing One Time as Rabbi Elie Scheller',
+    read_only: true,
+    writes_disabled: true,
+    external_sends_disabled: true,
+    charges_disabled: true,
+    uploads_disabled: true,
+    actor: payload.actor,
+    target: payload.target,
+    workspace_key: payload.workspace_key,
+    project_key: payload.project_key,
+    target_role: payload.target_role,
+    started_at: payload.iat_iso,
+    expires_at: new Date(Number(payload.exp)).toISOString(),
+    exit_url: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
+    allowed_modules: [
+      'Overview',
+      'Classes',
+      'Schedule',
+      'Members',
+      'CRM / Leads',
+      'Classroom',
+      'Video Library',
+      'Worksheets',
+      'Community / Questions',
+      'Communications',
+      'Automations',
+      'Payments / Access',
+      'Integrations',
+      'Support',
+      'Tasks',
+      'Settings',
+    ],
+    hidden_modules: [
+      'Watchdog',
+      'Codex Queue',
+      'Agent internals',
+      'Raw prompt intake',
+      'Proof gaps',
+      'API contracts',
+      'OAuth token details',
+      'Platform-wide goals',
+      'BNA student accountability',
+      'BNA private records',
+      'Webcraft branding',
+      'Platform Suite',
+      'Developer test fixtures',
+    ],
+    audit: {
+      start_event: 'one_time_view_as_rabbi_started',
+      end_event: 'one_time_view_as_rabbi_ended',
+      request_id: req.headers['x-request-id'] || crypto.randomUUID(),
+      actor_id: payload.actor.id,
+      target_id: payload.target.id,
+      workspace_key: payload.workspace_key,
+      project_key: payload.project_key,
+    },
+    provider_portal: review.provider_portal,
+    external_write_performed: false,
+    secrets_included: false,
+  };
+}
+
 app.get('/api/one-time-review', (req, res) => {
   res.json({
     success: true,
     review: oneTimeSharedReviewDataForRequest(req),
     test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type !== 'all') {
+    return res.status(403).json({
+      success: false,
+      error: 'Only platform_super_admin can start View as Rabbi.',
+      external_write_performed: false,
+    });
+  }
+  const issuedAt = Date.now();
+  const payload = {
+    typ: 'one_time_view_as_rabbi',
+    iat: issuedAt,
+    iat_iso: new Date(issuedAt).toISOString(),
+    exp: issuedAt + 20 * 60 * 1000,
+    actor: {
+      id: identity.username || req.opsUser || 'platform_super_admin',
+      role: 'platform_super_admin',
+      display_name: identity.displayName || identity.username || 'Platform Super Admin',
+    },
+    target: {
+      id: 'TEST-ONETIME-PROVIDER-RABBI',
+      role: 'workspace_owner',
+      display_name: 'Rabbi Elie Scheller',
+    },
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    target_role: 'workspace_owner',
+    read_only: true,
+  };
+  const token = signOneTimeViewAsPayload(payload);
+  res.json({
+    success: true,
+    token,
+    view_url: `/provider.html?review=one-time&view_as_rabbi=${encodeURIComponent(token)}`,
+    session: oneTimeViewAsSessionView(payload, req),
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/bna/one-time/view-as-rabbi/session', requireAdmin, (req, res) => {
+  const payload = verifyOneTimeViewAsToken(req.query.token || req.headers['x-one-time-view-as-token']);
+  if (!payload) {
+    return res.status(401).json({
+      success: false,
+      error: 'A valid signed View as Rabbi session is required.',
+      external_write_performed: false,
+    });
+  }
+  res.json({
+    success: true,
+    session: oneTimeViewAsSessionView(payload, req),
+    external_write_performed: false,
+  });
+});
+
+app.post('/api/bna/one-time/view-as-rabbi/end', requireAdmin, (req, res) => {
+  const payload = verifyOneTimeViewAsToken(req.body?.token || req.headers['x-one-time-view-as-token']);
+  if (!payload) {
+    return res.status(401).json({
+      success: false,
+      error: 'A valid signed View as Rabbi session is required.',
+      external_write_performed: false,
+    });
+  }
+  res.json({
+    success: true,
+    ended: true,
+    audit_event: {
+      event_type: 'one_time_view_as_rabbi_ended',
+      actor_id: payload.actor.id,
+      target_id: payload.target.id,
+      workspace_key: payload.workspace_key,
+      project_key: payload.project_key,
+      ended_at: new Date().toISOString(),
+      request_id: req.headers['x-request-id'] || crypto.randomUUID(),
+    },
+    redirect_to: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
     external_write_performed: false,
   });
 });

@@ -745,6 +745,8 @@
         const queryParams = new URLSearchParams(window.location.search);
         const setupToken = queryParams.get('setup') || '';
         const oneTimeReviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
+        const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
+        let oneTimeViewAsRabbiSession = null;
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -765,6 +767,32 @@
         function shortText(value, limit = 140) {
             const text = String(value || '').replace(/\s+/g, ' ').trim();
             return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
+        }
+
+        function ensureViewAsBanner(session) {
+            let banner = document.getElementById('oneTimeViewAsBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'oneTimeViewAsBanner';
+                banner.className = 'one-time-view-as-banner';
+                document.body.prepend(banner);
+            }
+            banner.innerHTML = `
+                <strong>VIEWING AS RABBI - READ ONLY</strong>
+                <span>${escapeHtml(session?.banner || 'You are viewing One Time as Rabbi Elie Scheller')}</span>
+                <button type="button" id="oneTimeExitViewAs">Exit view</button>
+            `;
+            document.getElementById('oneTimeExitViewAs')?.addEventListener('click', async () => {
+                try {
+                    await fetch('/api/bna/one-time/view-as-rabbi/end', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: oneTimeViewAsRabbiToken }),
+                    });
+                } catch {}
+                window.location.href = session?.exit_url || '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview';
+            });
         }
 
         function classMediaServiceOptions(services = []) {
@@ -1181,9 +1209,15 @@
             `;
         }
 
-        function applyOneTimeReviewBrand() {
+        function applyOneTimeReviewBrand(viewAsSession = null) {
             document.body.classList.add('one-time-review-active');
-            document.title = 'OneTimeOneTime Provider Review';
+            if (viewAsSession) {
+                document.body.classList.add('one-time-view-as-readonly');
+                document.title = 'Viewing One Time as Rabbi Elie Scheller';
+                ensureViewAsBanner(viewAsSession);
+            } else {
+                document.title = 'OneTimeOneTime Provider Review';
+            }
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
                 mark.textContent = '';
@@ -1195,21 +1229,23 @@
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
             if (title) title.textContent = 'OneTimeOneTime';
-            if (subtitle) subtitle.textContent = 'Rabbi/provider review workspace';
+            if (subtitle) subtitle.textContent = viewAsSession ? 'Rabbi Scheller workspace owner view' : 'Rabbi/provider review workspace';
             const actions = document.querySelector('.portal-topbar-actions');
             if (actions) {
-                actions.innerHTML = `
-                    <a class="portal-topbar-link" href="/one-time">One Time</a>
-                    <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
-                    <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
-                    <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
-                    <span class="brand-chip">TEST review mode</span>
-                `;
+                actions.innerHTML = viewAsSession
+                    ? `<span class="brand-chip">VIEWING AS RABBI - READ ONLY</span>`
+                    : `
+                        <a class="portal-topbar-link" href="/one-time">One Time</a>
+                        <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
+                        <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                        <span class="brand-chip">TEST review mode</span>
+                    `;
             }
         }
 
-        function renderOneTimeProviderReview(data) {
-            applyOneTimeReviewBrand();
+        function renderOneTimeProviderReview(data, viewAsSession = null) {
+            applyOneTimeReviewBrand(viewAsSession);
             portalState = data;
             const parent = data.parent || {};
             const student = data.student || {};
@@ -1218,9 +1254,19 @@
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.remove('hidden');
-            document.getElementById('providerTitle').textContent = 'One Time provider review';
-            document.getElementById('providerSubtitle').textContent = 'Rabbi/admin TEST review workspace';
-            document.getElementById('providerNav').innerHTML = [
+            document.getElementById('providerTitle').textContent = viewAsSession ? 'One Time as Rabbi Elie Scheller' : 'One Time provider review';
+            document.getElementById('providerSubtitle').textContent = viewAsSession
+                ? 'Workspace owner experience, read-only, same One Time scope'
+                : 'Rabbi/admin TEST review workspace';
+            const navItems = viewAsSession ? [
+                ['overview', 'Overview'],
+                ['class_setup', 'Classes'],
+                ['class_media', 'Video Library'],
+                ['communications', 'Community / Questions'],
+                ['commercial', 'Payments / Access'],
+                ['integrations', 'Integrations'],
+                ['activity', 'Support'],
+            ] : [
                 ['overview', 'Overview'],
                 ['communications', 'Communications'],
                 ['class_setup', 'Live Class'],
@@ -1228,7 +1274,8 @@
                 ['commercial', 'Payments/Trial'],
                 ['integrations', 'Integrations'],
                 ['activity', 'Support/Activity'],
-            ].map(([id, label], index) => `
+            ];
+            document.getElementById('providerNav').innerHTML = navItems.map(([id, label], index) => `
                 <button type="button" data-provider-nav="${escapeHtml(id)}" class="${index === 0 ? 'active' : ''}">
                     ${escapeHtml(label)}
                 </button>
@@ -1243,7 +1290,7 @@
             const activityPanel = document.querySelector('[data-provider-section="activity"]');
             if (overviewPanel) overviewPanel.classList.remove('provider-section-hidden');
             document.getElementById('providerOverview').innerHTML = `
-                <div class="overview-metric"><strong>OneTime</strong><span class="small">Branded TEST review</span></div>
+                <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded TEST review'}</span></div>
                 <div class="overview-metric"><strong>1</strong><span class="small">TEST parent</span></div>
                 <div class="overview-metric"><strong>1</strong><span class="small">TEST student</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
@@ -1251,12 +1298,16 @@
             `;
             const overviewList = document.createElement('div');
             overviewList.className = 'service-list';
-            overviewList.innerHTML = [
+            overviewList.innerHTML = (viewAsSession ? [
+                reviewCard('Workspace owner', data.provider?.name || 'Rabbi Elie Scheller', 'workspace_owner'),
+                reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Elie Scheller', 'writes disabled'),
+                reviewCard('Allowed modules', (viewAsSession.allowed_modules || []).join(', '), 'Rabbi scope'),
+            ] : [
                 reviewCard('Rabbi/provider owner', data.provider?.name || 'Rabbi Elie Scheller', data.provider?.role || 'workspace_owner'),
                 reviewCard('Shloimie admin/manager', data.admin?.name || 'Shloimie', data.admin?.role || 'workspace_admin'),
                 reviewCard('TEST parent', `${parent.name || ''} sees only ${student.display_name || student.name || 'one linked TEST student'}`, parent.role || 'parent'),
                 reviewCard('TEST student', `${student.display_name || student.name || ''} has no bot or BNA accountability goals in review mode`, student.role || 'student'),
-            ].join('');
+            ]).join('');
             overviewPanel?.appendChild(overviewList);
             if (classPanel) {
                 classPanel.classList.remove('provider-section-hidden');
@@ -1296,10 +1347,10 @@
             if (integrationPanel) {
                 integrationPanel.classList.remove('provider-section-hidden');
                 document.getElementById('integrationList').innerHTML = [
-                    reviewCard('Stripe', 'Test/readiness only. No live charge.', 'gated'),
-                    reviewCard('Resend', 'Template preview only. Sender/domain readiness blocks sending.', 'blocked external'),
-                    reviewCard('Zoom', 'Readiness state only. Real meeting creation remains operator-gated.', 'gated'),
-                    reviewCard('Vimeo', 'Manual sample reference works. Automated upload waits for user authorization.', 'manual ready'),
+                    reviewCard('Stripe', 'Test checkout/readiness can be verified. Live billing still needs account, tax/refund, and launch approval.', 'Needs live policy'),
+                    reviewCard('Resend', 'Templates render in preview. Sender/domain and approved test recipient are required before any send.', 'Needs sender decision'),
+                    reviewCard('Zoom', 'Protected Join Class is modeled. Real meeting creation remains approval-gated.', 'Needs meeting approval'),
+                    reviewCard('Vimeo', 'Lesson embed is ready in the classroom. Automated upload waits for user authorization.', 'Lesson embed ready'),
                 ].join('');
             }
             if (activityPanel) {
@@ -1314,6 +1365,16 @@
         }
 
         async function loadSession() {
+            if (oneTimeViewAsRabbiToken) {
+                try {
+                    const result = await api(`/api/bna/one-time/view-as-rabbi/session?token=${encodeURIComponent(oneTimeViewAsRabbiToken)}`);
+                    oneTimeViewAsRabbiSession = result.session || null;
+                    renderOneTimeProviderReview(oneTimeViewAsRabbiSession?.provider_portal || {}, oneTimeViewAsRabbiSession);
+                } catch (error) {
+                    showLogin(error.message || 'A valid signed View as Rabbi session is required.');
+                }
+                return;
+            }
             if (oneTimeReviewMode) {
                 try {
                     renderOneTimeProviderReview(await api('/api/one-time-review/provider'));

@@ -25444,3 +25444,33 @@ email/WhatsApp send, charge, access grant, real Zoom meeting, Vimeo upload,
 external CRM/GHL write, raw private export, or secret exposure was performed.
 The next operator purpose is `One Time UI/workflow corrections and full Agent
 Mode visual QA`.
+
+## 2026-06-22T20:34:00+03:00 - One Time Assets, Funnel, Vimeo, Stripe/Email Readiness, View as Rabbi
+
+Updated `REQ-20260622-003` through `REQ-20260622-010` on isolated branch
+`codex/one-time-assets-vimeo-stripe-email-view-as-rabbi-20260622` from base
+`04d93788c48f729001f99c54a67f89ef42cfbe79`. Preserved the raw source,
+inventoried and deduplicated the downloaded One Time/Rabbi Scheller assets into
+`C:\Users\User\Documents\BNA-Assets\One-Time`, added tracked intake evidence,
+reworked `/one-time` into a simple worldwide Mishnayos funnel with public Vimeo
+hero `1158542993?h=daa31d3417`, embedded the member lesson Vimeo in the
+classroom, added a read-only campaign timer API, added public privacy/terms
+shells, and implemented signed platform-super-admin read-only View as Rabbi
+preview endpoints and banner UI.
+
+Verification: `node --check server.js` passed; focused tests
+`tests/one-time-focused-landing.test.js`,
+`tests/one-time-shared-review-branding.test.js`, and
+`tests/one-time-product-system.test.js` passed 15/15; full `npm test` passed
+1044/1044; action/security watchdogs passed; tracked secret audit passed; and
+`git diff --check` passed with Windows line-ending warnings only. Local
+`ONE_TIME_REVIEW_ONLY_NO_DB=1` readback passed for `/one-time`,
+`/api/one-time/campaign`, and `/api/one-time-review/classroom`. The execution
+run validator still fails only because this isolated branch differs from the
+active run's recorded PR branch and the stripped worktree lacks older historical
+live-smoke evidence files. No live email/WhatsApp
+send, charge, checkout, access grant, Zoom write, Vimeo upload, DNS/Railway
+mutation, external CRM/GHL write, raw private export, or secret exposure was
+performed. Remaining blockers are explicit operator decisions for campaign
+deadline, email sender/audience, Stripe live policy, new asset rights/consent,
+and deployment target approval.

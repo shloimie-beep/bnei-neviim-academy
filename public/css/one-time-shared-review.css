@@ -85,6 +85,41 @@ body.one-time-review-active .btn {
   background: var(--one-time-yellow);
 }
 
+body.one-time-view-as-readonly {
+  background: #080910 !important;
+}
+
+.one-time-view-as-banner {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 9px 14px;
+  color: #101010;
+  background: #ede518;
+  border-bottom: 1px solid rgba(8, 9, 16, 0.22);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.one-time-view-as-banner span {
+  color: #101010;
+  font-weight: 700;
+}
+
+.one-time-view-as-banner button {
+  min-height: 30px;
+  border: 1px solid rgba(8, 9, 16, 0.4) !important;
+  border-radius: 7px;
+  color: #fff !important;
+  background: #080910 !important;
+  padding: 5px 10px;
+}
+
 .one-time-review-hero-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(170px, 260px);
