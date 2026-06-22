@@ -48,8 +48,8 @@ test('One Time shared review email templates are preview-only and no-send', () =
 test('One Time shared review classroom includes manual Vimeo library sample', () => {
   const review = buildOneTimeSharedReviewData();
   const video = review.classroom.today_video;
-  assert.equal(video.vimeo_video_id, '123456789');
-  assert.equal(video.member_library_item.media_url, 'https://vimeo.com/123456789');
+  assert.equal(video.vimeo_video_id, '1178363755');
+  assert.equal(video.member_library_item.media_url, 'https://vimeo.com/1178363755/282ea2577c');
   assert.equal(review.classroom.curriculum.length, 1);
   assert.equal(review.classroom.classes.length, 1);
 });

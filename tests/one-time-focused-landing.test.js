@@ -2,11 +2,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const test = require('node:test');
 
-test('OneTime focused landing copy uses current Mishnayos offer and safe CTA', () => {
+test('OneTime focused landing copy uses current shared review offer and safe CTA', () => {
   const html = fs.readFileSync('public/one-time/index.html', 'utf8');
 
-  assert.match(html, /Worldwide OneTime Mishnayos/);
-  assert.match(html, /Join the Shir/);
+  assert.match(html, /OneTimeOneTime Mishnah/);
+  assert.match(html, /Shared review/);
+  assert.match(html, /Start Review/);
+  assert.match(html, /Email Previews/);
   assert.match(html, /\$67 planned/);
   assert.match(html, /No charge, access grant, or external send is enabled/);
   assert.match(html, /does not create a checkout, send a message, grant access, or write to an external CRM/);

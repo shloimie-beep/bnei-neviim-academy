@@ -376,6 +376,7 @@
         }
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
+    <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
 <body class="bna-shell bna-portal-page bna-provider-page">
     <header class="brand-topbar">
@@ -1180,7 +1181,34 @@
             `;
         }
 
+        function applyOneTimeReviewBrand() {
+            document.body.classList.add('one-time-review-active');
+            const mark = document.querySelector('.brand-mark');
+            if (mark && !mark.querySelector('img')) {
+                mark.textContent = '';
+                const img = document.createElement('img');
+                img.src = '/images/one-time/onetimelogo.webp';
+                img.alt = '';
+                mark.appendChild(img);
+            }
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = 'Rabbi/provider review workspace';
+            const actions = document.querySelector('.portal-topbar-actions');
+            if (actions) {
+                actions.innerHTML = `
+                    <a class="portal-topbar-link" href="/one-time">One Time</a>
+                    <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
+                    <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                    <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                    <span class="brand-chip">TEST review mode</span>
+                `;
+            }
+        }
+
         function renderOneTimeProviderReview(data) {
+            applyOneTimeReviewBrand();
             portalState = data;
             const parent = data.parent || {};
             const student = data.student || {};
@@ -1214,6 +1242,7 @@
             const activityPanel = document.querySelector('[data-provider-section="activity"]');
             if (overviewPanel) overviewPanel.classList.remove('provider-section-hidden');
             document.getElementById('providerOverview').innerHTML = `
+                <div class="overview-metric"><strong>OneTime</strong><span class="small">Branded TEST review</span></div>
                 <div class="overview-metric"><strong>1</strong><span class="small">TEST parent</span></div>
                 <div class="overview-metric"><strong>1</strong><span class="small">TEST student</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>

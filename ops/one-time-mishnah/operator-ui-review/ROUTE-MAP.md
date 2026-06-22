@@ -34,7 +34,7 @@ Base URL:
 
 1. Navigation language and labels: does it feel like One Time, not BNA?
 2. Parent and student scoping: confirm no unrelated people or BNA data appear.
-3. Class/library structure: lesson, video, worksheet and class readiness.
+3. Class/library structure: lesson, video, worksheet and class readiness, including the manual Vimeo `Pesachim perek 10` sample reference.
 4. Email previews: subject, preview text, body, recipient scope and blocked-send reason.
 5. Payments/trial/access wording: does the $67/month and 30-day trial language feel right?
 6. Achievement/reward wording: make sure parent-safe explanations sound right.

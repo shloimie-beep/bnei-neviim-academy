@@ -1175,6 +1175,7 @@
         }
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
+    <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
 <body class="bna-shell bna-portal-page bna-parent-page">
     <header class="brand-topbar">
@@ -4544,7 +4545,33 @@
             `;
         }
 
+        function applyOneTimeReviewBrand() {
+            document.body.classList.add('one-time-review-active');
+            const mark = document.querySelector('.brand-mark');
+            if (mark && !mark.querySelector('img')) {
+                mark.textContent = '';
+                const img = document.createElement('img');
+                img.src = '/images/one-time/onetimelogo.webp';
+                img.alt = '';
+                mark.appendChild(img);
+            }
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = 'Parent review portal';
+            const actions = document.querySelector('.portal-topbar-actions');
+            if (actions) {
+                actions.innerHTML = `
+                    <a class="portal-topbar-link" href="/one-time">One Time</a>
+                    <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                    <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                    <span class="brand-chip">Linked TEST child only</span>
+                `;
+            }
+        }
+
         function renderOneTimeParentReview(data) {
+            applyOneTimeReviewBrand();
             portalData = data;
             const student = data.student || {};
             const classSession = data.class_session || {};
@@ -4559,9 +4586,10 @@
             els.whatsappDock.classList.add('hidden');
             document.body.classList.remove('parent-has-assistant', 'parent-has-whatsapp');
             els.portalPanel.innerHTML = `
-                <section class="panel">
+                <section class="panel one-time-review-hero-card">
                     <div class="section-title">
                         <div>
+                            <img class="one-time-page-logo" src="/images/one-time/onetimelogo.webp" alt="" aria-hidden="true">
                             <span class="eyebrow">One Time parent review</span>
                             <h1>${escapeHtml(data.parent?.name || 'TEST Parent')}</h1>
                             <p class="small">TEST-only parent view for Rabbi Scheller's One Time workspace. This payload intentionally includes only one linked TEST student.</p>

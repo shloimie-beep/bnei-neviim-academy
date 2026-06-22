@@ -2029,3 +2029,55 @@ The database bootstrap dry-run found 18 tracked SQL migrations plus the
 One Time seed and isolation scan, with checksums recorded and no database
 connection used.
 <!-- req-313-provisioning:end -->
+
+<!-- shared-review-branding:start -->
+## REQ-20260622-002 - Shared One Time Branded Review Evidence
+
+Source:
+
+- `raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md`
+
+Brand/asset trace:
+
+- `ops/one-time-mishnah/brand-site-review/ASSET-INVENTORY.md`
+- `ops/one-time-mishnah/brand-site-review/asset-manifest.json`
+- `ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md`
+- Raw promo MP4 was inventoried and traced but not committed.
+
+Review packet:
+
+- `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
+- `ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md`
+- `ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md`
+- `ops/one-time-mishnah/operator-ui-review/NEXT-RAMBLE-TEMPLATE.md`
+- `ops/one-time-mishnah/operator-ui-review/screenshot-index.html`
+
+Runtime/review implementation:
+
+- `public/one-time/index.html`
+- `public/provider.html`
+- `public/parent.html`
+- `public/student.html`
+- `public/one-time-classroom.html`
+- `public/one-time-email-review.html`
+- `public/css/one-time-shared-review.css`
+- `public/images/one-time/`
+- `src/platform/instances/one-time-shared-review-data.js`
+
+Safe review data:
+
+- Workspace: `rabbi_sheller_provider`
+- Project: `one_time_mishnah_class`
+- Parent: `TEST-ONETIME-PARENT-001`
+- Student: `TEST-ONETIME-STUDENT-001`
+- Classroom access code: `TEST-ONETIME-REVIEW-ACCESS`
+- Manual Vimeo sample: `https://vimeo.com/1178363755/282ea2577c`
+
+Guardrails:
+
+- No Railway provisioning.
+- No `skillful-motivation` topology change.
+- No DNS change.
+- No live email, WhatsApp, charge, Zoom meeting, Vimeo upload, external CRM,
+  or secret exposure.
+<!-- shared-review-branding:end -->

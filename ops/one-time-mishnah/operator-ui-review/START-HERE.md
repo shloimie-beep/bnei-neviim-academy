@@ -44,7 +44,7 @@ The parent, student, provider and classroom review links use synthetic `TEST-` r
 3. Open Provider/Rabbi review mode.
 4. Open Parent review mode and verify only the linked TEST student appears.
 5. Open Student review mode and verify no bot, BNA goals, or unrelated records appear.
-6. Open Classroom/library review mode and inspect the sample lesson/video/worksheet structure.
+6. Open Classroom/library review mode and inspect the sample lesson/video/worksheet structure, including the manual Vimeo `Pesachim perek 10` reference.
 7. Open Email template previews and inspect all no-send templates.
 8. Record UI/workflow corrections using `NEXT-RAMBLE-TEMPLATE.md`.
 
@@ -55,6 +55,7 @@ The parent, student, provider and classroom review links use synthetic `TEST-` r
 - Read-only review APIs under `/api/one-time-review`.
 - Parent, student, provider, classroom and email preview routes.
 - Manual Vimeo reference UI state.
+- Legacy OneTimeOneTime logo and hero image on the shared review landing/portals.
 - No-send email template preview surface.
 - Local-only review submit behavior for parent/student/classroom feedback forms.
 
@@ -67,7 +68,7 @@ The parent, student, provider and classroom review links use synthetic `TEST-` r
 - $67/month and 30-day trial examples.
 - Milestone, achievement and reward examples.
 - Private question and support ticket examples.
-- Manual Vimeo sample reference `https://vimeo.com/123456789`.
+- Manual Vimeo sample reference `https://vimeo.com/1178363755/282ea2577c`, traced from the legacy OneTimeOneTime downloaded site.
 
 ## Externally Blocked
 

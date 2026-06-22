@@ -1295,6 +1295,7 @@
         }
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
+    <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
 <body class="bna-shell bna-portal-page bna-student-page">
     <header class="brand-topbar">
@@ -1551,9 +1552,9 @@
         const STORAGE_KEY = 'bnaStudentAccessCode';
         const LANGUAGE_KEY = 'bnaStudentGoalBoardLanguage';
         const FILTERS = ['today', 'upcoming', 'waiting', 'done'];
+        const initialAccessCode = new URLSearchParams(window.location.search).get('code') || '';
         const queryParams = new URLSearchParams(window.location.search);
         const ONE_TIME_REVIEW_MODE = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
-        const initialAccessCode = queryParams.get('code') || '';
         if (!initialAccessCode) localStorage.removeItem(STORAGE_KEY);
         let accessCode = initialAccessCode;
         let studentSessionActive = false;
@@ -3628,7 +3629,33 @@
             `;
         }
 
+        function applyOneTimeReviewBrand() {
+            document.body.classList.add('one-time-review-active');
+            const mark = document.querySelector('.brand-mark');
+            if (mark && !mark.querySelector('img')) {
+                mark.textContent = '';
+                const img = document.createElement('img');
+                img.src = '/images/one-time/onetimelogo.webp';
+                img.alt = '';
+                mark.appendChild(img);
+            }
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = 'Student review portal';
+            const actions = document.querySelector('.portal-topbar-actions');
+            if (actions) {
+                actions.innerHTML = `
+                    <a class="portal-topbar-link" href="/one-time">One Time</a>
+                    <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
+                    <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                    <span class="brand-chip">No bot / no BNA goals</span>
+                `;
+            }
+        }
+
         function renderOneTimeStudentReview(data) {
+            applyOneTimeReviewBrand();
             portalData = data;
             const student = data.student || {};
             const classSession = data.class_session || {};
@@ -3664,11 +3691,12 @@
                 <a class="portal-nav-button ${index === 0 ? 'active' : ''}" href="#${escapeHtml(id)}">${escapeHtml(label)}</a>
             `).join('');
             els.portalContent.innerHTML = `
-                <section class="panel top-card" id="reviewOverview">
+                <section class="panel top-card one-time-review-hero-card" id="reviewOverview">
                     <div>
+                        <img class="one-time-page-logo" src="/images/one-time/onetimelogo.webp" alt="" aria-hidden="true">
                         <p class="eyebrow">One Time student review</p>
                         <h2>${escapeHtml(student.display_name || student.name || 'TEST student')}</h2>
-                        <p class="small">This view contains only this TEST student's One Time records. BNA accountability goals and the student bot are intentionally absent.</p>
+                        <p class="small">This view contains only this TEST student's One Time class, course, and progress records.</p>
                         <div class="metric-grid">
                             ${reviewMetric('Course progress', `${data.course?.progress_percent || 0}%`)}
                             ${reviewMetric('Attendance', `${attendance.percentage || 0}%`)}
@@ -3742,7 +3770,7 @@
                     </article>
                     <article class="panel">
                         <h2>Not shown</h2>
-                        <p class="small">No BNA student tutor bot, unrestricted Mishnah bot, BNA accountability goals, or unrelated student records are included in this review mode.</p>
+                        <p class="small">General study assistants, accountability-goal tooling, and unrelated student records are not included in this review mode.</p>
                     </article>
                 </section>
             `;

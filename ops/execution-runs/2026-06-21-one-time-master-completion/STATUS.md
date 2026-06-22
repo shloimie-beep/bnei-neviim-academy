@@ -929,3 +929,39 @@ Railway project, uses stdin for secrets, writes a redacted report, and should
 be followed by the separate database bootstrap/seed/isolation scan plus
 `npm run app:smoke:onetime-separate-instance -- <base-url>`.
 <!-- req-313-provisioning:end -->
+
+<!-- shared-review-branding:start -->
+## REQ-20260622-002 - Shared One Time Branded Review
+
+Status: implementation complete locally; pending commit, push, shared deploy,
+and live smoke.
+
+The existing shared One Time review surfaces have been branded for Shloimie's
+review without provisioning Railway, touching `skillful-motivation`, creating
+services, or hooking DNS.
+
+Updated review surfaces:
+
+- One Time landing: `/one-time`
+- Provider/Rabbi review: `/provider.html?review=one-time`
+- Parent review: `/parent.html?review=one-time`
+- Student review: `/student.html?review=one-time`
+- Classroom/library:
+  `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`
+- Email template preview: `/one-time-email-review.html`
+
+The review packet is current at
+`ops/one-time-mishnah/operator-ui-review/`. It includes exact review links,
+known blockers, the secure local review-login handoff path, route map, and the
+next UI-correction ramble template.
+
+Local fixture-backed route smoke passed at 1440x900 and 390x844 for all six
+review routes with no page-level horizontal overflow, no console errors, and
+no stale placeholder/private fixture leakage.
+
+Known validator caveat: `npm run bna:run:validate` currently fails before this
+requirement can close because this safety worktree is detached and older run
+requirements reference historical live-smoke evidence files missing from this
+checkout. The failure is recorded in `TEST-RESULTS.md` and is not caused by
+the shared review branding implementation.
+<!-- shared-review-branding:end -->

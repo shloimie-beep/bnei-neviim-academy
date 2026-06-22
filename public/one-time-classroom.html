@@ -73,11 +73,13 @@
     }
     .brand {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
     }
+    .brand div { min-width: 0; }
     .brand strong { font-size: 18px; }
-    .brand span { color: var(--muted); font-size: 13px; }
+    .brand span { display: block; color: var(--muted); font-size: 13px; }
     .top-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
     main {
       width: min(1180px, calc(100% - 28px));
@@ -261,18 +263,22 @@
       .hero-copy { padding: 20px; }
     }
   </style>
+  <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
-<body>
+<body class="one-time-review-active">
   <div class="shell">
     <header>
       <div class="topbar">
         <div class="brand">
-          <strong>One Time Mishnah Classroom</strong>
-          <span>Videos, assignments, source sheets, live sessions, and Rabbi-reviewed questions</span>
+          <img class="one-time-page-logo" src="/images/one-time/onetimelogo.webp" alt="" aria-hidden="true">
+          <div>
+            <strong>One Time Mishnah Classroom</strong>
+            <span>Videos, assignments, source sheets, live sessions, and Rabbi-reviewed questions</span>
+          </div>
         </div>
         <div class="top-actions">
-          <a href="/member-library"><button type="button">Library</button></a>
-          <a href="/rabbi"><button type="button">Rabbi Portal</button></a>
+          <a href="/one-time"><button type="button">One Time</button></a>
+          <a href="/provider.html?review=one-time"><button type="button">Provider Review</button></a>
         </div>
       </div>
     </header>
@@ -281,7 +287,7 @@
       <div class="hero">
         <div class="hero-copy">
           <h1>Mishnah Classroom</h1>
-          <p>Follow the class videos by Seder, see what is scheduled, and respond to Rabbi-reviewed prompts without an open student chat.</p>
+          <p>Follow the class videos by Seder, see what is scheduled, and respond to Rabbi-reviewed prompts without an open student chat. This review route uses TEST-only member-library data.</p>
           <div class="pill-row">
             <span class="pill">Internal calendar</span>
             <span class="pill">Approved questions</span>
@@ -369,7 +375,7 @@
   <script>
     const queryParams = new URLSearchParams(window.location.search);
     const reviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
-    const queryCode = queryParams.get('code') || '';
+    const queryCode = new URLSearchParams(window.location.search).get('code') || '';
     const reviewAccessCode = 'TEST-ONETIME-REVIEW-ACCESS';
     const state = { code: queryCode || (reviewMode ? reviewAccessCode : localStorage.getItem('oneTimeClassroomCode') || ''), classroom: null };
     const els = {

@@ -26,6 +26,7 @@
 - Parent/student/classroom submit buttons in review mode record local preview feedback only; they do not write to the database.
 - Admin/Rabbi Operations review still requires existing private Operations credentials.
 - The shared live default instance can still report BNA runtime flags; use the `?review=one-time` routes to inspect the isolated One Time review payload.
+- Legacy partner/publication logo assets are inventoried but are not used as new public claims until Shloimie approves the exact wording and permission status.
 - This packet is not the final visual QA pass; it exists so Shloimie can collect UI/workflow corrections.
 
 ## Known UI Issues To Watch Closely

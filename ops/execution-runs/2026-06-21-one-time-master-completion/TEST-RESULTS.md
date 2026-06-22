@@ -1328,3 +1328,49 @@ REQ-20260621-902 hosted transcription credential audit:
   tracked secret-risk files found.
 - PASS `git diff --check` with line-ending warnings only.
 <!-- req-313-provisioning:end -->
+
+<!-- shared-review-branding:start -->
+## REQ-20260622-002 - Shared One Time Branded Review Test Results
+
+Local verification on 2026-06-22:
+
+- PASS `node --test tests/one-time-classroom-calendar-community-bot.test.js`
+  with 6/6 passing.
+- PASS focused review/data/privacy tests:
+  `node --test tests/one-time-shared-review-branding.test.js tests/public-route-privacy-contract.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js`
+  with 19/19 passing.
+- PASS focused fixture data tests:
+  `node --test tests/instances/one-time-shared-review-data.test.js tests/one-time-shared-review-branding.test.js`
+  with 9/9 passing.
+- PASS `npm test` with 1041/1041 passing.
+- PASS `node scripts/audit-secrets.mjs`: 3996 tracked paths checked, 0
+  tracked secret-risk files found.
+- PASS `npm run watchdog:actions`: report
+  `ops/watchdog-audits/2026-06-22T12-23-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`: report
+  `ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md`.
+- PASS `git diff --check` with Windows line-ending warnings only.
+- PASS fixture-backed route/mobile smoke for `/one-time`,
+  `/provider.html?review=one-time`, `/parent.html?review=one-time`,
+  `/student.html?review=one-time`,
+  `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`,
+  and `/one-time-email-review.html` at 1440x900 and 390x844.
+
+Route smoke verified:
+
+- HTTP 200 for all six review routes.
+- One Time/OneTime branding present.
+- One Time image/logo assets loaded.
+- No page-level horizontal overflow at 1440px or 390px.
+- No console/page errors.
+- No `Dratler`, stale fake Vimeo ID `123456789`, or student-bot placeholder
+  leakage in review page text.
+
+Validator caveat:
+
+- `npm run bna:run:validate` currently fails in this safety worktree because
+  the worktree is detached (`current branch is HEAD`) and older requirements
+  reference historical live-smoke evidence files missing from this checkout.
+  The validator failure predates this review implementation and is not a
+  regression in the shared review routes.
+<!-- shared-review-branding:end -->

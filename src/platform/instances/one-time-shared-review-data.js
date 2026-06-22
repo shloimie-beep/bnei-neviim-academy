@@ -80,8 +80,8 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   const classSession = {
     id: 'TEST-OT-CLASS-001',
     title: 'TEST Weekly Mishnah Live Class',
-    masechta: 'Berachos',
-    perek: 'Perek 1',
+    masechta: 'Pesachim',
+    perek: 'Perek 10',
     mishnah_range: 'Mishnah 1-2',
     starts_at: '2026-06-25T19:30:00.000Z',
     timezone: 'Asia/Jerusalem',
@@ -114,33 +114,34 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   };
   const module = {
     id: 'TEST-OT-MODULE-001',
-    title: 'Berachos Foundations',
+    title: 'Pesachim Foundations',
     lesson_count: 1,
   };
   const lesson = {
     id: 'TEST-OT-LESSON-001',
-    title: 'Berachos 1:1 - When We Say Shema',
+    title: 'Pesachim Perek 10 - Seder Night Review',
     status: 'in_progress',
     progress_percent: 60,
   };
   const video = {
     id: 'TEST-OT-VIDEO-001',
-    title: 'Berachos 1:1 Review Class',
+    title: 'Pesachim Perek 10 Review Class',
     provider: 'vimeo_manual_reference',
     media_provider: 'Vimeo manual/sample reference',
-    media_url: 'https://vimeo.com/123456789',
-    vimeo_video_id: '123456789',
-    thumbnail_url: '',
-    duration_seconds: 2180,
+    media_url: 'https://vimeo.com/1178363755/282ea2577c',
+    embed_url: 'https://player.vimeo.com/video/1178363755?h=282ea2577c',
+    vimeo_video_id: '1178363755',
+    thumbnail_url: 'https://i.vimeocdn.com/video/2139941749-4bdcb97014af5470fbdf1c04fb8fffd550f91fad7cbf4497e63268ca3aebbf48-d?f=webp',
+    duration_seconds: 2380,
     class_date: '2026-06-18',
     package_status: 'published_for_review',
     visibility: 'member_library_review',
-    description: 'Manual Vimeo sample reference for UI review. This is not an automated upload.',
+    description: 'Manual Vimeo sample reference traced from the legacy OneTimeOneTime site for UI review. This is not an automated upload.',
     blocker: 'Automated Vimeo upload remains blocked until a user-level Vimeo authorization token and upload policy are approved.',
   };
   const worksheet = {
     id: 'TEST-OT-WORKSHEET-001',
-    title: 'TEST Berachos 1:1 Worksheet',
+    title: 'TEST Pesachim Perek 10 Worksheet',
     url: '/documents/parent-handbook',
     status: 'published_for_review',
   };
@@ -241,7 +242,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     buildEmailTemplate({
       key: 'worksheet_resource',
       label: 'Worksheet/resource',
-      subject: 'New worksheet for Berachos 1:1',
+      subject: 'New worksheet for Pesachim Perek 10',
       preview_text: 'Open the new worksheet/resource from your portal.',
       body_preview: 'The worksheet card appears in the student and parent review portals with a safe sample resource link.',
       recipient_scope: 'Enrolled parent and student',
@@ -425,6 +426,14 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     project_key: PROJECT_KEY,
     access_code: REVIEW_ACCESS_CODE,
     links: reviewLinks,
+    brand: {
+      name: 'OneTimeOneTime Mishnah',
+      provider_label: 'Rabbi Scheller',
+      logo: '/images/one-time/onetimelogo.webp',
+      hero: '/images/one-time/onetime-hero-vertical.webp',
+      public_review_path: '/one-time',
+      source_trace: 'ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md',
+    },
     identities: { rabbi, admin, parent, student },
     parent_portal: parentPortal,
     student_portal: studentPortal,
@@ -459,7 +468,8 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       'One Time route/module structure',
       'Read-only review endpoints',
       'Preview-only email template surfaces',
-      'Manual Vimeo reference workflow state',
+      'Manual Vimeo reference workflow state using legacy Vimeo ID 1178363755',
+      'Legacy OneTimeOneTime logo and hero image in shared review UI',
       'Parent/student/provider review scoping in TEST payloads',
     ],
     mock_test_only: [
@@ -468,7 +478,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       'Payment/trial/access example',
       'Milestone, achievement, and reward lifecycle',
       'Private question and support ticket examples',
-      'Manual Vimeo sample reference',
+      'Manual Vimeo sample reference and legacy site branding assets',
     ],
     external_blockers: [
       'Live email sending waits for Resend sender/domain readiness and approved send policy.',

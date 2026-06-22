@@ -1,0 +1,139 @@
+body.one-time-review-active {
+  --one-time-ink: #121212;
+  --one-time-night: #161616;
+  --one-time-yellow: #ede518;
+  --one-time-blue: #08779c;
+  --one-time-paper: #fffef3;
+  background:
+    radial-gradient(circle at 18% 8%, rgba(237, 229, 24, 0.16), transparent 28rem),
+    linear-gradient(135deg, #fffef3 0%, #f4f8fb 54%, #eef7f4 100%) !important;
+}
+
+body.one-time-review-active .brand-topbar {
+  color: #fff;
+  border-bottom-color: rgba(237, 229, 24, 0.26);
+  background: rgba(22, 22, 22, 0.94);
+}
+
+body.one-time-review-active .brand-lockup strong,
+body.one-time-review-active .brand-lockup span {
+  color: inherit;
+}
+
+body.one-time-review-active .brand-lockup span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+body.one-time-review-active .brand-mark {
+  overflow: hidden;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--one-time-yellow);
+  box-shadow: 0 12px 28px rgba(237, 229, 24, 0.25);
+}
+
+body.one-time-review-active .brand-mark img,
+.one-time-inline-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+body.one-time-review-active .brand-chip,
+body.one-time-review-active .portal-topbar-link {
+  color: #101010;
+  border-color: rgba(237, 229, 24, 0.56);
+  background: var(--one-time-yellow);
+}
+
+body.one-time-review-active .portal-topbar-link.secondary-link {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.one-time-review-active .eyebrow {
+  color: var(--one-time-blue);
+}
+
+body.one-time-review-active .panel,
+body.one-time-review-active .service-card,
+body.one-time-review-active .portal-card,
+body.one-time-review-active .metric,
+body.one-time-review-active article {
+  border-color: rgba(8, 119, 156, 0.16);
+}
+
+body.one-time-review-active .status-pill,
+body.one-time-review-active .pill {
+  border-color: rgba(8, 119, 156, 0.18);
+  color: #103947;
+  background: rgba(8, 119, 156, 0.1);
+}
+
+body.one-time-review-active button,
+body.one-time-review-active .btn {
+  border-radius: 7px;
+}
+
+body.one-time-review-active button:not(.secondary),
+body.one-time-review-active .btn {
+  border-color: var(--one-time-yellow);
+  color: #101010;
+  background: var(--one-time-yellow);
+}
+
+.one-time-review-hero-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, 260px);
+  gap: 18px;
+  align-items: center;
+  overflow: hidden;
+  color: #fff;
+  background:
+    linear-gradient(90deg, rgba(22, 22, 22, 0.94), rgba(22, 22, 22, 0.72)),
+    url("/images/one-time/onetime-hero-vertical.webp") right center / auto 120% no-repeat,
+    #161616;
+}
+
+.one-time-review-hero-card h1,
+.one-time-review-hero-card h2 {
+  color: #fff !important;
+}
+
+.one-time-review-hero-card p,
+.one-time-review-hero-card .small {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+
+.one-time-review-hero-card .status-pill {
+  justify-self: end;
+  color: #101010;
+  border-color: var(--one-time-yellow);
+  background: var(--one-time-yellow);
+}
+
+.one-time-page-logo {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+  border-radius: 14px;
+  background: var(--one-time-yellow);
+  padding: 6px;
+}
+
+@media (max-width: 720px) {
+  .one-time-review-hero-card {
+    grid-template-columns: 1fr;
+    background:
+      linear-gradient(180deg, rgba(22, 22, 22, 0.95), rgba(22, 22, 22, 0.78)),
+      url("/images/one-time/onetime-hero-vertical.webp") right bottom / auto 105% no-repeat,
+      #161616;
+  }
+
+  .one-time-review-hero-card .status-pill {
+    justify-self: start;
+  }
+}
