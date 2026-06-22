@@ -3643,9 +3643,13 @@
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
             const heroEyebrow = document.querySelector('.hero .eyebrow');
+            const languageToggle = document.querySelector('.language-toggle');
+            const sidebarEyebrow = document.querySelector('.portal-sidebar-header .eyebrow');
             if (title) title.textContent = 'OneTimeOneTime';
             if (subtitle) subtitle.textContent = 'Student review portal';
             if (heroEyebrow) heroEyebrow.textContent = 'OneTimeOneTime Mishnah';
+            if (languageToggle) languageToggle.classList.add('hidden');
+            if (sidebarEyebrow) sidebarEyebrow.textContent = 'One Time Classroom';
             const actions = document.querySelector('.portal-topbar-actions');
             if (actions) {
                 actions.innerHTML = `
