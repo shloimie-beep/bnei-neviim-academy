@@ -168,7 +168,7 @@ async function main() {
       label: 'email',
       path: '/one-time-email-review.html',
       expectedTitle: /One Time Email Review/i,
-      requiredText: ['One Time Email Review', 'preview only', 'no-send'],
+      requiredText: ['One Time Email Review', 'Preview-only transactional templates', 'no-send'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Dratler Family'],

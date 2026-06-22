@@ -2352,13 +2352,15 @@
             els.langEnButton.classList.toggle('active', language === 'en');
             els.langHeButton.classList.toggle('active', language === 'he');
             const menuLabel = document.querySelector('#portalMenuToggle');
-            if (menuLabel) menuLabel.childNodes[menuLabel.childNodes.length - 1].textContent = ` ${t('menu')}`;
+            if (menuLabel) menuLabel.childNodes[menuLabel.childNodes.length - 1].textContent = ONE_TIME_REVIEW_MODE ? ' Review' : ` ${t('menu')}`;
             const sidebarEyebrow = document.querySelector('.portal-sidebar-header .eyebrow');
-            if (sidebarEyebrow) sidebarEyebrow.textContent = t('boardTitle');
+            if (sidebarEyebrow) sidebarEyebrow.textContent = ONE_TIME_REVIEW_MODE ? 'One Time Classroom' : t('boardTitle');
             const thisWeekLabel = document.querySelector('.sidebar-block .eyebrow');
             if (thisWeekLabel) thisWeekLabel.textContent = t('thisWeek');
             const brandSubtitle = document.querySelector('.brand-lockup div span');
-            if (brandSubtitle) brandSubtitle.textContent = t('brandSubtitle');
+            if (brandSubtitle) brandSubtitle.textContent = ONE_TIME_REVIEW_MODE ? 'Student review portal' : t('brandSubtitle');
+            const languageToggle = document.querySelector('.language-toggle');
+            if (languageToggle) languageToggle.classList.toggle('hidden', ONE_TIME_REVIEW_MODE);
             const studentTopbarLabels = [
                 ['[data-student-topbar-public]', 'publicSite'],
                 ['[data-student-topbar-families]', 'families'],
