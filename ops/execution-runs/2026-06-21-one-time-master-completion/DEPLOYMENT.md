@@ -735,7 +735,7 @@ dry-run mode and records the migration/seed/isolation-scan checksum manifest.
 Status: pushed / not live-deployed.
 
 - Implementation/pushed commit:
-  `698fdea4fa57ec4de9efe20c3c943a12f3a128da`
+  `4d43160be025df23f953bff38f7b0f1aaf7c10ad`
 - PR branch:
   `codex/agent-control-center-20260619`
 - PR:
@@ -743,8 +743,8 @@ Status: pushed / not live-deployed.
 - Shared live base checked:
   `https://bneineviimacademy.org`
 
-Deployment was not completed. A read-only live probe showed that the current
-shared app has not picked up commit `698fdea4` yet:
+Deployment was not completed. The previous read-only live probe showed that
+the current shared app had not picked up commit `698fdea4` yet:
 
 - `/one-time` returns HTTP 200 but does not contain the new
   `OneTimeOneTime`/shared-review branding.
@@ -754,9 +754,9 @@ shared app has not picked up commit `698fdea4` yet:
 - `/one-time-email-review.html` returns HTTP 404 on the current live shared
   app.
 
-To avoid uploading unrelated dirty artifacts, the deploy attempt was run from a
-clean detached worktree at commit `698fdea4`. The deploy stopped before any
-Railway mutation:
+To avoid uploading unrelated dirty artifacts, the previous deploy attempt was
+run from a clean detached worktree at commit `698fdea4`. The deploy stopped
+before any Railway mutation:
 
 ```text
 Project: one-time-production
@@ -771,12 +771,17 @@ deployment was created or modified. Given the operator instruction not to
 touch `skillful-motivation`, Codex did not relink the Railway project or force
 a shared-service deploy.
 
+Phase 2 update: commit `4d43160be025df23f953bff38f7b0f1aaf7c10ad` is pushed
+to the PR #5 branch and locally verified, but no additional shared deploy was
+attempted because the same Railway project/service approval blocker remains.
+
 Exact unblock action:
 
 ```powershell
 # only after the operator approves/relinks the existing shared app deploy target
 git checkout codex/agent-control-center-20260619
 git pull --ff-only
+git rev-parse HEAD # must show 4d43160be025df23f953bff38f7b0f1aaf7c10ad or later
 npm run railway:redeploy
 npm run railway:doctor
 ```

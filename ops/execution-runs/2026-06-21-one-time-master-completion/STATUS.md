@@ -940,6 +940,12 @@ The existing shared One Time review surfaces have been branded for Shloimie's
 review without provisioning Railway, touching `skillful-motivation`, creating
 services, or hooking DNS.
 
+Phase 2 branded landing/review work is pushed at commit
+`4d43160be025df23f953bff38f7b0f1aaf7c10ad`. It adds the full raw prompt copy,
+brand kit/configuration, service-provider site config, stage-only teaching
+stills, expanded preview-only email templates, refreshed review packet, and a
+polished `/one-time` landing page using traced OneTimeOneTime assets.
+
 Updated review surfaces:
 
 - One Time landing: `/one-time`
@@ -955,11 +961,15 @@ The review packet is current at
 known blockers, the secure local review-login handoff path, route map, and the
 next UI-correction ramble template.
 
-Local fixture-backed route smoke passed at 1440x900 and 390x844 for all six
-review routes with no page-level horizontal overflow, no console errors, and
-no stale placeholder/private fixture leakage.
+Local fixture-backed route smoke passed at 390x844, 768x1024, and 1440x900
+for all six review routes: HTTP 200, expected One Time marker present, stale
+BNA shell absent, and 0 console errors. The compact screenshot index is
+`ops/one-time-mishnah/operator-ui-review/screenshot-index.html`; the PNG
+screenshots remain in the repo-ignored local screenshot directory referenced
+by that index.
 
-Implementation/pushed commit: `698fdea4fa57ec4de9efe20c3c943a12f3a128da`.
+Implementation/pushed commit:
+`4d43160be025df23f953bff38f7b0f1aaf7c10ad`.
 
 Shared deploy attempt:
 
@@ -974,6 +984,9 @@ Shared deploy attempt:
   linked project.
 - No Railway project, service, database, DNS, variable, or deployment mutation
   was performed.
+- No additional shared deploy was attempted for commit
+  `4d43160be025df23f953bff38f7b0f1aaf7c10ad` because the same approved shared
+  deploy target blocker remains.
 
 Known validator caveat: `npm run bna:run:validate` currently fails before this
 requirement can close because this safety worktree is detached and older run

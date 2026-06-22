@@ -1014,16 +1014,19 @@ valid replacement credential was available to propagate or retry.
 Status: PR pushed; local fixture review ready; shared live deploy blocked.
 
 - Commit pushed to PR #5:
-  `698fdea4fa57ec4de9efe20c3c943a12f3a128da`
+  `4d43160be025df23f953bff38f7b0f1aaf7c10ad`
 - Review packet:
   `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
 - Secure ignored review-login handoff:
   `.runtime/onetime-review-identities/one-time-shared-review-logins-20260622.json`
 
-Local fixture-backed smoke passed for the review routes at 1440x900 and
-390x844. The current shared live site has not deployed this bundle yet:
-`/one-time-email-review.html` is still 404 live, and the new branding markers
-are absent from the live review pages.
+Local fixture-backed smoke passed for the review routes at 390x844,
+768x1024, and 1440x900. The current shared live site has not deployed this
+bundle yet: the earlier read-only live probe found
+`/one-time-email-review.html` still 404 live, and the new branding markers
+absent from the live review pages. No new shared deploy was attempted after
+commit `4d43160be025df23f953bff38f7b0f1aaf7c10ad` because the same approved
+shared target blocker remains.
 
 Blocked live deploy reason:
 
@@ -1040,6 +1043,7 @@ Exact next action if the operator wants live shared review:
 # operator approval/relink required first for the existing shared app target
 git checkout codex/agent-control-center-20260619
 git pull --ff-only
+git rev-parse HEAD # confirm 4d43160be025df23f953bff38f7b0f1aaf7c10ad or later
 npm run railway:redeploy
 npm run railway:doctor
 ```

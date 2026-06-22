@@ -2036,13 +2036,31 @@ connection used.
 Source:
 
 - `raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md`
+- `raw-input/RAW-20260622-002-full-source-prompt.md`
+- Prompt SHA-256:
+  `b30c63f1fcabfe18680a51e4cdc6a488e31aa780e737ddc6193becceae257837`
+
+Brand kit and configuration:
+
+- `brand-kit/one-time/README.md`
+- `brand-kit/one-time/colors.json`
+- `brand-kit/one-time/copy.md`
+- `brand-kit/one-time/assets.json`
+- `brand-kit/one-time/usage.md`
+- `config/brands/one-time.json`
+- `config/service-provider-sites/one-time.json`
+- `src/platform/service-provider-sites/index.js`
+- `src/platform/instances/one-time.js`
 
 Brand/asset trace:
 
 - `ops/one-time-mishnah/brand-site-review/ASSET-INVENTORY.md`
 - `ops/one-time-mishnah/brand-site-review/asset-manifest.json`
 - `ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md`
+- `ops/one-time-mishnah/operator-ui-review/ASSET-REVIEW.md`
 - Raw promo MP4 was inventoried and traced but not committed.
+- Vimeo promo embed `1158542993` was traced but not embedded because it
+  includes unapproved child/crowd imagery.
 
 Review packet:
 
@@ -2063,6 +2081,18 @@ Runtime/review implementation:
 - `public/css/one-time-shared-review.css`
 - `public/images/one-time/`
 - `src/platform/instances/one-time-shared-review-data.js`
+- `tests/one-time-review-only-server.test.js`
+
+Local UI evidence:
+
+- Commit pushed to PR #5 branch:
+  `4d43160be025df23f953bff38f7b0f1aaf7c10ad`
+- `ops/one-time-mishnah/operator-ui-review/screenshot-index.html`
+- Local ignored screenshot/report directory:
+  `ops/one-time-mishnah/operator-ui-review/screenshots/2026-06-22-phase-2-local/`
+- Three screenshots were visually inspected after the route smoke:
+  `landing-mobile390.png`, `landing-desktop1440.png`, and
+  `parent-mobile390.png`.
 
 Safe review data:
 
