@@ -1366,6 +1366,19 @@ Route smoke verified:
 - No `Dratler`, stale fake Vimeo ID `123456789`, or student-bot placeholder
   leakage in review page text.
 
+Read-only shared-live probe after push:
+
+- PASS `https://bneineviimacademy.org/api/health`: `status: ok`, database
+  connected.
+- LIVE NOT UPDATED `/one-time`: HTTP 200, but new `OneTimeOneTime`, shared
+  review CSS, and logo markers absent.
+- LIVE NOT UPDATED `/provider.html?review=one-time`,
+  `/parent.html?review=one-time`, `/student.html?review=one-time`, and
+  `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`:
+  HTTP 200, but new shared review CSS/logo markers absent.
+- LIVE NOT UPDATED `/one-time-email-review.html`: HTTP 404.
+- No live mutation was performed by the probe.
+
 Validator caveat:
 
 - `npm run bna:run:validate` currently fails in this safety worktree because

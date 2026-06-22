@@ -2734,7 +2734,7 @@
       "id": "REQ-20260622-002",
       "title": "Shared One Time branded review deployment",
       "expected_result": "The existing shared One Time landing, provider, parent, student, classroom and email review routes use traced legacy branding assets, remain scoped to TEST One Time data, pass focused checks, are pushed to PR #5, and are deployed/live-smoked on the shared app when safe.",
-      "status": "in_progress",
+      "status": "blocked",
       "source_id": "RAW-20260622-002",
       "source_statement_ids": [
         "STMT-20260622-002-0001"
@@ -2749,9 +2749,9 @@
       "depends_on": [
         "REQ-20260621-909"
       ],
-      "implementation_status": "implementation_started",
-      "can_continue_without_operator": true,
-      "next_action": "Finish local branding integration, run focused checks, commit, push PR #5 branch, deploy the existing shared app if safe, and record live smoke evidence.",
+      "implementation_status": "pushed_verified_local_live_deploy_blocked",
+      "can_continue_without_operator": false,
+      "next_action": "After operator approval for the existing shared app deploy target, run git checkout codex/agent-control-center-20260619; git pull --ff-only; npm run railway:redeploy; npm run railway:doctor; then smoke /one-time, provider/parent/student review routes, classroom review route, and /one-time-email-review.html.",
       "acceptance_criteria": [
         "legacy OneTimeOneTime logo and hero assets are inventoried and used in the shared review UI",
         "raw promo MP4 is traced but not committed",
@@ -2765,7 +2765,14 @@
         "raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md",
         "ops/one-time-mishnah/brand-site-review/ASSET-INVENTORY.md",
         "ops/one-time-mishnah/brand-site-review/asset-manifest.json",
-        "ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md"
+        "ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md#req-20260622-002---shared-one-time-branded-review",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#req-20260622-002---shared-one-time-branded-review-evidence",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#req-20260622-002---shared-one-time-branded-review-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#req-20260622-002-shared-one-time-branded-review",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md#shared-one-time-review-handoff",
+        "ops/watchdog-audits/2026-06-22T12-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md"
       ],
       "verification": [
         "node --test tests/one-time-shared-review-branding.test.js",
@@ -2775,7 +2782,10 @@
         "node scripts/audit-secrets.mjs",
         "git diff --check",
         "focused route/mobile smoke for /one-time and review routes",
-        "shared live smoke after deployment"
+        "shared live smoke after deployment",
+        "node --test tests/instances/one-time-shared-review-data.test.js tests/one-time-shared-review-branding.test.js tests/one-time-classroom-calendar-community-bot.test.js",
+        "npm test",
+        "read-only live probe for shared review routes after push"
       ],
       "implementation_files": [
         "public/one-time/index.html",
@@ -2793,7 +2803,23 @@
       ],
       "deployment_required": true,
       "live_required": true,
-      "updated_at": "2026-06-22T00:00:00+03:00"
+      "updated_at": "2026-06-22T12:30:00+03:00",
+      "blocker": "Shared live deploy is blocked because Railway CLI is currently linked to project one-time-production with no service selected, target shared service skillful-motivation is not available from that link, and the operator instructed Codex not to touch skillful-motivation or relink/force the shared service deploy.",
+      "blocker_owner": "Operator / Railway shared app owner",
+      "blocker_next_action": "Approve and relink the existing shared app deploy target, or provide a project token/session for the current shared app service; then redeploy commit 698fdea4 and run the focused review route smoke.",
+      "implementation_commit": "698fdea4fa57ec4de9efe20c3c943a12f3a128da",
+      "pushed_commit": "698fdea4fa57ec4de9efe20c3c943a12f3a128da",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_evidence": [
+        "No positive deployment evidence: shared live deploy blocked before mutation by Railway link/service mismatch and operator no-touch instruction.",
+        "Read-only live probe: /one-time-email-review.html returns 404 and new branding markers are absent from live shared routes."
+      ],
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": [
+        "Local fixture-backed route smoke passed at 1440x900 and 390x844.",
+        "Read-only shared-live probe shows commit 698fdea4 is not live yet."
+      ]
     }
   ],
   "source_statement_matrix": {

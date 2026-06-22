@@ -730,3 +730,65 @@ account-level Railway auth remains unavailable.
 `ops/one-time-mishnah/onetime-database-bootstrap-report.json` was generated in
 dry-run mode and records the migration/seed/isolation-scan checksum manifest.
 
+## REQ-20260622-002 Shared One Time Branded Review
+
+Status: pushed / not live-deployed.
+
+- Implementation/pushed commit:
+  `698fdea4fa57ec4de9efe20c3c943a12f3a128da`
+- PR branch:
+  `codex/agent-control-center-20260619`
+- PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/5`
+- Shared live base checked:
+  `https://bneineviimacademy.org`
+
+Deployment was not completed. A read-only live probe showed that the current
+shared app has not picked up commit `698fdea4` yet:
+
+- `/one-time` returns HTTP 200 but does not contain the new
+  `OneTimeOneTime`/shared-review branding.
+- `/provider.html?review=one-time`, `/parent.html?review=one-time`,
+  `/student.html?review=one-time`, and the classroom review route return HTTP
+  200 but do not contain the new shared review CSS/logo markers.
+- `/one-time-email-review.html` returns HTTP 404 on the current live shared
+  app.
+
+To avoid uploading unrelated dirty artifacts, the deploy attempt was run from a
+clean detached worktree at commit `698fdea4`. The deploy stopped before any
+Railway mutation:
+
+```text
+Project: one-time-production
+Environment: production
+Service: None
+Target Railway service: skillful-motivation / production
+Service "skillful-motivation" not found.
+```
+
+No Railway project, service, database, variable, DNS record, restart, or
+deployment was created or modified. Given the operator instruction not to
+touch `skillful-motivation`, Codex did not relink the Railway project or force
+a shared-service deploy.
+
+Exact unblock action:
+
+```powershell
+# only after the operator approves/relinks the existing shared app deploy target
+git checkout codex/agent-control-center-20260619
+git pull --ff-only
+npm run railway:redeploy
+npm run railway:doctor
+```
+
+Then rerun a live review smoke for:
+
+```text
+/one-time
+/provider.html?review=one-time
+/parent.html?review=one-time
+/student.html?review=one-time
+/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+/one-time-email-review.html
+```
+

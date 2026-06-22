@@ -1007,3 +1007,59 @@ REQ-20260621-902 remains blocked. The latest credential audit is
 both approved local OpenAI credential sources returned HTTP `401`, so no
 valid replacement credential was available to propagate or retry.
 <!-- req-313-separate-instance:end -->
+
+<!-- shared-review-branding:start -->
+## Shared One Time Review Handoff
+
+Status: PR pushed; local fixture review ready; shared live deploy blocked.
+
+- Commit pushed to PR #5:
+  `698fdea4fa57ec4de9efe20c3c943a12f3a128da`
+- Review packet:
+  `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
+- Secure ignored review-login handoff:
+  `.runtime/onetime-review-identities/one-time-shared-review-logins-20260622.json`
+
+Local fixture-backed smoke passed for the review routes at 1440x900 and
+390x844. The current shared live site has not deployed this bundle yet:
+`/one-time-email-review.html` is still 404 live, and the new branding markers
+are absent from the live review pages.
+
+Blocked live deploy reason:
+
+- The clean deploy checkout is linked to Railway project `one-time-production`
+  with no service selected.
+- `npm run railway:redeploy` stopped before mutation because target service
+  `skillful-motivation` is not available in that linked project.
+- The operator instructed Codex not to touch `skillful-motivation`, so Codex
+  did not relink the Railway project or force the shared-service deploy.
+
+Exact next action if the operator wants live shared review:
+
+```powershell
+# operator approval/relink required first for the existing shared app target
+git checkout codex/agent-control-center-20260619
+git pull --ff-only
+npm run railway:redeploy
+npm run railway:doctor
+```
+
+Then smoke:
+
+```powershell
+# read-only route check after deploy
+# /one-time
+# /provider.html?review=one-time
+# /parent.html?review=one-time
+# /student.html?review=one-time
+# /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
+# /one-time-email-review.html
+```
+
+Exact next action if Shloimie reviews before live deploy:
+
+- Use the pushed PR packet and local screenshots in
+  `ops/one-time-mishnah/operator-ui-review/`.
+- Submit UI/workflow corrections using
+  `ops/one-time-mishnah/operator-ui-review/NEXT-RAMBLE-TEMPLATE.md`.
+<!-- shared-review-branding:end -->

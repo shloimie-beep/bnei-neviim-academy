@@ -933,8 +933,8 @@ be followed by the separate database bootstrap/seed/isolation scan plus
 <!-- shared-review-branding:start -->
 ## REQ-20260622-002 - Shared One Time Branded Review
 
-Status: implementation complete locally; pending commit, push, shared deploy,
-and live smoke.
+Status: pushed to PR #5; shared live deploy blocked by Railway project/service
+access and the operator instruction not to touch `skillful-motivation`.
 
 The existing shared One Time review surfaces have been branded for Shloimie's
 review without provisioning Railway, touching `skillful-motivation`, creating
@@ -958,6 +958,22 @@ next UI-correction ramble template.
 Local fixture-backed route smoke passed at 1440x900 and 390x844 for all six
 review routes with no page-level horizontal overflow, no console errors, and
 no stale placeholder/private fixture leakage.
+
+Implementation/pushed commit: `698fdea4fa57ec4de9efe20c3c943a12f3a128da`.
+
+Shared deploy attempt:
+
+- A read-only live probe showed the current live shared site has not picked up
+  the new review bundle yet; `/one-time-email-review.html` is still 404 and
+  the new OneTimeOneTime branding assets are not present.
+- A clean deploy checkout at `698fdea4` was created to avoid uploading
+  unrelated dirty artifacts.
+- `npm run railway:redeploy` stopped before deployment because Railway CLI is
+  currently linked to project `one-time-production` with no service selected,
+  and the target shared service `skillful-motivation` is not available in that
+  linked project.
+- No Railway project, service, database, DNS, variable, or deployment mutation
+  was performed.
 
 Known validator caveat: `npm run bna:run:validate` currently fails before this
 requirement can close because this safety worktree is detached and older run
