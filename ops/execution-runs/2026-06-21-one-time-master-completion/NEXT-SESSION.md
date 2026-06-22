@@ -1011,59 +1011,27 @@ valid replacement credential was available to propagate or retry.
 <!-- shared-review-branding:start -->
 ## Shared One Time Review Handoff
 
-Status: PR pushed; local fixture review ready; shared live deploy blocked.
+Status: done / deployed shared review ready for operator review.
 
-- Commit pushed to PR #5:
-  `4d43160be025df23f953bff38f7b0f1aaf7c10ad`
-- Review packet:
-  `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
-- Secure ignored review-login handoff:
-  `.runtime/onetime-review-identities/one-time-shared-review-logins-20260622.json`
+- Final pushed app commit: `168bda1f18fb65864fdf4e75e242f9480c571325`
+- PR #5 branch: `codex/agent-control-center-20260619`
+- Shared Railway deployment: `3671af2d-26e1-4e24-b918-52074d821ad7` on existing `skillful-motivation` / `production`
+- Standard live smoke: `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md`
+- Focused shared review live smoke: `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md`
+- Review packet: `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
+- Secure ignored review-login handoff: `.runtime/onetime-review-identities/one-time-shared-review-logins-20260622.json`
 
-Local fixture-backed smoke passed for the review routes at 390x844,
-768x1024, and 1440x900. The current shared live site has not deployed this
-bundle yet: the earlier read-only live probe found
-`/one-time-email-review.html` still 404 live, and the new branding markers
-absent from the live review pages. No new shared deploy was attempted after
-commit `4d43160be025df23f953bff38f7b0f1aaf7c10ad` because the same approved
-shared target blocker remains.
+Live review URLs:
 
-Blocked live deploy reason:
+- Public review: `https://bneineviimacademy.org/one-time/`
+- Provider/Rabbi review: `https://bneineviimacademy.org/provider.html?review=one-time`
+- Parent review: `https://bneineviimacademy.org/parent.html?review=one-time`
+- Student review: `https://bneineviimacademy.org/student.html?review=one-time`
+- Classroom/library: `https://bneineviimacademy.org/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`
+- Email previews: `https://bneineviimacademy.org/one-time-email-review.html`
+- Operations review route: `https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview`
 
-- The clean deploy checkout is linked to Railway project `one-time-production`
-  with no service selected.
-- `npm run railway:redeploy` stopped before mutation because target service
-  `skillful-motivation` is not available in that linked project.
-- The operator instructed Codex not to touch `skillful-motivation`, so Codex
-  did not relink the Railway project or force the shared-service deploy.
+Exact next action: Shloimie should review the deployed shared review experience and give the next correction ramble using the purpose `One Time UI/workflow corrections and full Agent Mode visual QA`. Use `ops/one-time-mishnah/operator-ui-review/NEXT-RAMBLE-TEMPLATE.md` to capture it.
 
-Exact next action if the operator wants live shared review:
-
-```powershell
-# operator approval/relink required first for the existing shared app target
-git checkout codex/agent-control-center-20260619
-git pull --ff-only
-git rev-parse HEAD # confirm 4d43160be025df23f953bff38f7b0f1aaf7c10ad or later
-npm run railway:redeploy
-npm run railway:doctor
-```
-
-Then smoke:
-
-```powershell
-# read-only route check after deploy
-# /one-time
-# /provider.html?review=one-time
-# /parent.html?review=one-time
-# /student.html?review=one-time
-# /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
-# /one-time-email-review.html
-```
-
-Exact next action if Shloimie reviews before live deploy:
-
-- Use the pushed PR packet and local screenshots in
-  `ops/one-time-mishnah/operator-ui-review/`.
-- Submit UI/workflow corrections using
-  `ops/one-time-mishnah/operator-ui-review/NEXT-RAMBLE-TEMPLATE.md`.
+Known continuing blocker outside this deployed shared review: the separate One Time instance remains blocked on separate Railway account/project access and should not be provisioned inside `skillful-motivation`.
 <!-- shared-review-branding:end -->

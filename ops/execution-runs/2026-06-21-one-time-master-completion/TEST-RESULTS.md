@@ -1334,58 +1334,36 @@ REQ-20260621-902 hosted transcription credential audit:
 
 Local verification on 2026-06-22:
 
-- PASS focused Phase 2 suite:
-  `node --test tests/one-time-shared-review-branding.test.js tests/instances/one-time-shared-review-data.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js`
-  with 20/20 passing.
+- PASS `node --check scripts/smoke-one-time-shared-review-live.mjs`.
 - PASS `node --check server.js`.
-- PASS local review-only server using `ONE_TIME_REVIEW_ONLY_NO_DB=1`.
-- PASS fixture-backed Playwright route smoke for `/one-time`,
-  `/provider.html?review=one-time`, `/parent.html?review=one-time`,
-  `/student.html?review=one-time`,
-  `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`,
-  and `/one-time-email-review.html` at 390x844, 768x1024, and 1440x900
-  with 18/18 checks passing.
-- PASS visual screenshot inspection for
-  `ops/one-time-mishnah/operator-ui-review/screenshots/2026-06-22-phase-2-local/landing-mobile390.png`,
-  `landing-desktop1440.png`, and `parent-mobile390.png`.
+- PASS focused Phase 2 suite: `node --test tests/one-time-focused-landing.test.js tests/one-time-shared-review-branding.test.js tests/one-time-product-system.test.js tests/instances/one-time-shared-review-data.test.js tests/one-time-review-only-server.test.js` with 21/21 passing.
+- PASS local review-only Playwright route smoke for `/one-time`, provider, parent, student, classroom, and email review routes at 390x844 with no stale BNA shell, Goal Board label, language-toggle, overflow, console, or broken-image regression.
 - PASS `npm test` with 1043/1043 passing.
-- PASS `node scripts/audit-secrets.mjs`: 4010 tracked paths checked, 0
-  tracked secret-risk files found.
-- PASS `npm run watchdog:actions`: report
-  `ops/watchdog-audits/2026-06-22T12-23-watchdog-action-audit.md`.
-- PASS `npm run watchdog:security`: report
-  `ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md`.
+- PASS `node scripts/audit-secrets.mjs`: 4034 tracked paths checked, 0 tracked secret-risk files found.
+- PASS `npm run watchdog:actions`: report `ops/watchdog-audits/2026-06-22T13-24-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`: report `ops/watchdog-audits/2026-06-22T13-24-watchdog-security-routes.md`.
 - PASS `git diff --check` with Windows line-ending warnings only.
 
-Route smoke verified:
+Deploy verification:
 
-- HTTP 200 for all six review routes.
-- One Time/OneTime branding present.
-- One Time image/logo assets loaded.
-- No page-level horizontal overflow at 390px, 768px, or 1440px.
-- No console/page errors.
-- No stale BNA shell on review pages.
-- No `Dratler`, stale fake Vimeo ID `123456789`, or student-bot placeholder
-  leakage in review page text.
+- PASS `npm run railway:doctor` for deployment `3671af2d-26e1-4e24-b918-52074d821ad7` after one transient Railway CLI decode retry.
+- PASS standard live app smoke: `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md`.
+- PASS focused shared review live smoke: `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md`.
 
-Read-only shared-live probe after push:
+Focused live smoke covered:
 
-- PASS `https://bneineviimacademy.org/api/health`: `status: ok`, database
-  connected.
-- LIVE NOT UPDATED `/one-time`: HTTP 200, but the earlier shared review
-  `OneTimeOneTime`, shared review CSS, and logo markers were absent.
-- LIVE NOT UPDATED `/provider.html?review=one-time`,
-  `/parent.html?review=one-time`, `/student.html?review=one-time`, and
-  `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`:
-  HTTP 200, but new shared review CSS/logo markers absent.
-- LIVE NOT UPDATED `/one-time-email-review.html`: HTTP 404.
-- No live mutation was performed by the probe.
+- `/one-time/`
+- `/provider.html?review=one-time`
+- `/parent.html?review=one-time`
+- `/student.html?review=one-time`
+- `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`
+- `/one-time-email-review.html`
+- `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview`
+- Viewports: 390x844, 768x1024, 1440x900.
+
+Route smoke verified HTTP 2xx/3xx, One Time titles/markers, logo selectors, expected copy, no forbidden BNA/Dratler shell text, no broken images, no horizontal overflow, and no console/page errors.
 
 Validator caveat:
 
-- `npm run bna:run:validate` currently fails in this safety worktree because
-  the worktree is detached (`current branch is HEAD`) and older requirements
-  reference historical live-smoke evidence files missing from this stripped
-  checkout. The validator failure predates this review implementation and is
-  not a regression in the shared review routes.
+- `npm run bna:run:validate` still fails in this detached/stripped worktree because older requirements reference historical ignored live-smoke evidence files missing from this checkout and `git_refs` expects a branch name instead of `HEAD`. This is not a `REQ-20260622-002` regression.
 <!-- shared-review-branding:end -->

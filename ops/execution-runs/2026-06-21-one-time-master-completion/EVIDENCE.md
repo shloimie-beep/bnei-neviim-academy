@@ -2037,8 +2037,7 @@ Source:
 
 - `raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md`
 - `raw-input/RAW-20260622-002-full-source-prompt.md`
-- Prompt SHA-256:
-  `b30c63f1fcabfe18680a51e4cdc6a488e31aa780e737ddc6193becceae257837`
+- Prompt SHA-256: `b30c63f1fcabfe18680a51e4cdc6a488e31aa780e737ddc6193becceae257837`
 
 Brand kit and configuration:
 
@@ -2059,16 +2058,7 @@ Brand/asset trace:
 - `ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md`
 - `ops/one-time-mishnah/operator-ui-review/ASSET-REVIEW.md`
 - Raw promo MP4 was inventoried and traced but not committed.
-- Vimeo promo embed `1158542993` was traced but not embedded because it
-  includes unapproved child/crowd imagery.
-
-Review packet:
-
-- `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
-- `ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md`
-- `ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md`
-- `ops/one-time-mishnah/operator-ui-review/NEXT-RAMBLE-TEMPLATE.md`
-- `ops/one-time-mishnah/operator-ui-review/screenshot-index.html`
+- Vimeo promo embed `1158542993` was traced but not embedded because it includes unapproved child/crowd imagery.
 
 Runtime/review implementation:
 
@@ -2081,18 +2071,23 @@ Runtime/review implementation:
 - `public/css/one-time-shared-review.css`
 - `public/images/one-time/`
 - `src/platform/instances/one-time-shared-review-data.js`
+- `scripts/smoke-one-time-shared-review-live.mjs`
 - `tests/one-time-review-only-server.test.js`
 
-Local UI evidence:
+Review packet:
 
-- Commit pushed to PR #5 branch:
-  `4d43160be025df23f953bff38f7b0f1aaf7c10ad`
+- `ops/one-time-mishnah/operator-ui-review/START-HERE.md`
+- `ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md`
+- `ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md`
+- `ops/one-time-mishnah/operator-ui-review/NEXT-RAMBLE-TEMPLATE.md`
 - `ops/one-time-mishnah/operator-ui-review/screenshot-index.html`
-- Local ignored screenshot/report directory:
-  `ops/one-time-mishnah/operator-ui-review/screenshots/2026-06-22-phase-2-local/`
-- Three screenshots were visually inspected after the route smoke:
-  `landing-mobile390.png`, `landing-desktop1440.png`, and
-  `parent-mobile390.png`.
+
+Deploy/live evidence:
+
+- Final pushed app commit: `168bda1f18fb65864fdf4e75e242f9480c571325`
+- Railway deployment: `3671af2d-26e1-4e24-b918-52074d821ad7` on existing shared `skillful-motivation` / `production` service, status `SUCCESS`
+- Standard live smoke: `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md` and `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.json`
+- Focused shared review live smoke: `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md` and `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.json`
 
 Safe review data:
 
@@ -2105,9 +2100,8 @@ Safe review data:
 
 Guardrails:
 
-- No Railway provisioning.
+- No Railway project/service/database provisioning.
 - No `skillful-motivation` topology change.
 - No DNS change.
-- No live email, WhatsApp, charge, Zoom meeting, Vimeo upload, external CRM,
-  or secret exposure.
+- No live email, WhatsApp, charge, Zoom meeting, Vimeo upload, external CRM, or secret exposure.
 <!-- shared-review-branding:end -->

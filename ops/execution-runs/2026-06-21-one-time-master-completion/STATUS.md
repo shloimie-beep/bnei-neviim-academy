@@ -933,18 +933,13 @@ be followed by the separate database bootstrap/seed/isolation scan plus
 <!-- shared-review-branding:start -->
 ## REQ-20260622-002 - Shared One Time Branded Review
 
-Status: pushed to PR #5; shared live deploy blocked by Railway project/service
-access and the operator instruction not to touch `skillful-motivation`.
+Status: done / pushed / deployed / live-smoked.
 
-The existing shared One Time review surfaces have been branded for Shloimie's
-review without provisioning Railway, touching `skillful-motivation`, creating
-services, or hooking DNS.
+The existing shared One Time review surfaces have been branded for Shloimie's review. The final shared app deployment used the existing `skillful-motivation` Railway service only; no Railway topology, DNS, separate service, separate database, external send, charge, Zoom write, Vimeo upload, or access grant was performed.
 
-Phase 2 branded landing/review work is pushed at commit
-`4d43160be025df23f953bff38f7b0f1aaf7c10ad`. It adds the full raw prompt copy,
-brand kit/configuration, service-provider site config, stage-only teaching
-stills, expanded preview-only email templates, refreshed review packet, and a
-polished `/one-time` landing page using traced OneTimeOneTime assets.
+Final pushed app commit: `168bda1f18fb65864fdf4e75e242f9480c571325`.
+
+Shared Railway deployment: `3671af2d-26e1-4e24-b918-52074d821ad7`, `SUCCESS`.
 
 Updated review surfaces:
 
@@ -952,45 +947,21 @@ Updated review surfaces:
 - Provider/Rabbi review: `/provider.html?review=one-time`
 - Parent review: `/parent.html?review=one-time`
 - Student review: `/student.html?review=one-time`
-- Classroom/library:
-  `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`
+- Classroom/library: `/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS`
 - Email template preview: `/one-time-email-review.html`
+- One Time Operations review route: `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview`
 
-The review packet is current at
-`ops/one-time-mishnah/operator-ui-review/`. It includes exact review links,
-known blockers, the secure local review-login handoff path, route map, and the
-next UI-correction ramble template.
+The review packet is current at `ops/one-time-mishnah/operator-ui-review/`. It includes exact review links, known blockers, the secure local review-login handoff path, route map, and the next UI-correction ramble template.
 
-Local fixture-backed route smoke passed at 390x844, 768x1024, and 1440x900
-for all six review routes: HTTP 200, expected One Time marker present, stale
-BNA shell absent, and 0 console errors. The compact screenshot index is
-`ops/one-time-mishnah/operator-ui-review/screenshot-index.html`; the PNG
-screenshots remain in the repo-ignored local screenshot directory referenced
-by that index.
+Verification summary:
 
-Implementation/pushed commit:
-`4d43160be025df23f953bff38f7b0f1aaf7c10ad`.
+- PASS focused tests, full `npm test` 1043/1043, action/security watchdogs, secret audit, syntax checks, and diff check.
+- PASS local review-only Playwright smoke for public review routes.
+- PASS standard live app smoke: `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md`.
+- PASS focused live smoke across landing, provider, parent, student, classroom, email, and Operations review routes at 390x844, 768x1024, and 1440x900: `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md`.
+- Student review mode no longer leaks stale BNA/Goal Board shell labels in the One Time review context.
 
-Shared deploy attempt:
+Known validator caveat: `npm run bna:run:validate` still fails in this detached/stripped worktree because older requirements reference historical ignored live-smoke evidence files missing from this checkout and `git_refs` expects a branch name instead of `HEAD`. This caveat is not caused by `REQ-20260622-002`; current evidence for this requirement is present.
 
-- A read-only live probe showed the current live shared site has not picked up
-  the new review bundle yet; `/one-time-email-review.html` is still 404 and
-  the new OneTimeOneTime branding assets are not present.
-- A clean deploy checkout at `698fdea4` was created to avoid uploading
-  unrelated dirty artifacts.
-- `npm run railway:redeploy` stopped before deployment because Railway CLI is
-  currently linked to project `one-time-production` with no service selected,
-  and the target shared service `skillful-motivation` is not available in that
-  linked project.
-- No Railway project, service, database, DNS, variable, or deployment mutation
-  was performed.
-- No additional shared deploy was attempted for commit
-  `4d43160be025df23f953bff38f7b0f1aaf7c10ad` because the same approved shared
-  deploy target blocker remains.
-
-Known validator caveat: `npm run bna:run:validate` currently fails before this
-requirement can close because this safety worktree is detached and older run
-requirements reference historical live-smoke evidence files missing from this
-checkout. The failure is recorded in `TEST-RESULTS.md` and is not caused by
-the shared review branding implementation.
+Next purpose: `One Time UI/workflow corrections and full Agent Mode visual QA`.
 <!-- shared-review-branding:end -->

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-21-one-time-master-completion",
   "title": "One Time Master Completion",
-  "updated_at": "2026-06-22T15:55:00+03:00",
+  "updated_at": "2026-06-22T16:37:00+03:00",
   "raw_id": "RAW-20260621-001",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
@@ -361,7 +361,7 @@
       "source_id": "RAW-20260622-002",
       "source_statement": "Turn the existing shared One Time review routes into a polished branded experience using supplied legacy assets, then deploy the shared review build for Shloimie UI/workflow review.",
       "requirement_id": "REQ-20260622-002",
-      "classification": "missing"
+      "classification": "implemented_verified_deployed"
     }
   ],
   "requirements": [
@@ -2734,7 +2734,7 @@
       "id": "REQ-20260622-002",
       "title": "Shared One Time branded review deployment",
       "expected_result": "The existing shared One Time landing, provider, parent, student, classroom and email review routes use traced legacy branding assets, remain scoped to TEST One Time data, pass focused checks, are pushed to PR #5, and are deployed/live-smoked on the shared app when safe.",
-      "status": "blocked",
+      "status": "done",
       "source_id": "RAW-20260622-002",
       "source_statement_ids": [
         "STMT-20260622-002-0001"
@@ -2749,9 +2749,9 @@
       "depends_on": [
         "REQ-20260621-909"
       ],
-      "implementation_status": "pushed_verified_local_phase2_live_deploy_blocked",
-      "can_continue_without_operator": false,
-      "next_action": "After operator approval for the existing shared app deploy target, run git checkout codex/agent-control-center-20260619; git pull --ff-only; verify commit 4d43160be025df23f953bff38f7b0f1aaf7c10ad or later is present; npm run railway:redeploy; npm run railway:doctor; then smoke /one-time, provider/parent/student review routes, classroom review route, and /one-time-email-review.html.",
+      "implementation_status": "pushed_deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Next step is Shloimie's One Time UI/workflow corrections and full Agent Mode visual QA ramble against the deployed shared review routes.",
       "acceptance_criteria": [
         "legacy OneTimeOneTime logo and hero assets are inventoried and used in the shared review UI",
         "raw promo MP4 is traced but not committed",
@@ -2771,7 +2771,8 @@
         "brand-kit/one-time/usage.md",
         "config/brands/one-time.json",
         "config/service-provider-sites/one-time.json",
-        "docs/product/service-provider-sites.md",
+        "docs/product/service-provider-landing-pages.md",
+        "docs/product/service-provider-site-onboarding.md",
         "ops/one-time-mishnah/brand-site-review/ASSET-INVENTORY.md",
         "ops/one-time-mishnah/brand-site-review/asset-manifest.json",
         "ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md",
@@ -2786,27 +2787,34 @@
         "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#req-20260622-002-shared-one-time-branded-review",
         "ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md#shared-one-time-review-handoff",
         "ops/watchdog-audits/2026-06-22T12-23-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-22T13-24-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-22T13-24-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.json"
       ],
       "verification": [
-        "PASS node --test tests/one-time-shared-review-branding.test.js tests/instances/one-time-shared-review-data.test.js tests/one-time-focused-landing.test.js tests/one-time-product-system.test.js (20/20)",
-        "PASS node --check server.js",
-        "PASS npm run watchdog:actions report ops/watchdog-audits/2026-06-22T12-23-watchdog-action-audit.md",
-        "PASS npm run watchdog:security report ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md",
-        "PASS node scripts/audit-secrets.mjs (4010 tracked paths, 0 tracked secret-risk files)",
-        "PASS git diff --check with Windows line-ending warnings only",
-        "PASS local review-only server with ONE_TIME_REVIEW_ONLY_NO_DB=1",
-        "PASS Playwright fixture-backed route smoke for six review routes at 390x844, 768x1024, and 1440x900 (18/18 checks): HTTP 200, marker present, BNA shell absent, 0 console errors",
-        "PASS visual inspection of landing mobile/desktop and parent mobile screenshots from ops/one-time-mishnah/operator-ui-review/screenshots/2026-06-22-phase-2-local/",
+        "PASS node --check scripts/smoke-one-time-shared-review-live.mjs; node --check server.js",
+        "PASS focused tests: node --test tests/one-time-focused-landing.test.js tests/one-time-shared-review-branding.test.js tests/one-time-product-system.test.js tests/instances/one-time-shared-review-data.test.js tests/one-time-review-only-server.test.js (21/21)",
+        "PASS local review-only Playwright smoke for /one-time, provider, parent, student, classroom, and email routes at 390x844; no BNA shell, Goal Board, Dratler, language-toggle, overflow, console, or broken-image regressions found",
         "PASS npm test (1043/1043)",
-        "EXPECTED BLOCKER npm run bna:run:validate fails because this stripped detached worktree is current branch HEAD and older requirements reference historical live-smoke evidence files missing from this checkout",
-        "BLOCKED shared live smoke after deployment: no approved/relinked shared Railway target available"
+        "PASS npm run watchdog:actions report ops/watchdog-audits/2026-06-22T13-24-watchdog-action-audit.md",
+        "PASS npm run watchdog:security report ops/watchdog-audits/2026-06-22T13-24-watchdog-security-routes.md",
+        "PASS node scripts/audit-secrets.mjs (4034 tracked paths, 0 tracked secret-risk files)",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "KNOWN npm run bna:run:validate still fails in this detached/stripped worktree because older requirements reference historical ignored live-smoke evidence files missing from this checkout and git_refs expects a branch name, not HEAD",
+        "PASS npm run railway:doctor for deployment 3671af2d-26e1-4e24-b918-52074d821ad7 after one transient Railway CLI decode retry",
+        "PASS npm run app:smoke -> ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-shared-review -> ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md (21 route/viewport checks)"
       ],
       "implementation_files": [
         "brand-kit/one-time/",
         "config/brands/one-time.json",
         "config/service-provider-sites/one-time.json",
-        "docs/product/service-provider-sites.md",
+        "docs/product/service-provider-landing-pages.md",
+        "docs/product/service-provider-site-onboarding.md",
         "src/platform/brands/index.js",
         "src/platform/service-provider-sites/index.js",
         "src/platform/instances/one-time.js",
@@ -2831,25 +2839,28 @@
       ],
       "deployment_required": true,
       "live_required": true,
-      "updated_at": "2026-06-22T15:55:00+03:00",
-      "blocker": "Shared live deploy is blocked because Railway CLI is currently linked to project one-time-production with no service selected, target shared service skillful-motivation is not available from that link, and the operator instructed Codex not to touch skillful-motivation or relink/force the shared service deploy.",
-      "blocker_owner": "Operator / Railway shared app owner",
-      "blocker_next_action": "Approve and relink the existing shared app deploy target, or provide a project token/session for the current shared app service; then redeploy commit 4d43160be025df23f953bff38f7b0f1aaf7c10ad or later and run the focused review route smoke.",
-      "implementation_commit": "4d43160be025df23f953bff38f7b0f1aaf7c10ad",
-      "pushed_commit": "4d43160be025df23f953bff38f7b0f1aaf7c10ad",
+      "updated_at": "2026-06-22T16:37:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "implementation_commit": "168bda1f18fb65864fdf4e75e242f9480c571325",
+      "pushed_commit": "168bda1f18fb65864fdf4e75e242f9480c571325",
       "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
       "deployment_evidence": [
-        "No positive deployment evidence: shared live deploy remains blocked before mutation by Railway link/service mismatch and operator no-touch instruction.",
-        "Earlier read-only live probe showed /one-time-email-review.html returns 404 and new branding markers are absent from live shared routes.",
-        "Phase 2 local implementation commit 4d43160be025df23f953bff38f7b0f1aaf7c10ad is pushed to origin/codex/agent-control-center-20260619, but not deployed/live-smoked on the shared app."
+        "Railway deployment 3671af2d-26e1-4e24-b918-52074d821ad7 reached SUCCESS on existing shared project/service skillful-motivation / production; no Railway topology, DNS, separate service, or database was created.",
+        "npm run railway:doctor passed for skillful-motivation / production and deployment 3671af2d-26e1-4e24-b918-52074d821ad7.",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md"
       ],
-      "deployment_id": "",
-      "deployed_commit": "",
+      "deployment_id": "3671af2d-26e1-4e24-b918-52074d821ad7",
+      "deployed_commit": "168bda1f18fb65864fdf4e75e242f9480c571325",
       "live_smoke": [
-        "Local fixture-backed Playwright route smoke passed for /one-time, provider, parent, student, classroom, and email review routes at 390x844, 768x1024, and 1440x900.",
-        "Screenshot index updated at ops/one-time-mishnah/operator-ui-review/screenshot-index.html; ignored PNG screenshots remain local under the referenced screenshots directory.",
-        "Read-only shared-live probe from the previous packet showed commit 698fdea4 was not live yet; no later shared deploy was permitted for commit 4d43160be025df23f953bff38f7b0f1aaf7c10ad."
-      ]
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.json"
+      ],
+      "closeout_summary": "Shared One Time brand/review experience is pushed to PR #5, deployed to the existing shared Railway app, and live-smoked across landing, provider, parent, student, classroom, email, and One Time Operations review routes at 390x844, 768x1024, and 1440x900. Student review stale BNA/Goal Board shell labels were removed in review mode. Next step is Shloimie UI/workflow correction ramble and Agent Mode visual QA."
     }
   ],
   "source_statement_matrix": {

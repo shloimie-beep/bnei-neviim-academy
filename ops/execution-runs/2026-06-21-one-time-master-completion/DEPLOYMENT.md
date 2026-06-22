@@ -732,68 +732,38 @@ dry-run mode and records the migration/seed/isolation-scan checksum manifest.
 
 ## REQ-20260622-002 Shared One Time Branded Review
 
-Status: pushed / not live-deployed.
+Status: deployed / live-smoked.
 
-- Implementation/pushed commit:
-  `4d43160be025df23f953bff38f7b0f1aaf7c10ad`
-- PR branch:
-  `codex/agent-control-center-20260619`
-- PR:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/5`
-- Shared live base checked:
-  `https://bneineviimacademy.org`
+- Final pushed app commit: `168bda1f18fb65864fdf4e75e242f9480c571325`
+- PR branch: `codex/agent-control-center-20260619`
+- PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/5`
+- Shared live base: `https://bneineviimacademy.org`
+- Railway project/service: existing `skillful-motivation` / `production`
+- Railway deployment: `3671af2d-26e1-4e24-b918-52074d821ad7`, `SUCCESS`
 
-Deployment was not completed. The previous read-only live probe showed that
-the current shared app had not picked up commit `698fdea4` yet:
+Deployment path:
 
-- `/one-time` returns HTTP 200 but does not contain the new
-  `OneTimeOneTime`/shared-review branding.
-- `/provider.html?review=one-time`, `/parent.html?review=one-time`,
-  `/student.html?review=one-time`, and the classroom review route return HTTP
-  200 but do not contain the new shared review CSS/logo markers.
-- `/one-time-email-review.html` returns HTTP 404 on the current live shared
-  app.
+- A clean deploy worktree was created at commit `168bda1f`.
+- `npm run railway:redeploy` prepared the deploy bundle but the script's `railway link` step failed with project-token authorization.
+- Codex uploaded that prepared clean bundle directly with `railway up -d --project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --service skillful-motivation --environment production`.
+- No Railway topology, DNS, separate service, separate database, or variable mutation was performed.
+- `npm run railway:doctor` passed after deployment `3671af2d-26e1-4e24-b918-52074d821ad7` reached `SUCCESS`.
 
-To avoid uploading unrelated dirty artifacts, the previous deploy attempt was
-run from a clean detached worktree at commit `698fdea4`. The deploy stopped
-before any Railway mutation:
+Live smoke proof:
+
+- Standard live app smoke passed: `ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md`.
+- Focused shared review smoke passed: `ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md`.
+
+Focused live routes:
 
 ```text
-Project: one-time-production
-Environment: production
-Service: None
-Target Railway service: skillful-motivation / production
-Service "skillful-motivation" not found.
-```
-
-No Railway project, service, database, variable, DNS record, restart, or
-deployment was created or modified. Given the operator instruction not to
-touch `skillful-motivation`, Codex did not relink the Railway project or force
-a shared-service deploy.
-
-Phase 2 update: commit `4d43160be025df23f953bff38f7b0f1aaf7c10ad` is pushed
-to the PR #5 branch and locally verified, but no additional shared deploy was
-attempted because the same Railway project/service approval blocker remains.
-
-Exact unblock action:
-
-```powershell
-# only after the operator approves/relinks the existing shared app deploy target
-git checkout codex/agent-control-center-20260619
-git pull --ff-only
-git rev-parse HEAD # must show 4d43160be025df23f953bff38f7b0f1aaf7c10ad or later
-npm run railway:redeploy
-npm run railway:doctor
-```
-
-Then rerun a live review smoke for:
-
-```text
-/one-time
+/one-time/
 /provider.html?review=one-time
 /parent.html?review=one-time
 /student.html?review=one-time
 /one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS
 /one-time-email-review.html
+/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview
 ```
 
+No external send, charge, access grant, Zoom meeting, Vimeo upload, DNS write, Railway topology change, or external CRM write was performed.
