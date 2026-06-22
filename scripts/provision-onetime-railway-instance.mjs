@@ -44,6 +44,7 @@ function parseArgs(argv) {
     skipDeploy: false,
     skipDomain: false,
     writeReport: false,
+    projectId: process.env.ONE_TIME_RAILWAY_PROJECT_ID || '',
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -72,6 +73,9 @@ function parseArgs(argv) {
       options.skipDomain = true;
     } else if (arg === '--write-report') {
       options.writeReport = true;
+    } else if (arg === '--project-id') {
+      options.projectId = argv[index + 1] || '';
+      index += 1;
     } else if (arg === '--help' || arg === '-h') {
       options.help = true;
     } else {
@@ -87,9 +91,10 @@ function usage() {
        node scripts/provision-onetime-railway-instance.mjs --apply --confirm ${CONFIRM_PHRASE} [--skip-secrets] [--skip-deploy] [--skip-domain]
 
 Dry-run by default. The apply path is guarded and refuses the shared BNA Railway
-project. It never prints secret values. Required secrets are read from process
-environment and written with railway variable set --stdin only when --apply is
-confirmed.`;
+project. Pass --project-id or ONE_TIME_RAILWAY_PROJECT_ID to reuse a known empty
+One Time project instead of creating by name. It never prints secret values.
+Required secrets are read from process environment and written with railway
+variable set --stdin only when --apply is confirmed.`;
 }
 
 function loadPlan(planPath) {
@@ -137,6 +142,7 @@ function runCommand(args, options = {}) {
     command: redactCommand(args).join(' '),
     status: result.status,
     ok: result.status === 0,
+    raw_stdout: result.stdout ? result.stdout.trim() : '',
     stdout: result.stdout ? result.stdout.trim().slice(0, 4000) : '',
     stderr: result.stderr ? result.stderr.trim().replace(/\s+/g, ' ').slice(0, 1000) : (result.error?.message || ''),
   };
@@ -206,7 +212,7 @@ function buildDryRun(checklist, options = {}) {
 function summarizeReadiness(checklist, railwayChecks) {
   const listCheck = railwayChecks.find((item) => item.command === 'railway list --json');
   const statusCheck = railwayChecks.find((item) => item.command === 'railway status --json');
-  const projects = listCheck?.ok ? arrayFromRailwayList(parseJson(listCheck.stdout)) : [];
+  const projects = listCheck?.ok ? arrayFromRailwayList(parseJson(listCheck.raw_stdout || listCheck.stdout)) : [];
   const projectNames = projects.map(projectName).filter(Boolean);
   const targetProject = projects.find((project) => projectName(project).toLowerCase() === checklist.target.target_project.toLowerCase()) || null;
   const statusText = `${statusCheck?.stdout || ''}\n${statusCheck?.stderr || ''}`;
@@ -277,9 +283,12 @@ function applyProvisioning(plan, checklist, options) {
     return report;
   }
 
-  const listPayload = parseJson(readOnlyChecks.find((item) => item.command === 'railway list --json')?.stdout || '');
+  const listCheck = readOnlyChecks.find((item) => item.command === 'railway list --json');
+  const listPayload = parseJson(listCheck?.raw_stdout || listCheck?.stdout || '');
   const projects = arrayFromRailwayList(listPayload);
-  let targetProject = projects.find((project) => projectName(project).toLowerCase() === checklist.target.target_project.toLowerCase()) || null;
+  let targetProject = options.projectId
+    ? projects.find((project) => projectId(project) === options.projectId) || { id: options.projectId, name: checklist.target.target_project }
+    : projects.find((project) => projectName(project).toLowerCase() === checklist.target.target_project.toLowerCase()) || null;
 
   if (!targetProject) {
     const initStep = runCommand([RAILWAY_BIN, 'init', '--name', checklist.target.target_project, '--json']);
@@ -291,7 +300,7 @@ function applyProvisioning(plan, checklist, options) {
     report.mutation_performed = true;
     targetProject = extractCreatedProject(parseJson(initStep.stdout));
   } else {
-    report.steps.push({ key: 'reuse_project', ok: true, project: checklist.target.target_project });
+    report.steps.push({ key: 'reuse_project', ok: true, project: checklist.target.target_project, project_id_known: Boolean(projectId(targetProject)) });
   }
 
   const targetProjectId = projectId(targetProject);

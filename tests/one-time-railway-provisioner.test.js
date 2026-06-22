@@ -39,11 +39,17 @@ test('One Time Railway provisioner refuses apply without exact confirmation befo
 
 test('One Time Railway provisioner exposes auth check mode separately from apply mode', () => {
   const script = fs.readFileSync('scripts/provision-onetime-railway-instance.mjs', 'utf8');
+  const preflight = fs.readFileSync('scripts/preflight-onetime-railway-provisioning.mjs', 'utf8');
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.match(script, /--check-auth/);
+  assert.match(script, /--project-id/);
+  assert.match(script, /ONE_TIME_RAILWAY_PROJECT_ID/);
+  assert.match(script, /raw_stdout \|\| listCheck\?\.stdout/);
   assert.match(script, /railway list --json/);
   assert.match(script, /current_link_mentions_forbidden_project/);
   assert.match(script, /variable', 'set'.*'--stdin'/s);
   assert.match(script, /app\.onetimeonetime\.com/);
+  assert.match(preflight, /raw_stdout: result\.stdout/);
+  assert.match(preflight, /listCheck\.raw_stdout \|\| listCheck\.stdout/);
   assert.match(packageJson.scripts['one-time:railway-provision:apply'], /provision-onetime-railway-instance\.mjs/);
 });

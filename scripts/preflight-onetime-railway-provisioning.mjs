@@ -67,6 +67,7 @@ function runReadOnlyRailway(args) {
     command: ['railway', ...args],
     status: result.status,
     ok: result.status === 0,
+    raw_stdout: result.stdout ? result.stdout.trim() : '',
     stdout: result.stdout ? result.stdout.trim().slice(0, 2000) : '',
     stderr: result.stderr ? result.stderr.trim().slice(0, 2000) : (result.error?.message || ''),
   };
@@ -91,7 +92,7 @@ function projectName(project) {
 function summarizeAuth(checklist, checks) {
   const listCheck = checks.find((item) => item.command.join(' ') === 'railway list --json');
   const statusCheck = checks.find((item) => item.command.join(' ') === 'railway status --json');
-  const projects = listCheck?.ok ? parseProjectList(listCheck.stdout) : [];
+  const projects = listCheck?.ok ? parseProjectList(listCheck.raw_stdout || listCheck.stdout) : [];
   const names = projects.map(projectName).filter(Boolean);
   const hasTarget = names.some((name) => name.toLowerCase() === checklist.target.target_project.toLowerCase());
   const hasForbidden = names.some((name) => name.toLowerCase() === checklist.target.forbidden_project.toLowerCase());
