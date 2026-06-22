@@ -9896,10 +9896,29 @@ function verifyOneTimeViewAsToken(token = '') {
   ) {
     return null;
   }
-  const payload = base64UrlDecode(encoded);
+  let payload;
+  try {
+    payload = base64UrlDecode(encoded);
+  } catch (error) {
+    return null;
+  }
   if (!payload?.exp || Date.now() > Number(payload.exp)) return null;
+  if (payload.typ !== 'one_time_view_as_rabbi' || payload.read_only !== true) return null;
   if (payload.workspace_key !== 'rabbi_sheller_provider' || payload.target_role !== 'workspace_owner') return null;
   return payload;
+}
+
+function requireOneTimeViewAsSuperAdmin(req, res) {
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type !== 'all') {
+    res.status(403).json({
+      success: false,
+      error: 'Only platform_super_admin can use View as Rabbi.',
+      external_write_performed: false,
+    });
+    return null;
+  }
+  return identity;
 }
 
 function oneTimeViewAsSessionView(payload, req) {
@@ -9978,14 +9997,8 @@ app.get('/api/one-time-review', (req, res) => {
 });
 
 app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
-  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
-  if (!identity || identity.scope?.type !== 'all') {
-    return res.status(403).json({
-      success: false,
-      error: 'Only platform_super_admin can start View as Rabbi.',
-      external_write_performed: false,
-    });
-  }
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
   const issuedAt = Date.now();
   const payload = {
     typ: 'one_time_view_as_rabbi',
@@ -10018,6 +10031,8 @@ app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
 });
 
 app.get('/api/bna/one-time/view-as-rabbi/session', requireAdmin, (req, res) => {
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
   const payload = verifyOneTimeViewAsToken(req.query.token || req.headers['x-one-time-view-as-token']);
   if (!payload) {
     return res.status(401).json({
@@ -10034,6 +10049,8 @@ app.get('/api/bna/one-time/view-as-rabbi/session', requireAdmin, (req, res) => {
 });
 
 app.post('/api/bna/one-time/view-as-rabbi/end', requireAdmin, (req, res) => {
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
   const payload = verifyOneTimeViewAsToken(req.body?.token || req.headers['x-one-time-view-as-token']);
   if (!payload) {
     return res.status(401).json({

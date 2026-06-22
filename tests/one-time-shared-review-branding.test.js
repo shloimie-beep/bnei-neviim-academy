@@ -172,7 +172,12 @@ test('campaign API and view-as Rabbi preview are declared as read-only guarded s
   assert.match(server, /app\.post\('\/api\/bna\/one-time\/view-as-rabbi\/start', requireAdmin/);
   assert.match(server, /app\.get\('\/api\/bna\/one-time\/view-as-rabbi\/session', requireAdmin/);
   assert.match(server, /app\.post\('\/api\/bna\/one-time\/view-as-rabbi\/end', requireAdmin/);
+  assert.match(server, /function requireOneTimeViewAsSuperAdmin/);
+  assert.match(server, /Only platform_super_admin can use View as Rabbi/);
   assert.match(server, /verifyOneTimeViewAsToken/);
+  assert.match(server, /try \{\s*payload = base64UrlDecode\(encoded\);[\s\S]*catch \(error\) \{\s*return null;/);
+  assert.match(server, /payload\.typ !== 'one_time_view_as_rabbi'/);
+  assert.match(server, /payload\.read_only !== true/);
   assert.match(server, /read_only: true/);
 
   assert.match(providerHtml, /view_as_rabbi/);
