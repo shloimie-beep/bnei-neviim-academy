@@ -74,8 +74,8 @@ function writeReports(report, options) {
     '',
     '## Checks',
     ...report.checks.map((check) => {
-      const marker = check.ok ? 'PASS' : 'FAIL';
-      const details = check.error ? ` - ${check.error}` : '';
+      const marker = check.skipped ? 'SKIP' : check.ok ? 'PASS' : 'FAIL';
+      const details = check.error ? ` - ${check.error}` : check.skipped ? ` - ${check.details?.reason || 'skipped'}` : '';
       return `- ${marker} ${check.name} (${check.duration_ms}ms)${details}`;
     }),
     '',
@@ -126,52 +126,52 @@ async function main() {
       requiredText: ['Worldwide Live Mishnah Learning', 'Finish Masechtas. Love Learning Torah.', 'Join the Live Shiur', 'Explore the Video Library', 'Member Login'],
       requiredSelectors: ['img[src*="onetimelogo"]', 'img[src*="onetime-hero-vertical"]', 'img[src*="promo-stage-still"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Huda Weber', 'Menachem Mendel', 'Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Huda Weber', 'Menachem Mendel', 'Dratler Family'],
     },
     {
       label: 'provider',
       path: '/provider.html?review=one-time',
       expectedTitle: /OneTimeOneTime Provider Review/i,
-      requiredText: ['OneTimeOneTime Provider Review', 'Provider/Rabbi', 'TEST-only'],
+      requiredText: ['One Time provider review', 'Rabbi/admin TEST review workspace', 'TEST-only'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
     },
     {
       label: 'parent',
       path: '/parent.html?review=one-time',
       expectedTitle: /OneTimeOneTime Parent Review/i,
-      requiredText: ['OneTimeOneTime Parent Review', 'TEST-ONETIME-STUDENT-001'],
+      requiredText: ['Parent Review Portal', 'TEST-ONETIME-STUDENT-001'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
     },
     {
       label: 'student',
       path: '/student.html?review=one-time',
       expectedTitle: /OneTimeOneTime Student Review/i,
-      requiredText: ['OneTimeOneTime Student Review', 'No bot / no BNA goals'],
+      requiredText: ['ONE TIME STUDENT REVIEW', 'No bot / no BNA goals'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
     },
     {
       label: 'classroom',
       path: '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS',
-      expectedTitle: /OneTimeOneTime Classroom Review/i,
-      requiredText: ['OneTimeOneTime Classroom Review', 'TEST-only member-library data', '1178363755'],
+      expectedTitle: /One Time Mishnah Classroom/i,
+      requiredText: ['One Time Mishnah Classroom', 'TEST-only member-library data', 'Vimeo manual/sample reference'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
     },
     {
       label: 'email',
       path: '/one-time-email-review.html',
-      expectedTitle: /OneTimeOneTime Email Review/i,
-      requiredText: ['OneTimeOneTime Email Review', 'preview only', 'no-send'],
+      expectedTitle: /One Time Email Review/i,
+      requiredText: ['One Time Email Review', 'preview only', 'no-send'],
       requiredSelectors: ['img[src*="onetimelogo"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
-      forbidText: ['Dratler Family'],
+      forbidText: ['Bnei Neviim Academy', 'Dratler Family'],
     },
     {
       label: 'operations',
@@ -227,7 +227,14 @@ async function main() {
       }
       try {
         for (const route of routes) {
-          await check(`${route.label} ${viewport.name}`, async () => {
+          const checkName = `${route.label} ${viewport.name}`;
+          if (route.needsSession && !sessionCookie) {
+            const reason = 'OPS_USERNAME/OPS_PASSWORD unavailable; authenticated Operations route not checked.';
+            report.checks.push({ name: checkName, ok: true, skipped: true, duration_ms: 0, details: { reason } });
+            console.log(`SKIP ${checkName}: ${reason}`);
+            continue;
+          }
+          await check(checkName, async () => {
             const page = await context.newPage();
             const consoleErrors = [];
             const pageErrors = [];
@@ -240,10 +247,11 @@ async function main() {
             await page.waitForTimeout(route.needsSession ? 3500 : 800);
             const title = await page.title();
             const text = (await page.locator('body').innerText({ timeout: 15000 })).replace(/\s+/g, ' ');
+            const textLower = text.toLowerCase();
             assert(route.expectedTitle.test(title), `${route.label} title mismatch: ${title}`);
             if (route.forbidTitle) assert(!route.forbidTitle.test(title), `${route.label} title leaked forbidden brand: ${title}`);
-            for (const item of route.requiredText) assert(text.includes(item), `${route.label} missing text: ${item}`);
-            for (const item of route.forbidText || []) assert(!text.includes(item), `${route.label} leaked forbidden text: ${item}`);
+            for (const item of route.requiredText) assert(textLower.includes(String(item).toLowerCase()), `${route.label} missing text: ${item}`);
+            for (const item of route.forbidText || []) assert(!textLower.includes(String(item).toLowerCase()), `${route.label} leaked forbidden text: ${item}`);
             for (const selector of route.requiredSelectors) {
               assert(await page.locator(selector).count() > 0, `${route.label} missing selector: ${selector}`);
             }
