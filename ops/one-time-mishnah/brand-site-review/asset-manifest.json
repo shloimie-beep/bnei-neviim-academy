@@ -1,5 +1,6 @@
 {
   "captured_at": "2026-06-22T00:00:00+03:00",
+  "updated_at": "2026-06-22T15:45:00+03:00",
   "source_roots": [
     "C:/Users/User/Downloads/OneTimeOneTime - Rabbi Eli Scheller.html",
     "C:/Users/User/Downloads/OneTimeOneTime - Rabbi Eli Scheller_files/"
@@ -11,7 +12,8 @@
       "bytes": 27472,
       "dimensions": "400x400",
       "sha256": "6b534dde8625b991cc9ef5e244190de950599718f35113825ab8c4c241edf441",
-      "destination_path": "public/images/one-time/onetimelogo.webp",
+      "destination_path": "public/images/one-time/brand/onetimelogo.webp",
+      "legacy_copy_path": "public/images/one-time/onetimelogo.webp",
       "intended_use": "review logo, favicon, portal topbars",
       "approval_status": "legacy_public_site_asset_safe_for_review"
     },
@@ -21,7 +23,8 @@
       "bytes": 24498,
       "dimensions": "400x533",
       "sha256": "62f0a3eb8f4515647f33756b0e1724a331a3612888cc65311a53decae2d53a0d",
-      "destination_path": "public/images/one-time/onetime-hero-vertical.webp",
+      "destination_path": "public/images/one-time/brand/onetime-hero-vertical.webp",
+      "legacy_copy_path": "public/images/one-time/onetime-hero-vertical.webp",
       "intended_use": "review landing and hero background",
       "approval_status": "legacy_public_site_asset_safe_for_review"
     },
@@ -31,8 +34,9 @@
       "bytes": 27080,
       "dimensions": "133x100",
       "sha256": "a424bb407e07a69c4dbfe7510231d2b353ffce7b07322fa3b0ea1d4ac3c74282",
-      "destination_path": "public/images/one-time/torahanytime-logo.png",
-      "intended_use": "inventory only",
+      "destination_path": "public/images/one-time/press/torahanytime-logo.png",
+      "legacy_copy_path": "public/images/one-time/torahanytime-logo.png",
+      "intended_use": "legacy media reference inventory only",
       "approval_status": "do_not_make_new_public_claims_without_approval"
     },
     {
@@ -41,8 +45,9 @@
       "bytes": 29590,
       "dimensions": "202x100",
       "sha256": "648eac401664fdcb64e7aca77c7c254c73c5db07b31b976c57778c8ce874e49c",
-      "destination_path": "public/images/one-time/twentyfour-six-logo.png",
-      "intended_use": "inventory only",
+      "destination_path": "public/images/one-time/press/twentyfour-six-logo.png",
+      "legacy_copy_path": "public/images/one-time/twentyfour-six-logo.png",
+      "intended_use": "legacy media reference inventory only",
       "approval_status": "do_not_make_new_public_claims_without_approval"
     },
     {
@@ -51,8 +56,9 @@
       "bytes": 8584,
       "dimensions": "131x100",
       "sha256": "7f7848f3e8de7722601fe3557eab3fb2cde55a17c0d503e7facaf51b37db2045",
-      "destination_path": "public/images/one-time/loop-logo.png",
-      "intended_use": "inventory only",
+      "destination_path": "public/images/one-time/press/loop-logo.png",
+      "legacy_copy_path": "public/images/one-time/loop-logo.png",
+      "intended_use": "legacy media reference inventory only",
       "approval_status": "do_not_make_new_public_claims_without_approval"
     },
     {
@@ -61,9 +67,40 @@
       "bytes": 6976,
       "dimensions": "338x100",
       "sha256": "68b9b6ea2082bddc88a42164803f2483047368fd81265143ee5db99a63749dff",
-      "destination_path": "public/images/one-time/mishpacha.webp",
-      "intended_use": "inventory only",
+      "destination_path": "public/images/one-time/press/mishpacha.webp",
+      "legacy_copy_path": "public/images/one-time/mishpacha.webp",
+      "intended_use": "legacy media reference inventory only",
       "approval_status": "do_not_make_new_public_claims_without_approval"
+    },
+    {
+      "source_path": "promo_website_v1 (1080p) (1).mp4 @ 00:00:05, cropped stage-only",
+      "type": "image/webp",
+      "bytes": 5892,
+      "dimensions": "960x376",
+      "sha256": "96b7e861d070126bb9a8bd5929d72728929fc6ca55df46614168e3ee518901fc",
+      "destination_path": "public/images/one-time/teaching/promo-stage-still-01.webp",
+      "intended_use": "review-safe stage/teacher gallery",
+      "approval_status": "derived_from_traced_video_cropped_to_avoid_child_crowd_imagery"
+    },
+    {
+      "source_path": "promo_website_v1 (1080p) (1).mp4 @ 00:00:08, cropped stage-only",
+      "type": "image/webp",
+      "bytes": 5406,
+      "dimensions": "960x376",
+      "sha256": "ec32539abab7bd28932cfa4371328d2604bfa6d3a94285f7f4dff0509777e051",
+      "destination_path": "public/images/one-time/teaching/promo-stage-still-02.webp",
+      "intended_use": "review-safe stage/teacher gallery",
+      "approval_status": "derived_from_traced_video_cropped_to_avoid_child_crowd_imagery"
+    },
+    {
+      "source_path": "promo_website_v1 (1080p) (1).mp4 @ 00:00:12, cropped stage-only",
+      "type": "image/webp",
+      "bytes": 14514,
+      "dimensions": "960x376",
+      "sha256": "0488e32eac965f8287c2371cec04024f95d46ba65a31d0c27049bddd78a6bc4f",
+      "destination_path": "public/images/one-time/teaching/promo-stage-still-03.webp",
+      "intended_use": "review-safe stage/teacher gallery",
+      "approval_status": "derived_from_traced_video_cropped_to_avoid_child_crowd_imagery"
     }
   ],
   "traced_not_committed": [
@@ -74,7 +111,15 @@
       "dimensions": "1920x1080",
       "duration_seconds": 32.13,
       "sha256": "04c15e40cd30fcc2447740279af2f7e124be6bc94c44f009596656ad83db0c67",
-      "reason": "raw source video not committed; Vimeo ID 1158542993 is traced"
+      "reason": "raw source video not committed; Vimeo ID 1158542993 is traced; landing does not embed it because it includes child/crowd imagery"
+    },
+    {
+      "source_path": "OneTimeOneTime - Rabbi Eli Scheller_files/b_w_captivated_crowd_photo-D4O3QBhB.png",
+      "type": "image/png",
+      "bytes": 1308767,
+      "dimensions": "1408x768",
+      "sha256": "b700ffb1bdf579829de47aff4f947d380d97b804534e3a1ccd127018cf5fb413",
+      "reason": "contains crowd/children context; keep out of review UI until image/privacy approval"
     },
     {
       "source_path": "OneTimeOneTime - Rabbi Eli Scheller_files/smilykid.png",

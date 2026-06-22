@@ -11,11 +11,28 @@ const BRAND_PRESETS = Object.freeze({
   one_time: Object.freeze({
     key: 'one_time',
     name: 'One Time Mishnah Class',
-    short_name: 'One Time',
+    public_name: 'OneTimeOneTime Mishnah',
+    short_name: 'OneTimeOneTime',
     audience: 'partner_mishnah_program',
     workspace_profile: 'service_provider',
-    primary_color: '#214f4b',
-    accent_color: '#c8902e',
+    primary_color: '#080910',
+    accent_color: '#ede518',
+    palette: Object.freeze({
+      black: '#080910',
+      charcoal: '#10131a',
+      navy: '#081323',
+      navy_2: '#102634',
+      teal: '#08779c',
+      cyan: '#0b9fc9',
+      yellow: '#ede518',
+      cream: '#faf9f4',
+      white: '#ffffff',
+      muted: '#aeb9c6',
+    }),
+    assets: Object.freeze({
+      logo: '/images/one-time/brand/onetimelogo.webp',
+      hero_portrait: '/images/one-time/brand/onetime-hero-vertical.webp',
+    }),
   }),
 });
 

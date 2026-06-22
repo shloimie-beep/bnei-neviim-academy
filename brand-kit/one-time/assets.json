@@ -1,0 +1,25 @@
+{
+  "logo": {
+    "path": "public/images/one-time/brand/onetimelogo.webp",
+    "source": "OneTimeOneTime - Rabbi Eli Scheller_files/onetimelogo.webp"
+  },
+  "hero_portrait": {
+    "path": "public/images/one-time/brand/onetime-hero-vertical.webp",
+    "source": "OneTimeOneTime - Rabbi Eli Scheller_files/onetime hero vertical.webp"
+  },
+  "press_logos": [
+    "public/images/one-time/press/torahanytime-logo.png",
+    "public/images/one-time/press/twentyfour-six-logo.png",
+    "public/images/one-time/press/loop-logo.png",
+    "public/images/one-time/press/mishpacha.webp"
+  ],
+  "teaching_stills": [
+    "public/images/one-time/teaching/promo-stage-still-01.webp",
+    "public/images/one-time/teaching/promo-stage-still-02.webp",
+    "public/images/one-time/teaching/promo-stage-still-03.webp"
+  ],
+  "traced_not_committed": [
+    "C:/Users/User/Downloads/OneTimeOneTime - Rabbi Eli Scheller_files/promo_website_v1 (1080p) (1).mp4",
+    "child/crowd imagery from the legacy capture is not used on the page"
+  ]
+}

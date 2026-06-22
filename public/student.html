@@ -3631,11 +3631,12 @@
 
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
+            document.title = 'OneTimeOneTime Student Review';
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
                 mark.textContent = '';
                 const img = document.createElement('img');
-                img.src = '/images/one-time/onetimelogo.webp';
+                img.src = '/images/one-time/brand/onetimelogo.webp';
                 img.alt = '';
                 mark.appendChild(img);
             }
@@ -3693,7 +3694,7 @@
             els.portalContent.innerHTML = `
                 <section class="panel top-card one-time-review-hero-card" id="reviewOverview">
                     <div>
-                        <img class="one-time-page-logo" src="/images/one-time/onetimelogo.webp" alt="" aria-hidden="true">
+                        <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                         <p class="eyebrow">One Time student review</p>
                         <h2>${escapeHtml(student.display_name || student.name || 'TEST student')}</h2>
                         <p class="small">This view contains only this TEST student's One Time class, course, and progress records.</p>

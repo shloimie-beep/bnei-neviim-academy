@@ -94,8 +94,16 @@ body.one-time-review-active .btn {
   color: #fff;
   background:
     linear-gradient(90deg, rgba(22, 22, 22, 0.94), rgba(22, 22, 22, 0.72)),
-    url("/images/one-time/onetime-hero-vertical.webp") right center / auto 120% no-repeat,
+    url("/images/one-time/brand/onetime-hero-vertical.webp") right center / auto 120% no-repeat,
     #161616;
+}
+
+body.one-time-review-active .one-time-review-hero-card {
+  color: #fff;
+  background:
+    linear-gradient(90deg, rgba(22, 22, 22, 0.94), rgba(22, 22, 22, 0.72)),
+    url("/images/one-time/brand/onetime-hero-vertical.webp") right center / auto 120% no-repeat,
+    #161616 !important;
 }
 
 .one-time-review-hero-card h1,
@@ -129,7 +137,7 @@ body.one-time-review-active .btn {
     grid-template-columns: 1fr;
     background:
       linear-gradient(180deg, rgba(22, 22, 22, 0.95), rgba(22, 22, 22, 0.78)),
-      url("/images/one-time/onetime-hero-vertical.webp") right bottom / auto 105% no-repeat,
+      url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 105% no-repeat,
       #161616;
   }
 

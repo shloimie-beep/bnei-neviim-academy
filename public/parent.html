@@ -4547,11 +4547,21 @@
 
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
+            document.title = 'OneTimeOneTime Parent Review';
+            document.querySelector('link[rel="manifest"]')?.remove();
+            const heroEyebrow = document.querySelector('[data-hero-eyebrow]');
+            const heroTitle = document.querySelector('[data-hero-title]');
+            const heroCopy = document.querySelector('[data-hero-copy]');
+            const languageToggle = document.querySelector('[data-language-toggle]');
+            if (heroEyebrow) heroEyebrow.textContent = 'OneTimeOneTime Mishnah';
+            if (heroTitle) heroTitle.textContent = 'Parent Review Portal';
+            if (heroCopy) heroCopy.textContent = 'One Time parent review portal with TEST-only family, class, library, payment/trial, and support data.';
+            if (languageToggle) languageToggle.classList.add('hidden');
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
                 mark.textContent = '';
                 const img = document.createElement('img');
-                img.src = '/images/one-time/onetimelogo.webp';
+                img.src = '/images/one-time/brand/onetimelogo.webp';
                 img.alt = '';
                 mark.appendChild(img);
             }
@@ -4589,7 +4599,7 @@
                 <section class="panel one-time-review-hero-card">
                     <div class="section-title">
                         <div>
-                            <img class="one-time-page-logo" src="/images/one-time/onetimelogo.webp" alt="" aria-hidden="true">
+                            <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                             <span class="eyebrow">One Time parent review</span>
                             <h1>${escapeHtml(data.parent?.name || 'TEST Parent')}</h1>
                             <p class="small">TEST-only parent view for Rabbi Scheller's One Time workspace. This payload intentionally includes only one linked TEST student.</p>

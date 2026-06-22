@@ -6,7 +6,7 @@
 - No `skillful-motivation` service changes.
 - No DNS hookup for `app.onetimeonetime.com`.
 - No PR merge.
-- No live email, live charge, real WhatsApp, real Zoom meeting, or real Vimeo upload.
+- No live email, live charge, real WhatsApp, real Zoom meeting, real Vimeo upload, or external CRM write.
 
 ## External Blockers
 
@@ -18,6 +18,7 @@
 | Vimeo automated upload | Manual/sample Vimeo reference is reviewable. | Approve/install a user-level Vimeo token and upload policy. |
 | Hosted transcription | `REQ-20260621-902` remains blocked by prior `401 invalid_credential`. | Provide/rotate the hosted transcription credential, then reprocess content job #78. |
 | Separate One Time instance | Provisioning is paused by operator instruction. | Resume `REQ-20260619-313` only after this shared UI review pass. |
+| Shared live deploy | Previous Railway CLI state was linked to the wrong One Time project/service, while the operator instruction forbids touching unrelated shared topology. | Approve/relink the existing shared app deploy target, or provide a safe project token/session for the current shared service before redeploying PR #5. |
 
 ## Known Review Limitations
 
@@ -25,9 +26,10 @@
 - Parent/student review links do not create real authenticated accounts or passwords.
 - Parent/student/classroom submit buttons in review mode record local preview feedback only; they do not write to the database.
 - Admin/Rabbi Operations review still requires existing private Operations credentials.
+- Local no-database review mode intentionally supports only public/static review routes and read-only fixture APIs; database-backed Operations routes still require the real shared app or local `DATABASE_URL`.
 - The shared live default instance can still report BNA runtime flags; use the `?review=one-time` routes to inspect the isolated One Time review payload.
-- Legacy partner/publication logo assets are inventoried but are not used as new public claims until Shloimie approves the exact wording and permission status.
-- This packet is not the final visual QA pass; it exists so Shloimie can collect UI/workflow corrections.
+- Legacy partner/publication logo assets are surfaced only as review inventory until Shloimie approves exact wording and permission status.
+- The traced promo video is not embedded on the landing page because it includes child/crowd imagery; only cropped stage-only stills are committed.
 
 ## Known UI Issues To Watch Closely
 

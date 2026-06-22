@@ -1,0 +1,110 @@
+{
+  "key": "one_time",
+  "brand_key": "one_time",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "slug": "one-time",
+  "base_routes": [
+    "/one-time",
+    "/one-time/mishnayos",
+    "/one-time/us",
+    "/one-time/uk",
+    "/one-time/israel",
+    "/one-time/interest",
+    "/one-time/member-login"
+  ],
+  "status": "shared_review",
+  "external_write_performed": false,
+  "review_only": true,
+  "identity": {
+    "name": "OneTimeOneTime Mishnah",
+    "owner_label": "Rabbi Elie Scheller",
+    "category": "Worldwide Live Mishnah Learning"
+  },
+  "assets": {
+    "logo": "/images/one-time/brand/onetimelogo.webp",
+    "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
+    "vimeo_promo_embed": "https://player.vimeo.com/video/1158542993?h=daa31d3417",
+    "press_logos": [
+      {
+        "label": "TorahAnytime",
+        "src": "/images/one-time/press/torahanytime-logo.png"
+      },
+      {
+        "label": "24Six",
+        "src": "/images/one-time/press/twentyfour-six-logo.png"
+      },
+      {
+        "label": "Loop",
+        "src": "/images/one-time/press/loop-logo.png"
+      },
+      {
+        "label": "Mishpacha",
+        "src": "/images/one-time/press/mishpacha.webp"
+      }
+    ],
+    "teaching_gallery": [
+      {
+        "label": "Live teaching stage",
+        "src": "/images/one-time/teaching/promo-stage-still-01.webp"
+      },
+      {
+        "label": "Rabbi teaching moment",
+        "src": "/images/one-time/teaching/promo-stage-still-02.webp"
+      },
+      {
+        "label": "Stage review setting",
+        "src": "/images/one-time/teaching/promo-stage-still-03.webp"
+      }
+    ]
+  },
+  "copy": {
+    "eyebrow": "Worldwide Live Mishnah Learning",
+    "headline": "Finish Masechtas. Love Learning Torah.",
+    "subhead": "A review-safe shared build for Rabbi Elie Scheller's OneTimeOneTime program, showing the brand, live class flow, library, parent portal, student portal, classroom, and no-send email templates.",
+    "primary_cta": "Start Review",
+    "secondary_cta": "Member Login",
+    "no_send_note": "Review build only. No checkout, access grant, email send, WhatsApp send, Zoom creation, Vimeo upload, DNS change, or external CRM write is enabled from this page."
+  },
+  "nav": [
+    {
+      "label": "Live Shiur",
+      "href": "#live-shiur"
+    },
+    {
+      "label": "Library",
+      "href": "#library"
+    },
+    {
+      "label": "How It Works",
+      "href": "#how-it-works"
+    },
+    {
+      "label": "Portals",
+      "href": "#portals"
+    },
+    {
+      "label": "FAQ",
+      "href": "#faq"
+    },
+    {
+      "label": "Member Login",
+      "href": "/one-time/member-login"
+    }
+  ],
+  "proof_note": "Legacy site media/publication references are inventoried for review only and do not imply sponsorship, endorsement, or permission status.",
+  "review_links": {
+    "provider": "/provider.html?review=one-time",
+    "parent": "/parent.html?review=one-time",
+    "student": "/student.html?review=one-time",
+    "classroom": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "email_preview": "/one-time-email-review.html"
+  },
+  "blocked_live_actions": [
+    "live_email_send",
+    "live_charge_or_checkout",
+    "real_zoom_meeting_creation",
+    "automated_vimeo_upload",
+    "dns_or_separate_railway_provisioning"
+  ]
+}

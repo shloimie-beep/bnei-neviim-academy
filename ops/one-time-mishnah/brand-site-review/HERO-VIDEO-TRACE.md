@@ -36,7 +36,11 @@ Local raw video source:
 ## Implementation Decision
 
 - The shared review landing uses the lightweight static hero image
-  `public/images/one-time/onetime-hero-vertical.webp`, not the 23 MB raw MP4.
+  `public/images/one-time/brand/onetime-hero-vertical.webp`, not the 23 MB raw
+  MP4.
+- The landing does not embed the Vimeo promo because the traced video includes
+  child/crowd imagery. Three cropped stage-only WebP stills are committed under
+  `public/images/one-time/teaching/` for review-safe visual context.
 - The review classroom/member-library fixture uses the traced manual Vimeo
   reference `https://vimeo.com/1178363755/282ea2577c`.
 - Automated Vimeo upload remains disabled until the user-level Vimeo token and

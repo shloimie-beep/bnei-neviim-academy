@@ -33,7 +33,21 @@ test('One Time shared review parent sees only the linked TEST student', () => {
 
 test('One Time shared review email templates are preview-only and no-send', () => {
   const review = buildOneTimeSharedReviewData();
-  assert.equal(review.email_templates.length, 11);
+  assert.equal(review.email_templates.length, 21);
+  const keys = new Set(review.email_templates.map((template) => template.key));
+  [
+    'parent_verification',
+    'student_verification',
+    'password_recovery',
+    'zoom_readiness_reminder',
+    'class_recording_available',
+    'milestone_notice',
+    'achievement_earned',
+    'reward_ready',
+    'payment_receipt_preview',
+    'payment_issue_preview',
+    'cancellation_request_received',
+  ].forEach((key) => assert.equal(keys.has(key), true, `missing ${key}`));
   for (const template of review.email_templates) {
     assert.equal(template.no_send, true);
     assert.equal(template.send_readiness, 'preview_only');

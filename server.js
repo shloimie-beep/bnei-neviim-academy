@@ -2540,6 +2540,7 @@ const TELEGRAM_CHAT_ID_BNA =
 const DATABASE_URL =
   usableSecretValue(process.env.DATABASE_URL) ||
   usableSecretValue(readLocalSecretFile('railway-database-url.txt'));
+const ONE_TIME_REVIEW_ONLY_NO_DB = /^(?:1|true|yes)$/i.test(String(process.env.ONE_TIME_REVIEW_ONLY_NO_DB || ''));
 const PAYMENT_LINK = process.env.PAYMENT_LINK || '';
 const GOOGLE_MAPS_API_KEY =
   usableSecretValue(process.env.GOOGLE_MAPS_API_KEY) ||
@@ -2773,14 +2774,22 @@ const GOOGLE_ASSIGNMENT_REQUIRED_SCOPES = {
 };
 const GOOGLE_DRIVE_PIPELINE_ROOT_NAME = process.env.GOOGLE_DRIVE_PIPELINE_ROOT_NAME || 'BNA V2';
 
-if (!DATABASE_URL) {
+if (!DATABASE_URL && !ONE_TIME_REVIEW_ONLY_NO_DB) {
   console.error('FATAL: DATABASE_URL not set');
   process.exit(1);
 }
 
 if (!OPS_USERNAME || !OPS_PASSWORD) {
-  console.error('FATAL: OPS_USERNAME and OPS_PASSWORD must be set');
-  process.exit(1);
+  if (ONE_TIME_REVIEW_ONLY_NO_DB) {
+    console.warn('ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.');
+  } else {
+    console.error('FATAL: OPS_USERNAME and OPS_PASSWORD must be set');
+    process.exit(1);
+  }
+}
+
+if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
+  console.warn('ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.');
 }
 
 function parseEnvBlock(rawValue) {
@@ -9728,10 +9737,19 @@ async function identifyOpsAssistantRequest(req) {
 }
 
 // Database connection
-const pool = new Pool({
-  connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+const pool = DATABASE_URL
+  ? new Pool({
+      connectionString: DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    })
+  : {
+      async query() {
+        throw new Error('Database is disabled in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+      },
+      async connect() {
+        throw new Error('Database is disabled in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+      },
+    };
 
 let stripeSdk = null;
 
@@ -27763,6 +27781,10 @@ async function createProviderIntakeRecord({ providerId = null, sessionKey = '', 
 
 // Initialize database
 async function initDb() {
+  if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
+    console.log('Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+    return;
+  }
   try {
     await pool.query(createSignupsTableSQL);
     await pool.query(createSignupAgreementSignaturesSQL);
@@ -78242,6 +78264,8 @@ async function sendTelegramMessage(chatId, text) {
 // Start server
 app.listen(PORT, HOST, () => {
   console.log(`BNA Server running on ${HOST}:${PORT}`);
-  startPaymentReminderScheduler();
+  if (!(ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL)) {
+    startPaymentReminderScheduler();
+  }
 });
 // Deploy timestamp: 2026-05-26T17:02:05Z

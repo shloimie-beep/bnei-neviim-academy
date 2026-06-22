@@ -1,708 +1,805 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OneTimeOneTime Mishnah - Worldwide Live Mishnah Learning</title>
+  <meta name="description" content="A shared review build for Rabbi Elie Scheller's OneTimeOneTime Mishnah learning experience: live shiur, video library, parent portal, student portal, classroom, and no-send email previews.">
   <meta name="robots" content="noindex, nofollow">
-  <title>OneTimeOneTime Mishnah Review</title>
-  <link rel="icon" href="/images/one-time/onetimelogo.webp">
+  <meta property="og:title" content="OneTimeOneTime Mishnah">
+  <meta property="og:description" content="Finish Masechtas. Love Learning Torah.">
+  <meta property="og:image" content="/images/one-time/brand/onetime-hero-vertical.webp">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#080910">
+  <link rel="canonical" href="/one-time">
+  <link rel="preload" href="/images/one-time/brand/onetime-hero-vertical.webp" as="image">
   <style>
     :root {
-      --ink: #14110f;
-      --paper: #fffef3;
-      --gold: #ede518;
-      --gold-dark: #b98500;
-      --blue: #08779c;
-      --green: #214f4b;
-      --line: rgba(20, 17, 15, 0.16);
-      --muted: #6f675e;
-      --white: #ffffff;
-      --shadow: 0 22px 70px rgba(0, 0, 0, 0.22);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ot-black: #080910;
+      --ot-charcoal: #10131a;
+      --ot-navy: #081323;
+      --ot-navy-2: #102634;
+      --ot-teal: #08779c;
+      --ot-cyan: #0b9fc9;
+      --ot-yellow: #ede518;
+      --ot-cream: #faf9f4;
+      --ot-white: #ffffff;
+      --ot-muted: #aeb9c6;
+      --ot-line: rgba(255,255,255,0.14);
+      --ot-light-line: rgba(8,9,16,0.12);
+      --ot-shadow: 0 22px 60px rgba(0,0,0,0.22);
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
-      background: var(--paper);
-      color: var(--ink);
+      color: var(--ot-white);
+      background: var(--ot-black);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
       line-height: 1.5;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
+    body, button, input, select, textarea { font: inherit; }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; }
+    p, h1, h2, h3 { margin-top: 0; letter-spacing: 0; }
+    p { color: rgba(255,255,255,0.76); }
+    h1 {
+      margin-bottom: 10px;
+      font-size: 4.15rem;
+      line-height: 0.93;
+      max-width: 800px;
     }
-
-    .topbar {
+    h2 {
+      margin-bottom: 12px;
+      font-size: 2.2rem;
+      line-height: 1.02;
+    }
+    h3 {
+      margin-bottom: 8px;
+      font-size: 1.1rem;
+      line-height: 1.15;
+    }
+    .wrap {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .site-header {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 20;
+      inset: 0 0 auto;
+      z-index: 30;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(8,9,16,0.86);
+      backdrop-filter: blur(16px);
+    }
+    .topbar {
+      min-height: 72px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 14px clamp(18px, 4vw, 54px);
-      color: var(--white);
-      background: rgba(20, 17, 15, 0.84);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-      backdrop-filter: blur(14px);
+      gap: 18px;
     }
-
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       min-width: 0;
-      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
     }
-
     .brand img {
-      width: 34px;
-      height: 34px;
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: var(--ot-yellow);
       object-fit: contain;
-      background: var(--gold);
-      border-radius: 6px;
-      padding: 4px;
     }
-
+    .brand strong {
+      display: block;
+      font-size: 0.98rem;
+      line-height: 1.05;
+    }
     .brand span {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      display: block;
+      color: var(--ot-muted);
+      font-size: 0.78rem;
+      line-height: 1.2;
     }
-
-    .topnav {
+    .nav {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
       justify-content: flex-end;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
     }
-
-    .topnav a,
-    .draft-pill {
-      min-height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.26);
-      border-radius: 6px;
-      padding: 7px 11px;
+    .nav a {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: rgba(255,255,255,0.78);
       font-size: 0.86rem;
-      font-weight: 700;
-      color: var(--white);
-      background: rgba(255, 255, 255, 0.08);
+      font-weight: 760;
+      text-decoration: none;
+      white-space: nowrap;
     }
-
-    .draft-pill {
-      color: var(--ink);
-      background: var(--gold);
-      border-color: var(--gold);
+    .nav a:hover,
+    .nav a:focus-visible {
+      border-color: var(--ot-line);
+      color: var(--ot-white);
+      outline: none;
     }
-
     .hero {
-      min-height: 88vh;
-      display: flex;
-      align-items: flex-end;
-      padding: 112px clamp(22px, 6vw, 78px) 56px;
-      color: var(--white);
+      min-height: 92vh;
+      padding: 116px 0 54px;
+      position: relative;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
       background:
-        linear-gradient(90deg, rgba(20, 17, 15, 0.94) 0%, rgba(20, 17, 15, 0.72) 48%, rgba(20, 17, 15, 0.2) 100%),
-        url("/images/one-time/onetime-hero-vertical.webp") right center / auto 100% no-repeat,
-        #161616;
+        linear-gradient(90deg, rgba(8,9,16,0.96) 0%, rgba(8,9,16,0.88) 48%, rgba(8,9,16,0.42) 100%),
+        url("/images/one-time/brand/onetime-hero-vertical.webp") right center / auto 94% no-repeat,
+        var(--ot-black);
     }
-
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 140px;
+      background: linear-gradient(180deg, transparent, var(--ot-black));
+      pointer-events: none;
+    }
     .hero-inner {
-      width: min(850px, 100%);
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(220px, 0.28fr);
+      gap: 28px;
+      align-items: end;
     }
-
     .eyebrow {
-      display: inline-flex;
-      margin-bottom: 14px;
-      color: var(--gold);
-      font-size: 0.82rem;
-      font-weight: 900;
-      letter-spacing: 0;
+      margin: 0 0 12px;
+      color: var(--ot-yellow);
+      font-size: 0.78rem;
+      font-weight: 860;
       text-transform: uppercase;
     }
-
-    h1 {
-      max-width: 780px;
-      margin: 0;
-      font-size: clamp(3rem, 9vw, 6.8rem);
-      line-height: 0.95;
-      letter-spacing: 0;
+    .hero-line {
+      color: var(--ot-white);
+      font-size: 1.65rem;
+      font-weight: 840;
+      line-height: 1.12;
+      max-width: 680px;
     }
-
     .hero-copy {
       max-width: 680px;
-      margin: 20px 0 0;
-      font-size: clamp(1rem, 2.1vw, 1.34rem);
-      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.05rem;
     }
-
-    .hero-actions {
+    .hero-side {
+      display: grid;
+      gap: 10px;
+      justify-items: end;
+      text-align: right;
+    }
+    .review-badge {
+      max-width: 250px;
+      border: 1px solid rgba(237,229,24,0.36);
+      border-radius: 8px;
+      padding: 12px;
+      color: #101010;
+      background: var(--ot-yellow);
+      font-size: 0.86rem;
+      font-weight: 820;
+    }
+    .button-row {
       display: flex;
-      align-items: center;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 28px;
+      margin-top: 22px;
     }
-
     .button {
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 44px;
-      border-radius: 6px;
-      border: 1px solid var(--ink);
-      padding: 11px 16px;
-      font-weight: 800;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--ot-white);
+      background: rgba(255,255,255,0.08);
+      font-weight: 820;
+      text-decoration: none;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
-    }
-
     .button.primary {
-      color: var(--ink);
-      background: var(--gold);
-      border-color: var(--gold);
+      color: #101010;
+      border-color: var(--ot-yellow);
+      background: var(--ot-yellow);
     }
-
-    .button.secondary {
-      color: var(--white);
-      border-color: rgba(255, 255, 255, 0.42);
-      background: rgba(255, 255, 255, 0.08);
+    .button.ghost {
+      color: var(--ot-white);
+      background: rgba(8,119,156,0.18);
+      border-color: rgba(11,159,201,0.38);
     }
-
-    main {
-      overflow: hidden;
+    .section {
+      padding: 68px 0;
+      background: var(--ot-black);
     }
-
-    section {
-      padding: 54px clamp(18px, 5vw, 70px);
+    .section.alt {
+      background: var(--ot-cream);
+      color: var(--ot-black);
     }
-
-    .intro-strip {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1px;
-      padding: 0;
-      background: var(--line);
+    .section.alt p { color: #4d5966; }
+    .section.alt .eyebrow { color: var(--ot-teal); }
+    .section.alt .panel,
+    .section.alt .tile {
+      border-color: var(--ot-light-line);
+      color: var(--ot-black);
+      background: var(--ot-white);
     }
-
-    .strip-cell {
-      min-height: 112px;
-      padding: 24px;
-      background: var(--white);
-    }
-
-    .strip-cell strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 1rem;
-    }
-
-    .strip-cell span {
-      color: var(--muted);
-      font-size: 0.94rem;
-    }
-
     .section-head {
-      max-width: 780px;
+      max-width: 770px;
       margin-bottom: 26px;
     }
-
-    h2 {
-      margin: 0 0 10px;
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      line-height: 1.02;
-      letter-spacing: 0;
-    }
-
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 1.04rem;
-    }
-
-    .tier-grid,
-    .region-grid,
-    .calendar-grid {
+    .muted { color: rgba(255,255,255,0.7); }
+    .grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
+      gap: 16px;
     }
-
-    .card {
-      border: 1px solid var(--line);
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .panel,
+    .tile {
+      border: 1px solid var(--ot-line);
       border-radius: 8px;
-      padding: 20px;
-      background: var(--white);
-      min-height: 100%;
+      background: rgba(255,255,255,0.06);
+      padding: 18px;
+      min-width: 0;
     }
-
-    .card h3 {
-      margin: 0 0 8px;
-      font-size: 1.22rem;
-      letter-spacing: 0;
-    }
-
-    .card p {
-      margin: 0 0 14px;
-      color: var(--muted);
-    }
-
-    .price-pending {
-      display: inline-flex;
-      align-items: center;
-      min-height: 32px;
-      border-radius: 6px;
-      padding: 5px 10px;
-      color: var(--ink);
-      background: #ffe28a;
-      font-size: 0.9rem;
-      font-weight: 900;
-    }
-
-    .candidate-list {
-      margin: 14px 0 0;
-      padding: 0;
-      list-style: none;
-      color: var(--muted);
-      font-size: 0.94rem;
-    }
-
-    .candidate-list li + li {
-      margin-top: 7px;
-    }
-
-    .region-band {
-      background: #f5f8fb;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .region-card.active {
-      border-color: var(--blue);
-      box-shadow: inset 0 0 0 2px rgba(29, 78, 137, 0.12);
-    }
-
-    .calendar-card {
-      background: var(--ink);
-      color: var(--white);
-      border-color: rgba(255, 255, 255, 0.16);
-    }
-
-    .calendar-card p {
-      color: rgba(255, 255, 255, 0.74);
-    }
-
-    .artifact-row {
+    .tile {
+      min-height: 156px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-content: start;
       gap: 8px;
-      margin-top: 16px;
     }
-
-    .artifact-row span {
-      border-radius: 6px;
-      padding: 8px;
-      background: rgba(244, 197, 66, 0.14);
-      color: #ffe28a;
-      font-size: 0.82rem;
-      font-weight: 800;
-      text-align: center;
-    }
-
-    .interest {
+    .proof-strip {
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
-      gap: 28px;
-      align-items: start;
-      background: var(--white);
+      grid-template-columns: minmax(0, 0.7fr) minmax(260px, 1.3fr);
+      gap: 18px;
+      align-items: center;
     }
-
-    .form-panel {
-      border: 1px solid var(--line);
+    .logo-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: center;
+    }
+    .logo-tile {
+      min-height: 84px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ot-light-line);
       border-radius: 8px;
-      padding: 20px;
-      background: #fffdf8;
-      box-shadow: var(--shadow);
+      background: var(--ot-white);
+      padding: 12px;
     }
-
-    form {
+    .logo-tile img {
+      max-height: 48px;
+      object-fit: contain;
+    }
+    .feature-band {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.86fr);
+      gap: 26px;
+      align-items: center;
+    }
+    .portrait-frame {
+      overflow: hidden;
+      border: 1px solid var(--ot-line);
+      border-radius: 8px;
+      box-shadow: var(--ot-shadow);
+      background: var(--ot-navy);
+    }
+    .portrait-frame img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .media-note {
+      margin-top: 10px;
+      color: rgba(255,255,255,0.66);
+      font-size: 0.9rem;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .gallery figure {
+      margin: 0;
+      overflow: hidden;
+      border: 1px solid var(--ot-line);
+      border-radius: 8px;
+      background: var(--ot-charcoal);
+    }
+    .gallery img {
+      width: 100%;
+      height: 154px;
+      object-fit: cover;
+    }
+    .gallery figcaption {
+      padding: 10px 12px;
+      color: rgba(255,255,255,0.74);
+      font-size: 0.86rem;
+    }
+    .portal-grid .tile {
+      min-height: 210px;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .pill {
+      border: 1px solid rgba(11,159,201,0.28);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--ot-cyan);
+      background: rgba(11,159,201,0.09);
+      font-size: 0.78rem;
+      font-weight: 760;
+    }
+    .interest-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 0.85fr) minmax(280px, 1.15fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .form-grid {
       display: grid;
       gap: 12px;
     }
-
     label {
       display: grid;
       gap: 6px;
-      color: var(--muted);
-      font-size: 0.88rem;
-      font-weight: 800;
+      color: #344252;
+      font-size: 0.84rem;
+      font-weight: 780;
     }
-
     input,
     select,
     textarea {
       width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 6px;
+      border: 1px solid var(--ot-light-line);
+      border-radius: 8px;
       padding: 11px 12px;
-      color: var(--ink);
-      background: var(--white);
-      font: inherit;
+      color: var(--ot-black);
+      background: var(--ot-white);
     }
-
     textarea {
-      min-height: 108px;
+      min-height: 96px;
       resize: vertical;
     }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .checkbox-line {
-      display: flex;
-      align-items: flex-start;
-      gap: 9px;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
-    .checkbox-line input {
-      width: auto;
-      margin-top: 4px;
-    }
-
     .form-status {
       min-height: 22px;
-      color: var(--green);
-      font-weight: 800;
+      color: var(--ot-teal);
+      font-weight: 760;
     }
-
+    details {
+      border-top: 1px solid var(--ot-light-line);
+      padding: 16px 0;
+    }
+    summary {
+      cursor: pointer;
+      color: var(--ot-black);
+      font-weight: 840;
+    }
+    details p {
+      margin: 10px 0 0;
+    }
     footer {
-      padding: 26px clamp(18px, 5vw, 70px);
-      color: rgba(255, 255, 255, 0.76);
-      background: var(--ink);
-      font-size: 0.92rem;
+      border-top: 1px solid var(--ot-line);
+      padding: 28px 0 34px;
+      background: var(--ot-black);
     }
-
-    @media (max-width: 860px) {
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .topnav {
-        justify-content: flex-start;
-      }
-
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .footer-row a {
+      color: rgba(255,255,255,0.74);
+      text-decoration: none;
+    }
+    .safe-note {
+      border-left: 4px solid var(--ot-yellow);
+      padding-left: 14px;
+    }
+    @media (max-width: 920px) {
+      h1 { font-size: 3.1rem; }
+      h2 { font-size: 1.85rem; }
       .hero {
-        min-height: 84vh;
-        padding-top: 150px;
-        background-position: center;
+        min-height: 88vh;
+        background:
+          linear-gradient(180deg, rgba(8,9,16,0.96), rgba(8,9,16,0.82)),
+          url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 76% no-repeat,
+          var(--ot-black);
       }
-
-      .intro-strip,
-      .tier-grid,
-      .region-grid,
-      .calendar-grid,
-      .interest,
-      .two-col {
+      .hero-inner,
+      .feature-band,
+      .proof-strip,
+      .interest-layout {
         grid-template-columns: 1fr;
       }
-
-      .artifact-row {
+      .hero-side {
+        justify-items: start;
+        text-align: left;
+      }
+      .grid.three,
+      .grid.two,
+      .gallery {
         grid-template-columns: 1fr;
       }
+      .logo-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .portrait-frame img { height: 420px; }
     }
-
-    @media (max-width: 520px) {
-      .topbar {
-        position: absolute;
+    @media (max-width: 620px) {
+      .topbar { min-height: 66px; }
+      .brand span { display: none; }
+      .nav { gap: 2px; }
+      .nav a { padding: 7px 8px; font-size: 0.8rem; }
+      h1 { font-size: 2.45rem; }
+      h2 { font-size: 1.55rem; }
+      .hero {
+        padding-top: 98px;
+        min-height: 88vh;
       }
-
-      h1 {
-        font-size: clamp(2.6rem, 15vw, 4rem);
-      }
-
-      section {
-        padding: 42px 16px;
-      }
+      .hero-line { font-size: 1.25rem; }
+      .section { padding: 48px 0; }
+      .button { width: 100%; }
+      .logo-row { grid-template-columns: 1fr; }
+      .portrait-frame img { height: 360px; }
     }
   </style>
 </head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="/one-time" aria-label="OneTime Mishnayos home">
-      <img src="/images/one-time/onetimelogo.webp" alt="">
-      <span>OneTimeOneTime Mishnah</span>
-    </a>
-    <nav class="topnav" aria-label="OneTime">
-      <span class="draft-pill">Shared review</span>
-      <a href="#offer">Offer</a>
-      <a href="#library">Library</a>
-      <a href="#calendar">Live Class</a>
-      <a href="#interest">Join the Shir</a>
-      <a href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Review Classroom</a>
-    </nav>
+<body data-site-config="/config/service-provider-sites/one-time.json">
+  <header class="site-header">
+    <div class="wrap topbar">
+      <a class="brand" href="/one-time" aria-label="OneTimeOneTime Mishnah home">
+        <img src="/images/one-time/brand/onetimelogo.webp" alt="">
+        <span>
+          <strong>OneTimeOneTime Mishnah</strong>
+          <span>Worldwide Live Mishnah Learning</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="One Time navigation">
+        <a href="#live-shiur">Live Shiur</a>
+        <a href="#library">Library</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#portals">Portals</a>
+        <a href="#faq">FAQ</a>
+        <a href="/one-time/member-login">Member Login</a>
+      </nav>
+    </div>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-inner">
-        <span class="eyebrow">Shared review environment</span>
-        <h1>OneTimeOneTime Mishnah</h1>
-        <p class="hero-copy">
-          A branded review surface for Rabbi Scheller's live Mishnah class: parent and student portals, protected classroom/library, preview-only email templates, and gated Zoom, Vimeo, Stripe, and Resend readiness.
-        </p>
-        <div class="hero-actions">
-          <a class="button primary" href="/provider.html?review=one-time">Start Review</a>
-          <a class="button secondary" href="/one-time-email-review.html">Email Previews</a>
+    <section class="hero" id="top">
+      <div class="wrap hero-inner">
+        <div>
+          <p class="eyebrow">Worldwide Live Mishnah Learning</p>
+          <h1>OneTimeOneTime Mishnah</h1>
+          <p class="hero-line">Finish Masechtas. Love Learning Torah.</p>
+          <p class="hero-copy">Rabbi Elie Scheller's shared review build brings the One Time brand, live shiur flow, video library, parent view, student view, classroom, and no-send email previews into one inspectable surface.</p>
+          <div class="button-row">
+            <a class="button primary" href="#interest">Start Review</a>
+            <a class="button ghost" href="/one-time/member-login">Member Login</a>
+            <a class="button" href="/one-time-email-review.html">Email Previews</a>
+          </div>
+        </div>
+        <div class="hero-side">
+          <div class="review-badge">Shared review only. No payment, external send, access grant, Zoom creation, Vimeo upload, DNS change, or CRM write is enabled.</div>
         </div>
       </div>
     </section>
 
-    <section class="intro-strip" aria-label="Program status">
-      <div class="strip-cell">
-        <strong>Focused product</strong>
-        <span>Live Mishnah class and member-library review, not a full school clone.</span>
-      </div>
-      <div class="strip-cell">
-        <strong>Review offer</strong>
-        <span>$67/month and 30-day trial examples are visible in TEST mode only.</span>
-      </div>
-      <div class="strip-cell">
-        <strong>Class model</strong>
-        <span>Live class readiness with replay/library support after approval.</span>
-      </div>
-      <div class="strip-cell">
-        <strong>Safety</strong>
-        <span>Student replies stay private and moderated before public sharing.</span>
+    <section class="section alt" aria-labelledby="proof-title">
+      <div class="wrap proof-strip">
+        <div>
+          <p class="eyebrow">Media and brand trace</p>
+          <h2 id="proof-title">Legacy One Time assets are inventoried for review.</h2>
+          <p>These marks came from the legacy OneTimeOneTime site capture. They are shown as review inventory only and do not imply sponsorship, endorsement, or permission status.</p>
+        </div>
+        <div class="logo-row" aria-label="Legacy media and publication references">
+          <div class="logo-tile"><img src="/images/one-time/press/torahanytime-logo.png" alt="TorahAnytime"></div>
+          <div class="logo-tile"><img src="/images/one-time/press/twentyfour-six-logo.png" alt="24Six"></div>
+          <div class="logo-tile"><img src="/images/one-time/press/loop-logo.png" alt="Loop"></div>
+          <div class="logo-tile"><img src="/images/one-time/press/mishpacha.webp" alt="Mishpacha"></div>
+        </div>
       </div>
     </section>
 
-    <section id="offer">
-      <div class="section-head">
-        <h2>One Simple Starting Offer</h2>
-        <p>This review keeps the product path focused on the live Mishnah class. Checkout stays unavailable until billing cadence, access policy, and public copy are approved.</p>
-      </div>
-      <div class="tier-grid">
-        <article class="card">
-          <h3>Worldwide Mishnayos Shir</h3>
-          <p>Live class access with replay/library support and a simple parent-aware member path.</p>
-          <span class="price-pending">$67 planned</span>
-          <ul class="candidate-list">
-            <li>Billing cadence needs Rabbi/Shloimie confirmation</li>
-            <li>Payment provider/link is not connected yet</li>
-            <li>No charge, access grant, or external send is enabled</li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3>Student Library</h3>
-          <p>Class recordings, live-session notes, Rabbi messages, and student replies stay inside a protected member experience.</p>
-          <span class="price-pending">Private after login</span>
-          <ul class="candidate-list">
-            <li>Member access is separate from the broader school parent/student portals</li>
-            <li>Public page markets the offer only</li>
-            <li>Library publishing remains review-gated</li>
-          </ul>
-        </article>
-        <article class="card">
-          <h3>VIP Summer Module</h3>
-          <p>A future high-touch class option for a smaller group, not part of this public offer until approved.</p>
-          <span class="price-pending">Future upsell</span>
-          <ul class="candidate-list">
-            <li>Likely $400-$500</li>
-            <li>About 30 kids, 12 weeks, pending dates</li>
-            <li>Keep internal until Rabbi confirms scope</li>
-          </ul>
-        </article>
+    <section class="section" id="pillars">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">What this review proves</p>
+          <h2>One brand, one shared flow, no live external actions.</h2>
+          <p>The page is designed for Shloimie and Rabbi Scheller to inspect how the One Time experience feels before live send, billing, access, or infrastructure decisions are activated.</p>
+        </div>
+        <div class="grid three">
+          <article class="tile">
+            <h3>Live class readiness</h3>
+            <p>Class details, attendance examples, Zoom readiness, and protected join language are visible without creating a real meeting.</p>
+          </article>
+          <article class="tile">
+            <h3>Member learning library</h3>
+            <p>The classroom review shows one manual Vimeo reference, worksheet/resource state, and course progress without automated upload.</p>
+          </article>
+          <article class="tile">
+            <h3>Parent and student portals</h3>
+            <p>Linked TEST parent/student fixtures show scoped One Time data only, with no BNA goals, bot, or unrelated private records.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section class="region-band" id="library">
-      <div class="section-head">
-        <h2>Library, Replies, And Parent Visibility</h2>
-        <p>The member side stays protected. Kids send replies privately, and Rabbi/admin review decides what can be shared.</p>
-      </div>
-      <div class="region-grid">
-        <article class="card region-card" data-region-card="israel">
-          <h3>Live class</h3>
-          <p>Rabbi Scheller can teach live from Eretz Yisrael once Zoom, schedule, and recording permissions are confirmed.</p>
-        </article>
-        <article class="card region-card" data-region-card="uk">
-          <h3>Private replies</h3>
-          <p>Students can send replies or questions privately from their portal for Rabbi/admin review.</p>
-        </article>
-        <article class="card region-card" data-region-card="us">
-          <h3>Moderated sharing</h3>
-          <p>Rabbi can choose selected answers or prompts for community display; students cannot publish directly.</p>
-        </article>
+    <section class="section alt" id="live-shiur">
+      <div class="wrap feature-band">
+        <div>
+          <p class="eyebrow">Live Mishnah Shiur</p>
+          <h2>Built around the energy of a real teacher, not a generic course shell.</h2>
+          <p>Rabbi Scheller's portrait and traced stage visuals carry the page. The raw MP4 remains out of Git, and the public review avoids unapproved child or crowd imagery.</p>
+          <div class="pill-row">
+            <span class="pill">$67 planned</span>
+            <span class="pill">30-day trial review</span>
+            <span class="pill">billing cadence pending policy</span>
+            <span class="pill">No live checkout</span>
+          </div>
+        </div>
+        <div class="portrait-frame">
+          <img src="/images/one-time/brand/onetime-hero-vertical.webp" alt="Rabbi Elie Scheller teaching">
+        </div>
       </div>
     </section>
 
-    <section id="calendar">
-      <div class="section-head">
-        <h2>Readiness Before Launch</h2>
-        <p>The meeting should settle the account access and permissions needed before the page can move from draft to launch-ready.</p>
-      </div>
-      <div class="calendar-grid">
-        <article class="card calendar-card">
-          <h3>Zoom and Vimeo</h3>
-          <p>Confirm class access, recordings, background-video rights, and whether API management is available.</p>
-          <div class="artifact-row">
-            <span>Zoom pending</span>
-            <span>Vimeo pending</span>
-            <span>Rights pending</span>
-          </div>
-        </article>
-        <article class="card calendar-card">
-          <h3>Email and domain</h3>
-          <p>Confirm Resend/domain setup, GoDaddy delegate access, and approved relaunch copy before any send.</p>
-          <div class="artifact-row">
-            <span>GoDaddy</span>
-            <span>Resend</span>
-            <span>No send yet</span>
-          </div>
-        </article>
-        <article class="card calendar-card">
-          <h3>Payment</h3>
-          <p>The $67 plan needs a provider of record, cadence, refund/access policy, and approved payment link.</p>
-          <div class="artifact-row">
-            <span>$67</span>
-            <span>Provider pending</span>
-            <span>No checkout yet</span>
-          </div>
-        </article>
+    <section class="section" id="how-it-works">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">How it works</p>
+          <h2>From class readiness to review-safe family updates.</h2>
+        </div>
+        <div class="grid three">
+          <article class="tile">
+            <h3>1. Join the review</h3>
+            <p>Interest capture posts to the first-party `/api/one-time/interest` route and returns no-checkout/no-send confirmation.</p>
+          </article>
+          <article class="tile">
+            <h3>2. Learn live</h3>
+            <p>The review classroom models the next shiur, attendance, worksheet, video reference, and questions without external writes.</p>
+          </article>
+          <article class="tile">
+            <h3>3. Continue in the library</h3>
+            <p>Parent and student views show progress, achievements, support, and template previews using TEST-only data.</p>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section class="interest" id="interest">
-      <div class="section-head">
-        <h2>Join Interest Review</h2>
-        <p>This form saves a first-party OneTime interest lead for internal review. It does not create a checkout, send a message, grant access, or write to an external CRM.</p>
+    <section class="section alt" id="library">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Video library preview</p>
+          <h2>Manual Vimeo reference, worksheet state, and class package review.</h2>
+          <p>The legacy promo video source is traced in the operator packet but not embedded here because the review must avoid unapproved child/crowd imagery. The member library sample still uses the safe manual Vimeo reference in the classroom route.</p>
+        </div>
+        <div class="grid two">
+          <article class="panel">
+            <h3>Pesachim Perek 10 Review Class</h3>
+            <p>Manual Vimeo sample reference: `1178363755`. Automated upload is blocked until user-level Vimeo authorization and upload policy are approved.</p>
+            <a class="button primary" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Open Classroom</a>
+          </article>
+          <article class="panel">
+            <h3>Worksheet/resource readiness</h3>
+            <p>The review packet shows one resource link and source-prep state. It does not publish new member materials or email attachments.</p>
+            <a class="button ghost" href="/parent.html?review=one-time">Parent Review</a>
+          </article>
+        </div>
       </div>
-      <div class="form-panel">
-        <form id="interestForm">
-          <div class="two-col">
-            <label>
-              Parent name
-              <input name="parent_name" autocomplete="name" placeholder="Name">
-            </label>
-            <label>
-              Region
-              <select name="region">
-                <option value="worldwide">Worldwide</option>
-                <option value="israel">Israel</option>
-                <option value="uk">UK</option>
-                <option value="us">US</option>
-              </select>
-            </label>
-          </div>
-          <div class="two-col">
-            <label>
-              Email
-              <input name="email" type="email" autocomplete="email" placeholder="email@example.com">
-            </label>
-            <label>
-              Phone or WhatsApp
-              <input name="phone" autocomplete="tel" placeholder="+972...">
-            </label>
-          </div>
-          <div class="two-col">
-            <label>
-              Learner name
-              <input name="student_name" placeholder="Student or learner">
-            </label>
-            <label>
-              Format
-              <select name="preferred_class_format">
-                <option value="library_live_low_touch">Worldwide Mishnayos shir</option>
-                <option value="not_sure">Not sure yet</option>
-                <option value="interactive_zoom">Interactive Zoom</option>
-                <option value="vip_high_touch">VIP high-touch</option>
-              </select>
-            </label>
-          </div>
+    </section>
+
+    <section class="section" aria-labelledby="gallery-title">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Teaching gallery</p>
+          <h2 id="gallery-title">Stage-only stills from the traced promo video.</h2>
+          <p class="media-note">These derived stills crop out audience/child imagery and keep the raw MP4 uncommitted.</p>
+        </div>
+        <div class="gallery">
+          <figure>
+            <img src="/images/one-time/teaching/promo-stage-still-01.webp" alt="Rabbi Scheller teaching on stage">
+            <figcaption>Live teaching energy</figcaption>
+          </figure>
+          <figure>
+            <img src="/images/one-time/teaching/promo-stage-still-02.webp" alt="Rabbi Scheller speaking into a microphone">
+            <figcaption>Teacher-first visual system</figcaption>
+          </figure>
+          <figure>
+            <img src="/images/one-time/teaching/promo-stage-still-03.webp" alt="One Time teaching stage setup">
+            <figcaption>Stage review environment</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="portals">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Shared review portals</p>
+          <h2>Inspect the exact TEST-only surfaces.</h2>
+          <p>Each link opens a scoped review mode or no-send preview. No route below grants real access or sends a message.</p>
+        </div>
+        <div class="grid three portal-grid">
+          <article class="tile">
+            <h3>Provider/Rabbi</h3>
+            <p>Overview, live class, media, payments/trial, integrations, and support/activity review.</p>
+            <a class="button primary" href="/provider.html?review=one-time">Provider Review</a>
+          </article>
+          <article class="tile">
+            <h3>Parent</h3>
+            <p>One TEST parent sees only one linked TEST student, progress, class, payment/trial note, and support.</p>
+            <a class="button primary" href="/parent.html?review=one-time">Parent Review</a>
+          </article>
+          <article class="tile">
+            <h3>Student</h3>
+            <p>One TEST student sees only the One Time class, library, worksheet, progress, achievement, and support.</p>
+            <a class="button primary" href="/student.html?review=one-time">Student Review</a>
+          </article>
+          <article class="tile">
+            <h3>Classroom/library</h3>
+            <p>TEST access code opens the no-write classroom review with lesson, video, worksheet, and threads.</p>
+            <a class="button primary" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+          </article>
+          <article class="tile">
+            <h3>Email previews</h3>
+            <p>Invitation, verification, recovery, class, library, worksheet, progress, payment, cancellation, and support templates.</p>
+            <a class="button primary" href="/one-time-email-review.html">Email Previews</a>
+          </article>
+          <article class="tile">
+            <h3>Member login</h3>
+            <p>Public entry shell only. Private member data stays unavailable without approved scoped access.</p>
+            <a class="button primary" href="/one-time/member-login">Member Login</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="story">
+      <div class="wrap feature-band">
+        <div>
+          <p class="eyebrow">About Rabbi Scheller</p>
+          <h2>Clear, lively Mishnah learning with visible family progress.</h2>
+          <p>OneTimeOneTime is being reviewed as a focused service-provider experience: a live class, recorded review, learning materials, progress visibility, and support workflows tied together under Rabbi Scheller's brand.</p>
+          <p>The current build intentionally keeps TEST identities, preview-only emails, and blocked live actions visible so the operator can correct the experience before any production workflow is enabled.</p>
+        </div>
+        <div class="portrait-frame">
+          <img src="/images/one-time/brand/onetime-hero-vertical.webp" alt="Rabbi Elie Scheller portrait">
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="interest">
+      <div class="wrap interest-layout">
+        <div>
+          <p class="eyebrow">Start Review</p>
+          <h2>Capture interest without triggering checkout or sends.</h2>
+          <p class="safe-note">No charge, access grant, or external send is enabled. No payment or external send is approved by this form. This form does not create a checkout, send a message, grant access, or write to an external CRM.</p>
+        </div>
+        <form id="interestForm" class="panel form-grid">
+          <label>
+            Parent name
+            <input name="parent_name" autocomplete="name" required>
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email">
+          </label>
+          <label>
+            Phone / WhatsApp
+            <input name="phone" autocomplete="tel">
+          </label>
+          <label>
+            Region
+            <select name="region">
+              <option value="us">US</option>
+              <option value="uk">UK</option>
+              <option value="israel">Israel</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
           <label>
             Notes
-            <textarea name="notes" placeholder="Timezone, age, learning background, or questions"></textarea>
+            <textarea name="notes" placeholder="Review-only note for the One Time interest flow"></textarea>
           </label>
-          <label class="checkbox-line">
-            <input name="consent" type="checkbox">
-            <span>Save this interest note for OneTime review. No payment or external send is approved by this form.</span>
-          </label>
-          <input type="hidden" name="source_landing_page" value="/one-time">
-          <button class="button primary" type="submit">Save join interest</button>
-          <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+          <button class="button primary" type="submit">Save Review Interest</button>
+          <p class="form-status" id="interestStatus" aria-live="polite"></p>
         </form>
+      </div>
+    </section>
+
+    <section class="section alt" id="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">FAQ</p>
+          <h2>Current shared-review answers.</h2>
+        </div>
+        <details>
+          <summary>Is this the final public One Time launch?</summary>
+          <p>No. This is a shared review deployment packet for PR #5. Final launch still needs operator review, deploy/live-smoke proof, and approval for any live workflows.</p>
+        </details>
+        <details>
+          <summary>Can this page charge a card or send an email?</summary>
+          <p>No. Payment, email, WhatsApp, Zoom, Vimeo upload, DNS, external CRM writes, and access automation are blocked until explicitly approved.</p>
+        </details>
+        <details>
+          <summary>Why is the promo video not embedded?</summary>
+          <p>The video source was traced, but the shared review avoids unapproved child/crowd imagery. Safe stage-only stills and the approved portrait are used instead.</p>
+        </details>
+        <details>
+          <summary>Where should review corrections go?</summary>
+          <p>Use the operator packet under `ops/one-time-mishnah/operator-ui-review/` and the linked review routes above.</p>
+        </details>
       </div>
     </section>
   </main>
 
   <footer>
-    OneTimeOneTime Mishnah shared review. The broader school homepage, parent app, and private Operations app remain separate surfaces.
+    <div class="wrap footer-row">
+      <span>OneTimeOneTime Mishnah shared review</span>
+      <span>
+        <a href="/provider.html?review=one-time">Provider</a> |
+        <a href="/parent.html?review=one-time">Parent</a> |
+        <a href="/student.html?review=one-time">Student</a> |
+        <a href="/one-time-email-review.html">Email Previews</a>
+      </span>
+    </div>
   </footer>
 
   <script>
-    (function () {
-      const region = location.pathname.split('/').filter(Boolean)[1] || 'worldwide';
-      const regionSelect = document.querySelector('select[name="region"]');
-      const source = document.querySelector('input[name="source_landing_page"]');
-      const cards = document.querySelectorAll('[data-region-card]');
-      if (regionSelect && ['israel', 'uk', 'us'].includes(region)) {
-        regionSelect.value = region;
-      }
-      if (source) source.value = location.pathname || '/one-time';
-      cards.forEach((card) => {
-        if (card.getAttribute('data-region-card') === region) card.classList.add('active');
-      });
+    const form = document.getElementById('interestForm');
+    const status = document.getElementById('interestStatus');
 
-      const form = document.getElementById('interestForm');
-      const status = document.getElementById('formStatus');
-      if (!form) return;
-      form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const data = Object.fromEntries(new FormData(form).entries());
-        data.consent = Boolean(form.elements.consent && form.elements.consent.checked);
-        data.interested_tiers = data.preferred_class_format && data.preferred_class_format !== 'not_sure'
-          ? [data.preferred_class_format]
-          : ['library_live_low_touch'];
-        status.textContent = 'Saving...';
-        try {
-          const response = await fetch('/api/one-time/interest', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
-          });
-          const payload = await response.json();
-          if (!response.ok || !payload.success) throw new Error(payload.error || 'Unable to save interest');
-          status.textContent = 'Saved for internal OneTime review. No checkout, send, or access grant was created.';
-          form.reset();
-          if (regionSelect && ['israel', 'uk', 'us'].includes(region)) regionSelect.value = region;
-          if (source) source.value = location.pathname || '/one-time';
-        } catch (err) {
-          status.textContent = err.message;
-        }
-      });
-    })();
+    function formPayload(formElement) {
+      const data = new FormData(formElement);
+      return Object.fromEntries(data.entries());
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = 'Saving review interest...';
+      const button = form.querySelector('button[type="submit"]');
+      button.disabled = true;
+      try {
+        const response = await fetch('/api/one-time/interest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formPayload(form)),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not save review interest');
+        status.textContent = data.message || 'Review interest saved. No payment or external send was performed.';
+        form.reset();
+      } catch (error) {
+        status.textContent = error.message || 'Could not save review interest.';
+      } finally {
+        button.disabled = false;
+      }
+    });
   </script>
   <script src="/js/app-select.js"></script>
 </body>

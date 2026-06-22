@@ -1183,11 +1183,12 @@
 
         function applyOneTimeReviewBrand() {
             document.body.classList.add('one-time-review-active');
+            document.title = 'OneTimeOneTime Provider Review';
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
                 mark.textContent = '';
                 const img = document.createElement('img');
-                img.src = '/images/one-time/onetimelogo.webp';
+                img.src = '/images/one-time/brand/onetimelogo.webp';
                 img.alt = '';
                 mark.appendChild(img);
             }

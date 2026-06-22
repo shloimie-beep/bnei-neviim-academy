@@ -4,6 +4,9 @@ Captured: 2026-06-22T00:00:00+03:00
 Source type: Codex chat goal prompt
 Workspace: `rabbi_sheller_provider`
 Project: `one_time_mishnah_class`
+Full raw source copy: `raw-input/RAW-20260622-002-full-source-prompt.md`
+Original local prompt: `C:\Users\User\Downloads\ONE-TIME-BRAND-LANDING-PHASE-2-CURRENT-HEAD-PROMPT (1).md`
+SHA-256: `b30c63f1fcabfe18680a51e4cdc6a488e31aa780e737ddc6193becceae257837`
 
 Goal: turn the existing shared One Time review routes into a polished branded
 experience using supplied legacy OneTimeOneTime assets, then deploy the shared

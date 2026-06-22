@@ -132,7 +132,9 @@ function buildOneTimeExportManifest(config = buildOneTimeInstanceConfig()) {
     ],
     files: [
       'config/brands/one-time.json',
+      'config/service-provider-sites/one-time.json',
       'src/platform/instances/one-time.js',
+      'src/platform/service-provider-sites/index.js',
       'src/platform/integrations/readiness.js',
       'docs/architecture/onetime-single-tenant-split.md',
       'docs/integrations/onetime-vimeo-zoom-resend-readiness.md',
