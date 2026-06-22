@@ -177,7 +177,7 @@ async function main() {
       label: 'operations',
       path: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
       expectedTitle: /One Time Mishnah Class - Operations/i,
-      requiredText: ['One Time Mishnah Class', 'Program Overview', 'Codex Queue'],
+      requiredText: ['One Time Mishnah Class', 'Program Overview', 'Provider Workspace'],
       requiredSelectors: ['.ops-app-shell'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Sign in to BNA Operations'],
