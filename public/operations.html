@@ -33296,12 +33296,22 @@
             });
         }
 
+        function updateDocumentTitleForWorkspace() {
+            if (currentWorkspaceIsOneTime()) {
+                const workspaceName = workspaceBranding?.workspace_name_override || currentWorkspaceRecord().display_name || 'One Time Mishnah Class';
+                document.title = `${workspaceName} - Operations`;
+                return;
+            }
+            document.title = 'BNA Operations';
+        }
+
         function render(errors = [], options = {}) {
             if (!options.force && renderShouldWaitForTextEntry()) {
                 deferRenderUntilTextEntrySettles(errors);
                 return;
             }
             normalizeCurrentRouteForWorkspace();
+            updateDocumentTitleForWorkspace();
             deferredRenderErrors = null;
             const app = document.getElementById('app');
             let content = '';

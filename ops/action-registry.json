@@ -126,16 +126,16 @@
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
-      "label": "Join the Shir",
+      "label": "Join the Live Shiur",
       "surface": "one_time_public_focused_offer",
       "route": "/one-time",
-      "selector_hint": "a[href=\"#interest\"].button.primary",
-      "expected_behavior": "Scrolls the public visitor to the OneTime interest form; does not create checkout, send messages, or grant access.",
+      "selector_hint": "a[href=\"/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS\"].button.primary",
+      "expected_behavior": "Opens the TEST-only classroom/live-shiur review route; does not create checkout, send messages, create a Zoom meeting, or grant access.",
       "permission": "public",
       "status": "active",
       "test": {
         "type": "static_and_browser",
-        "expected_result": "Primary CTA points to #interest and no payment action fires."
+        "expected_result": "Primary CTA points to the TEST-only classroom review route and no payment, send, Zoom creation, or access grant fires."
       },
       "related_goal_ids": [
         "GOAL-CORE-002",
