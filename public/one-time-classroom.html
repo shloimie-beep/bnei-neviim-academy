@@ -367,8 +367,11 @@
   </div>
 
   <script>
-    const queryCode = new URLSearchParams(window.location.search).get('code') || '';
-    const state = { code: queryCode || localStorage.getItem('oneTimeClassroomCode') || '', classroom: null };
+    const queryParams = new URLSearchParams(window.location.search);
+    const reviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
+    const queryCode = queryParams.get('code') || '';
+    const reviewAccessCode = 'TEST-ONETIME-REVIEW-ACCESS';
+    const state = { code: queryCode || (reviewMode ? reviewAccessCode : localStorage.getItem('oneTimeClassroomCode') || ''), classroom: null };
     const els = {
       form: document.getElementById('accessForm'),
       code: document.getElementById('accessCode'),
@@ -521,13 +524,16 @@
 
     async function loadClassroom(code) {
       els.status.textContent = 'Opening classroom...';
-      const response = await fetch(`/api/one-time-classroom?code=${encodeURIComponent(code)}`, { credentials: 'same-origin' });
+      const path = reviewMode
+        ? '/api/one-time-review/classroom'
+        : `/api/one-time-classroom?code=${encodeURIComponent(code)}`;
+      const response = await fetch(path, { credentials: 'same-origin' });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Could not open classroom');
       state.code = code;
       state.classroom = data.classroom || {};
-      localStorage.setItem('oneTimeClassroomCode', code);
-      els.status.textContent = 'Classroom opened.';
+      if (!reviewMode) localStorage.setItem('oneTimeClassroomCode', code);
+      els.status.textContent = reviewMode ? 'TEST classroom review opened. No writes will be performed.' : 'Classroom opened.';
       renderAll();
     }
 
@@ -551,6 +557,11 @@
       button.disabled = true;
       status.textContent = 'Submitting for review...';
       try {
+        if (reviewMode) {
+          form.elements.body.value = '';
+          status.textContent = 'Preview submitted locally for UI review. No database write occurred.';
+          return;
+        }
         const response = await fetch(`/api/one-time-classroom/threads/${encodeURIComponent(form.dataset.threadId)}/responses`, {
           method: 'POST',
           credentials: 'same-origin',

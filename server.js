@@ -151,6 +151,10 @@ const {
   buildOneTimeTestIdentityPreview,
 } = require('./src/platform/instances/one-time-test-fixtures');
 const {
+  REVIEW_ACCESS_CODE: ONE_TIME_REVIEW_ACCESS_CODE,
+  buildOneTimeSharedReviewData,
+} = require('./src/platform/instances/one-time-shared-review-data');
+const {
   buildOneTimeAgentModeAcceptance,
 } = require('./src/platform/agent-control/one-time-acceptance');
 const {
@@ -9773,6 +9777,80 @@ app.get('/api/one-time/instance-config', (req, res) => {
     ...INSTANCE_RUNTIME_FLAGS,
     app_visible: true,
     secrets_included: false,
+    external_write_performed: false,
+  });
+});
+
+function oneTimeSharedReviewDataForRequest(req) {
+  const host = req.get('host') || 'localhost:3000';
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  return buildOneTimeSharedReviewData({
+    baseUrl: `${protocol}://${host}`,
+  });
+}
+
+app.get('/api/one-time-review', (req, res) => {
+  res.json({
+    success: true,
+    review: oneTimeSharedReviewDataForRequest(req),
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/parent', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.parent_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/student', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.student_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/provider', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.provider_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/classroom', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    classroom: review.classroom,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/email-templates', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    email_templates: review.email_templates,
+    links: review.links,
+    blockers: review.external_blockers,
+    send_disabled: true,
+    test_only: true,
     external_write_performed: false,
   });
 });
@@ -69116,7 +69194,18 @@ app.get('/api/member-library', async (req, res) => {
 
 app.get('/api/one-time-classroom', async (req, res) => {
   try {
-    const classroom = await getOneTimeClassroomForAccessCode(req.query.code || req.query.access_code || '');
+    const accessCode = String(req.query.code || req.query.access_code || '').trim();
+    if (accessCode === ONE_TIME_REVIEW_ACCESS_CODE || String(req.query.review || '').toLowerCase() === 'one-time') {
+      const review = oneTimeSharedReviewDataForRequest(req);
+      return res.json({
+        success: true,
+        classroom: review.classroom,
+        internal_fields_hidden: true,
+        test_only: true,
+        external_write_performed: false,
+      });
+    }
+    const classroom = await getOneTimeClassroomForAccessCode(accessCode);
     res.json({
       success: true,
       classroom,

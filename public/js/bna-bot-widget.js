@@ -3,6 +3,8 @@
 
   const path = window.location.pathname;
   const query = new URLSearchParams(window.location.search);
+  const isOneTimeReview = ['one-time', 'onetime', '1', 'true'].includes(String(query.get('review') || '').toLowerCase());
+  if (isOneTimeReview) return;
   const isParent = /^\/parent/.test(path);
   const isStudent = /^\/student/.test(path);
   try {

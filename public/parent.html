@@ -1335,6 +1335,10 @@
         let calendarStudentFilter = 'all';
         let selectedCalendarDate = '';
         let selectedCalendarEventId = '';
+        const ONE_TIME_REVIEW_MODE = (() => {
+            const value = String(new URLSearchParams(window.location.search).get('review') || '').toLowerCase();
+            return ['one-time', 'onetime', '1', 'true'].includes(value);
+        })();
         const strings = {
             en: {
                 parent: 'Parent',
@@ -4531,7 +4535,121 @@
             updateParentInstallState();
         }
 
+        function reviewField(label, value) {
+            return `
+                <article class="portal-card">
+                    <span class="eyebrow">${escapeHtml(label)}</span>
+                    <strong>${escapeHtml(value || 'Not available')}</strong>
+                </article>
+            `;
+        }
+
+        function renderOneTimeParentReview(data) {
+            portalData = data;
+            const student = data.student || {};
+            const classSession = data.class_session || {};
+            const attendance = data.attendance || {};
+            const payment = data.payment || {};
+            els.loginPanel.classList.add('hidden');
+            els.parentOnboardingPanel.classList.add('hidden');
+            els.portalMenuToggle.classList.add('hidden');
+            els.portalPanel.classList.remove('hidden');
+            els.logoutButton.classList.add('hidden');
+            els.parentAssistantDock.classList.add('hidden');
+            els.whatsappDock.classList.add('hidden');
+            document.body.classList.remove('parent-has-assistant', 'parent-has-whatsapp');
+            els.portalPanel.innerHTML = `
+                <section class="panel">
+                    <div class="section-title">
+                        <div>
+                            <span class="eyebrow">One Time parent review</span>
+                            <h1>${escapeHtml(data.parent?.name || 'TEST Parent')}</h1>
+                            <p class="small">TEST-only parent view for Rabbi Scheller's One Time workspace. This payload intentionally includes only one linked TEST student.</p>
+                        </div>
+                        <span class="status-pill">Preview only</span>
+                    </div>
+                    <div class="overview-grid">
+                        ${reviewField('Linked student', student.display_name || student.name)}
+                        ${reviewField('Next class', classSession.title)}
+                        ${reviewField('Attendance', `${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0} minutes (${attendance.percentage || 0}%)`)}
+                        ${reviewField('Access', payment.access_state)}
+                    </div>
+                </section>
+                <section class="grid">
+                    <article class="panel">
+                        <h2>Class and Zoom</h2>
+                        <p><strong>${escapeHtml(classSession.masechta || '')} ${escapeHtml(classSession.perek || '')}</strong></p>
+                        <p class="small">${escapeHtml(classSession.mishnah_range || '')} / ${escapeHtml(classSession.timezone || '')}</p>
+                        <div class="notice">${escapeHtml(data.zoom?.student_visible_note || 'Zoom readiness is shown without creating a real meeting.')}</div>
+                    </article>
+                    <article class="panel">
+                        <h2>Course progress</h2>
+                        <p><strong>${escapeHtml(data.course?.title || '')}</strong></p>
+                        <p class="small">${escapeHtml(data.module?.title || '')} / ${escapeHtml(data.lesson?.title || '')}</p>
+                        <div class="progress"><span style="width:${Math.max(0, Math.min(100, Number(data.course?.progress_percent || 0)))}%"></span></div>
+                    </article>
+                    <article class="panel">
+                        <h2>Library and worksheet</h2>
+                        <p><strong>${escapeHtml(data.video?.title || '')}</strong></p>
+                        <p class="small">${escapeHtml(data.video?.media_provider || '')}</p>
+                        <p><a class="btn" href="${escapeHtml(data.links?.classroom || '/one-time-classroom.html?review=one-time')}" target="_blank" rel="noopener">Open classroom/library</a></p>
+                        <p><a class="btn" href="${escapeHtml(data.worksheet?.url || '#')}" target="_blank" rel="noopener">Open worksheet/resource</a></p>
+                    </article>
+                    <article class="panel">
+                        <h2>Announcement</h2>
+                        <p><strong>${escapeHtml(data.announcement?.title || '')}</strong></p>
+                        <p class="small">${escapeHtml(data.announcement?.body || '')}</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Payment / trial</h2>
+                        <p><strong>${escapeHtml(payment.offer || '')}</strong></p>
+                        <p class="small">${escapeHtml(payment.trial || '')} / ${escapeHtml(payment.status || '')}</p>
+                        <div class="notice">TEST mode only. No real charge or payment link is created from this review.</div>
+                    </article>
+                    <article class="panel">
+                        <h2>Milestones and rewards</h2>
+                        <p><strong>${escapeHtml(data.milestone?.title || '')}</strong></p>
+                        <p class="small">${escapeHtml(data.achievement?.title || '')}: ${escapeHtml(data.achievement?.parent_safe_explanation || '')}</p>
+                        <p class="small">${escapeHtml(data.reward?.title || '')} / ${escapeHtml(data.reward?.status || '')}</p>
+                    </article>
+                    <article class="panel">
+                        <h2>Private question</h2>
+                        <p><strong>${escapeHtml(data.private_question?.title || '')}</strong></p>
+                        <p class="small">${escapeHtml(data.private_question?.body || '')}</p>
+                        <span class="status-pill">${escapeHtml(data.private_question?.status || '')}</span>
+                    </article>
+                    <article class="panel">
+                        <h2>Support ticket</h2>
+                        <p><strong>${escapeHtml(data.support_ticket?.title || '')}</strong></p>
+                        <p class="small">${escapeHtml(data.support_ticket?.latest_activity || '')}</p>
+                        <span class="status-pill">${escapeHtml(data.support_ticket?.status || '')}</span>
+                        <form data-one-time-parent-review-form>
+                            <label>Ask support / Rabbi<textarea name="body" placeholder="Type a review-only parent question"></textarea></label>
+                            <div class="button-row"><button type="submit">Submit preview</button></div>
+                            <div class="status"></div>
+                        </form>
+                    </article>
+                </section>
+            `;
+            els.portalPanel.querySelectorAll('[data-one-time-parent-review-form]').forEach((form) => {
+                form.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    const status = form.querySelector('.status');
+                    if (status) status.textContent = 'Preview submitted locally for UI review. No database write or email send occurred.';
+                    form.reset();
+                });
+            });
+        }
+
         async function loadPortal() {
+            if (ONE_TIME_REVIEW_MODE) {
+                try {
+                    renderOneTimeParentReview(await api('/api/one-time-review/parent'));
+                } catch (error) {
+                    showLogin(error.message || 'Could not load One Time parent review.', true);
+                }
+                return;
+            }
             try {
                 renderPortal(await api('/api/parent-portal'));
             } catch (error) {

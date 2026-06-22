@@ -741,7 +741,9 @@
     <script>
         let portalState = null;
         let activeProviderSection = 'overview';
-        const setupToken = new URLSearchParams(window.location.search).get('setup') || '';
+        const queryParams = new URLSearchParams(window.location.search);
+        const setupToken = queryParams.get('setup') || '';
+        const oneTimeReviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -869,6 +871,17 @@
         }
 
         function providerSections() {
+            if (oneTimeReviewMode) {
+                return [
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'communications', label: 'Communications' },
+                    { id: 'class_setup', label: 'Live Class' },
+                    { id: 'class_media', label: 'Course/Library' },
+                    { id: 'commercial', label: 'Payments/Trial' },
+                    { id: 'integrations', label: 'Integrations' },
+                    { id: 'activity', label: 'Support/Activity' },
+                ];
+            }
             const sections = [
                 { id: 'overview', label: 'Overview' },
                 { id: 'profile', label: 'Profile / Listing' },
@@ -1153,7 +1166,132 @@
             setProviderSection(activeProviderSection);
         }
 
+        function reviewCard(title, body, status = '') {
+            return `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(title)}</h3>
+                            <p class="small">${escapeHtml(body)}</p>
+                        </div>
+                        ${status ? `<span class="status-pill">${escapeHtml(status)}</span>` : ''}
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderOneTimeProviderReview(data) {
+            portalState = data;
+            const parent = data.parent || {};
+            const student = data.student || {};
+            const classSession = data.class_session || {};
+            const attendance = data.attendance || {};
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('portalPanel').classList.remove('hidden');
+            document.getElementById('providerTitle').textContent = 'One Time provider review';
+            document.getElementById('providerSubtitle').textContent = 'Rabbi/admin TEST review workspace';
+            document.getElementById('providerNav').innerHTML = [
+                ['overview', 'Overview'],
+                ['communications', 'Communications'],
+                ['class_setup', 'Live Class'],
+                ['class_media', 'Course/Library'],
+                ['commercial', 'Payments/Trial'],
+                ['integrations', 'Integrations'],
+                ['activity', 'Support/Activity'],
+            ].map(([id, label], index) => `
+                <button type="button" data-provider-nav="${escapeHtml(id)}" class="${index === 0 ? 'active' : ''}">
+                    ${escapeHtml(label)}
+                </button>
+            `).join('');
+            document.querySelectorAll('[data-provider-section]').forEach(panel => panel.classList.add('provider-section-hidden'));
+            const overviewPanel = document.querySelector('[data-provider-section="overview"]');
+            const commsPanel = document.querySelector('[data-provider-section="communications"]');
+            const classPanel = document.querySelector('[data-provider-section="class_setup"]');
+            const mediaPanel = document.querySelector('[data-provider-section="class_media"]');
+            const commercialPanel = document.querySelector('[data-provider-section="commercial"]');
+            const integrationPanel = document.querySelector('[data-provider-section="integrations"]');
+            const activityPanel = document.querySelector('[data-provider-section="activity"]');
+            if (overviewPanel) overviewPanel.classList.remove('provider-section-hidden');
+            document.getElementById('providerOverview').innerHTML = `
+                <div class="overview-metric"><strong>1</strong><span class="small">TEST parent</span></div>
+                <div class="overview-metric"><strong>1</strong><span class="small">TEST student</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(String(data.email_templates?.length || 0))}</strong><span class="small">Email previews</span></div>
+            `;
+            const overviewList = document.createElement('div');
+            overviewList.className = 'service-list';
+            overviewList.innerHTML = [
+                reviewCard('Rabbi/provider owner', data.provider?.name || 'Rabbi Elie Scheller', data.provider?.role || 'workspace_owner'),
+                reviewCard('Shloimie admin/manager', data.admin?.name || 'Shloimie', data.admin?.role || 'workspace_admin'),
+                reviewCard('TEST parent', `${parent.name || ''} sees only ${student.display_name || student.name || 'one linked TEST student'}`, parent.role || 'parent'),
+                reviewCard('TEST student', `${student.display_name || student.name || ''} has no bot or BNA accountability goals in review mode`, student.role || 'student'),
+            ].join('');
+            overviewPanel?.appendChild(overviewList);
+            if (classPanel) {
+                classPanel.classList.remove('provider-section-hidden');
+                classPanel.innerHTML = `
+                    <h2>Live Class and Attendance</h2>
+                    <div class="service-list">
+                        ${reviewCard(classSession.title || 'TEST live Mishnah class', `${classSession.masechta || ''} ${classSession.perek || ''} ${classSession.mishnah_range || ''}`, classSession.status || 'review_ready')}
+                        ${reviewCard('Zoom readiness', data.zoom?.student_visible_note || '', data.zoom?.state || 'gated')}
+                        ${reviewCard('Attendance example', `${attendance.exact_minutes || 0} exact minutes / ${attendance.percentage || 0}%`, attendance.status || 'review')}
+                    </div>
+                `;
+            }
+            if (mediaPanel) {
+                mediaPanel.classList.remove('provider-section-hidden');
+                mediaPanel.innerHTML = `
+                    <h2>Course, Library, Worksheets</h2>
+                    <div class="service-list">
+                        ${reviewCard(data.course?.title || 'Course', `${data.module?.title || ''} / ${data.lesson?.title || ''}`, `${data.course?.progress_percent || 0}% progress`)}
+                        ${reviewCard(data.video?.title || 'Manual Vimeo reference', data.video?.description || '', data.video?.media_provider || 'manual reference')}
+                        ${reviewCard(data.worksheet?.title || 'Worksheet', data.worksheet?.url || '', data.worksheet?.status || 'review')}
+                    </div>
+                `;
+            }
+            if (commsPanel) {
+                commsPanel.classList.remove('provider-section-hidden');
+                document.getElementById('providerMessages').innerHTML = [
+                    reviewCard('Announcement', data.announcement?.body || '', data.announcement?.visibility || 'review'),
+                    reviewCard('Private question', data.private_question?.body || '', data.private_question?.status || 'review'),
+                    reviewCard('Support ticket', data.support_ticket?.latest_activity || '', data.support_ticket?.status || 'open'),
+                    reviewCard('Email previews', `${data.email_templates?.length || 0} templates are available at ${data.links?.email_preview || '/one-time-email-review.html'}`, 'preview only'),
+                ].join('');
+            }
+            if (commercialPanel) {
+                commercialPanel.classList.remove('provider-section-hidden');
+                document.getElementById('commercialSummary').innerHTML = reviewCard(data.payment?.offer || 'Offer', `${data.payment?.trial || ''} / ${data.payment?.status || ''}. No real charge in review mode.`, data.payment?.access_state || 'test');
+            }
+            if (integrationPanel) {
+                integrationPanel.classList.remove('provider-section-hidden');
+                document.getElementById('integrationList').innerHTML = [
+                    reviewCard('Stripe', 'Test/readiness only. No live charge.', 'gated'),
+                    reviewCard('Resend', 'Template preview only. Sender/domain readiness blocks sending.', 'blocked external'),
+                    reviewCard('Zoom', 'Readiness state only. Real meeting creation remains operator-gated.', 'gated'),
+                    reviewCard('Vimeo', 'Manual sample reference works. Automated upload waits for user authorization.', 'manual ready'),
+                ].join('');
+            }
+            if (activityPanel) {
+                activityPanel.classList.remove('provider-section-hidden');
+                document.getElementById('providerActivity').innerHTML = [
+                    reviewCard('Milestone', data.milestone?.title || '', data.milestone?.status || 'review'),
+                    reviewCard('Achievement', data.achievement?.title || '', data.achievement?.status || 'review'),
+                    reviewCard('Reward', data.reward?.title || '', data.reward?.status || 'review'),
+                ].join('');
+            }
+            setProviderSection('overview');
+        }
+
         async function loadSession() {
+            if (oneTimeReviewMode) {
+                try {
+                    renderOneTimeProviderReview(await api('/api/one-time-review/provider'));
+                } catch (error) {
+                    showLogin(error.message || 'Could not load One Time provider review.');
+                }
+                return;
+            }
             if (setupToken) {
                 await loadSetupToken();
                 return;
