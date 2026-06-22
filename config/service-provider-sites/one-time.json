@@ -61,9 +61,10 @@
   "copy": {
     "eyebrow": "Worldwide Live Mishnah Learning",
     "headline": "Finish Masechtas. Love Learning Torah.",
-    "subhead": "A review-safe shared build for Rabbi Elie Scheller's OneTimeOneTime program, showing the brand, live class flow, library, parent portal, student portal, classroom, and no-send email templates.",
-    "primary_cta": "Start Review",
-    "secondary_cta": "Member Login",
+    "subhead": "Join a worldwide live Mishnah shiur with Rabbi Elie Scheller - live classes, a growing video library, and practical worksheets that help kids keep learning.",
+    "primary_cta": "Join the Live Shiur",
+    "secondary_cta": "Explore the Video Library",
+    "member_cta": "Member Login",
     "no_send_note": "Review build only. No checkout, access grant, email send, WhatsApp send, Zoom creation, Vimeo upload, DNS change, or external CRM write is enabled from this page."
   },
   "nav": [

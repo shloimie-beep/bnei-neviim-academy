@@ -6,11 +6,13 @@ Eyebrow: Worldwide Live Mishnah Learning
 
 Headline: Finish Masechtas. Love Learning Torah.
 
-Subhead: Live shiur, review library, parent visibility, student progress, and support workflows for Rabbi Elie Scheller's OneTimeOneTime Mishnah program.
+Subhead: Join a worldwide live Mishnah shiur with Rabbi Elie Scheller - live classes, a growing video library, and practical worksheets that help kids keep learning.
 
-Primary CTA: Start Review
+Primary CTA: Join the Live Shiur
 
-Secondary CTA: Member Login
+Secondary CTA: Explore the Video Library
+
+Member CTA: Member Login
 
 ## Required Review Guardrail
 
