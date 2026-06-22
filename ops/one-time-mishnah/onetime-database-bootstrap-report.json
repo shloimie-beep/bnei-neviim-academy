@@ -1,0 +1,147 @@
+{
+  "mode": "apply",
+  "ok": false,
+  "mutation_performed": false,
+  "confirmation_required": "BOOTSTRAP_ONE_TIME_DATABASE",
+  "database_url_env": "DATABASE_URL",
+  "instance_guard": {
+    "required_app_instance": "onetime",
+    "current_app_instance": "",
+    "current_default_workspace_key": "",
+    "current_default_project_key": ""
+  },
+  "migration_count": 18,
+  "migrations": [
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-05-device-control-mock.sql",
+      "bytes": 5965,
+      "sha256": "8f6844617ebe8ecdc9cb37d82825553f57acbeac644f3c770ec2b3e5f4ee85f2"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-05-one-time-projects.sql",
+      "bytes": 5825,
+      "sha256": "0f57dd4b2c52eb37fe3c8ffec992e1fc58457a48a7c0c889ae496219c456a7b0"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-automation-center.sql",
+      "bytes": 20021,
+      "sha256": "362c815f0449b826deee1a7053b209b8b732680e28fba3d9bb272d61599b7817"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-decision-lifecycle.sql",
+      "bytes": 4686,
+      "sha256": "a2972245c99e4c0060658764d6f7dae6001c51053f750dc27aa8df55f16f1b8a"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-observable-codex-queue.sql",
+      "bytes": 14589,
+      "sha256": "b6d5629e87af4d7e45deb25f6a6be3c6cbd0f7a5c2e44461176b17cb671647db"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-pending-access-dedupe-done-links.sql",
+      "bytes": 5274,
+      "sha256": "88ff7bfefb057857befc047085e26d8cdf764cff0ae5d9bf0e18c5465bebc45b"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-provider-index-mvp.sql",
+      "bytes": 11073,
+      "sha256": "67495adce603a333609717a9f8b8e49db15f623651fea4936ea10cfb13cca301"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-rabbi-checkout-access.sql",
+      "bytes": 23484,
+      "sha256": "996c73ce660536b9d2e741c3d2a4671b972ff59576d9692de5d08b603805a298"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-15-rabbi-task-dialogue.sql",
+      "bytes": 12675,
+      "sha256": "61aadcddf408e0d60e6038acdd17b9314562e3e9a4efb189ecfac82e4bc29b82"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-16-community-06.sql",
+      "bytes": 3057,
+      "sha256": "de446c311805afa9381d0cd20c8b1dabc89ddc64f010bfedaccdfc15399a4938"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-16-helper-profile-knowledge.sql",
+      "bytes": 2503,
+      "sha256": "fef714412a6254e67c81903584666ce0c465d08a4cf16fe0442c0c75ea8ea0c1"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-16-one-time-product-system.sql",
+      "bytes": 49742,
+      "sha256": "67820a62ffdb2a42cf668d500971e8b237bd23fed6aecbde5fa7764561061a81"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-16-provider-integrations-secret-storage.sql",
+      "bytes": 4800,
+      "sha256": "cb66f7555d33ffb149ad005f159eaa91e697922051da4bee5deee66105421803"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-16-raw-intake-queue.sql",
+      "bytes": 1555,
+      "sha256": "c62228d8e2fc188c1cb2961c91a34c27d952cdb735f8841b65926b5f47ef574a"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-17-agentic-goal-memory.sql",
+      "bytes": 4805,
+      "sha256": "71d539dc8b9f85ce15b52df50f07503337e9bba5863d115298cc87618eecb984"
+    },
+    {
+      "role": "migration",
+      "path": "migrations/parallel-20260619-core-001-platform-core.sql",
+      "bytes": 23686,
+      "sha256": "6b9415b2d16346f6a5afbd47fe1a350ba9432c15981267b95798f6d8a9ea2da0"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-21-one-time-transcript-privacy.sql",
+      "bytes": 699,
+      "sha256": "b19881aae30ae710fa955f8cc0037c9f8ee7aeef59ce507c7490215d7b0501e3"
+    },
+    {
+      "role": "migration",
+      "path": "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+      "bytes": 13685,
+      "sha256": "721cc8708d3652d5f6d984f34f8eb1292657d54b83ae9f15335f5d8154787dff"
+    }
+  ],
+  "seed": {
+    "role": "seed",
+    "path": "ops/one-time-mishnah/separate-instance-seed.sql",
+    "bytes": 12627,
+    "sha256": "6baf101b8d8488e726262be87e7996653c0fc615bf3d63eb7bc176ac81b8192f"
+  },
+  "isolation_scan": {
+    "role": "isolation_scan",
+    "path": "ops/one-time-mishnah/separate-instance-isolation-scan.sql",
+    "bytes": 697,
+    "sha256": "05a6f92f549ab0ed553c1dd910464b6bcfad220cac954f2c34551bc1848e671e"
+  },
+  "apply_command": "npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE",
+  "started_at": "2026-06-22T05:41:36.962Z",
+  "blockers": [
+    "Missing confirmation phrase: --confirm BOOTSTRAP_ONE_TIME_DATABASE",
+    "APP_INSTANCE must be onetime before applying One Time database bootstrap.",
+    "DEFAULT_WORKSPACE_KEY must be rabbi_sheller_provider before applying One Time database bootstrap.",
+    "DEFAULT_PROJECT_KEY must be one_time_mishnah_class before applying One Time database bootstrap.",
+    "DATABASE_URL is not configured."
+  ],
+  "applied": [],
+  "isolation_results": []
+}

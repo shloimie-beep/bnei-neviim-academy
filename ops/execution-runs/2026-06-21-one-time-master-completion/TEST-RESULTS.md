@@ -1298,4 +1298,33 @@ REQ-20260621-902 hosted transcription credential audit:
 - Railway variable-name readback: unavailable/unauthorized with current auth.
 - No valid replacement credential was found; no restart or job `#78` retry was
   performed.
+
+2026-06-22 focused continuation:
+
+- PASS `node scripts/provision-onetime-railway-instance.mjs --json`; dry-run
+  only, mutation performed: false.
+- PASS/BLOCKED AS EXPECTED `node scripts/provision-onetime-railway-instance.mjs
+  --check-auth --json --write-report`; wrote
+  `ops/one-time-mishnah/onetime-railway-provisioning-report.json` and reported
+  account-level Railway auth unavailable.
+- PASS `node scripts/bootstrap-onetime-database.mjs --json --write-report`;
+  wrote `ops/one-time-mishnah/onetime-database-bootstrap-report.json` with 18
+  migration checksums plus seed/isolation-scan checksums; mutation performed:
+  false.
+- PASS `node --test tests/one-time-database-bootstrap.test.js
+  tests/one-time-railway-provisioner.test.js
+  tests/one-time-separate-instance-package.test.js`; 14/14 focused tests passed.
+- PASS `node --test tests/one-time-database-bootstrap.test.js
+  tests/one-time-railway-provisioner.test.js
+  tests/one-time-separate-instance-package.test.js
+  tests/instances/w4-onetime-instance.test.js
+  tests/one-time-deployment-readiness.test.js`; 25/25 focused tests passed.
+- PASS `npm test`; 1032/1032 tests passed.
+- PASS `npm run watchdog:actions`; 0 findings, report
+  `ops/watchdog-audits/2026-06-22T05-42-watchdog-action-audit.md`.
+- PASS `npm run watchdog:security`; 0 findings, report
+  `ops/watchdog-audits/2026-06-22T05-42-watchdog-security-routes.md`.
+- PASS `node scripts/audit-secrets.mjs`; 3980 tracked paths checked, 0
+  tracked secret-risk files found.
+- PASS `git diff --check` with line-ending warnings only.
 <!-- req-313-provisioning:end -->

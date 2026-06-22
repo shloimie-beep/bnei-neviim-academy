@@ -11,6 +11,26 @@ Exact next command:
 npm run bna:run:next
 ```
 
+REQ-20260619-313 continuation note:
+
+- The separate One Time package, seed, isolation scan, preflight, and guarded
+  apply runner are present.
+- Latest Railway/AppData follow-up:
+  `ops/one-time-mishnah/railway-auth-followup-2026-06-22.md`.
+- Durable backend/UI review tracker:
+  `ops/one-time-mishnah/backend-ui-review-readiness-tracker.md`.
+- Redacted provisioning report:
+  `ops/one-time-mishnah/onetime-railway-provisioning-report.json`.
+- Redacted database bootstrap checksum report:
+  `ops/one-time-mishnah/onetime-database-bootstrap-report.json`.
+- After Railway account-level auth or a scoped One Time project token is
+  available, run:
+
+```powershell
+npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE
+npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE
+```
+
 Do not run external sends, billing, DNS, real Zoom meeting creation, real Vimeo
 upload/publication, hard deletes, or PR merge.
 

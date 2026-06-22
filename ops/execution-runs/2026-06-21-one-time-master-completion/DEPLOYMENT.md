@@ -712,8 +712,21 @@ Exact next action after Railway access is available:
 
 ```powershell
 npm run one-time:separate-instance-package
-npm run app:smoke:onetime-separate-instance
+npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE
+npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE
+npm run app:smoke:onetime-separate-instance -- <base-url>
 ```
 
-Use the generated plan and SQL files in `ops/one-time-mishnah/`.
+Use the generated plan and SQL files in `ops/one-time-mishnah/`. The apply
+runner is dry-run by default, refuses the forbidden shared BNA Railway project,
+sets secrets through stdin only, and writes a redacted report.
+The database bootstrap runner is also dry-run by default, requires the One Time
+instance env guards, records migration checksums, applies the One Time seed,
+and runs the isolation scan only after explicit confirmation.
+
+2026-06-22 update: `ops/one-time-mishnah/onetime-railway-provisioning-report.json`
+was generated in auth-check mode. It confirms no mutation was performed and
+account-level Railway auth remains unavailable.
+`ops/one-time-mishnah/onetime-database-bootstrap-report.json` was generated in
+dry-run mode and records the migration/seed/isolation-scan checksum manifest.
 

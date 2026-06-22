@@ -878,7 +878,7 @@ project/database/domain, DNS authority, budget, and ownership approval.
 <!-- req-313-provisioning:start -->
 ## REQ-20260619-313 - Separate One Time Instance Provisioning
 
-Status: blocked / external Railway account access required
+Status: blocked external / apply automation ready
 
 Local implementation commit: `1aed3f2bc3478db9a5c61f192d66d80c14a6f523`
 
@@ -887,16 +887,31 @@ Operator authorization was received on 2026-06-21 in
 The requirement is no longer waiting on the prior Option B decision. The
 deployable version was frozen, the One Time single-tenant runtime package was
 implemented, and the redacted provisioning package, idempotent One Time-only
-seed SQL, isolation scan SQL, domain handoff, live-smoke script, and operator
-UI review package now exist.
+seed SQL, isolation scan SQL, domain handoff, live-smoke script, operator UI
+review package, guarded apply-capable Railway runner, and guarded database
+bootstrap runner now exist.
 
-Provisioning itself is blocked because the available Railway credential is
-project-scoped to the existing shared BNA project `skillful-motivation`.
-`railway whoami` and `railway list --json` return unauthorized, and the prompt
-explicitly forbids creating One Time services inside `skillful-motivation`.
-No Railway project, Postgres database, web service, worker, custom domain,
-DNS record, production variable, payment send, email send, Zoom meeting,
-Vimeo upload, or BNA data copy was created.
+Provisioning itself is blocked because Railway account-level authentication is
+not available in this shell. The operator's AppData note was checked:
+AppData contains the Railway CLI install path, not an account-auth config.
+`C:\Users\User\.railway\config.json` is valid but contains no token-like/auth
+keys, and `railway whoami`, `railway list --json`, and `railway status --json`
+still return unauthorized. The prompt explicitly forbids creating One Time
+services inside `skillful-motivation`. No Railway project, Postgres database,
+web service, worker, custom domain, DNS record, production variable, payment
+send, email send, Zoom meeting, Vimeo upload, or BNA data copy was created.
+
+New continuation evidence:
+
+- `scripts/provision-onetime-railway-instance.mjs`
+- `scripts/bootstrap-onetime-database.mjs`
+- `tests/one-time-railway-provisioner.test.js`
+- `tests/one-time-database-bootstrap.test.js`
+- `ops/one-time-mishnah/onetime-railway-provisioning-report.json`
+- `ops/one-time-mishnah/onetime-database-bootstrap-report.json`
+- `ops/one-time-mishnah/railway-auth-followup-2026-06-22.md`
+- `ops/one-time-mishnah/backend-ui-review-readiness-tracker.md`
+- `memory/2026-06-22.md`
 
 Exact next operator action: provide an account-level Railway login/session
 that can list/create projects, or provide a pre-created separate Railway
@@ -905,8 +920,12 @@ project token for `one-time-production` with permission to create/configure
 
 ```powershell
 npm run one-time:separate-instance-package
+npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE
+npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE
 ```
 
-and apply the plan in
-`ops/one-time-mishnah/separate-instance-provisioning-plan.md`.
+The apply runner is dry-run by default, refuses the forbidden shared BNA
+Railway project, uses stdin for secrets, writes a redacted report, and should
+be followed by the separate database bootstrap/seed/isolation scan plus
+`npm run app:smoke:onetime-separate-instance -- <base-url>`.
 <!-- req-313-provisioning:end -->

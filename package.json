@@ -49,6 +49,8 @@
     "one-time:agent-mode-acceptance": "node scripts/one-time-agent-mode-acceptance.mjs",
     "one-time:separate-instance-package": "node scripts/generate-onetime-separate-instance-package.mjs",
     "one-time:railway-provision:check": "node scripts/preflight-onetime-railway-provisioning.mjs --allow-blocked",
+    "one-time:railway-provision:apply": "node scripts/provision-onetime-railway-instance.mjs",
+    "one-time:db:bootstrap": "node scripts/bootstrap-onetime-database.mjs",
     "audit:hebrew-rtl": "node scripts/audit-hebrew-rtl-ui-labels.mjs",
     "helper:parity": "node scripts/generate-helper-tool-parity-map.mjs",
     "smoke:int05-integrations": "node scripts/smoke-int05-integrations-ui.mjs",

@@ -1,0 +1,25 @@
+{
+  "mode": "apply",
+  "ok": false,
+  "mutation_performed": false,
+  "started_at": "2026-06-22T05:41:37.685Z",
+  "target": {
+    "ok": true,
+    "failures": [],
+    "target_project": "one-time-production",
+    "forbidden_project": "skillful-motivation",
+    "web_service": "one-time-web",
+    "postgres_service": "one-time-postgres"
+  },
+  "steps": [],
+  "blockers": [
+    "Missing confirmation phrase: --confirm PROVISION_ONE_TIME_INSTANCE"
+  ],
+  "dns_records": [],
+  "verification_commands": [
+    "npm run bna:run:validate",
+    "node scripts/audit-secrets.mjs",
+    "npm run app:smoke:onetime-separate-instance -- https://app.onetimeonetime.com",
+    "npm run bna:run:next"
+  ]
+}

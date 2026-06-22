@@ -1993,4 +1993,39 @@ Both approved local OpenAI credential sources returned HTTP `401`, and Railway
 variable-name readback was unavailable with current auth. No valid replacement
 credential was available, so no Railway variable write, restart, reprocess, or
 transcription retry was performed.
+
+2026-06-22 continuation:
+
+- Added guarded apply-capable provisioner:
+  `scripts/provision-onetime-railway-instance.mjs`.
+- Added npm entrypoint:
+  `npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE`.
+- Added focused tests:
+  `tests/one-time-railway-provisioner.test.js`.
+- Added guarded database bootstrap runner:
+  `scripts/bootstrap-onetime-database.mjs`.
+- Added database bootstrap tests:
+  `tests/one-time-database-bootstrap.test.js`.
+- Redacted dry-run/auth report:
+  `ops/one-time-mishnah/onetime-railway-provisioning-report.json`.
+- Redacted database bootstrap checksum report:
+  `ops/one-time-mishnah/onetime-database-bootstrap-report.json`.
+- Railway/AppData follow-up evidence:
+  `ops/one-time-mishnah/railway-auth-followup-2026-06-22.md`.
+- Durable backend/UI review tracker:
+  `ops/one-time-mishnah/backend-ui-review-readiness-tracker.md`.
+- Topic memory:
+  `memory/2026-06-22.md`.
+- Clean watchdog reports:
+  `ops/watchdog-audits/2026-06-22T05-42-watchdog-action-audit.md` and
+  `ops/watchdog-audits/2026-06-22T05-42-watchdog-security-routes.md`.
+
+The follow-up confirmed that AppData contains the Railway CLI install path, not
+a usable account-auth config. `C:\Users\User\.railway\config.json` is valid but
+contains no token-like/auth-like keys, and account-level Railway commands still
+return unauthorized. No Railway mutation, DNS mutation, deploy, send, charge,
+Zoom meeting, Vimeo upload, production DB write, or secret exposure occurred.
+The database bootstrap dry-run found 18 tracked SQL migrations plus the
+One Time seed and isolation scan, with checksums recorded and no database
+connection used.
 <!-- req-313-provisioning:end -->

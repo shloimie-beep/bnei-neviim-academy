@@ -675,7 +675,7 @@ function buildOneTimeRailwayProvisioningChecklist(plan = buildOneTimeRailwayPlan
       },
       {
         key: 'create_postgres',
-        command: ['railway', 'add', '--database', 'postgres', '--json'],
+        command: ['railway', 'add', '--database', 'postgres', '--service', postgresService, '--json'],
         note: `Create or verify the ${postgresService} Postgres service in the One Time project.`,
       },
       {
@@ -717,9 +717,9 @@ function buildOneTimeRailwayProvisioningChecklist(plan = buildOneTimeRailwayPlan
       },
     ],
     database_steps: [
-      'Apply the existing schema/migration chain to the new One Time Postgres database.',
-      'Apply ops/one-time-mishnah/separate-instance-seed.sql.',
-      'Run ops/one-time-mishnah/separate-instance-isolation-scan.sql and record zero BNA-private rows.',
+      'Run npm run one-time:db:bootstrap -- --json first to review migration checksums without mutating the database.',
+      'After the separate One Time database is available, run npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE with APP_INSTANCE=onetime, DEFAULT_WORKSPACE_KEY=rabbi_sheller_provider, and DEFAULT_PROJECT_KEY=one_time_mishnah_class.',
+      'Confirm the bootstrap report applies the existing migration chain, ops/one-time-mishnah/separate-instance-seed.sql, and ops/one-time-mishnah/separate-instance-isolation-scan.sql with zero BNA-private rows.',
     ],
     verification_commands: [
       'npm run bna:run:validate',
