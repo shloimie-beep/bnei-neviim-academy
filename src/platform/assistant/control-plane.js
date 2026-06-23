@@ -201,6 +201,8 @@ const ROLE_ALLOWED_CATEGORIES = Object.freeze({
     'worksheet',
     'community',
     'announcement',
+    'chart',
+    'dashboard_layout',
     'template_version',
     'automation',
     'reminder',

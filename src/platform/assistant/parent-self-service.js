@@ -10,6 +10,11 @@ const {
   createDraftVersion,
   createPreview,
 } = require('./draft-versioning');
+const {
+  CHART_TEMPLATES,
+  applyChartDashboardPatch,
+  buildChartDashboardConfiguration,
+} = require('./chart-dashboard-config');
 
 const PARENT_SELF_SERVICE_REQUIREMENT_ID = 'REQ-20260623-018';
 const CONTRACT_VERSION = 'assistant-parent-self-service-v1';
@@ -26,14 +31,9 @@ const PARENT_CAPABILITIES = Object.freeze([
   'view_payment_access',
 ]);
 
-const PARENT_CHART_TEMPLATES = Object.freeze([
-  'parent_weekly_summary',
-  'attendance_first',
-  'progress_first',
-  'course_completion',
-  'milestones_achievements',
-  'grandparent_summary',
-]);
+const PARENT_CHART_TEMPLATES = Object.freeze(Object.entries(CHART_TEMPLATES)
+  .filter(([, template]) => template.role_scopes.includes('parent'))
+  .map(([key]) => key));
 
 const DEFAULT_TEMPLATE_SECTIONS = Object.freeze({
   parent_weekly_summary: Object.freeze(['attendance', 'progress', 'course_completion', 'milestones']),
@@ -234,6 +234,8 @@ function assertParentChildScope({
 }
 
 function buildLayoutContent({
+  actor = {},
+  channel = 'parent_portal_assistant',
   layout_name = '',
   template = 'parent_weekly_summary',
   child_id = '',
@@ -245,34 +247,22 @@ function buildLayoutContent({
   workspace_key = 'bna',
   project_key = 'bna',
 } = {}) {
-  const chartTemplate = normalizeTemplate(template);
-  const orderedSections = normalizeSections({ template: chartTemplate, sections });
-  return {
-    chart_definition: {
-      source: 'official_parent_visible_records',
-      official_data_read_only: true,
-      arbitrary_code_allowed: false,
-      arbitrary_css_allowed: false,
-    },
-    chart_template: chartTemplate,
-    dashboard_layout: {
-      name: compact(layout_name || chartTemplate.replace(/_/g, ' '), 160),
-      sections: orderedSections,
-    },
-    layout_version: {
-      parent_version_key: '',
-      change_summary: 'Parent chart layout configured by assistant.',
-    },
-    metric_visibility: normalizeMetricVisibility(metric_visibility),
+  return buildChartDashboardConfiguration({
+    actor,
+    channel,
     role_scope: 'parent',
-    workspace_scope: { workspace_key, project_key },
-    student_scope: { child_id: String(child_id), parent_id: String(parent_id || '') },
-    date_range: normalizeDateRange(date_range),
-    display_preferences: normalizeDisplayPreferences(display_preferences),
+    layout_name,
+    template,
+    sections,
+    metric_visibility,
+    date_range,
+    display_preferences,
+    student_scope: { child_id, parent_id },
+    workspace_key,
+    project_key,
     approval_state: 'draft',
-    official_data_mutated: false,
-    underlying_record_change_allowed: false,
-  };
+    version_number: 1,
+  });
 }
 
 function createParentChartLayout({
@@ -319,6 +309,8 @@ function createParentChartLayout({
     },
   });
   const content = buildLayoutContent({
+    actor,
+    channel,
     layout_name,
     template,
     child_id: target.child_id,
@@ -406,24 +398,21 @@ function patchParentChartLayout({
     project_key: draft.project_key,
   });
   const previousContent = previousVersion.content || {};
-  const content = {
-    ...previousContent,
-    dashboard_layout: {
-      ...(previousContent.dashboard_layout || {}),
-      ...(changes.layout_name ? { name: compact(changes.layout_name, 160) } : {}),
-      ...(changes.sections ? { sections: normalizeSections({ template: previousContent.chart_template, sections: changes.sections }) } : {}),
+  const content = applyChartDashboardPatch({
+    current_config: previousContent,
+    actor,
+    channel: channel || draft.channel_key,
+    changes,
+    patch: {
+      saved_view_name: changes.layout_name || '',
+      sections: changes.sections || [],
+      template: changes.template || '',
+      metric_visibility: changes.metric_visibility || {},
+      date_range: changes.date_range || {},
+      display_preferences: changes.display_preferences || {},
     },
-    chart_template: changes.template ? normalizeTemplate(changes.template) : previousContent.chart_template,
-    metric_visibility: changes.metric_visibility
-      ? normalizeMetricVisibility(changes.metric_visibility)
-      : previousContent.metric_visibility || {},
-    date_range: changes.date_range ? normalizeDateRange(changes.date_range) : previousContent.date_range,
-    display_preferences: changes.display_preferences
-      ? normalizeDisplayPreferences(changes.display_preferences)
-      : previousContent.display_preferences,
-    official_data_mutated: false,
-    underlying_record_change_allowed: false,
-  };
+    version_number,
+  });
   const version = createDraftVersion({
     draft,
     actor,

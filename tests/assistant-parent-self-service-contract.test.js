@@ -93,7 +93,7 @@ test('parent chart layouts reject unlinked children and private/admin-only field
     child_id: '101',
     parent_id: 'parent-1',
     sections: ['attendance', 'admin_notes'],
-  }), /parent_field_denied:sections:admin_notes/);
+  }), /chart_dashboard_config_rejected:metric_denied:admin_notes/);
 
   assert.throws(() => createParentChartLayout({
     actor: parent,
@@ -101,7 +101,7 @@ test('parent chart layouts reject unlinked children and private/admin-only field
     child_id: '101',
     parent_id: 'parent-1',
     metric_visibility: { official_score: true },
-  }), /parent_field_denied:metric_visibility:official_score/);
+  }), /chart_dashboard_config_rejected:metric_denied:official_score/);
 });
 
 test('natural-language chart edits create a new version and still protect records', () => {
