@@ -377,10 +377,19 @@ export function summarizeExternalReadbackGateReport(report = {}) {
         };
       });
   const approvalGates = report.approval_gates || {};
+  const rawJobRange = report.job_range && typeof report.job_range === 'object' ? report.job_range : null;
+  const jobRange = rawJobRange
+    ? {
+        present: true,
+        valid: Boolean(rawJobRange.valid),
+        normalized: rawJobRange.valid ? String(rawJobRange.normalized || '') : '',
+      }
+    : null;
   return {
     ok: Boolean(report.ok),
     mode: report.mode || 'unknown',
     scopes,
+    job_range: jobRange,
     external_read_performed: Boolean(report.external_read_performed),
     production_mutation_performed: Boolean(report.production_mutation_performed),
     safe_apply_performed: Boolean(report.safe_apply_performed),

@@ -29,6 +29,15 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+Latest external job-range summary slice:
+
+- External readback/backfill summaries now preserve sanitized backfill
+  `job_range` state for approval handoffs.
+- Valid numeric job IDs/ranges are retained only as normalized values such as
+  `64,73-74`.
+- Invalid raw requested job-range text is omitted from summaries, keeping
+  closeout and return-packet surfaces free of arbitrary requested values.
+
 Latest shared config placeholder slice:
 
 - External readback/backfill config readiness now uses the shared

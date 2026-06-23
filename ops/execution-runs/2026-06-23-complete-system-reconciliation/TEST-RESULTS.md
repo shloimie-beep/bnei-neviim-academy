@@ -2,6 +2,35 @@
 
 ## Passed
 
+- `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs scripts/system-truth.mjs`:
+  PASS after sanitized external job-range summary hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 26/26; summarized external readback/backfill reports preserve only
+  sanitized `job_range` validity and normalized numeric ranges, without raw
+  requested text or secret/config values.
+- Runtime `summarizeExternalReadbackGateReport` proof with valid `jobRange=64,73-74` and invalid `jobRange=64-secret-value-for-DATABASE_URL`:
+  PASS; valid summary retained normalized `64,73-74`, invalid summary omitted
+  raw requested text, and dummy secret/config values were not printed.
+- `npm run source:truth -- --json`:
+  PASS after sanitized external job-range summary hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after sanitized external job-range summary hardening.
+- `npm run bna:run:validate`:
+  PASS after sanitized external job-range summary hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements after sanitized external job-range
+  summary hardening.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none after sanitized external job-range
+  summary hardening.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found after
+  sanitized external job-range summary hardening.
+- `git diff --check`:
+  PASS with line-ending warnings only after sanitized external job-range
+  summary hardening.
+- `npm test`:
+  PASS, 1116/1116 after sanitized external job-range summary hardening.
 - `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
   PASS after shared config placeholder gate hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:

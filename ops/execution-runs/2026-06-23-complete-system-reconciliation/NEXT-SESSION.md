@@ -20,7 +20,9 @@ Open requirements:
   also re-checked for usable non-placeholder content before external readback
   readiness can become true. Railway and Drive config values now use the same
   shared placeholder detector, so broader placeholders such as `replace me` and
-  `placeholder` are also blocked.
+  `placeholder` are also blocked. Redacted external readback/backfill summaries
+  now preserve only sanitized backfill `job_range` validity and normalized
+  numeric ranges, without raw requested text.
 - `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
@@ -71,7 +73,9 @@ Open requirements:
   Railway/Drive config values are not treated as configured targets. The
   guarded canonical Postgres CLI now rejects placeholder `DATABASE_URL` values
   before connect in readback/apply modes. Railway/Drive config placeholders now
-  use the same detector as secrets.
+  use the same detector as secrets. External readback/backfill summaries keep
+  validated numeric job-range handoff state while omitting invalid raw
+  requested text.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
   from current run evidence, with `latest.json` kept aligned to the active run
@@ -146,8 +150,8 @@ Completed implementation slice:
   preserve Git porcelain leading whitespace and report the current mixed
   worktree as unstaged/untracked dirty state, not staged deploy-ready work.
 - Return-packet Agent Work rows are anchored to
-  `git_refs.last_validated_head`; the current validated checkpoint is
-  `68649b1a345446a413b567f708a39708adbccfa9`.
+  `git_refs.last_validated_head`; the current validation basis before this
+  slice is `b9f60a7360b10301193b9617bb33f756f0e68f2a`.
 - Return-packet external gate summary is backed by the same dry-run external
   readback gate logic and reports no external read, production mutation, safe
   apply, deploy, or secret values.
@@ -163,6 +167,9 @@ Completed implementation slice:
   closeout while readiness is incomplete.
 - External readback/backfill readiness now treats placeholder Railway service
   and Drive folder config values as `placeholder`, not configured.
+- External readback/backfill summaries now preserve sanitized backfill
+  `job_range` validity and normalized numeric ranges while omitting invalid raw
+  requested text from closeout and return-packet handoff surfaces.
 
 Follow-on implementation scope:
 

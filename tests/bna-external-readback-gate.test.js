@@ -302,3 +302,53 @@ test('external readback and backfill can be requested together only with both ga
   assert.equal(report.external_read_performed, false);
   assert.equal(report.production_mutation_performed, false);
 });
+
+test('external readback summary preserves only sanitized backfill job range state', async () => {
+  const mod = await loadGate();
+  const validReport = mod.buildExternalReadbackGateReport({
+    backfillApply: true,
+    confirmReadback: mod.READBACK_CONFIRM_PHRASE,
+    confirmBackfill: mod.BACKFILL_CONFIRM_PHRASE,
+    jobRange: '64,73-74',
+    scopes: new Set(['database']),
+  }, {
+    repoRoot,
+    env: {
+      [mod.READBACK_APPROVAL_ENV]: 'approved',
+      [mod.BACKFILL_APPROVAL_ENV]: 'approved',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['DATABASE_URL'])),
+  });
+
+  const validSummary = mod.summarizeExternalReadbackGateReport(validReport);
+  assert.deepEqual(validSummary.job_range, {
+    present: true,
+    valid: true,
+    normalized: '64,73-74',
+  });
+  assert.equal(validSummary.safe_apply_performed, false);
+  assert.doesNotMatch(JSON.stringify(validSummary), /secret-value-for|postgres:\/\//);
+
+  const invalidReport = mod.buildExternalReadbackGateReport({
+    backfillApply: true,
+    confirmReadback: mod.READBACK_CONFIRM_PHRASE,
+    confirmBackfill: mod.BACKFILL_CONFIRM_PHRASE,
+    jobRange: '64-secret-value-for-DATABASE_URL',
+    scopes: new Set(['database']),
+  }, {
+    repoRoot,
+    env: {
+      [mod.READBACK_APPROVAL_ENV]: 'approved',
+      [mod.BACKFILL_APPROVAL_ENV]: 'approved',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['DATABASE_URL'])),
+  });
+
+  const invalidSummary = mod.summarizeExternalReadbackGateReport(invalidReport);
+  assert.deepEqual(invalidSummary.job_range, {
+    present: true,
+    valid: false,
+    normalized: '',
+  });
+  assert.doesNotMatch(JSON.stringify(invalidSummary), /secret-value-for|DATABASE_URL|postgres:\/\//);
+});
