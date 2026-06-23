@@ -2,6 +2,16 @@
 
 ## Passed
 
+- `npm run bna:return-packet -- --json`:
+  PASS; regenerated ignored private packet files and refreshed the redacted repo packet against pushed head `2ceb514052ca19e40dc49e6c8d12aa479fe43480`.
+- Redacted return packet full-home-path leakage check:
+  PASS; no full local home path string found in the tracked packet.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `git diff --check`:
+  PASS with line-ending warnings only.
 - `node --check scripts/bna-production-closeout-gate.mjs`:
   PASS.
 - `node --test tests/bna-production-closeout-gate.test.js`:

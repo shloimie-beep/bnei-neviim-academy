@@ -30,7 +30,8 @@ Open requirements:
   Drive readiness by configured state only.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
-  from current run evidence.
+  from current run evidence, with `latest.json` kept aligned to the active run
+  metadata before handoff.
 
 Next exact commands for continuation:
 

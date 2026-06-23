@@ -244,6 +244,8 @@ Return packet reproducibility slice verified:
   `[local-user]`.
 - Focused system-truth coverage passed, 4/4, and the tracked redacted packet
   was checked for full local home path leakage.
+- The active run pointer was refreshed before handoff regeneration so the
+  redacted packet reports the current run update time and pushed branch head.
 
 ## Privacy Boundary
 

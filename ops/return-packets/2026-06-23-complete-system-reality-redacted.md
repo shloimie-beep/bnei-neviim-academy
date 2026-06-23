@@ -1,5 +1,5 @@
 CHATGPT RETURN PACKET
-Generated: 2026-06-23T13:16:25.250Z
+Generated: 2026-06-23T13:30:44.476Z
 Privacy: redacted_repo_safe
 
 SYSTEM TRUTH
@@ -8,7 +8,7 @@ SYSTEM TRUTH
 - branch/PR: codex/issue-8-complete-system-reconciliation / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12
 - active run: ops/execution-runs/2026-06-23-complete-system-reconciliation
 - source coverage: errors 0, unmapped 0
-- local-only work: dirty files 88
+- local-only work: dirty files 92
 - unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet
 - merged-not-deployed: deployment readback not verified in current local state
 - deployed-not-verified: live proof not verified in current local state
@@ -58,7 +58,7 @@ WORKTREES
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-6cfe7a25 / (detached) / 6cfe7a258489 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-8a67ebb9 / (detached) / 4d43160be025 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-95aab80a / (detached) / 95aab80a7fc5 / safety_snapshot / recovery: retain until owner confirms cleanup
-- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 2d8058fec458 / active_owned / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 2ceb514052ca / active_owned / recovery: review file-level diff before porting; do not stage all
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio / codex/service-provider-studio-20260623 / 4936394ae0a9 / clean_stale / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio-integration / codex/service-provider-studio-integration-20260623 / a9528b2d9467 / clean_current / recovery: retain until owner confirms cleanup
 
@@ -126,7 +126,7 @@ MY TASKS
 - MYTASK-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
 
 AGENT WORK
-- REQ-20260623-210 / production_closeout_gate_slice_complete / codex/issue-8-complete-system-reconciliation / 2d8058fec458 / Continue approved production database apply/readback through the guarded Postgres operator CLI, then use the production closeout gate from a deploy-safe worktree before deploy and live verification.
+- REQ-20260623-210 / detached_release_candidate_gate_slice_complete / codex/issue-8-complete-system-reconciliation / 2ceb514052ca / After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
 
 TESTS / DEPLOYMENT
 - tests: - `npm test`:
@@ -138,7 +138,7 @@ TESTS / DEPLOYMENT
 
 WHAT IS STILL NOT DONE
 - REQ-20260623-209 / Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing in this environment. / owner: Operator / next: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
-- REQ-20260623-210 / Continue approved production database apply/readback through the guarded Postgres operator CLI, then use the production closeout gate from a deploy-safe worktree before deploy and live verification. / owner: Codex / next: Continue approved production database apply/readback through the guarded Postgres operator CLI, then use the production closeout gate from a deploy-safe worktree before deploy and live verification.
+- REQ-20260623-210 / After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification. / owner: Codex / next: After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
 
 NEXT AUTOMATIC ACTION
 - package: REQ-20260623-210

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T16:22:32+03:00",
+  "updated_at": "2026-06-23T16:29:08+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -758,16 +758,17 @@
         "REQ-20260623-208"
       ],
       "status": "done",
-      "implementation_status": "return_packet_generator_verified",
+      "implementation_status": "return_packet_generator_verified_latest_pointer_refreshed",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Regenerate the packet with npm run bna:return-packet -- --json before private handoff or final response.",
+      "next_action": "Regenerate the packet with npm run bna:return-packet -- --json before private handoff or final response, after keeping latest.json aligned to the active run metadata.",
       "acceptance_criteria": [
         "Private return packet exists outside Git",
         "Redacted repo summary exists",
         "Final response includes copy-ready packet",
-        "Packet can be regenerated from current run evidence"
+        "Packet can be regenerated from current run evidence",
+        "Active run pointer is aligned before return-packet handoff"
       ],
       "evidence": [
         "ops/return-packets/2026-06-23-complete-system-reality-redacted.md",
@@ -781,7 +782,12 @@
         "node --check scripts/system-truth.mjs: PASS",
         "node --test tests/system-truth-scripts.test.js: PASS, 4/4",
         "node scripts/system-truth.mjs return-packet --json: PASS, generated ignored private packet and redacted repo summary",
-        "Tracked redacted packet full-home-path leakage check: PASS"
+        "Tracked redacted packet full-home-path leakage check: PASS",
+        "npm run bna:return-packet -- --json: PASS after latest pointer refresh",
+        "Redacted return packet full-home-path leakage check: PASS after latest pointer refresh",
+        "npm run bna:run:validate: PASS",
+        "npm run bna:run:source-coverage: PASS, 0 unmapped executable statements",
+        "git diff --check: PASS with line-ending warnings only"
       ],
       "implementation_files": [
         "package.json",
@@ -790,8 +796,8 @@
         "ops/return-packets/2026-06-23-complete-system-reality-redacted.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T16:13:43+03:00",
-      "expected_result": "Private return packet exists outside Git; Redacted repo summary exists; Final response includes copy-ready packet; Packet can be regenerated from current run evidence"
+      "updated_at": "2026-06-23T16:29:08+03:00",
+      "expected_result": "Private return packet exists outside Git; Redacted repo summary exists; Final response includes copy-ready packet; Packet can be regenerated from current run evidence; Active run pointer is aligned before return-packet handoff"
     }
   ]
 }

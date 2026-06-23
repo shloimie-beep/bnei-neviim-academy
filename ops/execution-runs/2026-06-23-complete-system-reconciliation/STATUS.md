@@ -1,5 +1,29 @@
 # Status
 
+## 2026-06-23T16:29:08+03:00
+
+Status: running, with the eighteenth return-packet pointer refresh slice
+complete.
+
+Refreshed `REQ-20260623-211` handoff evidence after the detached
+release-candidate gate commit. The active execution-run pointer now matches the
+current run metadata, and the redacted ChatGPT return packet was regenerated
+against pushed head `2ceb514052ca19e40dc49e6c8d12aa479fe43480`.
+
+Verified in this slice:
+
+- `ops/execution-runs/latest.json` now reports the current run update time.
+- `ops/return-packets/2026-06-23-complete-system-reality-redacted.md` reports
+  the current active worktree head and REQ-210 phase.
+- The tracked redacted packet still contains no full local home path string.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T16:22:32+03:00
 
 Status: running, with the seventeenth release-candidate gate hardening slice
