@@ -47,6 +47,7 @@
 - `scripts/ramble-intake-contract.mjs`
 - `scripts/canonical-intake-postgres.mjs`
 - `scripts/bna-production-closeout-gate.mjs`
+- `scripts/bna-external-readback-gate.mjs`
 - `scripts/watchdog-raw-intake-drift.mjs`
 - `scripts/platform-synthetic-e2e.mjs`
 - `docs/product/ramble-queue-contract.md`
@@ -59,6 +60,7 @@
 - `tests/ingestion/w3-intake-persistence.test.js`
 - `tests/canonical-intake-postgres-cli.test.js`
 - `tests/bna-production-closeout-gate.test.js`
+- `tests/bna-external-readback-gate.test.js`
 - `tests/watchdog-raw-intake-drift.test.js`
 - `tests/one-time-synthetic-pilot.test.js`
 - `tests/service-provider-studio-browser-smoke.test.js`
@@ -207,6 +209,19 @@ Production closeout gate slice verified:
   blocked deploy because this worktree still has mixed dirty/untracked files.
 - Focused release-gate/system tests passed, 6/6. Stale-evidence, action
   watchdog, and security watchdog checks also passed.
+
+External readback/backfill gate slice verified:
+
+- `scripts/bna-external-readback-gate.mjs` reports database, Railway, and Drive
+  readback/backfill readiness by configured state and source label only.
+- The gate requires `READ_EXTERNAL_PRODUCTION_STATE` with
+  `BNA_EXTERNAL_READBACK_APPROVED=approved` before readback, and
+  `APPLY_GUARDED_CLASS_BACKFILL` with `BNA_BACKFILL_APPLY_APPROVED=approved`
+  before guarded backfill apply.
+- The real dry-run gate correctly blocked all three scopes in this environment
+  because the required configured state is missing.
+- No external read, production mutation, deploy, live smoke, or safe apply was
+  performed.
 
 ## Privacy Boundary
 

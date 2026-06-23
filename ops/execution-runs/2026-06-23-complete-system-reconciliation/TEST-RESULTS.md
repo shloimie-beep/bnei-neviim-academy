@@ -2,6 +2,20 @@
 
 ## Passed
 
+- `node --check scripts/bna-external-readback-gate.mjs`:
+  PASS.
+- `node --test tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 6/6.
+- `npm --silent run bna:external-readback-gate -- --json`:
+  PASS as a blocked dry-run gate; database, Railway, and Drive readback gates are not ready in this environment; no external read or mutation performed.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm test`:
+  PASS, 1093/1093.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4146 tracked paths checked, 0 tracked secret-risk files found.
 - `node --check scripts/bna-production-closeout-gate.mjs`:
   PASS.
 - `node --test tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
@@ -21,9 +35,9 @@
 - `npm run bna:run:source-coverage`:
   PASS, 0 unmapped executable statements.
 - `npm test`:
-  PASS, 1090/1090.
+  PASS, 1093/1093.
 - `node scripts/audit-secrets.mjs`:
-  PASS, 4144 tracked paths checked, 0 tracked secret-risk files found.
+  PASS, 4146 tracked paths checked, 0 tracked secret-risk files found.
 - `node --check scripts/canonical-intake-postgres.mjs scripts/watchdog-raw-intake-drift.mjs`:
   PASS.
 - `node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:

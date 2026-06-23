@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T15:53:11+03:00",
+  "updated_at": "2026-06-23T16:01:20+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -520,12 +520,12 @@
         "REQ-20260623-208"
       ],
       "status": "blocked",
-      "implementation_status": "external_readback_not_authorized_or_not_configured",
+      "implementation_status": "external_readback_gate_slice_complete_blocked_on_configuration",
       "can_continue_without_operator": false,
-      "blocker": "Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection.",
+      "blocker": "Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing in this environment.",
       "blocker_owner": "Operator",
-      "blocker_next_action": "Approve or provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets.",
-      "next_action": "Provide/approve read-only DB and Railway service readback gates before production verification or guarded backfill.",
+      "blocker_next_action": "Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.",
+      "next_action": "Run npm run bna:external-readback-gate with approved readback/backfill confirmations after DB/Railway/Drive targets are configured.",
       "acceptance_criteria": [
         "Database proof is from live readback, not repo comments",
         "Railway deployment is tied to commit/deployment ID",
@@ -534,16 +534,28 @@
       ],
       "evidence": [
         "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
-        "ops/drive-audits/2026-06-23-class-intake-complete-truth.md"
+        "ops/drive-audits/2026-06-23-class-intake-complete-truth.md",
+        "scripts/bna-external-readback-gate.mjs",
+        "tests/bna-external-readback-gate.test.js"
       ],
       "verification": [
         "railway status: PASS, Project one-time-production / Environment production / Service None",
-        "npm run drive:intake:truth: PASS, live_database_verified=false and safe_apply_performed=false"
+        "npm run drive:intake:truth: PASS, live_database_verified=false and safe_apply_performed=false",
+        "node --check scripts/bna-external-readback-gate.mjs: PASS",
+        "node --test tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js: PASS, 6/6",
+        "npm --silent run bna:external-readback-gate -- --json: PASS as blocked dry-run gate; DB/Railway/Drive configured state missing; no external read or mutation performed",
+        "npm run bna:run:validate: PASS",
+        "npm run bna:run:source-coverage: PASS",
+        "npm test: PASS, 1093/1093",
+        "node scripts/audit-secrets.mjs: PASS, 4146 tracked paths checked and 0 tracked secret-risk files found"
       ],
-      "implementation_files": [],
+      "implementation_files": [
+        "scripts/bna-external-readback-gate.mjs",
+        "tests/bna-external-readback-gate.test.js"
+      ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T13:56:00+03:00",
-      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent"
+      "updated_at": "2026-06-23T16:01:20+03:00",
+      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent; External readback/backfill gate is implemented and currently blocked on configured DB/Railway/Drive targets plus approval"
     },
     {
       "id": "REQ-20260623-210",

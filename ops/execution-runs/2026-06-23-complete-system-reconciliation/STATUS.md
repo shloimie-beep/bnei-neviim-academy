@@ -1,5 +1,31 @@
 # Status
 
+## 2026-06-23T16:01:20+03:00
+
+Status: running, with the fifteenth gated-readback slice complete.
+
+Extended `REQ-20260623-209` with a redacted external readback/backfill gate.
+The gate reports database, Railway, and Drive readiness by configured state and
+source label only, and requires explicit confirmation phrases plus approval
+environment flags before any future external readback or guarded backfill apply.
+
+Verified in this slice:
+
+- `scripts/bna-external-readback-gate.mjs` reports
+  `external_read_performed: false`, `production_mutation_performed: false`, and
+  `safe_apply_performed: false`.
+- `package.json` exposes `npm run bna:external-readback-gate`.
+- Focused external-readback/system coverage passed, 6/6.
+- Real dry-run gate output correctly blocked database, Railway, and Drive
+  readback because the required configured state is missing in this environment.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T15:53:11+03:00
 
 Status: running, with the fourteenth canonical implementation slice complete.

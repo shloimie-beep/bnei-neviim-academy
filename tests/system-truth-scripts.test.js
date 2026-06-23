@@ -18,6 +18,7 @@ test('system truth commands are exposed through package scripts', () => {
   assert.equal(pkg.scripts['intake:github'], 'node scripts/intake-github.mjs');
   assert.equal(pkg.scripts['bna:intake:postgres'], 'node scripts/canonical-intake-postgres.mjs');
   assert.equal(pkg.scripts['bna:release-gate'], 'node scripts/bna-production-closeout-gate.mjs');
+  assert.equal(pkg.scripts['bna:external-readback-gate'], 'node scripts/bna-external-readback-gate.mjs');
 });
 
 test('system truth script reports readiness by variable state only', () => {
@@ -43,6 +44,10 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   assert.match(read('scripts/bna-production-closeout-gate.mjs'), /VERIFY_BNA_LIVE_CLOSEOUT/);
   assert.match(read('scripts/bna-production-closeout-gate.mjs'), /BNA_PRODUCTION_DEPLOY_APPROVED/);
   assert.match(read('scripts/bna-production-closeout-gate.mjs'), /production_mutation_performed:\s*false/);
+  assert.match(read('scripts/bna-external-readback-gate.mjs'), /READ_EXTERNAL_PRODUCTION_STATE/);
+  assert.match(read('scripts/bna-external-readback-gate.mjs'), /APPLY_GUARDED_CLASS_BACKFILL/);
+  assert.match(read('scripts/bna-external-readback-gate.mjs'), /BNA_EXTERNAL_READBACK_APPROVED/);
+  assert.match(read('scripts/bna-external-readback-gate.mjs'), /external_read_performed:\s*false/);
   const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'intake-github.mjs')).href);
   const issue = {
     number: 7,

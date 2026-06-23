@@ -24,6 +24,8 @@ Open requirements:
   production closeout gate now checks branch/run/dirty-state readiness before
   approved deploy/live verification. Remaining approved production database
   apply, deploy, and live verification work remain open.
+  A redacted external readback/backfill gate now reports database, Railway, and
+  Drive readiness by configured state only.
 
 Next exact commands for continuation:
 
@@ -70,9 +72,14 @@ Completed implementation slice:
 - Dry-run production closeout gate exposed as `npm run bna:release-gate`, with
   branch, pushed HEAD, dirty worktree, required script, run metadata, and
   deploy/live approval checks.
+- Redacted external readback/backfill gate exposed as
+  `npm run bna:external-readback-gate`, with explicit readback/backfill
+  confirmation gates and no external reads or writes in dry-run mode.
 
 Follow-on implementation scope:
 
+- Approved external readback/backfill gate setup for database, Railway service
+  metadata, and Drive targets.
 - Approved production database apply/readback using the guarded canonical
   Postgres operator CLI after explicit gate approval.
 - Deploy of the app-visible/schema changes after explicit deployment approval
