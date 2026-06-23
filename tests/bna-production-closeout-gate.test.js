@@ -282,3 +282,40 @@ test('production closeout gate blocks live verification on missing external read
   assert.equal(report.external_readback_gate.production_mutation_performed, false);
   assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
 });
+
+test('production closeout gate blocks deploy on missing external readback readiness', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    deploy: true,
+    confirmDeploy: mod.DEPLOY_CONFIRM_PHRASE,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {
+      [mod.DEPLOY_APPROVAL_ENV]: 'approved',
+    },
+    integrationReadiness: readyIntegrationReadiness,
+    externalReadbackGate: {
+      ...readyExternalReadbackGate,
+      ok: false,
+      scopes: [
+        { scope: 'database', ready: false, secrets_configured: 0, secrets_required: 1, config_configured: 0, config_required: 0 },
+        { scope: 'railway', ready: false, secrets_configured: 0, secrets_required: 1, config_configured: 0, config_required: 6 },
+        { scope: 'drive', ready: true, secrets_configured: 1, secrets_required: 4, config_configured: 1, config_required: 4 },
+      ],
+      blockers: [
+        'database readback gate is not ready; required configured state is missing.',
+        'railway readback gate is not ready; required configured state is missing.',
+      ],
+    },
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.mode, 'deploy_gate');
+  assert.equal(report.deploy_performed, false);
+  assert.equal(report.production_mutation_performed, false);
+  assert.ok(report.blockers.some((blocker) => /database external readback readiness is blocked/i.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /railway external readback readiness is blocked/i.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
+});

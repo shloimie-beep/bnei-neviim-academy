@@ -303,6 +303,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     if (!approved(env[DEPLOY_APPROVAL_ENV])) {
       blockers.push(`${DEPLOY_APPROVAL_ENV}=approved is required before deploy closeout.`);
     }
+    blockers.push(...externalReadbackBlockers);
   }
   if (options.liveVerify) {
     if (options.confirmLive !== LIVE_VERIFY_CONFIRM_PHRASE) {

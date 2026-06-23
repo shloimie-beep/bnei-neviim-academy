@@ -2,6 +2,33 @@
 
 ## Passed
 
+- `node --check scripts/bna-production-closeout-gate.mjs`:
+  PASS after release-gate deploy external-readback hardening.
+- `node --test tests/bna-production-closeout-gate.test.js tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 17/17; release gate blocks deploy when database/Railway/Drive
+  external-readback readiness is incomplete.
+- `npm run bna:release-gate -- --json --deploy --confirm-deploy DEPLOY_BNA_PRODUCTION_CLOSEOUT` with `BNA_PRODUCTION_DEPLOY_APPROVED=approved`:
+  PASS as expected blocked gate; missing external readback readiness blocks
+  deploy and `deploy_performed=false`.
+- `npm run bna:release-gate -- --json`:
+  PASS as expected blocked dry-run; readiness blockers stay scoped to
+  deploy/live/final modes and no external action is performed.
+- `npm run source:truth -- --json`:
+  PASS after release-gate deploy external-readback hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after release-gate deploy external-readback hardening.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1104/1104 after release-gate deploy external-readback hardening.
 - `node --check scripts/bna-external-readback-gate.mjs`:
   PASS after release-gate external-readback readiness hardening.
 - `node --check scripts/bna-production-closeout-gate.mjs`:

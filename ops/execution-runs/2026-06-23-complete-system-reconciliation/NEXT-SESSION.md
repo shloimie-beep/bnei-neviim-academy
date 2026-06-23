@@ -44,8 +44,8 @@ Open requirements:
   The production closeout gate now reports the same integration readiness and
   blocks live/final closeout when integration readiness is incomplete.
   The production closeout gate also reports sanitized database/Railway/Drive
-  external-readback readiness and blocks live/final closeout when those scopes
-  are incomplete.
+  external-readback readiness and blocks deploy/live/final closeout when those
+  scopes are incomplete.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
@@ -132,8 +132,8 @@ Completed implementation slice:
   Stripe, and Rabbi Telegram readiness by configured/missing variable state
   only and blocks live/final closeout while readiness is incomplete.
 - Release-gate external-readback guard reports database, Railway, and Drive
-  readiness by sanitized scope/count summary and blocks live/final closeout
-  while readiness is incomplete.
+  readiness by sanitized scope/count summary and blocks deploy/live/final
+  closeout while readiness is incomplete.
 
 Follow-on implementation scope:
 
