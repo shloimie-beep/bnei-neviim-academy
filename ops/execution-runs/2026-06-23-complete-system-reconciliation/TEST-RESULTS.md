@@ -3,6 +3,26 @@
 ## Passed
 
 - `node --check scripts/system-truth.mjs`:
+  PASS after return-packet integration-readiness hardening.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 5/5; return packet includes OpenAI, Vimeo, Resend, Stripe, and Rabbi
+  Telegram readiness by configured/missing variable state only, with no secret
+  values or external reads.
+- `npm run bna:return-packet -- --json`:
+  PASS; tracked redacted packet includes `INTEGRATION READINESS`.
+- `npm run source:truth -- --json`:
+  PASS after return-packet integration-readiness hardening.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `npm test`:
+  PASS, 1101/1101 after return-packet integration-readiness hardening.
+- `node --check scripts/system-truth.mjs`:
   PASS after source-truth issue-evidence hardening.
 - `node --test tests/system-truth-scripts.test.js`:
   PASS, 5/5; source coverage reports Issue #7/#8 dry-run evidence present

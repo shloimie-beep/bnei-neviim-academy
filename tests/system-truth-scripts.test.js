@@ -80,6 +80,20 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'railway'));
   assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'drive'));
   assert.doesNotMatch(JSON.stringify(report.external_gates), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
+  assert.equal(report.integration_readiness.variable_state_only, true);
+  assert.equal(report.integration_readiness.secret_values_printed, false);
+  assert.equal(report.integration_readiness.external_read_performed, false);
+  const integrationGroups = Object.fromEntries(report.integration_readiness.groups.map((group) => [group.integration, group]));
+  assert.ok(integrationGroups.openai);
+  assert.ok(integrationGroups.vimeo);
+  assert.ok(integrationGroups.resend);
+  assert.ok(integrationGroups.stripe);
+  assert.ok(integrationGroups.rabbi_telegram);
+  assert.ok(integrationGroups.vimeo.fields.some((field) => field.name === 'VIMEO_ACCESS_TOKEN'));
+  assert.ok(integrationGroups.resend.fields.some((field) => field.name === 'RESEND_DOMAIN'));
+  assert.ok(integrationGroups.stripe.fields.some((field) => field.name === 'RABBI_STRIPE_MODE'));
+  assert.ok(integrationGroups.rabbi_telegram.blockers.some((blocker) => /deployment state is not verified/i.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|postgres:\/\/|sk_live_|sk_test_/);
   const run = JSON.parse(read('ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json'));
   if (run.git_refs?.last_validated_head) {
     assert.equal(report.system_truth.validated_agent_work_head, run.git_refs.last_validated_head);
@@ -99,6 +113,10 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.match(renderedPacket, /- branch head: [0-9a-f]{40}/);
   assert.match(renderedPacket, /- validated Agent Work head: [0-9a-f]{40}/);
   assert.match(renderedPacket, /- issue source evidence: issue #7 present, issue #8 present/);
+  assert.match(renderedPacket, /INTEGRATION READINESS/);
+  assert.match(renderedPacket, /VIMEO_ACCESS_TOKEN=(configured|missing)/);
+  assert.match(renderedPacket, /RESEND_DOMAIN=(configured|missing)/);
+  assert.match(renderedPacket, /RABBI_STRIPE_MODE=(configured|missing)/);
   assert.match(renderedPacket, /AGENT WORK[\s\S]*branch [0-9a-f]{12} \/ validated [0-9a-f]{12}/);
   if (report.agent_work.some((item) => item.package === 'REQ-20260623-210')) {
     assert.equal(report.next_automatic_action.package, 'none');

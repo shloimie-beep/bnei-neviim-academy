@@ -657,6 +657,74 @@ function summarizeExternalGate(report = {}) {
   };
 }
 
+function readinessFieldByKey(readiness = {}, key) {
+  const fields = Array.isArray(readiness.fields) ? readiness.fields : [];
+  return fields.find((field) => field.key === key) || {
+    key,
+    configured: false,
+    source: 'not configured'
+  };
+}
+
+function summarizeIntegrationGroup(readiness, integration, label, fieldKeys, options = {}) {
+  const fields = fieldKeys.map((key) => {
+    const field = readinessFieldByKey(readiness, key);
+    return {
+      name: field.key,
+      configured: Boolean(field.configured),
+      source: field.configured ? field.source : 'not configured'
+    };
+  });
+  const missing = fields.filter((field) => !field.configured).map((field) => field.name);
+  const blockers = [
+    ...missing.map((name) => `${name} is not configured.`),
+    ...(options.blockers || [])
+  ];
+  return {
+    integration,
+    label,
+    ready: blockers.length === 0,
+    fields,
+    blockers
+  };
+}
+
+function summarizeIntegrationReadiness(readiness = {}) {
+  return {
+    generated_at: readiness.generated_at || nowIso(),
+    variable_state_only: readiness.variable_state_only === true,
+    secret_values_printed: false,
+    external_read_performed: false,
+    groups: [
+      summarizeIntegrationGroup(readiness, 'openai', 'OpenAI transcription/parser', [
+        'OPENAI_API_KEY'
+      ]),
+      summarizeIntegrationGroup(readiness, 'vimeo', 'Vimeo video/member library', [
+        'VIMEO_CLIENT_ID',
+        'VIMEO_CLIENT_SECRET',
+        'VIMEO_ACCESS_TOKEN'
+      ]),
+      summarizeIntegrationGroup(readiness, 'resend', 'Resend email sending/domain', [
+        'RESEND_API_KEY',
+        'RESEND_FROM',
+        'RESEND_FROM_EMAIL',
+        'RESEND_DOMAIN',
+        'RESEND_WEBHOOK_SECRET'
+      ]),
+      summarizeIntegrationGroup(readiness, 'stripe', 'Stripe payment mode', [
+        'STRIPE_SECRET_KEY',
+        'RABBI_STRIPE_SECRET_KEY',
+        'RABBI_STRIPE_MODE'
+      ]),
+      summarizeIntegrationGroup(readiness, 'rabbi_telegram', 'Rabbi Telegram worker', [
+        'TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER'
+      ], {
+        blockers: ['Worker deployment state is not verified by local readiness scanning.']
+      })
+    ]
+  };
+}
+
 function returnPacketResumeCommands(runDoc = {}) {
   const branch = runDoc?.git_refs?.pr_branch || runDoc?.git_refs?.expected_branch || 'codex/issue-8-complete-system-reconciliation';
   return [
@@ -696,6 +764,7 @@ async function returnPacketReport() {
   const drive = driveIntakeReport();
   const asset = assetReport();
   const ui = uiSourceCoverageReport();
+  const integrationReadiness = summarizeIntegrationReadiness(readinessReport());
   const externalGates = summarizeExternalGate(buildExternalReadbackGateReport());
   const requirements = Array.isArray(requirementsDoc?.requirements) ? requirementsDoc.requirements : [];
   const summarizedRequirements = summarizeRequirements(requirements);
@@ -779,6 +848,7 @@ async function returnPacketReport() {
       safe_apply_performed: false,
       remaining_backfill: 'jobs 64-74 production apply remains gated by external readback/backfill approval'
     },
+    integration_readiness: integrationReadiness,
     external_gates: externalGates,
     assets_drive: {
       known_targets: asset.known_targets,
@@ -861,6 +931,8 @@ function renderReturnPacketMarkdown(report, options = {}) {
   const assetSamples = Array.isArray(report.assets_drive?.sample_matches) ? report.assets_drive.sample_matches : [];
   const jobRows = report.class_drive_intake?.jobs || {};
   const latestTests = report.tests_deployment?.latest_tests || {};
+  const integrationReadiness = report.integration_readiness || {};
+  const integrationGroups = Array.isArray(integrationReadiness.groups) ? integrationReadiness.groups : [];
   const externalGates = report.external_gates || {};
   const gateScopes = Array.isArray(externalGates.scopes) ? externalGates.scopes : [];
   const gateBlockers = Array.isArray(externalGates.blockers) ? externalGates.blockers : [];
@@ -929,6 +1001,16 @@ function renderReturnPacketMarkdown(report, options = {}) {
       : ['- scopes: none recorded']),
     ...(gateBlockers.length ? gateBlockers.map((blocker) => `- blocker: ${blocker}`) : ['- blockers: none']),
     ...(gateCommands.length ? gateCommands.map((command) => `- next: ${command}`) : ['- next: see execution-run blockers']),
+    '',
+    'INTEGRATION READINESS',
+    `- safety: variable_state_only=${integrationReadiness.variable_state_only ? 'yes' : 'no'}, secret_values_printed=${integrationReadiness.secret_values_printed ? 'yes' : 'no'}, external_read=${integrationReadiness.external_read_performed ? 'yes' : 'no'}`,
+    ...(integrationGroups.length
+      ? integrationGroups.map((group) => {
+          const fields = group.fields.map((field) => `${field.name}=${field.configured ? 'configured' : 'missing'}`).join(', ');
+          const blockersText = group.blockers.length ? `; blockers ${group.blockers.join(' ')}` : '';
+          return `- ${group.label}: ${group.ready ? 'ready' : 'blocked'}; ${fields}${blockersText}`;
+        })
+      : ['- integrations: none recorded']),
     '',
     'ASSETS / DRIVE',
     `- logo: repo match count ${assetSamples.filter((item) => /logo/i.test(item.path)).length}`,

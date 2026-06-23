@@ -43,6 +43,14 @@ Latest source-truth slice:
 - The issue dry-run evidence is marked no-write and secret-safe; production
   persistence remains gated.
 
+Latest integration-readiness slice:
+
+- The return packet now includes OpenAI, Vimeo, Resend, Stripe, and Rabbi
+  Telegram readiness by configured/missing variable state only.
+- The integration readiness section reports no external read and no secret
+  values; production reads, sends, uploads, charges, deploys, and worker
+  verification remain gated.
+
 ## Implementation Evidence
 
 - `server.js`

@@ -38,6 +38,9 @@ Open requirements:
   Work commit basis in system truth and Agent Work rows.
   Source truth and the return packet now recognize GitHub Issue #7/#8 dry-run
   intake evidence as present while keeping persistence/acknowledgement gated.
+  The return packet now includes OpenAI, Vimeo, Resend, Stripe, and Rabbi
+  Telegram readiness by configured/missing variable state only, without
+  external reads or secret values.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
