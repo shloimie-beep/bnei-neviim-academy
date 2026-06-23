@@ -42,7 +42,7 @@ Open requirements:
   Telegram readiness by configured/missing variable state only, without
   external reads or secret values.
   The production closeout gate now reports the same integration readiness and
-  blocks live/final closeout when integration readiness is incomplete.
+  blocks deploy/live/final closeout when integration readiness is incomplete.
   The production closeout gate also reports sanitized database/Railway/Drive
   external-readback readiness and blocks deploy/live/final closeout when those
   scopes are incomplete.
@@ -130,7 +130,7 @@ Completed implementation slice:
   not pushed.
 - Release-gate integration-readiness guard reports OpenAI, Vimeo, Resend,
   Stripe, and Rabbi Telegram readiness by configured/missing variable state
-  only and blocks live/final closeout while readiness is incomplete.
+  only and blocks deploy/live/final closeout while readiness is incomplete.
 - Release-gate external-readback guard reports database, Railway, and Drive
   readiness by sanitized scope/count summary and blocks deploy/live/final
   closeout while readiness is incomplete.

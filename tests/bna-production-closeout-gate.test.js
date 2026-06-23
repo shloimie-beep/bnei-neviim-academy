@@ -246,6 +246,41 @@ test('production closeout gate blocks live verification on missing integration r
   assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|sk_live_|sk_test_|postgres:\/\//);
 });
 
+test('production closeout gate blocks deploy on missing integration readiness', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    deploy: true,
+    confirmDeploy: mod.DEPLOY_CONFIRM_PHRASE,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {
+      [mod.DEPLOY_APPROVAL_ENV]: 'approved',
+    },
+    externalReadbackGate: readyExternalReadbackGate,
+    integrationReadiness: integrationReadiness([
+      {
+        integration: 'vimeo',
+        label: 'Vimeo video/member library',
+        ready: false,
+        fields: [
+          { name: 'VIMEO_ACCESS_TOKEN', configured: false, source: 'not configured' },
+        ],
+        blockers: ['VIMEO_ACCESS_TOKEN is not configured.'],
+      },
+    ]),
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.mode, 'deploy_gate');
+  assert.equal(report.deploy_performed, false);
+  assert.equal(report.production_mutation_performed, false);
+  assert.ok(report.blockers.some((blocker) => /Vimeo video\/member library readiness is blocked/i.test(blocker)));
+  assert.match(JSON.stringify(report.integration_readiness), /VIMEO_ACCESS_TOKEN/);
+  assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|sk_live_|sk_test_|postgres:\/\//);
+});
+
 test('production closeout gate blocks live verification on missing external readback readiness', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({

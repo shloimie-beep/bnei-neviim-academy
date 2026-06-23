@@ -1,5 +1,49 @@
 # Status
 
+## 2026-06-23T18:38:15+03:00
+
+Status: running, with the thirtieth release-gate deploy integration-readiness
+slice complete.
+
+Extended the production closeout gate so deploy closeout also blocks when
+OpenAI, Vimeo, Resend, Stripe, or Rabbi Telegram integration readiness is
+incomplete. This keeps deploy closeout aligned with the production closeout
+contract: a deploy approval phrase/env is not enough while required integration
+state is known incomplete. The check reports configured/missing variable state
+only. No external read, production mutation, deploy, live verification, send,
+upload, charge, or backfill was performed.
+
+Verified in this slice:
+
+- `node --check scripts/bna-production-closeout-gate.mjs` passed.
+- `node --test tests/bna-production-closeout-gate.test.js
+  tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js`
+  passed, 18/18.
+- `npm run bna:release-gate -- --json --deploy --confirm-deploy
+  DEPLOY_BNA_PRODUCTION_CLOSEOUT` with `BNA_PRODUCTION_DEPLOY_APPROVED=approved`
+  remained blocked on dirty worktree plus missing integration and external
+  readback readiness, with `deploy_performed=false`.
+- `npm run bna:release-gate -- --json` remained an expected blocked dry-run
+  and did not add readiness blockers outside deploy/live/final modes.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with this
+  slice as the Agent Work phase.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1105/1105.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T18:29:46+03:00
 
 Status: running, with the twenty-ninth release-gate deploy external-readback

@@ -51,7 +51,7 @@ Latest integration-readiness slice:
   values; production reads, sends, uploads, charges, deploys, and worker
   verification remain gated.
 - The production closeout gate now uses the same shared integration-readiness
-  summary and blocks live/final closeout when integration readiness is
+  summary and blocks deploy/live/final closeout when integration readiness is
   incomplete.
 
 Latest external-readback closeout slice:
