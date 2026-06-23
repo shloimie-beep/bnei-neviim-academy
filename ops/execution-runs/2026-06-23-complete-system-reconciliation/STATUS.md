@@ -1,5 +1,32 @@
 # Status
 
+## 2026-06-23T15:53:11+03:00
+
+Status: running, with the fourteenth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a dry-run production closeout gate for the
+final database/deploy/live-verification leg. The gate checks branch alignment,
+pushed HEAD, dirty worktree state, required npm scripts, active run metadata,
+and explicit deploy/live approval phrases without calling Railway, mutating the
+database, smoking the live app, or printing secrets.
+
+Verified in this slice:
+
+- `scripts/bna-production-closeout-gate.mjs` reports redacted deploy/live
+  readiness with `production_mutation_performed: false`.
+- `package.json` exposes `npm run bna:release-gate`.
+- Focused release-gate/system coverage passed, 6/6.
+- Real dry-run gate output correctly blocked deploy from the current mixed dirty
+  worktree while confirming the branch HEAD is pushed.
+- `npm run bna:run:stale-evidence`, `npm run watchdog:actions`, and
+  `npm run watchdog:security` passed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T15:44:41+03:00
 
 Status: running, with the thirteenth canonical implementation slice complete.

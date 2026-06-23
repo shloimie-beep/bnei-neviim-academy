@@ -46,6 +46,7 @@
 - `scripts/intake-github.mjs`
 - `scripts/ramble-intake-contract.mjs`
 - `scripts/canonical-intake-postgres.mjs`
+- `scripts/bna-production-closeout-gate.mjs`
 - `scripts/watchdog-raw-intake-drift.mjs`
 - `scripts/platform-synthetic-e2e.mjs`
 - `docs/product/ramble-queue-contract.md`
@@ -57,6 +58,7 @@
 - `tests/ingestion/w3-intake-service.test.js`
 - `tests/ingestion/w3-intake-persistence.test.js`
 - `tests/canonical-intake-postgres-cli.test.js`
+- `tests/bna-production-closeout-gate.test.js`
 - `tests/watchdog-raw-intake-drift.test.js`
 - `tests/one-time-synthetic-pilot.test.js`
 - `tests/service-provider-studio-browser-smoke.test.js`
@@ -193,6 +195,18 @@ Canonical Postgres operator CLI slice verified:
   `BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved`.
 - Focused CLI/persistence/watchdog/system tests passed, 13/13, and
   `npm run watchdog:raw` passed with the operator CLI contract guarded.
+
+Production closeout gate slice verified:
+
+- `scripts/bna-production-closeout-gate.mjs` checks branch alignment, pushed
+  HEAD, dirty worktree state, required npm scripts, active run metadata, and
+  explicit deploy/live approval gates before production closeout.
+- The gate does not deploy, live-smoke, mutate a database, call Railway, or
+  print secret values.
+- The real local gate run confirmed the current branch HEAD is pushed but
+  blocked deploy because this worktree still has mixed dirty/untracked files.
+- Focused release-gate/system tests passed, 6/6. Stale-evidence, action
+  watchdog, and security watchdog checks also passed.
 
 ## Privacy Boundary
 

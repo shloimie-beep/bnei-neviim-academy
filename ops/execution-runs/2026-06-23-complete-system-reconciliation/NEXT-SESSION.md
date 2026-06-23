@@ -20,9 +20,10 @@ Open requirements:
   contract. Operations source/audit readback tabs now expose linked raw-intake
   detail locally. The local Postgres persistence/readback adapter and no-write
   `--postgres-plan` preview are implemented. A guarded dry-run-first Postgres
-  operator CLI is now available for approved readback/apply gates. Remaining
-  approved production database apply, deploy, and live verification work remain
-  open.
+  operator CLI is now available for approved readback/apply gates. A dry-run
+  production closeout gate now checks branch/run/dirty-state readiness before
+  approved deploy/live verification. Remaining approved production database
+  apply, deploy, and live verification work remain open.
 
 Next exact commands for continuation:
 
@@ -66,14 +67,18 @@ Completed implementation slice:
 - Guarded canonical Postgres operator CLI exposed as
   `npm run bna:intake:postgres`, with redacted dry-run output and explicit
   readback/apply confirmation gates.
+- Dry-run production closeout gate exposed as `npm run bna:release-gate`, with
+  branch, pushed HEAD, dirty worktree, required script, run metadata, and
+  deploy/live approval checks.
 
 Follow-on implementation scope:
 
 - Approved production database apply/readback using the guarded canonical
   Postgres operator CLI after explicit gate approval.
-- Deploy of the app-visible/schema changes after explicit deployment approval.
+- Deploy of the app-visible/schema changes after explicit deployment approval
+  and a clean release-gate report from a deploy-safe worktree.
 - Live read-only verification after deploy and approved credentials/service
-  selection.
+  selection, using the release-gate confirmation path.
 
 Do not deploy, delete worktrees, rewrite Git history, apply production backfill,
 send messages, upload to Vimeo, or charge cards without explicit gates.

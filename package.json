@@ -52,6 +52,7 @@
     "prompts:audit": "node scripts/prompts-audit.mjs",
     "ramble:intake-contract": "node scripts/ramble-intake-contract.mjs",
     "bna:intake:postgres": "node scripts/canonical-intake-postgres.mjs",
+    "bna:release-gate": "node scripts/bna-production-closeout-gate.mjs",
     "prompt:queue-contract": "node scripts/prompt-queue-contract.mjs",
     "platform:synthetic-e2e": "node scripts/platform-synthetic-e2e.mjs",
     "one-time:agent-mode-acceptance": "node scripts/one-time-agent-mode-acceptance.mjs",

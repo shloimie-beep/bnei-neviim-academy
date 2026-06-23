@@ -17,6 +17,7 @@ test('system truth commands are exposed through package scripts', () => {
   assert.equal(pkg.scripts['ui:source-coverage'], 'node scripts/system-truth.mjs ui');
   assert.equal(pkg.scripts['intake:github'], 'node scripts/intake-github.mjs');
   assert.equal(pkg.scripts['bna:intake:postgres'], 'node scripts/canonical-intake-postgres.mjs');
+  assert.equal(pkg.scripts['bna:release-gate'], 'node scripts/bna-production-closeout-gate.mjs');
 });
 
 test('system truth script reports readiness by variable state only', () => {
@@ -38,6 +39,10 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   assert.match(read('scripts/canonical-intake-postgres.mjs'), /READ_CANONICAL_INTAKE_POSTGRES/);
   assert.match(read('scripts/canonical-intake-postgres.mjs'), /BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED/);
   assert.match(read('scripts/canonical-intake-postgres.mjs'), /database_mutation_performed/);
+  assert.match(read('scripts/bna-production-closeout-gate.mjs'), /DEPLOY_BNA_PRODUCTION_CLOSEOUT/);
+  assert.match(read('scripts/bna-production-closeout-gate.mjs'), /VERIFY_BNA_LIVE_CLOSEOUT/);
+  assert.match(read('scripts/bna-production-closeout-gate.mjs'), /BNA_PRODUCTION_DEPLOY_APPROVED/);
+  assert.match(read('scripts/bna-production-closeout-gate.mjs'), /production_mutation_performed:\s*false/);
   const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'intake-github.mjs')).href);
   const issue = {
     number: 7,

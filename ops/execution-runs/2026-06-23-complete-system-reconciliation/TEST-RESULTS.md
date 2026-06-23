@@ -2,6 +2,28 @@
 
 ## Passed
 
+- `node --check scripts/bna-production-closeout-gate.mjs`:
+  PASS.
+- `node --test tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 6/6.
+- `npm --silent run bna:release-gate -- --json`:
+  PASS as a blocked dry-run gate; branch HEAD pushed, deploy blocked because the worktree is mixed dirty/untracked.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `npm run watchdog:actions`:
+  PASS, `ok: true`, severity `ok`, findings 0.
+- `npm run watchdog:security`:
+  PASS, `ok: true`, severity `ok`, findings 0.
+- `node --test tests/bna-production-closeout-gate.test.js tests/canonical-intake-postgres-cli.test.js tests/ingestion/w3-intake-persistence.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
+  PASS, 16/16.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm test`:
+  PASS, 1090/1090.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4144 tracked paths checked, 0 tracked secret-risk files found.
 - `node --check scripts/canonical-intake-postgres.mjs scripts/watchdog-raw-intake-drift.mjs`:
   PASS.
 - `node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
@@ -17,9 +39,9 @@
 - `npm run bna:run:source-coverage`:
   PASS, 0 unmapped executable statements.
 - `npm test`:
-  PASS, 1087/1087.
+  PASS, 1090/1090.
 - `node scripts/audit-secrets.mjs`:
-  PASS, 4142 tracked paths checked, 0 tracked secret-risk files found.
+  PASS, 4144 tracked paths checked, 0 tracked secret-risk files found.
 - `node --check scripts/ramble-intake-contract.mjs scripts/watchdog-raw-intake-drift.mjs src/platform/ingestion/intake-postgres-persistence.js server.js`:
   PASS.
 - `node --test tests/ingestion/w3-intake-persistence.test.js tests/intake-parser.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
