@@ -274,6 +274,16 @@ const EXTERNAL_ACTION_CATEGORIES = new Set([
   'deployment_status',
 ]);
 
+const PRIVATE_ACTION_CATEGORIES = new Set([
+  'chart',
+  'dashboard_layout',
+  'ticket',
+  'support',
+  'file_intake',
+  'billing',
+  'agent_work',
+]);
+
 function normalizeKey(value = '') {
   return String(value || '')
     .trim()
@@ -375,6 +385,54 @@ function targetWorkspaceScope(target = {}) {
   };
 }
 
+function interactionRiskScope(target = {}) {
+  const sourceContext = target.source_context || target.sourceContext || target.source || {};
+  const chatType = normalizeKey(target.chat_type || target.chatType || sourceContext.chat_type || sourceContext.chatType || '');
+  const privacy = normalizeKey(
+    target.privacy_classification
+    || target.privacyClassification
+    || sourceContext.privacy_classification
+    || sourceContext.privacyClassification
+    || ''
+  );
+  const confidenceValue = target.identity_confidence ?? target.identityConfidence ?? target.match_confidence ?? target.matchConfidence;
+  const confidence = confidenceValue === undefined || confidenceValue === null || confidenceValue === ''
+    ? null
+    : Number(confidenceValue);
+  return {
+    is_group_chat: ['group', 'supergroup', 'channel'].includes(chatType),
+    has_private_forwarded_content: Boolean(
+      target.forwarded_private_content
+      || target.forwardedPrivateContent
+      || sourceContext.forwarded_private_content
+      || sourceContext.forwardedPrivateContent
+    ),
+    private_content: [
+      'private',
+      'student_sensitive',
+      'admin_private',
+      'billing_sensitive',
+      'security_sensitive',
+      'secret',
+    ].includes(privacy),
+    guessed_identifier: Boolean(
+      target.guessed_id
+      || target.guessedId
+      || target.guessed_identifier
+      || target.guessedIdentifier
+      || target.resolution_status === 'guessed'
+      || target.resolutionStatus === 'guessed'
+      || (confidence !== null && confidence < 0.8)
+    ),
+    human_reviewed: Boolean(
+      target.human_reviewed
+      || target.humanReviewed
+      || sourceContext.human_reviewed
+      || sourceContext.humanReviewed
+    ),
+  };
+}
+
 function workspaceMatches(actorScope, targetScope) {
   if (actorScope.all_workspaces) return true;
   if (targetScope.project_key && actorScope.project_key && targetScope.project_key !== actorScope.project_key) return false;
@@ -399,6 +457,7 @@ function actionPolicy({ actor = {}, channel = '', action_category = '', actionCa
   const category = normalizeActionCategory(action_category || actionCategory);
   const actorScope = actorWorkspaceScope(actor);
   const targetScope = targetWorkspaceScope(target);
+  const riskScope = interactionRiskScope(target);
   const allowedCategories = ROLE_ALLOWED_CATEGORIES[actorScope.role] || new Set();
   const op = normalizeKey(operation);
   const reasons = [];
@@ -408,6 +467,14 @@ function actionPolicy({ actor = {}, channel = '', action_category = '', actionCa
   if (category && !allowedCategories.has(category)) reasons.push('role_category_denied');
   if (!workspaceMatches(actorScope, targetScope)) reasons.push('workspace_scope_mismatch');
   if (!relationshipMatches(actorScope, targetScope)) reasons.push('relationship_scope_mismatch');
+  if (riskScope.guessed_identifier) reasons.push('guessed_identifier_requires_review');
+  if (riskScope.is_group_chat && PRIVATE_ACTION_CATEGORIES.has(category) && actorScope.role !== 'super_admin') {
+    reasons.push('group_chat_private_action_restricted');
+  }
+  if (riskScope.is_group_chat && riskScope.private_content) reasons.push('group_chat_private_content_restricted');
+  if (riskScope.has_private_forwarded_content && !riskScope.human_reviewed) {
+    reasons.push('private_forwarded_content_requires_review');
+  }
 
   const external = EXTERNAL_ACTION_CATEGORIES.has(category) || ['send', 'publish', 'charge', 'deploy', 'enable'].includes(op);
   const previewRequired = PREVIEW_REQUIRED_CATEGORIES.has(category) || external;
@@ -427,6 +494,7 @@ function actionPolicy({ actor = {}, channel = '', action_category = '', actionCa
       workspace_key: actorScope.workspace_key,
       project_key: actorScope.project_key,
     },
+    interaction_risk: riskScope,
     action_category: category,
     typed_action_required: true,
     browser_click_substitution_allowed: false,
