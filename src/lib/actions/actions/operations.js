@@ -7,6 +7,9 @@ const {
 const {
   createAutomationDraft,
 } = require('../../../platform/assistant/automation-builder');
+const {
+  planProblemResolution,
+} = require('../../../platform/assistant/problem-resolution');
 
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
@@ -43,7 +46,8 @@ function normalizeTaskSource(value) {
 
 function normalizeTicketSource(value) {
   const normalized = String(value || 'dashboard').trim().toLowerCase().replace(/[\s-]+/g, '_');
-  if (normalized === 'ui' || normalized === 'ui_button' || normalized === 'assistant') return 'web_assistant';
+  if (normalized === 'ui' || normalized === 'ui_button' || normalized === 'assistant' || normalized === 'website_assistant' || normalized === 'parent_portal_assistant' || normalized === 'provider_portal_assistant' || normalized === 'student_portal_assistant') return 'web_assistant';
+  if (normalized === 'operations_helper') return 'dashboard';
   return TICKET_SOURCES.has(normalized) ? normalized : 'dashboard';
 }
 
@@ -2641,9 +2645,30 @@ async function createTicket(inputs = {}, context = {}) {
   const description = String(inputs.message || inputs.description || inputs.body || '').trim();
   if (!description) throw new Error('message is required');
   const title = compactText(inputs.title || titleFromBody(description, 'Support ticket'), 220);
-  const severity = normalizeSeverity(inputs.severity);
-  const category = normalizeTicketCategory(inputs.category || inputs.route);
+  const problemResolution = planProblemResolution({
+    message: description,
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'website_assistant',
+    context: {
+      ...(inputs.source_context || inputs.sourceContext || {}),
+      title,
+      route: inputs.route || inputs.page_url || inputs.url || null,
+      object_type: inputs.related_type || inputs.relatedType || null,
+      object_id: inputs.related_id || inputs.relatedId || null,
+      device: inputs.device_context || inputs.deviceContext || null,
+      viewport: inputs.viewport || null,
+      workspace_key: inputs.workspace_key || inputs.workspaceKey || context.actor?.workspace_key || context.actor?.workspace_id,
+      project_key: inputs.project_key || inputs.projectKey || context.actor?.project_key,
+      child_id: inputs.child_id || inputs.student_id || inputs.studentId || null,
+      provider_id: inputs.provider_id || inputs.providerId || null,
+    },
+    files: inputs.files || inputs.attachments || [],
+    existing_tickets: inputs.existing_tickets || inputs.existingTickets || [],
+  });
+  const severity = normalizeSeverity(inputs.severity || problemResolution.classification.severity);
+  const category = normalizeTicketCategory(inputs.category || problemResolution.classification.category || inputs.route);
   const preview = {
+    requirement_id: problemResolution.requirement_id,
     ticket_created: false,
     title,
     category,
@@ -2652,9 +2677,24 @@ async function createTicket(inputs = {}, context = {}) {
     related_type: inputs.related_type || null,
     related_id: inputs.related_id || null,
     source: normalizeTicketSource(context.source || inputs.source),
-    no_codex_task_created: category !== 'task_manager',
+    no_codex_task_created: true,
+    agent_work_handoff_required: Boolean(problemResolution.agent_work_package),
+    problem_resolution: problemResolution,
   };
   if (context.dryRun || !context.db) return preview;
+  const sourceContext = {
+    action_registry: true,
+    route: inputs.route || null,
+    related_type: inputs.related_type || null,
+    related_id: inputs.related_id || null,
+    problem_resolution: {
+      requirement_id: problemResolution.requirement_id,
+      dedupe_key: problemResolution.dedupe_key,
+      classification: problemResolution.classification,
+      agent_work_required: Boolean(problemResolution.agent_work_package),
+      private_reply_required: problemResolution.classification.private_reply_required,
+    },
+  };
   const result = await context.db.query(
     `INSERT INTO bna_support_tickets (
        title, description, severity, status, category, reporter_name, reporter_role,
@@ -2673,12 +2713,7 @@ async function createTicket(inputs = {}, context = {}) {
       context.actor?.role || null,
       inputs.assigned_to || null,
       preview.source,
-      JSON.stringify({
-        action_registry: true,
-        route: inputs.route || null,
-        related_type: inputs.related_type || null,
-        related_id: inputs.related_id || null,
-      }),
+      JSON.stringify(sourceContext),
       context.actor?.user_id || 'action_registry',
     ]
   );
@@ -3623,6 +3658,20 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
         handler,
         route: inputs.route || null,
         classification: inputs.classification || 'problem_report',
+        problem_resolution: planProblemResolution({
+          message: inputs.message || inputs.body || inputs.description || 'Problem report',
+          actor: context.actor || {},
+          channel: context.source || inputs.channel || 'website_assistant',
+          context: {
+            route: inputs.route || null,
+            viewport: inputs.viewport || null,
+            selected_area: inputs.selected_area || inputs.selectedArea || null,
+            child_id: inputs.student_id || inputs.studentId || null,
+            workspace_key: context.actor?.workspace_key || context.actor?.workspace_id || 'bna',
+          },
+          files: inputs.files || inputs.attachments || [],
+          existing_tickets: inputs.existing_tickets || inputs.existingTickets || [],
+        }),
         note: 'Parent/student reports create review tickets for Shloimie/admin. They do not create Codex code tasks automatically.',
       };
     case 'provider.createQuestionPost':

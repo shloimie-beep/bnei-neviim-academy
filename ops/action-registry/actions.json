@@ -70,7 +70,16 @@
       "route",
       "severity",
       "related_type",
-      "related_id"
+      "related_id",
+      "source_context",
+      "device_context",
+      "viewport",
+      "files",
+      "existing_tickets",
+      "workspace_key",
+      "project_key",
+      "child_id",
+      "provider_id"
     ],
     "validation": {},
     "dry_run_supported": true,
@@ -3166,7 +3175,11 @@
       "viewport",
       "selected_area",
       "classification",
-      "student_id"
+      "student_id",
+      "source_context",
+      "device_context",
+      "files",
+      "existing_tickets"
     ],
     "validation": {},
     "dry_run_supported": true,
