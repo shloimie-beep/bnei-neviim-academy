@@ -62,6 +62,58 @@ test('One Time action coverage report is current and gates risky controls', asyn
   }
 });
 
+test('Universal action parity report is current and gates every visible control', async () => {
+  const { buildUniversalActionParity } = await import('../scripts/generate-universal-action-parity.mjs');
+  const built = buildUniversalActionParity({ write: false });
+  const artifact = JSON.parse(fs.readFileSync('ops/action-registry/universal-action-parity.json', 'utf8'));
+
+  assert.equal(built.ok, true);
+  assert.equal(artifact.ok, true);
+  assert.equal(artifact.requirement_id, 'REQ-20260623-013');
+  assert.equal(artifact.content_hash, built.content_hash);
+  assert.equal(artifact.summary.visible_controls, built.summary.visible_controls);
+  assert.equal(artifact.summary.visible_controls_classified, artifact.summary.visible_controls);
+  assert.equal(artifact.summary.missing_contract, 0);
+  assert.equal(artifact.summary.missing_handler, 0);
+  assert.equal(artifact.summary.missing_test, 0);
+  assert.equal(artifact.summary.risky_without_approval, 0);
+  assert.equal(artifact.browser_click_substitution_allowed, false);
+
+  for (const rule of artifact.release_gate.rules) {
+    assert.equal(rule.passed, true, `${rule.name} should pass`);
+  }
+
+  assert.ok(artifact.parity_sources.ui_button.count >= 20);
+  assert.ok(artifact.parity_sources.telegram_request.count >= 40);
+  assert.ok(artifact.parity_sources.website_assistant_request.count >= 40);
+  assert.ok(artifact.parity_sources.operations_helper_request.count >= 20);
+  assert.ok(artifact.parity_sources.automation_action.count >= 10);
+  assert.ok(artifact.parity_sources.agent_work_handoff.count >= 5);
+
+  const categoryStates = new Map(artifact.category_coverage.map((row) => [row.category, row.state]));
+  for (const category of [
+    'provider_profile',
+    'provider_listing',
+    'course',
+    'class',
+    'video',
+    'worksheet',
+    'community',
+    'announcement',
+    'email_campaign',
+    'ticket',
+    'support',
+    'file_intake',
+    'integration',
+    'agent_work',
+  ]) {
+    assert.equal(categoryStates.get(category), 'covered_by_canonical_registry', `${category} should be covered`);
+  }
+  for (const row of artifact.category_coverage) {
+    assert.ok(['covered_by_canonical_registry', 'not_applicable_current_surface'].includes(row.state));
+  }
+});
+
 test('One Time visible data-action hooks are registered', async () => {
   const { buildActionAudit } = await import('../scripts/watchdog-action-audit.mjs');
   const audit = buildActionAudit();
