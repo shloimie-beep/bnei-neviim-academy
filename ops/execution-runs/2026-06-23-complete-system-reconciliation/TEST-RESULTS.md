@@ -3,6 +3,30 @@
 ## Passed
 
 - `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
+  PASS after external placeholder config readiness hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 22/22; Railway service and Drive folder placeholder config values do
+  not mark external readback readiness ready.
+- `npm run bna:external-readback-gate -- --json --railway` with dummy `RAILWAY_TOKEN`, `RAILWAY_PROJECT_ID`, `RAILWAY_ENVIRONMENT_ID`, and placeholder `RAILWAY_SERVICE_NAME=None`:
+  PASS as expected blocked gate; placeholder Railway service config no longer
+  marks Railway ready, and dummy values were not printed.
+- `npm run source:truth -- --json`:
+  PASS after external placeholder config readiness hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after external placeholder config readiness hardening.
+- `npm run bna:run:validate`:
+  PASS after external placeholder config readiness hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1110/1110 after external placeholder config readiness hardening.
+- `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
   PASS after external Drive authentication-path readiness hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
   PASS, 21/21; Drive readiness requires a complete application-credentials,

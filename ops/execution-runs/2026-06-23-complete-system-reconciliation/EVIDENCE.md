@@ -64,6 +64,16 @@ Latest external-readback closeout slice:
 - The release-gate next-command plan now includes the guarded external readback
   and backfill gate commands before deploy/live closeout commands.
 
+Latest external placeholder config slice:
+
+- Railway and Drive config readiness now rejects placeholder values such as
+  `None`, `null`, `undefined`, `not configured`, `TODO`, and template
+  placeholders.
+- Placeholder config is reported by source label only as `placeholder`; the
+  supplied config values remain redacted from JSON and markdown output.
+- Regression coverage verifies placeholder Railway service and Drive folder
+  values block readiness before any external read, write, deploy, or backfill.
+
 Latest external-backfill gate slice:
 
 - Guarded external backfill apply now requires both

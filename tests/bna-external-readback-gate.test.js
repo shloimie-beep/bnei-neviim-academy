@@ -97,6 +97,47 @@ test('external readback gate requires a complete Drive authentication path', asy
   assert.ok(oauth.readiness.drive.auth_paths.some((authPath) => authPath.path === 'oauth_refresh_token' && authPath.ready));
 });
 
+test('external readback gate rejects placeholder Railway and Drive config values', async () => {
+  const mod = await loadGate();
+  const railway = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['railway']),
+  }, {
+    repoRoot,
+    env: {
+      RAILWAY_PROJECT_ID: 'project-id-secretish',
+      RAILWAY_ENVIRONMENT_ID: 'environment-id-secretish',
+      RAILWAY_SERVICE_NAME: 'None',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['RAILWAY_TOKEN'])),
+  });
+
+  const railwayService = railway.readiness.railway.config.find((state) => state.name === 'RAILWAY_SERVICE_NAME');
+  assert.equal(railway.ok, false);
+  assert.equal(railway.readiness.railway.ready, false);
+  assert.equal(railwayService.configured, false);
+  assert.equal(railwayService.source, 'placeholder');
+  assert.ok(railway.blockers.some((blocker) => /railway readback gate is not ready/i.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(railway), /secret-value-for|project-id-secretish|environment-id-secretish|\bNone\b/);
+
+  const drive = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['drive']),
+  }, {
+    repoRoot,
+    env: {
+      BNA_DRIVE_ROOT_FOLDER_ID: 'TODO',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['GOOGLE_APPLICATION_CREDENTIALS'])),
+  });
+
+  const driveRoot = drive.readiness.drive.config.find((state) => state.name === 'BNA_DRIVE_ROOT_FOLDER_ID');
+  assert.equal(drive.ok, false);
+  assert.equal(drive.readiness.drive.ready, false);
+  assert.equal(driveRoot.configured, false);
+  assert.equal(driveRoot.source, 'placeholder');
+  assert.ok(drive.blockers.some((blocker) => /drive readback gate is not ready/i.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(drive), /secret-value-for|TODO/);
+});
+
 test('external readback gate blocks missing readback approval and missing configured state', async () => {
   const mod = await loadGate();
   const report = mod.buildExternalReadbackGateReport({

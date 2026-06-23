@@ -14,7 +14,9 @@ Open requirements:
   Guarded backfill apply now requires both the external readback confirmation
   phrase and the backfill confirmation phrase, plus a positive numeric
   `--job-range`. Drive readiness now requires a complete application
-  credentials, service-account, or OAuth refresh-token auth path.
+  credentials, service-account, or OAuth refresh-token auth path. Railway/Drive
+  config readiness rejects placeholders such as `None`, `null`, `undefined`,
+  `not configured`, `TODO`, and template placeholders.
 - `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
@@ -58,7 +60,8 @@ Open requirements:
   Drive readiness by configured state only. Guarded backfill apply now also
   requires readback confirmation and validates `--job-range` as positive
   numeric job IDs/ranges. Drive readiness now blocks partial Google auth state
-  instead of treating any single Google secret as ready.
+  instead of treating any single Google secret as ready, and placeholder
+  Railway/Drive config values are not treated as configured targets.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
   from current run evidence, with `latest.json` kept aligned to the active run
@@ -116,8 +119,9 @@ Completed implementation slice:
 - Redacted external readback/backfill gate exposed as
   `npm run bna:external-readback-gate`, with explicit readback/backfill
   confirmation gates, numeric job-range validation for guarded backfill apply,
-  complete Drive authentication-path readiness checks, and no external reads or
-  writes in dry-run mode.
+  complete Drive authentication-path readiness checks, placeholder config
+  rejection for Railway/Drive targets, and no external reads or writes in
+  dry-run mode.
 - Reproducible ChatGPT return packet generator exposed as
   `npm run bna:return-packet`, writing private ignored `.runtime/` packet files
   plus the redacted repo packet.
@@ -145,6 +149,8 @@ Completed implementation slice:
 - Release-gate external-readback guard reports database, Railway, and Drive
   readiness by sanitized scope/count summary and blocks deploy/live/final
   closeout while readiness is incomplete.
+- External readback/backfill readiness now treats placeholder Railway service
+  and Drive folder config values as `placeholder`, not configured.
 
 Follow-on implementation scope:
 

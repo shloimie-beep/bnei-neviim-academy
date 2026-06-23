@@ -1,18 +1,18 @@
 CHATGPT RETURN PACKET
-Generated: 2026-06-23T16:15:31.355Z
+Generated: 2026-06-23T16:25:17.881Z
 Privacy: redacted_repo_safe
 
 SYSTEM TRUTH
 - master: a9528b2d9467174d76d4c25bfb028f9308f24b4f
 - deployed commit/deployment: not verified by current local state / not verified by current local state
 - branch/PR: codex/issue-8-complete-system-reconciliation / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12
-- branch head: 2dd88a6fefc79c0cdc2cdbf9f90daf363cd56c78
-- validated Agent Work head: 68649b1a345446a413b567f708a39708adbccfa9
+- branch head: c93c99d109f991c64784e08cc515a940153f3c13
+- validated Agent Work head: c93c99d109f991c64784e08cc515a940153f3c13
 - active run: ops/execution-runs/2026-06-23-complete-system-reconciliation
 - branch sync: ahead 0, behind 0, local-only commits 0
 - source coverage: errors 0, unmapped 0
 - issue source evidence: issue #7 present, issue #8 present
-- local-only work: dirty files 149
+- local-only work: dirty files 148
 - unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet
 - merged-not-deployed: deployment readback not verified in current local state
 - deployed-not-verified: live proof not verified in current local state
@@ -62,8 +62,8 @@ WORKTREES
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-6cfe7a25 / (detached) / 6cfe7a258489 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-8a67ebb9 / (detached) / 4d43160be025 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-95aab80a / (detached) / 95aab80a7fc5 / safety_snapshot / recovery: retain until owner confirms cleanup
-- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 2dd88a6fefc7 / active_owned / recovery: review file-level diff before porting; do not stage all
-- [local-user]/Documents/Codex/2026-06-23/one-time-batch4-control-plane / codex/one-time-batch4-control-plane-20260623 / bcb0e153aac4 / clean_current / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / c93c99d109f9 / active_owned / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-23/one-time-batch4-control-plane / codex/one-time-batch4-control-plane-20260623 / bcb0e153aac4 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio / codex/service-provider-studio-20260623 / 4936394ae0a9 / clean_stale / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio-integration / codex/service-provider-studio-integration-20260623 / a9528b2d9467 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
 
@@ -148,15 +148,15 @@ UI / STUDIO
 - Service Provider Studio: present in repo evidence and covered by local smoke tests; live deployed proof remains gated
 
 DECISIONS FOR SHLOIMIE
-- DECISION-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / recommendation: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate. / action: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
-- DECISION-REQ-20260623-210 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / recommendation: Configure/provide the approved DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates. / action: Configure/provide the approved DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
+- DECISION-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / recommendation: Configure/provide the specific read-only/live gate for DATABASE_URL, non-placeholder Railway service metadata, and non-placeholder Drive file/folder targets, then approve the external readback gate. / action: Configure/provide the specific read-only/live gate for DATABASE_URL, non-placeholder Railway service metadata, and non-placeholder Drive file/folder targets, then approve the external readback gate.
+- DECISION-REQ-20260623-210 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / recommendation: Configure/provide the approved non-placeholder DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates. / action: Configure/provide the approved non-placeholder DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
 
 MY TASKS
-- MYTASK-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
-- MYTASK-REQ-20260623-210 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the approved DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
+- MYTASK-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the specific read-only/live gate for DATABASE_URL, non-placeholder Railway service metadata, and non-placeholder Drive file/folder targets, then approve the external readback gate.
+- MYTASK-REQ-20260623-210 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the approved non-placeholder DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
 
 AGENT WORK
-- REQ-20260623-210 / canonical_postgres_combined_readback_gate_hardened / codex/issue-8-complete-system-reconciliation / branch 2dd88a6fefc7 / validated 68649b1a3454 / After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
+- REQ-20260623-210 / external_placeholder_config_gate_hardened / codex/issue-8-complete-system-reconciliation / branch c93c99d109f9 / validated c93c99d109f9 / After explicit approvals and configured non-placeholder targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
 
 TESTS / DEPLOYMENT
 - tests: - `npm test`:
@@ -167,8 +167,8 @@ TESTS / DEPLOYMENT
 - live smokes: not performed by this packet generation
 
 WHAT IS STILL NOT DONE
-- REQ-20260623-209 / Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing in this environment. / owner: Operator / next: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
-- REQ-20260623-210 / Production database apply/readback, deploy, and live verification require configured DB/Railway/Drive targets plus explicit approval gates before execution. / owner: Operator / next: Configure/provide the approved DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
+- REQ-20260623-209 / Live database readback/backfill and Railway service metadata require approved external gates and configured non-placeholder read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing or placeholder in this environment. / owner: Operator / next: Configure/provide the specific read-only/live gate for DATABASE_URL, non-placeholder Railway service metadata, and non-placeholder Drive file/folder targets, then approve the external readback gate.
+- REQ-20260623-210 / Production database apply/readback, deploy, and live verification require configured non-placeholder DB/Railway/Drive targets plus explicit approval gates before execution. / owner: Operator / next: Configure/provide the approved non-placeholder DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
 
 NEXT AUTOMATIC ACTION
 - package: none

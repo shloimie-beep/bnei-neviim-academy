@@ -106,16 +106,33 @@ function approved(value) {
   return /^(?:1|true|yes|approved)$/i.test(String(value || '').trim());
 }
 
-function envConfigured(env, name) {
-  return String(env?.[name] || '').trim().length > 0;
+function normalizedConfigValue(env, name) {
+  return String(env?.[name] || '').trim();
+}
+
+function isPlaceholderConfigValue(value = '') {
+  const normalized = String(value || '').trim();
+  return /^(?:none|null|undefined|not configured|not-configured|missing|todo|tbd|n\/a|na|-|_)$/i.test(normalized) ||
+    /^<[^>]+>$/.test(normalized) ||
+    /^\$\{[^}]+\}$/.test(normalized);
+}
+
+function configSource(env, name) {
+  const value = normalizedConfigValue(env, name);
+  if (!value) return 'not configured';
+  if (isPlaceholderConfigValue(value)) return 'placeholder';
+  return 'env';
 }
 
 function safeConfigState(env, names = []) {
-  return names.map((name) => ({
-    name,
-    configured: envConfigured(env, name),
-    source: envConfigured(env, name) ? 'env' : 'not configured',
-  }));
+  return names.map((name) => {
+    const source = configSource(env, name);
+    return {
+      name,
+      configured: source === 'env',
+      source,
+    };
+  });
 }
 
 function secretState(spec, context = {}) {

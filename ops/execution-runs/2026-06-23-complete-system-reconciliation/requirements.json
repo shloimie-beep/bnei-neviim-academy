@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T18:48:04+03:00",
+  "updated_at": "2026-06-23T19:22:12+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -520,19 +520,20 @@
         "REQ-20260623-208"
       ],
       "status": "blocked",
-      "implementation_status": "external_drive_auth_path_gate_hardened",
+      "implementation_status": "external_placeholder_config_gate_hardened",
       "can_continue_without_operator": false,
-      "blocker": "Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing in this environment.",
+      "blocker": "Live database readback/backfill and Railway service metadata require approved external gates and configured non-placeholder read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing or placeholder in this environment.",
       "blocker_owner": "Operator",
-      "blocker_next_action": "Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.",
-      "next_action": "Run npm run bna:external-readback-gate with approved readback/backfill confirmations after DB/Railway/Drive targets are configured.",
+      "blocker_next_action": "Configure/provide the specific read-only/live gate for DATABASE_URL, non-placeholder Railway service metadata, and non-placeholder Drive file/folder targets, then approve the external readback gate.",
+      "next_action": "Run npm run bna:external-readback-gate with approved readback/backfill confirmations after DB/Railway/Drive targets are configured with non-placeholder values.",
       "acceptance_criteria": [
         "Database proof is from live readback, not repo comments",
         "Railway deployment is tied to commit/deployment ID",
         "Drive assets/classes have source IDs and permissions verified",
         "Backfill apply is gated and idempotent",
         "Backfill apply requires readback confirmation and a positive numeric job range",
-        "Drive readiness requires a complete application-credentials, service-account, or OAuth refresh-token auth path"
+        "Drive readiness requires a complete application-credentials, service-account, or OAuth refresh-token auth path",
+        "Railway and Drive placeholder config values do not satisfy readiness"
       ],
       "evidence": [
         "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
@@ -542,6 +543,17 @@
         "tests/bna-external-readback-gate.test.js"
       ],
       "verification": [
+        "node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs: PASS after external placeholder config readiness hardening",
+        "node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js: PASS, 22/22; Railway service and Drive folder placeholder config values do not mark external readiness ready",
+        "npm run bna:external-readback-gate -- --json --railway with dummy RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_ENVIRONMENT_ID, and placeholder RAILWAY_SERVICE_NAME=None: PASS as expected blocked gate; placeholder Railway service config no longer marks Railway ready and dummy values were not printed",
+        "npm run source:truth -- --json: PASS after external placeholder config readiness hardening",
+        "npm run bna:return-packet -- --json: PASS after external placeholder config readiness hardening",
+        "npm run bna:run:validate: PASS after external placeholder config readiness hardening",
+        "npm run bna:run:source-coverage: PASS, 0 unmapped executable statements after external placeholder config readiness hardening",
+        "npm run bna:run:stale-evidence: PASS, stale evidence detection none after external placeholder config readiness hardening",
+        "node scripts/audit-secrets.mjs: PASS, 4149 tracked paths checked and 0 tracked secret-risk files found after external placeholder config readiness hardening",
+        "git diff --check: PASS with line-ending warnings only after external placeholder config readiness hardening",
+        "npm test: PASS, 1110/1110 after external placeholder config readiness hardening",
         "node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs: PASS after external Drive authentication-path readiness hardening",
         "node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js: PASS, 21/21; Drive readiness requires a complete application-credentials, service-account, or OAuth refresh-token auth path",
         "npm run bna:external-readback-gate -- --json --drive with dummy GOOGLE_CLIENT_EMAIL and BNA_DRIVE_ROOT_FOLDER_ID: PASS as expected blocked gate; partial Drive auth no longer marks Drive ready and dummy values were not printed",
@@ -580,8 +592,8 @@
         "tests/bna-external-readback-gate.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T19:12:25+03:00",
-      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent; Backfill apply requires readback confirmation and a positive numeric job range; Drive readiness requires a complete application-credentials, service-account, or OAuth refresh-token auth path; External readback/backfill gate is implemented and currently blocked on configured DB/Railway/Drive targets plus approval"
+      "updated_at": "2026-06-23T19:22:12+03:00",
+      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent; Backfill apply requires readback confirmation and a positive numeric job range; Drive readiness requires a complete application-credentials, service-account, or OAuth refresh-token auth path; Railway and Drive placeholder config values do not satisfy readiness; External readback/backfill gate is implemented and currently blocked on configured non-placeholder DB/Railway/Drive targets plus approval"
     },
     {
       "id": "REQ-20260623-210",
@@ -603,12 +615,12 @@
         "REQ-20260623-204"
       ],
       "status": "in_progress",
-      "implementation_status": "canonical_postgres_combined_readback_gate_hardened",
+      "implementation_status": "external_placeholder_config_gate_hardened",
       "can_continue_without_operator": false,
-      "blocker": "Production database apply/readback, deploy, and live verification require configured DB/Railway/Drive targets plus explicit approval gates before execution.",
+      "blocker": "Production database apply/readback, deploy, and live verification require configured non-placeholder DB/Railway/Drive targets plus explicit approval gates before execution.",
       "blocker_owner": "Operator",
-      "blocker_next_action": "Configure/provide the approved DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.",
-      "next_action": "After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.",
+      "blocker_next_action": "Configure/provide the approved non-placeholder DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.",
+      "next_action": "After explicit approvals and configured non-placeholder targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.",
       "acceptance_criteria": [
         "Stable display IDs do not collide across same-day sources or shared item prefixes",
         "Passed verification packages close through canonical parent prompt statuses",
@@ -635,6 +647,7 @@
         "Return packet reports integration readiness by variable configured/missing state only for OpenAI, Vimeo, Resend, Stripe, and Rabbi Telegram",
         "Production closeout gate reports integration readiness and blocks deploy/live/final closeout when integration readiness is incomplete",
         "Production closeout gate reports external readback readiness by scope and blocks deploy/live/final closeout when database, Railway, or Drive readiness is incomplete",
+        "External readback gate rejects placeholder Railway service and Drive folder config values before readiness",
         "Canonical persistence model is implemented",
         "Decision auto-resume is tested",
         "Operations compact views are verified",
@@ -685,6 +698,17 @@
         "tests/system-truth-scripts.test.js"
       ],
       "verification": [
+        "node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs: PASS after external placeholder config readiness hardening",
+        "node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js: PASS, 22/22; Railway service and Drive folder placeholder config values do not mark external readiness ready",
+        "npm run bna:external-readback-gate -- --json --railway with dummy RAILWAY_TOKEN, RAILWAY_PROJECT_ID, RAILWAY_ENVIRONMENT_ID, and placeholder RAILWAY_SERVICE_NAME=None: PASS as expected blocked gate; placeholder Railway service config no longer marks Railway ready and dummy values were not printed",
+        "npm run source:truth -- --json: PASS after external placeholder config readiness hardening",
+        "npm run bna:return-packet -- --json: PASS after external placeholder config readiness hardening",
+        "npm run bna:run:validate: PASS after external placeholder config readiness hardening",
+        "npm run bna:run:source-coverage: PASS, 0 unmapped executable statements after external placeholder config readiness hardening",
+        "npm run bna:run:stale-evidence: PASS, stale evidence detection none after external placeholder config readiness hardening",
+        "node scripts/audit-secrets.mjs: PASS, 4149 tracked paths checked and 0 tracked secret-risk files found after external placeholder config readiness hardening",
+        "git diff --check: PASS with line-ending warnings only after external placeholder config readiness hardening",
+        "npm test: PASS, 1110/1110 after external placeholder config readiness hardening",
         "node --check scripts/canonical-intake-postgres.mjs: PASS after canonical Postgres combined apply/readback gate hardening",
         "node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js: PASS, 9/9; combined apply/readback requires readback confirmation and approval",
         "npm run watchdog:raw: PASS, ok true with known medium provenance findings only after canonical Postgres combined apply/readback gate hardening",
@@ -910,8 +934,8 @@
         "tests/system-truth-scripts.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T18:48:04+03:00",
-      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Operations source/audit tabs expose raw-intake detail readback; Production Postgres apply/readback adapter is implemented with injected-client gating; Production Postgres operator CLI is dry-run first and requires explicit readback/apply gates; Production closeout gate checks branch, pushed HEAD, dirty worktree, run metadata, and deploy/live approval gates; Detached release-candidate checkout validation is explicit and verifies HEAD against a named pushed remote branch; Production closeout and return-packet dirty-state reporting preserve Git porcelain leading whitespace so unstaged dirty files are not reported as staged; Return packet Agent Work commit is sourced from the execution run validated checkpoint instead of transient pre-commit worktree HEAD; Return packet distinguishes current branch head from validated Agent Work commit basis; Source truth and return packet recognize GitHub Issue #7/#8 dry-run evidence without external writes or secret values; Return packet reports OpenAI/Vimeo/Resend/Stripe/Rabbi Telegram readiness by configured/missing variable state only; Production closeout gate reports the same integration readiness and blocks deploy/live/final closeout when readiness is incomplete; Production closeout gate reports sanitized external readback readiness and blocks deploy/live/final closeout when database/Railway/Drive readiness is incomplete; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes; Approval-gated in-progress requirements are not advertised as unblocked executable batches; Return packet next automatic action uses executable-batch state and reports no automatic package when approval-gated; Combined canonical Postgres apply/readback requests require both apply and readback approval gates before any database connection"
+      "updated_at": "2026-06-23T19:22:12+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Operations source/audit tabs expose raw-intake detail readback; Production Postgres apply/readback adapter is implemented with injected-client gating; Production Postgres operator CLI is dry-run first and requires explicit readback/apply gates; Production closeout gate checks branch, pushed HEAD, dirty worktree, run metadata, and deploy/live approval gates; Detached release-candidate checkout validation is explicit and verifies HEAD against a named pushed remote branch; Production closeout and return-packet dirty-state reporting preserve Git porcelain leading whitespace so unstaged dirty files are not reported as staged; Return packet Agent Work commit is sourced from the execution run validated checkpoint instead of transient pre-commit worktree HEAD; Return packet distinguishes current branch head from validated Agent Work commit basis; Source truth and return packet recognize GitHub Issue #7/#8 dry-run evidence without external writes or secret values; Return packet reports OpenAI/Vimeo/Resend/Stripe/Rabbi Telegram readiness by configured/missing variable state only; Production closeout gate reports the same integration readiness and blocks deploy/live/final closeout when readiness is incomplete; Production closeout gate reports sanitized external readback readiness and blocks deploy/live/final closeout when database, Railway, or Drive readiness is incomplete; External readback gate rejects placeholder Railway service and Drive folder config values before readiness; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes; Approval-gated in-progress requirements are not advertised as unblocked executable batches; Return packet next automatic action uses executable-batch state and reports no automatic package when approval-gated; Combined canonical Postgres apply/readback requests require both apply and readback approval gates before any database connection"
     },
     {
       "id": "REQ-20260623-211",
