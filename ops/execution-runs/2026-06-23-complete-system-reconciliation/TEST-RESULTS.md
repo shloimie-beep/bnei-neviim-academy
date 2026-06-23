@@ -2,6 +2,12 @@
 
 ## Passed
 
+- `node --check server.js`:
+  PASS.
+- `node --test tests/intake-parser.test.js`:
+  PASS, 16/16.
+- Operations inline script syntax check:
+  PASS, checked 5 inline scripts.
 - `node --check src/platform/ingestion/canonical-ids.js src/platform/ingestion/intake-source.js src/lib/bna/ramble-protocol.js src/lib/bna/intake-parser.js src/lib/bna/goal-memory.js`:
   PASS.
 - `node --test tests/ingestion/canonical-ids.test.js tests/intake-parser.test.js tests/intake-parser-goals.test.js tests/agentic-goal-memory-hardening.test.js tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js`:

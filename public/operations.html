@@ -8828,7 +8828,7 @@
         let contactSection = currentView === 'contacts' && ['overview', 'people', 'parents', 'interested_parents', 'contacts', 'students', 'participants', 'crm_contacts', 'email_contacts', 'questions', 'access', 'messages', 'intake', 'follow_up', 'tags', 'forms', 'notes'].includes(initialSection)
             ? initialSection
             : 'overview';
-        let intakeSection = currentView === 'intake' && ['runs', 'review', 'sections'].includes(initialSection)
+        let intakeSection = currentView === 'intake' && ['runs', 'source', 'audit', 'review', 'sections'].includes(initialSection)
             ? initialSection
             : 'runs';
         let liveClassSection = currentView === 'live_classes' && ['overview'].includes(initialSection)
@@ -8994,6 +8994,8 @@
         ];
         const INTAKE_SUBTABS = [
             { id: 'runs', label: 'Parse Runs' },
+            { id: 'source', label: 'Source' },
+            { id: 'audit', label: 'Audit' },
             { id: 'review', label: 'Review Queue' },
             { id: 'sections', label: 'Sections' }
         ];
@@ -10358,6 +10360,8 @@
         function intakeSubnavCounts() {
             return {
                 runs: intakeParseRuns.length,
+                source: intakeParseRuns.filter(run => run.metadata?.raw_intake_stable_id).length,
+                audit: intakeReviewItems.length + intakeParseRuns.filter(run => ['needs_review', 'failed'].includes(String(run.status || '').toLowerCase())).length,
                 review: intakeReviewItems.filter(item => ['open', 'reviewing'].includes(String(item.status || 'open'))).length,
                 sections: intakeSections.filter(section => section.status === 'proposed').length
             };
@@ -24570,9 +24574,24 @@
             `;
         }
 
+        function selectedIntakeRunDetail() {
+            const run = intakeSelectedRun?.parse_run || intakeParseRuns.find(item => Number(item.id) === Number(intakeSelectedRunId)) || null;
+            return {
+                rawIntake: intakeSelectedRun?.raw_intake || null,
+                run,
+                items: intakeSelectedRun?.items || [],
+                reviews: intakeSelectedRun?.review_items || []
+            };
+        }
+
+        function selectedIntakeRawStableId(run = null, rawIntake = null) {
+            return rawIntake?.stable_id || run?.metadata?.raw_intake_stable_id || run?.parse_json?.ramble_protocol?.raw_id || '';
+        }
+
         function renderIntakeReview() {
             const counts = intakeSubnavCounts();
-            const selected = intakeSelectedRun?.parse_run || intakeParseRuns.find(run => Number(run.id) === Number(intakeSelectedRunId)) || null;
+            const detail = selectedIntakeRunDetail();
+            const selected = detail.run;
             return `
                 <div class="container">
                     ${intakeNotice ? `<div class="success-banner">${escapeHtml(intakeNotice)}</div>` : ''}
@@ -24584,11 +24603,13 @@
                         </div>
                         <div class="metric-grid compact">
                             <div class="metric-card"><span>Runs</span><strong>${counts.runs || 0}</strong></div>
+                            <div class="metric-card"><span>Source Links</span><strong>${counts.source || 0}</strong></div>
+                            <div class="metric-card"><span>Audit Flags</span><strong>${counts.audit || 0}</strong></div>
                             <div class="metric-card"><span>Open Review</span><strong>${counts.review || 0}</strong></div>
                             <div class="metric-card"><span>Proposed Sections</span><strong>${counts.sections || 0}</strong></div>
                         </div>
                     </section>
-                    ${intakeSection === 'review' ? renderIntakeReviewQueue() : intakeSection === 'sections' ? renderIntakeSections() : renderIntakeRuns(selected)}
+                    ${intakeSection === 'review' ? renderIntakeReviewQueue() : intakeSection === 'sections' ? renderIntakeSections() : intakeSection === 'source' ? renderIntakeSource(detail) : intakeSection === 'audit' ? renderIntakeAudit(detail) : renderIntakeRuns(selected)}
                 </div>
             `;
         }
@@ -24656,6 +24677,128 @@
                     </table>
                 </div>
                 ${reviews.length ? `<h3>Review Items</h3><div class="stacked-list">${reviews.map(renderIntakeReviewRow).join('')}</div>` : ''}
+            `;
+        }
+
+        function renderIntakeSource(detail = selectedIntakeRunDetail()) {
+            const { rawIntake, run, items } = detail;
+            if (!run) return `<section class="panel"><div class="empty-state">Select a parse run to inspect source lineage.</div></section>`;
+            const protocol = run.parse_json?.ramble_protocol || {};
+            const envelope = run.parse_json?.source_envelope || {};
+            const rawId = selectedIntakeRawStableId(run, rawIntake);
+            const excerptRows = items.filter(item => item.source_excerpt || item.payload?.source_excerpt || item.payload?.raw_excerpt);
+            const rawText = rawIntake?.raw_text || run.raw_input || '';
+            const transcriptText = rawIntake?.transcript_text || '';
+            return `
+                <div class="dashboard-grid two-column">
+                    <section class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Source Lineage</h2>
+                                <p>${escapeHtml(run.summary || 'Canonical intake source readback')}</p>
+                            </div>
+                            <span class="status-pill ${escapeHtml(rawIntake?.parse_status || run.status || 'parsed')}">${escapeHtml(rawIntake?.parse_status || run.status || 'parsed')}</span>
+                        </div>
+                        <div class="detail-grid">
+                            <div><span>Raw ID</span><strong>${escapeHtml(rawId || 'Not linked')}</strong></div>
+                            <div><span>Source</span><strong>${escapeHtml(rawIntake?.source_channel || run.source_type || 'manual')}</strong></div>
+                            <div><span>Message</span><strong>${escapeHtml(rawIntake?.source_message_id || run.source_id || 'n/a')}</strong></div>
+                            <div><span>Created</span><strong>${escapeHtml(formatDateTime(rawIntake?.created_at || run.created_at) || 'n/a')}</strong></div>
+                            <div><span>Register</span><strong>${escapeHtml(rawIntake?.requirement_register_path || protocol.requirement_register_path || 'None')}</strong></div>
+                            <div><span>Workspace</span><strong>${escapeHtml(run.metadata?.workspace_key || envelope.default_workspace || 'platform')}</strong></div>
+                        </div>
+                        <h3>Raw Capture</h3>
+                        <p>${escapeHtml(limitTextClient(rawText, 900) || 'No raw text is attached to this parse run.')}</p>
+                        ${transcriptText ? `<h3>Transcript</h3><p>${escapeHtml(limitTextClient(transcriptText, 700))}</p>` : ''}
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Source Excerpts</h2>
+                                <p>${Number(excerptRows.length)} parsed item${excerptRows.length === 1 ? '' : 's'} preserve source text.</p>
+                            </div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead><tr><th>Item</th><th>Excerpt</th><th>Target</th></tr></thead>
+                                <tbody>
+                                    ${excerptRows.length ? excerptRows.map(item => `
+                                        <tr>
+                                            <td><strong>${escapeHtml(item.item_key || `#${item.id}`)}</strong><br><small>${escapeHtml(formatEventType(item.item_type))}</small></td>
+                                            <td>${escapeHtml(limitTextClient(item.source_excerpt || item.payload?.source_excerpt || item.payload?.raw_excerpt || '', 260))}</td>
+                                            <td>${escapeHtml(item.target_table || item.payload?.target_table || item.status || 'parsed')}</td>
+                                        </tr>
+                                    `).join('') : `<tr><td colspan="3">No source excerpts are attached to this run.</td></tr>`}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function renderIntakeAudit(detail = selectedIntakeRunDetail()) {
+            const { rawIntake, run, items, reviews } = detail;
+            if (!run) return `<section class="panel"><div class="empty-state">Select a parse run to inspect audit status.</div></section>`;
+            const itemStatusCounts = countByValue(items, item => item.status || 'parsed');
+            const itemTypeCounts = countByValue(items, item => item.item_type || 'unknown');
+            const openReviews = reviews.filter(item => ['open', 'reviewing'].includes(String(item.status || 'open'))).length;
+            const externalWriteRecorded = run.metadata?.external_write_performed === true || rawIntake?.metadata?.external_write_performed === true;
+            const auditRows = [
+                ['Raw stable ID', selectedIntakeRawStableId(run, rawIntake) || 'Not linked'],
+                ['Raw status', rawIntake?.parse_status || 'Not linked'],
+                ['Parser status', run.status || 'parsed'],
+                ['Dry run', run.dry_run ? 'Yes' : 'No'],
+                ['External writes', externalWriteRecorded ? 'Check metadata' : 'None recorded'],
+                ['Parser version', run.parser_version || 'unknown'],
+                ['Created by', run.created_by || 'system'],
+                ['Created', formatDateTime(run.created_at) || 'n/a'],
+                ['Filed', formatDateTime(run.filed_at) || 'Not filed']
+            ];
+            return `
+                <div class="dashboard-grid two-column">
+                    <section class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Run Audit</h2>
+                                <p>${escapeHtml(run.summary || 'Parser audit readback')}</p>
+                            </div>
+                            <span class="status-pill ${escapeHtml(run.status || 'parsed')}">${escapeHtml(run.status || 'parsed')}</span>
+                        </div>
+                        <div class="detail-grid">
+                            <div><span>Parsed Items</span><strong>${Number(items.length)}</strong></div>
+                            <div><span>Open Review</span><strong>${Number(openReviews)}</strong></div>
+                            <div><span>Filed</span><strong>${Number(itemStatusCounts.filed || 0)}</strong></div>
+                            <div><span>Needs Review</span><strong>${Number(itemStatusCounts.needs_review || 0)}</strong></div>
+                            <div><span>External Write</span><strong>${externalWriteRecorded ? 'Check' : 'None'}</strong></div>
+                            <div><span>Raw Linked</span><strong>${rawIntake ? 'Yes' : 'No'}</strong></div>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead><tr><th>Check</th><th>Value</th></tr></thead>
+                                <tbody>
+                                    ${auditRows.map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <section class="panel">
+                        <div class="panel-header">
+                            <div>
+                                <h2>Item Distribution</h2>
+                                <p>Counts by canonical type and current filing status.</p>
+                            </div>
+                        </div>
+                        <div class="detail-grid">
+                            ${Object.entries(itemTypeCounts).length ? Object.entries(itemTypeCounts).map(([type, count]) => `<div><span>${escapeHtml(formatEventType(type))}</span><strong>${Number(count)}</strong></div>`).join('') : '<div><span>Items</span><strong>0</strong></div>'}
+                        </div>
+                        <h3>Status Counts</h3>
+                        <div class="detail-grid">
+                            ${Object.entries(itemStatusCounts).length ? Object.entries(itemStatusCounts).map(([status, count]) => `<div><span>${escapeHtml(formatEventType(status))}</span><strong>${Number(count)}</strong></div>`).join('') : '<div><span>Status</span><strong>0</strong></div>'}
+                        </div>
+                        ${reviews.length ? `<h3>Review Queue</h3><div class="stacked-list">${reviews.map(renderIntakeReviewRow).join('')}</div>` : ''}
+                    </section>
+                </div>
             `;
         }
 

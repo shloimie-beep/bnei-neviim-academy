@@ -1,5 +1,32 @@
 # Status
 
+## 2026-06-23T15:18:18+03:00
+
+Status: running, with the eleventh canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with local Operations source/audit readback for
+canonical intake runs. The parse-run detail endpoint now returns the linked
+raw-intake record when available, and Operations has compact Source and Audit
+tabs for raw stable IDs, source channel/message, source excerpts, item status
+counts, review pressure, and no-external-write readback.
+
+Verified in this slice:
+
+- `/api/bna/intake/parse-runs/:id` enriches detail readback with
+  `raw_intake` via `metadata.raw_intake_stable_id`.
+- `public/operations.html` exposes `source` and `audit` intake sections using
+  the selected parse run and linked raw-intake detail.
+- Static workflow coverage pins the raw-intake detail readback and the new
+  Operations sections.
+- Focused parser/UI coverage passed, 16/16, and the Operations inline scripts
+  parse successfully.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  deploy, and live verification are not complete yet.
+
 ## 2026-06-23T15:09:48+03:00
 
 Status: running, with the tenth canonical implementation slice complete.

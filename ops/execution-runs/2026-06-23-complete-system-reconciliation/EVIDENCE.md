@@ -31,6 +31,8 @@
 
 ## Implementation Evidence
 
+- `server.js`
+- `public/operations.html`
 - `src/platform/ingestion/canonical-ids.js`
 - `src/platform/ingestion/intake-source.js`
 - `src/platform/ingestion/intake-service.js`
@@ -144,6 +146,18 @@ Canonical auto-resume watchdog contract slice verified:
   routing, and the no-external-write marker.
 - Focused watchdog/queue tests passed, 9/9, and `npm run watchdog:raw` passed
   with the existing non-failing medium raw provenance findings.
+
+Canonical Operations source/audit readback slice verified:
+
+- Parse-run detail readback now includes the linked `bna_raw_intake` row when
+  the run metadata carries `raw_intake_stable_id`.
+- Operations Intake has compact Source and Audit sections for raw stable ID,
+  source channel/message, source excerpts, item distribution, review pressure,
+  parser status, and no-external-write readback.
+- Static intake workflow coverage pins the server detail enrichment and the
+  new Operations sections.
+- Focused parser/UI tests passed, 16/16, and the Operations inline scripts
+  parsed successfully.
 
 ## Privacy Boundary
 

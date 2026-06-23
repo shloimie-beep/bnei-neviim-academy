@@ -20166,6 +20166,15 @@ function intakeParseRunView(row = {}) {
   };
 }
 
+function rawIntakeView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    metadata: intakeJson(row.metadata, {}),
+    parsed_payload: intakeJson(row.parsed_payload, {}),
+  };
+}
+
 function intakeParseItemView(row = {}) {
   if (!row) return null;
   return {
@@ -20811,12 +20820,17 @@ async function createCanonicalIntakeParseRun({
 async function fetchIntakeRunDetail(id, db = pool) {
   const run = (await db.query('SELECT * FROM bna_intake_parse_runs WHERE id = $1', [id])).rows[0] || null;
   if (!run) return null;
+  const parsedRun = intakeParseRunView(run);
+  const rawIntakeStableId = parsedRun.metadata?.raw_intake_stable_id || null;
+  const rawIntake = rawIntakeStableId
+    ? (await db.query('SELECT * FROM bna_raw_intake WHERE stable_id = $1', [rawIntakeStableId])).rows[0] || null
+    : null;
   const items = (await db.query(
     'SELECT * FROM bna_intake_parse_items WHERE parse_run_id = $1 ORDER BY id ASC',
     [id]
   )).rows.map(intakeParseItemView);
   const reviews = (await fetchIntakeReviewItems({ parseRunId: id, db })).reviews;
-  return { parse_run: intakeParseRunView(run), items, review_items: reviews };
+  return { raw_intake: rawIntakeView(rawIntake), parse_run: parsedRun, items, review_items: reviews };
 }
 
 async function fetchIntakeReviewItems({ status = 'open', parseRunId = null, limit = 100, db = pool } = {}) {
