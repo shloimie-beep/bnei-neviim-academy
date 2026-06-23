@@ -1,4 +1,9 @@
 const { compactText, normalizeWorkspace, WORKSPACES } = require('../types');
+const {
+  createCampaignDraft,
+  createDripSequenceDraft,
+  previewCampaignSegment,
+} = require('../../../platform/assistant/campaign-control');
 
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
@@ -296,6 +301,53 @@ function draftEmail(inputs = {}, context = {}) {
     sent: false,
     approval_required_before_send: true,
   };
+}
+
+function campaignAudienceInputs(inputs = {}) {
+  const audience = inputs.audience && typeof inputs.audience === 'object' ? inputs.audience : {};
+  return {
+    segment_name: inputs.segment_name || audience.segment_name || inputs.audience_label || audience.audience_label || 'Campaign segment',
+    audience_label: inputs.audience_label || audience.audience_label || inputs.segment_name || audience.segment_name || 'Campaign segment',
+    estimated_count: inputs.estimated_count || audience.estimated_count || audience.count || 0,
+    consent_count: inputs.consent_count || audience.consent_count || 0,
+    suppression_counts: inputs.suppression_counts || audience.suppression_counts || {},
+    exclusions: inputs.exclusions || audience.exclusions || [],
+    workspace_key: inputs.workspace_key || audience.workspace_key,
+    project_key: inputs.project_key || audience.project_key,
+  };
+}
+
+function draftEmailCampaignPreview(inputs = {}, context = {}) {
+  return createCampaignDraft({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    goal: inputs.goal || inputs.message || inputs.title || 'Email campaign draft',
+    audience: campaignAudienceInputs(inputs),
+    message: inputs.message && typeof inputs.message === 'object'
+      ? inputs.message
+      : { subject: inputs.subject || inputs.title, body: inputs.body || inputs.message },
+    sender: inputs.sender || {},
+    schedule: inputs.schedule || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
+}
+
+function draftDripSequencePreview(inputs = {}, context = {}) {
+  return createDripSequenceDraft({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    goal: inputs.goal || inputs.message || inputs.title || 'Drip sequence draft',
+    audience: campaignAudienceInputs(inputs),
+    messages: inputs.messages || [],
+    message_count: inputs.message_count || inputs.messageCount || 6,
+    sender: inputs.sender || {},
+    schedule: inputs.schedule || {},
+    intervals: inputs.intervals || [],
+    rate_limit: inputs.rate_limit || inputs.rateLimit || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
 }
 
 async function draftEmailFromNewsletter(inputs = {}, context = {}) {
@@ -3432,6 +3484,16 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return moveTaskWorkspace(inputs, context);
     case 'tickets.create':
       return createTicket(inputs, context);
+    case 'communications.previewCampaignSegment':
+      return previewCampaignSegment({
+        actor: context.actor || {},
+        channel: context.source || inputs.channel || 'operations_helper',
+        ...campaignAudienceInputs(inputs),
+      });
+    case 'communications.draftEmailCampaign':
+      return draftEmailCampaignPreview(inputs, context);
+    case 'communications.draftDripSequence':
+      return draftDripSequencePreview(inputs, context);
     case 'decisions.create':
       return createDecision(inputs, context);
     case 'timeline.addNote':

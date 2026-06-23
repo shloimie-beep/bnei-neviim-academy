@@ -37,6 +37,16 @@ function extractProviderId(message = '') {
   return match ? Number(match[1]) : null;
 }
 
+function extractAudienceCount(message = '') {
+  const match = String(message || '').match(/\b(\d{1,3}(?:,\d{3})+|\d+)\s*(?:opted[-\s]?in\s*)?(?:lead|parent|contact|recipient|person|people|email)s?\b/i);
+  return match ? Number(match[1].replace(/,/g, '')) : null;
+}
+
+function extractMessageCount(message = '') {
+  const match = String(message || '').match(/\b(\d+)[-\s]?(?:message|email)s?\b|\b(\d+)[-\s]?part\b/i);
+  return match ? Number(match[1] || match[2]) : null;
+}
+
 function titleFromMessage(message = '', fallback = 'Assistant request') {
   return compact(String(message || '')
     .replace(/^\s*(ticket|task|todo|decision|codex|bug)\s*:\s*/i, '')
@@ -90,6 +100,34 @@ function inferInputs(actionId, message = '', provided = {}) {
       body: text,
       visibility: 'provider',
     });
+  } else if (actionId === 'preview_campaign_segment') {
+    Object.assign(inferred, {
+      segment_name: title,
+      audience_label: title,
+      estimated_count: extractAudienceCount(text) || '',
+      consent_count: /\bopted[-\s]?in|consent\b/i.test(text) ? (extractAudienceCount(text) || '') : '',
+      exclusions: [
+        /\bunsubscribed|unsubscribe\b/i.test(text) ? 'unsubscribed' : '',
+        /\bbounced?\b/i.test(text) ? 'bounced' : '',
+        /\balready enrolled|enrolled\b/i.test(text) ? 'already_enrolled' : '',
+      ].filter(Boolean),
+    });
+  } else if (actionId === 'draft_email_campaign') {
+    Object.assign(inferred, {
+      goal: text,
+      segment_name: title,
+      estimated_count: extractAudienceCount(text) || '',
+      consent_count: /\bopted[-\s]?in|consent\b/i.test(text) ? (extractAudienceCount(text) || '') : '',
+      message: { subject: title, body: text },
+    });
+  } else if (actionId === 'draft_drip_sequence') {
+    Object.assign(inferred, {
+      goal: text,
+      segment_name: title,
+      estimated_count: extractAudienceCount(text) || '',
+      consent_count: /\bopted[-\s]?in|consent\b/i.test(text) ? (extractAudienceCount(text) || '') : '',
+      message_count: extractMessageCount(text) || 6,
+    });
   } else {
     Object.assign(inferred, {
       title,
@@ -141,6 +179,9 @@ function scoreAction(action, message = '', requestedActionId = '') {
   if (/\b(codex|code|server|api|database|deploy|railway|test|fix this button)\b/.test(text) && id === 'route_bug_to_codex') score += 80;
   if (/\b(provider|profile|google business|google maps|place id|maps link)\b/.test(text) && id === 'capture_provider_google_business_link') score += 70;
   if (/\b(provider|rabbi|classroom|post|question)\b/.test(text) && id === 'create_provider_question_post') score += 55;
+  if (/\b(segment|audience|suppression|suppress|unsubscribed|bounced|opted[-\s]?in)\b/.test(text) && id === 'preview_campaign_segment') score += 65;
+  if (/\b(email campaign|campaign|bulk email|send email|audience preview)\b/.test(text) && id === 'draft_email_campaign') score += 70;
+  if (/\b(drip|sequence|nurture|follow[-\s]?up series|six[-\s]?email|6[-\s]?email)\b/.test(text) && id === 'draft_drip_sequence') score += 85;
   return score;
 }
 
