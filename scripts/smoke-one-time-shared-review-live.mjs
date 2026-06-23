@@ -122,9 +122,9 @@ async function main() {
     {
       label: 'landing',
       path: '/one-time/',
-      expectedTitle: /OneTimeOneTime/i,
-      requiredText: ['Worldwide Live Mishnah Learning', 'Finish Masechtas. Love Learning Torah.', 'Join the Live Shiur', 'Explore the Video Library', 'Member Login'],
-      requiredSelectors: ['img[src*="onetimelogo"]', 'img[src*="onetime-hero-vertical"]', 'img[src*="promo-stage-still"]'],
+      expectedTitle: /Learn Mishnayos Live with Rabbi Elie Scheller/i,
+      requiredText: ['OneTimeOneTime Mishnah', 'START 30 DAYS FREE', 'WATCH RABBI SCHELLER', '$67 USD per month after a 30-day free trial', 'Member Login'],
+      requiredSelectors: ['img[src*="onetimelogo"]', 'img[src*="onetime-hero-vertical"]', 'iframe[src*="player.vimeo.com/video/1158542993"]'],
       forbidTitle: /BNA|Bnei Neviim/i,
       forbidText: ['Bnei Neviim Academy', 'Huda Weber', 'Menachem Mendel', 'Dratler Family'],
     },

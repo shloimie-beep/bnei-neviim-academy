@@ -94,6 +94,7 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(classroomHtml, /classEmbedUrl/);
   assert.match(classroomHtml, /<iframe/);
   assert.match(classroomHtml, /Fallback Vimeo Link/);
+  assert.match(classroomHtml, /\.video-embed \{ min-height: 0; \}/);
   assert.match(fs.readFileSync('public/one-time-email-review.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
 });
 
