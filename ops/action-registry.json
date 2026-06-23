@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-22T20:00:00+03:00",
+  "updated_at": "2026-06-23T10:05:23+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -660,6 +660,224 @@
         "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-OPEN-SOURCE",
+      "label": "Open Source",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio",
+      "selector_hint": "button[onclick=\"setStudioSection('source')\"]",
+      "expected_behavior": "Switches the scoped Studio view to the source intake panel without writing data.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "setStudioSection",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "tests/service-provider-studio-browser-smoke.test.js opens Source and saves a mocked local source."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-CREATE-PROJECT",
+      "label": "Create Project",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio",
+      "selector_hint": "form[onsubmit=\"createStudioProjectFromForm(event)\"] button[type=\"submit\"]",
+      "expected_behavior": "Creates a first-party, workspace-scoped Studio project in draft/source state.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "createStudioProjectFromForm",
+      "api_route": "/api/bna/studio/projects",
+      "test": {
+        "type": "ui_static_and_api_contract",
+        "expected_result": "Studio API contract verifies scoped POST route and UI exports createStudioProjectFromForm."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-SAVE-SOURCE",
+      "label": "Save Source",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=source",
+      "selector_hint": "form[onsubmit^=\"saveStudioSourceFromForm\"] button[type=\"submit\"]",
+      "expected_behavior": "Saves raw source privately, returns normalized/hash metadata, and shows only a preview in the UI.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "saveStudioSourceFromForm",
+      "api_route": "/api/bna/studio/projects/:id/source",
+      "test": {
+        "type": "domain_and_browser_smoke",
+        "expected_result": "Domain test verifies unsafe HTML stripping and browser smoke saves a mocked source."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-GENERATE-STORYBOARD",
+      "label": "Generate Storyboard",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=storyboard",
+      "selector_hint": "button[onclick^=\"generateStudioStoryboard\"], form[onsubmit^=\"generateStudioStoryboard\"]",
+      "expected_behavior": "Generates deterministic local storyboard scenes and scene-version rows for the scoped project.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "generateStudioStoryboard",
+      "api_route": "/api/bna/studio/projects/:id/storyboard",
+      "test": {
+        "type": "domain_and_browser_smoke",
+        "expected_result": "Domain test validates storyboard output and browser smoke exercises the Storyboard action."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-COMPILE-PROMPT",
+      "label": "Compile Prompt",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "form[onsubmit^=\"compileStudioPrompt\"] button[type=\"submit\"]",
+      "expected_behavior": "Compiles prompt layers with policy, workspace, brief, delimited untrusted source, correction, and no-send output contracts.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "compileStudioPrompt",
+      "api_route": "/api/bna/studio/projects/:id/prompt-compile",
+      "test": {
+        "type": "domain_and_browser_smoke",
+        "expected_result": "Domain test checks prompt-injection boundaries and browser smoke shows the compiled prompt."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-PREVIEW-CORRECTION",
+      "label": "Preview Correction",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "form[onsubmit^=\"previewStudioCorrection\"] button[type=\"submit\"]",
+      "expected_behavior": "Previews a reversible correction patch without mutating data or making external calls.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "previewStudioCorrection",
+      "api_route": "/api/bna/studio/projects/:id/corrections/preview",
+      "test": {
+        "type": "domain_and_api_contract",
+        "expected_result": "Correction previews are reversible and no-write; broad patches require confirmation when applied."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-APPLY-CORRECTION",
+      "label": "Apply Preview",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=prompts",
+      "selector_hint": "button[onclick^=\"applyStudioCorrection\"]",
+      "expected_behavior": "Applies the currently previewed reversible correction patch to the scoped project after confirmation.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "applyStudioCorrection",
+      "api_route": "/api/bna/studio/projects/:id/corrections/apply",
+      "test": {
+        "type": "api_contract",
+        "expected_result": "Route enforces scoped project access and broad correction confirmation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-SAVE-SCENE",
+      "label": "Save Scene",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=storyboard",
+      "selector_hint": "form[onsubmit^=\"updateStudioSceneFromForm\"] button[type=\"submit\"]",
+      "expected_behavior": "Updates a scoped storyboard scene and appends a scene-version snapshot.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "updateStudioSceneFromForm",
+      "api_route": "/api/bna/studio/scenes/:id",
+      "test": {
+        "type": "api_contract",
+        "expected_result": "Scene route loads owner project/workspace before update."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-MOCK-RENDER",
+      "label": "Run Mock Render",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=jobs",
+      "selector_hint": "button[onclick^=\"renderStudioMock\"]",
+      "expected_behavior": "Runs a deterministic local mock render, creates local assets/usage, and performs no external write.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "renderStudioMock",
+      "api_route": "/api/bna/studio/projects/:id/render",
+      "test": {
+        "type": "domain_and_api_contract",
+        "expected_result": "Mock job output has local assets and external_write_performed=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-STUDIO-HANDOFF-CONTENT",
+      "label": "Create Content Handoff",
+      "surface": "operations_service_provider_studio",
+      "route": "/operations?view=studio&section=handoff",
+      "selector_hint": "button[onclick^=\"handoffStudioProject\"]",
+      "expected_behavior": "Creates an idempotent local Content job/output handoff only; no publish, send, schedule, upload, access grant, payment, or external CRM write.",
+      "permission": "super_admin_or_provider_workspace_admin",
+      "status": "active",
+      "handler": "handoffStudioProject",
+      "api_route": "/api/bna/studio/projects/:id/handoff",
+      "test": {
+        "type": "domain_and_browser_smoke",
+        "expected_result": "Domain test verifies no-publish idempotency and browser smoke creates a mocked local handoff."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
         "GOAL-CORE-015"
       ]
     }

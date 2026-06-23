@@ -8188,6 +8188,40 @@
             updateContentBundle(id, bundle) { return this.request('PATCH', '/content-bundles/' + id, bundle); },
             generateContentBundle(id, payload = {}) { return this.request('POST', '/content-bundles/' + id + '/generate', payload); },
             bulkGenerateContent(payload = {}) { return this.request('POST', '/content-jobs/bulk-generate', payload); },
+            getStudioDashboard(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                return this.request('GET', '/studio/dashboard' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            getStudioProjects(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.status) params.set('status', filters.status);
+                return this.request('GET', '/studio/projects' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            getStudioProject(id) { return this.request('GET', '/studio/projects/' + encodeURIComponent(id)); },
+            createStudioProject(payload = {}) { return this.request('POST', '/studio/projects', payload); },
+            updateStudioProject(id, payload = {}) { return this.request('PATCH', '/studio/projects/' + encodeURIComponent(id), payload); },
+            saveStudioSource(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/source', payload); },
+            generateStudioOutline(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/outline', payload); },
+            generateStudioStoryboard(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/storyboard', payload); },
+            compileStudioPrompt(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/prompt-compile', payload); },
+            previewStudioCorrection(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/corrections/preview', payload); },
+            applyStudioCorrection(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/corrections/apply', payload); },
+            updateStudioScene(id, payload = {}) { return this.request('PATCH', '/studio/scenes/' + encodeURIComponent(id), payload); },
+            regenerateStudioScene(id, payload = {}) { return this.request('POST', '/studio/scenes/' + encodeURIComponent(id) + '/regenerate', payload); },
+            renderStudioProject(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/render', payload); },
+            retryStudioJob(id, payload = {}) { return this.request('POST', '/studio/jobs/' + encodeURIComponent(id) + '/retry', payload); },
+            cancelStudioJob(id, payload = {}) { return this.request('POST', '/studio/jobs/' + encodeURIComponent(id) + '/cancel', payload); },
+            handoffStudioProject(id, payload = {}) { return this.request('POST', '/studio/projects/' + encodeURIComponent(id) + '/handoff', payload); },
+            getStudioUsage(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                return this.request('GET', '/studio/usage' + (params.toString() ? '?' + params.toString() : ''));
+            },
             getWorkspacePlatform(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.workspace) params.set('workspace', filters.workspace);
@@ -8522,6 +8556,15 @@
         let contentPromptLibraryLoading = false;
         let contentPromptLibraryError = '';
         let contentBundles = [];
+        let studioDashboard = { projects: [], jobs: [], usage_rollup: null, price_catalog: [], pilot_fixture: null };
+        let studioProjects = [];
+        let studioProjectDetail = null;
+        let studioUsage = { usage_rollup: null, budget_rows: [], recent_events: [], price_catalog: [] };
+        let studioNotice = '';
+        let studioCorrectionPreview = null;
+        let studioCorrectionPayload = null;
+        let studioCompiledPrompt = null;
+        let studioHandoffResult = null;
         let oneTimeQuestionQueue = [];
         let oneTimeQuestionQueueSummary = null;
         let oneTimeQuestionDigestPreview = null;
@@ -8636,6 +8679,7 @@
         const initialTask = initialParams.get('task');
         let intakeSelectedRunId = Number(initialParams.get('parse_run') || '') || null;
         let selectedContentDetailJobId = Number(initialParams.get('content_job') || '') || null;
+        let selectedStudioProjectId = Number(initialParams.get('studio_project') || '') || null;
         const VIEW_ALIASES = {
             home: 'dashboard',
             overview: 'dashboard',
@@ -8654,6 +8698,11 @@
             providers: 'service_providers',
             service_provider: 'service_providers',
             service_providers: 'service_providers',
+            studio: 'studio',
+            service_provider_studio: 'studio',
+            provider_studio: 'studio',
+            story_studio: 'studio',
+            video_studio: 'studio',
             messages: 'communications',
             comms: 'communications',
             dialogue: 'communications',
@@ -8694,7 +8743,7 @@
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
         const initialViewWasInternalDialogue = ['dialogue', 'internal', 'internal_dialogue'].includes(String(initialView || '').toLowerCase());
         const initialAgentRunMatch = window.location.pathname.match(/^\/operations\/agents\/runs\/([^/?#]+)/);
-        let currentView = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'].includes(normalizedInitialView) ? normalizedInitialView : 'dashboard';
+        let currentView = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'community', 'studio', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'].includes(normalizedInitialView) ? normalizedInitialView : 'dashboard';
         if (initialAgentRunMatch) currentView = 'agents';
         agentRunDeepKey = initialAgentRunMatch ? decodeURIComponent(initialAgentRunMatch[1]) : String(initialParams.get('run') || '');
         let navDrawerOpen = false;
@@ -8762,6 +8811,9 @@
         let contentSection = currentView === 'content' && ['library', 'one_time_library', 'meetings', 'research', 'selected', 'repurpose', 'newsletter', 'prompts', 'bundles'].includes(initialSection)
             ? initialSection
             : 'library';
+        let studioSection = currentView === 'studio' && ['overview', 'source', 'storyboard', 'prompts', 'jobs', 'usage', 'handoff'].includes(initialSection)
+            ? initialSection
+            : 'overview';
         let communitySection = currentView === 'community' && ['overview', 'courses', 'worksheets', 'questions', 'approvals', 'ledger', 'parent_preview'].includes(initialSection)
             ? initialSection
             : 'overview';
@@ -8883,6 +8935,7 @@
             { id: 'students', label: 'Students', marker: 'ST' },
             { id: 'contacts', label: 'Parents / Contacts', marker: 'PC' },
             { id: 'community', label: 'Community', marker: 'CO' },
+            { id: 'studio', label: 'Studio', marker: 'ST' },
             { id: 'content', label: 'Content', marker: 'CT' },
             { id: 'live_classes', label: 'Live Classes', marker: 'LC' },
             { id: 'calendar', label: 'Calendar', marker: 'CA' },
@@ -9056,6 +9109,15 @@
             { id: 'newsletter', label: 'Newsletter' },
             { id: 'prompts', label: 'Prompts' },
             { id: 'bundles', label: 'Bundles' }
+        ];
+        const STUDIO_SUBTABS = [
+            { id: 'overview', label: 'Overview' },
+            { id: 'source', label: 'Source' },
+            { id: 'storyboard', label: 'Storyboard' },
+            { id: 'prompts', label: 'Prompts' },
+            { id: 'jobs', label: 'Jobs' },
+            { id: 'usage', label: 'Usage' },
+            { id: 'handoff', label: 'Handoff' }
         ];
 
         const CONTACT_SUBTABS = [
@@ -9808,6 +9870,7 @@
                 contacts: { tabs: providerWorkspace ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS, active: contactSection, countSource: contactSubnavCounts(), label: providerWorkspace ? 'Participants / Members' : 'Parents / Contacts' },
                 intake: { tabs: INTAKE_SUBTABS, active: intakeSection, countSource: intakeSubnavCounts(), label: 'Intake Review' },
                 community: { tabs: COMMUNITY_SUBTABS, active: communitySection, countSource: communitySubnavCounts(), label: 'Community' },
+                studio: { tabs: STUDIO_SUBTABS, active: studioSection, countSource: studioSubnavCounts(), label: 'Studio' },
                 content: { tabs: visibleContentSubtabs(), active: visibleContentSubtabs().some(tab => tab.id === contentSection) ? contentSection : 'library', countSource: contentSubnavCounts(), label: 'Content' },
                 live_classes: { tabs: LIVE_CLASS_SUBTABS, active: liveClassSection, countSource: {}, label: 'Live Classes' },
                 calendar: { tabs: providerWorkspace ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS, active: calendarSection, countSource: calendarSubnavCounts(), label: providerWorkspace ? 'Calendar / Schedule' : 'Calendar' },
@@ -10018,6 +10081,7 @@
             if (currentView === 'contacts') return '<button class="primary-button" onclick="addInterestedParentLead(event)">New Lead</button>';
             if (currentView === 'intake') return '<button class="primary-button" onclick="openManualIntakePrompt()">Parse Intake</button>';
             if (currentView === 'community') return '<button class="primary-button" onclick="createCommunityQuestionPrompt(event)">New Question</button>';
+            if (currentView === 'studio') return '<button class="primary-button" onclick="setStudioSection(\'source\')">Open Source</button>';
             if (currentView === 'content') return '<button class="primary-button" onclick="createManualContentJob()">New Content</button>';
             if (currentView === 'calendar') return '<button class="primary-button" onclick="createCalendarEventPrompt()">New Event</button>';
             if (currentView === 'service_providers' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'schedule\')">Open Schedule</button>';
@@ -10045,6 +10109,7 @@
             if (currentView === 'agents') return AGENT_RUN_TABS.find(tab => tab.id === agentRunsTab)?.label || 'Ready';
             if (currentView === 'students') return STUDENT_SUBTABS.find(tab => tab.id === studentSection)?.label || 'Overview';
             if (currentView === 'community') return COMMUNITY_SUBTABS.find(tab => tab.id === communitySection)?.label || 'Overview';
+            if (currentView === 'studio') return STUDIO_SUBTABS.find(tab => tab.id === studioSection)?.label || 'Overview';
             if (currentView === 'content') return CONTENT_SUBTABS.find(tab => tab.id === contentSection)?.label || 'Library';
             if (currentView === 'contacts') return (isProviderWorkspace() ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS).find(tab => tab.id === contactSection)?.label || 'Parents';
             if (currentView === 'intake') return INTAKE_SUBTABS.find(tab => tab.id === intakeSection)?.label || 'Parse Runs';
@@ -10332,6 +10397,25 @@
                 });
                 return counts;
             }, {});
+        }
+
+        function studioSubnavCounts() {
+            const detail = studioProjectDetail || {};
+            const sourceCount = (detail.sources || []).length;
+            const sceneCount = (detail.scenes || []).length;
+            const promptCount = (detail.prompt_layers || []).length;
+            const jobCount = (studioDashboard.jobs || []).length + (detail.jobs || []).length;
+            const usageEvents = studioUsage?.recent_events?.length || 0;
+            const handoffCount = (detail.exports || []).filter(item => String(item.export_type || '') === 'content_handoff').length;
+            return {
+                overview: studioProjects.length || (studioDashboard.projects || []).length,
+                source: sourceCount,
+                storyboard: sceneCount,
+                prompts: promptCount,
+                jobs: jobCount,
+                usage: usageEvents,
+                handoff: handoffCount
+            };
         }
 
         function accountingSubnavCounts() {
@@ -19786,16 +19870,706 @@
             `;
         }
 
+        function studioDefaultProjectKey() {
+            const key = projectKeyForWorkspaceKey();
+            return key && key !== 'all' ? key : 'one_time_mishnah_class';
+        }
+
+        function studioDefaultWorkspaceKey(projectKey = studioDefaultProjectKey()) {
+            const workspace = currentWorkspaceKey();
+            if (workspace && workspace !== 'platform') return workspace;
+            return workspaceFromProjectKey(projectKey);
+        }
+
+        function studioCurrentProject() {
+            return studioProjectDetail?.project
+                || studioProjects.find(project => Number(project.id) === Number(selectedStudioProjectId))
+                || studioProjects[0]
+                || null;
+        }
+
+        function studioMoney(value) {
+            const amount = Number(value || 0);
+            if (!Number.isFinite(amount) || amount <= 0) return '$0.00';
+            return `$${amount.toFixed(amount < 1 ? 4 : 2)}`;
+        }
+
+        function studioUsageRollup() {
+            return studioDashboard?.usage_rollup || studioUsage?.usage_rollup || studioUsage?.rollup || {};
+        }
+
+        function studioRollupNumber(rollup = {}, key = '') {
+            const value = rollup?.[key] ?? rollup?.totals?.[key] ?? 0;
+            const number = Number(value || 0);
+            return Number.isFinite(number) ? number : 0;
+        }
+
+        function studioProjectStatusLabel(project = {}) {
+            return String(project.status || 'draft').replace(/_/g, ' ');
+        }
+
+        function studioJsonSnippet(value, max = 900) {
+            const parsed = parseJsonField(value) || value || {};
+            try {
+                return JSON.stringify(parsed, null, 2).slice(0, max);
+            } catch {
+                return String(value || '').slice(0, max);
+            }
+        }
+
+        function renderStudio() {
+            const project = studioCurrentProject();
+            const rollup = studioUsageRollup();
+            const activeJobs = (studioDashboard.jobs || []).filter(job => !['succeeded', 'cancelled'].includes(String(job.status || '').toLowerCase()));
+            const projectOptions = availableProjects().filter(project => project.project_key && project.project_key !== 'all');
+            const defaultProject = studioDefaultProjectKey();
+            return `
+                <div class="container" data-testid="service-provider-studio">
+                    <div class="page-heading saas-page-heading">
+                        <div>
+                            <div class="page-kicker">Provider Studio</div>
+                            <h2>Universal Service Provider Studio</h2>
+                            <p>Build scoped provider video/story assets from raw source, storyboard scenes, prompt layers, mock render jobs, usage records, and no-send Content handoffs.</p>
+                        </div>
+                        <div class="task-actions">
+                            <button class="task-action" type="button" onclick="setStudioSection('source')">Source</button>
+                            <button class="task-action" type="button" onclick="setStudioSection('storyboard')">Storyboard</button>
+                            <button class="task-action primary" type="button" onclick="setStudioSection('handoff')">Handoff</button>
+                        </div>
+                    </div>
+                    ${studioNotice ? `<div class="settings-disabled-note">${escapeHtml(studioNotice)}</div>` : ''}
+                    <section class="focus-panel">
+                        <div class="usage-grid">
+                            ${renderUsageMetricCard('Projects', studioProjects.length, 'Studio projects visible in this workspace.')}
+                            ${renderUsageMetricCard('Open Jobs', activeJobs.length, 'Queued, running, failed, or stale Studio jobs.')}
+                            ${renderUsageMetricCard('Tokens', studioRollupNumber(rollup, 'input_tokens') + studioRollupNumber(rollup, 'output_tokens'), 'Input and output tokens logged by Studio usage events.')}
+                            ${renderUsageMetricCard('Estimated Cost', studioMoney(studioRollupNumber(rollup, 'estimated_cost_usd')), 'Mock or adapter-reported cost from Studio usage rows.')}
+                        </div>
+                    </section>
+                    ${renderPersonSectionMenu({ id: 'studio', label: 'Studio Sections', sections: tabsWithCounts(STUDIO_SUBTABS, studioSubnavCounts()), activeId: studioSection, handlerName: 'setStudioSection' })}
+                    <section class="focus-panel">
+                        <div class="task-section-header">
+                            <h3>Projects</h3>
+                            <span>${escapeHtml(currentWorkspaceRecord().display_name || currentWorkspaceKey())}</span>
+                        </div>
+                        <form class="task-inline-comment-form" onsubmit="createStudioProjectFromForm(event)">
+                            <div class="content-section-grid">
+                                <div class="form-group">
+                                    <label>Title</label>
+                                    <input name="title" required placeholder="One Time Mishnah episode promo">
+                                </div>
+                                <div class="form-group">
+                                    <label>Project</label>
+                                    <select name="project_key">
+                                        ${projectOptions.map(option => `<option value="${escapeHtml(option.project_key)}" ${option.project_key === defaultProject ? 'selected' : ''}>${escapeHtml(option.short_name || option.name || option.project_key)}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Audience</label>
+                                    <input name="target_audience" placeholder="Parents, participants, or donors">
+                                </div>
+                                <div class="form-group">
+                                    <label>Format</label>
+                                    <select name="format">
+                                        <option value="slideshow_video">Slideshow video</option>
+                                        <option value="short_form_video">Short-form video</option>
+                                        <option value="illustrated_story">Illustrated story</option>
+                                        <option value="lesson_clip">Lesson clip</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="task-action primary" type="submit">Create Project</button>
+                        </form>
+                        <div class="content-section-grid">
+                            ${studioProjects.length ? studioProjects.map(renderStudioProjectCard).join('') : '<div class="empty-state">No Studio projects are loaded for this workspace.</div>'}
+                        </div>
+                    </section>
+                    ${project ? renderStudioProjectDetail(project) : ''}
+                </div>
+            `;
+        }
+
+        function renderStudioProjectCard(project = {}) {
+            const active = Number(project.id) === Number(selectedStudioProjectId);
+            return `
+                <article class="content-card ${active ? 'selected' : ''}" data-testid="studio-project-card">
+                    <div class="content-card-title">${escapeHtml(project.title || 'Studio project')}</div>
+                    <div class="content-card-meta">${escapeHtml([project.project_short_name || project.project_key, project.workspace_key, studioProjectStatusLabel(project)].filter(Boolean).join(' / '))}</div>
+                    <p class="event-meta">${escapeHtml(limitTextClient(project.brief_json?.goal || project.brief_json?.target_audience || project.format || '', 160))}</p>
+                    <div class="task-actions">
+                        <button class="task-action ${active ? 'primary' : ''}" type="button" onclick="selectStudioProject(${Number(project.id || 0)})">Open</button>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderStudioProjectDetail(project = {}) {
+            const detail = studioProjectDetail?.project?.id && Number(studioProjectDetail.project.id) === Number(project.id) ? studioProjectDetail : null;
+            if (!detail) {
+                return `
+                    <section class="focus-panel">
+                        <div class="task-section-header"><h3>${escapeHtml(project.title || 'Studio project')}</h3><span>${escapeHtml(studioProjectStatusLabel(project))}</span></div>
+                        <div class="empty-state">Project detail is loading.</div>
+                    </section>
+                `;
+            }
+            const sections = {
+                overview: renderStudioOverviewPanel(detail),
+                source: renderStudioSourcePanel(detail),
+                storyboard: renderStudioStoryboardPanel(detail),
+                prompts: renderStudioPromptPanel(detail),
+                jobs: renderStudioJobsPanel(detail),
+                usage: renderStudioUsagePanel(detail),
+                handoff: renderStudioHandoffPanel(detail)
+            };
+            return `
+                <section class="focus-panel" data-testid="studio-project-detail">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>${escapeHtml(detail.project.title || 'Studio project')}</h3>
+                            <p class="event-meta">${escapeHtml([detail.project.project_short_name || detail.project.project_key, detail.project.workspace_key, studioProjectStatusLabel(detail.project)].filter(Boolean).join(' / '))}</p>
+                        </div>
+                        <span>${escapeHtml(formatDateTime(detail.project.updated_at) || 'Not updated')}</span>
+                    </div>
+                    ${sections[studioSection] || sections.overview}
+                </section>
+            `;
+        }
+
+        function renderStudioOverviewPanel(detail = {}) {
+            const rollup = detail.usage_rollup || {};
+            return `
+                <div class="usage-grid">
+                    ${renderUsageMetricCard('Sources', (detail.sources || []).length, 'Stored normalized source records.')}
+                    ${renderUsageMetricCard('Scenes', (detail.scenes || []).length, 'Storyboard scenes and editable versions.')}
+                    ${renderUsageMetricCard('Prompt Layers', (detail.prompt_layers || []).length, 'System, source, scene, style, and correction layers.')}
+                    ${renderUsageMetricCard('Cost', studioMoney(studioRollupNumber(rollup, 'estimated_cost_usd')), 'Project-level usage estimate.')}
+                </div>
+                ${detail.project.brief_json && Object.keys(detail.project.brief_json).length ? `
+                    <article class="content-card">
+                        <div class="content-card-title">Brief</div>
+                        <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(detail.project.brief_json))}</pre>
+                    </article>
+                ` : '<div class="empty-state">No brief has been saved for this project yet.</div>'}
+            `;
+        }
+
+        function renderStudioSourcePanel(detail = {}) {
+            return `
+                <form class="task-inline-comment-form" onsubmit="saveStudioSourceFromForm(event, ${Number(detail.project.id)})">
+                    <div class="content-section-grid">
+                        <div class="form-group">
+                            <label>Source Title</label>
+                            <input name="title" value="${escapeHtml(detail.project.title || '')}">
+                        </div>
+                        <div class="form-group">
+                            <label>Source Type</label>
+                            <select name="source_type">
+                                <option value="manual">Manual</option>
+                                <option value="transcript">Transcript</option>
+                                <option value="url">URL</option>
+                                <option value="drive_note">Drive note</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Source URL</label>
+                            <input name="source_url" placeholder="Optional reference URL">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Raw Source</label>
+                        <textarea name="raw_text" required placeholder="Paste the untrusted source text here. It is normalized and hashed before use."></textarea>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="submit">Save Source</button>
+                        <button class="task-action" type="button" onclick="generateStudioOutline(event, ${Number(detail.project.id)})">Generate Outline</button>
+                        <button class="task-action" type="button" onclick="generateStudioStoryboard(event, ${Number(detail.project.id)})">Generate Storyboard</button>
+                    </div>
+                </form>
+                <div class="task-list">
+                    ${(detail.sources || []).length ? detail.sources.map(source => `
+                        <article class="task-card">
+                            <div class="task-card-header">
+                                <div>
+                                    <div class="task-title">${escapeHtml(source.title || 'Source')}</div>
+                                    <div class="task-meta"><span>${escapeHtml(source.source_type || 'manual')}</span><span>${escapeHtml(source.source_hash || '')}</span></div>
+                                </div>
+                            </div>
+                            <p>${escapeHtml(limitTextClient(source.raw_text_preview || source.normalized_text_preview || '', 260))}</p>
+                            ${(source.annotations || []).length ? `<div class="task-chip-row">${source.annotations.map(item => `<span class="status-chip">${escapeHtml(item.type || item.message || 'annotation')}</span>`).join('')}</div>` : ''}
+                        </article>
+                    `).join('') : '<div class="empty-state">No source records have been saved.</div>'}
+                </div>
+            `;
+        }
+
+        function renderStudioStoryboardPanel(detail = {}) {
+            return `
+                <form class="task-inline-comment-form" onsubmit="generateStudioStoryboard(event, ${Number(detail.project.id)})">
+                    <div class="content-section-grid">
+                        <div class="form-group">
+                            <label>Scene Count</label>
+                            <input name="scene_count" type="number" min="1" max="12" value="${Math.max(3, (detail.scenes || []).length || 3)}">
+                        </div>
+                        <div class="form-group">
+                            <label>Tone</label>
+                            <input name="tone" placeholder="Warm, clear, parent-friendly">
+                        </div>
+                        <div class="form-group">
+                            <label>Style</label>
+                            <input name="style_key" placeholder="bna_clean_illustrated">
+                        </div>
+                    </div>
+                    <button class="task-action primary" type="submit">Generate Storyboard</button>
+                </form>
+                <div class="task-list">
+                    ${(detail.scenes || []).length ? detail.scenes.map(renderStudioSceneEditor).join('') : '<div class="empty-state">No storyboard scenes have been generated.</div>'}
+                </div>
+            `;
+        }
+
+        function renderStudioSceneEditor(scene = {}) {
+            return `
+                <article class="task-card" data-testid="studio-scene-card">
+                    <form onsubmit="updateStudioSceneFromForm(event, ${Number(scene.id)})">
+                        <div class="task-card-header">
+                            <div>
+                                <div class="task-title">Scene ${Number(scene.position || 0)}: ${escapeHtml(scene.title || 'Untitled')}</div>
+                                <div class="task-meta"><span>${escapeHtml(scene.status || 'draft')}</span><span>${Number(scene.duration_seconds || 0)} sec</span><span>v${Number(scene.version || 1)}</span></div>
+                            </div>
+                        </div>
+                        <div class="content-section-grid">
+                            <div class="form-group">
+                                <label>Position</label>
+                                <input name="position" type="number" min="1" value="${Number(scene.position || 1)}">
+                            </div>
+                            <div class="form-group">
+                                <label>Duration</label>
+                                <input name="duration_seconds" type="number" min="1" max="180" value="${Number(scene.duration_seconds || 12)}">
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select name="status">
+                                    ${['draft', 'ready', 'rendered', 'approved', 'needs_revision'].map(status => `<option value="${status}" ${String(scene.status || '') === status ? 'selected' : ''}>${escapeHtml(status.replace(/_/g, ' '))}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group"><label>Title</label><input name="title" value="${escapeHtml(scene.title || '')}"></div>
+                        <div class="form-group"><label>Body</label><textarea name="body">${escapeHtml(scene.body || '')}</textarea></div>
+                        <div class="form-group"><label>Narration</label><textarea name="narration">${escapeHtml(scene.narration || '')}</textarea></div>
+                        <div class="form-group"><label>Visual Prompt</label><textarea name="visual_prompt">${escapeHtml(scene.visual_prompt || '')}</textarea></div>
+                        <div class="task-actions">
+                            <button class="task-action primary" type="submit">Save Scene</button>
+                            <button class="task-action" type="button" onclick="regenerateStudioScene(event, ${Number(scene.id)})">Regenerate Mock</button>
+                        </div>
+                    </form>
+                </article>
+            `;
+        }
+
+        function renderStudioPromptPanel(detail = {}) {
+            const layers = detail.prompt_layers || [];
+            return `
+                <form class="task-inline-comment-form" onsubmit="compileStudioPrompt(event, ${Number(detail.project.id)})">
+                    <div class="content-section-grid">
+                        <div class="form-group">
+                            <label>Scene</label>
+                            <select name="scene_id">
+                                <option value="">Project prompt</option>
+                                ${(detail.scenes || []).map(scene => `<option value="${Number(scene.id)}">${escapeHtml(`Scene ${scene.position}: ${scene.title || scene.scene_key}`)}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Provider</label>
+                            <select name="provider">
+                                <option value="mock">Mock</option>
+                                <option value="openai">OpenAI adapter</option>
+                                <option value="kimi">Kimi adapter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="task-action primary" type="submit">Compile Prompt</button>
+                </form>
+                ${studioCompiledPrompt ? `
+                    <article class="content-card">
+                        <div class="content-card-title">Latest Compiled Prompt</div>
+                        <div class="content-card-meta">${escapeHtml(studioCompiledPrompt.compiled_hash || '')}</div>
+                        <pre class="settings-code-block">${escapeHtml(limitTextClient(studioCompiledPrompt.compiled_prompt || '', 1800))}</pre>
+                    </article>
+                ` : ''}
+                <div class="content-section-grid">
+                    ${layers.length ? layers.slice(0, 8).map(layer => `
+                        <article class="content-card">
+                            <div class="content-card-title">${escapeHtml(layer.label || layer.layer_key || 'Prompt layer')}</div>
+                            <div class="content-card-meta">${escapeHtml([layer.layer_type, layer.layer_hash || layer.hash, layer.status].filter(Boolean).join(' / '))}</div>
+                            <pre class="settings-code-block">${escapeHtml(limitTextClient(layer.content || '', 900))}</pre>
+                        </article>
+                    `).join('') : '<div class="empty-state">No prompt layers have been compiled.</div>'}
+                </div>
+                <form class="task-inline-comment-form" onsubmit="previewStudioCorrection(event, ${Number(detail.project.id)})">
+                    <div class="content-section-grid">
+                        <div class="form-group">
+                            <label>Correction Scope</label>
+                            <select name="scope">
+                                <option value="project">Project</option>
+                                <option value="scene">Scene</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Scene</label>
+                            <select name="scene_id">
+                                <option value="">Whole project</option>
+                                ${(detail.scenes || []).map(scene => `<option value="${Number(scene.id)}">${escapeHtml(`Scene ${scene.position}: ${scene.title || scene.scene_key}`)}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Correction</label>
+                        <textarea name="correction" required placeholder="Describe the storyboard or prompt change to preview."></textarea>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action" type="submit">Preview Correction</button>
+                        <button class="task-action primary" type="button" onclick="applyStudioCorrection(event, ${Number(detail.project.id)})">Apply Preview</button>
+                    </div>
+                </form>
+                ${studioCorrectionPreview ? `
+                    <article class="content-card">
+                        <div class="content-card-title">Correction Preview</div>
+                        <div class="content-card-meta">${escapeHtml([studioCorrectionPreview.patch_id, studioCorrectionPreview.scope, studioCorrectionPreview.requires_confirmation ? 'confirmation required' : 'ready'].filter(Boolean).join(' / '))}</div>
+                        <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(studioCorrectionPreview, 1400))}</pre>
+                    </article>
+                ` : ''}
+            `;
+        }
+
+        function renderStudioJobsPanel(detail = {}) {
+            const jobs = detail.jobs || [];
+            const assets = detail.assets || [];
+            return `
+                <div class="task-actions">
+                    <button class="task-action primary" type="button" onclick="renderStudioMock(event, ${Number(detail.project.id)})">Run Mock Render</button>
+                </div>
+                <div class="task-list">
+                    ${jobs.length ? jobs.map(job => `
+                        <article class="task-card">
+                            <div class="task-card-header">
+                                <div>
+                                    <div class="task-title">#${Number(job.id)} ${escapeHtml(job.job_type || 'job')}</div>
+                                    <div class="task-meta"><span>${escapeHtml(job.status || '')}</span><span>${escapeHtml(job.provider || '')}/${escapeHtml(job.model || '')}</span><span>${escapeHtml(formatDateTime(job.updated_at) || '')}</span></div>
+                                </div>
+                            </div>
+                            <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(job.result_payload || job.request_payload, 800))}</pre>
+                            <div class="task-actions">
+                                <button class="task-action" type="button" onclick="retryStudioJob(event, ${Number(job.id)})">Retry</button>
+                                <button class="task-action" type="button" onclick="cancelStudioJob(event, ${Number(job.id)})">Cancel</button>
+                            </div>
+                        </article>
+                    `).join('') : '<div class="empty-state">No Studio jobs are loaded for this project.</div>'}
+                </div>
+                <div class="content-section-grid">
+                    ${assets.length ? assets.map(asset => `
+                        <article class="content-card">
+                            <div class="content-card-title">${escapeHtml(asset.title || asset.asset_key || 'Asset')}</div>
+                            <div class="content-card-meta">${escapeHtml([asset.asset_type, asset.rights_status, asset.privacy_status].filter(Boolean).join(' / '))}</div>
+                            <p class="event-meta">${escapeHtml(asset.url || '')}</p>
+                        </article>
+                    `).join('') : ''}
+                </div>
+            `;
+        }
+
+        function renderStudioUsagePanel(detail = {}) {
+            const rollup = detail.usage_rollup || studioUsageRollup();
+            const budgets = studioUsage.budgets || studioUsage.budget_rows || [];
+            const catalog = studioDashboard.price_catalog || studioUsage.price_catalog || [];
+            return `
+                <div class="usage-grid">
+                    ${renderUsageMetricCard('Input Tokens', studioRollupNumber(rollup, 'input_tokens'), 'Studio input tokens.')}
+                    ${renderUsageMetricCard('Output Tokens', studioRollupNumber(rollup, 'output_tokens'), 'Studio output tokens.')}
+                    ${renderUsageMetricCard('Media Seconds', studioRollupNumber(rollup, 'media_seconds'), 'Generated or mocked media duration.')}
+                    ${renderUsageMetricCard('Estimated Cost', studioMoney(studioRollupNumber(rollup, 'estimated_cost_usd')), 'Usage event cost estimate.')}
+                </div>
+                <div class="content-section-grid">
+                    ${catalog.length ? catalog.map(row => `
+                        <article class="content-card">
+                            <div class="content-card-title">${escapeHtml(row.provider || 'provider')} / ${escapeHtml(row.model || 'model')}</div>
+                            <div class="content-card-meta">input ${studioMoney(row.input_per_1m)} / output ${studioMoney(row.output_per_1m)} / media ${studioMoney(row.media_second)}</div>
+                        </article>
+                    `).join('') : '<div class="empty-state">No active price catalog rows are loaded.</div>'}
+                    ${budgets.length ? budgets.map(row => `
+                        <article class="content-card">
+                            <div class="content-card-title">${escapeHtml(row.workspace_key || 'workspace')}</div>
+                            <div class="content-card-meta">monthly ${studioMoney(row.monthly_budget_usd)} / alert ${studioMoney(row.alert_threshold_usd)}</div>
+                        </article>
+                    `).join('') : ''}
+                </div>
+            `;
+        }
+
+        function renderStudioHandoffPanel(detail = {}) {
+            const exports = detail.exports || [];
+            return `
+                <div class="task-actions">
+                    <button class="task-action primary" type="button" onclick="handoffStudioProject(event, ${Number(detail.project.id)})">Create Content Handoff</button>
+                </div>
+                <p class="settings-disabled-note">Studio handoff creates local Content job records only. It does not publish, send, schedule, upload, or call an external social provider.</p>
+                ${studioHandoffResult ? `
+                    <article class="content-card">
+                        <div class="content-card-title">Latest Handoff</div>
+                        <div class="content-card-meta">${escapeHtml(studioHandoffResult.idempotency_key || studioHandoffResult.handoff?.idempotency_key || '')}</div>
+                        <pre class="settings-code-block">${escapeHtml(studioJsonSnippet(studioHandoffResult, 1400))}</pre>
+                    </article>
+                ` : ''}
+                <div class="task-list">
+                    ${exports.length ? exports.map(item => `
+                        <article class="task-card">
+                            <div class="task-title">${escapeHtml(item.export_type || 'export')}</div>
+                            <div class="task-meta"><span>${escapeHtml(item.status || '')}</span><span>${escapeHtml(formatDateTime(item.created_at) || '')}</span><span>${item.content_job_id ? `Content job #${Number(item.content_job_id)}` : 'No content job'}</span></div>
+                        </article>
+                    `).join('') : '<div class="empty-state">No Content handoffs have been created for this project.</div>'}
+                </div>
+            `;
+        }
+
+        function studioFormPayload(form) {
+            const payload = Object.fromEntries(new FormData(form).entries());
+            Object.keys(payload).forEach((key) => {
+                if (typeof payload[key] === 'string') payload[key] = payload[key].trim();
+                if (payload[key] === '') delete payload[key];
+            });
+            return payload;
+        }
+
+        function setStudioSection(section) {
+            currentView = 'studio';
+            setCurrentSection(section);
+        }
+
+        async function selectStudioProject(id) {
+            selectedStudioProjectId = Number(id || 0) || null;
+            studioCorrectionPreview = null;
+            studioCorrectionPayload = null;
+            studioCompiledPrompt = null;
+            studioHandoffResult = null;
+            syncOperationsUrl();
+            render();
+            await loadStudioData({ includeDetail: true }).then(() => render()).catch(error => {
+                studioNotice = error.message || 'Studio project could not load.';
+                render();
+            });
+        }
+
+        async function createStudioProjectFromForm(event) {
+            event?.preventDefault?.();
+            const form = event?.currentTarget;
+            const payload = studioFormPayload(form);
+            payload.project_key = normalizeProjectKey(payload.project_key || studioDefaultProjectKey());
+            payload.workspace_key = studioDefaultWorkspaceKey(payload.project_key);
+            payload.brief_json = {
+                target_audience: payload.target_audience || '',
+                format: payload.format || 'slideshow_video'
+            };
+            try {
+                const result = await api.createStudioProject(payload);
+                selectedStudioProjectId = Number(result?.project?.id || 0) || selectedStudioProjectId;
+                studioSection = 'source';
+                studioNotice = 'Studio project created.';
+                form?.reset?.();
+                await loadStudioData({ includeDetail: true });
+                syncOperationsUrl();
+            } catch (error) {
+                studioNotice = error.message || 'Studio project could not be created.';
+            }
+            render();
+        }
+
+        async function saveStudioSourceFromForm(event, projectId) {
+            event?.preventDefault?.();
+            const form = event?.currentTarget;
+            const payload = studioFormPayload(form);
+            try {
+                await api.saveStudioSource(projectId, payload);
+                studioNotice = 'Source saved and normalized.';
+                form?.reset?.();
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Source could not be saved.';
+            }
+            render();
+        }
+
+        async function generateStudioOutline(event, projectId) {
+            event?.preventDefault?.();
+            try {
+                await api.generateStudioOutline(projectId, {});
+                studioNotice = 'Outline job created.';
+                await loadStudioData({ includeDetail: true });
+                studioSection = 'jobs';
+            } catch (error) {
+                studioNotice = error.message || 'Outline could not be generated.';
+            }
+            render();
+        }
+
+        async function generateStudioStoryboard(event, projectId) {
+            event?.preventDefault?.();
+            const payload = event?.currentTarget?.tagName === 'FORM' ? studioFormPayload(event.currentTarget) : {};
+            if (payload.scene_count) payload.scene_count = Number(payload.scene_count);
+            if (payload.tone || payload.style_key) payload.brief = { tone: payload.tone || '', style_key: payload.style_key || '' };
+            try {
+                await api.generateStudioStoryboard(projectId, payload);
+                studioNotice = 'Storyboard generated.';
+                studioSection = 'storyboard';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Storyboard could not be generated.';
+            }
+            render();
+        }
+
+        async function compileStudioPrompt(event, projectId) {
+            event?.preventDefault?.();
+            const payload = studioFormPayload(event?.currentTarget);
+            if (payload.scene_id) payload.scene_id = Number(payload.scene_id);
+            try {
+                const result = await api.compileStudioPrompt(projectId, payload);
+                studioCompiledPrompt = result?.compiled_prompt || null;
+                studioNotice = 'Prompt compiled.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Prompt could not be compiled.';
+            }
+            render();
+        }
+
+        async function previewStudioCorrection(event, projectId) {
+            event?.preventDefault?.();
+            const payload = studioFormPayload(event?.currentTarget);
+            if (payload.scene_id) payload.scene_id = Number(payload.scene_id);
+            try {
+                const result = await api.previewStudioCorrection(projectId, payload);
+                studioCorrectionPreview = result?.patch || null;
+                studioCorrectionPayload = payload;
+                studioNotice = 'Correction preview ready.';
+            } catch (error) {
+                studioNotice = error.message || 'Correction preview failed.';
+            }
+            render();
+        }
+
+        async function applyStudioCorrection(event, projectId) {
+            event?.preventDefault?.();
+            if (!studioCorrectionPreview) {
+                studioNotice = 'Preview a correction before applying it.';
+                render();
+                return;
+            }
+            try {
+                const result = await api.applyStudioCorrection(projectId, {
+                    correction: studioCorrectionPreview.correction || '',
+                    scope: studioCorrectionPreview.scope || 'project',
+                    scene_id: studioCorrectionPayload?.scene_id || null,
+                    confirmed: true
+                });
+                studioCorrectionPreview = result?.patch || null;
+                studioNotice = 'Correction applied.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Correction could not be applied.';
+            }
+            render();
+        }
+
+        async function updateStudioSceneFromForm(event, sceneId) {
+            event?.preventDefault?.();
+            const payload = studioFormPayload(event?.currentTarget);
+            ['position', 'duration_seconds'].forEach(key => {
+                if (payload[key] !== undefined) payload[key] = Number(payload[key]);
+            });
+            try {
+                await api.updateStudioScene(sceneId, payload);
+                studioNotice = 'Scene saved.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Scene could not be saved.';
+            }
+            render();
+        }
+
+        async function regenerateStudioScene(event, sceneId) {
+            event?.preventDefault?.();
+            try {
+                await api.regenerateStudioScene(sceneId, { instruction: 'Regenerate from Operations Studio' });
+                studioNotice = 'Scene mock regeneration queued.';
+                studioSection = 'jobs';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Scene regeneration failed.';
+            }
+            render();
+        }
+
+        async function renderStudioMock(event, projectId) {
+            event?.preventDefault?.();
+            try {
+                await api.renderStudioProject(projectId, { render_format: 'mp4_preview' });
+                studioNotice = 'Mock render completed.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Mock render failed.';
+            }
+            render();
+        }
+
+        async function retryStudioJob(event, jobId) {
+            event?.preventDefault?.();
+            try {
+                await api.retryStudioJob(jobId, {});
+                studioNotice = 'Studio job queued for retry.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Studio job retry failed.';
+            }
+            render();
+        }
+
+        async function cancelStudioJob(event, jobId) {
+            event?.preventDefault?.();
+            try {
+                await api.cancelStudioJob(jobId, { reason: 'Cancelled from Operations Studio' });
+                studioNotice = 'Studio job cancelled.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Studio job cancellation failed.';
+            }
+            render();
+        }
+
+        async function handoffStudioProject(event, projectId) {
+            event?.preventDefault?.();
+            try {
+                const result = await api.handoffStudioProject(projectId, { approved_by: opsMe?.username || 'operations' });
+                studioHandoffResult = result || null;
+                studioNotice = 'Content handoff created.';
+                await loadStudioData({ includeDetail: true });
+            } catch (error) {
+                studioNotice = error.message || 'Content handoff failed.';
+            }
+            render();
+        }
+
         function renderApiUsage() {
             const counts = apiUsageSubnavCounts();
             const errorTickets = supportTickets.filter(ticket => !['resolved', 'closed'].includes(ticket.status) && /bot|api|openai|kimi|telegram|automation/i.test(`${ticket.category || ''} ${ticket.title || ''} ${ticket.description || ''}`));
+            const studioRollup = studioUsageRollup();
+            const studioEvents = studioUsage.events || studioUsage.recent_events || [];
             return `
                 <div class="container">
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Usage</div>
                             <h2>API Usage</h2>
-                            <p>Usage is grouped by workspace, role/account, provider, and bot where existing logs support it. Token/cost values stay blank until backend tracking is added.</p>
+                            <p>Usage is grouped by workspace, role/account, provider, bot, and Studio provider jobs where existing logs support it.</p>
                         </div>
                     </div>
                     <section class="focus-panel">
@@ -19803,9 +20577,20 @@
                             ${renderUsageMetricCard('Messages / Notes', contactCommunications.length, 'Existing communication records; not a token counter.')}
                             ${renderUsageMetricCard('Bot/API Issues', counts.errors, 'Open support/error records related to bots, APIs, or automations.')}
                             ${renderUsageMetricCard('Tracked Workspaces', counts.workspace, 'Projects/workspaces currently visible to this login.')}
-                            ${renderUsageMetricCard('Estimated Cost', 'Not tracked', 'No fake cost is shown until API metering persistence exists.')}
+                            ${renderUsageMetricCard('Studio Cost', studioMoney(studioRollupNumber(studioRollup, 'estimated_cost_usd')), 'Estimated cost from Studio usage-event persistence.')}
                         </div>
                     </section>
+                    ${apiUsageSection === 'provider' || apiUsageSection === 'overview' ? `
+                        <section class="focus-panel">
+                            <div class="task-section-header"><h3>Studio Metering</h3><span>${studioEvents.length} recent events</span></div>
+                            <div class="usage-grid">
+                                ${renderUsageMetricCard('Studio Tokens', studioRollupNumber(studioRollup, 'input_tokens') + studioRollupNumber(studioRollup, 'output_tokens'), 'Input plus output tokens.')}
+                                ${renderUsageMetricCard('Studio Media', studioRollupNumber(studioRollup, 'media_seconds'), 'Media seconds recorded by render jobs.')}
+                                ${renderUsageMetricCard('Studio Jobs', (studioDashboard.jobs || []).length, 'Recent Studio jobs visible in this workspace.')}
+                                ${renderUsageMetricCard('Studio Projects', (studioDashboard.projects || studioProjects || []).length, 'Visible Studio projects.')}
+                            </div>
+                        </section>
+                    ` : ''}
                     ${apiUsageSection === 'errors' || apiUsageSection === 'overview' ? `
                         <section class="focus-panel">
                             <div class="task-section-header"><h3>Errors / Rate Limits</h3><span>${errorTickets.length} open records</span></div>
@@ -31296,7 +32081,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
             return new Set(views);
         }
 
@@ -31354,6 +32139,15 @@
         function contentDataProjectFilters(workspaceKey = currentWorkspaceKey()) {
             const projectKey = projectKeyForWorkspaceKey(workspaceKey);
             return projectKey && projectKey !== 'all' ? { project_key: projectKey } : {};
+        }
+
+        function studioDataProjectFilters(workspaceKey = currentWorkspaceKey()) {
+            const projectKey = projectKeyForWorkspaceKey(workspaceKey);
+            const workspace = normalizeWorkspaceKey(workspaceKey);
+            const filters = {};
+            if (workspace && workspace !== 'platform') filters.workspace = workspace;
+            if (projectKey && projectKey !== 'all') filters.project_key = projectKey;
+            return filters;
         }
 
         function communityDataProjectFilters(workspaceKey = currentWorkspaceKey()) {
@@ -31490,9 +32284,9 @@
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const profile = workspaceNavProfile(workspaceKey);
             const nav = {
-                platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
+                platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
                 bna: ['dashboard', 'watchdog', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
-                service_provider: ['dashboard', 'watchdog', 'service_providers', 'agents', 'platform_suite', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
+                service_provider: ['dashboard', 'watchdog', 'service_providers', 'agents', 'platform_suite', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
                 family: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings'],
                 household: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings']
             };
@@ -31510,6 +32304,7 @@
                     agents: { label: 'Agents', marker: 'AG' },
                     platform_suite: { label: 'Platform Suite', marker: 'PS' },
                     community: { label: 'Community', marker: 'CO' },
+                    studio: { label: 'Studio', marker: 'ST' },
                     service_providers: { label: 'Providers', marker: 'PR' },
                     communications: { label: 'Communications', marker: 'CM' },
                     pipelines: { label: 'Pipelines', marker: 'PL' },
@@ -31527,6 +32322,7 @@
                     students: { label: 'Students', marker: 'ST' },
                     contacts: { label: 'Parents', marker: 'PA' },
                     community: { label: 'Community', marker: 'CO' },
+                    studio: { label: 'Studio', marker: 'ST' },
                     content: { label: 'Content', marker: 'CT' },
                     live_classes: { label: 'Live Classes', marker: 'LC' },
                     calendar: { label: 'Calendar', marker: 'CA' },
@@ -31545,6 +32341,7 @@
                     platform_suite: { label: 'Program Suite', marker: 'PS' },
                     contacts: { label: 'Members', marker: 'MB' },
                     community: { label: 'Community', marker: 'CO' },
+                    studio: { label: 'Studio', marker: 'ST' },
                     content: { label: 'Content', marker: 'CT' },
                     live_classes: { label: 'Live', marker: 'LC' },
                     calendar: { label: 'Schedule', marker: 'SC' },
@@ -31613,7 +32410,7 @@
                     currentView = 'contacts';
                     selectedStudentId = null;
                 }
-                if (currentView === 'content' || currentView === 'accounting' || currentView === 'api_usage' || currentView === 'pipelines' || currentView === 'admin' || currentView === 'integrations') currentView = 'dashboard';
+                if (currentView === 'studio' || currentView === 'content' || currentView === 'accounting' || currentView === 'api_usage' || currentView === 'pipelines' || currentView === 'admin' || currentView === 'integrations') currentView = 'dashboard';
                 if (currentView === 'contacts' && contactSection === 'students') contactSection = 'people';
                 if (currentView === 'service_providers' && !SERVICE_PROVIDER_SUBTABS.some(tab => tab.id === serviceProviderSection)) serviceProviderSection = 'overview';
             }
@@ -32990,6 +33787,35 @@
             if (errors.length) throw new Error(errors.join('; '));
         }
 
+        async function loadStudioData(options = {}) {
+            const filters = studioDataProjectFilters();
+            const [dashboardRes, usageRes] = await Promise.allSettled([
+                api.getStudioDashboard(filters),
+                api.getStudioUsage(filters)
+            ]);
+            if (dashboardRes.status === 'fulfilled' && dashboardRes.value) {
+                studioDashboard = dashboardRes.value;
+                studioProjects = dashboardRes.value.projects || [];
+                if (!selectedStudioProjectId && studioProjects[0]?.id) selectedStudioProjectId = Number(studioProjects[0].id);
+            }
+            if (usageRes.status === 'fulfilled' && usageRes.value) studioUsage = usageRes.value;
+            const shouldLoadDetail = options.includeDetail !== false && selectedStudioProjectId;
+            if (shouldLoadDetail) {
+                const detail = await api.getStudioProject(selectedStudioProjectId).catch((error) => {
+                    studioNotice = error.message || 'Studio project detail could not load.';
+                    return null;
+                });
+                studioProjectDetail = detail || null;
+                if (detail?.project?.id) selectedStudioProjectId = Number(detail.project.id);
+            } else if (!selectedStudioProjectId) {
+                studioProjectDetail = null;
+            }
+            const errors = [dashboardRes, usageRes]
+                .filter(result => result.status === 'rejected')
+                .map(result => result.reason?.message || 'Studio data failed');
+            if (errors.length) throw new Error(errors.join('; '));
+        }
+
         async function loadData(options = {}) {
             if (loadDataInFlight && options.background) return;
             loadDataInFlight = true;
@@ -33020,7 +33846,7 @@
                 const needsGoogleIntegrationData = (activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection));
                 const needsPipelineData = needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView);
                 const needsDialogueData = needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection));
-                const needsProjectData = needsDashboardData || ['pipelines', 'service_providers', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection));
+                const needsProjectData = needsDashboardData || ['pipelines', 'service_providers', 'studio', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection));
                 const needsTaskData = needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView);
                 const needsAgentFleetData = needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
                 const needsQueueHealthData = needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView);
@@ -33033,6 +33859,7 @@
                 const needsSignupData = needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
                 const needsAccountingData = needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing_payments', 'billing', 'payment_links', 'api_limits'].includes(activeSettingsSection));
                 const needsContentData = needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView);
+                const needsStudioData = ['studio', 'api_usage'].includes(activeView);
                 const needsCommunityData = needsDashboardData || activeView === 'community';
                 const needsLiveClassData = needsDashboardData || ['live_classes', 'contacts', 'students'].includes(activeView);
                 const needsStudentRosterData = needsDashboardData || needsLocalClassroomData || needsCommunityData || ['contacts', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['learning_portals', 'parent_portal', 'student_portal'].includes(activeSettingsSection));
@@ -33246,6 +34073,7 @@
                 }
                 if (needsRabbiLaunchData) await loadRabbiLaunchData();
                 if (activeView === 'intake') await loadIntakeData();
+                if (needsStudioData) await loadStudioData({ includeDetail: activeView === 'studio' });
                 if (activeView === 'students' || (activeView === 'admin' && adminSection === 'identity')) {
                     try {
                         const duplicateResult = await api.getStudentIdentityDuplicates({ status: 'open', limit: 100 });
@@ -33325,6 +34153,7 @@
                 case 'platform_suite': content = renderPlatformSuite(); break;
                 case 'students': content = renderStudents(); break;
                 case 'community': content = renderCommunityAdmin(); break;
+                case 'studio': content = renderStudio(); break;
                 case 'content': content = renderContent(); break;
                 case 'contacts': content = renderContacts(); break;
                 case 'intake': content = renderIntakeReview(); break;
@@ -33371,6 +34200,7 @@
             if (currentView === 'platform_suite') return 'overview';
             if (currentView === 'students') return studentSection;
             if (currentView === 'community') return communitySection;
+            if (currentView === 'studio') return studioSection;
             if (currentView === 'content') return contentSection;
             if (currentView === 'contacts') return contactSection;
             if (currentView === 'intake') return intakeSection;
@@ -33418,6 +34248,8 @@
             }
             if (currentView !== 'content') url.searchParams.delete('content_job');
             if (currentView === 'content' && selectedContentDetailJobId) url.searchParams.set('content_job', selectedContentDetailJobId);
+            if (currentView !== 'studio') url.searchParams.delete('studio_project');
+            if (currentView === 'studio' && selectedStudioProjectId) url.searchParams.set('studio_project', selectedStudioProjectId);
             window.history.replaceState({}, '', url);
         }
 
@@ -33438,6 +34270,7 @@
             }
             if (currentView === 'students') studentSection = STUDENT_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'community') communitySection = COMMUNITY_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
+            if (currentView === 'studio') studioSection = STUDIO_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'content') contentSection = CONTENT_SUBTABS.some(tab => tab.id === section) ? section : 'library';
             if (currentView === 'contacts') {
                 const tabs = isProviderWorkspace() ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS;
@@ -36844,6 +37677,21 @@
             executeBnaHelperPlan,
             cancelBnaHelperPlan,
             openHelperResult,
+            setStudioSection,
+            selectStudioProject,
+            createStudioProjectFromForm,
+            saveStudioSourceFromForm,
+            generateStudioOutline,
+            generateStudioStoryboard,
+            compileStudioPrompt,
+            previewStudioCorrection,
+            applyStudioCorrection,
+            updateStudioSceneFromForm,
+            regenerateStudioScene,
+            renderStudioMock,
+            retryStudioJob,
+            cancelStudioJob,
+            handoffStudioProject,
         });
 
         // Init

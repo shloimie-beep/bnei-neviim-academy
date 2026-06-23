@@ -121,6 +121,7 @@
     "watchdog:communications": "node scripts/watchdog-communications-alerts.mjs",
     "watchdog:visual": "node scripts/watchdog-visual-baseline.mjs",
     "watchdog:all": "npm run watchdog:audit && npm run watchdog:links && npm run watchdog:actions && npm run watchdog:security && npm run watchdog:raw && npm run watchdog:content && npm run watchdog:communications",
+    "studio:smoke": "node --test tests/service-provider-studio-browser-smoke.test.js",
     "watchdog:once": "node scripts/agent-fleet-supervisor.mjs --watchdog --once",
     "watchdog:start": "powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1",
     "watchdog:restart": "powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -Restart",

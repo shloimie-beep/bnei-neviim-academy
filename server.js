@@ -83,6 +83,7 @@ const {
   agentRunView,
   parseJsonMaybe: parseAgentJsonMaybe,
 } = require('./src/lib/bna/agent-control');
+const studio = require('./src/lib/bna/service-provider-studio');
 const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
   assertOneTimeScopedPreview,
@@ -8335,11 +8336,11 @@ function identifyOpsUser(username, password = null) {
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
-  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8552,6 +8553,15 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/content-jobs\/\d+\/actions$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/content-jobs\/\d+\/parse-mixed-recording$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/content-jobs\/\d+\/outputs$/.test(routePath) && method === 'POST') return true;
+  if (routePath === '/api/bna/studio/dashboard' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/usage' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+$/.test(routePath) && method === 'PATCH') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+\/regenerate$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/jobs\/\d+\/(?:retry|cancel)$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/project-meetings' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/project-meetings\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
   if (/^\/api\/bna\/content-outputs\/\d+$/.test(routePath) && method === 'PATCH') return true;
@@ -14737,6 +14747,11 @@ const createOneTimeProductSystemSQL = fs.readFileSync(
 
 const createOneTimeTrialReferralConfigSQL = fs.readFileSync(
   path.join(__dirname, 'railway-migration-2026-06-21-one-time-trial-referral-config.sql'),
+  'utf8'
+);
+
+const createServiceProviderStudioSQL = fs.readFileSync(
+  path.join(__dirname, 'railway-migration-2026-06-23-service-provider-studio.sql'),
   'utf8'
 );
 
@@ -28118,6 +28133,7 @@ async function initDb() {
     await pool.query(createRabbiCheckoutAccessSQL);
     await pool.query(createOneTimeProductSystemSQL);
     await pool.query(createOneTimeTrialReferralConfigSQL);
+    await pool.query(createServiceProviderStudioSQL);
     await pool.query(createContentOutputsSQL);
     await pool.query(createContentPromptsSQL);
     await pool.query(createContentPromptVersionsSQL);
@@ -30602,7 +30618,7 @@ async function ensureDefaultProjects(db = pool) {
       compatibility_role: oneTimeOwnerCanonical.compatibility_role || oneTimeOwnerAssignment.role,
       role_contract: 'one-time-role-model-v1',
       account_owner: true,
-      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
+      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'community', 'studio', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
     },
   }, db);
   await ensureProjectMember(oneTime, oneTimeManagerAssignment.person_name, {
@@ -34396,7 +34412,7 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     activeWorkspace: workspaceProjectView(activeWorkspace),
     active_workspace: workspaceProjectView(activeWorkspace),
     memberships: memberships.map(workspaceMembershipView),
-    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
+    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
   };
 }
 
@@ -35332,6 +35348,13 @@ async function assertProjectOwnedRowAccess(req, tableName, rowId, db = pool) {
     'bna_assignments',
     'bna_support_tickets',
     'bna_in_app_notifications',
+    'bna_studio_projects',
+    'bna_studio_sources',
+    'bna_studio_scenes',
+    'bna_studio_jobs',
+    'bna_studio_assets',
+    'bna_studio_exports',
+    'bna_studio_usage_events',
   ]);
   if (!allowedTables.has(tableName)) {
     const error = new Error('Scoped access check is not configured for this record type.');
@@ -53357,6 +53380,966 @@ app.delete('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+function studioJson(value, fallback = {}) {
+  if (value === null || value === undefined || value === '') return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function studioProjectView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    brief_json: studioJson(row.brief_json, {}),
+    character_bible: studioJson(row.character_bible, []),
+    guardrails: studioJson(row.guardrails, []),
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+function studioSceneView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    character_refs: studioJson(row.character_refs, []),
+    asset_refs: studioJson(row.asset_refs, []),
+    style_json: studioJson(row.style_json, {}),
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+function studioSourceView(row = {}) {
+  if (!row) return null;
+  const { raw_text, normalized_text, ...safeRow } = row;
+  return {
+    ...safeRow,
+    annotations: studioJson(row.annotations, []),
+    metadata: studioJson(row.metadata, {}),
+    raw_text_returned: false,
+    raw_text_preview: String(row.raw_text || '').slice(0, 280),
+    normalized_text_returned: false,
+    normalized_text_preview: String(row.normalized_text || '').slice(0, 500),
+  };
+}
+
+function studioJobView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    request_payload: studioJson(row.request_payload, {}),
+    result_payload: studioJson(row.result_payload, {}),
+  };
+}
+
+function studioAssetView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+async function studioScopeForRequest(req, source = {}) {
+  const requestedWorkspace = activeWorkspaceKeyFromRequest(req, source.workspace_key || source.workspace || defaultWorkspaceKeyForRequest(req));
+  const workspaceKey = assertWorkspaceAccess(req, requestedWorkspace || defaultWorkspaceKeyForRequest(req), 'use Studio');
+  const global = !opsScopeProjectKey(req) && ['platform', 'super_admin'].includes(workspaceKey);
+  if (global && !source.project_key && !source.project) {
+    return { workspaceKey, project: null, global: true };
+  }
+  const project = await resolveProjectForScopedWrite(req, {
+    ...source,
+    workspace_key: workspaceKey,
+    project_key: source.project_key || source.project || workspaceProjectKey(workspaceKey),
+  });
+  assertProjectAccess(req, project);
+  return { workspaceKey, project, global: false };
+}
+
+function appendStudioScope(req, conditions, params, alias = 'sp', source = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (scopedProjectKey) {
+    params.push(scopedProjectKey);
+    conditions.push(`${alias}.project_id = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
+    return;
+  }
+  const requestedWorkspace = normalizeWorkspaceKey(source.workspace_key || source.workspace || req.query?.workspace_key || req.query?.workspace || '');
+  if (requestedWorkspace && !['platform', 'super_admin'].includes(requestedWorkspace)) {
+    const workspaceKey = assertWorkspaceAccess(req, requestedWorkspace, 'list Studio');
+    const projectKey = workspaceProjectKey(workspaceKey) || normalizeProjectKey(source.project_key || source.project || '');
+    if (projectKey) {
+      params.push(projectKey);
+      conditions.push(`${alias}.project_id = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
+    }
+    params.push(workspaceKey);
+    conditions.push(`${alias}.workspace_key = $${params.length}`);
+  }
+}
+
+async function getStudioProjectForRequest(req, studioProjectId, db = pool) {
+  const id = Number(studioProjectId || 0);
+  if (!Number.isFinite(id) || id <= 0) {
+    const error = new Error('Studio project id is required');
+    error.statusCode = 400;
+    throw error;
+  }
+  const row = (await db.query(
+    `SELECT sp.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+     FROM bna_studio_projects sp
+     JOIN bna_projects p ON p.id = sp.project_id
+     WHERE sp.id = $1
+     LIMIT 1`,
+    [id]
+  )).rows[0];
+  if (!row) {
+    const error = new Error('Studio project not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  assertProjectAccess(req, row);
+  assertWorkspaceAccess(req, row.workspace_key, 'read Studio project');
+  return studioProjectView(row);
+}
+
+async function loadStudioProjectDetail(req, studioProjectId, db = pool) {
+  const project = await getStudioProjectForRequest(req, studioProjectId, db);
+  const [sources, scenes, layers, patches, jobs, assets, exportsResult, usage] = await Promise.all([
+    db.query(`SELECT * FROM bna_studio_sources WHERE studio_project_id = $1 ORDER BY created_at DESC`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_scenes WHERE studio_project_id = $1 ORDER BY position ASC, id ASC`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_prompt_layers WHERE studio_project_id = $1 ORDER BY created_at DESC, id DESC LIMIT 80`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_revision_patches WHERE studio_project_id = $1 ORDER BY created_at DESC LIMIT 40`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_jobs WHERE studio_project_id = $1 ORDER BY updated_at DESC, id DESC LIMIT 40`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_assets WHERE studio_project_id = $1 ORDER BY updated_at DESC, id DESC LIMIT 80`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_exports WHERE studio_project_id = $1 ORDER BY updated_at DESC, id DESC LIMIT 20`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_usage_events WHERE studio_project_id = $1 ORDER BY created_at DESC LIMIT 120`, [project.id]),
+  ]);
+  return {
+    project,
+    sources: sources.rows.map(studioSourceView),
+    scenes: scenes.rows.map(studioSceneView),
+    prompt_layers: layers.rows.map((row) => ({ ...row, metadata: studioJson(row.metadata, {}) })),
+    correction_patches: patches.rows.map((row) => ({
+      ...row,
+      operations: studioJson(row.operations, []),
+      affected_layers: studioJson(row.affected_layers, []),
+    })),
+    jobs: jobs.rows.map(studioJobView),
+    assets: assets.rows.map(studioAssetView),
+    exports: exportsResult.rows.map((row) => ({ ...row, manifest_json: studioJson(row.manifest_json, {}) })),
+    usage_events: usage.rows,
+    usage_rollup: studio.buildUsageRollup(usage.rows),
+  };
+}
+
+async function loadStudioPrimarySource(studioProjectId, db = pool) {
+  const row = (await db.query(
+    `SELECT *
+     FROM bna_studio_sources
+     WHERE studio_project_id = $1
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [studioProjectId]
+  )).rows[0];
+  if (!row) return null;
+  return {
+    ...row,
+    annotations: studioJson(row.annotations, []),
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+async function insertStudioUsageEvent({ db = pool, project, studioProjectId = null, jobId = null, workspaceKey, actor = '', usage = {}, metadata = {} } = {}) {
+  if (!project?.id) return null;
+  const result = await db.query(
+    `INSERT INTO bna_studio_usage_events (
+       studio_project_id, job_id, project_id, workspace_key, actor,
+       provider, model, operation, input_tokens, output_tokens, media_seconds,
+       estimated_cost_usd, latency_ms, status, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+     RETURNING *`,
+    [
+      studioProjectId,
+      jobId,
+      project.id,
+      workspaceKey,
+      actor || null,
+      usage.provider || 'mock',
+      usage.model || 'deterministic-v1',
+      usage.operation || 'studio_operation',
+      Number(usage.input_tokens || 0),
+      Number(usage.output_tokens || 0),
+      Number(usage.media_seconds || 0),
+      Number(usage.estimated_cost_usd || 0),
+      Number(usage.latency_ms || 0),
+      usage.status || 'succeeded',
+      JSON.stringify(metadata || {}),
+    ]
+  );
+  return result.rows[0];
+}
+
+app.get('/api/bna/studio/dashboard', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [`sp.status <> 'archived'`];
+    appendStudioScope(req, conditions, params, 'sp', req.query || {});
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const projects = (await pool.query(
+      `SELECT sp.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name,
+              COALESCE(scene_counts.scene_count, 0) AS scene_count,
+              COALESCE(job_counts.open_jobs, 0) AS open_jobs
+       FROM bna_studio_projects sp
+       JOIN bna_projects p ON p.id = sp.project_id
+       LEFT JOIN (
+         SELECT studio_project_id, count(*) AS scene_count
+         FROM bna_studio_scenes
+         GROUP BY studio_project_id
+       ) scene_counts ON scene_counts.studio_project_id = sp.id
+       LEFT JOIN (
+         SELECT studio_project_id, count(*) AS open_jobs
+         FROM bna_studio_jobs
+         WHERE status IN ('queued', 'running', 'failed', 'stale')
+         GROUP BY studio_project_id
+       ) job_counts ON job_counts.studio_project_id = sp.id
+       ${whereClause}
+       ORDER BY sp.updated_at DESC
+       LIMIT 40`,
+      params
+    )).rows.map(studioProjectView);
+    const usageConditions = [];
+    const usageParams = [];
+    appendStudioScope(req, usageConditions, usageParams, 'u', req.query || {});
+    const usageWhere = usageConditions.length ? `WHERE ${usageConditions.join(' AND ')}` : '';
+    const usageRows = (await pool.query(
+      `SELECT provider, model, operation, status, input_tokens, output_tokens, media_seconds, estimated_cost_usd, latency_ms
+       FROM bna_studio_usage_events u
+       ${usageWhere}
+       ORDER BY created_at DESC
+       LIMIT 300`,
+      usageParams
+    )).rows;
+    const jobs = (await pool.query(
+      `SELECT j.*, sp.title AS studio_title, p.project_key
+       FROM bna_studio_jobs j
+       JOIN bna_studio_projects sp ON sp.id = j.studio_project_id
+       JOIN bna_projects p ON p.id = j.project_id
+       ${whereClause.replaceAll('sp.', 'sp.')}
+       ORDER BY j.updated_at DESC
+       LIMIT 20`,
+      params
+    )).rows.map(studioJobView);
+    const priceCatalog = (await pool.query(
+      `SELECT provider, model, input_per_1m, output_per_1m, media_second, status, metadata
+       FROM bna_studio_price_catalog
+       WHERE status = 'active'
+       ORDER BY provider ASC, model ASC`
+    )).rows.map((row) => ({ ...row, metadata: studioJson(row.metadata, {}) }));
+    const workspaceKey = normalizeWorkspaceKey(req.query.workspace || req.query.workspace_key || defaultWorkspaceKeyForRequest(req));
+    res.json({
+      success: true,
+      projects,
+      jobs,
+      usage_rollup: studio.buildUsageRollup(usageRows),
+      price_catalog: priceCatalog,
+      pilot_fixture: workspaceKey === 'rabbi_sheller_provider' ? studio.buildOneTimeStudioPilotFixture() : null,
+      no_external_writes: true,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/projects', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [`sp.status <> 'archived'`];
+    appendStudioScope(req, conditions, params, 'sp', req.query || {});
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const rows = (await pool.query(
+      `SELECT sp.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+       FROM bna_studio_projects sp
+       JOIN bna_projects p ON p.id = sp.project_id
+       ${whereClause}
+       ORDER BY sp.updated_at DESC
+       LIMIT 100`,
+      params
+    )).rows;
+    res.json({ success: true, projects: rows.map(studioProjectView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const title = String(body.title || body.name || '').trim();
+  if (!title) return res.status(400).json({ error: 'title is required' });
+  try {
+    const scope = await studioScopeForRequest(req, body);
+    if (!scope.project) return res.status(400).json({ error: 'workspace or project is required for Studio project creation' });
+    const brief = body.brief_json || body.brief || {};
+    const result = await pool.query(
+      `INSERT INTO bna_studio_projects (
+         project_id, workspace_key, title, format, status, brief_json,
+         character_bible, guardrails, metadata, created_by, updated_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+       RETURNING *`,
+      [
+        scope.project.id,
+        scope.workspaceKey,
+        title,
+        body.format || brief.format || 'slideshow_video',
+        studio.normalizeStudioStatus(body.status || 'draft'),
+        JSON.stringify(brief || {}),
+        JSON.stringify(Array.isArray(body.character_bible) ? body.character_bible : []),
+        JSON.stringify(Array.isArray(body.guardrails) ? body.guardrails : []),
+        JSON.stringify({ source: 'operations_studio', external_write_performed: false, ...(body.metadata || {}) }),
+        req.opsUser || 'dashboard',
+      ]
+    );
+    res.json({ success: true, project: studioProjectView({ ...result.rows[0], project_key: scope.project.project_key, project_name: scope.project.name }) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/projects/:id', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    res.json({ success: true, ...detail });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/studio/projects/:id', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const allowed = ['title', 'format', 'status', 'brief_json', 'character_bible', 'guardrails', 'metadata'];
+  const fields = [];
+  const values = [];
+  try {
+    await getStudioProjectForRequest(req, req.params.id);
+    for (const field of allowed) {
+      if (!Object.prototype.hasOwnProperty.call(body, field)) continue;
+      const value = ['brief_json', 'character_bible', 'guardrails', 'metadata'].includes(field)
+        ? JSON.stringify(body[field] || (field === 'character_bible' || field === 'guardrails' ? [] : {}))
+        : field === 'status'
+          ? studio.normalizeStudioStatus(body[field])
+          : body[field];
+      values.push(value);
+      fields.push(`${field} = $${values.length}`);
+    }
+    if (!fields.length) return res.status(400).json({ error: 'No valid Studio project fields provided' });
+    values.push(req.opsUser || 'dashboard');
+    fields.push(`updated_by = $${values.length}`);
+    values.push(req.params.id);
+    const result = await pool.query(
+      `UPDATE bna_studio_projects
+       SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    res.json({ success: true, project: studioProjectView(result.rows[0]) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/source', requireAdmin, async (req, res) => {
+  try {
+    const project = await getStudioProjectForRequest(req, req.params.id);
+    const source = studio.normalizeStudioSourceInput(req.body || {});
+    if (!source.normalized_text) return res.status(400).json({ error: 'source text is required' });
+    const result = await pool.query(
+      `INSERT INTO bna_studio_sources (
+         studio_project_id, project_id, source_hash, raw_hash, title, source_type,
+         raw_text, normalized_text, sanitized_html, annotations, metadata, created_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       ON CONFLICT (studio_project_id, source_hash) DO UPDATE SET
+         title = EXCLUDED.title,
+         metadata = bna_studio_sources.metadata || EXCLUDED.metadata
+       RETURNING *`,
+      [
+        project.id,
+        project.project_id,
+        source.source_hash,
+        source.raw_hash,
+        source.title,
+        source.source_type,
+        source.raw_text,
+        source.normalized_text,
+        source.sanitized_html || null,
+        JSON.stringify(source.annotations || []),
+        JSON.stringify(source.metadata || {}),
+        req.opsUser || 'dashboard',
+      ]
+    );
+    await pool.query(`UPDATE bna_studio_projects SET status = 'structuring', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [project.id, req.opsUser || 'dashboard']);
+    res.json({
+      success: true,
+      source: studioSourceView(result.rows[0]),
+      normalized: {
+        source_hash: source.source_hash,
+        raw_hash: source.raw_hash,
+        char_count: source.char_count,
+        word_count: source.word_count,
+        annotation_count: source.annotations.length,
+        unsafe_html_stripped: Boolean(source.metadata?.unsafe_html_stripped),
+      },
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/outline', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const source = await loadStudioPrimarySource(detail.project.id) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const storyboard = studio.buildStoryboard({
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: { ...detail.project.brief_json, ...(req.body?.brief || {}) },
+      scene_count: req.body?.scene_count || detail.project.brief_json?.scene_count || 3,
+    });
+    const compiled = studio.compileStudioPrompt({
+      project: detail.project,
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: detail.project.brief_json,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+    });
+    const job = studio.completeMockStudioJob(studio.createMockStudioJob({
+      project: detail.project,
+      job_type: 'outline',
+      payload: { compiled_hash: compiled.compiled_hash },
+      scenes: storyboard.scenes,
+    }), storyboard.scenes);
+    const jobRow = (await pool.query(
+      `INSERT INTO bna_studio_jobs (studio_project_id, project_id, job_type, status, provider, model, idempotency_key, request_payload, result_payload, attempts, finished_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+       ON CONFLICT (idempotency_key) DO UPDATE SET result_payload = EXCLUDED.result_payload, status = EXCLUDED.status, updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, job.job_type, job.status, job.provider, job.model, job.idempotency_key, JSON.stringify(job.request_payload), JSON.stringify({ storyboard, compiled_hash: compiled.compiled_hash }), job.attempts]
+    )).rows[0];
+    await insertStudioUsageEvent({
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      jobId: jobRow.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'outline', input_chars: compiled.compiled_prompt.length, output_chars: JSON.stringify(storyboard).length }),
+    });
+    res.json({ success: true, storyboard, compiled_prompt: compiled, job: studioJobView(jobRow) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/storyboard', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const source = await loadStudioPrimarySource(detail.project.id, client) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const storyboard = studio.buildStoryboard({
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: { ...detail.project.brief_json, ...(req.body?.brief || {}) },
+      scene_count: req.body?.scene_count || detail.project.brief_json?.scene_count || 3,
+    });
+    const scenes = [];
+    for (const scene of storyboard.scenes) {
+      const row = (await client.query(
+        `INSERT INTO bna_studio_scenes (
+           studio_project_id, project_id, scene_key, position, title, body, narration,
+           visual_prompt, duration_seconds, transition, character_refs, asset_refs,
+           style_json, status, version, metadata, created_by
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'draft', $14, $15, $16)
+         ON CONFLICT (studio_project_id, scene_key) DO UPDATE SET
+           position = EXCLUDED.position,
+           title = EXCLUDED.title,
+           body = EXCLUDED.body,
+           narration = EXCLUDED.narration,
+           visual_prompt = EXCLUDED.visual_prompt,
+           duration_seconds = EXCLUDED.duration_seconds,
+           transition = EXCLUDED.transition,
+           character_refs = EXCLUDED.character_refs,
+           asset_refs = EXCLUDED.asset_refs,
+           style_json = EXCLUDED.style_json,
+           version = bna_studio_scenes.version + 1,
+           metadata = bna_studio_scenes.metadata || EXCLUDED.metadata,
+           updated_at = NOW()
+         RETURNING *`,
+        [
+          detail.project.id,
+          detail.project.project_id,
+          scene.scene_key,
+          scene.position,
+          scene.title,
+          scene.body,
+          scene.narration,
+          scene.visual_prompt,
+          scene.duration_seconds,
+          scene.transition,
+          JSON.stringify(scene.character_refs || []),
+          JSON.stringify(scene.asset_refs || []),
+          JSON.stringify(scene.style || {}),
+          scene.version,
+          JSON.stringify(scene.metadata || {}),
+          req.opsUser || 'dashboard',
+        ]
+      )).rows[0];
+      await client.query(
+        `INSERT INTO bna_studio_scene_versions (scene_id, studio_project_id, version, snapshot_json, change_note, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (scene_id, version) DO NOTHING`,
+        [row.id, detail.project.id, row.version, JSON.stringify(studioSceneView(row)), 'Storyboard generated', req.opsUser || 'dashboard']
+      );
+      scenes.push(studioSceneView(row));
+    }
+    await client.query(`UPDATE bna_studio_projects SET status = 'storyboard', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [detail.project.id, req.opsUser || 'dashboard']);
+    await client.query('COMMIT');
+    res.json({ success: true, storyboard: { ...storyboard, scenes }, scenes });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/prompt-compile', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const scene = req.body?.scene_id
+      ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id))
+      : detail.scenes[0] || null;
+    const source = await loadStudioPrimarySource(detail.project.id, client) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const compiled = studio.compileStudioPrompt({
+      project: detail.project,
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: detail.project.brief_json,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+      scene,
+      correction_patches: detail.correction_patches,
+      layers: req.body?.layers || [],
+    });
+    for (const layer of compiled.layers) {
+      await client.query(
+        `INSERT INTO bna_studio_prompt_layers (
+           studio_project_id, scene_id, project_id, layer_type, layer_key, label,
+           content, version, locked, status, layer_hash, metadata, created_by
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', $10, $11, $12)`,
+        [
+          detail.project.id,
+          scene?.id || null,
+          detail.project.project_id,
+          layer.layer_type,
+          layer.layer_key,
+          layer.label,
+          layer.content,
+          layer.version,
+          layer.locked,
+          layer.hash,
+          JSON.stringify({ compiler_version: compiled.compiler_version, order: layer.order }),
+          req.opsUser || 'dashboard',
+        ]
+      );
+    }
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'prompt_compile', input_chars: compiled.compiled_prompt.length, output_chars: JSON.stringify(compiled.layers).length }),
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, compiled_prompt: compiled });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/corrections/preview', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const scene = req.body?.scene_id ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id)) : null;
+    const patch = studio.previewCorrectionPatch({
+      correction: req.body?.correction || req.body?.feedback || '',
+      scope: req.body?.scope || (scene ? 'scene' : 'project'),
+      scene,
+      project: detail.project,
+    });
+    res.json({ success: true, patch, no_external_writes: true });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/corrections/apply', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const scene = req.body?.scene_id ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id)) : null;
+    const patch = studio.previewCorrectionPatch({
+      correction: req.body?.correction || req.body?.feedback || '',
+      scope: req.body?.scope || (scene ? 'scene' : 'project'),
+      scene,
+      project: detail.project,
+    });
+    if (patch.requires_confirmation && req.body?.confirmed !== true && req.body?.confirm !== 'APPLY_STUDIO_CORRECTION') {
+      return res.status(409).json({ error: 'Broad Studio correction requires confirmed:true or APPLY_STUDIO_CORRECTION.', patch });
+    }
+    const result = await pool.query(
+      `INSERT INTO bna_studio_revision_patches (
+         studio_project_id, scene_id, project_id, patch_id, scope, correction_text,
+         operations, affected_layers, status, requires_confirmation, applied_by, applied_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'applied', $9, $10, NOW())
+       ON CONFLICT (studio_project_id, patch_id) DO UPDATE SET
+         status = 'applied',
+         operations = EXCLUDED.operations,
+         affected_layers = EXCLUDED.affected_layers,
+         applied_by = EXCLUDED.applied_by,
+         applied_at = NOW()
+       RETURNING *`,
+      [
+        detail.project.id,
+        scene?.id || null,
+        detail.project.project_id,
+        patch.patch_id,
+        patch.scope,
+        patch.correction,
+        JSON.stringify(patch.operations || []),
+        JSON.stringify(patch.affected_layers || []),
+        patch.requires_confirmation,
+        req.opsUser || 'dashboard',
+      ]
+    );
+    res.json({ success: true, patch: { ...patch, status: 'applied' }, row: result.rows[0] });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/studio/scenes/:id', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id || 0);
+  const allowed = ['position', 'title', 'body', 'narration', 'visual_prompt', 'duration_seconds', 'transition', 'character_refs', 'asset_refs', 'style_json', 'status', 'metadata'];
+  const fields = [];
+  const values = [];
+  try {
+    const sceneOwner = (await pool.query(
+      `SELECT s.*, sp.workspace_key, p.project_key
+       FROM bna_studio_scenes s
+       JOIN bna_studio_projects sp ON sp.id = s.studio_project_id
+       JOIN bna_projects p ON p.id = s.project_id
+       WHERE s.id = $1`,
+      [id]
+    )).rows[0];
+    if (!sceneOwner) return res.status(404).json({ error: 'Studio scene not found' });
+    assertProjectAccess(req, sceneOwner);
+    assertWorkspaceAccess(req, sceneOwner.workspace_key, 'edit Studio scene');
+    for (const field of allowed) {
+      if (!Object.prototype.hasOwnProperty.call(req.body || {}, field)) continue;
+      const jsonField = ['character_refs', 'asset_refs', 'style_json', 'metadata'].includes(field);
+      values.push(jsonField ? JSON.stringify(req.body[field] || (field.endsWith('refs') ? [] : {})) : req.body[field]);
+      fields.push(`${field} = $${values.length}`);
+    }
+    if (!fields.length) return res.status(400).json({ error: 'No valid Studio scene fields provided' });
+    fields.push('version = version + 1');
+    values.push(id);
+    const updated = (await pool.query(
+      `UPDATE bna_studio_scenes
+       SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    )).rows[0];
+    await pool.query(
+      `INSERT INTO bna_studio_scene_versions (scene_id, studio_project_id, version, snapshot_json, change_note, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (scene_id, version) DO NOTHING`,
+      [updated.id, updated.studio_project_id, updated.version, JSON.stringify(studioSceneView(updated)), 'Scene edited', req.opsUser || 'dashboard']
+    );
+    res.json({ success: true, scene: studioSceneView(updated) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/scenes/:id/regenerate', requireAdmin, async (req, res) => {
+  try {
+    const sceneRow = (await pool.query(
+      `SELECT s.*, sp.workspace_key, p.project_key
+       FROM bna_studio_scenes s
+       JOIN bna_studio_projects sp ON sp.id = s.studio_project_id
+       JOIN bna_projects p ON p.id = s.project_id
+       WHERE s.id = $1`,
+      [Number(req.params.id || 0)]
+    )).rows[0];
+    if (!sceneRow) return res.status(404).json({ error: 'Studio scene not found' });
+    assertProjectAccess(req, sceneRow);
+    assertWorkspaceAccess(req, sceneRow.workspace_key, 'regenerate Studio scene');
+    const job = studio.completeMockStudioJob(studio.createMockStudioJob({
+      project: sceneRow,
+      job_type: 'image_mock',
+      payload: { scene_id: sceneRow.id, instruction: req.body?.instruction || '' },
+      scenes: [studioSceneView(sceneRow)],
+    }), [studioSceneView(sceneRow)]);
+    const jobRow = (await pool.query(
+      `INSERT INTO bna_studio_jobs (studio_project_id, project_id, job_type, status, provider, model, idempotency_key, request_payload, result_payload, attempts, finished_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+       ON CONFLICT (idempotency_key) DO UPDATE SET status = EXCLUDED.status, result_payload = EXCLUDED.result_payload, updated_at = NOW()
+       RETURNING *`,
+      [sceneRow.studio_project_id, sceneRow.project_id, job.job_type, job.status, job.provider, job.model, job.idempotency_key, JSON.stringify(job.request_payload), JSON.stringify(job.result_payload), job.attempts]
+    )).rows[0];
+    res.json({ success: true, job: studioJobView(jobRow), manifest: job.result_payload });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/render', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const job = studio.completeMockStudioJob(studio.createMockStudioJob({
+      project: detail.project,
+      job_type: 'render_mock',
+      payload: { render_format: req.body?.render_format || 'mp4_preview' },
+      scenes: detail.scenes,
+    }), detail.scenes);
+    const jobRow = (await client.query(
+      `INSERT INTO bna_studio_jobs (studio_project_id, project_id, job_type, status, provider, model, idempotency_key, request_payload, result_payload, attempts, finished_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+       ON CONFLICT (idempotency_key) DO UPDATE SET status = EXCLUDED.status, result_payload = EXCLUDED.result_payload, updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, job.job_type, job.status, job.provider, job.model, job.idempotency_key, JSON.stringify(job.request_payload), JSON.stringify(job.result_payload), job.attempts]
+    )).rows[0];
+    for (const asset of job.result_payload.assets || []) {
+      await client.query(
+        `INSERT INTO bna_studio_assets (
+           studio_project_id, scene_id, project_id, asset_key, asset_type, title, url,
+           rights_status, privacy_status, metadata
+         ) VALUES ($1, (SELECT id FROM bna_studio_scenes WHERE studio_project_id = $1 AND scene_key = $2 LIMIT 1), $3, $4, $5, $6, $7, $8, $9, $10)
+         ON CONFLICT (studio_project_id, asset_key) DO UPDATE SET
+           url = EXCLUDED.url,
+           rights_status = EXCLUDED.rights_status,
+           privacy_status = EXCLUDED.privacy_status,
+           metadata = bna_studio_assets.metadata || EXCLUDED.metadata,
+           updated_at = NOW()`,
+        [
+          detail.project.id,
+          asset.scene_key,
+          detail.project.project_id,
+          asset.asset_key,
+          asset.asset_type,
+          asset.scene_key,
+          asset.url,
+          asset.rights_status,
+          asset.privacy_status,
+          JSON.stringify(asset),
+        ]
+      );
+    }
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      jobId: jobRow.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'render_mock', input_chars: JSON.stringify(detail.scenes).length, output_chars: JSON.stringify(job.result_payload).length, media_seconds: job.result_payload.duration_seconds || 0 }),
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, job: studioJobView(jobRow), manifest: job.result_payload, external_write_performed: false });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/studio/jobs/:id/retry', requireAdmin, async (req, res) => {
+  try {
+    const jobOwner = (await pool.query(
+      `SELECT j.*, sp.workspace_key, p.project_key
+       FROM bna_studio_jobs j
+       JOIN bna_studio_projects sp ON sp.id = j.studio_project_id
+       JOIN bna_projects p ON p.id = j.project_id
+       WHERE j.id = $1`,
+      [Number(req.params.id || 0)]
+    )).rows[0];
+    if (!jobOwner) return res.status(404).json({ error: 'Studio job not found' });
+    assertProjectAccess(req, jobOwner);
+    assertWorkspaceAccess(req, jobOwner.workspace_key, 'retry Studio job');
+    const updated = (await pool.query(
+      `UPDATE bna_studio_jobs
+       SET status = 'queued', attempts = attempts + 1, error = NULL, queued_at = NOW(), updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [jobOwner.id]
+    )).rows[0];
+    res.json({ success: true, job: studioJobView(updated) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/jobs/:id/cancel', requireAdmin, async (req, res) => {
+  try {
+    const jobOwner = (await pool.query(
+      `SELECT j.*, sp.workspace_key, p.project_key
+       FROM bna_studio_jobs j
+       JOIN bna_studio_projects sp ON sp.id = j.studio_project_id
+       JOIN bna_projects p ON p.id = j.project_id
+       WHERE j.id = $1`,
+      [Number(req.params.id || 0)]
+    )).rows[0];
+    if (!jobOwner) return res.status(404).json({ error: 'Studio job not found' });
+    assertProjectAccess(req, jobOwner);
+    assertWorkspaceAccess(req, jobOwner.workspace_key, 'cancel Studio job');
+    const updated = (await pool.query(
+      `UPDATE bna_studio_jobs
+       SET status = 'cancelled', error = COALESCE($2, error), finished_at = NOW(), updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [jobOwner.id, req.body?.reason || 'Cancelled from Studio']
+    )).rows[0];
+    res.json({ success: true, job: studioJobView(updated) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/usage', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [];
+    appendStudioScope(req, conditions, params, 'u', req.query || {});
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const rows = (await pool.query(
+      `SELECT *
+       FROM bna_studio_usage_events u
+       ${whereClause}
+       ORDER BY created_at DESC
+       LIMIT 500`,
+      params
+    )).rows;
+    const budgetParams = [];
+    const budgetConditions = [];
+    appendStudioScope(req, budgetConditions, budgetParams, 'b', req.query || {});
+    const budgetWhereClause = budgetConditions.length ? `WHERE ${budgetConditions.join(' AND ')}` : '';
+    const budget = (await pool.query(
+      `SELECT *
+       FROM bna_studio_workspace_settings b
+       ${budgetWhereClause}
+       ORDER BY updated_at DESC
+       LIMIT 100`,
+      budgetParams
+    )).rows;
+    res.json({ success: true, events: rows, rollup: studio.buildUsageRollup(rows), budgets: budget });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/handoff', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const source = await loadStudioPrimarySource(detail.project.id, client) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const handoff = studio.buildContentHandoffPackage({
+      project: detail.project,
+      studio_project: detail.project,
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      scenes: detail.scenes,
+      assets: detail.assets,
+      usage: detail.usage_rollup,
+      approved_by: req.body?.approved_by || req.opsUser || 'dashboard',
+    });
+    const existing = (await client.query(
+      `SELECT *
+       FROM bna_studio_exports
+       WHERE studio_project_id = $1
+         AND idempotency_key = $2
+       LIMIT 1`,
+      [detail.project.id, handoff.idempotency_key]
+    )).rows[0];
+    if (existing?.content_job_id) {
+      await client.query('COMMIT');
+      return res.json({ success: true, handoff, export: existing, idempotent: true });
+    }
+    const content = handoff.content_job;
+    const job = (await client.query(
+      `INSERT INTO bna_content_jobs (
+         project_id, title, source_type, caption, status, transcript_text, parse_json, notes
+       ) VALUES ($1, $2, $3, $4, 'needs_approval', $5, $6, $7)
+       RETURNING *`,
+      [
+        detail.project.project_id,
+        content.title,
+        content.source_type,
+        content.caption,
+        content.transcript_text,
+        JSON.stringify(content.parse_json || {}),
+        'Created by Service Provider Studio handoff. No publish or member access grant performed.',
+      ]
+    )).rows[0];
+    const outputs = [];
+    for (const output of content.outputs || []) {
+      const row = (await client.query(
+        `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING *`,
+        [job.id, output.output_type, output.title || null, output.body || null, output.platform || 'studio', output.status || 'draft', JSON.stringify(output.metadata || {})]
+      )).rows[0];
+      outputs.push(row);
+    }
+    const exportRow = (await client.query(
+      `INSERT INTO bna_studio_exports (
+         studio_project_id, project_id, export_type, idempotency_key,
+         content_job_id, manifest_json, status, no_publish, external_write_performed, created_by
+       ) VALUES ($1, $2, 'content_handoff', $3, $4, $5, 'created', TRUE, FALSE, $6)
+       ON CONFLICT (idempotency_key) DO UPDATE SET
+         content_job_id = COALESCE(bna_studio_exports.content_job_id, EXCLUDED.content_job_id),
+         manifest_json = EXCLUDED.manifest_json,
+         status = 'created',
+         updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, handoff.idempotency_key, job.id, JSON.stringify(content.parse_json?.studio_manifest || {}), req.opsUser || 'dashboard']
+    )).rows[0];
+    await client.query(`UPDATE bna_studio_projects SET status = 'handed_off', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [detail.project.id, req.opsUser || 'dashboard']);
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'content_handoff', input_chars: JSON.stringify(handoff).length, output_chars: JSON.stringify(outputs).length }),
+      metadata: { content_job_id: job.id, no_publish: true },
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, handoff, content_job: job, outputs, export: exportRow, external_write_performed: false });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 
@@ -78184,6 +79167,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createRabbiCheckoutAccessSQL);
     await pool.query(createOneTimeProductSystemSQL);
     await pool.query(createOneTimeTrialReferralConfigSQL);
+    await pool.query(createServiceProviderStudioSQL);
     await pool.query(createServiceProvidersSQL);
     await pool.query(createProviderIndexMvpSQL);
     await pool.query(createCommunicationsIntegrationsSQL);
