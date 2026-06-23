@@ -1,5 +1,31 @@
 # Status
 
+## 2026-06-23T14:28:57+03:00
+
+Status: running, with the fourth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a canonical intake service that builds one
+packet from source record to platform parse, parent prompt, and
+persistence-ready raw intake / parse-run / parse-item records. GitHub dry-run
+intake and the ramble contract script now enter through that service, and the
+packet remains local/dry-run safe with no external writes.
+
+Verified in this slice:
+
+- Adapters have a shared `buildCanonicalIntakePacket` entrypoint.
+- Persistence plans include raw intake, parse run, parse items, and parent
+  prompt records.
+- GitHub issue packets preserve first-class provider/kind context through the
+  persistence plan.
+- Focused intake service/source/parser/system tests passed, 18/18.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; broad persistence apply/readback,
+  Operations UI, watchdog parity, synthetic E2E, deploy, and live verification
+  are not complete yet.
+
 ## 2026-06-23T14:21:23+03:00
 
 Status: running, with the third canonical implementation slice complete.

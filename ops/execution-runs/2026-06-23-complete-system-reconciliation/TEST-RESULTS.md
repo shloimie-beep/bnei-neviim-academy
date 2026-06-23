@@ -13,8 +13,14 @@
   PASS.
 - `node --test tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js tests/system-truth-scripts.test.js tests/intake-parser.test.js`:
   PASS, 31/31.
+- `node --check src/platform/ingestion/intake-service.js scripts/intake-github.mjs scripts/ramble-intake-contract.mjs`:
+  PASS.
+- `node --test tests/ingestion/w3-intake-service.test.js tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js tests/system-truth-scripts.test.js`:
+  PASS, 18/18.
+- `node scripts/ramble-intake-contract.mjs --text="Task: Codex should verify canonical intake service." | Out-Null`:
+  PASS.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1073/1073.
+- `npm test`: PASS, 1076/1076.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

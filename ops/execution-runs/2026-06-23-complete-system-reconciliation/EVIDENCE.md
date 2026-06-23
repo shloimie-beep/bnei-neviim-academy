@@ -33,17 +33,20 @@
 
 - `src/platform/ingestion/canonical-ids.js`
 - `src/platform/ingestion/intake-source.js`
+- `src/platform/ingestion/intake-service.js`
 - `src/lib/bna/intake-schema.js`
 - `src/lib/bna/ramble-protocol.js`
 - `src/lib/bna/intake-parser.js`
 - `src/lib/bna/goal-memory.js`
 - `src/platform/ingestion/prompt-queue.js`
 - `scripts/intake-github.mjs`
+- `scripts/ramble-intake-contract.mjs`
 - `docs/product/ramble-queue-contract.md`
 - `tests/ingestion/canonical-ids.test.js`
 - `tests/intake-parser.test.js`
 - `tests/ingestion/w3-parser-queue.test.js`
 - `tests/ingestion/w3-intake-source.test.js`
+- `tests/ingestion/w3-intake-service.test.js`
 - `tests/system-truth-scripts.test.js`
 
 Stable display ID slice verified:
@@ -64,6 +67,14 @@ Source adapter slice verified:
 - GitHub issue/PR inputs normalize as `github` provider records.
 - ChatGPT exports normalize as `chatgpt` provider records.
 - GitHub intake dry-runs no longer identify issue packets as `local_file`.
+
+Canonical intake service slice verified:
+
+- Adapters can enter through one `buildCanonicalIntakePacket` service.
+- Packets include source record, platform parse, parent prompt, and
+  persistence-ready raw intake / parse-run / parse-item records.
+- GitHub dry-runs and the ramble contract script use the service without
+  external writes.
 
 ## Privacy Boundary
 

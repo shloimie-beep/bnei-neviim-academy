@@ -8,8 +8,7 @@ import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const { createIntakeSourceRecord } = require('../src/platform/ingestion/intake-source');
-const { parsePlatformIntake } = require('../src/platform/ingestion/canonical-parser');
+const { buildCanonicalIntakePacket } = require('../src/platform/ingestion/intake-service');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -110,38 +109,45 @@ export function buildGitHubIntakePreview({ repo = DEFAULT_REPO, issue, comments 
     ? `${repo}#${issue.number}:comment:${commentId}`
     : `${repo}#${issue.number}`;
   const fingerprint = sha256([externalId, redactedBody].join('\n--bna-github-intake--\n'));
-  const source = createIntakeSourceRecord({
-    source_provider: 'github',
-    source_kind: 'github_issue',
-    source_type: 'github_issue',
-    source_id: externalId,
-    source_link: issueUrl(repo, issue.number, commentId),
-    title: issue.title,
-    raw_text: redactedBody,
-    actor: issue.user?.login || null,
-    created_at: issue.created_at || nowIso(),
-    workspace: 'bna',
-    project: 'bna_operations',
-    metadata: {
-      repo,
-      issue_number: issue.number,
-      comment_id: commentId || null,
-      github_state: issue.state || null
-    }
-  });
-  let parser = null;
+  let packet = null;
   try {
-    parser = parsePlatformIntake({
+    packet = buildCanonicalIntakePacket({
       raw_text: redactedBody,
-      source_id: source.source_id,
-      raw_id: `RAW-GITHUB-${issue.number}`,
       workspace_key: 'internal_super_admin',
       project_key: 'bna_operations',
-      source_provider: 'github'
+      source_provider: 'github',
+      source_kind: 'github_issue',
+      source_type: 'github_issue',
+      source_id: externalId,
+      source_link: issueUrl(repo, issue.number, commentId),
+      title: issue.title,
+      actor: issue.user?.login || null,
+      created_at: issue.created_at || nowIso(),
+      raw_id: `RAW-GITHUB-${issue.number}`,
+      metadata: {
+        repo,
+        issue_number: issue.number,
+        comment_id: commentId || null,
+        github_state: issue.state || null
+      }
     });
   } catch (error) {
-    parser = { schema_valid: false, schema_errors: [error.message] };
+    packet = {
+      source_record: {
+        source_id: externalId,
+        stable_key: null,
+        idempotency_key: null,
+        source_provider: 'github',
+        source_channel: 'github',
+        source_kind: 'github_issue'
+      },
+      parsed: { schema_valid: false, schema_errors: [error.message] },
+      parent_prompt: null,
+      persistence: null
+    };
   }
+  const source = packet.source_record;
+  const parser = packet.parsed;
   return {
     generated_at: nowIso(),
     mode: 'dry_run',
@@ -164,6 +170,16 @@ export function buildGitHubIntakePreview({ repo = DEFAULT_REPO, issue, comments 
       excerpt: safeExcerpt(redactedBody),
       privacy_classification: 'redacted_repo_safe'
     },
+    parent_prompt_id: packet.parent_prompt?.prompt_id || null,
+    persistence_plan: packet.persistence
+      ? {
+          contract_version: packet.persistence.contract_version,
+          external_write_performed: packet.persistence.external_write_performed,
+          parse_item_count: packet.persistence.parse_items.length,
+          raw_intake_stable_id: packet.persistence.raw_intake.stable_id,
+          parse_run_status: packet.persistence.parse_run.status
+        }
+      : null,
     parser_counts: parser
       ? {
           decisions: parser.decisions?.length || 0,
@@ -199,6 +215,15 @@ function renderMarkdown(report) {
     `- privacy_classification: ${report.source_envelope.privacy_classification}`,
     `- body_length: ${report.source_envelope.body_length}`,
     `- excerpt: ${report.source_envelope.excerpt}`,
+    '',
+    '## Canonical Packet',
+    '',
+    `- parent_prompt_id: ${report.parent_prompt_id || 'none'}`,
+    `- persistence_contract: ${report.persistence_plan?.contract_version || 'none'}`,
+    `- persistence_external_write_performed: ${report.persistence_plan?.external_write_performed ?? false}`,
+    `- persistence_parse_item_count: ${report.persistence_plan?.parse_item_count ?? 0}`,
+    `- raw_intake_stable_id: ${report.persistence_plan?.raw_intake_stable_id || 'none'}`,
+    `- parse_run_status: ${report.persistence_plan?.parse_run_status || 'none'}`,
     '',
     '## Parser Counts',
     '',

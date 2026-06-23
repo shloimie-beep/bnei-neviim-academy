@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T14:21:23+03:00",
+  "updated_at": "2026-06-23T14:28:57+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -565,7 +565,7 @@
         "REQ-20260623-204"
       ],
       "status": "in_progress",
-      "implementation_status": "canonical_display_id_hardening_slice_complete",
+      "implementation_status": "canonical_intake_service_persistence_slice_complete",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
@@ -574,8 +574,9 @@
         "Stable display IDs do not collide across same-day sources or shared item prefixes",
         "Passed verification packages close through canonical parent prompt statuses",
         "GitHub and ChatGPT packets use first-class source providers",
-        "Canonical persistence model is implemented",
         "Adapters use one intake service",
+        "Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt",
+        "Canonical persistence model is implemented",
         "Decision auto-resume is tested",
         "Operations compact views are verified",
         "Synthetic E2E passes"
@@ -584,17 +585,20 @@
         "ops/return-packets/2026-06-23-complete-system-reality-redacted.md",
         "src/platform/ingestion/canonical-ids.js",
         "src/platform/ingestion/intake-source.js",
+        "src/platform/ingestion/intake-service.js",
         "src/lib/bna/intake-schema.js",
         "src/lib/bna/ramble-protocol.js",
         "src/lib/bna/intake-parser.js",
         "src/lib/bna/goal-memory.js",
         "src/platform/ingestion/prompt-queue.js",
         "scripts/intake-github.mjs",
+        "scripts/ramble-intake-contract.mjs",
         "docs/product/ramble-queue-contract.md",
         "tests/ingestion/canonical-ids.test.js",
         "tests/intake-parser.test.js",
         "tests/ingestion/w3-parser-queue.test.js",
         "tests/ingestion/w3-intake-source.test.js",
+        "tests/ingestion/w3-intake-service.test.js",
         "tests/system-truth-scripts.test.js"
       ],
       "verification": [
@@ -604,31 +608,37 @@
         "node --test tests/ingestion/w3-parser-queue.test.js tests/ingestion/w3-intake-source.test.js: PASS, 11/11",
         "node --check src/platform/ingestion/intake-source.js scripts/intake-github.mjs src/lib/bna/ramble-protocol.js src/lib/bna/intake-parser.js: PASS",
         "node --test tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js tests/system-truth-scripts.test.js tests/intake-parser.test.js: PASS, 31/31",
+        "node --check src/platform/ingestion/intake-service.js scripts/intake-github.mjs scripts/ramble-intake-contract.mjs: PASS",
+        "node --test tests/ingestion/w3-intake-service.test.js tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js tests/system-truth-scripts.test.js: PASS, 18/18",
+        "node scripts/ramble-intake-contract.mjs --text=\"Task: Codex should verify canonical intake service.\" | Out-Null: PASS",
         "npm run bna:run:validate: PASS",
         "npm run bna:run:source-coverage: PASS",
-        "npm test: PASS, 1073/1073",
+        "npm test: PASS, 1076/1076",
         "node scripts/audit-secrets.mjs: PASS",
         "git diff --check: PASS with line-ending warnings only"
       ],
       "implementation_files": [
         "src/platform/ingestion/canonical-ids.js",
         "src/platform/ingestion/intake-source.js",
+        "src/platform/ingestion/intake-service.js",
         "src/lib/bna/intake-schema.js",
         "src/lib/bna/ramble-protocol.js",
         "src/lib/bna/intake-parser.js",
         "src/lib/bna/goal-memory.js",
         "src/platform/ingestion/prompt-queue.js",
         "scripts/intake-github.mjs",
+        "scripts/ramble-intake-contract.mjs",
         "docs/product/ramble-queue-contract.md",
         "tests/ingestion/canonical-ids.test.js",
         "tests/intake-parser.test.js",
         "tests/ingestion/w3-parser-queue.test.js",
         "tests/ingestion/w3-intake-source.test.js",
+        "tests/ingestion/w3-intake-service.test.js",
         "tests/system-truth-scripts.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T14:21:23+03:00",
-      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Canonical persistence model is implemented; Adapters use one intake service; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
+      "updated_at": "2026-06-23T14:28:57+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
     },
     {
       "id": "REQ-20260623-211",

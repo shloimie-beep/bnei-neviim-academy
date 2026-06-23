@@ -2,13 +2,8 @@ import { createRequire } from 'node:module';
 import fs from 'node:fs';
 
 const require = createRequire(import.meta.url);
-const {
-  createIntakeSourceRecord,
-  validateIntakeSourceRecord,
-} = require('../src/platform/ingestion/intake-source');
-const {
-  parsePlatformIntake,
-} = require('../src/platform/ingestion/canonical-parser');
+const { validateIntakeSourceRecord } = require('../src/platform/ingestion/intake-source');
+const { buildCanonicalIntakePacket } = require('../src/platform/ingestion/intake-service');
 
 function readInput(argv = process.argv.slice(2)) {
   const fileArg = argv.find((arg) => arg.startsWith('--file='));
@@ -19,19 +14,21 @@ function readInput(argv = process.argv.slice(2)) {
 }
 
 const rawText = readInput();
-const source = createIntakeSourceRecord({
+const packet = buildCanonicalIntakePacket({
   source_provider: 'manual',
   source_kind: 'text',
   raw_text: rawText,
   actor: 'local_contract_script',
   parser_version: 'w3-platform-parser-v1',
 });
+const source = packet.source_record;
 const validation = validateIntakeSourceRecord(source);
-const parsed = parsePlatformIntake({
-  raw_text: rawText,
-  source_id: source.stable_key,
-  raw_id: source.stable_key,
-  source_provider: source.source_provider,
-});
+const parsed = packet.parsed;
 
-process.stdout.write(`${JSON.stringify({ source, validation, parsed }, null, 2)}\n`);
+process.stdout.write(`${JSON.stringify({
+  source,
+  validation,
+  parsed,
+  parent_prompt: packet.parent_prompt,
+  persistence: packet.persistence,
+}, null, 2)}\n`);

@@ -27,6 +27,8 @@ test('system truth script reports readiness by variable state only', () => {
 });
 
 test('GitHub intake preview is idempotent and redacts secret-like text', async () => {
+  assert.match(read('scripts/intake-github.mjs'), /intake-service/);
+  assert.match(read('scripts/ramble-intake-contract.mjs'), /buildCanonicalIntakePacket/);
   const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'intake-github.mjs')).href);
   const issue = {
     number: 7,
@@ -42,6 +44,11 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   assert.equal(first.source_envelope.source_provider, 'github');
   assert.equal(first.source_envelope.source_channel, 'github');
   assert.equal(first.source_envelope.source_kind, 'github_issue');
+  assert.match(first.parent_prompt_id, /^PROMPT-/);
+  assert.equal(first.persistence_plan.contract_version, 'w3-canonical-intake-service-v1');
+  assert.equal(first.persistence_plan.external_write_performed, false);
+  assert.ok(first.persistence_plan.parse_item_count >= 1);
+  assert.equal(first.persistence_plan.raw_intake_stable_id.startsWith('intake_source_'), true);
   assert.equal(first.trusted_source, true);
   assert.doesNotMatch(JSON.stringify(first), /not_a_real_secret_fixture/);
   assert.match(first.source_envelope.excerpt, /\[redacted/);

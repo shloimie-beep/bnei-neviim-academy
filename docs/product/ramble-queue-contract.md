@@ -30,8 +30,11 @@ intake. The record preserves:
 - processing attempts
 - final routing
 
-The module is local/dry-run safe and does not mutate Drive or external
-accounts.
+Adapters should enter through
+`src/platform/ingestion/intake-service.js`, which builds one canonical packet:
+source record, platform parse, parent prompt, and persistence-ready
+`bna_raw_intake` / parse-run / parse-item records. The service is local/dry-run
+safe and does not mutate Drive, GitHub, databases, or external accounts.
 
 ## Folder Plan
 
