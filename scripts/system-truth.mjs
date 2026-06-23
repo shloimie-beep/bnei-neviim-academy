@@ -603,6 +603,37 @@ function summarizeExternalGate(report = {}) {
   };
 }
 
+function returnPacketResumeCommands(runDoc = {}) {
+  const branch = runDoc?.git_refs?.pr_branch || runDoc?.git_refs?.expected_branch || 'codex/issue-8-complete-system-reconciliation';
+  return [
+    'git fetch origin',
+    `git switch ${branch}`,
+    `git pull --ff-only origin ${branch}`,
+    'npm run bna:run:resume',
+    'npm run bna:run:blockers',
+    'npm run bna:return-packet -- --json'
+  ];
+}
+
+function privatePacketFileSummary(privatePacketPath, privatePacketJsonPath) {
+  return [
+    {
+      path: privatePacketPath,
+      privacy_classification: 'internal_local_only',
+      gitignored: true,
+      pushed: false,
+      reason: 'Private ChatGPT handoff packet is generated under .runtime and must remain outside Git.'
+    },
+    {
+      path: privatePacketJsonPath,
+      privacy_classification: 'internal_local_only',
+      gitignored: true,
+      pushed: false,
+      reason: 'Machine-readable private ChatGPT handoff packet is generated under .runtime and must remain outside Git.'
+    }
+  ];
+}
+
 async function returnPacketReport() {
   const { latest, runDir, requirementsDoc, runDoc } = currentRunState();
   const repo = gitIdentity(repoRoot);
@@ -642,6 +673,10 @@ async function returnPacketReport() {
       branch: repo.branch,
       head: repo.head,
       upstream: repo.upstream || '',
+      ahead: repo.ahead || 0,
+      behind: repo.behind || 0,
+      local_only_commits: repo.ahead || 0,
+      unpulled_remote_commits: repo.behind || 0,
       validated_agent_work_head: agentWorkCommit,
       pr: runDoc?.git_refs?.pr_url || '',
       active_run: latest?.path || '',
@@ -650,6 +685,8 @@ async function returnPacketReport() {
       dirty_total: dirty.total,
       dirty_sample: dirty.sample || []
     },
+    resume_commands: returnPacketResumeCommands(runDoc),
+    private_files_not_pushed: privatePacketFileSummary(privatePacketPath, privatePacketJsonPath),
     source_coverage: source,
     worktrees: worktree.worktrees,
     ramble_protocol: {
@@ -771,6 +808,8 @@ function renderReturnPacketMarkdown(report, options = {}) {
   const gateScopes = Array.isArray(externalGates.scopes) ? externalGates.scopes : [];
   const gateBlockers = Array.isArray(externalGates.blockers) ? externalGates.blockers : [];
   const gateCommands = Array.isArray(externalGates.next_command_plan) ? externalGates.next_command_plan : [];
+  const resumeCommands = Array.isArray(report.resume_commands) ? report.resume_commands : [];
+  const privateFiles = Array.isArray(report.private_files_not_pushed) ? report.private_files_not_pushed : [];
   const lines = [
     'CHATGPT RETURN PACKET',
     `Generated: ${report.generated_at}`,
@@ -781,6 +820,7 @@ function renderReturnPacketMarkdown(report, options = {}) {
     `- deployed commit/deployment: ${report.system_truth.deployed_commit || 'unknown'} / ${report.system_truth.deployment_id || 'unknown'}`,
     `- branch/PR: ${report.system_truth.branch || 'unknown'} / ${report.system_truth.pr || 'none'}`,
     `- active run: ${report.system_truth.active_run || 'unknown'}`,
+    `- branch sync: ahead ${report.system_truth.ahead ?? 'unknown'}, behind ${report.system_truth.behind ?? 'unknown'}, local-only commits ${report.system_truth.local_only_commits ?? 'unknown'}`,
     `- source coverage: errors ${report.source_coverage?.validation?.errors?.length ?? 'unknown'}, unmapped ${report.source_coverage?.source_statements?.unmapped_executable ?? 'unknown'}`,
     `- local-only work: dirty files ${report.system_truth.dirty_total ?? 0}`,
     '- unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet',
@@ -872,6 +912,12 @@ function renderReturnPacketMarkdown(report, options = {}) {
     'NEXT AUTOMATIC ACTION',
     `- package: ${report.next_automatic_action.package}`,
     `- command: ${report.next_automatic_action.command}`,
+    '',
+    'EXACT RESUME COMMANDS',
+    ...(resumeCommands.length ? resumeCommands.map((command) => `- ${command}`) : ['- none recorded']),
+    '',
+    'PRIVATE FILES NOT PUSHED',
+    ...(privateFiles.length ? privateFiles.map((file) => `- ${file.path} / ${file.privacy_classification} / gitignored=${file.gitignored ? 'yes' : 'no'} / pushed=${file.pushed ? 'yes' : 'no'}`) : ['- none recorded']),
     '',
     'CHATGPT RETURN PACKET',
     `- local path: ${report.private_packet.markdown_path}`,

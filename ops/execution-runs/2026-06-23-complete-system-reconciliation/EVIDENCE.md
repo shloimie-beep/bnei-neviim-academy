@@ -220,6 +220,14 @@ Production closeout gate slice verified:
   database, Railway, and Drive readiness counts, approval blockers, next
   approved commands, and explicit no-read/no-write safety flags without
   rendering secret/config variable names in the redacted handoff.
+- The return packet now reports branch ahead/behind/local-only commit counts,
+  exact resume commands, and the private `.runtime` packet files as
+  gitignored/not pushed, matching the handoff requirements for local-only
+  commits, resume commands, and private files.
+- Full `npm test` passed, 1101/1101, after the return-packet
+  resume/private-file summary hardening; run validation, source coverage,
+  stale-evidence detection, tracked secret audit, and redacted packet
+  resume/private-file field checks also passed.
 - Full `npm test` passed, 1101/1101, after the external gate return-packet
   summary hardening; run validation, source coverage, stale-evidence detection,
   tracked secret audit, and the expected-blocked external gate dry-run also

@@ -32,6 +32,9 @@ Open requirements:
   with database/Railway/Drive readiness counts, blockers, safety flags, and the
   next approved-command plan without rendering secret/config variable names in
   the redacted handoff.
+  The return packet also reports branch ahead/behind/local-only commit counts,
+  exact resume commands, and private `.runtime` packet files as gitignored/not
+  pushed.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
@@ -111,6 +114,9 @@ Completed implementation slice:
 - Return-packet external gate summary is backed by the same dry-run external
   readback gate logic and reports no external read, production mutation, safe
   apply, deploy, or secret values.
+- Return-packet resume/private-file summary reports exact continuation
+  commands and confirms the private `.runtime` packet files are gitignored and
+  not pushed.
 
 Follow-on implementation scope:
 

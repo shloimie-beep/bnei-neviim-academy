@@ -1,5 +1,38 @@
 # Status
 
+## 2026-06-23T17:27:37+03:00
+
+Status: running, with the twenty-third return-packet resume/private-file
+summary slice complete.
+
+Updated the return-packet generator so the JSON and markdown handoff now
+include branch ahead/behind/local-only commit counts, exact resume commands,
+and explicit private `.runtime` packet files marked `gitignored` and not
+pushed. This tightens the objective's required handoff fields without changing
+any production state.
+
+Verified in this slice:
+
+- `node --check scripts/system-truth.mjs` passed.
+- `node --test tests/system-truth-scripts.test.js` passed, 5/5.
+- `npm run bna:return-packet -- --json` regenerated the private ignored
+  packet and tracked redacted packet with exact resume commands and private
+  file status.
+- Full `npm test` passed, 1101/1101; source coverage remained at 0 unmapped
+  executable statements, stale-evidence detection passed, and the tracked
+  secret audit found 0 tracked secret-risk files.
+- Redacted packet checks confirmed no full local home path or obvious
+  secret-marker strings.
+- No production mutation, deploy, live verification, external read, send,
+  upload, charge, or backfill was performed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T17:19:46+03:00
 
 Status: running, with the twenty-second external gate return-packet summary

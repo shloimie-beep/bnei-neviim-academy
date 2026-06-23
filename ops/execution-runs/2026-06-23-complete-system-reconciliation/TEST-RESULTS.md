@@ -3,6 +3,31 @@
 ## Passed
 
 - `node --check scripts/system-truth.mjs`:
+  PASS after return-packet resume/private-file summary hardening.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 5/5; return packet reports branch local-only commit counts, exact
+  resume commands, and private `.runtime` packet files as gitignored/not
+  pushed.
+- `npm run bna:return-packet -- --json`:
+  PASS; packet reports branch ahead/behind/local-only commit counts, exact
+  resume commands, private `.runtime` packet files as not pushed, and phase
+  `return_packet_resume_private_files_hardened`.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- Redacted return packet resume/private-file field checks:
+  PASS; branch sync counts, exact resume commands, private files not pushed,
+  `package: none`, and approval-gated verdict are present.
+- Redacted return packet full-home-path and obvious secret-marker checks:
+  PASS.
+- `npm test`:
+  PASS, 1101/1101 after return-packet resume/private-file summary hardening.
+- `node --check scripts/system-truth.mjs`:
   PASS after external gate return-packet summary hardening.
 - `node --test tests/system-truth-scripts.test.js`:
   PASS, 5/5; return-packet external gate summary reports no external read,

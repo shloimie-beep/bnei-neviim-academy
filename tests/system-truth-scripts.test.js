@@ -44,6 +44,19 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.equal(report.redacted_repo_summary.includes_private_raw_source, false);
   assert.equal(report.redacted_repo_summary.includes_secret_values, false);
   assert.ok(report.system_truth.branch);
+  assert.equal(typeof report.system_truth.local_only_commits, 'number');
+  assert.equal(typeof report.system_truth.unpulled_remote_commits, 'number');
+  assert.deepEqual(report.resume_commands.slice(-3), [
+    'npm run bna:run:resume',
+    'npm run bna:run:blockers',
+    'npm run bna:return-packet -- --json',
+  ]);
+  assert.deepEqual(report.private_files_not_pushed.map((file) => file.path), [
+    '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md',
+    '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json',
+  ]);
+  assert.ok(report.private_files_not_pushed.every((file) => file.gitignored === true));
+  assert.ok(report.private_files_not_pushed.every((file) => file.pushed === false));
   assert.equal(report.external_gates.external_read_performed, false);
   assert.equal(report.external_gates.production_mutation_performed, false);
   assert.equal(report.external_gates.safe_apply_performed, false);
