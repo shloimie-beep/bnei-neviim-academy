@@ -13,8 +13,8 @@ Open requirements:
 - `REQ-20260623-209`: blocked on approved external readback/backfill gates.
 - `REQ-20260623-210`: in progress; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
-  packet slices are verified, with remaining persistence apply/readback,
-  UI/watchdog/E2E work open.
+  packet plus local persistence readback slices are verified, with remaining
+  approved production persistence apply, UI/watchdog/E2E work open.
 
 Next exact commands for continuation:
 
@@ -38,12 +38,15 @@ Completed implementation slice:
   including GitHub dry-run intake alignment.
 - Canonical intake service entrypoint that builds one source/parse/parent
   prompt/persistence-ready packet for adapters and contract scripts.
+- Local canonical persistence memory adapter with idempotent apply/readback by
+  raw intake, parse run, or parent prompt locator.
 
 Follow-on implementation scope:
 
-- Durable persistence apply/readback for source envelopes and adapter ingestion
-  records across Telegram, Codex, Operations, Drive, recordings, approved
-  uploads, and the now-normalized GitHub/ChatGPT source providers.
+- Approved production persistence apply/readback for source envelopes and
+  adapter ingestion records across Telegram, Codex, Operations, Drive,
+  recordings, approved uploads, and the now-normalized GitHub/ChatGPT source
+  providers.
 - Canonical tasks/decisions/content/community/integration persistence.
 - Lifecycle state machine, auto-resume watchdogs, Operations UI source/audit
   tabs, synthetic E2E, deploy, and live read-only verification.

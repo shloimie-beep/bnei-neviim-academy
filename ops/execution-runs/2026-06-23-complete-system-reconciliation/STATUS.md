@@ -1,5 +1,29 @@
 # Status
 
+## 2026-06-23T14:39:23+03:00
+
+Status: running, with the fifth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a local canonical persistence adapter for
+intake packets. The adapter upserts raw intake, parse run, parse items, and
+parent prompt rows into an in-memory store, reads them back by raw intake,
+parse run, or parent prompt locator, and records that no external write was
+performed.
+
+Verified in this slice:
+
+- Canonical packet apply/readback is idempotent in the local memory store.
+- Parent-prompt and raw-intake locators read back linked parse rows.
+- The ramble contract script can emit an opt-in `--memory-readback` result.
+- Focused persistence/service/source/system tests passed, 14/14.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  Operations UI, watchdog parity, synthetic E2E, deploy, and live verification
+  are not complete yet.
+
 ## 2026-06-23T14:28:57+03:00
 
 Status: running, with the fourth canonical implementation slice complete.

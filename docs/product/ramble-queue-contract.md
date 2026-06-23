@@ -35,6 +35,9 @@ Adapters should enter through
 source record, platform parse, parent prompt, and persistence-ready
 `bna_raw_intake` / parse-run / parse-item records. The service is local/dry-run
 safe and does not mutate Drive, GitHub, databases, or external accounts.
+`src/platform/ingestion/intake-persistence.js` provides the matching local
+apply/readback adapter for no-external-write verification before any production
+database path is approved.
 
 ## Folder Plan
 

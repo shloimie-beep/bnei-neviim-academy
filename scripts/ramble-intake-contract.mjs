@@ -4,6 +4,10 @@ import fs from 'node:fs';
 const require = createRequire(import.meta.url);
 const { validateIntakeSourceRecord } = require('../src/platform/ingestion/intake-source');
 const { buildCanonicalIntakePacket } = require('../src/platform/ingestion/intake-service');
+const {
+  applyCanonicalIntakePacketToMemory,
+  createMemoryIntakePersistenceStore,
+} = require('../src/platform/ingestion/intake-persistence');
 
 function readInput(argv = process.argv.slice(2)) {
   const fileArg = argv.find((arg) => arg.startsWith('--file='));
@@ -13,7 +17,12 @@ function readInput(argv = process.argv.slice(2)) {
   return fs.readFileSync(0, 'utf8') || 'Demo ramble intake item: create a Codex task to verify the parent prompt queue contract and record evidence.';
 }
 
-const rawText = readInput();
+function hasFlag(argv = process.argv.slice(2), flag) {
+  return argv.includes(flag);
+}
+
+const argv = process.argv.slice(2);
+const rawText = readInput(argv);
 const packet = buildCanonicalIntakePacket({
   source_provider: 'manual',
   source_kind: 'text',
@@ -24,6 +33,12 @@ const packet = buildCanonicalIntakePacket({
 const source = packet.source_record;
 const validation = validateIntakeSourceRecord(source);
 const parsed = packet.parsed;
+const memoryReadback = hasFlag(argv, '--apply-memory') || hasFlag(argv, '--memory-readback')
+  ? applyCanonicalIntakePacketToMemory(packet, {
+      store: createMemoryIntakePersistenceStore(),
+      applied_at: packet.generated_at,
+    })
+  : null;
 
 process.stdout.write(`${JSON.stringify({
   source,
@@ -31,4 +46,5 @@ process.stdout.write(`${JSON.stringify({
   parsed,
   parent_prompt: packet.parent_prompt,
   persistence: packet.persistence,
+  memory_readback: memoryReadback,
 }, null, 2)}\n`);

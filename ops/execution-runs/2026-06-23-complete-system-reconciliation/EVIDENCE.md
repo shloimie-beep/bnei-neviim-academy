@@ -34,6 +34,7 @@
 - `src/platform/ingestion/canonical-ids.js`
 - `src/platform/ingestion/intake-source.js`
 - `src/platform/ingestion/intake-service.js`
+- `src/platform/ingestion/intake-persistence.js`
 - `src/lib/bna/intake-schema.js`
 - `src/lib/bna/ramble-protocol.js`
 - `src/lib/bna/intake-parser.js`
@@ -47,6 +48,7 @@
 - `tests/ingestion/w3-parser-queue.test.js`
 - `tests/ingestion/w3-intake-source.test.js`
 - `tests/ingestion/w3-intake-service.test.js`
+- `tests/ingestion/w3-intake-persistence.test.js`
 - `tests/system-truth-scripts.test.js`
 
 Stable display ID slice verified:
@@ -75,6 +77,14 @@ Canonical intake service slice verified:
   persistence-ready raw intake / parse-run / parse-item records.
 - GitHub dry-runs and the ramble contract script use the service without
   external writes.
+
+Canonical persistence readback slice verified:
+
+- Local memory apply/readback upserts canonical raw intake, parse run, parse
+  items, and parent prompt records idempotently.
+- Readback can locate linked rows by raw intake ID or parent prompt ID.
+- `scripts/ramble-intake-contract.mjs --memory-readback` exercises the adapter
+  without production database writes.
 
 ## Privacy Boundary
 
