@@ -40,8 +40,10 @@ const {
 const {
   GAMIFICATION_EVENT_TYPES,
   badgeAwardIdempotencyKey,
+  badgeReversalIdempotencyKey,
   buildGamificationBadgeReadiness,
   courseEnrollmentSummary,
+  evaluateAutomaticBadgeAwards,
   gamificationIdempotencyKey,
   normalizeGamificationEventType,
   oneTimeBadgeDefinitions,
@@ -81,6 +83,7 @@ const {
   agentRunView,
   parseJsonMaybe: parseAgentJsonMaybe,
 } = require('./src/lib/bna/agent-control');
+const studio = require('./src/lib/bna/service-provider-studio');
 const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
   assertOneTimeScopedPreview,
@@ -89,7 +92,11 @@ const {
 } = require('./src/lib/bna/one-time-drive-brief');
 const {
   decorateOneTimeIdentity,
+  canOneTimeIdentity,
+  normalizeOneTimeRole,
   oneTimeCanonicalOwnerAssignments,
+  oneTimeDisplayName,
+  oneTimeRoleLabel,
 } = require('./src/lib/bna/one-time-role-model');
 const {
   hasContactLeadPipelineBuildIntent,
@@ -125,6 +132,8 @@ const {
 } = require('./src/lib/bna/public-helper-retrieval');
 const {
   buildTranscriptPrivacyReadiness,
+  normalizeTranscriptPrivacyClass,
+  normalizeTranscriptReviewState,
 } = require('./src/lib/bna/transcript-privacy');
 const {
   buildCommunityModerationReadiness,
@@ -140,8 +149,18 @@ const {
   ASSISTANT_DATA_MODEL_TABLES,
 } = require('./src/platform/assistant/control-plane');
 const {
-  buildAssistantControlCenterSnapshot,
-} = require('./src/platform/assistant/control-center');
+  buildOneTimeRuntimeFlags,
+} = require('./src/platform/instances/one-time-separate-deployment');
+const {
+  buildOneTimeTestIdentityPreview,
+} = require('./src/platform/instances/one-time-test-fixtures');
+const {
+  REVIEW_ACCESS_CODE: ONE_TIME_REVIEW_ACCESS_CODE,
+  buildOneTimeSharedReviewData,
+} = require('./src/platform/instances/one-time-shared-review-data');
+const {
+  buildOneTimeAgentModeAcceptance,
+} = require('./src/platform/agent-control/one-time-acceptance');
 const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
@@ -248,11 +267,27 @@ const {
   normalizeOneTimeVisibility,
   normalizeOneTimeArtifactStatus,
   normalizeOneTimeCalendarView,
+  normalizeOneTimeAppointmentStatus,
+  normalizeOneTimeAppointmentType,
+  normalizeOneTimeAvailabilityType,
+  normalizeOneTimeBillingModel,
+  normalizeOneTimeProductOfferKey,
   normalizeCandidatePricing,
   oneTimeTierPlanningView,
+  oneTimeProductOfferView,
+  buildOneTimeProductOfferCatalog,
+  oneTimeAvailabilityRuleView,
+  buildOneTimeAvailabilityFoundation,
+  oneTimeAppointmentIntentView,
+  defaultOneTimeAppointmentTypes,
+  buildOneTimePortalFoundations,
   calendarRangeForView,
   validateOneTimeLead,
   buildSourcePrepDraft,
+  oneTimePolicyAcceptanceRecordView,
+  oneTimeReferralRecordView,
+  buildOneTimeTrialReferralConfiguration,
+  buildOneTimePaymentAccessClassLinkConfiguration,
   oneTimeProductReadinessView,
 } = require('./src/lib/bna/one-time-product-system');
 const {
@@ -380,6 +415,7 @@ app.use((req, res, next) => {
 
 const DEFAULT_PROJECT_KEY = 'bna';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
 const ONE_TIME_MEDIA_PROVIDERS = new Set(['vimeo', 'manual_url', 'drive', 'placeholder']);
@@ -2508,6 +2544,7 @@ const TELEGRAM_CHAT_ID_BNA =
 const DATABASE_URL =
   usableSecretValue(process.env.DATABASE_URL) ||
   usableSecretValue(readLocalSecretFile('railway-database-url.txt'));
+const ONE_TIME_REVIEW_ONLY_NO_DB = /^(?:1|true|yes)$/i.test(String(process.env.ONE_TIME_REVIEW_ONLY_NO_DB || ''));
 const PAYMENT_LINK = process.env.PAYMENT_LINK || '';
 const GOOGLE_MAPS_API_KEY =
   usableSecretValue(process.env.GOOGLE_MAPS_API_KEY) ||
@@ -2741,14 +2778,22 @@ const GOOGLE_ASSIGNMENT_REQUIRED_SCOPES = {
 };
 const GOOGLE_DRIVE_PIPELINE_ROOT_NAME = process.env.GOOGLE_DRIVE_PIPELINE_ROOT_NAME || 'BNA V2';
 
-if (!DATABASE_URL) {
+if (!DATABASE_URL && !ONE_TIME_REVIEW_ONLY_NO_DB) {
   console.error('FATAL: DATABASE_URL not set');
   process.exit(1);
 }
 
 if (!OPS_USERNAME || !OPS_PASSWORD) {
-  console.error('FATAL: OPS_USERNAME and OPS_PASSWORD must be set');
-  process.exit(1);
+  if (ONE_TIME_REVIEW_ONLY_NO_DB) {
+    console.warn('ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.');
+  } else {
+    console.error('FATAL: OPS_USERNAME and OPS_PASSWORD must be set');
+    process.exit(1);
+  }
+}
+
+if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
+  console.warn('ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.');
 }
 
 function parseEnvBlock(rawValue) {
@@ -2881,8 +2926,8 @@ const RESEND_REPLY_TO = normalizeEmail(process.env.RESEND_REPLY_TO || integratio
 const RESEND_SEND_FALLBACK_APPROVED = Boolean(resendRuntimeConfig.fallbackApproved);
 const RESEND_WEBHOOK_SECRET = integrationSecretLoader.loadSecret({
   envName: 'RESEND_WEBHOOK_SECRET',
-  names: ['resend-api-key', 'resend-webhook-secret', 'resend'],
-  fileNames: ['resend-api-key.txt', 'RESEND_WEBHOOK_SECRET.txt', 'resend.txt'],
+  names: ['resend-webhook-secret'],
+  fileNames: ['resend-webhook-secret.txt', 'RESEND_WEBHOOK_SECRET.txt'],
   repoRoot: __dirname,
 }).value || usableSecretValue(process.env.RESEND_WEBHOOK_SECRET);
 const stripeRuntimeConfig = stripeIntegration.getStripeConfig({ repoRoot: __dirname });
@@ -8294,11 +8339,11 @@ function identifyOpsUser(username, password = null) {
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
-  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8310,7 +8355,7 @@ function identifyOpsUser(username, password = null) {
     });
   }
 
-  // Two-login architecture: owner (Rabbi Elie Scheller) vs manager (Shloimie)
+  // Two-login architecture: owner (Rabbi Ellie Scheller) vs manager (Shloimie)
   if (
     ONE_TIME_OWNER_USERNAME &&
     ONE_TIME_OWNER_PASSWORD &&
@@ -8322,7 +8367,7 @@ function identifyOpsUser(username, password = null) {
       role: 'project_owner',
       scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
       allowedViews: ownerAllowedViews,
-      displayName: 'Rabbi Elie Scheller',
+      displayName: 'Rabbi Ellie Scheller',
     });
   }
 
@@ -8393,16 +8438,26 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/intake\/review\/[^/]+\/resolve$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/projects' && method === 'GET') return true;
   if (routePath === '/api/bna/people' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/workspace-users' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/workspace-users/role-audit' && method === 'GET') return true;
+  if (/^\/api\/bna\/workspace-users\/\d+$/.test(routePath) && method === 'PATCH') return true;
   if (routePath === '/api/bna/workspace-platform' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/drive-social-ingestion' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/app-access-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/question-moderation' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/product-system' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/trial-referral-config' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/payment-access-class-links' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/crm-import-preview' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/test-identities-preview' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/agent-mode-acceptance' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/integrations/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/calendar' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/calendar-events' && method === 'POST') return true;
+  if (routePath === '/api/bna/one-time/appointment-intents' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/one-time/source-prep-jobs' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/product-leads' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/one-time/product-leads' && method === 'GET') return true;
@@ -8502,6 +8557,15 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (/^\/api\/bna\/content-jobs\/\d+\/actions$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/content-jobs\/\d+\/parse-mixed-recording$/.test(routePath) && method === 'POST') return true;
   if (/^\/api\/bna\/content-jobs\/\d+\/outputs$/.test(routePath) && method === 'POST') return true;
+  if (routePath === '/api/bna/studio/dashboard' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/usage' && method === 'GET') return true;
+  if (routePath === '/api/bna/studio/projects' && ['GET', 'POST'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/(?:source|outline|storyboard|prompt-compile|render|handoff)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/projects\/\d+\/corrections\/(?:preview|apply)$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+$/.test(routePath) && method === 'PATCH') return true;
+  if (/^\/api\/bna\/studio\/scenes\/\d+\/regenerate$/.test(routePath) && method === 'POST') return true;
+  if (/^\/api\/bna\/studio\/jobs\/\d+\/(?:retry|cancel)$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/project-meetings' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/project-meetings\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
   if (/^\/api\/bna\/content-outputs\/\d+$/.test(routePath) && method === 'PATCH') return true;
@@ -8547,6 +8611,8 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/gamification-events' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/gamification-events/backfill' && method === 'POST') return true;
   if (routePath === '/api/bna/gamification/badge-readiness' && method === 'GET') return true;
+  if (routePath === '/api/bna/student-badges/rabbi-award' && method === 'POST') return true;
+  if (/^\/api\/bna\/student-badges\/\d+\/reverse$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/shoutouts' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/shoutouts\/\d+\/approve$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/parent-student-links' && ['GET', 'POST'].includes(method)) return true;
@@ -8773,275 +8839,6 @@ async function issueSession(username, db = pool) {
     [sessionId, username, expiresAt]
   );
   return sessionId;
-}
-
-async function maybeHandleOpsPortalFallback(req, res, {
-  username,
-  password,
-  returnTo = '/operations',
-  source = 'portal_login',
-} = {}) {
-  const identity = identifyOpsUser(username, password);
-  if (!identity) return false;
-  const redirectTo = identity.scope?.type === 'project'
-    ? oneTimeOperationsReturnPath(returnTo)
-    : safeOperationsReturnPath(returnTo);
-  const sessionId = await issueSession(identity.username);
-  setSessionCookie(res, sessionId);
-  res.json({
-    success: true,
-    portal_redirect: true,
-    redirect_to: redirectTo,
-    user: identity.username,
-    role: identity.role,
-    scope: identity.scope,
-    allowedViews: identity.allowedViews,
-    message: 'Opening Operations with your Operations login.',
-    source,
-  });
-  return true;
-}
-
-function safePortalReturnPath(value, portal) {
-  const fallbackByPortal = {
-    operations: '/operations',
-    provider: '/provider',
-    parent: '/parent',
-    student: '/student',
-  };
-  const fallback = fallbackByPortal[portal] || '/';
-  if (portal === 'operations') return safeOperationsReturnPath(value || fallback);
-  const raw = String(value || '').trim();
-  if (!raw) return fallback;
-  try {
-    const url = new URL(raw, 'https://bna.local');
-    if (url.origin !== 'https://bna.local') return fallback;
-    const allowedPath = fallbackByPortal[portal];
-    if (!allowedPath || url.pathname !== allowedPath) return fallback;
-    return `${url.pathname}${url.search}${url.hash}`;
-  } catch {
-    return fallback;
-  }
-}
-
-function portalDestinationRedirect(destination, returnTo = '') {
-  if (destination?.portal === 'operations') {
-    return destination.identity?.scope?.type === 'project'
-      ? oneTimeOperationsReturnPath(returnTo)
-      : safeOperationsReturnPath(returnTo);
-  }
-  return safePortalReturnPath(returnTo, destination?.portal);
-}
-
-function publicPortalDestination(destination, returnTo = '') {
-  return {
-    id: destination.id,
-    portal: destination.portal,
-    role: destination.role,
-    label: destination.label,
-    workspace_key: destination.workspace_key || null,
-    project_key: destination.project_key || null,
-    redirect_to: portalDestinationRedirect(destination, returnTo),
-  };
-}
-
-async function collectPortalLoginDestinations({ username, password, db = pool } = {}) {
-  const rawUsername = String(username || '').trim();
-  const rawPassword = String(password || '');
-  if (!rawUsername || !rawPassword) return [];
-  const destinations = [];
-
-  const opsIdentity = identifyOpsUser(rawUsername, rawPassword);
-  if (opsIdentity) {
-    destinations.push({
-      id: `operations:${opsIdentity.username}`,
-      portal: 'operations',
-      role: opsIdentity.role,
-      label: opsIdentity.displayName || opsIdentity.username || 'Operations',
-      workspace_key: opsIdentity.scope?.type === 'project' ? 'rabbi_sheller_provider' : 'bna',
-      project_key: opsIdentity.scope?.projectKey || null,
-      identity: opsIdentity,
-    });
-  }
-
-  const provider = (await db.query(
-    `SELECT *
-     FROM bna_service_providers
-     WHERE lower(COALESCE(login_username, '')) = lower($1)
-       AND password_hash IS NOT NULL
-       AND status NOT IN ('draft', 'rejected', 'archived')
-     LIMIT 1`,
-    [rawUsername]
-  )).rows[0] || null;
-  if (provider && verifyParentPassword(rawPassword, provider.password_hash)) {
-    destinations.push({
-      id: `provider:${provider.id}`,
-      portal: 'provider',
-      role: 'service_provider',
-      label: provider.provider_name || provider.display_name || provider.contact_name || 'Provider workspace',
-      workspace_key: provider.workspace_key || provider.project_key || null,
-      project_key: provider.project_key || null,
-      provider,
-    });
-  }
-
-  const parentEmail = normalizeEmail(rawUsername);
-  if (parentEmail) {
-    const parentAccount = (await db.query(
-      `SELECT parent_email, password_hash
-       FROM bna_parent_password_accounts
-       WHERE lower(parent_email) = $1
-       LIMIT 1`,
-      [parentEmail]
-    )).rows[0] || null;
-    if (parentAccount && verifyParentPassword(rawPassword, parentAccount.password_hash)) {
-      const records = await findParentAccessRecords(parentEmail, db);
-      if (parentAccessEligible(records)) {
-        destinations.push({
-          id: `parent:${parentEmail}`,
-          portal: 'parent',
-          role: 'parent',
-          label: parentEmail,
-          workspace_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
-          project_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
-          parentEmail,
-        });
-      }
-    }
-  }
-
-  const studentUsername = normalizeStudentLoginUsername(rawUsername);
-  if (studentUsername) {
-    const studentAccount = (await db.query(
-      `SELECT a.student_id, a.username, a.password_hash, a.status,
-              s.id, s.name, s.name_en, s.name_he, s.status AS student_status
-       FROM bna_student_password_accounts a
-       JOIN bna_students s ON s.id = a.student_id
-       WHERE a.username_normalized = $1
-         AND a.status = 'active'
-         AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
-       LIMIT 1`,
-      [studentUsername]
-    )).rows[0] || null;
-    if (studentAccount && verifyStudentPassword(rawPassword, studentAccount.password_hash)) {
-      destinations.push({
-        id: `student:${studentAccount.student_id}`,
-        portal: 'student',
-        role: 'student',
-        label: studentAccount.name || studentAccount.name_en || studentAccount.username || 'Student',
-        workspace_key: null,
-        project_key: null,
-        student: studentAccount,
-      });
-    }
-  }
-
-  return destinations;
-}
-
-async function issuePortalDestinationSession(destination, res, { db = pool, returnTo = '' } = {}) {
-  const redirectTo = portalDestinationRedirect(destination, returnTo);
-  if (destination.portal === 'operations') {
-    const sessionId = await issueSession(destination.identity.username, db);
-    setSessionCookie(res, sessionId);
-    return {
-      sessionId,
-      user: destination.identity.username,
-      role: destination.identity.role,
-      scope: destination.identity.scope,
-      allowedViews: destination.identity.allowedViews,
-      redirect_to: redirectTo,
-    };
-  }
-  if (destination.portal === 'provider') {
-    const sessionId = await issueProviderSession(destination.provider.id, db);
-    await db.query(`UPDATE bna_service_providers SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`, [destination.provider.id]);
-    setProviderSessionCookie(res, sessionId);
-    return {
-      sessionId,
-      role: destination.role,
-      provider_id: destination.provider.id,
-      provider_name: destination.provider.provider_name || destination.provider.display_name || null,
-      redirect_to: redirectTo,
-    };
-  }
-  if (destination.portal === 'parent') {
-    const sessionId = await issueParentSession(destination.parentEmail, db);
-    await db.query(
-      `UPDATE bna_parent_password_accounts
-       SET last_login_at = NOW(),
-           updated_at = NOW()
-       WHERE lower(parent_email) = $1`,
-      [destination.parentEmail]
-    );
-    setParentSessionCookie(res, sessionId);
-    return {
-      sessionId,
-      role: destination.role,
-      email: destination.parentEmail,
-      redirect_to: redirectTo,
-    };
-  }
-  if (destination.portal === 'student') {
-    const studentId = Number(destination.student.student_id || destination.student.id);
-    const sessionId = await issueStudentSession(studentId, db, {
-      login_method: 'portal_agnostic_username_password',
-      raw_password_stored: false,
-    });
-    await db.query(
-      `UPDATE bna_student_password_accounts
-       SET last_login_at = NOW(),
-           updated_at = NOW()
-       WHERE student_id = $1`,
-      [studentId]
-    );
-    setStudentSessionCookie(res, sessionId);
-    return {
-      sessionId,
-      role: destination.role,
-      student: {
-        id: studentId,
-        name: destination.student.name || destination.student.name_en || null,
-      },
-      redirect_to: redirectTo,
-    };
-  }
-  const error = new Error('Unsupported login destination');
-  error.statusCode = 400;
-  throw error;
-}
-
-async function maybeHandleOtherPortalLogin(req, res, {
-  username,
-  password,
-  currentPortal,
-  returnTo = '',
-  source = 'portal_login',
-  db = pool,
-} = {}) {
-  const destinations = (await collectPortalLoginDestinations({ username, password, db }))
-    .filter((destination) => destination.portal !== currentPortal);
-  if (!destinations.length) return false;
-  if (destinations.length > 1) {
-    return res.json({
-      success: true,
-      chooser_required: true,
-      message: 'Choose which portal or workspace to open.',
-      destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
-      source,
-    });
-  }
-  const destination = destinations[0];
-  const sessionPayload = await issuePortalDestinationSession(destination, res, { db, returnTo });
-  res.json({
-    success: true,
-    portal_redirect: true,
-    redirect_to: sessionPayload.redirect_to,
-    role: destination.role,
-    destination: publicPortalDestination(destination, returnTo),
-    source,
-  });
-  return true;
 }
 
 async function createOpsAccessLink({
@@ -9954,10 +9751,19 @@ async function identifyOpsAssistantRequest(req) {
 }
 
 // Database connection
-const pool = new Pool({
-  connectionString: DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+const pool = DATABASE_URL
+  ? new Pool({
+      connectionString: DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    })
+  : {
+      async query() {
+        throw new Error('Database is disabled in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+      },
+      async connect() {
+        throw new Error('Database is disabled in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+      },
+    };
 
 let stripeSdk = null;
 
@@ -9981,7 +9787,14 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 });
 
 // Middleware
-app.use(express.json({ limit: '25mb' }));
+app.use(express.json({
+  limit: '25mb',
+  verify: (req, res, buf) => {
+    if (req.originalUrl && req.originalUrl.startsWith('/api/bna/resend/webhook')) {
+      req.rawBody = Buffer.from(buf || '').toString('utf8');
+    }
+  },
+}));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(express.static('public', {
   setHeaders(res, filePath) {
@@ -9990,6 +9803,349 @@ app.use(express.static('public', {
     }
   }
 }));
+
+app.get('/api/one-time/instance-config', (req, res) => {
+  res.json({
+    ...INSTANCE_RUNTIME_FLAGS,
+    app_visible: true,
+    secrets_included: false,
+    external_write_performed: false,
+  });
+});
+
+function oneTimeCampaignConfig(now = new Date()) {
+  const startAt = String(process.env.ONE_TIME_CAMPAIGN_START_AT || '').trim();
+  const deadlineAt = String(process.env.ONE_TIME_CAMPAIGN_DEADLINE_AT || '').trim();
+  const timeZone = String(process.env.ONE_TIME_CAMPAIGN_TIME_ZONE || 'Asia/Jerusalem').trim();
+  const offerKey = String(process.env.ONE_TIME_CAMPAIGN_OFFER_KEY || 'one-time-30-day-free-trial').trim();
+  const startMs = startAt ? Date.parse(startAt) : NaN;
+  const deadlineMs = deadlineAt ? Date.parse(deadlineAt) : NaN;
+  const deadlineConfigured = Number.isFinite(deadlineMs);
+  const startConfigured = Number.isFinite(startMs);
+  const nowMs = now.getTime();
+  const active = deadlineConfigured && (!startConfigured || nowMs >= startMs) && nowMs < deadlineMs;
+  const expired = deadlineConfigured && nowMs >= deadlineMs;
+  return {
+    campaign_key: 'one-time-worldwide-mishnayos-launch',
+    offer_key: offerKey,
+    headline: '30 DAYS TO JOIN - START WITH 30 DAYS FREE',
+    start_at: startConfigured ? new Date(startMs).toISOString() : '',
+    deadline_at: deadlineConfigured ? new Date(deadlineMs).toISOString() : '',
+    time_zone: timeZone,
+    server_now: now.toISOString(),
+    deadline_configured: deadlineConfigured,
+    start_configured: startConfigured,
+    active,
+    expired,
+    editable_by: 'platform_super_admin',
+    audit_required_for_changes: true,
+    status: deadlineConfigured ? (expired ? 'expired' : active ? 'active' : 'scheduled') : 'needs_operator_decision',
+    decision: deadlineConfigured ? null : {
+      id: 'DEC-20260622-ONE-TIME-CAMPAIGN-DEADLINE',
+      missing_information: 'Exact campaign launch timestamp and 30-day enrollment deadline.',
+      owner: 'Shloimie / One Time launch owner',
+      recommended_option: 'Set ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY in the approved environment before public launch.',
+      alternatives: ['Keep the page in deadline-pending mode until launch approval is ready.'],
+      consequence: 'The page will not show a fake/resetting countdown.',
+      exact_next_action: 'Approve the launch timestamp and install the four ONE_TIME_CAMPAIGN_* variables.',
+    },
+    external_write_performed: false,
+    secrets_included: false,
+  };
+}
+
+app.get('/api/one-time/campaign', (req, res) => {
+  res.json({
+    success: true,
+    campaign: oneTimeCampaignConfig(new Date()),
+    external_write_performed: false,
+  });
+});
+
+function oneTimeSharedReviewDataForRequest(req) {
+  const host = req.get('host') || 'localhost:3000';
+  const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
+  return buildOneTimeSharedReviewData({
+    baseUrl: `${protocol}://${host}`,
+  });
+}
+
+function oneTimeViewAsSigningSecret() {
+  return String(
+    process.env.ONE_TIME_VIEW_AS_SECRET ||
+    process.env.SESSION_SECRET ||
+    process.env.CRON_SECRET ||
+    DATABASE_URL ||
+    'one-time-view-as-local'
+  );
+}
+
+function base64UrlEncode(value) {
+  return Buffer.from(JSON.stringify(value)).toString('base64url');
+}
+
+function base64UrlDecode(value) {
+  return JSON.parse(Buffer.from(String(value || ''), 'base64url').toString('utf8'));
+}
+
+function signOneTimeViewAsPayload(payload) {
+  const encoded = base64UrlEncode(payload);
+  const signature = crypto
+    .createHmac('sha256', oneTimeViewAsSigningSecret())
+    .update(encoded)
+    .digest('base64url');
+  return `${encoded}.${signature}`;
+}
+
+function verifyOneTimeViewAsToken(token = '') {
+  const [encoded, signature] = String(token || '').split('.');
+  if (!encoded || !signature) return null;
+  const expected = crypto
+    .createHmac('sha256', oneTimeViewAsSigningSecret())
+    .update(encoded)
+    .digest('base64url');
+  if (
+    expected.length !== signature.length ||
+    !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+  ) {
+    return null;
+  }
+  let payload;
+  try {
+    payload = base64UrlDecode(encoded);
+  } catch (error) {
+    return null;
+  }
+  if (!payload?.exp || Date.now() > Number(payload.exp)) return null;
+  if (payload.typ !== 'one_time_view_as_rabbi' || payload.read_only !== true) return null;
+  if (payload.workspace_key !== 'rabbi_sheller_provider' || payload.target_role !== 'workspace_owner') return null;
+  return payload;
+}
+
+function requireOneTimeViewAsSuperAdmin(req, res) {
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type !== 'all') {
+    res.status(403).json({
+      success: false,
+      error: 'Only platform_super_admin can use View as Rabbi.',
+      external_write_performed: false,
+    });
+    return null;
+  }
+  return identity;
+}
+
+function oneTimeViewAsSessionView(payload, req) {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  return {
+    mode: 'view_as_rabbi',
+    banner: 'You are viewing One Time as Rabbi Elie Scheller',
+    read_only: true,
+    writes_disabled: true,
+    external_sends_disabled: true,
+    charges_disabled: true,
+    uploads_disabled: true,
+    actor: payload.actor,
+    target: payload.target,
+    workspace_key: payload.workspace_key,
+    project_key: payload.project_key,
+    target_role: payload.target_role,
+    started_at: payload.iat_iso,
+    expires_at: new Date(Number(payload.exp)).toISOString(),
+    exit_url: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
+    allowed_modules: [
+      'Overview',
+      'Classes',
+      'Schedule',
+      'Members',
+      'CRM / Leads',
+      'Classroom',
+      'Video Library',
+      'Worksheets',
+      'Community / Questions',
+      'Communications',
+      'Automations',
+      'Payments / Access',
+      'Integrations',
+      'Support',
+      'Tasks',
+      'Settings',
+    ],
+    hidden_modules: [
+      'Watchdog',
+      'Codex Queue',
+      'Agent internals',
+      'Raw prompt intake',
+      'Proof gaps',
+      'API contracts',
+      'OAuth token details',
+      'Platform-wide goals',
+      'BNA student accountability',
+      'BNA private records',
+      'Webcraft branding',
+      'Platform Suite',
+      'Developer test fixtures',
+    ],
+    audit: {
+      start_event: 'one_time_view_as_rabbi_started',
+      end_event: 'one_time_view_as_rabbi_ended',
+      request_id: req.headers['x-request-id'] || crypto.randomUUID(),
+      actor_id: payload.actor.id,
+      target_id: payload.target.id,
+      workspace_key: payload.workspace_key,
+      project_key: payload.project_key,
+    },
+    provider_portal: review.provider_portal,
+    external_write_performed: false,
+    secrets_included: false,
+  };
+}
+
+app.get('/api/one-time-review', (req, res) => {
+  res.json({
+    success: true,
+    review: oneTimeSharedReviewDataForRequest(req),
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
+  const issuedAt = Date.now();
+  const payload = {
+    typ: 'one_time_view_as_rabbi',
+    iat: issuedAt,
+    iat_iso: new Date(issuedAt).toISOString(),
+    exp: issuedAt + 20 * 60 * 1000,
+    actor: {
+      id: identity.username || req.opsUser || 'platform_super_admin',
+      role: 'platform_super_admin',
+      display_name: identity.displayName || identity.username || 'Platform Super Admin',
+    },
+    target: {
+      id: 'TEST-ONETIME-PROVIDER-RABBI',
+      role: 'workspace_owner',
+      display_name: 'Rabbi Elie Scheller',
+    },
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: 'one_time_mishnah_class',
+    target_role: 'workspace_owner',
+    read_only: true,
+  };
+  const token = signOneTimeViewAsPayload(payload);
+  res.json({
+    success: true,
+    token,
+    view_url: `/provider.html?review=one-time&view_as_rabbi=${encodeURIComponent(token)}`,
+    session: oneTimeViewAsSessionView(payload, req),
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/bna/one-time/view-as-rabbi/session', requireAdmin, (req, res) => {
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
+  const payload = verifyOneTimeViewAsToken(req.query.token || req.headers['x-one-time-view-as-token']);
+  if (!payload) {
+    return res.status(401).json({
+      success: false,
+      error: 'A valid signed View as Rabbi session is required.',
+      external_write_performed: false,
+    });
+  }
+  res.json({
+    success: true,
+    session: oneTimeViewAsSessionView(payload, req),
+    external_write_performed: false,
+  });
+});
+
+app.post('/api/bna/one-time/view-as-rabbi/end', requireAdmin, (req, res) => {
+  const identity = requireOneTimeViewAsSuperAdmin(req, res);
+  if (!identity) return;
+  const payload = verifyOneTimeViewAsToken(req.body?.token || req.headers['x-one-time-view-as-token']);
+  if (!payload) {
+    return res.status(401).json({
+      success: false,
+      error: 'A valid signed View as Rabbi session is required.',
+      external_write_performed: false,
+    });
+  }
+  res.json({
+    success: true,
+    ended: true,
+    audit_event: {
+      event_type: 'one_time_view_as_rabbi_ended',
+      actor_id: payload.actor.id,
+      target_id: payload.target.id,
+      workspace_key: payload.workspace_key,
+      project_key: payload.project_key,
+      ended_at: new Date().toISOString(),
+      request_id: req.headers['x-request-id'] || crypto.randomUUID(),
+    },
+    redirect_to: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/parent', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.parent_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/student', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.student_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/provider', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    ...review.provider_portal,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/classroom', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    classroom: review.classroom,
+    links: review.links,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
+
+app.get('/api/one-time-review/email-templates', (req, res) => {
+  const review = oneTimeSharedReviewDataForRequest(req);
+  res.json({
+    success: true,
+    email_templates: review.email_templates,
+    links: review.links,
+    blockers: review.external_blockers,
+    send_disabled: true,
+    test_only: true,
+    external_write_performed: false,
+  });
+});
 
 app.get('/documents/parent-handbook', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'documents', 'parent-handbook.html'));
@@ -10213,7 +10369,7 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
   project_id INTEGER NOT NULL REFERENCES bna_projects(id) ON DELETE CASCADE,
   person_name TEXT NOT NULL,
   role TEXT DEFAULT 'member',
-  access_level TEXT NOT NULL DEFAULT 'member' CHECK (access_level IN ('owner', 'manager', 'member', 'viewer')),
+  access_level TEXT NOT NULL DEFAULT 'member' CHECK (access_level IN ('owner', 'admin', 'manager', 'member', 'viewer')),
   telegram_chat_id TEXT,
   login_username TEXT,
   active BOOLEAN DEFAULT TRUE,
@@ -10222,6 +10378,10 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (project_id, person_name)
 );
+ALTER TABLE bna_project_members DROP CONSTRAINT IF EXISTS bna_project_members_access_level_check;
+ALTER TABLE bna_project_members
+  ADD CONSTRAINT bna_project_members_access_level_check
+  CHECK (access_level IN ('owner', 'admin', 'manager', 'member', 'viewer'));
 `;
 
 const createAutomationCenterSQL = `
@@ -10412,6 +10572,15 @@ CREATE TABLE IF NOT EXISTS bna_workspace_memberships (
   role TEXT NOT NULL CHECK (role IN (
     'owner',
     'super_admin',
+    'platform_super_admin',
+    'platform_manager',
+    'support_admin',
+    'technical_agent',
+    'workspace_owner',
+    'workspace_admin',
+    'workspace_manager',
+    'provider_staff',
+    'moderator',
     'admin',
     'rabbi',
     'teacher',
@@ -10437,6 +10606,53 @@ CREATE TABLE IF NOT EXISTS bna_workspace_memberships (
 
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_memberships_workspace ON bna_workspace_memberships(workspace_id, active);
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_memberships_person ON bna_workspace_memberships(person_id, active);
+ALTER TABLE bna_workspace_memberships DROP CONSTRAINT IF EXISTS bna_workspace_memberships_role_check;
+ALTER TABLE bna_workspace_memberships
+  ADD CONSTRAINT bna_workspace_memberships_role_check
+  CHECK (role IN (
+    'owner',
+    'super_admin',
+    'platform_super_admin',
+    'platform_manager',
+    'support_admin',
+    'technical_agent',
+    'workspace_owner',
+    'workspace_admin',
+    'workspace_manager',
+    'provider_staff',
+    'moderator',
+    'admin',
+    'rabbi',
+    'teacher',
+    'manager',
+    'parent',
+    'child',
+    'student',
+    'service_provider',
+    'client',
+    'tester',
+    'viewer'
+  ));
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS invitation_state TEXT NOT NULL DEFAULT 'active';
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS disabled_at TIMESTAMP;
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMP;
+ALTER TABLE bna_workspace_memberships ADD COLUMN IF NOT EXISTS login_state TEXT NOT NULL DEFAULT 'not_configured';
+
+CREATE TABLE IF NOT EXISTS bna_platform_role_audit_events (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER,
+  membership_id INTEGER,
+  actor_person_id INTEGER,
+  target_person_id INTEGER,
+  event_type TEXT NOT NULL,
+  from_role TEXT,
+  to_role TEXT,
+  reason TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_platform_role_audit_workspace ON bna_platform_role_audit_events(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_platform_role_audit_membership ON bna_platform_role_audit_events(membership_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS bna_households (
   id SERIAL PRIMARY KEY,
@@ -11346,6 +11562,17 @@ CREATE TABLE IF NOT EXISTS bna_support_tickets (
   reporter_role TEXT,
   assigned_to TEXT,
   source TEXT NOT NULL DEFAULT 'dashboard' CHECK (source IN ('dashboard', 'telegram', 'api', 'system')),
+  ticket_number TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  requester_user_key TEXT,
+  requester_email TEXT,
+  requester_display_name TEXT,
+  requester_role TEXT,
+  page_path TEXT,
+  authenticated_context JSONB DEFAULT '{}',
+  notification_state TEXT DEFAULT 'internal_only',
+  staff_reply_state TEXT DEFAULT 'internal_only',
   related_task_id INTEGER REFERENCES bna_tasks(id) ON DELETE SET NULL,
   source_context JSONB DEFAULT '{}',
   created_by TEXT DEFAULT 'system',
@@ -11360,6 +11587,9 @@ CREATE TABLE IF NOT EXISTS bna_support_ticket_comments (
   author TEXT NOT NULL DEFAULT 'system',
   body TEXT NOT NULL,
   visibility TEXT NOT NULL DEFAULT 'project' CHECK (visibility IN ('internal', 'operator', 'project')),
+  requester_visible BOOLEAN NOT NULL DEFAULT FALSE,
+  staff_reply BOOLEAN NOT NULL DEFAULT FALSE,
+  notification_state TEXT DEFAULT 'internal_only',
   source TEXT NOT NULL DEFAULT 'dashboard' CHECK (source IN ('dashboard', 'telegram', 'api', 'system')),
   source_context JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -11380,6 +11610,32 @@ ALTER TABLE bna_support_ticket_comments DROP CONSTRAINT IF EXISTS bna_support_ti
 ALTER TABLE bna_support_ticket_comments
   ADD CONSTRAINT bna_support_ticket_comments_source_check
   CHECK (source IN ('dashboard', 'telegram', 'api', 'system', 'web_assistant'));
+
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS ticket_number TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS workspace_key TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS project_key TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_user_key TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_email TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_display_name TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS requester_role TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS page_path TEXT;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS authenticated_context JSONB DEFAULT '{}';
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS notification_state TEXT DEFAULT 'internal_only';
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS staff_reply_state TEXT DEFAULT 'internal_only';
+ALTER TABLE bna_support_ticket_comments ADD COLUMN IF NOT EXISTS requester_visible BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_support_ticket_comments ADD COLUMN IF NOT EXISTS staff_reply BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE bna_support_ticket_comments ADD COLUMN IF NOT EXISTS notification_state TEXT DEFAULT 'internal_only';
+UPDATE bna_support_tickets
+   SET ticket_number = 'OT-SUP-' || LPAD(id::text, 6, '0')
+ WHERE ticket_number IS NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_support_tickets_ticket_number_unique
+  ON bna_support_tickets (ticket_number)
+  WHERE ticket_number IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_support_tickets_requester_email
+  ON bna_support_tickets (lower(requester_email))
+  WHERE requester_email IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_support_ticket_comments_requester_visible
+  ON bna_support_ticket_comments (ticket_id, requester_visible, created_at);
 `;
 
 const createTicketCompatibilityViewsSQL = `
@@ -12976,6 +13232,24 @@ CREATE TABLE IF NOT EXISTS bna_email_drafts (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS bna_resend_webhook_events (
+  id SERIAL PRIMARY KEY,
+  svix_id TEXT UNIQUE,
+  svix_timestamp BIGINT,
+  event_type TEXT NOT NULL,
+  provider_message_id TEXT,
+  delivery_status TEXT,
+  processing_status TEXT NOT NULL DEFAULT 'queued' CHECK (processing_status IN ('queued', 'processed', 'duplicate', 'dead_letter')),
+  duplicate_count INTEGER NOT NULL DEFAULT 0,
+  payload JSONB NOT NULL DEFAULT '{}',
+  error TEXT,
+  communication_id INTEGER,
+  email_log_id INTEGER,
+  received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  processed_at TIMESTAMP,
+  last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS bna_dns_setup_tasks (
   id SERIAL PRIMARY KEY,
   workspace_id INTEGER,
@@ -13022,6 +13296,22 @@ CREATE INDEX IF NOT EXISTS idx_bna_social_posts_provider_status ON bna_social_po
 CREATE INDEX IF NOT EXISTS idx_bna_social_posts_created_at ON bna_social_posts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_email_drafts_provider_status ON bna_email_drafts(provider, status);
 CREATE INDEX IF NOT EXISTS idx_bna_email_drafts_created_at ON bna_email_drafts(created_at DESC);
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS svix_id TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS svix_timestamp BIGINT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS provider_message_id TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS delivery_status TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS processing_status TEXT NOT NULL DEFAULT 'queued';
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS duplicate_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS payload JSONB NOT NULL DEFAULT '{}';
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS error TEXT;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS communication_id INTEGER;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS email_log_id INTEGER;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS received_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS processed_at TIMESTAMP;
+ALTER TABLE bna_resend_webhook_events ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_resend_webhook_events_svix_id ON bna_resend_webhook_events(svix_id) WHERE svix_id IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_resend_webhook_events_type_received ON bna_resend_webhook_events(event_type, received_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_resend_webhook_events_message ON bna_resend_webhook_events(provider_message_id);
 ALTER TABLE bna_dns_setup_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER;
 ALTER TABLE bna_dns_setup_tasks ADD COLUMN IF NOT EXISTS provider_id INTEGER;
 ALTER TABLE bna_dns_setup_tasks ADD COLUMN IF NOT EXISTS purpose TEXT;
@@ -14377,8 +14667,18 @@ ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS media_provider TEXT DEFA
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS media_url TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS vimeo_id TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS thumbnail_url TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS masechta TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS perek TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS mishnah_range TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS duration_seconds INTEGER;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_status TEXT DEFAULT 'draft';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_notes TEXT;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_review_state TEXT DEFAULT 'needs_review';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_privacy_class TEXT DEFAULT 'needs_review';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_segments JSONB DEFAULT '[]';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_versions JSONB DEFAULT '{}';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_glossary JSONB DEFAULT '[]';
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS transcript_release_audit JSONB DEFAULT '{}';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS source_sheet_draft TEXT;
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS package_status TEXT DEFAULT 'draft';
 ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS updated_by TEXT;
@@ -14800,6 +15100,16 @@ const createRabbiCheckoutAccessSQL = fs.readFileSync(
 
 const createOneTimeProductSystemSQL = fs.readFileSync(
   path.join(__dirname, 'railway-migration-2026-06-16-one-time-product-system.sql'),
+  'utf8'
+);
+
+const createOneTimeTrialReferralConfigSQL = fs.readFileSync(
+  path.join(__dirname, 'railway-migration-2026-06-21-one-time-trial-referral-config.sql'),
+  'utf8'
+);
+
+const createServiceProviderStudioSQL = fs.readFileSync(
+  path.join(__dirname, 'railway-migration-2026-06-23-service-provider-studio.sql'),
   'utf8'
 );
 
@@ -18948,6 +19258,17 @@ function parseJsonArrayMaybe(value) {
     .filter(Boolean);
 }
 
+function parseJsonObjectMaybe(value) {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) return value;
+  if (Array.isArray(value)) return { items: value };
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {}
+  return {};
+}
+
 function normalizeDecisionOptions(value) {
   return parseJsonArrayMaybe(value).map((option, index) => {
     if (option && typeof option === 'object') {
@@ -20687,6 +21008,8 @@ async function createCanonicalIntakeParseRun({
   source_id = null,
   source_table = null,
   source_message_id = null,
+  filename = '',
+  source_title = '',
   created_by = 'dashboard',
   media_url = null,
   intake_type = 'general',
@@ -20737,6 +21060,8 @@ async function createCanonicalIntakeParseRun({
       source_channel,
       source_id,
       source_table,
+      filename,
+      title: source_title || filename,
       source_date: rawIntake?.created_at || null,
       workspace_key,
       project_key,
@@ -20752,6 +21077,8 @@ async function createCanonicalIntakeParseRun({
       raw_intake_stable_id: rawIntake?.stable_id || null,
       workspace_key: workspace_key || null,
       project_key: project_key || null,
+      filename: filename || null,
+      source_title: source_title || filename || null,
     };
   const runResult = await db.query(
     `INSERT INTO bna_intake_parse_runs (
@@ -22943,11 +23270,13 @@ async function ensureTorahSeedStudents(db = pool) {
         `Seeded for Torah learning group goal on ${TORAH_TEMP_SEED_DATE}.`,
       ]
     );
-    await refreshStudentIdentityFields(inserted.rows[0].id, {
+    const insertedStudent = inserted.rows[0];
+    if (!insertedStudent?.id) continue;
+    await refreshStudentIdentityFields(insertedStudent.id, {
       aliases: seed.aliases || [],
-      source_records: [studentIdentitySourceRecord('torah_seed', inserted.rows[0], { seed_name: seed.name })],
+      source_records: [studentIdentitySourceRecord('torah_seed', insertedStudent, { seed_name: seed.name })],
     }, db).catch(() => {});
-    students.push(inserted.rows[0]);
+    students.push(insertedStudent);
   }
 }
 
@@ -24703,6 +25032,7 @@ async function ensureInitialParentLeads() {
       );
 
     const lead = leadResult.rows[0];
+    if (!lead?.id) continue;
     await pool.query(
       `INSERT INTO bna_contact_communications (
         contact_type, lead_id, channel, direction, summary, body,
@@ -25663,6 +25993,18 @@ function oneTimeLongText(value = '', max = 20000) {
   return String(value || '').trim().slice(0, max);
 }
 
+function oneTimeJsonField(value, fallback) {
+  if (value === undefined || value === null || value === '') return JSON.stringify(fallback);
+  if (typeof value === 'string') {
+    try {
+      return JSON.stringify(JSON.parse(value));
+    } catch {
+      return JSON.stringify(fallback);
+    }
+  }
+  return JSON.stringify(value);
+}
+
 function oneTimeOptionalUrl(value = '', fieldName = 'hosted URL') {
   return hostedHttpUrl(value || '', fieldName, { required: false });
 }
@@ -25708,9 +26050,19 @@ function oneTimeClassSessionView(row = {}) {
     media_url: mediaUrl || '',
     vimeo_id: row.vimeo_id || parseVimeoId(mediaUrl),
     thumbnail_url: row.thumbnail_url || '',
+    masechta: row.masechta || '',
+    perek: row.perek || '',
+    mishnah_range: row.mishnah_range || '',
+    duration_seconds: row.duration_seconds ? Number(row.duration_seconds) : null,
     transcript_text: row.transcript_text || '',
     transcript_status: normalizeOneTimeTranscriptStatus(row.transcript_status),
     transcript_notes: row.transcript_notes || '',
+    transcript_review_state: normalizeTranscriptReviewState(row.transcript_review_state || row.transcript_status || 'needs_review'),
+    transcript_privacy_class: normalizeTranscriptPrivacyClass(row.transcript_privacy_class || 'needs_review'),
+    transcript_segments: parseJsonArrayMaybe(row.transcript_segments),
+    transcript_versions: parseJsonObjectMaybe(row.transcript_versions),
+    transcript_glossary: parseJsonArrayMaybe(row.transcript_glossary),
+    transcript_release_audit: parseJsonObjectMaybe(row.transcript_release_audit),
     source_sheet_draft: row.source_sheet_draft || '',
     package_status: normalizeOneTimePackageStatus(row.package_status),
     updated_by: row.updated_by || '',
@@ -25800,6 +26152,10 @@ function buildOneTimeClassPackage(classSession, assets = [], libraryItems = []) 
     media_url: session.media_url,
     vimeo_id: session.vimeo_id,
     thumbnail_url: session.thumbnail_url,
+    masechta: session.masechta,
+    perek: session.perek,
+    mishnah_range: session.mishnah_range,
+    duration_seconds: session.duration_seconds,
     transcript: {
       status: session.transcript_status,
       text: session.transcript_text,
@@ -25837,6 +26193,10 @@ function buildMemberLibraryItemSnapshot(packageView = {}) {
     media_url: packageView.media_url || '',
     vimeo_id: packageView.vimeo_id || '',
     thumbnail_url: packageView.thumbnail_url || '',
+    masechta: packageView.masechta || '',
+    perek: packageView.perek || '',
+    mishnah_range: packageView.mishnah_range || '',
+    duration_seconds: packageView.duration_seconds || null,
     assets: safeAssets,
     source_sheet_draft: packageView.source_sheet_draft || '',
     transcript_status: packageView.transcript?.status || 'draft',
@@ -25857,6 +26217,13 @@ function oneTimeMemberLibraryPublicView(row = {}) {
     media_url: item.media_url || snapshot.media_url || '',
     vimeo_id: item.vimeo_id || snapshot.vimeo_id || '',
     thumbnail_url: item.thumbnail_url || snapshot.thumbnail_url || '',
+    masechta: snapshot.masechta || '',
+    perek: snapshot.perek || '',
+    mishnah_range: snapshot.mishnah_range || '',
+    duration_seconds: snapshot.duration_seconds || null,
+    watch_progress_seconds: 0,
+    watch_progress_percent: 0,
+    review_state: snapshot.transcript_status === 'approved' ? 'review_ready' : 'needs_review',
     assets: assets
       .filter((asset) => asset && asset.status !== 'archived')
       .filter((asset) => ['worksheet', 'source_sheet', 'example', 'other'].includes(asset.asset_type))
@@ -26229,6 +26596,10 @@ async function getOneTimeClassroomData({ db = pool, memberLibrary = null, member
       ...session,
       transcript_text: memberSafe ? '' : session.transcript_text,
       transcript_notes: memberSafe ? '' : session.transcript_notes,
+      transcript_segments: memberSafe ? [] : session.transcript_segments,
+      transcript_versions: memberSafe ? {} : session.transcript_versions,
+      transcript_glossary: memberSafe ? [] : session.transcript_glossary,
+      transcript_release_audit: memberSafe ? {} : session.transcript_release_audit,
       member_library_item: memberItems.find((item) => Number(item.class_session_id) === Number(session.id)) || null,
     }));
   const todayKey = getTodayDateInTimeZone();
@@ -28043,6 +28414,10 @@ async function createProviderIntakeRecord({ providerId = null, sessionKey = '', 
 
 // Initialize database
 async function initDb() {
+  if (ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL) {
+    console.log('Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode');
+    return;
+  }
   try {
     await pool.query(createSignupsTableSQL);
     await pool.query(createSignupAgreementSignaturesSQL);
@@ -28115,6 +28490,8 @@ async function initDb() {
     await pool.query(createLiveClassInfrastructureSQL);
     await pool.query(createRabbiCheckoutAccessSQL);
     await pool.query(createOneTimeProductSystemSQL);
+    await pool.query(createOneTimeTrialReferralConfigSQL);
+    await pool.query(createServiceProviderStudioSQL);
     await pool.query(createContentOutputsSQL);
     await pool.query(createContentPromptsSQL);
     await pool.query(createContentPromptVersionsSQL);
@@ -29158,20 +29535,35 @@ async function ensureProjectMember(project, personName, fields = {}, db = pool) 
 
 function internalPersonView(row = {}) {
   const metadata = row.metadata && typeof row.metadata === 'object' ? row.metadata : {};
+  const canonicalRole = normalizeWorkspaceUserCanonicalRole(row.canonical_role || metadata.canonical_role || row.workspace_role || row.role);
   return {
     id: row.id,
+    person_id: row.person_id || null,
+    workspace_membership_id: row.workspace_membership_id || null,
     person_name: row.person_name,
+    display_name: oneTimeDisplayName(row.person_name || row.preferred_name || row.full_name || ''),
     role: row.role,
+    canonical_role: canonicalRole,
+    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || workspaceUserRoleLabel(canonicalRole),
+    role_scope: workspaceUserRoleScope(canonicalRole),
     access_level: row.access_level,
     telegram_chat_id: row.telegram_chat_id,
     login_username: row.login_username,
-    active: row.active !== false,
+    active: row.workspace_membership_active === false ? false : row.active !== false,
+    invitation_state: row.invitation_state || metadata.invitation_state || (row.active === false ? 'disabled' : 'active'),
+    disabled_at: row.disabled_at || null,
+    last_activity_at: row.last_activity_at || metadata.last_activity_at || row.updated_at || null,
+    login_state: row.login_state || metadata.login_state || (row.login_username ? 'configured' : 'not_configured'),
+    parent_child_relationship: metadata.parent_child_relationship || null,
+    enrollment_relationship: metadata.enrollment_relationship || null,
+    access_entitlement_status: metadata.access_entitlement_status || 'not_configured',
     project_id: row.project_id,
     project_key: row.project_key,
+    workspace_key: workspaceKeyForProject(row.project_key),
     project_name: row.project_name,
     project_short_name: row.project_short_name,
-    email: metadata.email || null,
-    phone: metadata.phone || null,
+    email: row.email || metadata.email || null,
+    phone: row.phone || metadata.phone || null,
     notes: metadata.notes || null,
     metadata,
     created_at: row.created_at,
@@ -29181,7 +29573,7 @@ function internalPersonView(row = {}) {
 
 function safeProjectMemberAccessLevel(value) {
   const normalized = String(value || '').trim().toLowerCase();
-  return ['owner', 'manager', 'member', 'viewer'].includes(normalized) ? normalized : 'member';
+  return ['owner', 'admin', 'manager', 'member', 'viewer'].includes(normalized) ? normalized : 'member';
 }
 
 async function ensureProjectOwnershipBackfill(bna, db = pool) {
@@ -30584,7 +30976,7 @@ async function ensureDefaultProjects(db = pool) {
       compatibility_role: oneTimeOwnerCanonical.compatibility_role || oneTimeOwnerAssignment.role,
       role_contract: 'one-time-role-model-v1',
       account_owner: true,
-      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
+      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'community', 'studio', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
     },
   }, db);
   await ensureProjectMember(oneTime, oneTimeManagerAssignment.person_name, {
@@ -30608,23 +31000,27 @@ async function ensureDefaultProjects(db = pool) {
 
   await ensureProjectOwnershipBackfill(bna, db);
 
-  await db.query(
-    `UPDATE bna_tasks
-     SET project_id = $1
-     WHERE
-       project_id IS NULL
-       AND (
-         category IN ('torah_class_prep', 'shiur_ideas', 'community_setup', 'community')
-         OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~ '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|shiur)'
-       )`,
-    [oneTime.id]
-  );
-  await db.query(
-    `UPDATE bna_tasks
-     SET project_id = $1
-     WHERE project_id IS NULL`,
-    [bna.id]
-  );
+  if (oneTime?.id) {
+    await db.query(
+      `UPDATE bna_tasks
+       SET project_id = $1
+       WHERE
+         project_id IS NULL
+         AND (
+           category IN ('torah_class_prep', 'shiur_ideas', 'community_setup', 'community')
+           OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~ '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|shiur)'
+         )`,
+      [oneTime.id]
+    );
+  }
+  if (bna?.id) {
+    await db.query(
+      `UPDATE bna_tasks
+       SET project_id = $1
+       WHERE project_id IS NULL`,
+      [bna.id]
+    );
+  }
   await ensureOneTimeProposalTasks(oneTime, db);
   await ensureRabbiSchellerLaunchTasks(oneTime, db);
   await ensureOneTimePendingAccessDialogueCards(oneTime, db);
@@ -30676,6 +31072,7 @@ function workspaceProjectView(row = {}) {
 function workspaceMembershipView(row = {}) {
   if (!row) return null;
   const metadata = parseJsonMaybe(row.metadata);
+  const canonicalRole = normalizeWorkspaceUserCanonicalRole(row.canonical_role || metadata.canonical_role || metadata.workspace_role || row.role);
   return {
     id: row.id,
     workspace_id: row.workspace_id,
@@ -30686,17 +31083,261 @@ function workspaceMembershipView(row = {}) {
     person_id: row.person_id,
     person_name: row.person_name || row.preferred_name,
     role: row.role,
-    canonical_role: row.canonical_role || metadata.canonical_role || metadata.workspace_role || '',
-    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || metadata.workspace_role_label || '',
+    canonical_role: canonicalRole,
+    canonical_role_label: row.canonical_role_label || metadata.canonical_role_label || metadata.workspace_role_label || workspaceUserRoleLabel(canonicalRole),
     platform_role: row.platform_role || metadata.platform_role || '',
     platform_role_label: row.platform_role_label || metadata.platform_role_label || '',
     role_contract: row.role_contract || metadata.role_contract || '',
     access_level: row.access_level,
+    invitation_state: row.invitation_state || metadata.invitation_state || (row.active === false ? 'disabled' : 'active'),
+    disabled_at: row.disabled_at || null,
+    last_activity_at: row.last_activity_at || metadata.last_activity_at || null,
+    login_state: row.login_state || metadata.login_state || 'not_configured',
     relationship_to_owner: row.relationship_to_owner,
     tags: Array.isArray(row.tags) ? row.tags : [],
     active: row.active !== false,
     metadata,
   };
+}
+
+const WORKSPACE_USER_PLATFORM_ROLES = new Set([
+  'platform_super_admin',
+  'platform_manager',
+  'support_admin',
+  'technical_agent',
+]);
+
+const WORKSPACE_USER_WORKSPACE_ROLES = new Set([
+  'workspace_owner',
+  'workspace_admin',
+  'workspace_manager',
+  'provider_staff',
+  'moderator',
+]);
+
+const WORKSPACE_USER_MEMBER_ROLES = new Set(['parent', 'student']);
+
+function normalizeWorkspaceUserRoleKey(value = '') {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+}
+
+function normalizeWorkspaceUserCanonicalRole(value = '') {
+  const key = normalizeWorkspaceUserRoleKey(value);
+  const oneTimeRole = normalizeOneTimeRole(key);
+  if (
+    WORKSPACE_USER_PLATFORM_ROLES.has(oneTimeRole) ||
+    WORKSPACE_USER_WORKSPACE_ROLES.has(oneTimeRole) ||
+    WORKSPACE_USER_MEMBER_ROLES.has(oneTimeRole)
+  ) {
+    return oneTimeRole;
+  }
+  const aliases = {
+    super_admin: 'platform_super_admin',
+    platform: 'platform_super_admin',
+    owner: 'workspace_owner',
+    project_owner: 'workspace_owner',
+    rabbi: 'workspace_owner',
+    admin: 'workspace_admin',
+    one_time_admin: 'workspace_admin',
+    project_admin: 'workspace_admin',
+    manager: 'workspace_manager',
+    project_manager: 'workspace_manager',
+    service_provider: 'provider_staff',
+    teacher: 'provider_staff',
+    child: 'student',
+    member_parent: 'parent',
+  };
+  return aliases[key] || (WORKSPACE_USER_MEMBER_ROLES.has(key) ? key : 'provider_staff');
+}
+
+function workspaceUserRoleLabel(role = '') {
+  const canonical = normalizeWorkspaceUserCanonicalRole(role);
+  return oneTimeRoleLabel(canonical);
+}
+
+function workspaceUserRoleScope(role = '') {
+  const canonical = normalizeWorkspaceUserCanonicalRole(role);
+  if (WORKSPACE_USER_PLATFORM_ROLES.has(canonical)) return 'platform';
+  if (WORKSPACE_USER_MEMBER_ROLES.has(canonical)) return 'member';
+  return 'workspace';
+}
+
+function workspaceUserAccessLevelForRole(role = '', fallback = '') {
+  const canonical = normalizeWorkspaceUserCanonicalRole(role);
+  const requested = String(fallback || '').trim().toLowerCase();
+  if (['owner', 'admin', 'manager', 'member', 'viewer'].includes(requested)) return requested;
+  if (canonical === 'platform_super_admin' || canonical === 'workspace_owner') return 'owner';
+  if (['platform_manager', 'support_admin', 'workspace_admin'].includes(canonical)) return 'admin';
+  if (['technical_agent', 'workspace_manager'].includes(canonical)) return 'manager';
+  if (['provider_staff', 'moderator', 'parent', 'student'].includes(canonical)) return 'member';
+  return 'viewer';
+}
+
+function workspaceUserInputMetadata(body = {}, canonicalRole = '') {
+  const metadata = body.metadata && typeof body.metadata === 'object' ? body.metadata : {};
+  const roleScope = workspaceUserRoleScope(canonicalRole);
+  const allowedViews = normalizeTextArray(body.allowed_views || body.allowedViews || metadata.allowed_views || []);
+  return {
+    ...metadata,
+    role_contract: 'workspace-membership-role-model-v1',
+    canonical_role: canonicalRole,
+    canonical_role_label: workspaceUserRoleLabel(canonicalRole),
+    role_scope: roleScope,
+    account_type: normalizeWorkspaceUserRoleKey(body.account_type || body.accountType || metadata.account_type || (
+      roleScope === 'member' ? `one_time_${canonicalRole}` : 'workspace_user'
+    )),
+    project_scope: metadata.project_scope,
+    workspace_scope: metadata.workspace_scope,
+    provider_staff_management: ['provider_staff', 'moderator', 'workspace_manager', 'workspace_admin', 'workspace_owner'].includes(canonicalRole),
+    access_entitlement_status: normalizeWorkspaceUserRoleKey(body.access_entitlement_status || body.accessEntitlementStatus || metadata.access_entitlement_status || 'not_configured'),
+    login_state: normalizeWorkspaceUserRoleKey(body.login_state || body.loginState || metadata.login_state || 'not_configured'),
+    parent_child_relationship: body.parent_child_relationship || body.parentChildRelationship || metadata.parent_child_relationship || null,
+    enrollment_relationship: body.enrollment_relationship || body.enrollmentRelationship || metadata.enrollment_relationship || null,
+    allowed_views: allowedViews,
+    no_send: true,
+  };
+}
+
+function workspaceUserView(row = {}) {
+  if (!row) return null;
+  const metadata = parseJsonMaybe(row.metadata);
+  const projectMemberMetadata = parseJsonMaybe(row.project_member_metadata);
+  const canonicalRole = normalizeWorkspaceUserCanonicalRole(row.canonical_role || metadata.canonical_role || projectMemberMetadata.canonical_role || row.role);
+  const active = row.active !== false && row.person_status !== 'archived';
+  const loginUsername = row.login_username || projectMemberMetadata.login_username || metadata.login_username || '';
+  return {
+    id: row.id,
+    membership_id: row.id,
+    person_id: row.person_id,
+    person_name: oneTimeDisplayName(row.person_name || row.preferred_name || row.full_name || row.login_username || ''),
+    full_name: row.full_name || '',
+    email: row.email || projectMemberMetadata.email || metadata.email || '',
+    phone: row.phone || projectMemberMetadata.phone || metadata.phone || '',
+    workspace_id: row.workspace_id,
+    workspace_key: workspaceKeyForProject(row.project_key || row.workspace_key),
+    project_key: row.project_key || row.workspace_key,
+    workspace_name: row.workspace_name || row.project_name || '',
+    workspace_type: row.workspace_type || '',
+    role: row.role,
+    canonical_role: canonicalRole,
+    canonical_role_label: workspaceUserRoleLabel(canonicalRole),
+    role_scope: workspaceUserRoleScope(canonicalRole),
+    access_level: row.access_level || workspaceUserAccessLevelForRole(canonicalRole),
+    invitation_state: row.invitation_state || metadata.invitation_state || (active ? 'active' : 'disabled'),
+    active,
+    disabled_at: row.disabled_at || null,
+    last_activity_at: row.last_activity_at || projectMemberMetadata.last_activity_at || metadata.last_activity_at || row.updated_at || null,
+    login_state: row.login_state || metadata.login_state || projectMemberMetadata.login_state || (loginUsername ? 'configured' : 'not_configured'),
+    login_username: loginUsername || '',
+    relationship_to_owner: row.relationship_to_owner || '',
+    parent_child_relationship: metadata.parent_child_relationship || null,
+    enrollment_relationship: metadata.enrollment_relationship || null,
+    access_entitlement_status: metadata.access_entitlement_status || projectMemberMetadata.access_entitlement_status || 'not_configured',
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    metadata: {
+      ...metadata,
+      canonical_role: canonicalRole,
+      canonical_role_label: workspaceUserRoleLabel(canonicalRole),
+    },
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+async function workspaceUserRowByMembershipId(membershipId, db = pool) {
+  const result = await db.query(
+    `SELECT wm.*,
+            p.project_key,
+            p.name AS workspace_name,
+            p.workspace_type,
+            people.preferred_name AS person_name,
+            people.full_name,
+            people.email,
+            people.phone,
+            people.status AS person_status,
+            pm.login_username,
+            pm.metadata AS project_member_metadata
+     FROM bna_workspace_memberships wm
+     JOIN bna_projects p ON p.id = wm.workspace_id
+     JOIN bna_people people ON people.id = wm.person_id
+     LEFT JOIN bna_project_members pm
+       ON pm.project_id = p.id
+      AND lower(pm.person_name) = lower(people.preferred_name)
+     WHERE wm.id = $1
+     LIMIT 1`,
+    [membershipId]
+  );
+  return result.rows[0] || null;
+}
+
+function requireWorkspaceUserPermission(req, action, workspaceKey, targetRole = '') {
+  const key = assertWorkspaceAccess(req, workspaceKey, action);
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type === 'all') return key;
+  const canonicalTargetRole = normalizeWorkspaceUserCanonicalRole(targetRole || 'provider_staff');
+  const oneTimeAction = action === 'read_role_audit_log'
+    ? 'read_role_audit_log'
+    : action === 'remove_workspace_user'
+      ? 'remove_workspace_user'
+      : action === 'deactivate_workspace_user'
+        ? 'deactivate_workspace_user'
+        : action === 'invite_workspace_user'
+          ? 'invite_workspace_user'
+          : 'change_workspace_role';
+  const permission = canOneTimeIdentity(oneTimeAction, identity, {
+    workspace_key: key,
+    project_key: workspaceProjectKey(key),
+    target_role: canonicalTargetRole,
+  });
+  if (!permission.allowed) {
+    const error = new Error(permission.reason);
+    error.statusCode = 403;
+    throw error;
+  }
+  return key;
+}
+
+async function insertWorkspaceRoleAuditEvent({
+  workspace_id = null,
+  membership_id = null,
+  actor_person_id = null,
+  target_person_id = null,
+  event_type = 'workspace_role_changed',
+  from_role = '',
+  to_role = '',
+  reason = '',
+  metadata = {},
+} = {}, db = pool) {
+  try {
+    const result = await db.query(
+      `INSERT INTO bna_platform_role_audit_events (
+         workspace_id, membership_id, actor_person_id, target_person_id,
+         event_type, from_role, to_role, reason, metadata
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+       RETURNING *`,
+      [
+        workspace_id || null,
+        membership_id || null,
+        actor_person_id || null,
+        target_person_id || null,
+        limitText(event_type, 120) || 'workspace_role_changed',
+        from_role || null,
+        to_role || null,
+        limitText(reason, 600) || null,
+        JSON.stringify(metadata || {}),
+      ]
+    );
+    return result.rows[0] || null;
+  } catch (err) {
+    console.warn('Workspace role audit insert failed:', err.message);
+    return null;
+  }
 }
 
 function householdView(row = {}, members = []) {
@@ -30835,6 +31476,7 @@ async function ensureWorkspaceProject({
     description,
     metadata,
   }, db);
+  if (!project?.id) return project || fallbackWorkspaceProjectRow(projectKey);
   return (await db.query(
     `UPDATE bna_projects
      SET workspace_type = $2,
@@ -32460,14 +33102,15 @@ async function linkExactStudentPerson({ person, name, workspaceId, householdId =
 }
 
 async function ensurePersonalWorkspacesAndPeople(db = pool) {
-  const { bna, oneTime } = await ensureDefaultProjects(db);
-  const shloimie = await upsertCanonicalPerson({
+  const { bna: seededBna, oneTime } = await ensureDefaultProjects(db);
+  const bna = seededBna || fallbackWorkspaceProjectRow('bna');
+  const shloimie = (await upsertCanonicalPerson({
     preferred_name: 'Shloimie',
     full_name: 'Shloimie Dratler',
     primary_language: 'en',
     metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['super_admin', 'bna:rabbi', 'family:parent'] },
-  }, db);
-  const superAdmin = await ensureWorkspaceProject({
+  }, db)) || { id: null, preferred_name: 'Shloimie', full_name: 'Shloimie Dratler' };
+  const superAdmin = (await ensureWorkspaceProject({
     projectKey: 'super_admin',
     name: 'Super Admin',
     shortName: 'Super Admin',
@@ -32479,8 +33122,8 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     slug: 'super-admin',
     settings: { primary_role_label: 'Operator', accountability_mode: 'admin' },
     metadata: { source: 'personal_workspace_seed' },
-  }, db);
-  const family = await ensureWorkspaceProject({
+  }, db)) || fallbackWorkspaceProjectRow('super_admin');
+  const family = (await ensureWorkspaceProject({
     projectKey: 'dratler_family',
     name: 'Dratler Family',
     shortName: 'Family',
@@ -32492,8 +33135,8 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     slug: 'dratler-family',
     settings: { accountability_mode: 'family' },
     metadata: { source: 'personal_workspace_seed', public: false },
-  }, db);
-  const bnaWorkspace = await ensureWorkspaceProject({
+  }, db)) || fallbackWorkspaceProjectRow('dratler_family');
+  const bnaWorkspace = (await ensureWorkspaceProject({
     projectKey: DEFAULT_PROJECT_KEY,
     name: bna.name || 'BNA',
     shortName: bna.short_name || 'BNA',
@@ -32504,7 +33147,7 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     languageDefault: 'en',
     slug: 'bna',
     settings: { primary_role_label: 'Rabbi', accountability_mode: 'school' },
-  }, db);
+  }, db)) || bna;
   let oneTimeWorkspace = oneTime || null;
   if (oneTime?.id) {
     await db.query(
@@ -32520,18 +33163,18 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
     oneTimeWorkspace = await getProjectByKey('one_time_mishnah_class', db).catch(() => oneTime);
   }
 
-  const menachem = await upsertCanonicalPerson({
+  const menachem = (await upsertCanonicalPerson({
     preferred_name: 'Menachem',
     full_name: 'Menachem Mendel Dratler',
     primary_language: 'en',
     metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['family:son', 'school:student', 'bna:student'] },
-  }, db);
-  const esty = await upsertCanonicalPerson({
+  }, db)) || { id: null, preferred_name: 'Menachem', full_name: 'Menachem Mendel Dratler' };
+  const esty = (await upsertCanonicalPerson({
     preferred_name: 'Esty',
     full_name: 'Esty',
     primary_language: 'en',
     metadata: { seed: 'personal-workspaces-2026-06-14', family_name: 'Dratler', tags: ['family:daughter', 'dratler_family'] },
-  }, db);
+  }, db)) || { id: null, preferred_name: 'Esty', full_name: 'Esty' };
 
   await ensureWorkspaceMembership(superAdmin, shloimie, { role: 'super_admin', access_level: 'owner', tags: ['super_admin'] }, db);
   await ensureWorkspaceMembership(superAdmin, shloimie, { role: 'owner', access_level: 'owner', tags: ['super_admin'] }, db);
@@ -32562,7 +33205,9 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
   await ensureHouseholdMember(household, menachem, { role: 'child', relationship: 'son', tags: ['family:son'] }, db);
   await ensureHouseholdMember(household, esty, { role: 'child', relationship: 'daughter', tags: ['family:daughter'] }, db);
 
-  await linkExactStudentPerson({ person: menachem, name: 'Menachem', workspaceId: bnaWorkspace.id }, db);
+  if (menachem?.id && bnaWorkspace?.id) {
+    await linkExactStudentPerson({ person: menachem, name: 'Menachem', workspaceId: bnaWorkspace.id }, db);
+  }
   const estySchoolMatches = (await db.query(
     `SELECT id, name, parent_email, status
      FROM bna_students
@@ -32631,8 +33276,10 @@ async function ensurePersonalWorkspacesAndPeople(db = pool) {
       assigned_to: 'Codex',
     },
   ];
-  for (const spec of setupTasks) {
-    await ensureWorkspaceSetupTask({ project: bnaWorkspace, category: spec.category || 'technology', urgency: 'this_week', assigned_to: spec.assigned_to || 'Shloimie', ...spec }, db);
+  if (bnaWorkspace?.id) {
+    for (const spec of setupTasks) {
+      await ensureWorkspaceSetupTask({ project: bnaWorkspace, category: spec.category || 'technology', urgency: 'this_week', assigned_to: spec.assigned_to || 'Shloimie', ...spec }, db);
+    }
   }
 
   return { superAdmin, bna: bnaWorkspace, family, people: { shloimie, menachem, esty }, household };
@@ -32648,6 +33295,7 @@ async function getProjectByKey(projectKey, db = pool) {
 
 async function ensureDefaultLearningCommunity(db = pool) {
   const project = await getProjectByKey(DEFAULT_PROJECT_KEY, db);
+  if (!project?.id) return null;
   const result = await db.query(
     `INSERT INTO bna_learning_communities (
        workspace_key, project_id, community_key, title, description,
@@ -32679,6 +33327,7 @@ async function ensureDefaultLearningCommunity(db = pool) {
 
 async function ensureWs11CommunityFoundation(db = pool) {
   const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, db);
+  if (!project?.id) return null;
   const community = (await db.query(
     `INSERT INTO bna_learning_communities (
        workspace_key, project_id, project_key, workspace_id, community_key,
@@ -32951,6 +33600,26 @@ function ws11GamificationEventView(row = {}) {
   };
 }
 
+function ws11StudentBadgeView(row = {}) {
+  return {
+    id: row.id,
+    student_id: row.student_id,
+    badge_id: row.badge_id,
+    badge_slug: row.slug || row.badge_slug || '',
+    badge_title: row.title || row.badge_title || '',
+    status: row.status || 'active',
+    awarded_event_id: row.awarded_event_id || null,
+    awarded_at: row.awarded_at || null,
+    awarded_by: row.awarded_by || '',
+    revoked_at: row.revoked_at || null,
+    revoked_by: row.revoked_by || '',
+    reversal_reason_present: Boolean(row.reversal_reason),
+    parent_safe_explanation: parseJsonMaybe(row.metadata).parent_safe_explanation || row.description || row.title || '',
+    metadata: parseJsonMaybe(row.metadata),
+    audit: parseJsonMaybe(row.audit_json),
+  };
+}
+
 function ws11StudentReferenceView(row = {}) {
   return {
     id: row.id,
@@ -33000,25 +33669,41 @@ function ws11ProgressReportView(row = {}) {
 }
 
 async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
-  const total = (await db.query(
-    `SELECT COALESCE(SUM(points), 0)::int AS total_points
+  if (!event || event.approval_status !== 'approved') return [];
+  const events = (await db.query(
+    `SELECT *
      FROM bna_gamification_events
      WHERE student_id = $1
-       AND approval_status = 'approved'`,
+       AND approval_status = 'approved'
+     ORDER BY occurred_at ASC, id ASC`,
     [studentId]
-  )).rows[0]?.total_points || 0;
-  const badges = (await db.query(
+  )).rows;
+  const existingBadges = (await db.query(
+    `SELECT sb.*, b.slug, b.title
+     FROM bna_student_badges sb
+     JOIN bna_badges b ON b.id = sb.badge_id
+     WHERE sb.student_id = $1
+       AND sb.status = 'active'`,
+    [studentId]
+  )).rows;
+  const candidates = evaluateAutomaticBadgeAwards({
+    student_id: studentId,
+    events,
+    existing_badges: existingBadges,
+  });
+  if (!candidates.length) return [];
+  const badgeRows = (await db.query(
     `SELECT *
      FROM bna_badges
      WHERE status = 'active'
-       AND (
-         event_type = $1
-         OR (points_required > 0 AND points_required <= $2)
-       )
-     ORDER BY points_required ASC, id ASC`,
-    [event.event_type, total]
+       AND slug = ANY($1::text[])`,
+    [candidates.map((candidate) => candidate.badge_slug)]
   )).rows;
-  for (const badge of badges) {
+  const badgesBySlug = new Map(badgeRows.map((badge) => [badge.slug, badge]));
+  const awardedRows = [];
+  for (const candidate of candidates) {
+    const badge = badgesBySlug.get(candidate.badge_slug);
+    if (!badge) continue;
     const awarded = (await db.query(
       `INSERT INTO bna_student_badges (
          student_id, badge_id, awarded_event_id, status, awarded_by, metadata, audit_json
@@ -33029,17 +33714,25 @@ async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
         studentId,
         badge.id,
         event.id,
-        JSON.stringify({ source: 'ws11_auto_award', total_points: total, requirement_id: 'REQ-20260619-310' }),
+        JSON.stringify({
+          source: 'event_driven_auto_award',
+          requirement_id: 'REQ-20260619-310',
+          idempotency_key: candidate.idempotency_key,
+          source_event_ref: candidate.evidence?.source_ref || String(event.id),
+          parent_safe_explanation: candidate.parent_safe_explanation,
+        }),
         JSON.stringify([{
           action: 'awarded',
-          source: 'ws11_auto_award',
+          source: 'event_driven_auto_award',
           event_id: event.id,
           awarded_by: 'system',
-          parent_safe_explanation: badge.description || badge.title,
+          reason: candidate.reason,
+          parent_safe_explanation: candidate.parent_safe_explanation,
         }]),
       ]
     )).rows[0];
     if (awarded) {
+      awardedRows.push(awarded);
       await db.query(
         `INSERT INTO bna_badge_audit_events (
            student_id, badge_id, student_badge_id, event_type, source_event_id,
@@ -33051,14 +33744,20 @@ async function awardEligibleBadgesForStudent(studentId, event, db = pool) {
           badge.id,
           awarded.id,
           event.id,
-          badgeAwardIdempotencyKey({ student_id: studentId, badge_slug: badge.slug, source_event_ref: event.id }),
-          badge.title,
-          badge.description || badge.title,
-          JSON.stringify({ source: 'ws11_auto_award', requirement_id: 'REQ-20260619-310', total_points: total }),
+          candidate.idempotency_key || badgeAwardIdempotencyKey({ student_id: studentId, badge_slug: badge.slug, source_event_ref: event.id }),
+          candidate.reason || badge.title,
+          candidate.parent_safe_explanation || badge.description || badge.title,
+          JSON.stringify({
+            source: 'event_driven_auto_award',
+            requirement_id: 'REQ-20260619-310',
+            badge_slug: badge.slug,
+            source_event_id: event.id,
+          }),
         ]
       );
     }
   }
+  return awardedRows;
 }
 
 async function createGamificationEvent(input = {}, db = pool) {
@@ -34071,7 +34770,7 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     activeWorkspace: workspaceProjectView(activeWorkspace),
     active_workspace: workspaceProjectView(activeWorkspace),
     memberships: memberships.map(workspaceMembershipView),
-    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
+    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
   };
 }
 
@@ -35007,6 +35706,13 @@ async function assertProjectOwnedRowAccess(req, tableName, rowId, db = pool) {
     'bna_assignments',
     'bna_support_tickets',
     'bna_in_app_notifications',
+    'bna_studio_projects',
+    'bna_studio_sources',
+    'bna_studio_scenes',
+    'bna_studio_jobs',
+    'bna_studio_assets',
+    'bna_studio_exports',
+    'bna_studio_usage_events',
   ]);
   if (!allowedTables.has(tableName)) {
     const error = new Error('Scoped access check is not configured for this record type.');
@@ -39870,60 +40576,19 @@ app.post('/api/bna/communications', requireAdmin, async (req, res) => {
 });
 
 app.post('/api/bna/resend/webhook', async (req, res) => {
-  const suppliedSecret = String(req.headers['x-resend-webhook-secret'] || req.query.secret || '').trim();
-  if (RESEND_WEBHOOK_SECRET && suppliedSecret !== RESEND_WEBHOOK_SECRET) {
-    return res.status(401).json({ error: 'Unauthorized Resend webhook' });
-  }
-  const payload = req.body && typeof req.body === 'object' ? req.body : {};
-  const eventType = String(payload.type || payload.event || '').trim();
-  const data = payload.data && typeof payload.data === 'object' ? payload.data : payload;
-  const messageId = data.email_id || data.emailId || data.message_id || data.id || null;
-  const status = ({
-    'email.sent': 'sent',
-    'email.delivered': 'delivered',
-    'email.delivery_delayed': 'delivery_delayed',
-    'email.bounced': 'bounced',
-    'email.complained': 'complained',
-    'email.opened': 'opened',
-    'email.clicked': 'clicked',
-  })[eventType] || eventType.replace(/^email\./, '') || 'webhook_received';
   try {
-    let updated = [];
-    if (messageId) {
-      updated = (await pool.query(
-        `UPDATE bna_communications
-         SET status = $2,
-             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
-         WHERE external_message_id = $1
-            OR metadata->>'resend_message_id' = $1
-         RETURNING *`,
-        [messageId, status, JSON.stringify({ resend_event: eventType, resend_payload: payload })]
-      )).rows;
-      await pool.query(
-        `UPDATE bna_email_log
-         SET status = CASE WHEN $2 IN ('delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed') THEN $2 ELSE status END,
-             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
-         WHERE provider_message_id = $1`,
-        [messageId, status, JSON.stringify({ resend_event: eventType })]
-      ).catch(() => {});
-    }
-    if (!updated.length) {
-      const communication = await logCommunication({
-        channel: 'email',
-        direction: 'outbound',
-        communicationType: 'resend_webhook',
-        subject: data.subject || null,
-        toAddress: Array.isArray(data.to) ? data.to.join(', ') : data.to || null,
-        externalMessageId: messageId,
-        provider: 'resend',
-        status,
-        metadata: { resend_event: eventType, resend_payload: payload },
-      });
-      updated = communication ? [communication] : [];
-    }
-    res.json({ success: true, event: eventType, status, updated_count: updated.length });
+    const result = await resendIntegration.processResendWebhook({
+      payload: req.body && typeof req.body === 'object' ? req.body : {},
+      rawPayload: req.rawBody || '',
+      headers: req.headers,
+      secret: RESEND_WEBHOOK_SECRET,
+      suppliedSecret: req.headers['x-resend-webhook-secret'] || req.query.secret || '',
+      db: pool,
+      logCommunication,
+    });
+    res.json(result);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.status || err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -40628,21 +41293,6 @@ app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, 
   }
 });
 
-app.get('/api/bna/assistant/control-center', requireAdmin, async (req, res) => {
-  try {
-    if (req.opsIdentity?.scope?.type !== 'all') {
-      return res.status(403).json({ success: false, error: 'Assistant Control Center is Super Admin only.' });
-    }
-    res.json(await buildAssistantControlCenterSnapshot({
-      db: pool,
-      actor: req.opsIdentity || {},
-    }));
-  } catch (err) {
-    const safe = safeIntegrationError(err, 'Assistant Control Center failed');
-    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
-  }
-});
-
 app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, res) => {
   try {
     const resendConfig = resendServerRuntimeConfig();
@@ -40715,7 +41365,10 @@ app.get('/api/bna/integrations/zoom/status', requireAdmin, (req, res) => {
   res.json({
     success: true,
     card: zoomIntegration.getZoomReadiness({ config: zoomRuntimeConfig }),
+    api_readiness: zoomIntegration.buildZoomApiReadiness({ config: zoomRuntimeConfig }),
     automation_readiness: zoomIntegration.buildZoomSessionAutomationPreview({}, { config: zoomRuntimeConfig }),
+    workflow_foundation: zoomIntegration.buildZoomSessionWorkflowModel({}, { config: zoomRuntimeConfig }),
+    webhook_processing: zoomIntegration.buildZoomWebhookProcessingPlan({ event: 'preview' }),
   });
 });
 
@@ -40884,9 +41537,14 @@ app.get('/api/bna/integrations/resend/health', requireAdmin, async (req, res) =>
     connected: readiness.connected,
     account_owner: readiness.account_owner,
     provider_account: readiness.provider_account,
+    from: readiness.from,
+    from_email: readiness.from_email,
+    sender_configured: Boolean(readiness.from_email),
+    domain_configured: Boolean(readiness.domain),
     domain: readiness.domain,
     domain_verified: readiness.domain_verified,
     send_allowed: readiness.send_allowed,
+    send_blocked: !readiness.send_allowed,
     fallback_approved: readiness.fallback_approved,
     blocker: readiness.blocker || null,
   });
@@ -40932,6 +41590,31 @@ app.get('/api/bna/integrations/resend/domains', requireAdmin, async (req, res) =
   } catch (err) {
     const safe = safeIntegrationError(err, 'Resend domain lookup failed');
     res.status(safe.status).json({ success: false, provider: 'resend', blocker: safe.blocker, error: safe.error });
+  }
+});
+
+app.get('/api/bna/integrations/resend/events', requireAdmin, async (req, res) => {
+  try {
+    const includePayload = !opsScopeProjectKey(req) && ['1', 'true'].includes(String(req.query.include_payload || '').toLowerCase());
+    const limit = Math.min(Math.max(Number(req.query.limit || 50), 1), 200);
+    const result = await pool.query(
+      `SELECT id, svix_id, event_type, provider_message_id, delivery_status,
+              processing_status, duplicate_count, error, communication_id,
+              email_log_id, received_at, processed_at, last_seen_at,
+              CASE WHEN $1 THEN payload ELSE NULL END AS payload
+       FROM bna_resend_webhook_events
+       ORDER BY received_at DESC, id DESC
+       LIMIT $2`,
+      [includePayload, limit]
+    );
+    res.json({
+      success: true,
+      provider: 'resend',
+      raw_payload_hidden: !includePayload,
+      events: result.rows,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, provider: 'resend', error: err.message });
   }
 });
 
@@ -41012,6 +41695,39 @@ function assertScopedDraftMetadataAccess(req, metadata = {}) {
   if (!scopedProjectKey) return;
   const projectKey = normalizeProjectKey(metadata?.project_key || metadata?.project || DEFAULT_PROJECT_KEY);
   assertProjectAccess(req, { project_key: projectKey });
+}
+
+async function findCrossWorkspaceEmailRecipientConflicts(req, emails = [], draftContext = {}, db = pool) {
+  const projectKey = normalizeProjectKey(draftContext.projectKey || requestedProjectKeyForInput(req, draftContext) || '');
+  const normalizedEmails = [...new Set((emails || []).map(normalizeEmail).filter(Boolean))];
+  if (!projectKey || !normalizedEmails.length) return [];
+  const result = await db.query(
+    `WITH known_emails AS (
+       SELECT LOWER(c.primary_email) AS email, COALESCE(ws.project_key, '') AS project_key, 'contact' AS source
+       FROM bna_contacts c
+       LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
+       WHERE c.primary_email IS NOT NULL
+       UNION ALL
+       SELECT LOWER(s.parent_email) AS email, COALESCE(p.project_key, '') AS project_key, 'signup' AS source
+       FROM signups s
+       LEFT JOIN bna_projects p ON p.id = s.project_id
+       WHERE s.parent_email IS NOT NULL
+       UNION ALL
+       SELECT LOWER(st.parent_email) AS email, COALESCE(p.project_key, '') AS project_key, 'student' AS source
+       FROM bna_students st
+       LEFT JOIN bna_projects p ON p.id = st.project_id
+       WHERE st.parent_email IS NOT NULL
+     )
+     SELECT email, project_key, source
+     FROM known_emails
+     WHERE email = ANY($1::text[])
+       AND project_key <> ''
+       AND project_key <> $2
+     ORDER BY email, source
+     LIMIT 20`,
+    [normalizedEmails, projectKey]
+  );
+  return result.rows;
 }
 
 app.get('/api/bna/communications/social/drafts', requireAdmin, async (req, res) => {
@@ -41250,6 +41966,19 @@ async function createResendEmailDraft(req, res) {
   if (!subject || (!text && !html)) return res.status(400).json({ error: 'subject and text/html are required' });
   const readiness = await getResendReadinessForResponse();
   const draftContext = scopedDraftContextForRequest(req, body);
+  const recipientConflicts = await findCrossWorkspaceEmailRecipientConflicts(req, [...to, ...cc, ...bcc], draftContext);
+  if (recipientConflicts.length) {
+    return res.status(403).json({
+      success: false,
+      error: 'Recipient belongs to a different workspace/project',
+      cross_workspace_recipients: recipientConflicts.map((item) => ({
+        email: item.email,
+        project_key: item.project_key,
+        source: item.source,
+      })),
+      send_blocked: true,
+    });
+  }
   const created = (await pool.query(
     `INSERT INTO bna_email_drafts (
        provider, provider_account, account_owner, from_email, to_emails, cc_emails, bcc_emails,
@@ -42594,39 +43323,40 @@ app.get('/api/bna/parent-leads', requireAdmin, async (req, res) => {
   const { lead_type, status, interest_level } = req.query;
   const conditions = [];
   const params = [];
-  appendScopeCondition(req, conditions, params, 'project_id');
+  appendRequestedProjectScopeCondition(req, conditions, params, 'l.project_id');
 
   if (lead_type) {
     params.push(lead_type);
-    conditions.push(`lead_type = $${params.length}`);
+    conditions.push(`l.lead_type = $${params.length}`);
   }
   if (status) {
     params.push(status);
-    conditions.push(`status = $${params.length}`);
+    conditions.push(`l.status = $${params.length}`);
   } else {
-    conditions.push(`COALESCE(status, 'interested') <> 'archived'`);
+    conditions.push(`COALESCE(l.status, 'interested') <> 'archived'`);
   }
   if (interest_level) {
     params.push(interest_level);
-    conditions.push(`interest_level = $${params.length}`);
+    conditions.push(`l.interest_level = $${params.length}`);
   }
 
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
     const result = await pool.query(
-      `SELECT *
-       FROM bna_parent_leads
+      `SELECT l.*, p.project_key, p.name AS project_name
+       FROM bna_parent_leads l
+       LEFT JOIN bna_projects p ON p.id = l.project_id
        ${whereClause}
        ORDER BY
-         CASE interest_level
+         CASE l.interest_level
            WHEN 'hot' THEN 1
            WHEN 'warm' THEN 2
            WHEN 'cool' THEN 3
            ELSE 4
          END,
-         COALESCE(next_follow_up_date, CURRENT_DATE + INTERVAL '365 days') ASC,
-         updated_at DESC`,
+         COALESCE(l.next_follow_up_date, CURRENT_DATE + INTERVAL '365 days') ASC,
+         l.updated_at DESC`,
       params
     );
     res.json({ leads: result.rows });
@@ -44551,12 +45281,6 @@ app.post('/api/provider-portal/login', async (req, res) => {
   }
 
   try {
-    if (await maybeHandleOpsPortalFallback(req, res, {
-      username,
-      password,
-      source: 'provider_portal_login',
-    })) return;
-
     const provider = (await pool.query(
       `SELECT *
        FROM bna_service_providers
@@ -44568,13 +45292,6 @@ app.post('/api/provider-portal/login', async (req, res) => {
     )).rows[0] || null;
 
     if (!provider || !verifyParentPassword(password, provider.password_hash)) {
-      if (await maybeHandleOtherPortalLogin(req, res, {
-        username,
-        password,
-        currentPortal: 'provider',
-        returnTo: '/provider',
-        source: 'provider_portal_login',
-      })) return;
       clearProviderSessionCookie(res);
       return res.status(401).json({ success: false, error: 'Invalid provider credentials' });
     }
@@ -48476,12 +49193,6 @@ app.post('/api/student-portal/login', async (req, res) => {
     return res.status(400).json({ error: 'Username and password are required' });
   }
 
-  if (await maybeHandleOpsPortalFallback(req, res, {
-    username,
-    password,
-    source: 'student_portal_login',
-  })) return;
-
   const persistentFailureCount = await countPersistentStudentPasswordAuthFailures(req, usernameNormalized);
   if (persistentFailureCount !== null && persistentFailureCount >= STUDENT_PORTAL_AUTH_MAX_FAILURES) {
     await recordPersistentStudentPasswordAuthAttempt(req, usernameNormalized, {
@@ -48509,14 +49220,6 @@ app.post('/api/student-portal/login', async (req, res) => {
       [usernameNormalized]
     )).rows[0];
     if (!account || !verifyStudentPassword(password, account.password_hash)) {
-      if (await maybeHandleOtherPortalLogin(req, res, {
-        username,
-        password,
-        currentPortal: 'student',
-        returnTo: '/student',
-        source: 'student_portal_login',
-        db: client,
-      })) return;
       await recordPersistentStudentPasswordAuthAttempt(req, usernameNormalized, {
         outcome: 'failure',
         metadata: { reason: 'invalid_username_or_password' },
@@ -49284,25 +49987,9 @@ app.post('/api/student-portal/worksheets/:id/submit', async (req, res) => {
 });
 
 app.post('/api/parent-portal/login', async (req, res) => {
-  const parentIdentity = String((req.body || {}).parent_email || (req.body || {}).email || (req.body || {}).username || (req.body || {}).login_username || '').trim();
-  const parentEmail = normalizeEmail(parentIdentity);
+  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
   const password = String((req.body || {}).password || '');
-  if ((!parentEmail || !password) && parentIdentity && password) {
-    if (await maybeHandleOtherPortalLogin(req, res, {
-      username: parentIdentity,
-      password,
-      currentPortal: 'parent',
-      returnTo: '/parent',
-      source: 'parent_portal_password_login',
-    })) return;
-  }
   if (!parentEmail || !password) return res.status(400).json({ error: 'Parent email and password are required' });
-
-  if (await maybeHandleOpsPortalFallback(req, res, {
-    username: parentIdentity,
-    password,
-    source: 'parent_portal_password_login',
-  })) return;
 
   const client = await pool.connect();
   try {
@@ -49314,14 +50001,6 @@ app.post('/api/parent-portal/login', async (req, res) => {
       [parentEmail]
     )).rows[0];
     if (!account || !verifyParentPassword(password, account.password_hash)) {
-      if (await maybeHandleOtherPortalLogin(req, res, {
-        username: parentIdentity || parentEmail,
-        password,
-        currentPortal: 'parent',
-        returnTo: '/parent',
-        source: 'parent_portal_password_login',
-        db: client,
-      })) return;
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     const records = await findParentAccessRecords(parentEmail, client);
@@ -49449,35 +50128,35 @@ app.post('/api/bna/auth/setup-password', async (req, res) => {
 });
 
 app.post('/api/bna/auth/login', async (req, res) => {
-  const body = req.body || {};
-  const username = limitText(body.username || body.login_username || body.identity || body.parent_email || body.email, 160);
-  const password = String(body.password || '');
-  const returnTo = body.returnTo || body.return_to || '';
-  if (!username || !password) return res.status(400).json({ error: 'username/email and password are required' });
+  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  const password = String((req.body || {}).password || '');
+  if (!parentEmail || !password) return res.status(400).json({ error: 'email and password are required' });
   const client = await pool.connect();
   try {
-    const destinations = await collectPortalLoginDestinations({ username, password, db: client });
-    if (!destinations.length) {
-      return res.status(401).json({ error: 'Invalid username or password' });
+    const account = (await client.query(
+      `SELECT parent_email, password_hash
+       FROM bna_parent_password_accounts
+       WHERE lower(parent_email) = $1
+       LIMIT 1`,
+      [parentEmail]
+    )).rows[0];
+    if (!account || !verifyParentPassword(password, account.password_hash)) {
+      return res.status(401).json({ error: 'Invalid email or password' });
     }
-    if (destinations.length > 1) {
-      return res.json({
-        success: true,
-        chooser_required: true,
-        message: 'Choose which portal or workspace to open.',
-        destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
-      });
+    const records = await findParentAccessRecords(parentEmail, client);
+    if (!parentAccessEligible(records)) {
+      return res.status(404).json({ error: 'No active student or signup is linked to this email' });
     }
-    const destination = destinations[0];
-    const sessionPayload = await issuePortalDestinationSession(destination, res, { db: client, returnTo });
-    res.json({
-      success: true,
-      role: destination.role,
-      portal: destination.portal,
-      destination: publicPortalDestination(destination, returnTo),
-      redirect_to: sessionPayload.redirect_to,
-      ...sessionPayload,
-    });
+    const sessionId = await issueParentSession(parentEmail, client);
+    await client.query(
+      `UPDATE bna_parent_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE lower(parent_email) = $1`,
+      [parentEmail]
+    );
+    setParentSessionCookie(res, sessionId);
+    res.json({ success: true, role: 'parent' });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
@@ -49487,18 +50166,8 @@ app.post('/api/bna/auth/login', async (req, res) => {
 
 app.post('/api/bna/auth/logout', async (req, res) => {
   const cookies = parseCookies(req);
-  await clearSession(cookies[SESSION_COOKIE_NAME]).catch(() => {});
   await clearParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => {});
-  await clearProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME]).catch(() => {});
-  await clearStudentSession(cookies[STUDENT_SESSION_COOKIE_NAME]).catch(() => {});
-  const secure = responseUsesSecureCookie(res) ? '; Secure' : '';
-  res.setHeader('Set-Cookie', [
-    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
-    `${ACTIVE_WORKSPACE_COOKIE_NAME}=; Path=/; SameSite=Lax; Max-Age=0${secure}`,
-    `${PARENT_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
-    `${PROVIDER_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
-    `${STUDENT_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`,
-  ]);
+  clearParentSessionCookie(res);
   res.json({ success: true });
 });
 
@@ -49507,12 +50176,6 @@ app.post('/api/parent/auth/login', async (req, res) => {
   const accessCode = String((req.body || {}).access_code || (req.body || {}).accessCode || '').trim();
   if (!identity || !accessCode) return res.status(400).json({ error: 'Email or phone and access code are required' });
   try {
-    if (await maybeHandleOpsPortalFallback(req, res, {
-      username: identity,
-      password: accessCode,
-      source: 'parent_public_access_login',
-    })) return;
-
     const account = await getParentAccountForLogin(identity, accessCode);
     if (!account) return res.status(401).json({ error: 'Invalid parent login' });
     const parentEmail = normalizeEmail(account.login_email || account.person_email || identity) || `parent-${account.parent_person_id}@local`;
@@ -53150,6 +53813,966 @@ app.delete('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
   }
 });
 
+function studioJson(value, fallback = {}) {
+  if (value === null || value === undefined || value === '') return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function studioProjectView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    brief_json: studioJson(row.brief_json, {}),
+    character_bible: studioJson(row.character_bible, []),
+    guardrails: studioJson(row.guardrails, []),
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+function studioSceneView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    character_refs: studioJson(row.character_refs, []),
+    asset_refs: studioJson(row.asset_refs, []),
+    style_json: studioJson(row.style_json, {}),
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+function studioSourceView(row = {}) {
+  if (!row) return null;
+  const { raw_text, normalized_text, ...safeRow } = row;
+  return {
+    ...safeRow,
+    annotations: studioJson(row.annotations, []),
+    metadata: studioJson(row.metadata, {}),
+    raw_text_returned: false,
+    raw_text_preview: String(row.raw_text || '').slice(0, 280),
+    normalized_text_returned: false,
+    normalized_text_preview: String(row.normalized_text || '').slice(0, 500),
+  };
+}
+
+function studioJobView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    request_payload: studioJson(row.request_payload, {}),
+    result_payload: studioJson(row.result_payload, {}),
+  };
+}
+
+function studioAssetView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+async function studioScopeForRequest(req, source = {}) {
+  const requestedWorkspace = activeWorkspaceKeyFromRequest(req, source.workspace_key || source.workspace || defaultWorkspaceKeyForRequest(req));
+  const workspaceKey = assertWorkspaceAccess(req, requestedWorkspace || defaultWorkspaceKeyForRequest(req), 'use Studio');
+  const global = !opsScopeProjectKey(req) && ['platform', 'super_admin'].includes(workspaceKey);
+  if (global && !source.project_key && !source.project) {
+    return { workspaceKey, project: null, global: true };
+  }
+  const project = await resolveProjectForScopedWrite(req, {
+    ...source,
+    workspace_key: workspaceKey,
+    project_key: source.project_key || source.project || workspaceProjectKey(workspaceKey),
+  });
+  assertProjectAccess(req, project);
+  return { workspaceKey, project, global: false };
+}
+
+function appendStudioScope(req, conditions, params, alias = 'sp', source = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (scopedProjectKey) {
+    params.push(scopedProjectKey);
+    conditions.push(`${alias}.project_id = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
+    return;
+  }
+  const requestedWorkspace = normalizeWorkspaceKey(source.workspace_key || source.workspace || req.query?.workspace_key || req.query?.workspace || '');
+  if (requestedWorkspace && !['platform', 'super_admin'].includes(requestedWorkspace)) {
+    const workspaceKey = assertWorkspaceAccess(req, requestedWorkspace, 'list Studio');
+    const projectKey = workspaceProjectKey(workspaceKey) || normalizeProjectKey(source.project_key || source.project || '');
+    if (projectKey) {
+      params.push(projectKey);
+      conditions.push(`${alias}.project_id = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
+    }
+    params.push(workspaceKey);
+    conditions.push(`${alias}.workspace_key = $${params.length}`);
+  }
+}
+
+async function getStudioProjectForRequest(req, studioProjectId, db = pool) {
+  const id = Number(studioProjectId || 0);
+  if (!Number.isFinite(id) || id <= 0) {
+    const error = new Error('Studio project id is required');
+    error.statusCode = 400;
+    throw error;
+  }
+  const row = (await db.query(
+    `SELECT sp.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+     FROM bna_studio_projects sp
+     JOIN bna_projects p ON p.id = sp.project_id
+     WHERE sp.id = $1
+     LIMIT 1`,
+    [id]
+  )).rows[0];
+  if (!row) {
+    const error = new Error('Studio project not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  assertProjectAccess(req, row);
+  assertWorkspaceAccess(req, row.workspace_key, 'read Studio project');
+  return studioProjectView(row);
+}
+
+async function loadStudioProjectDetail(req, studioProjectId, db = pool) {
+  const project = await getStudioProjectForRequest(req, studioProjectId, db);
+  const [sources, scenes, layers, patches, jobs, assets, exportsResult, usage] = await Promise.all([
+    db.query(`SELECT * FROM bna_studio_sources WHERE studio_project_id = $1 ORDER BY created_at DESC`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_scenes WHERE studio_project_id = $1 ORDER BY position ASC, id ASC`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_prompt_layers WHERE studio_project_id = $1 ORDER BY created_at DESC, id DESC LIMIT 80`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_revision_patches WHERE studio_project_id = $1 ORDER BY created_at DESC LIMIT 40`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_jobs WHERE studio_project_id = $1 ORDER BY updated_at DESC, id DESC LIMIT 40`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_assets WHERE studio_project_id = $1 ORDER BY updated_at DESC, id DESC LIMIT 80`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_exports WHERE studio_project_id = $1 ORDER BY updated_at DESC, id DESC LIMIT 20`, [project.id]),
+    db.query(`SELECT * FROM bna_studio_usage_events WHERE studio_project_id = $1 ORDER BY created_at DESC LIMIT 120`, [project.id]),
+  ]);
+  return {
+    project,
+    sources: sources.rows.map(studioSourceView),
+    scenes: scenes.rows.map(studioSceneView),
+    prompt_layers: layers.rows.map((row) => ({ ...row, metadata: studioJson(row.metadata, {}) })),
+    correction_patches: patches.rows.map((row) => ({
+      ...row,
+      operations: studioJson(row.operations, []),
+      affected_layers: studioJson(row.affected_layers, []),
+    })),
+    jobs: jobs.rows.map(studioJobView),
+    assets: assets.rows.map(studioAssetView),
+    exports: exportsResult.rows.map((row) => ({ ...row, manifest_json: studioJson(row.manifest_json, {}) })),
+    usage_events: usage.rows,
+    usage_rollup: studio.buildUsageRollup(usage.rows),
+  };
+}
+
+async function loadStudioPrimarySource(studioProjectId, db = pool) {
+  const row = (await db.query(
+    `SELECT *
+     FROM bna_studio_sources
+     WHERE studio_project_id = $1
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [studioProjectId]
+  )).rows[0];
+  if (!row) return null;
+  return {
+    ...row,
+    annotations: studioJson(row.annotations, []),
+    metadata: studioJson(row.metadata, {}),
+  };
+}
+
+async function insertStudioUsageEvent({ db = pool, project, studioProjectId = null, jobId = null, workspaceKey, actor = '', usage = {}, metadata = {} } = {}) {
+  if (!project?.id) return null;
+  const result = await db.query(
+    `INSERT INTO bna_studio_usage_events (
+       studio_project_id, job_id, project_id, workspace_key, actor,
+       provider, model, operation, input_tokens, output_tokens, media_seconds,
+       estimated_cost_usd, latency_ms, status, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+     RETURNING *`,
+    [
+      studioProjectId,
+      jobId,
+      project.id,
+      workspaceKey,
+      actor || null,
+      usage.provider || 'mock',
+      usage.model || 'deterministic-v1',
+      usage.operation || 'studio_operation',
+      Number(usage.input_tokens || 0),
+      Number(usage.output_tokens || 0),
+      Number(usage.media_seconds || 0),
+      Number(usage.estimated_cost_usd || 0),
+      Number(usage.latency_ms || 0),
+      usage.status || 'succeeded',
+      JSON.stringify(metadata || {}),
+    ]
+  );
+  return result.rows[0];
+}
+
+app.get('/api/bna/studio/dashboard', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [`sp.status <> 'archived'`];
+    appendStudioScope(req, conditions, params, 'sp', req.query || {});
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const projects = (await pool.query(
+      `SELECT sp.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name,
+              COALESCE(scene_counts.scene_count, 0) AS scene_count,
+              COALESCE(job_counts.open_jobs, 0) AS open_jobs
+       FROM bna_studio_projects sp
+       JOIN bna_projects p ON p.id = sp.project_id
+       LEFT JOIN (
+         SELECT studio_project_id, count(*) AS scene_count
+         FROM bna_studio_scenes
+         GROUP BY studio_project_id
+       ) scene_counts ON scene_counts.studio_project_id = sp.id
+       LEFT JOIN (
+         SELECT studio_project_id, count(*) AS open_jobs
+         FROM bna_studio_jobs
+         WHERE status IN ('queued', 'running', 'failed', 'stale')
+         GROUP BY studio_project_id
+       ) job_counts ON job_counts.studio_project_id = sp.id
+       ${whereClause}
+       ORDER BY sp.updated_at DESC
+       LIMIT 40`,
+      params
+    )).rows.map(studioProjectView);
+    const usageConditions = [];
+    const usageParams = [];
+    appendStudioScope(req, usageConditions, usageParams, 'u', req.query || {});
+    const usageWhere = usageConditions.length ? `WHERE ${usageConditions.join(' AND ')}` : '';
+    const usageRows = (await pool.query(
+      `SELECT provider, model, operation, status, input_tokens, output_tokens, media_seconds, estimated_cost_usd, latency_ms
+       FROM bna_studio_usage_events u
+       ${usageWhere}
+       ORDER BY created_at DESC
+       LIMIT 300`,
+      usageParams
+    )).rows;
+    const jobs = (await pool.query(
+      `SELECT j.*, sp.title AS studio_title, p.project_key
+       FROM bna_studio_jobs j
+       JOIN bna_studio_projects sp ON sp.id = j.studio_project_id
+       JOIN bna_projects p ON p.id = j.project_id
+       ${whereClause.replaceAll('sp.', 'sp.')}
+       ORDER BY j.updated_at DESC
+       LIMIT 20`,
+      params
+    )).rows.map(studioJobView);
+    const priceCatalog = (await pool.query(
+      `SELECT provider, model, input_per_1m, output_per_1m, media_second, status, metadata
+       FROM bna_studio_price_catalog
+       WHERE status = 'active'
+       ORDER BY provider ASC, model ASC`
+    )).rows.map((row) => ({ ...row, metadata: studioJson(row.metadata, {}) }));
+    const workspaceKey = normalizeWorkspaceKey(req.query.workspace || req.query.workspace_key || defaultWorkspaceKeyForRequest(req));
+    res.json({
+      success: true,
+      projects,
+      jobs,
+      usage_rollup: studio.buildUsageRollup(usageRows),
+      price_catalog: priceCatalog,
+      pilot_fixture: workspaceKey === 'rabbi_sheller_provider' ? studio.buildOneTimeStudioPilotFixture() : null,
+      no_external_writes: true,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/projects', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [`sp.status <> 'archived'`];
+    appendStudioScope(req, conditions, params, 'sp', req.query || {});
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const rows = (await pool.query(
+      `SELECT sp.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+       FROM bna_studio_projects sp
+       JOIN bna_projects p ON p.id = sp.project_id
+       ${whereClause}
+       ORDER BY sp.updated_at DESC
+       LIMIT 100`,
+      params
+    )).rows;
+    res.json({ success: true, projects: rows.map(studioProjectView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const title = String(body.title || body.name || '').trim();
+  if (!title) return res.status(400).json({ error: 'title is required' });
+  try {
+    const scope = await studioScopeForRequest(req, body);
+    if (!scope.project) return res.status(400).json({ error: 'workspace or project is required for Studio project creation' });
+    const brief = body.brief_json || body.brief || {};
+    const result = await pool.query(
+      `INSERT INTO bna_studio_projects (
+         project_id, workspace_key, title, format, status, brief_json,
+         character_bible, guardrails, metadata, created_by, updated_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+       RETURNING *`,
+      [
+        scope.project.id,
+        scope.workspaceKey,
+        title,
+        body.format || brief.format || 'slideshow_video',
+        studio.normalizeStudioStatus(body.status || 'draft'),
+        JSON.stringify(brief || {}),
+        JSON.stringify(Array.isArray(body.character_bible) ? body.character_bible : []),
+        JSON.stringify(Array.isArray(body.guardrails) ? body.guardrails : []),
+        JSON.stringify({ source: 'operations_studio', external_write_performed: false, ...(body.metadata || {}) }),
+        req.opsUser || 'dashboard',
+      ]
+    );
+    res.json({ success: true, project: studioProjectView({ ...result.rows[0], project_key: scope.project.project_key, project_name: scope.project.name }) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/projects/:id', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    res.json({ success: true, ...detail });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/studio/projects/:id', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const allowed = ['title', 'format', 'status', 'brief_json', 'character_bible', 'guardrails', 'metadata'];
+  const fields = [];
+  const values = [];
+  try {
+    await getStudioProjectForRequest(req, req.params.id);
+    for (const field of allowed) {
+      if (!Object.prototype.hasOwnProperty.call(body, field)) continue;
+      const value = ['brief_json', 'character_bible', 'guardrails', 'metadata'].includes(field)
+        ? JSON.stringify(body[field] || (field === 'character_bible' || field === 'guardrails' ? [] : {}))
+        : field === 'status'
+          ? studio.normalizeStudioStatus(body[field])
+          : body[field];
+      values.push(value);
+      fields.push(`${field} = $${values.length}`);
+    }
+    if (!fields.length) return res.status(400).json({ error: 'No valid Studio project fields provided' });
+    values.push(req.opsUser || 'dashboard');
+    fields.push(`updated_by = $${values.length}`);
+    values.push(req.params.id);
+    const result = await pool.query(
+      `UPDATE bna_studio_projects
+       SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    res.json({ success: true, project: studioProjectView(result.rows[0]) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/source', requireAdmin, async (req, res) => {
+  try {
+    const project = await getStudioProjectForRequest(req, req.params.id);
+    const source = studio.normalizeStudioSourceInput(req.body || {});
+    if (!source.normalized_text) return res.status(400).json({ error: 'source text is required' });
+    const result = await pool.query(
+      `INSERT INTO bna_studio_sources (
+         studio_project_id, project_id, source_hash, raw_hash, title, source_type,
+         raw_text, normalized_text, sanitized_html, annotations, metadata, created_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       ON CONFLICT (studio_project_id, source_hash) DO UPDATE SET
+         title = EXCLUDED.title,
+         metadata = bna_studio_sources.metadata || EXCLUDED.metadata
+       RETURNING *`,
+      [
+        project.id,
+        project.project_id,
+        source.source_hash,
+        source.raw_hash,
+        source.title,
+        source.source_type,
+        source.raw_text,
+        source.normalized_text,
+        source.sanitized_html || null,
+        JSON.stringify(source.annotations || []),
+        JSON.stringify(source.metadata || {}),
+        req.opsUser || 'dashboard',
+      ]
+    );
+    await pool.query(`UPDATE bna_studio_projects SET status = 'structuring', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [project.id, req.opsUser || 'dashboard']);
+    res.json({
+      success: true,
+      source: studioSourceView(result.rows[0]),
+      normalized: {
+        source_hash: source.source_hash,
+        raw_hash: source.raw_hash,
+        char_count: source.char_count,
+        word_count: source.word_count,
+        annotation_count: source.annotations.length,
+        unsafe_html_stripped: Boolean(source.metadata?.unsafe_html_stripped),
+      },
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/outline', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const source = await loadStudioPrimarySource(detail.project.id) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const storyboard = studio.buildStoryboard({
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: { ...detail.project.brief_json, ...(req.body?.brief || {}) },
+      scene_count: req.body?.scene_count || detail.project.brief_json?.scene_count || 3,
+    });
+    const compiled = studio.compileStudioPrompt({
+      project: detail.project,
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: detail.project.brief_json,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+    });
+    const job = studio.completeMockStudioJob(studio.createMockStudioJob({
+      project: detail.project,
+      job_type: 'outline',
+      payload: { compiled_hash: compiled.compiled_hash },
+      scenes: storyboard.scenes,
+    }), storyboard.scenes);
+    const jobRow = (await pool.query(
+      `INSERT INTO bna_studio_jobs (studio_project_id, project_id, job_type, status, provider, model, idempotency_key, request_payload, result_payload, attempts, finished_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+       ON CONFLICT (idempotency_key) DO UPDATE SET result_payload = EXCLUDED.result_payload, status = EXCLUDED.status, updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, job.job_type, job.status, job.provider, job.model, job.idempotency_key, JSON.stringify(job.request_payload), JSON.stringify({ storyboard, compiled_hash: compiled.compiled_hash }), job.attempts]
+    )).rows[0];
+    await insertStudioUsageEvent({
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      jobId: jobRow.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'outline', input_chars: compiled.compiled_prompt.length, output_chars: JSON.stringify(storyboard).length }),
+    });
+    res.json({ success: true, storyboard, compiled_prompt: compiled, job: studioJobView(jobRow) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/storyboard', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const source = await loadStudioPrimarySource(detail.project.id, client) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const storyboard = studio.buildStoryboard({
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: { ...detail.project.brief_json, ...(req.body?.brief || {}) },
+      scene_count: req.body?.scene_count || detail.project.brief_json?.scene_count || 3,
+    });
+    const scenes = [];
+    for (const scene of storyboard.scenes) {
+      const row = (await client.query(
+        `INSERT INTO bna_studio_scenes (
+           studio_project_id, project_id, scene_key, position, title, body, narration,
+           visual_prompt, duration_seconds, transition, character_refs, asset_refs,
+           style_json, status, version, metadata, created_by
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, 'draft', $14, $15, $16)
+         ON CONFLICT (studio_project_id, scene_key) DO UPDATE SET
+           position = EXCLUDED.position,
+           title = EXCLUDED.title,
+           body = EXCLUDED.body,
+           narration = EXCLUDED.narration,
+           visual_prompt = EXCLUDED.visual_prompt,
+           duration_seconds = EXCLUDED.duration_seconds,
+           transition = EXCLUDED.transition,
+           character_refs = EXCLUDED.character_refs,
+           asset_refs = EXCLUDED.asset_refs,
+           style_json = EXCLUDED.style_json,
+           version = bna_studio_scenes.version + 1,
+           metadata = bna_studio_scenes.metadata || EXCLUDED.metadata,
+           updated_at = NOW()
+         RETURNING *`,
+        [
+          detail.project.id,
+          detail.project.project_id,
+          scene.scene_key,
+          scene.position,
+          scene.title,
+          scene.body,
+          scene.narration,
+          scene.visual_prompt,
+          scene.duration_seconds,
+          scene.transition,
+          JSON.stringify(scene.character_refs || []),
+          JSON.stringify(scene.asset_refs || []),
+          JSON.stringify(scene.style || {}),
+          scene.version,
+          JSON.stringify(scene.metadata || {}),
+          req.opsUser || 'dashboard',
+        ]
+      )).rows[0];
+      await client.query(
+        `INSERT INTO bna_studio_scene_versions (scene_id, studio_project_id, version, snapshot_json, change_note, created_by)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (scene_id, version) DO NOTHING`,
+        [row.id, detail.project.id, row.version, JSON.stringify(studioSceneView(row)), 'Storyboard generated', req.opsUser || 'dashboard']
+      );
+      scenes.push(studioSceneView(row));
+    }
+    await client.query(`UPDATE bna_studio_projects SET status = 'storyboard', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [detail.project.id, req.opsUser || 'dashboard']);
+    await client.query('COMMIT');
+    res.json({ success: true, storyboard: { ...storyboard, scenes }, scenes });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/prompt-compile', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const scene = req.body?.scene_id
+      ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id))
+      : detail.scenes[0] || null;
+    const source = await loadStudioPrimarySource(detail.project.id, client) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const compiled = studio.compileStudioPrompt({
+      project: detail.project,
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      brief: detail.project.brief_json,
+      character_bible: detail.project.character_bible,
+      guardrails: detail.project.guardrails,
+      scene,
+      correction_patches: detail.correction_patches,
+      layers: req.body?.layers || [],
+    });
+    for (const layer of compiled.layers) {
+      await client.query(
+        `INSERT INTO bna_studio_prompt_layers (
+           studio_project_id, scene_id, project_id, layer_type, layer_key, label,
+           content, version, locked, status, layer_hash, metadata, created_by
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'active', $10, $11, $12)`,
+        [
+          detail.project.id,
+          scene?.id || null,
+          detail.project.project_id,
+          layer.layer_type,
+          layer.layer_key,
+          layer.label,
+          layer.content,
+          layer.version,
+          layer.locked,
+          layer.hash,
+          JSON.stringify({ compiler_version: compiled.compiler_version, order: layer.order }),
+          req.opsUser || 'dashboard',
+        ]
+      );
+    }
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'prompt_compile', input_chars: compiled.compiled_prompt.length, output_chars: JSON.stringify(compiled.layers).length }),
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, compiled_prompt: compiled });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/corrections/preview', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const scene = req.body?.scene_id ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id)) : null;
+    const patch = studio.previewCorrectionPatch({
+      correction: req.body?.correction || req.body?.feedback || '',
+      scope: req.body?.scope || (scene ? 'scene' : 'project'),
+      scene,
+      project: detail.project,
+    });
+    res.json({ success: true, patch, no_external_writes: true });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/corrections/apply', requireAdmin, async (req, res) => {
+  try {
+    const detail = await loadStudioProjectDetail(req, req.params.id);
+    const scene = req.body?.scene_id ? detail.scenes.find((item) => Number(item.id) === Number(req.body.scene_id)) : null;
+    const patch = studio.previewCorrectionPatch({
+      correction: req.body?.correction || req.body?.feedback || '',
+      scope: req.body?.scope || (scene ? 'scene' : 'project'),
+      scene,
+      project: detail.project,
+    });
+    if (patch.requires_confirmation && req.body?.confirmed !== true && req.body?.confirm !== 'APPLY_STUDIO_CORRECTION') {
+      return res.status(409).json({ error: 'Broad Studio correction requires confirmed:true or APPLY_STUDIO_CORRECTION.', patch });
+    }
+    const result = await pool.query(
+      `INSERT INTO bna_studio_revision_patches (
+         studio_project_id, scene_id, project_id, patch_id, scope, correction_text,
+         operations, affected_layers, status, requires_confirmation, applied_by, applied_at
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'applied', $9, $10, NOW())
+       ON CONFLICT (studio_project_id, patch_id) DO UPDATE SET
+         status = 'applied',
+         operations = EXCLUDED.operations,
+         affected_layers = EXCLUDED.affected_layers,
+         applied_by = EXCLUDED.applied_by,
+         applied_at = NOW()
+       RETURNING *`,
+      [
+        detail.project.id,
+        scene?.id || null,
+        detail.project.project_id,
+        patch.patch_id,
+        patch.scope,
+        patch.correction,
+        JSON.stringify(patch.operations || []),
+        JSON.stringify(patch.affected_layers || []),
+        patch.requires_confirmation,
+        req.opsUser || 'dashboard',
+      ]
+    );
+    res.json({ success: true, patch: { ...patch, status: 'applied' }, row: result.rows[0] });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/studio/scenes/:id', requireAdmin, async (req, res) => {
+  const id = Number(req.params.id || 0);
+  const allowed = ['position', 'title', 'body', 'narration', 'visual_prompt', 'duration_seconds', 'transition', 'character_refs', 'asset_refs', 'style_json', 'status', 'metadata'];
+  const fields = [];
+  const values = [];
+  try {
+    const sceneOwner = (await pool.query(
+      `SELECT s.*, sp.workspace_key, p.project_key
+       FROM bna_studio_scenes s
+       JOIN bna_studio_projects sp ON sp.id = s.studio_project_id
+       JOIN bna_projects p ON p.id = s.project_id
+       WHERE s.id = $1`,
+      [id]
+    )).rows[0];
+    if (!sceneOwner) return res.status(404).json({ error: 'Studio scene not found' });
+    assertProjectAccess(req, sceneOwner);
+    assertWorkspaceAccess(req, sceneOwner.workspace_key, 'edit Studio scene');
+    for (const field of allowed) {
+      if (!Object.prototype.hasOwnProperty.call(req.body || {}, field)) continue;
+      const jsonField = ['character_refs', 'asset_refs', 'style_json', 'metadata'].includes(field);
+      values.push(jsonField ? JSON.stringify(req.body[field] || (field.endsWith('refs') ? [] : {})) : req.body[field]);
+      fields.push(`${field} = $${values.length}`);
+    }
+    if (!fields.length) return res.status(400).json({ error: 'No valid Studio scene fields provided' });
+    fields.push('version = version + 1');
+    values.push(id);
+    const updated = (await pool.query(
+      `UPDATE bna_studio_scenes
+       SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    )).rows[0];
+    await pool.query(
+      `INSERT INTO bna_studio_scene_versions (scene_id, studio_project_id, version, snapshot_json, change_note, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       ON CONFLICT (scene_id, version) DO NOTHING`,
+      [updated.id, updated.studio_project_id, updated.version, JSON.stringify(studioSceneView(updated)), 'Scene edited', req.opsUser || 'dashboard']
+    );
+    res.json({ success: true, scene: studioSceneView(updated) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/scenes/:id/regenerate', requireAdmin, async (req, res) => {
+  try {
+    const sceneRow = (await pool.query(
+      `SELECT s.*, sp.workspace_key, p.project_key
+       FROM bna_studio_scenes s
+       JOIN bna_studio_projects sp ON sp.id = s.studio_project_id
+       JOIN bna_projects p ON p.id = s.project_id
+       WHERE s.id = $1`,
+      [Number(req.params.id || 0)]
+    )).rows[0];
+    if (!sceneRow) return res.status(404).json({ error: 'Studio scene not found' });
+    assertProjectAccess(req, sceneRow);
+    assertWorkspaceAccess(req, sceneRow.workspace_key, 'regenerate Studio scene');
+    const job = studio.completeMockStudioJob(studio.createMockStudioJob({
+      project: sceneRow,
+      job_type: 'image_mock',
+      payload: { scene_id: sceneRow.id, instruction: req.body?.instruction || '' },
+      scenes: [studioSceneView(sceneRow)],
+    }), [studioSceneView(sceneRow)]);
+    const jobRow = (await pool.query(
+      `INSERT INTO bna_studio_jobs (studio_project_id, project_id, job_type, status, provider, model, idempotency_key, request_payload, result_payload, attempts, finished_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+       ON CONFLICT (idempotency_key) DO UPDATE SET status = EXCLUDED.status, result_payload = EXCLUDED.result_payload, updated_at = NOW()
+       RETURNING *`,
+      [sceneRow.studio_project_id, sceneRow.project_id, job.job_type, job.status, job.provider, job.model, job.idempotency_key, JSON.stringify(job.request_payload), JSON.stringify(job.result_payload), job.attempts]
+    )).rows[0];
+    res.json({ success: true, job: studioJobView(jobRow), manifest: job.result_payload });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/render', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const job = studio.completeMockStudioJob(studio.createMockStudioJob({
+      project: detail.project,
+      job_type: 'render_mock',
+      payload: { render_format: req.body?.render_format || 'mp4_preview' },
+      scenes: detail.scenes,
+    }), detail.scenes);
+    const jobRow = (await client.query(
+      `INSERT INTO bna_studio_jobs (studio_project_id, project_id, job_type, status, provider, model, idempotency_key, request_payload, result_payload, attempts, finished_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW())
+       ON CONFLICT (idempotency_key) DO UPDATE SET status = EXCLUDED.status, result_payload = EXCLUDED.result_payload, updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, job.job_type, job.status, job.provider, job.model, job.idempotency_key, JSON.stringify(job.request_payload), JSON.stringify(job.result_payload), job.attempts]
+    )).rows[0];
+    for (const asset of job.result_payload.assets || []) {
+      await client.query(
+        `INSERT INTO bna_studio_assets (
+           studio_project_id, scene_id, project_id, asset_key, asset_type, title, url,
+           rights_status, privacy_status, metadata
+         ) VALUES ($1, (SELECT id FROM bna_studio_scenes WHERE studio_project_id = $1 AND scene_key = $2 LIMIT 1), $3, $4, $5, $6, $7, $8, $9, $10)
+         ON CONFLICT (studio_project_id, asset_key) DO UPDATE SET
+           url = EXCLUDED.url,
+           rights_status = EXCLUDED.rights_status,
+           privacy_status = EXCLUDED.privacy_status,
+           metadata = bna_studio_assets.metadata || EXCLUDED.metadata,
+           updated_at = NOW()`,
+        [
+          detail.project.id,
+          asset.scene_key,
+          detail.project.project_id,
+          asset.asset_key,
+          asset.asset_type,
+          asset.scene_key,
+          asset.url,
+          asset.rights_status,
+          asset.privacy_status,
+          JSON.stringify(asset),
+        ]
+      );
+    }
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      jobId: jobRow.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'render_mock', input_chars: JSON.stringify(detail.scenes).length, output_chars: JSON.stringify(job.result_payload).length, media_seconds: job.result_payload.duration_seconds || 0 }),
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, job: studioJobView(jobRow), manifest: job.result_payload, external_write_performed: false });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/studio/jobs/:id/retry', requireAdmin, async (req, res) => {
+  try {
+    const jobOwner = (await pool.query(
+      `SELECT j.*, sp.workspace_key, p.project_key
+       FROM bna_studio_jobs j
+       JOIN bna_studio_projects sp ON sp.id = j.studio_project_id
+       JOIN bna_projects p ON p.id = j.project_id
+       WHERE j.id = $1`,
+      [Number(req.params.id || 0)]
+    )).rows[0];
+    if (!jobOwner) return res.status(404).json({ error: 'Studio job not found' });
+    assertProjectAccess(req, jobOwner);
+    assertWorkspaceAccess(req, jobOwner.workspace_key, 'retry Studio job');
+    const updated = (await pool.query(
+      `UPDATE bna_studio_jobs
+       SET status = 'queued', attempts = attempts + 1, error = NULL, queued_at = NOW(), updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [jobOwner.id]
+    )).rows[0];
+    res.json({ success: true, job: studioJobView(updated) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/jobs/:id/cancel', requireAdmin, async (req, res) => {
+  try {
+    const jobOwner = (await pool.query(
+      `SELECT j.*, sp.workspace_key, p.project_key
+       FROM bna_studio_jobs j
+       JOIN bna_studio_projects sp ON sp.id = j.studio_project_id
+       JOIN bna_projects p ON p.id = j.project_id
+       WHERE j.id = $1`,
+      [Number(req.params.id || 0)]
+    )).rows[0];
+    if (!jobOwner) return res.status(404).json({ error: 'Studio job not found' });
+    assertProjectAccess(req, jobOwner);
+    assertWorkspaceAccess(req, jobOwner.workspace_key, 'cancel Studio job');
+    const updated = (await pool.query(
+      `UPDATE bna_studio_jobs
+       SET status = 'cancelled', error = COALESCE($2, error), finished_at = NOW(), updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [jobOwner.id, req.body?.reason || 'Cancelled from Studio']
+    )).rows[0];
+    res.json({ success: true, job: studioJobView(updated) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/studio/usage', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [];
+    appendStudioScope(req, conditions, params, 'u', req.query || {});
+    const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+    const rows = (await pool.query(
+      `SELECT *
+       FROM bna_studio_usage_events u
+       ${whereClause}
+       ORDER BY created_at DESC
+       LIMIT 500`,
+      params
+    )).rows;
+    const budgetParams = [];
+    const budgetConditions = [];
+    appendStudioScope(req, budgetConditions, budgetParams, 'b', req.query || {});
+    const budgetWhereClause = budgetConditions.length ? `WHERE ${budgetConditions.join(' AND ')}` : '';
+    const budget = (await pool.query(
+      `SELECT *
+       FROM bna_studio_workspace_settings b
+       ${budgetWhereClause}
+       ORDER BY updated_at DESC
+       LIMIT 100`,
+      budgetParams
+    )).rows;
+    res.json({ success: true, events: rows, rollup: studio.buildUsageRollup(rows), budgets: budget });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/studio/projects/:id/handoff', requireAdmin, async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const detail = await loadStudioProjectDetail(req, req.params.id, client);
+    const source = await loadStudioPrimarySource(detail.project.id, client) || detail.sources[0] || studio.normalizeStudioSourceInput({ title: detail.project.title, raw_text: detail.project.brief_json?.goal || detail.project.title });
+    const handoff = studio.buildContentHandoffPackage({
+      project: detail.project,
+      studio_project: detail.project,
+      source: { ...source, normalized_text: source.normalized_text || source.normalized_text_preview || source.raw_text_preview || '' },
+      scenes: detail.scenes,
+      assets: detail.assets,
+      usage: detail.usage_rollup,
+      approved_by: req.body?.approved_by || req.opsUser || 'dashboard',
+    });
+    const existing = (await client.query(
+      `SELECT *
+       FROM bna_studio_exports
+       WHERE studio_project_id = $1
+         AND idempotency_key = $2
+       LIMIT 1`,
+      [detail.project.id, handoff.idempotency_key]
+    )).rows[0];
+    if (existing?.content_job_id) {
+      await client.query('COMMIT');
+      return res.json({ success: true, handoff, export: existing, idempotent: true });
+    }
+    const content = handoff.content_job;
+    const job = (await client.query(
+      `INSERT INTO bna_content_jobs (
+         project_id, title, source_type, caption, status, transcript_text, parse_json, notes
+       ) VALUES ($1, $2, $3, $4, 'needs_approval', $5, $6, $7)
+       RETURNING *`,
+      [
+        detail.project.project_id,
+        content.title,
+        content.source_type,
+        content.caption,
+        content.transcript_text,
+        JSON.stringify(content.parse_json || {}),
+        'Created by Service Provider Studio handoff. No publish or member access grant performed.',
+      ]
+    )).rows[0];
+    const outputs = [];
+    for (const output of content.outputs || []) {
+      const row = (await client.query(
+        `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         RETURNING *`,
+        [job.id, output.output_type, output.title || null, output.body || null, output.platform || 'studio', output.status || 'draft', JSON.stringify(output.metadata || {})]
+      )).rows[0];
+      outputs.push(row);
+    }
+    const exportRow = (await client.query(
+      `INSERT INTO bna_studio_exports (
+         studio_project_id, project_id, export_type, idempotency_key,
+         content_job_id, manifest_json, status, no_publish, external_write_performed, created_by
+       ) VALUES ($1, $2, 'content_handoff', $3, $4, $5, 'created', TRUE, FALSE, $6)
+       ON CONFLICT (idempotency_key) DO UPDATE SET
+         content_job_id = COALESCE(bna_studio_exports.content_job_id, EXCLUDED.content_job_id),
+         manifest_json = EXCLUDED.manifest_json,
+         status = 'created',
+         updated_at = NOW()
+       RETURNING *`,
+      [detail.project.id, detail.project.project_id, handoff.idempotency_key, job.id, JSON.stringify(content.parse_json?.studio_manifest || {}), req.opsUser || 'dashboard']
+    )).rows[0];
+    await client.query(`UPDATE bna_studio_projects SET status = 'handed_off', updated_at = NOW(), updated_by = $2 WHERE id = $1`, [detail.project.id, req.opsUser || 'dashboard']);
+    await insertStudioUsageEvent({
+      db: client,
+      project: { id: detail.project.project_id },
+      studioProjectId: detail.project.id,
+      workspaceKey: detail.project.workspace_key,
+      actor: req.opsUser,
+      usage: studio.estimateStudioUsage({ provider: 'mock', operation: 'content_handoff', input_chars: JSON.stringify(handoff).length, output_chars: JSON.stringify(outputs).length }),
+      metadata: { content_job_id: job.id, no_publish: true },
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, handoff, content_job: job, outputs, export: exportRow, external_write_performed: false });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
 // BNA dashboard: content repurposing pipeline
 app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const { status } = req.query;
@@ -54371,50 +55994,6 @@ function mixedRecordingCountsFromApply(applied = null, intake = {}) {
   };
 }
 
-function progressOnlyMixedRecordingParse(parsed = {}, job = {}, students = []) {
-  const groupGoalEntries = Array.isArray(parsed.group_goal_entries) ? parsed.group_goal_entries.slice(0, 60) : [];
-  const dailyTorahUpdates = synthesizeAbsentDailyTorahUpdates({
-    job,
-    students,
-    dailyTorahUpdates: Array.isArray(parsed.daily_torah_updates) ? parsed.daily_torah_updates.slice(0, 60) : [],
-  });
-  if (!groupGoalEntries.length && !dailyTorahUpdates.length) return null;
-  return {
-    tasks: [],
-    accountability_events: [],
-    group_goal_entries: groupGoalEntries,
-    daily_torah_updates: dailyTorahUpdates,
-    class_notes: [],
-    report: {
-      ...(parsed.report || {}),
-      progress_only_persist: true,
-    },
-  };
-}
-
-function mergeMixedRecordingCounts(base = {}, progress = {}) {
-  const next = { ...base };
-  for (const key of ['group_goal_entries', 'daily_torah_updates', 'torah_learning_entries']) {
-    next[key] = Number(base[key] || 0) + Number(progress[key] || 0);
-  }
-  if (progress.accountability_events) {
-    next.accountability_events = Number(base.accountability_events || 0) + Number(progress.accountability_events || 0);
-  }
-  return next;
-}
-
-async function generateMixedRecordingProgressParse({ job = {}, students = [] } = {}) {
-  try {
-    return await generateMixedRecordingParse({ job, students });
-  } catch (error) {
-    return basicMixedRecordingParse({
-      job,
-      students,
-      error: error instanceof Error ? error : new Error(String(error || 'Mixed recording progress parse failed.')),
-    });
-  }
-}
-
 async function parseMixedRecordingSource({
   job = {},
   instruction = '',
@@ -54432,8 +56011,6 @@ async function parseMixedRecordingSource({
   ].filter(Boolean).join('\n\n').trim();
   const sourceId = job.id || job.source_message_id || job.local_path || intakeStableHash(rawInput).slice(0, 24);
   const sourceType = contentBacked ? 'content_recording' : 'recording_intake';
-  const parseProjectKey = projectKey || DEFAULT_PROJECT_KEY;
-  const students = await activeStudentsForMixedRecordingParse({ projectKey: parseProjectKey });
   const intake = await createCanonicalIntakeParseRun({
     rawInput,
     source_type: sourceType,
@@ -54444,47 +56021,22 @@ async function parseMixedRecordingSource({
     dry_run: Boolean(dryRun),
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
-  const progressParsed = await generateMixedRecordingProgressParse({ job, students });
-  const progressOnlyParsed = progressOnlyMixedRecordingParse(progressParsed, job, students);
   if (dryRun) {
-    const progressCounts = progressOnlyParsed ? {
-      group_goal_entries: progressOnlyParsed.group_goal_entries.length,
-      daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
-      torah_learning_entries: progressOnlyParsed.daily_torah_updates.length,
-    } : {};
     return {
       success: true,
       dry_run: true,
       raw_intake: intake.raw_intake,
       parse_run: intake.parse_run,
       parsed,
-      progress_parse: progressOnlyParsed ? {
-        parsed: progressOnlyParsed,
-        counts: progressCounts,
-        report: progressParsed.report || {},
-      } : null,
       items: intake.items,
       review_items: intake.review_items,
-      counts: mergeMixedRecordingCounts(mixedRecordingCountsFromApply(null, intake), progressCounts),
+      counts: mixedRecordingCountsFromApply(null, intake),
       report: parsed.report,
     };
   }
 
-  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: parseProjectKey });
-  let progressApplied = null;
-  if (progressOnlyParsed) {
-    progressApplied = await persistMixedRecordingParse({
-      job,
-      parsed: progressOnlyParsed,
-      students,
-      previousParse,
-      dryRun: false,
-      archiveSourceAfterParse: false,
-      contentBacked: false,
-      projectKey: parseProjectKey,
-    });
-  }
-  const counts = mergeMixedRecordingCounts(mixedRecordingCountsFromApply(applied, intake), progressApplied?.counts || {});
+  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: projectKey || DEFAULT_PROJECT_KEY });
+  const counts = mixedRecordingCountsFromApply(applied, intake);
   const nextParse = {
     ...(previousParse || {}),
     intake_parse_run_id: intake.parse_run.id,
@@ -54499,11 +56051,6 @@ async function parseMixedRecordingSource({
       source_table: contentBacked && job.id ? 'bna_content_jobs' : null,
       counts,
       report: parsed.report,
-      progress_parse: progressOnlyParsed ? {
-        persisted_at: new Date().toISOString(),
-        counts: progressApplied?.counts || {},
-        report: progressParsed.report || {},
-      } : null,
     },
   };
   if (contentBacked && job.id) {
@@ -54556,6 +56103,8 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
       ...source,
       source_channel: body.source_channel || body.sourceChannel || source.source_type,
       source_message_id: body.source_message_id || body.message_id || source.source_id || null,
+      filename: body.filename || body.file_name || body.fileName || body.name || body.source_filename || body.sourceFilename || '',
+      source_title: body.title || body.source_title || body.sourceTitle || '',
       media_url: body.media_url || body.mediaUrl || null,
       intake_type: body.intake_type || body.intakeType || (body.requirement_register_path ? 'broad_correction' : 'general'),
       workspace_key: parseWorkspaceKey,
@@ -56868,7 +58417,7 @@ function normalizeContactImportRow(row = {}) {
   };
 }
 
-async function lookupContactImportDedupe(row = {}, db = pool) {
+async function lookupContactImportDedupe(row = {}, db = pool, scope = {}) {
   const phoneDigits = normalizePhoneDigits(row.phone);
   const email = normalizeEmail(row.email);
   if (!phoneDigits && !email) return { status: 'needs_identifier', matches: [] };
@@ -56884,10 +58433,14 @@ async function lookupContactImportDedupe(row = {}, db = pool) {
     conditions.push(`regexp_replace(COALESCE(primary_phone, ''), '\\D', '', 'g') = $${params.length}`);
   }
   if (conditions.length) {
+    if (scope.workspaceId) {
+      params.push(scope.workspaceId);
+    }
     const contacts = (await db.query(
       `SELECT 'contact' AS type, id, full_name AS name, primary_email AS email, primary_phone AS phone, status, source
        FROM bna_contacts
-       WHERE ${conditions.join(' OR ')}
+       WHERE (${conditions.join(' OR ')})
+         ${scope.workspaceId ? `AND workspace_id = $${params.length}` : ''}
        LIMIT 5`,
       params
     ).catch(() => ({ rows: [] }))).rows;
@@ -56904,16 +58457,67 @@ async function lookupContactImportDedupe(row = {}, db = pool) {
       leadParams.push(phoneDigits);
       leadConditions.push(`regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $${leadParams.length}`);
     }
+    const scopedProjectParam = scope.projectId ? leadParams.length + 1 : 0;
+    if (scope.projectId) leadParams.push(scope.projectId);
     const leads = (await db.query(
       `SELECT 'parent_lead' AS type, id, parent_name AS name, parent_email AS email, parent_phone AS phone, status, source
        FROM bna_parent_leads
-       WHERE ${leadConditions.join(' OR ')}
+       WHERE (${leadConditions.join(' OR ')})
+         ${scope.projectId ? `AND project_id = $${scopedProjectParam}` : ''}
        LIMIT 5`,
       leadParams
     ).catch(() => ({ rows: [] }))).rows;
     matches.push(...leads);
   }
   return { status: matches.length ? 'possible_duplicate' : 'new_candidate', matches };
+}
+
+function contactImportSourceFromBody(body = {}) {
+  const source = body.source_inventory && typeof body.source_inventory === 'object'
+    ? body.source_inventory
+    : {};
+  const sourceId = limitText(body.source_inventory_id || body.sourceInventoryId || source.id || source.inventory_id || '', 80);
+  const sourceHash = limitText(body.source_sha256 || body.sourceSha256 || source.sha256 || '', 96);
+  const classification = limitText(body.source_classification || body.sourceClassification || source.classification || '', 120);
+  const recommendedLane = limitText(body.recommended_lane || body.recommendedLane || source.recommended_lane || '', 160);
+  return {
+    source_inventory_id: sourceId || null,
+    source_sha256: sourceHash || null,
+    source_classification: classification || null,
+    recommended_lane: recommendedLane || null,
+    source_privacy: 'metadata_reference_only',
+    raw_source_committed: false,
+  };
+}
+
+async function contactImportPreviewScope(body = {}, req = null, db = pool) {
+  const requestedProjectKey = normalizeProjectKey(body.project_key || body.projectKey || '');
+  const requestedWorkspaceKey = normalizeWorkspaceKey(body.workspace_key || body.workspaceKey || '');
+  const scopedProjectKey = req ? opsScopeProjectKey(req) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey || workspaceProjectKey(requestedWorkspaceKey) || DEFAULT_PROJECT_KEY;
+  const project = projectKey ? await getProjectByKey(projectKey, db).catch(() => null) : null;
+  const workspaceKey = requestedWorkspaceKey || (projectKey ? workspaceKeyForProject(projectKey) : '') || 'bna';
+  const workspaceId = projectKey ? await getWorkspaceIdForProjectKey(projectKey, db).catch(() => null) : null;
+  return {
+    project_id: project?.id || null,
+    project_key: project?.project_key || projectKey || null,
+    workspace_id: workspaceId || null,
+    workspace_key: workspaceKey,
+    scope_enforced: Boolean(scopedProjectKey || requestedProjectKey || requestedWorkspaceKey),
+  };
+}
+
+function contactImportDedupeKey(row = {}, scope = {}) {
+  const basis = normalizeEmail(row.email)
+    ? `email:${normalizeEmail(row.email)}`
+    : normalizePhoneDigits(row.phone)
+      ? `phone:${normalizePhoneDigits(row.phone)}`
+      : `row:${row.row_number || ''}:${row.name || row.organization || 'unknown'}`;
+  const scopeKey = scope.project_key || scope.workspace_key || 'bna';
+  return {
+    dedupe_key: sha256Hex(`${scopeKey}:${basis}`).slice(0, 48),
+    dedupe_basis: basis.split(':')[0],
+  };
 }
 
 function contactImportRowsFromBody(body = {}) {
@@ -56925,17 +58529,28 @@ function contactImportRowsFromBody(body = {}) {
   return parseDelimitedContactExport(content);
 }
 
-async function previewContactImport(body = {}, db = pool) {
+async function previewContactImport(body = {}, db = pool, req = null) {
   const rows = contactImportRowsFromBody(body);
+  const scope = await contactImportPreviewScope(body, req, db);
+  const sourceInventory = contactImportSourceFromBody(body);
   const normalizedRows = rows.slice(0, Math.max(1, Math.min(Number(body.limit || 100), 500))).map(normalizeContactImportRow);
   const preview = [];
   for (const row of normalizedRows) {
-    const dedupe = await lookupContactImportDedupe(row, db);
+    const { source_row, ...safeRow } = row;
+    const dedupe = await lookupContactImportDedupe(row, db, scope);
+    const dedupeKey = contactImportDedupeKey(row, scope);
     preview.push({
-      ...row,
+      ...safeRow,
+      ...dedupeKey,
+      project_key: scope.project_key,
+      workspace_key: scope.workspace_key,
+      no_send: true,
+      external_write_performed: false,
+      local_write_performed: false,
       dedupe_status: dedupe.status,
       duplicate_matches: dedupe.matches,
       proposed_action: row.required_review ? 'needs_mapping_review' : dedupe.matches.length ? 'review_existing_match' : 'stage_contact_candidate',
+      import_status: 'preview_only_approval_required',
     });
   }
   const byClassification = preview.reduce((acc, row) => {
@@ -56948,7 +58563,19 @@ async function previewContactImport(body = {}, db = pool) {
     no_send: true,
     external_write_performed: false,
     local_write_performed: false,
+    external_crm_write_performed: false,
+    source_inventory: sourceInventory,
+    scope,
     workflow: 'CSV/vCard/email export upload -> field mapping -> dedupe -> tags -> workspace association -> parent/provider/student classification -> preview before commit',
+    import_policy: {
+      mode: 'preview_only',
+      commit_requires_operator_approval: true,
+      required_confirmation: 'APPROVE_CONTACT_IMPORT',
+      warm_leads_no_send_until_approval: true,
+      no_external_crm_runtime: true,
+      forbidden_external_runtimes: ['ghl', 'go_high_level', 'leadconnector'],
+      raw_upload_content_returned: false,
+    },
     field_mapping: {
       name: ['name', 'full_name', 'display_name', 'fn'],
       email: ['email', 'email_address', 'primary_email'],
@@ -56962,11 +58589,17 @@ async function previewContactImport(body = {}, db = pool) {
       rows_previewed: preview.length,
       possible_duplicates: preview.filter((row) => row.dedupe_status === 'possible_duplicate').length,
       needs_mapping_review: preview.filter((row) => row.required_review).length,
+      warm_leads_no_send: preview.length,
       classifications: byClassification,
+    },
+    audit_plan: {
+      would_write_tables_after_approval: ['bna_parent_leads', 'bna_contacts', 'bna_contact_identities', 'bna_contact_pipeline_events'],
+      dedupe_history: 'Preview computes scoped dedupe keys and duplicate matches; commit/import remains blocked until explicit operator approval.',
+      source_reference: sourceInventory.source_inventory_id || sourceInventory.source_sha256 ? sourceInventory : null,
     },
     preview,
     commit_blocked: true,
-    blocker: 'Preview is ready. Commit/import remains approval-gated so no contacts, tags, emails, WhatsApp messages, or external records are written from an upload preview.',
+    blocker: 'Preview is ready. Commit/import remains approval-gated so no contacts, tags, emails, WhatsApp messages, external CRM records, GHL/LeadConnector records, or billing records are written from an upload preview.',
   };
 }
 
@@ -57240,13 +58873,28 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/bna/wapi/phonebook-report', requireAdmin, async (req, res) => {
-  if (req.opsIdentity?.scope?.type !== 'all') {
-    return res.status(403).json({ error: 'Whapi phonebook grouping is account-wide and requires an unscoped Operations admin login.' });
-  }
   try {
     const limit = Math.max(1, Math.min(Number(req.query.limit || 100), 500));
-    const report = await buildWapiPhonebookReport({ db: pool, limit });
-    res.json(report);
+    const requestedWorkspace = normalizeWorkspaceKey(req.query.workspace || req.query.workspace_key || '');
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const scopedWorkspaceKey = scopedProjectKey ? workspaceKeyForProject(scopedProjectKey) : '';
+    const workspaceKey = scopedWorkspaceKey || (requestedWorkspace && !['platform', 'super_admin', 'all'].includes(requestedWorkspace)
+      ? assertWorkspaceAccess(req, requestedWorkspace)
+      : '');
+    const projectKey = workspaceKey ? workspaceProjectKey(workspaceKey) : '';
+    const workspaceId = projectKey ? await getWorkspaceIdForProjectKey(projectKey) : null;
+    const report = await buildWapiPhonebookReport({
+      db: pool,
+      limit,
+      projectKey,
+      workspaceId,
+    });
+    res.json({
+      ...report,
+      scope: projectKey ? 'workspace' : 'account',
+      workspace_key: workspaceKey || 'all',
+      raw_payload_hidden: true,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -57670,7 +59318,7 @@ app.post('/api/bna/wapi/sync', requireAdmin, async (req, res) => {
 
 app.post('/api/bna/contact-imports/preview', requireAdmin, async (req, res) => {
   try {
-    const result = await previewContactImport(req.body || {});
+    const result = await previewContactImport(req.body || {}, pool, req);
     res.json(result);
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -57711,20 +59359,45 @@ app.post('/api/bna/whatsapp/sync', requireAdmin, async (req, res) => {
 app.get('/api/bna/whatsapp/messages', requireAdmin, async (req, res) => {
   const limit = Math.min(Math.max(Number(req.query.limit || 200), 1), 500);
   try {
+    const workspaceKey = assertWorkspaceAccess(req, req.query.workspace || req.query.workspace_key || defaultWorkspaceKeyForRequest(req));
+    const projectKey = workspaceProjectKey(workspaceKey);
+    const workspaceId = projectKey ? await getWorkspaceIdForProjectKey(projectKey) : null;
+    const includeRaw = /^(?:1|true|yes)$/i.test(String(req.query.include_raw || req.query.includeRaw || ''));
+    if (includeRaw && req.opsIdentity?.scope?.type !== 'all') {
+      return res.status(403).json({ error: 'Raw WhatsApp provider payload readback requires an unscoped Operations admin login.' });
+    }
+    const conditions = [];
+    const params = [];
+    if (workspaceId) {
+      params.push(workspaceId);
+      conditions.push(`m.workspace_id = $${params.length}`);
+    } else if (opsScopeProjectKey(req)) {
+      conditions.push('1 = 0');
+    }
+    params.push(limit);
+    const limitParam = `$${params.length}`;
+    const rawPayloadSelect = includeRaw ? ', m.raw_payload' : '';
     const result = await pool.query(
-      `SELECT m.*,
+      `SELECT m.id, m.workspace_id, m.contact_id, m.provider, m.external_message_id,
+              m.external_chat_id, m.direction, m.from_phone, m.to_phone, m.from_name,
+              m.body_text, m.occurred_at, m.imported_at${rawPayloadSelect},
               c.full_name AS contact_name,
               c.primary_email AS contact_email,
               c.status AS contact_status
        FROM bna_whatsapp_messages m
        LEFT JOIN bna_contacts c ON c.id = m.contact_id
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
        ORDER BY COALESCE(m.occurred_at, m.imported_at) DESC, m.id DESC
-       LIMIT $1`,
-      [limit]
+       LIMIT ${limitParam}`,
+      params
     );
-    res.json({ messages: result.rows });
+    res.json({
+      messages: result.rows,
+      workspace_key: workspaceKey,
+      raw_payload_hidden: !includeRaw,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -60553,9 +62226,36 @@ app.get('/api/bna/people', requireAdmin, async (req, res) => {
       SELECT pm.*,
              p.project_key,
              p.name AS project_name,
-             p.short_name AS project_short_name
+             p.short_name AS project_short_name,
+             bp.id AS person_id,
+             bp.full_name,
+             bp.email,
+             bp.phone,
+             wm.id AS workspace_membership_id,
+             wm.role AS workspace_role,
+             wm.active AS workspace_membership_active,
+             wm.invitation_state,
+             wm.disabled_at,
+             wm.last_activity_at,
+             wm.login_state,
+             COALESCE(wm.metadata->>'canonical_role', pm.metadata->>'canonical_role', wm.role, pm.role) AS canonical_role,
+             COALESCE(wm.metadata->>'canonical_role_label', pm.metadata->>'canonical_role_label') AS canonical_role_label
       FROM bna_project_members pm
       JOIN bna_projects p ON p.id = pm.project_id
+      LEFT JOIN bna_people bp
+        ON lower(bp.preferred_name) = lower(pm.person_name)
+        OR (pm.login_username IS NOT NULL AND lower(bp.email) = lower(pm.login_username))
+      LEFT JOIN LATERAL (
+        SELECT wm_inner.*
+        FROM bna_workspace_memberships wm_inner
+        WHERE wm_inner.workspace_id = p.id
+          AND wm_inner.person_id = bp.id
+        ORDER BY
+          CASE WHEN wm_inner.active = TRUE THEN 0 ELSE 1 END,
+          wm_inner.updated_at DESC NULLS LAST,
+          wm_inner.id DESC
+        LIMIT 1
+      ) wm ON TRUE
       WHERE p.status <> 'archived'
         AND COALESCE(pm.active, TRUE) = TRUE`;
     if (requestedProjectKey) {
@@ -60617,6 +62317,324 @@ app.post('/api/bna/people', requireAdmin, async (req, res) => {
       [person.id]
     )).rows[0];
     res.json({ success: true, person: internalPersonView(row) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/workspace-users', requireAdmin, async (req, res) => {
+  try {
+    await ensurePersonalWorkspacesAndPeopleOnce();
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    if (requestedProjectKey) {
+      requireWorkspaceUserPermission(req, 'read_workspace_users', workspaceKeyForProject(requestedProjectKey));
+    } else if (req.opsIdentity?.scope?.type === 'project') {
+      requireWorkspaceUserPermission(req, 'read_workspace_users', defaultWorkspaceKeyForRequest(req));
+    }
+
+    const params = [];
+    const conditions = [`p.status <> 'archived'`];
+    if (requestedProjectKey) {
+      params.push(requestedProjectKey);
+      conditions.push(`p.project_key = $${params.length}`);
+    }
+    const status = String(req.query.status || '').trim().toLowerCase();
+    if (status === 'active') conditions.push(`wm.active = TRUE`);
+    if (status === 'inactive' || status === 'disabled') conditions.push(`wm.active = FALSE`);
+    if (req.query.q) {
+      params.push(`%${String(req.query.q).trim()}%`);
+      conditions.push(`(people.preferred_name ILIKE $${params.length} OR people.email ILIKE $${params.length} OR people.phone ILIKE $${params.length})`);
+    }
+
+    const rows = (await pool.query(
+      `SELECT wm.*,
+              p.project_key,
+              p.name AS workspace_name,
+              p.workspace_type,
+              people.preferred_name AS person_name,
+              people.full_name,
+              people.email,
+              people.phone,
+              people.status AS person_status,
+              pm.login_username,
+              pm.metadata AS project_member_metadata
+       FROM bna_workspace_memberships wm
+       JOIN bna_projects p ON p.id = wm.workspace_id
+       JOIN bna_people people ON people.id = wm.person_id
+       LEFT JOIN bna_project_members pm
+         ON pm.project_id = p.id
+        AND lower(pm.person_name) = lower(people.preferred_name)
+       WHERE ${conditions.join(' AND ')}
+       ORDER BY
+         CASE p.project_key WHEN 'super_admin' THEN 1 WHEN 'bna' THEN 2 WHEN 'dratler_family' THEN 3 WHEN 'one_time_mishnah_class' THEN 4 ELSE 5 END,
+         CASE COALESCE(wm.metadata->>'canonical_role', wm.role)
+           WHEN 'platform_super_admin' THEN 1
+           WHEN 'workspace_owner' THEN 2
+           WHEN 'workspace_admin' THEN 3
+           WHEN 'workspace_manager' THEN 4
+           WHEN 'provider_staff' THEN 5
+           WHEN 'moderator' THEN 6
+           WHEN 'parent' THEN 7
+           WHEN 'student' THEN 8
+           ELSE 9
+         END,
+         people.preferred_name ASC
+       LIMIT 500`,
+      params
+    )).rows;
+
+    res.json({
+      success: true,
+      users: rows.map(workspaceUserView),
+      no_send: true,
+      workspace_scope: requestedProjectKey ? workspaceKeyForProject(requestedProjectKey) : 'all',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/workspace-users/role-audit', requireAdmin, async (req, res) => {
+  try {
+    const requestedProjectKey = requestedProjectKeyForScopedList(req);
+    let workspace = null;
+    if (requestedProjectKey) {
+      const workspaceKey = requireWorkspaceUserPermission(req, 'read_role_audit_log', workspaceKeyForProject(requestedProjectKey));
+      workspace = await getWorkspaceProjectByKey(workspaceKey);
+    } else if (req.opsIdentity?.scope?.type === 'project') {
+      const workspaceKey = requireWorkspaceUserPermission(req, 'read_role_audit_log', defaultWorkspaceKeyForRequest(req));
+      workspace = await getWorkspaceProjectByKey(workspaceKey);
+    }
+    const params = [];
+    const conditions = [];
+    if (workspace?.id) {
+      params.push(workspace.id);
+      conditions.push(`e.workspace_id = $${params.length}`);
+    }
+    params.push(Math.min(Math.max(Number(req.query.limit || 80), 1), 200));
+    const limitParam = params.length;
+    const rows = (await pool.query(
+      `SELECT e.*,
+              p.project_key,
+              p.name AS workspace_name,
+              actor.preferred_name AS actor_name,
+              target.preferred_name AS target_name
+       FROM bna_platform_role_audit_events e
+       LEFT JOIN bna_projects p ON p.id = e.workspace_id
+       LEFT JOIN bna_people actor ON actor.id = e.actor_person_id
+       LEFT JOIN bna_people target ON target.id = e.target_person_id
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY e.created_at DESC
+       LIMIT $${limitParam}`,
+      params
+    )).rows;
+    res.json({
+      success: true,
+      audit_events: rows.map((row) => ({
+        id: row.id,
+        workspace_id: row.workspace_id,
+        workspace_key: workspaceKeyForProject(row.project_key),
+        project_key: row.project_key,
+        workspace_name: row.workspace_name,
+        membership_id: row.membership_id,
+        actor_person_id: row.actor_person_id,
+        actor_name: row.actor_name,
+        target_person_id: row.target_person_id,
+        target_name: oneTimeDisplayName(row.target_name || ''),
+        event_type: row.event_type,
+        from_role: row.from_role,
+        to_role: row.to_role,
+        reason: row.reason,
+        metadata: parseJsonMaybe(row.metadata),
+        created_at: row.created_at,
+      })),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/workspace-users', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const requestedWorkspace = normalizeWorkspaceKey(body.workspace_key || body.workspace || defaultWorkspaceKeyForRequest(req));
+    const canonicalRole = normalizeWorkspaceUserCanonicalRole(body.canonical_role || body.canonicalRole || body.role || 'provider_staff');
+    const workspaceKey = requireWorkspaceUserPermission(req, 'invite_workspace_user', requestedWorkspace, canonicalRole);
+    const workspace = await getWorkspaceProjectByKey(workspaceKey);
+    if (!workspace) return res.status(404).json({ error: 'Workspace was not found' });
+    const preferredName = limitText(body.person_name || body.preferred_name || body.name || body.display_name || '', 180);
+    if (!preferredName) return res.status(400).json({ error: 'person_name is required' });
+    const accessLevel = workspaceUserAccessLevelForRole(canonicalRole, body.access_level || body.accessLevel);
+    const invitationState = normalizeWorkspaceUserRoleKey(body.invitation_state || body.invitationState || 'invited') || 'invited';
+    const loginState = normalizeWorkspaceUserRoleKey(body.login_state || body.loginState || (body.login_username || body.loginUsername ? 'configured' : 'not_configured'));
+    const metadata = {
+      ...workspaceUserInputMetadata(body, canonicalRole),
+      project_scope: workspace.project_key,
+      workspace_scope: workspaceKey,
+      invitation_state: invitationState,
+      login_state: loginState,
+      created_by: req.opsUser || 'operations',
+    };
+    const person = await upsertCanonicalPerson({
+      preferred_name: preferredName,
+      full_name: body.full_name || body.fullName || preferredName,
+      email: body.email || '',
+      phone: body.phone || '',
+      status: body.person_status || 'active',
+      metadata: {
+        source: 'workspace_user_management',
+        workspace_key: workspaceKey,
+        project_key: workspace.project_key,
+      },
+    }, pool);
+    const membership = await ensureWorkspaceMembership(workspace, person, {
+      role: canonicalRole,
+      access_level: accessLevel,
+      relationship_to_owner: body.relationship_to_owner || body.relationshipToOwner || '',
+      tags: normalizeTextArray(body.tags || body.tag_list || []),
+      metadata,
+    }, pool);
+    await pool.query(
+      `UPDATE bna_workspace_memberships
+       SET invitation_state = $2,
+           login_state = $3,
+           last_activity_at = COALESCE(last_activity_at, NOW()),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $4::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [membership.id, invitationState, loginState, JSON.stringify(metadata)]
+    );
+
+    await ensureProjectMember(workspace, preferredName, {
+      role: canonicalRole,
+      access_level: accessLevel,
+      login_username: body.login_username || body.loginUsername || null,
+      metadata,
+    }, pool);
+
+    const actorPerson = await getCanonicalPersonForOpsIdentity(req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME)).catch(() => null);
+    const auditEvent = await insertWorkspaceRoleAuditEvent({
+      workspace_id: workspace.id,
+      membership_id: membership.id,
+      actor_person_id: actorPerson?.id || null,
+      target_person_id: person.id,
+      event_type: 'workspace_user_invited',
+      from_role: '',
+      to_role: canonicalRole,
+      reason: body.reason || body.access_reason || 'Workspace user created from Operations Users screen.',
+      metadata: {
+        no_send: true,
+        invitation_state: invitationState,
+        login_state: loginState,
+        project_key: workspace.project_key,
+        workspace_key: workspaceKey,
+      },
+    }, pool);
+    const row = await workspaceUserRowByMembershipId(membership.id);
+    res.status(201).json({
+      success: true,
+      user: workspaceUserView(row),
+      audit_event: auditEvent,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/workspace-users/:id', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const current = await workspaceUserRowByMembershipId(req.params.id);
+    if (!current) return res.status(404).json({ error: 'Workspace user membership was not found' });
+    const workspaceKey = workspaceKeyForProject(current.project_key);
+    const action = normalizeWorkspaceUserRoleKey(body.action || (
+      Object.prototype.hasOwnProperty.call(body, 'active')
+        ? (body.active ? 'reactivate' : 'deactivate')
+        : 'update_role'
+    ));
+    const currentRole = normalizeWorkspaceUserCanonicalRole(current.canonical_role || parseJsonMaybe(current.metadata).canonical_role || current.role);
+    const nextRole = normalizeWorkspaceUserCanonicalRole(body.canonical_role || body.canonicalRole || body.role || currentRole);
+    const permissionAction = action === 'remove_membership' || action === 'archive'
+      ? 'remove_workspace_user'
+      : action === 'deactivate'
+        ? 'deactivate_workspace_user'
+        : 'change_workspace_role';
+    const permissionTargetRole = currentRole === 'workspace_owner' ? currentRole : nextRole;
+    requireWorkspaceUserPermission(req, permissionAction, workspaceKey, permissionTargetRole);
+
+    const metadata = {
+      ...workspaceUserInputMetadata({ ...parseJsonMaybe(current.metadata), ...body }, nextRole),
+      project_scope: current.project_key,
+      workspace_scope: workspaceKey,
+      updated_by: req.opsUser || 'operations',
+    };
+    const accessLevel = workspaceUserAccessLevelForRole(nextRole, body.access_level || body.accessLevel || current.access_level);
+    const fields = [
+      'role = $1',
+      'access_level = $2',
+      `metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb`,
+      'updated_at = NOW()',
+    ];
+    const values = [nextRole, accessLevel, JSON.stringify(metadata)];
+    let eventType = 'workspace_role_changed';
+    if (action === 'deactivate') {
+      fields.push(`active = FALSE`, `invitation_state = 'disabled'`, `disabled_at = NOW()`);
+      eventType = 'workspace_user_deactivated';
+    } else if (action === 'reactivate') {
+      fields.push(`active = TRUE`, `invitation_state = 'active'`, `disabled_at = NULL`);
+      eventType = 'workspace_user_reactivated';
+    } else if (action === 'remove_membership' || action === 'archive') {
+      fields.push(`active = FALSE`, `invitation_state = 'archived'`, `disabled_at = NOW()`);
+      eventType = 'workspace_membership_archived';
+    }
+    if (body.login_state || body.loginState) {
+      values.push(normalizeWorkspaceUserRoleKey(body.login_state || body.loginState));
+      fields.push(`login_state = $${values.length}`);
+    }
+    values.push(current.id);
+    await pool.query(
+      `UPDATE bna_workspace_memberships
+       SET ${fields.join(', ')}
+       WHERE id = $${values.length}`,
+      values
+    );
+    await pool.query(
+      `UPDATE bna_project_members
+       SET role = $1,
+           access_level = $2,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE project_id = $4
+         AND lower(person_name) = lower($5)`,
+      [nextRole, accessLevel, JSON.stringify(metadata), current.workspace_id, current.person_name]
+    );
+    const actorPerson = await getCanonicalPersonForOpsIdentity(req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME)).catch(() => null);
+    const auditEvent = await insertWorkspaceRoleAuditEvent({
+      workspace_id: current.workspace_id,
+      membership_id: current.id,
+      actor_person_id: actorPerson?.id || null,
+      target_person_id: current.person_id,
+      event_type: eventType,
+      from_role: currentRole,
+      to_role: nextRole,
+      reason: body.reason || `${eventType} from Operations Users screen.`,
+      metadata: {
+        no_send: true,
+        action,
+        project_key: current.project_key,
+        workspace_key: workspaceKey,
+      },
+    }, pool);
+    const updated = await workspaceUserRowByMembershipId(current.id);
+    res.json({
+      success: true,
+      user: workspaceUserView(updated),
+      audit_event: auditEvent,
+      no_send: true,
+      external_write_performed: false,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -61234,6 +63252,237 @@ app.get('/api/bna/gamification/badge-readiness', requireAdmin, async (req, res) 
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/student-badges/rabbi-award', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const studentId = Number(body.student_id || body.studentId);
+  const badgeSlug = String(body.badge_slug || body.badgeSlug || body.slug || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const reason = limitText(body.reason || body.award_reason || body.awardReason || '', 600);
+  const sourceEventId = Number(body.source_event_id || body.sourceEventId || 0) || null;
+  const sourceEventRef = limitText(body.source_event_ref || body.sourceEventRef || body.evidence_ref || body.evidenceRef || (sourceEventId ? `bna_gamification_events:${sourceEventId}` : ''), 240);
+  const actor = limitText(body.actor || body.awarded_by || body.awardedBy || req.opsUser || 'operations', 120) || 'operations';
+  if (!Number.isFinite(studentId)) return res.status(400).json({ error: 'student_id is required' });
+  if (!badgeSlug) return res.status(400).json({ error: 'badge_slug is required' });
+  if (!reason) return res.status(400).json({ error: 'reason is required' });
+  if (!sourceEventRef) return res.status(400).json({ error: 'source_event_ref or source_event_id is required' });
+  const definition = oneTimeBadgeDefinitions().find((badge) => badge.slug === badgeSlug && badge.award_mode === 'rabbi_awarded');
+  if (!definition) return res.status(400).json({ error: 'badge_slug must be a Rabbi-awarded badge' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await assertStudentAccess(req, studentId, client);
+    if (sourceEventId) {
+      const sourceEvent = (await client.query(
+        `SELECT id
+         FROM bna_gamification_events
+         WHERE id = $1
+           AND student_id = $2
+           AND approval_status <> 'archived'
+         LIMIT 1`,
+        [sourceEventId, studentId]
+      )).rows[0];
+      if (!sourceEvent) {
+        await client.query('ROLLBACK');
+        return res.status(404).json({ error: 'source gamification event not found for student' });
+      }
+    }
+    const badge = (await client.query(
+      `SELECT *
+       FROM bna_badges
+       WHERE slug = $1
+         AND status = 'active'
+       LIMIT 1`,
+      [badgeSlug]
+    )).rows[0];
+    if (!badge) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'badge definition not found' });
+    }
+    const idempotencyKey = String(body.idempotency_key || body.idempotencyKey || badgeAwardIdempotencyKey({
+      student_id: studentId,
+      badge_slug: badgeSlug,
+      source_event_ref: sourceEventRef,
+    })).slice(0, 240);
+    const existingAudit = (await client.query(
+      `SELECT bae.*, sb.*, b.slug, b.title, b.description
+       FROM bna_badge_audit_events bae
+       LEFT JOIN bna_student_badges sb ON sb.id = bae.student_badge_id
+       LEFT JOIN bna_badges b ON b.id = COALESCE(sb.badge_id, bae.badge_id)
+       WHERE bae.idempotency_key = $1
+       LIMIT 1`,
+      [idempotencyKey]
+    )).rows[0];
+    if (existingAudit?.student_badge_id) {
+      await client.query('COMMIT');
+      return res.json({
+        success: true,
+        idempotent_replay: true,
+        badge: ws11StudentBadgeView(existingAudit),
+        external_write_performed: false,
+        public_individual_leaderboard_enabled: false,
+        notification_sent: false,
+        access_grant_changed: false,
+      });
+    }
+    const auditEntry = [{
+      action: 'awarded',
+      source: 'rabbi_manual_badge_award',
+      reason,
+      actor,
+      source_event_ref: sourceEventRef,
+      source_event_id: sourceEventId,
+      requirement_id: 'REQ-20260619-310',
+      created_at: new Date().toISOString(),
+    }];
+    const metadata = {
+      source: 'rabbi_manual_badge_award',
+      requirement_id: 'REQ-20260619-310',
+      idempotency_key: idempotencyKey,
+      source_event_ref: sourceEventRef,
+      parent_safe_explanation: definition.parent_safe_explanation || badge.description || badge.title,
+      no_public_individual_leaderboard: true,
+    };
+    const awarded = (await client.query(
+      `INSERT INTO bna_student_badges (
+         student_id, badge_id, awarded_event_id, status, awarded_by, metadata, audit_json
+       ) VALUES ($1, $2, $3, 'active', $4, $5::jsonb, $6::jsonb)
+       ON CONFLICT (student_id, badge_id) DO UPDATE SET
+         status = 'active',
+         awarded_event_id = COALESCE(EXCLUDED.awarded_event_id, bna_student_badges.awarded_event_id),
+         awarded_by = EXCLUDED.awarded_by,
+         awarded_at = CASE WHEN bna_student_badges.status = 'revoked' THEN NOW() ELSE bna_student_badges.awarded_at END,
+         revoked_at = NULL,
+         revoked_by = NULL,
+         reversal_reason = NULL,
+         metadata = COALESCE(bna_student_badges.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+         audit_json = COALESCE(bna_student_badges.audit_json, '[]'::jsonb) || EXCLUDED.audit_json
+       RETURNING *`,
+      [
+        studentId,
+        badge.id,
+        sourceEventId,
+        actor,
+        JSON.stringify(metadata),
+        JSON.stringify(auditEntry),
+      ]
+    )).rows[0];
+    await client.query(
+      `INSERT INTO bna_badge_audit_events (
+         student_id, badge_id, student_badge_id, event_type, source_event_id,
+         idempotency_key, reason, parent_safe_explanation, actor_label, metadata
+       ) VALUES ($1, $2, $3, 'awarded', $4, $5, $6, $7, $8, $9::jsonb)
+       ON CONFLICT (idempotency_key) DO NOTHING`,
+      [
+        studentId,
+        badge.id,
+        awarded.id,
+        sourceEventId,
+        idempotencyKey,
+        reason,
+        definition.parent_safe_explanation || badge.description || badge.title,
+        actor,
+        JSON.stringify(metadata),
+      ]
+    );
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      badge: ws11StudentBadgeView({ ...awarded, slug: badge.slug, title: badge.title, description: badge.description }),
+      external_write_performed: false,
+      public_individual_leaderboard_enabled: false,
+      notification_sent: false,
+      access_grant_changed: false,
+      prize_coupon_credit_changed: false,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/student-badges/:id/reverse', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const reason = limitText(body.reversal_reason || body.reversalReason || body.reason || '', 600);
+  if (!reason) return res.status(400).json({ error: 'reversal_reason is required' });
+  const actor = limitText(body.actor || body.revoked_by || body.revokedBy || req.opsUser || 'operations', 120) || 'operations';
+  const badgeId = Number(req.params.id);
+  if (!Number.isFinite(badgeId)) return res.status(400).json({ error: 'badge id is required' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const existing = (await client.query(
+      `SELECT sb.*, b.slug, b.title, b.description
+       FROM bna_student_badges sb
+       JOIN bna_badges b ON b.id = sb.badge_id
+       WHERE sb.id = $1
+       FOR UPDATE`,
+      [badgeId]
+    )).rows[0];
+    if (!existing) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'badge not found' });
+    }
+    await assertStudentAccess(req, existing.student_id, client);
+    const idempotencyKey = badgeReversalIdempotencyKey({
+      student_id: existing.student_id,
+      badge_slug: existing.slug,
+      reversal_ref: body.reversal_ref || body.reversalRef || reason,
+    });
+    const auditEntry = [{
+      action: 'revoked',
+      source: 'manual_badge_reversal',
+      reason,
+      actor,
+      requirement_id: 'REQ-20260619-310',
+      created_at: new Date().toISOString(),
+    }];
+    const updated = (await client.query(
+      `UPDATE bna_student_badges
+       SET status = 'revoked',
+           revoked_at = NOW(),
+           revoked_by = $2,
+           reversal_reason = $3,
+           audit_json = COALESCE(audit_json, '[]'::jsonb) || $4::jsonb
+       WHERE id = $1
+       RETURNING *`,
+      [existing.id, actor, reason, JSON.stringify(auditEntry)]
+    )).rows[0];
+    await client.query(
+      `INSERT INTO bna_badge_audit_events (
+         student_id, badge_id, student_badge_id, event_type, source_event_id,
+         idempotency_key, reason, parent_safe_explanation, actor_label, metadata
+       ) VALUES ($1, $2, $3, 'revoked', $4, $5, $6, $7, $8, $9::jsonb)
+       ON CONFLICT (idempotency_key) DO NOTHING`,
+      [
+        existing.student_id,
+        existing.badge_id,
+        existing.id,
+        existing.awarded_event_id || null,
+        idempotencyKey,
+        reason,
+        'Badge reversal recorded after human review.',
+        actor,
+        JSON.stringify({ source: 'manual_badge_reversal', requirement_id: 'REQ-20260619-310', badge_slug: existing.slug }),
+      ]
+    );
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      badge: ws11StudentBadgeView({ ...updated, slug: existing.slug, title: existing.title, description: existing.description }),
+      external_write_performed: false,
+      public_individual_leaderboard_enabled: false,
+      notification_sent: false,
+      access_grant_changed: false,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 
@@ -67515,13 +69764,17 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
     const thumbnailUrl = oneTimeOptionalUrl(body.thumbnail_url || body.thumbnailUrl || '', 'thumbnail_url');
     const mediaProvider = normalizeOneTimeMediaProvider(mediaUrl, body.media_provider || body.mediaProvider);
     const vimeoId = limitText(body.vimeo_id || body.vimeoId || parseVimeoId(mediaUrl), 80) || null;
+    if (mediaProvider === 'vimeo' && mediaUrl && !vimeoId) return res.status(400).json({ error: 'A valid Vimeo URL or Vimeo ID is required for Vimeo media.' });
     const actor = oneTimeActor(req, body);
     const inserted = (await pool.query(
       `INSERT INTO bna_class_sessions (
          project_id, class_date, title, description, summary, media_provider, media_url,
-         vimeo_id, thumbnail_url, transcript_text, transcript_status, transcript_notes,
+         vimeo_id, thumbnail_url, masechta, perek, mishnah_range, duration_seconds,
+         transcript_text, transcript_status, transcript_notes,
+         transcript_review_state, transcript_privacy_class, transcript_segments,
+         transcript_versions, transcript_glossary, transcript_release_audit,
          source_sheet_draft, package_status, updated_by, updated_at
-       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, NOW())
+       ) VALUES ($1, NULLIF($2, '')::date, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NULLIF($13, 0), $14, $15, $16, $17, $18, $19::jsonb, $20::jsonb, $21::jsonb, $22::jsonb, $23, $24, $25, NOW())
        RETURNING *`,
       [
         project.id,
@@ -67533,9 +69786,19 @@ app.post('/api/bna/one-time/classes', requireAdmin, async (req, res) => {
         mediaUrl,
         vimeoId,
         thumbnailUrl,
+        limitText(body.masechta || '', 120) || null,
+        limitText(body.perek || '', 80) || null,
+        limitText(body.mishnah_range || body.mishnahRange || '', 120) || null,
+        Math.max(0, Number(body.duration_seconds || body.durationSeconds || 0) || 0),
         oneTimeLongText(body.transcript_text || body.transcript || '', 60000) || null,
         normalizeOneTimeTranscriptStatus(body.transcript_status || body.transcriptStatus || 'draft'),
         oneTimeLongText(body.transcript_notes || body.transcriptNotes || '', 8000) || null,
+        normalizeTranscriptReviewState(body.transcript_review_state || body.transcriptReviewState || body.review_state || body.reviewState || 'needs_review'),
+        normalizeTranscriptPrivacyClass(body.transcript_privacy_class || body.transcriptPrivacyClass || body.privacy_class || body.privacyClass || 'needs_review'),
+        oneTimeJsonField(body.transcript_segments || body.transcriptSegments || [], []),
+        oneTimeJsonField(body.transcript_versions || body.transcriptVersions || {}, {}),
+        oneTimeJsonField(body.transcript_glossary || body.transcriptGlossary || [], []),
+        oneTimeJsonField(body.transcript_release_audit || body.transcriptReleaseAudit || {}, {}),
         oneTimeLongText(body.source_sheet_draft || body.sourceSheetDraft || '', 60000) || null,
         normalizeOneTimePackageStatus(body.package_status || body.packageStatus || 'draft'),
         actor,
@@ -67575,6 +69838,10 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
       values.push(value);
       fields.push(`${field} = $${values.length}`);
     };
+    const setJsonField = (field, value) => {
+      values.push(value);
+      fields.push(`${field} = $${values.length}::jsonb`);
+    };
     if (body.title !== undefined) {
       const title = limitText(body.title || '', 240);
       if (!title) return res.status(400).json({ error: 'title cannot be blank' });
@@ -67584,9 +69851,19 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
     if (body.description !== undefined) setField('description', oneTimeLongText(body.description, 5000) || null);
     if (body.summary !== undefined) setField('summary', oneTimeLongText(body.summary, 5000) || null);
     if (body.thumbnail_url !== undefined || body.thumbnailUrl !== undefined) setField('thumbnail_url', oneTimeOptionalUrl(body.thumbnail_url || body.thumbnailUrl || '', 'thumbnail_url'));
+    if (body.masechta !== undefined) setField('masechta', limitText(body.masechta || '', 120) || null);
+    if (body.perek !== undefined) setField('perek', limitText(body.perek || '', 80) || null);
+    if (body.mishnah_range !== undefined || body.mishnahRange !== undefined) setField('mishnah_range', limitText(body.mishnah_range || body.mishnahRange || '', 120) || null);
+    if (body.duration_seconds !== undefined || body.durationSeconds !== undefined) setField('duration_seconds', Math.max(0, Number(body.duration_seconds || body.durationSeconds || 0) || 0) || null);
     if (body.transcript_text !== undefined || body.transcript !== undefined) setField('transcript_text', oneTimeLongText(body.transcript_text || body.transcript || '', 60000) || null);
     if (body.transcript_status !== undefined || body.transcriptStatus !== undefined) setField('transcript_status', normalizeOneTimeTranscriptStatus(body.transcript_status || body.transcriptStatus));
     if (body.transcript_notes !== undefined || body.transcriptNotes !== undefined) setField('transcript_notes', oneTimeLongText(body.transcript_notes || body.transcriptNotes || '', 8000) || null);
+    if (body.transcript_review_state !== undefined || body.transcriptReviewState !== undefined || body.review_state !== undefined || body.reviewState !== undefined) setField('transcript_review_state', normalizeTranscriptReviewState(body.transcript_review_state || body.transcriptReviewState || body.review_state || body.reviewState));
+    if (body.transcript_privacy_class !== undefined || body.transcriptPrivacyClass !== undefined || body.privacy_class !== undefined || body.privacyClass !== undefined) setField('transcript_privacy_class', normalizeTranscriptPrivacyClass(body.transcript_privacy_class || body.transcriptPrivacyClass || body.privacy_class || body.privacyClass));
+    if (body.transcript_segments !== undefined || body.transcriptSegments !== undefined) setJsonField('transcript_segments', oneTimeJsonField(body.transcript_segments || body.transcriptSegments || [], []));
+    if (body.transcript_versions !== undefined || body.transcriptVersions !== undefined) setJsonField('transcript_versions', oneTimeJsonField(body.transcript_versions || body.transcriptVersions || {}, {}));
+    if (body.transcript_glossary !== undefined || body.transcriptGlossary !== undefined) setJsonField('transcript_glossary', oneTimeJsonField(body.transcript_glossary || body.transcriptGlossary || [], []));
+    if (body.transcript_release_audit !== undefined || body.transcriptReleaseAudit !== undefined) setJsonField('transcript_release_audit', oneTimeJsonField(body.transcript_release_audit || body.transcriptReleaseAudit || {}, {}));
     if (body.source_sheet_draft !== undefined || body.sourceSheetDraft !== undefined) setField('source_sheet_draft', oneTimeLongText(body.source_sheet_draft || body.sourceSheetDraft || '', 60000) || null);
     if (body.package_status !== undefined || body.packageStatus !== undefined) setField('package_status', normalizeOneTimePackageStatus(body.package_status || body.packageStatus));
     if (body.media_url !== undefined || body.mediaUrl !== undefined || body.source_media_url !== undefined || body.media_provider !== undefined || body.mediaProvider !== undefined || body.vimeo_id !== undefined || body.vimeoId !== undefined) {
@@ -67594,9 +69871,11 @@ app.patch('/api/bna/one-time/classes/:id', requireAdmin, async (req, res) => {
         ? oneTimeOptionalUrl(body.media_url || body.mediaUrl || body.source_media_url || '', 'media_url')
         : existing.media_url || existing.source_media_url || null;
       const mediaProvider = normalizeOneTimeMediaProvider(mediaUrl, body.media_provider || body.mediaProvider || existing.media_provider);
+      const vimeoId = limitText(body.vimeo_id || body.vimeoId || parseVimeoId(mediaUrl), 80) || null;
+      if (mediaProvider === 'vimeo' && mediaUrl && !vimeoId) return res.status(400).json({ error: 'A valid Vimeo URL or Vimeo ID is required for Vimeo media.' });
       setField('media_url', mediaUrl);
       setField('media_provider', mediaProvider);
-      setField('vimeo_id', limitText(body.vimeo_id || body.vimeoId || parseVimeoId(mediaUrl), 80) || null);
+      setField('vimeo_id', vimeoId);
     }
     setField('updated_by', oneTimeActor(req, body));
     fields.push('updated_at = NOW()');
@@ -67709,15 +69988,29 @@ app.post('/api/bna/one-time/classes/:id/package-preview', requireAdmin, async (r
     const assets = await getOneTimeAssetsForClass(session.id);
     const libraryItems = await getOneTimeLibraryItemsForClass(session.id);
     const packageView = buildOneTimeClassPackage(session, assets, libraryItems);
+    const recordingPipeline = videoHostingIntegration.buildRecordingPipelinePreview({
+      class_session: packageView.class_session,
+      vimeo_url: packageView.media_url || packageView.vimeo_id || '',
+      metadata: {
+        masechta: packageView.masechta,
+        perek: packageView.perek,
+        mishnah_range: packageView.mishnah_range,
+      },
+      transcript: packageView.transcript?.text || '',
+      summary: packageView.description || '',
+      processing_completed: Boolean(packageView.vimeo_id || packageView.media_url),
+      playback_verified: Boolean(packageView.vimeo_id || packageView.media_url),
+      retention_permits_deletion: false,
+    }, { config: videoHostingRuntimeConfig });
     const event = await logOneTimePublishEvent({
       projectId: project.id,
       classSessionId: session.id,
       action: 'preview',
       actor: oneTimeActor(req, body),
-      afterState: { package_preview: packageView },
+      afterState: { package_preview: packageView, recording_pipeline: recordingPipeline },
       notes: 'Admin package preview only; no member-library publish ran.',
     });
-    res.json({ success: true, package: packageView, event });
+    res.json({ success: true, package: packageView, recording_pipeline: recordingPipeline, event });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -68596,7 +70889,18 @@ app.get('/api/member-library', async (req, res) => {
 
 app.get('/api/one-time-classroom', async (req, res) => {
   try {
-    const classroom = await getOneTimeClassroomForAccessCode(req.query.code || req.query.access_code || '');
+    const accessCode = String(req.query.code || req.query.access_code || '').trim();
+    if (accessCode === ONE_TIME_REVIEW_ACCESS_CODE || String(req.query.review || '').toLowerCase() === 'one-time') {
+      const review = oneTimeSharedReviewDataForRequest(req);
+      return res.json({
+        success: true,
+        classroom: review.classroom,
+        internal_fields_hidden: true,
+        test_only: true,
+        external_write_performed: false,
+      });
+    }
+    const classroom = await getOneTimeClassroomForAccessCode(accessCode);
     res.json({
       success: true,
       classroom,
@@ -68914,7 +71218,10 @@ function rabbiLibraryItemView(row = {}) {
 
 function rabbiLiveSessionView(row = {}, scopes = null) {
   const activeScopes = Array.isArray(scopes) ? scopes : null;
-  const canSeeZoom = activeScopes ? activeScopes.includes(row.required_scope || 'live') : true;
+  const memberScoped = Array.isArray(scopes);
+  const requiredScope = row.required_scope || 'live';
+  const canSeeClassLink = activeScopes ? activeScopes.includes(requiredScope) : true;
+  const hasRawZoomUrl = Boolean(row.zoom_url);
   return {
     id: row.id ? Number(row.id) : null,
     project_id: row.project_id ? Number(row.project_id) : null,
@@ -68923,12 +71230,24 @@ function rabbiLiveSessionView(row = {}, scopes = null) {
     start_at: row.start_at || null,
     end_at: row.end_at || null,
     timezone: row.timezone || 'Asia/Jerusalem',
-    zoom_url: canSeeZoom ? row.zoom_url || '' : '',
-    required_scope: row.required_scope || 'live',
+    zoom_url: memberScoped ? '' : row.zoom_url || '',
+    required_scope: requiredScope,
     status: row.status || 'scheduled',
     recording_url: row.recording_status === 'published' ? row.recording_url || '' : '',
     recording_status: row.recording_status || 'none',
     notes: activeScopes ? '' : row.notes || '',
+    class_link: {
+      relationship_scope: 'member_session_and_active_live_grant',
+      available: canSeeClassLink && hasRawZoomUrl,
+      status: canSeeClassLink
+        ? (hasRawZoomUrl ? 'protected_reference_required' : 'pending_internal_class_link')
+        : 'live_access_required',
+      required_scope: requiredScope,
+      url: '',
+      raw_zoom_join_url_returned: false,
+      zoom_host_start_url_returned: false,
+      protected_reference_required: true,
+    },
     metadata: rabbiJson(row.metadata),
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
@@ -69622,6 +71941,28 @@ function oneTimeProductDecisionView(row = {}) {
   };
 }
 
+function oneTimePromotionPolicyView(row = {}) {
+  return {
+    id: row.id ? Number(row.id) : null,
+    project_id: row.project_id ? Number(row.project_id) : null,
+    program_id: row.program_id ? Number(row.program_id) : null,
+    program_key: row.program_key || ONE_TIME_PRODUCT_PROGRAM_KEY,
+    policy_key: row.policy_key || '',
+    policy_version: row.policy_version || '',
+    policy_type: row.policy_type || '',
+    status: row.status || 'draft',
+    title: row.title || '',
+    config: oneTimeProductJson(row.config),
+    public_copy_approved: row.public_copy_approved === true,
+    live_billing_enabled: row.live_billing_enabled === true,
+    invoice_credit_enabled: row.invoice_credit_enabled === true,
+    external_write_performed: row.external_write_performed === true,
+    metadata: oneTimeProductJson(row.metadata),
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
 function oneTimeProductLeadView(row = {}) {
   return {
     id: row.id ? Number(row.id) : null,
@@ -69707,6 +72048,27 @@ function oneTimeCalendarEventView(row = {}, { includePrivate = true } = {}) {
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
   };
+}
+
+function oneTimeOfferRowView(row = {}) {
+  return oneTimeProductOfferView({
+    ...row,
+    metadata: oneTimeProductJson(row.metadata),
+  });
+}
+
+function oneTimeAvailabilityRowView(row = {}) {
+  return oneTimeAvailabilityRuleView({
+    ...row,
+    metadata: oneTimeProductJson(row.metadata),
+  });
+}
+
+function oneTimeAppointmentRowView(row = {}) {
+  return oneTimeAppointmentIntentView({
+    ...row,
+    metadata: oneTimeProductJson(row.metadata),
+  });
 }
 
 function oneTimeSourcePrepJobView(row = {}) {
@@ -69834,6 +72196,216 @@ async function createOneTimeProductLead(input = {}, db = pool) {
   return oneTimeProductLeadView(row);
 }
 
+const ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY = Object.freeze({
+  generated_at: '2026-06-21T13:46:05.453Z',
+  source_directory_label: 'Downloads',
+  privacy: 'metadata_and_redacted_schema_signals_only',
+  total_files: 203,
+  import_candidates: 56,
+  classification_counts: Object.freeze({
+    one_time_rabbi_scheller_followers: 1,
+    email_audience_export: 5,
+    legacy_crm_or_pipeline_export: 29,
+    contact_list_candidate: 21,
+    external_lead_list: 48,
+    communications_export: 13,
+    import_mapping_reference: 2,
+    accounting_export: 2,
+    research_or_campaign_working_file: 4,
+    unknown_spreadsheet: 78,
+  }),
+  duplicate_hash_group_count: 29,
+});
+
+const ONE_TIME_CRM_IMPORT_CANDIDATE_SOURCES = Object.freeze([
+  Object.freeze({
+    source_inventory_id: 'DL-SHEET-f93f34d98e',
+    label: 'Rabbi Ellie Scheller followers export',
+    file_label: 'Rabbi Scheller Followers.xlsx',
+    classification: 'one_time_rabbi_scheller_followers',
+    recommended_lane: 'one_time_crm_import_candidate',
+    row_count_estimate: 812,
+    column_count: 2,
+    source_hash_prefix: 'e17bbb32c8b2',
+    priority: 'highest',
+    approval_blocker: 'Operator must approve this as the canonical One Time source and approve the field mapping before production import.',
+  }),
+  Object.freeze({
+    source_inventory_id: 'classification:email_audience_export',
+    label: 'Email audience exports',
+    classification: 'email_audience_export',
+    recommended_lane: 'email_audience_reconciliation',
+    file_count: 5,
+    source_hash_prefix: null,
+    priority: 'review',
+    approval_blocker: 'Operator must choose subscribed, unsubscribed, and suppression semantics before any audience import.',
+  }),
+  Object.freeze({
+    source_inventory_id: 'classification:legacy_crm_or_pipeline_export',
+    label: 'Legacy CRM or pipeline exports',
+    classification: 'legacy_crm_or_pipeline_export',
+    recommended_lane: 'metadata_reference_only',
+    file_count: 29,
+    source_hash_prefix: null,
+    priority: 'quarantine',
+    approval_blocker: 'Treat as historical reference only until ownership, consent, and workspace scope are confirmed.',
+  }),
+  Object.freeze({
+    source_inventory_id: 'classification:contact_list_candidate',
+    label: 'Contact-list candidates',
+    classification: 'contact_list_candidate',
+    recommended_lane: 'manual_review_before_import',
+    file_count: 21,
+    source_hash_prefix: null,
+    priority: 'review',
+    approval_blocker: 'Manual review is required before these can become One Time warm leads.',
+  }),
+]);
+
+function oneTimeCrmImportCandidateSourceViews() {
+  return ONE_TIME_CRM_IMPORT_CANDIDATE_SOURCES.map((source) => ({
+    ...source,
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: ONE_TIME_PROJECT_KEY,
+    import_enabled: false,
+    dry_run_supported: true,
+    no_send_until_approved: true,
+    external_write_performed: false,
+    raw_rows_returned: false,
+  }));
+}
+
+function oneTimeCrmImportDedupePolicy() {
+  return {
+    stable_key_parts: [
+      'workspace_key',
+      'project_key',
+      'source_inventory_id',
+      'source_statement_or_row_fingerprint',
+      'normalized_email_or_phone',
+      'related_entity',
+      'target_route_or_file',
+    ],
+    workspace_key: 'rabbi_sheller_provider',
+    project_key: ONE_TIME_PROJECT_KEY,
+    match_order: ['normalized_email', 'normalized_phone', 'source_inventory_id', 'source_row_fingerprint'],
+    preserves_audit_history: true,
+    warm_leads_no_send_until_approval: true,
+    import_commit_requires_operator_approval: true,
+    no_external_crm_runtime: true,
+    forbidden_external_runtimes: ['ghl', 'go_high_level', 'leadconnector'],
+    raw_upload_content_returned: false,
+    approved_import_writes: ['bna_parent_leads', 'bna_contact_communications'],
+    approval_confirmation: 'APPROVE_ONE_TIME_CRM_IMPORT',
+  };
+}
+
+async function oneTimeCrmImportCurrentState(projectId, db = pool) {
+  const empty = {
+    scoped_leads: 0,
+    rabbi_email_contacts: 0,
+    subscribers_csv_source: 0,
+    no_send_leads: 0,
+    campaign_staged: 0,
+    external_write_marked: 0,
+    duplicate_email_groups: 0,
+    largest_duplicate_email_group: 0,
+  };
+  if (!projectId) return empty;
+  const countRow = (await db.query(
+    `SELECT
+       (COUNT(*) FILTER (WHERE COALESCE(status, '') <> 'archived'))::int AS scoped_leads,
+       (COUNT(*) FILTER (WHERE 'one-time-list:rabbi-email-contacts' = ANY(COALESCE(tags, ARRAY[]::text[]))))::int AS rabbi_email_contacts,
+       (COUNT(*) FILTER (WHERE 'one-time-source:subscribers-csv' = ANY(COALESCE(tags, ARRAY[]::text[]))))::int AS subscribers_csv_source,
+       (COUNT(*) FILTER (
+          WHERE COALESCE(metadata->>'no_send', 'false') = 'true'
+             OR 'one-time-no-send-until-approved' = ANY(COALESCE(tags, ARRAY[]::text[]))
+       ))::int AS no_send_leads,
+       (COUNT(*) FILTER (
+          WHERE COALESCE(metadata->>'campaign_send_status', '') = 'not_sent'
+             OR 'one-time-campaign-staging' = ANY(COALESCE(tags, ARRAY[]::text[]))
+       ))::int AS campaign_staged,
+       (COUNT(*) FILTER (WHERE COALESCE(metadata->>'external_write_performed', 'false') = 'true'))::int AS external_write_marked
+     FROM bna_parent_leads
+     WHERE project_id = $1`,
+    [projectId]
+  ).catch(() => ({ rows: [empty] }))).rows[0] || empty;
+  const duplicateRow = (await db.query(
+    `WITH grouped AS (
+       SELECT lower(trim(parent_email)) AS normalized_email, COUNT(*)::int AS row_count
+       FROM bna_parent_leads
+       WHERE project_id = $1
+         AND COALESCE(status, '') <> 'archived'
+         AND lower(trim(COALESCE(parent_email, ''))) <> ''
+       GROUP BY lower(trim(parent_email))
+       HAVING COUNT(*) > 1
+     )
+     SELECT
+       COUNT(*)::int AS duplicate_email_groups,
+       COALESCE(MAX(row_count), 0)::int AS largest_duplicate_email_group
+     FROM grouped`,
+    [projectId]
+  ).catch(() => ({ rows: [{ duplicate_email_groups: 0, largest_duplicate_email_group: 0 }] }))).rows[0] || {};
+  return {
+    ...empty,
+    ...countRow,
+    duplicate_email_groups: Number(duplicateRow.duplicate_email_groups || 0),
+    largest_duplicate_email_group: Number(duplicateRow.largest_duplicate_email_group || 0),
+    scoped_to_project_id: true,
+    raw_contact_values_returned: false,
+  };
+}
+
+async function oneTimeCrmImportPreviewReadiness(projectId, db = pool) {
+  const currentState = await oneTimeCrmImportCurrentState(projectId, db);
+  return {
+    success: true,
+    project_key: ONE_TIME_PROJECT_KEY,
+    workspace_key: 'rabbi_sheller_provider',
+    dry_run: true,
+    no_send: true,
+    external_write_performed: false,
+    external_crm_write_performed: false,
+    local_write_performed: false,
+    import_ready: false,
+    commit_blocked: true,
+    blocker_owner: 'operator',
+    blocker: 'Operator must select the canonical source file, approve the field mapping/dedupe plan, and confirm APPROVE_ONE_TIME_CRM_IMPORT before a first-party import apply run.',
+    inventory_summary: ONE_TIME_CRM_IMPORT_INVENTORY_SUMMARY,
+    candidate_sources: oneTimeCrmImportCandidateSourceViews(),
+    current_crm_state: currentState,
+    dedupe_policy: oneTimeCrmImportDedupePolicy(),
+    preview_actions: [
+      {
+        action_key: 'one_time_crm_preview_mapping',
+        label: 'Preview Mapping',
+        enabled: true,
+        confirmation_required: false,
+        endpoint: '/api/bna/contact-imports/preview',
+        method: 'POST',
+      },
+      {
+        action_key: 'one_time_crm_apply_import',
+        label: 'Apply Import',
+        enabled: false,
+        confirmation_required: true,
+        disabled_reason: 'Needs operator source, mapping, and dedupe approval. This goal does not import private spreadsheet rows without that approval.',
+      },
+    ],
+    guardrails: {
+      workspace_project_scoped: true,
+      no_raw_rows_returned: true,
+      no_campaign_send: true,
+      no_email_send: true,
+      no_whatsapp_send: true,
+      no_payment_or_invoice: true,
+      no_external_crm_runtime: true,
+      ghl_leadconnector_inactive: true,
+      audit_history_preserved: true,
+    },
+  };
+}
+
 async function oneTimeProductSystemPayload(req) {
   const project = await assertRabbiAdminAccess(req);
   const programRow = await getOneTimeProductProgram(project.id);
@@ -69849,8 +72421,19 @@ async function oneTimeProductSystemPayload(req) {
     leads,
     schedules,
     calendar,
+    offers,
+    availabilityRules,
+    appointmentIntents,
     sourcePrepJobs,
     providers,
+    libraryItems,
+    crmImportPreview,
+    promotionPolicies,
+    acceptanceRows,
+    referralRows,
+    checkoutRows,
+    accessGrantRows,
+    liveSessionRows,
   ] = await Promise.all([
     rabbiTiers(project.id),
     pool.query(
@@ -69880,6 +72463,25 @@ async function oneTimeProductSystemPayload(req) {
     ),
     oneTimeCalendarRows({ projectId: project.id, view: 'week', audience: 'admin' }),
     pool.query(
+      `SELECT * FROM bna_one_time_product_offers
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY offer_key ASC`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ),
+    pool.query(
+      `SELECT * FROM bna_one_time_availability_rules
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY rule_type ASC, start_time_local ASC NULLS LAST, id ASC`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ),
+    pool.query(
+      `SELECT * FROM bna_one_time_appointment_intents
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY created_at DESC, id DESC
+       LIMIT 100`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ),
+    pool.query(
       `SELECT * FROM bna_source_prep_jobs
        WHERE project_id = $1 AND program_key = $2
        ORDER BY created_at DESC, id DESC
@@ -69887,9 +72489,90 @@ async function oneTimeProductSystemPayload(req) {
       [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
     ),
     getRabbiProviderSettings(project.id),
+    pool.query(
+      `SELECT id, title, visibility, created_at
+       FROM bna_library_items
+       WHERE project_id = $1
+       ORDER BY created_at DESC, id DESC
+       LIMIT 100`,
+      [project.id]
+    ),
+    oneTimeCrmImportPreviewReadiness(project.id),
+    pool.query(
+      `SELECT *
+       FROM bna_one_time_promotion_policies
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY policy_type ASC, policy_key ASC, policy_version DESC`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_one_time_policy_acceptances
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY accepted_at DESC NULLS LAST, created_at DESC NULLS LAST, id DESC
+       LIMIT 25`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_one_time_referrals
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY created_at DESC NULLS LAST, id DESC
+       LIMIT 50`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_checkout_records
+       WHERE project_id = $1
+       ORDER BY created_at DESC NULLS LAST, id DESC
+       LIMIT 100`,
+      [project.id]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_access_grants
+       WHERE project_id = $1
+       ORDER BY created_at DESC NULLS LAST, id DESC
+       LIMIT 100`,
+      [project.id]
+    ).catch(() => ({ rows: [] })),
+    pool.query(
+      `SELECT *
+       FROM bna_live_sessions
+       WHERE project_id = $1
+       ORDER BY start_at ASC NULLS LAST, created_at DESC NULLS LAST, id DESC
+       LIMIT 100`,
+      [project.id]
+    ).catch(() => ({ rows: [] })),
   ]);
   const planningTiers = Object.values(ONE_TIME_PRODUCT_TIER_KEYS).map(oneTimeTierPlanningView);
   const scheduleViews = schedules.rows.map(oneTimeScheduleView);
+  const productOffers = buildOneTimeProductOfferCatalog(offers.rows.map(oneTimeOfferRowView));
+  const availability = buildOneTimeAvailabilityFoundation(availabilityRules.rows.map(oneTimeAvailabilityRowView));
+  const appointmentRows = appointmentIntents.rows.map(oneTimeAppointmentRowView);
+  const decisionViews = decisions.rows.map(oneTimeProductDecisionView);
+  const promotionPolicyViews = promotionPolicies.rows.map(oneTimePromotionPolicyView);
+  const acceptanceRecords = acceptanceRows.rows.map(oneTimePolicyAcceptanceRecordView);
+  const referralRecords = referralRows.rows.map(oneTimeReferralRecordView);
+  const trialReferralConfig = {
+    ...buildOneTimeTrialReferralConfiguration({
+      offers: productOffers,
+      decisions: decisionViews,
+      acceptances: acceptanceRecords,
+      referrals: referralRecords,
+    }),
+    promotion_policies: promotionPolicyViews,
+    promotion_policy_count: promotionPolicyViews.length,
+  };
+  const paymentAccessClassLinks = buildOneTimePaymentAccessClassLinkConfiguration({
+    checkouts: checkoutRows.rows,
+    accessGrants: accessGrantRows.rows,
+    liveSessions: liveSessionRows.rows,
+  });
+  const stripeLocalBeta = stripeIntegration.buildOneTimeStripeLocalBetaPlan({
+    trial_referral_config: trialReferralConfig,
+  }, { config: stripeRuntimeConfig });
   const providerReadiness = providers.map((provider) => ({
     provider: provider.provider,
     mode: provider.mode,
@@ -69904,11 +72587,26 @@ async function oneTimeProductSystemPayload(req) {
     planning_tiers: planningTiers,
     tiers,
     funnels: funnels.rows.map(oneTimeProductFunnelView),
-    decisions: decisions.rows.map(oneTimeProductDecisionView),
+    decisions: decisionViews,
     leads: leads.rows.map(oneTimeProductLeadView),
     schedules: scheduleViews,
     calendar,
+    product_offers: productOffers,
+    trial_referral_config: trialReferralConfig,
+    trial_referral_policies: promotionPolicyViews,
+    stripe_local_beta: stripeLocalBeta,
+    payment_access_class_links: paymentAccessClassLinks,
+    availability,
+    appointment_types: defaultOneTimeAppointmentTypes(),
+    appointment_intents: appointmentRows,
+    portal_foundations: buildOneTimePortalFoundations({
+      calendar,
+      offers: productOffers,
+      appointmentIntents: appointmentRows,
+      libraryItems: libraryItems.rows,
+    }),
     source_prep_jobs: sourcePrepJobs.rows.map(oneTimeSourcePrepJobView),
+    crm_import_preview: crmImportPreview,
     provider_readiness: providerReadiness,
     product_readiness: oneTimeProductReadinessView({
       providers: providerReadiness,
@@ -69922,6 +72620,8 @@ async function oneTimeProductSystemPayload(req) {
       public_pages_noindex: true,
       no_external_write_without_approval: true,
       no_account_grants_from_interest: true,
+      appointment_intents_internal_only: true,
+      calendar_events_do_not_create_zoom_meetings: true,
     },
   };
 }
@@ -69934,12 +72634,101 @@ app.get('/api/bna/one-time/product-system', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/one-time/trial-referral-config', requireAdmin, async (req, res) => {
+  try {
+    const system = await oneTimeProductSystemPayload(req);
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      trial_referral_config: system.trial_referral_config,
+      stripe_local_beta: system.stripe_local_beta,
+      live_charges_enabled: false,
+      real_invoice_credits_enabled: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/payment-access-class-links', requireAdmin, async (req, res) => {
+  try {
+    const system = await oneTimeProductSystemPayload(req);
+    res.json({
+      success: true,
+      project_key: ONE_TIME_PROJECT_KEY,
+      workspace_key: 'rabbi_sheller_provider',
+      payment_access_class_links: system.payment_access_class_links,
+      live_charges_enabled: false,
+      automated_access_grants_enabled: false,
+      raw_zoom_join_url_returned_to_members: false,
+      zoom_host_start_url_returned: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/crm-import-preview', requireAdmin, async (req, res) => {
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    res.json(await oneTimeCrmImportPreviewReadiness(project.id));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/test-identities-preview', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const preview = buildOneTimeTestIdentityPreview({ checked_at: new Date().toISOString() });
+    res.json({
+      success: true,
+      ...preview,
+      production_records_created: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/agent-mode-acceptance', requireAdmin, async (req, res) => {
+  try {
+    await assertRabbiAdminAccess(req);
+    const acceptance = buildOneTimeAgentModeAcceptance({ checked_at: new Date().toISOString() });
+    res.json({
+      success: true,
+      ...acceptance,
+      production_mutation_performed: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.get('/api/bna/one-time/transcript-privacy', requireAdmin, async (req, res) => {
   try {
     await assertRabbiAdminAccess(req);
     const classroom = await getOneTimeClassroomData({ db: pool, memberSafe: false });
+    const classes = classroom.classes || [];
+    const storedSegments = classes.flatMap((session) => {
+      const segments = Array.isArray(session.transcript_segments) ? session.transcript_segments : [];
+      return segments.map((segment, index) => ({
+        ...segment,
+        segment_ref: segment.segment_ref || segment.segmentRef || `class_session:${session.id}:segment:${index + 1}`,
+        source_recording_ref: segment.source_recording_ref || segment.sourceRecordingRef || `class_session:${session.id}`,
+        source_transcript_ref: segment.source_transcript_ref || segment.sourceTranscriptRef || (session.content_job_id ? `content_job:${session.content_job_id}` : ''),
+        privacy_class: segment.privacy_class || segment.privacyClass || session.transcript_privacy_class,
+        review_state: segment.review_state || segment.reviewState || session.transcript_review_state,
+      }));
+    });
     const readiness = buildTranscriptPrivacyReadiness({
-      classes: classroom.classes || [],
+      classes,
+      segments: storedSegments,
       example_student_id: req.query.student_id || req.query.studentId || null,
     });
     res.json({
@@ -69948,6 +72737,9 @@ app.get('/api/bna/one-time/transcript-privacy', requireAdmin, async (req, res) =
       workspace_key: 'rabbi_sheller_provider',
       transcript_privacy: readiness,
       raw_transcript_text_returned: false,
+      transcript_body_returned: false,
+      production_mutation_performed: false,
+      external_write_performed: false,
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -69999,6 +72791,10 @@ app.get('/api/bna/one-time/study-assistant-readiness', requireAdmin, async (req,
       }),
       study_assistant_feature_flag_enabled: false,
       unrestricted_ai_chat_enabled: false,
+      arbitrary_version_ingestion_enabled: false,
+      answer_generation_enabled: false,
+      source_corpus_mutation_enabled: false,
+      portal_publish_enabled: false,
       raw_source_text_returned: false,
       external_write_performed: false,
       production_mutation_performed: false,
@@ -70057,6 +72853,81 @@ app.get('/api/bna/one-time/calendar', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/bna/one-time/calendar-events', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const program = await getOneTimeProductProgram(project.id);
+    const startRaw = body.start_at || body.startAt || '';
+    const startDate = startRaw ? new Date(startRaw) : null;
+    if (startRaw && Number.isNaN(startDate.getTime())) {
+      return res.status(400).json({ error: 'A valid start_at timestamp is required when scheduling a class event.' });
+    }
+    const durationMinutes = Math.max(15, Math.min(240, Number(body.duration_minutes || body.durationMinutes || 60) || 60));
+    const endDate = startDate ? new Date(startDate.getTime() + durationMinutes * 60000) : null;
+    const requestedStatus = String(body.event_status || body.status || 'draft').trim().toLowerCase();
+    const eventStatus = ['draft', 'planned', 'completed', 'canceled'].includes(requestedStatus) ? requestedStatus : 'draft';
+    const tierEligibility = oneTimeProductArray(body.tier_eligibility || body.tierEligibility);
+    const row = (await pool.query(
+      `INSERT INTO bna_program_calendar_events (
+         project_id, program_id, program_key, title, masechta, perek, mishnah_range,
+         start_at, end_at, timezone, class_type, tier_eligibility, visibility,
+         event_status, source_sheet_status, worksheet_status, slides_status,
+         question_deadline_at, worksheet_deadline_at, zoom_url, replay_url,
+         notes, metadata, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7,
+         $8::timestamptz, $9::timestamptz, $10, $11, $12::text[], $13,
+         $14, $15, $16, $17,
+         $18::timestamptz, $19::timestamptz, NULL, NULL,
+         $20, $21::jsonb, NOW()
+       )
+       RETURNING *`,
+      [
+        project.id,
+        program?.id || null,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        limitText(body.title || body.class_title || body.classTitle || 'OneTime Mishnayos class', 220),
+        limitText(body.masechta || '', 120) || null,
+        limitText(body.perek || '', 80) || null,
+        limitText(body.mishnah_range || body.mishnahRange || '', 120) || null,
+        startDate ? startDate.toISOString() : null,
+        endDate ? endDate.toISOString() : null,
+        limitText(body.timezone || 'Asia/Jerusalem', 100),
+        limitText(body.class_type || body.classType || 'live_class', 80),
+        tierEligibility,
+        normalizeOneTimeVisibility(body.visibility || 'admin_only'),
+        eventStatus,
+        normalizeOneTimeArtifactStatus(body.source_sheet_status || body.sourceSheetStatus || 'not_started'),
+        normalizeOneTimeArtifactStatus(body.worksheet_status || body.worksheetStatus || 'not_started'),
+        normalizeOneTimeArtifactStatus(body.slides_status || body.slidesStatus || 'not_started'),
+        body.question_deadline_at || body.questionDeadlineAt || null,
+        body.worksheet_deadline_at || body.worksheetDeadlineAt || null,
+        limitText(body.notes || '', 1000) || null,
+        JSON.stringify({
+          ...oneTimeProductJson(body.metadata),
+          source: 'operations_one_time_calendar_event',
+          duration_minutes: durationMinutes,
+          no_zoom_meeting_created: true,
+          no_access_granted: true,
+          external_calendar_write_performed: false,
+          external_write_performed: false,
+        }),
+      ]
+    )).rows[0];
+    res.json({
+      success: true,
+      calendar_event: oneTimeCalendarEventView(row),
+      no_zoom_meeting_created: true,
+      external_calendar_write_performed: false,
+      external_write_performed: false,
+      message: 'OneTime class event saved internally. No Zoom meeting or external calendar write was performed.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.get('/api/one-time/calendar', async (req, res) => {
   try {
     const project = await getRabbiProject();
@@ -70069,6 +72940,104 @@ app.get('/api/one-time/calendar', async (req, res) => {
     res.json({ success: true, ...calendar, public_only: true });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/bna/one-time/appointment-intents', requireAdmin, async (req, res) => {
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const rows = (await pool.query(
+      `SELECT *
+       FROM bna_one_time_appointment_intents
+       WHERE project_id = $1 AND program_key = $2
+       ORDER BY created_at DESC, id DESC
+       LIMIT 200`,
+      [project.id, ONE_TIME_PRODUCT_PROGRAM_KEY]
+    )).rows;
+    res.json({
+      success: true,
+      appointment_intents: rows.map(oneTimeAppointmentRowView),
+      no_zoom_meeting_created: true,
+      external_calendar_write_performed: false,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/one-time/appointment-intents', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const project = await assertRabbiAdminAccess(req);
+    const program = await getOneTimeProductProgram(project.id);
+    const startRaw = body.starts_at || body.startsAt || body.start_at || body.startAt || '';
+    const startDate = startRaw ? new Date(startRaw) : null;
+    if (startRaw && Number.isNaN(startDate.getTime())) {
+      return res.status(400).json({ error: 'A valid starts_at timestamp is required when saving an appointment intent.' });
+    }
+    const appointmentType = normalizeOneTimeAppointmentType(body.appointment_type || body.appointmentType || 'consultation');
+    const status = normalizeOneTimeAppointmentStatus(body.status || 'intent');
+    const durationMinutes = Math.max(15, Math.min(180, Number(body.duration_minutes || body.durationMinutes || 30) || 30));
+    const bufferMinutes = Math.max(0, Math.min(120, Number(body.buffer_minutes || body.bufferMinutes || 10) || 10));
+    const row = (await pool.query(
+      `INSERT INTO bna_one_time_appointment_intents (
+         project_id, program_id, program_key, appointment_type, status,
+         parent_name, parent_email, student_name, starts_at,
+         duration_minutes, buffer_minutes, booking_window_days, cancellation_cutoff_hours,
+         entitlement_required, payment_required, parent_confirmation_required,
+         reminders_enabled, zoom_meeting_created, external_calendar_write_performed,
+         private_notes, parent_visible_summary, metadata, created_by, updated_at
+       ) VALUES (
+         $1, $2, $3, $4, $5,
+         $6, $7, $8, $9::timestamptz,
+         $10, $11, $12, $13,
+         $14, $15, $16,
+         FALSE, FALSE, FALSE,
+         $17, $18, $19::jsonb, $20, NOW()
+       )
+       RETURNING *`,
+      [
+        project.id,
+        program?.id || null,
+        ONE_TIME_PRODUCT_PROGRAM_KEY,
+        appointmentType,
+        status,
+        limitText(body.parent_name || body.parentName || '', 180) || null,
+        normalizeEmail(body.parent_email || body.parentEmail || '') || null,
+        limitText(body.student_name || body.studentName || '', 180) || null,
+        startDate ? startDate.toISOString() : null,
+        durationMinutes,
+        bufferMinutes,
+        Math.max(1, Math.min(365, Number(body.booking_window_days || body.bookingWindowDays || 30) || 30)),
+        Math.max(0, Math.min(720, Number(body.cancellation_cutoff_hours || body.cancellationCutoffHours || 24) || 24)),
+        body.entitlement_required === true || body.entitlementRequired === true,
+        body.payment_required === true || body.paymentRequired === true,
+        body.parent_confirmation_required !== false && body.parentConfirmationRequired !== false,
+        limitText(body.private_notes || body.privateNotes || '', 2000) || null,
+        limitText(body.parent_visible_summary || body.parentVisibleSummary || '', 1000) || null,
+        JSON.stringify({
+          ...oneTimeProductJson(body.metadata),
+          source: 'operations_one_time_appointment_intent',
+          no_zoom_meeting_created: true,
+          no_external_calendar_write: true,
+          no_reminders_sent: true,
+          no_charge_or_invoice: true,
+          external_write_performed: false,
+        }),
+        limitText(req.opsUser || body.created_by || body.createdBy || 'dashboard', 120),
+      ]
+    )).rows[0];
+    res.json({
+      success: true,
+      appointment_intent: oneTimeAppointmentRowView(row),
+      no_zoom_meeting_created: true,
+      external_calendar_write_performed: false,
+      external_write_performed: false,
+      message: 'OneTime appointment intent saved internally. No Zoom meeting, reminder, charge, or external calendar write was performed.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -71254,6 +74223,257 @@ app.get('/api/rabbi/member/live-sessions', async (req, res) => {
       member: publicMemberView(auth.member, auth.grants),
       access_pending: !scopes.includes('live'),
       live_sessions: rows.map((row) => rabbiLiveSessionView(row, scopes)),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/rabbi/member/support-tickets', async (req, res) => {
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_support_tickets
+       WHERE project_id = $1
+         AND source_context->>'member_id' = $2
+         AND source_context->>'relationship_scope' = 'one_time_member_project_ticket'
+       ORDER BY COALESCE(updated_at, created_at) DESC, id DESC
+       LIMIT 80`,
+      [auth.project.id, String(auth.member.id)]
+    );
+    const ids = result.rows.map((ticket) => ticket.id).filter(Boolean);
+    const comments = ids.length ? (await pool.query(
+      `SELECT *
+       FROM bna_support_ticket_comments
+       WHERE ticket_id = ANY($1::int[])
+         AND visibility = 'project'
+       ORDER BY created_at ASC, id ASC`,
+      [ids]
+    )).rows : [];
+    const commentsByTicket = new Map();
+    comments.forEach((comment) => {
+      const key = Number(comment.ticket_id);
+      if (!commentsByTicket.has(key)) commentsByTicket.set(key, []);
+      commentsByTicket.get(key).push(comment);
+    });
+    res.json({
+      success: true,
+      member: publicMemberView(auth.member, auth.grants),
+      relationship_scope: 'one_time_member_project_ticket',
+      support_bot_mode: 'ticket_only',
+      unrestricted_mishnah_study_bot: false,
+      tickets: result.rows.map((row) => memberSupportTicketView(row, commentsByTicket.get(Number(row.id)) || [])),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/rabbi/member/support-tickets', async (req, res) => {
+  const body = req.body || {};
+  const title = limitText(String(body.title || '').trim(), 180);
+  const description = limitText(String(body.description || body.body || '').trim(), 1500);
+  if (!title && !description) {
+    return res.status(400).json({ success: false, error: 'title or description is required' });
+  }
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const sourceContext = memberSupportSourceContext(req, auth, body, {
+      relationship_scope: 'one_time_member_project_ticket',
+      page_path: limitText(redactValue(body.page_path || body.pagePath || '/rabbi-member'), 700),
+    });
+    const result = await pool.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, title, description, severity, status, category,
+         reporter_name, reporter_role, assigned_to, source,
+         workspace_key, project_key, requester_user_key, requester_email,
+         requester_display_name, requester_role, page_path, authenticated_context,
+         notification_state, staff_reply_state, source_context, created_by
+       )
+       VALUES (
+         $1, $2, $3, $4, 'open', $5, $6, 'one_time_member', 'Shloimie', 'api',
+         'rabbi_sheller_provider', $7, $8, $9,
+         $10, 'one_time_member', $11, $12::jsonb,
+         'staff_review_pending', 'internal_only', $13::jsonb, 'member_portal'
+       )
+       RETURNING *`,
+      [
+        auth.project.id,
+        title || description.slice(0, 160),
+        description || null,
+        safeSupportTicketSeverity(body.severity || 'normal'),
+        safeSupportTicketCategory(body.category || 'other'),
+        limitText(auth.member.display_name || auth.member.name || auth.member.email || 'One Time member', 160),
+        auth.project.project_key,
+        String(auth.member.id),
+        normalizeEmail(auth.member.email || '') || null,
+        limitText(auth.member.display_name || auth.member.name || auth.member.email || 'One Time member', 160),
+        sourceContext.page_path || null,
+        JSON.stringify({
+          authenticated: true,
+          auth_source: 'rabbi_member_session_token',
+          workspace_key: 'rabbi_sheller_provider',
+          project_key: auth.project.project_key,
+          member_id: auth.member.id,
+          member_email_present: Boolean(normalizeEmail(auth.member.email || '')),
+          page_path: sourceContext.page_path || null,
+          raw_access_code_stored: false,
+          no_send: true,
+          external_write_performed: false,
+        }),
+        JSON.stringify(sourceContext),
+      ]
+    );
+    let ticket = supportTicketView(result.rows[0]);
+    if (ticket.id && !result.rows[0].ticket_number) {
+      ticket = supportTicketView((await pool.query(
+        `UPDATE bna_support_tickets
+         SET ticket_number = 'OT-SUP-' || LPAD(id::text, 6, '0'),
+             updated_at = NOW()
+         WHERE id = $1
+           AND ticket_number IS NULL
+         RETURNING *`,
+        [ticket.id]
+      )).rows[0] || ticket);
+    }
+    await createInAppNotification({
+      eventType: 'member_support_ticket_created',
+      projectId: auth.project.id,
+      workspaceKey: workspaceKeyForProject(auth.project.project_key),
+      recipientLabel: 'Shloimie',
+      recipientRole: 'operator',
+      title: `${ticket.ticket_number}: ${ticket.title}`,
+      body: limitText(ticket.description || 'Review the member support ticket.', 900),
+      priority: ticket.severity === 'blocking' ? 'urgent' : ticket.severity === 'high' ? 'high' : 'normal',
+      relatedType: 'support_ticket',
+      relatedId: ticket.id,
+      sourceTable: 'bna_support_tickets',
+      sourceId: ticket.id,
+      sourceContext: {
+        source: 'one_time_member_support_ticket',
+        member_id: auth.member.id,
+        relationship_scope: 'one_time_member_project_ticket',
+        support_bot_mode: 'ticket_only',
+        unrestricted_mishnah_study_bot: false,
+        no_send: true,
+        external_write_performed: false,
+      },
+      createdBy: 'member_portal',
+    }).catch((error) => console.error('Member support ticket notification error:', error));
+    res.json({
+      success: true,
+      ticket: memberSupportTicketView(ticket, []),
+      support_bot_mode: 'ticket_only',
+      unrestricted_mishnah_study_bot: false,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/rabbi/member/support-tickets/:id', async (req, res) => {
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const ticket = (await pool.query(
+      `SELECT *
+       FROM bna_support_tickets
+       WHERE id = $1
+         AND project_id = $2
+         AND source_context->>'member_id' = $3
+         AND source_context->>'relationship_scope' = 'one_time_member_project_ticket'
+       LIMIT 1`,
+      [req.params.id, auth.project.id, String(auth.member.id)]
+    )).rows[0];
+    if (!ticket) return res.status(404).json({ success: false, error: 'Support ticket not found' });
+    const comments = (await pool.query(
+      `SELECT *
+       FROM bna_support_ticket_comments
+       WHERE ticket_id = $1
+         AND visibility = 'project'
+       ORDER BY created_at ASC, id ASC`,
+      [ticket.id]
+    )).rows;
+    res.json({
+      success: true,
+      ticket: memberSupportTicketView(ticket, comments),
+      support_bot_mode: 'ticket_only',
+      unrestricted_mishnah_study_bot: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/rabbi/member/questions', async (req, res) => {
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_one_time_question_reviews
+       WHERE project_id = $1
+         AND member_id = $2
+       ORDER BY COALESCE(updated_at, created_at) DESC, id DESC
+       LIMIT 80`,
+      [auth.project.id, String(auth.member.id)]
+    );
+    res.json({
+      success: true,
+      member: publicMemberView(auth.member, auth.grants),
+      relationship_scope: 'one_time_member_private_question',
+      no_public_forum: true,
+      no_member_feed: true,
+      no_send: true,
+      external_write_performed: false,
+      questions: result.rows.map(memberQuestionSubmissionView),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/rabbi/member/questions', async (req, res) => {
+  const body = req.body || {};
+  const questionText = limitText(String(body.question_text || body.question || body.body || '').trim(), 2500);
+  if (!questionText) return res.status(400).json({ success: false, error: 'question_text is required' });
+  try {
+    const auth = await rabbiMemberFromSessionToken(bearerOrBodyToken(req));
+    const topic = limitText(String(body.topic || 'Private member question').trim(), 160);
+    const sourceContext = memberSupportSourceContext(req, auth, body, {
+      relationship_scope: 'one_time_member_private_question',
+      no_public_forum: true,
+      no_member_feed: true,
+      page_path: limitText(redactValue(body.page_path || body.pagePath || '/rabbi-member'), 700),
+    });
+    const result = await pool.query(
+      `INSERT INTO bna_one_time_question_reviews (
+         project_id, member_id, submitter_label, question_text, topic,
+         privacy_notes, review_status, assigned_to, waiting_on,
+         next_action_label, source_context, public_visible, member_visible,
+         forum_post_created, no_send, external_write_performed, created_by
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, 'needs_review', 'Rabbi Elie Scheller', 'rabbi_review',
+               'Review private member question', $7::jsonb, FALSE, FALSE, FALSE, TRUE, FALSE, 'member_portal')
+       RETURNING *`,
+      [
+        auth.project.id,
+        String(auth.member.id),
+        limitText(auth.member.display_name || auth.member.name || auth.member.email || 'Private member', 160),
+        questionText,
+        topic || 'Private member question',
+        'Member-submitted private One Time question. Staff notes stay hidden unless an approved member-visible reply is added.',
+        JSON.stringify(sourceContext),
+      ]
+    );
+    res.json({
+      success: true,
+      question: memberQuestionSubmissionView(result.rows[0]),
+      no_public_forum: true,
+      no_member_feed: true,
+      no_send: true,
+      external_write_performed: false,
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ success: false, error: err.message });
@@ -73408,11 +76628,102 @@ function safeSupportTicketSource(value) {
 }
 
 function supportTicketView(row = {}) {
+  const id = row.id ? Number(row.id) : null;
   return {
     ...row,
+    ticket_number: id ? (row.ticket_number || `OT-SUP-${String(id).padStart(6, '0')}`) : '',
     source_context: row.source_context && typeof row.source_context === 'object'
       ? row.source_context
       : parseJsonMaybe(row.source_context) || {},
+  };
+}
+
+function memberSupportTicketView(row = {}, comments = []) {
+  const ticket = supportTicketView(row);
+  const visibleComments = (Array.isArray(comments) ? comments : [])
+    .filter((comment) => String(comment.visibility || 'project') === 'project')
+    .map((comment) => ({
+      id: comment.id ? Number(comment.id) : null,
+      author: limitText(comment.author || 'Staff', 120),
+      body: limitText(comment.body || '', 1200),
+      created_at: comment.created_at || null,
+    }));
+  return {
+    id: ticket.id ? Number(ticket.id) : null,
+    ticket_number: ticket.ticket_number,
+    title: limitText(ticket.title || 'Support ticket', 180),
+    description: limitText(ticket.description || '', 900),
+    status: safeSupportTicketStatus(ticket.status),
+    severity: safeSupportTicketSeverity(ticket.severity),
+    category: safeSupportTicketCategory(ticket.category),
+    relationship_scope: 'one_time_member_project_ticket',
+    member_scoped: true,
+    other_user_data_returned: false,
+    staff_internal_notes_returned: false,
+    source_context_returned: false,
+    no_send: true,
+    external_write_performed: false,
+    private_notification: {
+      status: SUPPORT_TICKET_PROCESSED_STATUSES.has(safeSupportTicketStatus(ticket.status))
+        ? 'processed_notification_draft_available_to_staff'
+        : 'staff_review_pending',
+      no_send: true,
+      external_write_performed: false,
+    },
+    staff_replies: visibleComments,
+    created_at: ticket.created_at || null,
+    updated_at: ticket.updated_at || null,
+  };
+}
+
+function memberQuestionSubmissionView(row = {}) {
+  const id = row.id ? Number(row.id) : null;
+  const staffReplyVisible = row.member_visible === true && String(row.review_notes || '').trim();
+  return {
+    id,
+    question_number: id ? `OT-Q-${String(id).padStart(6, '0')}` : '',
+    title: limitText(row.title || row.topic || 'Private question', 180),
+    topic: limitText(row.topic || '', 160),
+    question_preview: limitText(row.question_text || '', 520),
+    review_status: row.review_status || 'needs_review',
+    relationship_scope: 'one_time_member_private_question',
+    member_scoped: true,
+    no_public_forum: true,
+    no_member_feed: true,
+    no_send: row.no_send !== false,
+    external_write_performed: row.external_write_performed === true,
+    public_visible: false,
+    forum_post_created: false,
+    other_user_data_returned: false,
+    internal_notes_returned: false,
+    source_context_returned: false,
+    staff_reply_available: Boolean(staffReplyVisible),
+    staff_reply: staffReplyVisible ? limitText(row.review_notes, 1200) : '',
+    created_at: row.created_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+function memberSupportSourceContext(req, auth, body = {}, extra = {}) {
+  const pagePath = limitText(redactValue(body.page_path || body.pagePath || body.current_route || body.currentRoute || ''), 700);
+  const pageUrl = limitText(redactValue(body.page_url || body.pageUrl || ''), 900);
+  return {
+    authenticated_user: true,
+    actor_type: 'one_time_member',
+    member_id: auth.member.id,
+    member_email: normalizeEmail(auth.member.email || ''),
+    member_name: limitText(auth.member.display_name || auth.member.name || '', 160),
+    project_key: auth.project.project_key,
+    workspace_key: 'rabbi_sheller_provider',
+    relationship_scope: extra.relationship_scope || 'one_time_member_project',
+    page_path: pagePath || null,
+    page_url: pageUrl || null,
+    support_bot_mode: 'ticket_only',
+    unrestricted_mishnah_study_bot: false,
+    raw_access_code_stored: false,
+    no_send: true,
+    external_write_performed: false,
+    ...(extra && typeof extra === 'object' ? extra : {}),
   };
 }
 
@@ -73466,6 +76777,7 @@ function supportTicketProcessedNotificationRecipient(ticket = {}) {
   return normalizeEmail(
     context.actor_email ||
     context.parent_email ||
+    context.member_email ||
     context.email ||
     context.reporter_email ||
     context.requester_email ||
@@ -74395,19 +77707,18 @@ app.get('/api/bna/one-time/roadmap', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/pending-briefs', requireAdmin, (req, res) => {
   try {
+    const briefs = listPendingBriefs(req);
+    const lifecycle_counts = briefs.reduce((counts, brief) => {
+      const key = brief.lifecycle_stage || 'planned';
+      counts[key] = (counts[key] || 0) + 1;
+      return counts;
+    }, { planned: 0, implementing: 0, verified: 0, deployed: 0 });
+
     res.json({
       success: true,
-      briefs: [],
-      lifecycle_counts: { planned: 0, implementing: 0, verified: 0, deployed: 0 },
-      archived: true,
-      source_dir: 'internal_handoffs_redacted',
-      canonical_status_source: '/api/bna/ops/queue-health',
-      message: 'tasks-pending/*.md files are internal Codex handoffs and are not exposed as operator task lanes.',
-      guardrails: [
-        'no_tasks_pending_file_enumeration',
-        'no_pending_briefs_operator_lane',
-        'use_queue_health_for_agent_lifecycle',
-      ],
+      briefs,
+      lifecycle_counts,
+      source_dir: 'tasks-pending',
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -74932,21 +78243,13 @@ app.get('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
        LIMIT 80`,
       [req.params.id]
     )).rows;
-    const linkedTaskParams = [req.params.id];
-    const linkedTaskWhere = ['child.parent_task_id = $1'];
-    const linkedTaskScopedProjectKey = opsScopeProjectKey(req);
-    if (linkedTaskScopedProjectKey) {
-      linkedTaskParams.push(linkedTaskScopedProjectKey);
-      linkedTaskWhere.push(`p.project_key = $${linkedTaskParams.length}`);
-    }
     const linkedTasks = (await pool.query(
-      `SELECT child.id, child.title, child.display_title, child.stage, child.task_kind, child.assigned_to, child.agent_status, child.decision_required, child.created_at, child.updated_at
-       FROM bna_tasks child
-       LEFT JOIN bna_projects p ON p.id = child.project_id
-       WHERE ${linkedTaskWhere.join(' AND ')}
-       ORDER BY child.updated_at DESC, child.created_at DESC
+      `SELECT id, title, display_title, stage, task_kind, assigned_to, agent_status, decision_required, created_at, updated_at
+       FROM bna_tasks
+       WHERE parent_task_id = $1
+       ORDER BY updated_at DESC, created_at DESC
        LIMIT 40`,
-      linkedTaskParams
+      [req.params.id]
     )).rows;
     const activeDecisionQueue = (await pool.query(
       `SELECT *
@@ -76293,6 +79596,8 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createLiveClassInfrastructureSQL);
     await pool.query(createRabbiCheckoutAccessSQL);
     await pool.query(createOneTimeProductSystemSQL);
+    await pool.query(createOneTimeTrialReferralConfigSQL);
+    await pool.query(createServiceProviderStudioSQL);
     await pool.query(createServiceProvidersSQL);
     await pool.query(createProviderIndexMvpSQL);
     await pool.query(createCommunicationsIntegrationsSQL);
@@ -76456,7 +79761,7 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], (req, res) => {
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 });
@@ -76466,7 +79771,7 @@ app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'rabbi.html'));
 });
 
-app.get(['/rabbi-member', '/rabbi/member', '/one-time/member-login'], (req, res) => {
+app.get(['/rabbi-member', '/rabbi/member'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'rabbi-member.html'));
 });
@@ -76633,6 +79938,8 @@ async function sendTelegramMessage(chatId, text) {
 // Start server
 app.listen(PORT, HOST, () => {
   console.log(`BNA Server running on ${HOST}:${PORT}`);
-  startPaymentReminderScheduler();
+  if (!(ONE_TIME_REVIEW_ONLY_NO_DB && !DATABASE_URL)) {
+    startPaymentReminderScheduler();
+  }
 });
 // Deploy timestamp: 2026-05-26T17:02:05Z
