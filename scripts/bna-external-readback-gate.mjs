@@ -353,6 +353,14 @@ export function buildExternalReadbackGateReport(options = {}, context = {}) {
 }
 
 export function summarizeExternalReadbackGateReport(report = {}) {
+  const summarizeAuthPaths = (authPaths = []) => (Array.isArray(authPaths) ? authPaths : [])
+    .map((authPath) => ({
+      path: String(authPath.path || ''),
+      ready: Boolean(authPath.ready),
+      configured_count: Number(authPath.configured_count || 0),
+      required_count: Number(authPath.required_count || 0),
+    }))
+    .filter((authPath) => authPath.path);
   const alreadySummarized = Array.isArray(report.scopes) &&
     report.scopes.some((scope) => scope && typeof scope === 'object' && Object.hasOwn(scope, 'ready'));
   const scopes = alreadySummarized
@@ -363,10 +371,12 @@ export function summarizeExternalReadbackGateReport(report = {}) {
         secrets_required: Number(scope.secrets_required || 0),
         config_configured: Number(scope.config_configured || 0),
         config_required: Number(scope.config_required || 0),
+        ...(Array.isArray(scope.auth_paths) ? { auth_paths: summarizeAuthPaths(scope.auth_paths) } : {}),
       }))
     : Object.entries(report.readiness || {}).map(([scope, state]) => {
         const secrets = Array.isArray(state.secrets) ? state.secrets : [];
         const config = Array.isArray(state.config) ? state.config : [];
+        const authPaths = summarizeAuthPaths(state.auth_paths);
         return {
           scope,
           ready: Boolean(state.ready),
@@ -374,6 +384,7 @@ export function summarizeExternalReadbackGateReport(report = {}) {
           secrets_required: secrets.length,
           config_configured: config.filter((item) => item.configured).length,
           config_required: config.length,
+          ...(authPaths.length ? { auth_paths: authPaths } : {}),
         };
       });
   const approvalGates = report.approval_gates || {};

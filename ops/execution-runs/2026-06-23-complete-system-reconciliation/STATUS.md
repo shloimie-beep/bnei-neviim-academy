@@ -1,5 +1,48 @@
 # Status
 
+## 2026-06-23T20:14:43+03:00
+
+Status: running, with the thirty-ninth sanitized Drive auth-path summary slice
+complete.
+
+Hardened the redacted external readback/backfill summary so Drive readiness now
+retains sanitized auth-path detail. Return-packet and closeout surfaces can
+show whether `application_credentials`, `service_account_pair`, or
+`oauth_refresh_token` paths are ready and how many fields are configured,
+without exposing Google secret/config variable names or values. No external
+read, Railway read, Drive read, database connection, production mutation,
+deploy, live verification, send, upload, charge, GitHub acknowledgement, or
+backfill was performed.
+
+Verified in this slice:
+
+- `node --check scripts/bna-external-readback-gate.mjs
+  scripts/bna-production-closeout-gate.mjs scripts/system-truth.mjs` passed.
+- `node --test tests/bna-external-readback-gate.test.js
+  tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`
+  passed, 27/27.
+- Runtime `summarizeExternalReadbackGateReport` proof passed: Drive
+  `service_account_pair` summarized as 1/2 configured and not ready, while
+  Google variable names, folder config names, and dummy values were not printed.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with
+  sanitized Drive auth-path summary evidence represented.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1117/1117.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured non-placeholder DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T20:05:49+03:00
 
 Status: running, with the thirty-eighth sanitized external job-range summary

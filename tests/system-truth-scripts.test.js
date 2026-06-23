@@ -101,7 +101,11 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'database'));
   assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'railway'));
   assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'drive'));
-  assert.doesNotMatch(JSON.stringify(report.external_gates), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
+  const driveGate = report.external_gates.scopes.find((scope) => scope.scope === 'drive');
+  assert.ok(driveGate.auth_paths.some((authPath) => authPath.path === 'application_credentials'));
+  assert.ok(driveGate.auth_paths.some((authPath) => authPath.path === 'service_account_pair'));
+  assert.ok(driveGate.auth_paths.some((authPath) => authPath.path === 'oauth_refresh_token'));
+  assert.doesNotMatch(JSON.stringify(report.external_gates), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_(?:APPLICATION_CREDENTIALS|CLIENT_EMAIL|PRIVATE_KEY|CLIENT_ID|CLIENT_SECRET|REFRESH_TOKEN)|BNA_DRIVE_ROOT_FOLDER_ID|secret-value|postgres:\/\//);
   assert.equal(report.integration_readiness.variable_state_only, true);
   assert.equal(report.integration_readiness.secret_values_printed, false);
   assert.equal(report.integration_readiness.external_read_performed, false);

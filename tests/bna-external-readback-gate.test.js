@@ -352,3 +352,37 @@ test('external readback summary preserves only sanitized backfill job range stat
   });
   assert.doesNotMatch(JSON.stringify(invalidSummary), /secret-value-for|DATABASE_URL|postgres:\/\//);
 });
+
+test('external readback summary preserves sanitized Drive auth path readiness', async () => {
+  const mod = await loadGate();
+  const report = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['drive']),
+  }, {
+    repoRoot,
+    env: {
+      BNA_DRIVE_ROOT_FOLDER_ID: 'drive-folder-secretish',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['GOOGLE_CLIENT_EMAIL'])),
+  });
+
+  const summary = mod.summarizeExternalReadbackGateReport(report);
+  const drive = summary.scopes.find((scope) => scope.scope === 'drive');
+  const serviceAccount = drive.auth_paths.find((authPath) => authPath.path === 'service_account_pair');
+  const oauth = drive.auth_paths.find((authPath) => authPath.path === 'oauth_refresh_token');
+
+  assert.equal(summary.ok, false);
+  assert.equal(drive.ready, false);
+  assert.deepEqual(serviceAccount, {
+    path: 'service_account_pair',
+    ready: false,
+    configured_count: 1,
+    required_count: 2,
+  });
+  assert.deepEqual(oauth, {
+    path: 'oauth_refresh_token',
+    ready: false,
+    configured_count: 0,
+    required_count: 3,
+  });
+  assert.doesNotMatch(JSON.stringify(summary), /GOOGLE_CLIENT_EMAIL|GOOGLE_PRIVATE_KEY|BNA_DRIVE_ROOT_FOLDER_ID|secret-value-for|drive-folder-secretish/);
+});

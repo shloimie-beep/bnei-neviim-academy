@@ -22,7 +22,10 @@ Open requirements:
   shared placeholder detector, so broader placeholders such as `replace me` and
   `placeholder` are also blocked. Redacted external readback/backfill summaries
   now preserve only sanitized backfill `job_range` validity and normalized
-  numeric ranges, without raw requested text.
+  numeric ranges, without raw requested text. Drive readiness summaries also
+  preserve sanitized auth-path readiness for application credentials,
+  service-account, and OAuth refresh-token paths without Google variable names
+  or values.
 - `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
@@ -75,7 +78,10 @@ Open requirements:
   before connect in readback/apply modes. Railway/Drive config placeholders now
   use the same detector as secrets. External readback/backfill summaries keep
   validated numeric job-range handoff state while omitting invalid raw
-  requested text.
+  requested text. They also keep sanitized Drive auth-path readiness counts so
+  approval handoffs can distinguish missing application credentials,
+  service-account pair, or OAuth refresh-token setup without printing secret
+  names or values.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
   from current run evidence, with `latest.json` kept aligned to the active run
@@ -170,6 +176,9 @@ Completed implementation slice:
 - External readback/backfill summaries now preserve sanitized backfill
   `job_range` validity and normalized numeric ranges while omitting invalid raw
   requested text from closeout and return-packet handoff surfaces.
+- External readback/backfill summaries now preserve sanitized Drive auth-path
+  readiness counts for application credentials, service-account pair, and OAuth
+  refresh-token setup without exposing Google variable names or values.
 
 Follow-on implementation scope:
 

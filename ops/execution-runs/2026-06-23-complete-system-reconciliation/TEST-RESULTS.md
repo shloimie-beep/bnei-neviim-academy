@@ -3,6 +3,36 @@
 ## Passed
 
 - `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs scripts/system-truth.mjs`:
+  PASS after sanitized Drive auth-path summary hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 27/27; summarized external readback/backfill reports preserve sanitized
+  Drive auth-path readiness counts without Google secret/config variable names
+  or values.
+- Runtime `summarizeExternalReadbackGateReport` proof with a partial Drive service-account auth path:
+  PASS; `service_account_pair` summarized as 1/2 configured and not ready,
+  while Google variable names, folder config names, and dummy values were not
+  printed.
+- `npm run source:truth -- --json`:
+  PASS after sanitized Drive auth-path summary hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after sanitized Drive auth-path summary hardening.
+- `npm run bna:run:validate`:
+  PASS after sanitized Drive auth-path summary hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements after sanitized Drive auth-path summary
+  hardening.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none after sanitized Drive auth-path summary
+  hardening.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found after
+  sanitized Drive auth-path summary hardening.
+- `git diff --check`:
+  PASS with line-ending warnings only after sanitized Drive auth-path summary
+  hardening.
+- `npm test`:
+  PASS, 1117/1117 after sanitized Drive auth-path summary hardening.
+- `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs scripts/system-truth.mjs`:
   PASS after sanitized external job-range summary hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
   PASS, 26/26; summarized external readback/backfill reports preserve only

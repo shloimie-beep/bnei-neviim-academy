@@ -29,6 +29,16 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+Latest Drive auth-path summary slice:
+
+- External readback/backfill summaries now preserve sanitized Drive auth-path
+  readiness for `application_credentials`, `service_account_pair`, and
+  `oauth_refresh_token`.
+- The summary reports only path names, readiness booleans, and
+  configured/required counts.
+- Google secret/config variable names, Drive folder IDs, and loaded values stay
+  out of redacted closeout and return-packet surfaces.
+
 Latest external job-range summary slice:
 
 - External readback/backfill summaries now preserve sanitized backfill
