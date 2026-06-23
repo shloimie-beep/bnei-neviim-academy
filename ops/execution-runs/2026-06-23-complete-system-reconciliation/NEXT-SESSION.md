@@ -18,7 +18,9 @@ Open requirements:
   config readiness rejects placeholders such as `None`, `null`, `undefined`,
   `not configured`, `TODO`, and template placeholders. Loaded secret values are
   also re-checked for usable non-placeholder content before external readback
-  readiness can become true.
+  readiness can become true. Railway and Drive config values now use the same
+  shared placeholder detector, so broader placeholders such as `replace me` and
+  `placeholder` are also blocked.
 - `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
@@ -68,7 +70,8 @@ Open requirements:
   instead of treating any single Google secret as ready, and placeholder
   Railway/Drive config values are not treated as configured targets. The
   guarded canonical Postgres CLI now rejects placeholder `DATABASE_URL` values
-  before connect in readback/apply modes.
+  before connect in readback/apply modes. Railway/Drive config placeholders now
+  use the same detector as secrets.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
   from current run evidence, with `latest.json` kept aligned to the active run

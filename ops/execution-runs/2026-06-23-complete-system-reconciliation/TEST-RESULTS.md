@@ -2,6 +2,34 @@
 
 ## Passed
 
+- `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
+  PASS after shared config placeholder gate hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 25/25; Railway/Drive config placeholders now use the shared
+  placeholder rejection helper.
+- Runtime `buildExternalReadbackGateReport` proof with `RAILWAY_SERVICE_NAME=replace me` and `BNA_DRIVE_ROOT_FOLDER_ID=placeholder`:
+  PASS as expected blocked readiness; safe source labels remained
+  `placeholder`, and raw dummy config/secret values were not printed.
+- `npm run source:truth -- --json`:
+  PASS after shared config placeholder gate hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after shared config placeholder gate hardening.
+- `npm run bna:run:validate`:
+  PASS after shared config placeholder gate hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements after shared config placeholder gate
+  hardening.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none after shared config placeholder gate
+  hardening.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found after
+  shared config placeholder gate hardening.
+- `git diff --check`:
+  PASS with line-ending warnings only after shared config placeholder gate
+  hardening.
+- `npm test`:
+  PASS, 1115/1115 after shared config placeholder gate hardening.
 - `node --check scripts/bna-external-readback-gate.mjs scripts/canonical-intake-postgres.mjs scripts/bna-production-closeout-gate.mjs`:
   PASS after external/Postgres placeholder gate hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/canonical-intake-postgres-cli.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:

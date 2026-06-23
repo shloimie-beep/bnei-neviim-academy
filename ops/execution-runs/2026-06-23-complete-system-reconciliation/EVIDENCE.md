@@ -29,6 +29,16 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+Latest shared config placeholder slice:
+
+- External readback/backfill config readiness now uses the shared
+  `usableSecretValue` placeholder detector instead of a smaller local regex.
+- Railway and Drive target config values such as `replace me` and
+  `placeholder` are demoted to source `placeholder` before readiness can become
+  true.
+- Regression and runtime coverage verifies raw dummy config and secret values
+  are not printed.
+
 Latest external/Postgres placeholder gate slice:
 
 - External readback secret readiness now verifies loaded secret values are

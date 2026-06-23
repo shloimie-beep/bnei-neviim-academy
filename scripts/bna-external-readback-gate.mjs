@@ -112,9 +112,7 @@ function normalizedConfigValue(env, name) {
 
 function isPlaceholderConfigValue(value = '') {
   const normalized = String(value || '').trim();
-  return /^(?:none|null|undefined|not configured|not-configured|missing|todo|tbd|n\/a|na|-|_)$/i.test(normalized) ||
-    /^<[^>]+>$/.test(normalized) ||
-    /^\$\{[^}]+\}$/.test(normalized);
+  return !usableSecretValue(normalized);
 }
 
 function configSource(env, name) {

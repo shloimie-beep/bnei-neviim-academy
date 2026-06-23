@@ -138,6 +138,36 @@ test('external readback gate rejects placeholder Railway and Drive config values
   assert.doesNotMatch(JSON.stringify(drive), /secret-value-for|TODO/);
 });
 
+test('external readback gate uses shared placeholder rejection for config values', async () => {
+  const mod = await loadGate();
+  const report = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['railway', 'drive']),
+  }, {
+    repoRoot,
+    env: {
+      RAILWAY_PROJECT_ID: 'project-id-secretish',
+      RAILWAY_ENVIRONMENT_ID: 'environment-id-secretish',
+      RAILWAY_SERVICE_NAME: 'replace me',
+      BNA_DRIVE_ROOT_FOLDER_ID: 'placeholder',
+    },
+    loadSecretFn: fakeLoadSecret(new Set([
+      'RAILWAY_TOKEN',
+      'GOOGLE_APPLICATION_CREDENTIALS',
+    ])),
+  });
+
+  const railwayService = report.readiness.railway.config.find((state) => state.name === 'RAILWAY_SERVICE_NAME');
+  const driveRoot = report.readiness.drive.config.find((state) => state.name === 'BNA_DRIVE_ROOT_FOLDER_ID');
+  assert.equal(report.ok, false);
+  assert.equal(report.readiness.railway.ready, false);
+  assert.equal(report.readiness.drive.ready, false);
+  assert.equal(railwayService.configured, false);
+  assert.equal(railwayService.source, 'placeholder');
+  assert.equal(driveRoot.configured, false);
+  assert.equal(driveRoot.source, 'placeholder');
+  assert.doesNotMatch(JSON.stringify(report), /replace me|secret-value-for|project-id-secretish|environment-id-secretish/i);
+});
+
 test('external readback gate rejects placeholder loaded secret values', async () => {
   const mod = await loadGate();
   const report = mod.buildExternalReadbackGateReport({

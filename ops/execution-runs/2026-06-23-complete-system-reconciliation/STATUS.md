@@ -1,5 +1,47 @@
 # Status
 
+## 2026-06-23T19:55:01+03:00
+
+Status: running, with the thirty-seventh shared config placeholder gate slice
+complete.
+
+Hardened the external readback/backfill gate so Railway and Drive config
+values use the same shared placeholder rejection as secret values. Placeholder
+config text such as `replace me` or `placeholder` no longer counts as a
+configured Railway service or Drive folder target. No external read, Railway
+read, Drive read, database connection, production mutation, deploy, live
+verification, send, upload, charge, GitHub acknowledgement, or backfill was
+performed.
+
+Verified in this slice:
+
+- `node --check scripts/bna-external-readback-gate.mjs
+  scripts/bna-production-closeout-gate.mjs` passed.
+- `node --test tests/bna-external-readback-gate.test.js
+  tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`
+  passed, 25/25.
+- Runtime external readback proof with placeholder Railway service and Drive
+  folder config remained blocked and did not print the raw dummy config or
+  secret values.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with shared
+  config placeholder gate hardening summarized.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1115/1115.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured non-placeholder DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T19:45:51+03:00
 
 Status: running, with the thirty-sixth external/Postgres placeholder gate
