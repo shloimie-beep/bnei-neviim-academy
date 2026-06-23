@@ -1,13 +1,13 @@
 CHATGPT RETURN PACKET
-Generated: 2026-06-23T17:18:33.991Z
+Generated: 2026-06-23T18:11:10.411Z
 Privacy: redacted_repo_safe
 
 SYSTEM TRUTH
 - master: a9528b2d9467174d76d4c25bfb028f9308f24b4f
 - deployed commit/deployment: not verified by current local state / not verified by current local state
 - branch/PR: codex/issue-8-complete-system-reconciliation / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12
-- branch head: f5b95f56ef1b1757ff94cba1448825e4f94432b2
-- validated Agent Work head: f5b95f56ef1b1757ff94cba1448825e4f94432b2
+- branch head: 3e68a7caed65e711a4ff512170d12dfadc0ff53e
+- validated Agent Work head: 3e68a7caed65e711a4ff512170d12dfadc0ff53e
 - active run: ops/execution-runs/2026-06-23-complete-system-reconciliation
 - branch sync: ahead 0, behind 0, local-only commits 0
 - source coverage: errors 0, unmapped 0
@@ -62,8 +62,8 @@ WORKTREES
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-6cfe7a25 / (detached) / 6cfe7a258489 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-8a67ebb9 / (detached) / 4d43160be025 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-95aab80a / (detached) / 95aab80a7fc5 / safety_snapshot / recovery: retain until owner confirms cleanup
-- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / f5b95f56ef1b / active_owned / recovery: review file-level diff before porting; do not stage all
-- [local-user]/Documents/Codex/2026-06-23/one-time-batch4-control-plane / codex/one-time-batch4-control-plane-20260623 / 2291d03a47ab / clean_current / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 3e68a7caed65 / active_owned / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-23/one-time-batch4-control-plane / codex/one-time-batch4-control-plane-20260623 / 2291d03a47ab / dirty_unknown / recovery: review file-level diff before porting; do not stage all
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio / codex/service-provider-studio-20260623 / 4936394ae0a9 / clean_stale / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio-integration / codex/service-provider-studio-integration-20260623 / a9528b2d9467 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
 
@@ -156,7 +156,7 @@ MY TASKS
 - MYTASK-REQ-20260623-210 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the approved non-placeholder DB/Railway/Drive targets and integration credentials, then approve the external readback, production apply, deploy, and live verification gates.
 
 AGENT WORK
-- REQ-20260623-210 / sanitized_drive_auth_path_summary_hardened / codex/issue-8-complete-system-reconciliation / branch f5b95f56ef1b / validated f5b95f56ef1b / After explicit approvals and configured non-placeholder targets/integrations, run the guarded Postgres apply/readback and external readback/backfill gates, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
+- REQ-20260623-210 / closeout_drive_auth_path_summary_covered / codex/issue-8-complete-system-reconciliation / branch 3e68a7caed65 / validated 3e68a7caed65 / After explicit approvals and configured non-placeholder targets/integrations, run the guarded Postgres apply/readback and external readback/backfill gates, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
 
 TESTS / DEPLOYMENT
 - tests: - `npm test`:

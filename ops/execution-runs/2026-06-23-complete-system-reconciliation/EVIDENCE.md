@@ -29,6 +29,15 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+Latest closeout Drive auth-path coverage slice:
+
+- Production closeout gate regression coverage now proves the release-gate
+  handoff preserves sanitized Drive auth-path readiness.
+- The closeout summary retains only auth-path names, readiness booleans, and
+  configured/required counts.
+- Google secret/config variable names, Drive folder config names, source
+  labels, and values stay out of the sanitized closeout external gate surface.
+
 Latest Drive auth-path summary slice:
 
 - External readback/backfill summaries now preserve sanitized Drive auth-path

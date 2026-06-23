@@ -318,6 +318,58 @@ test('production closeout gate blocks live verification on missing external read
   assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
 });
 
+test('production closeout gate preserves sanitized Drive auth-path readiness summary', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {},
+    integrationReadiness: readyIntegrationReadiness,
+    externalReadbackGate: {
+      ok: false,
+      mode: 'dry_run',
+      readiness: {
+        drive: {
+          ready: false,
+          secrets: [
+            { name: 'GOOGLE_CLIENT_EMAIL', configured: true, source: 'keyholder' },
+            { name: 'GOOGLE_PRIVATE_KEY', configured: false, source: 'not configured' },
+          ],
+          config: [
+            { name: 'BNA_DRIVE_ROOT_FOLDER_ID', configured: true, source: 'environment' },
+          ],
+          auth_paths: [
+            { path: 'application_credentials', ready: false, configured_count: 0, required_count: 1 },
+            { path: 'service_account_pair', ready: false, configured_count: 1, required_count: 2 },
+            { path: 'oauth_refresh_token', ready: false, configured_count: 0, required_count: 3 },
+          ],
+        },
+      },
+      external_read_performed: false,
+      production_mutation_performed: false,
+      safe_apply_performed: false,
+      deploy_performed: false,
+      secrets_redacted: true,
+      blockers: ['drive readback gate is not ready; required configured state is missing.'],
+    },
+  });
+
+  const drive = report.external_readback_gate.scopes.find((scope) => scope.scope === 'drive');
+  const serviceAccount = drive.auth_paths.find((authPath) => authPath.path === 'service_account_pair');
+
+  assert.equal(report.external_readback_gate.external_read_performed, false);
+  assert.equal(report.external_readback_gate.production_mutation_performed, false);
+  assert.deepEqual(serviceAccount, {
+    path: 'service_account_pair',
+    ready: false,
+    configured_count: 1,
+    required_count: 2,
+  });
+  assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /GOOGLE_CLIENT_EMAIL|GOOGLE_PRIVATE_KEY|BNA_DRIVE_ROOT_FOLDER_ID|keyholder|environment/);
+});
+
 test('production closeout gate blocks deploy on missing external readback readiness', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({

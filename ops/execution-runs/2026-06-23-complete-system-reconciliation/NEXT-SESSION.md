@@ -25,7 +25,9 @@ Open requirements:
   numeric ranges, without raw requested text. Drive readiness summaries also
   preserve sanitized auth-path readiness for application credentials,
   service-account, and OAuth refresh-token paths without Google variable names
-  or values.
+  or values. Production closeout regression coverage now proves the sanitized
+  auth-path readiness counts survive through the release-gate handoff without
+  Google variable names or values.
 - `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
@@ -81,7 +83,9 @@ Open requirements:
   requested text. They also keep sanitized Drive auth-path readiness counts so
   approval handoffs can distinguish missing application credentials,
   service-account pair, or OAuth refresh-token setup without printing secret
-  names or values.
+  names or values. The production closeout gate has regression coverage for
+  preserving that sanitized auth-path summary while omitting Google variable
+  names, Drive folder config names, source labels, and values.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
   from current run evidence, with `latest.json` kept aligned to the active run
@@ -179,6 +183,10 @@ Completed implementation slice:
 - External readback/backfill summaries now preserve sanitized Drive auth-path
   readiness counts for application credentials, service-account pair, and OAuth
   refresh-token setup without exposing Google variable names or values.
+- Production closeout gate regression coverage now proves the release-gate
+  handoff preserves those sanitized Drive auth-path readiness counts without
+  exposing Google variable names, Drive folder config names, source labels, or
+  values.
 
 Follow-on implementation scope:
 

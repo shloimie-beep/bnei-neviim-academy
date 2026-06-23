@@ -2,6 +2,32 @@
 
 ## Passed
 
+- `node --check scripts/bna-production-closeout-gate.mjs scripts/bna-external-readback-gate.mjs scripts/system-truth.mjs`:
+  PASS after closeout Drive auth-path summary coverage.
+- `node --test tests/bna-production-closeout-gate.test.js tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 28/28; production closeout gate preserves sanitized Drive auth-path
+  readiness counts without Google secret/config variable names, Drive folder
+  config names, source labels, or values.
+- `npm run source:truth -- --json`:
+  PASS after closeout Drive auth-path summary coverage.
+- `npm run bna:return-packet -- --json`:
+  PASS after closeout Drive auth-path summary coverage.
+- `npm run bna:run:validate`:
+  PASS after closeout Drive auth-path summary coverage.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements after closeout Drive auth-path summary
+  coverage.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none after closeout Drive auth-path summary
+  coverage.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found after
+  closeout Drive auth-path summary coverage.
+- `git diff --check`:
+  PASS with line-ending warnings only after closeout Drive auth-path summary
+  coverage.
+- `npm test`:
+  PASS, 1118/1118 after closeout Drive auth-path summary coverage.
 - `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs scripts/system-truth.mjs`:
   PASS after sanitized Drive auth-path summary hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
