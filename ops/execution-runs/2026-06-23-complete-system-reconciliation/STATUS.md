@@ -1,5 +1,50 @@
 # Status
 
+## 2026-06-23T18:48:04+03:00
+
+Status: running, with the thirty-first canonical Postgres combined
+apply/readback gate slice complete.
+
+Hardened the canonical Postgres operator CLI so a combined `--apply
+--readback` request requires the readback confirmation phrase and
+`BNA_CANONICAL_INTAKE_POSTGRES_READBACK_APPROVED=approved`, in addition to the
+apply confirmation/env gate. This closes a local approval-path asymmetry before
+any future production database operation. No database connection, readback,
+production mutation, deploy, live verification, send, upload, charge, or
+backfill was performed.
+
+Verified in this slice:
+
+- `node --check scripts/canonical-intake-postgres.mjs` passed.
+- `node --test tests/canonical-intake-postgres-cli.test.js
+  tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`
+  passed, 9/9.
+- `npm run watchdog:raw` passed with `ok: true`; only the known medium raw
+  provenance findings remain.
+- `npm run bna:intake:postgres -- --json --apply --readback --confirm
+  APPLY_CANONICAL_INTAKE_POSTGRES --text ...` with a dummy `DATABASE_URL` and
+  `BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved` remained blocked on
+  the missing readback confirmation/env gate, with
+  `database_mutation_performed=false`.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with this
+  slice as the Agent Work phase.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1106/1106.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T18:38:15+03:00
 
 Status: running, with the thirtieth release-gate deploy integration-readiness

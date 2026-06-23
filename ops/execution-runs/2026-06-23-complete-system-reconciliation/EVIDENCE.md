@@ -231,6 +231,9 @@ Canonical Postgres operator CLI slice verified:
   `BNA_CANONICAL_INTAKE_POSTGRES_READBACK_APPROVED=approved`; apply requires
   `APPLY_CANONICAL_INTAKE_POSTGRES` plus
   `BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved`.
+- Combined `--apply --readback` requests require the separate readback
+  confirmation/env gate in addition to the apply confirmation/env gate before
+  any database connection can occur.
 - Focused CLI/persistence/watchdog/system tests passed, 13/13, and
   `npm run watchdog:raw` passed with the operator CLI contract guarded.
 

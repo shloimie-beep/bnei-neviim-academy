@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const { spawnSync } = require('node:child_process');
 const path = require('node:path');
 const test = require('node:test');
+const { pathToFileURL } = require('node:url');
 
 const repoRoot = path.resolve(__dirname, '..');
 const script = path.join(repoRoot, 'scripts', 'canonical-intake-postgres.mjs');
@@ -18,6 +19,10 @@ function runCli(args, env = {}) {
       ...env,
     },
   });
+}
+
+async function loadCli() {
+  return import(pathToFileURL(script).href);
 }
 
 test('canonical intake postgres CLI dry-runs without SQL text or database access', () => {
@@ -60,4 +65,37 @@ test('canonical intake postgres CLI blocks apply without approval gates', () => 
   assert.ok(report.blockers.some((blocker) => /BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved/.test(blocker)));
   assert.ok(report.blockers.some((blocker) => /DATABASE_URL is not configured/.test(blocker)));
   assert.equal(report.plan.applied, false);
+});
+
+test('canonical intake postgres CLI requires readback gate for combined apply and readback', async () => {
+  const mod = await loadCli();
+  const blocked = mod.buildGuardReport({
+    apply: true,
+    readback: true,
+    confirm: mod.APPLY_CONFIRM_PHRASE,
+    text: 'Task: Codex should not combine apply and readback without readback approval.',
+  }, {
+    DATABASE_URL: 'postgres://redacted.invalid/bna',
+    [mod.APPLY_APPROVAL_ENV]: 'approved',
+  });
+
+  assert.equal(blocked.ok, false);
+  assert.ok(blocked.blockers.some((blocker) => /--confirm-readback READ_CANONICAL_INTAKE_POSTGRES/.test(blocker)));
+  assert.ok(blocked.blockers.some((blocker) => /BNA_CANONICAL_INTAKE_POSTGRES_READBACK_APPROVED=approved/.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(blocked), /postgres:\/\/redacted\.invalid/);
+
+  const approved = mod.buildGuardReport({
+    apply: true,
+    readback: true,
+    confirm: mod.APPLY_CONFIRM_PHRASE,
+    confirmReadback: mod.READBACK_CONFIRM_PHRASE,
+    text: 'Task: Codex should allow combined apply/readback only after both gates.',
+  }, {
+    DATABASE_URL: 'postgres://redacted.invalid/bna',
+    [mod.APPLY_APPROVAL_ENV]: 'approved',
+    [mod.READBACK_APPROVAL_ENV]: 'approved',
+  });
+
+  assert.equal(approved.ok, true);
+  assert.doesNotMatch(JSON.stringify(approved), /postgres:\/\/redacted\.invalid/);
 });

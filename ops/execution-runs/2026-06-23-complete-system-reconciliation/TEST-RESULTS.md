@@ -2,6 +2,34 @@
 
 ## Passed
 
+- `node --check scripts/canonical-intake-postgres.mjs`:
+  PASS after canonical Postgres combined apply/readback gate hardening.
+- `node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
+  PASS, 9/9; combined apply/readback requires readback confirmation and
+  approval.
+- `npm run watchdog:raw`:
+  PASS, `ok: true`, severity `medium`, findings 2; known raw provenance
+  findings only.
+- `npm run bna:intake:postgres -- --json --apply --readback --confirm APPLY_CANONICAL_INTAKE_POSTGRES --text ...` with dummy `DATABASE_URL` and `BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved`:
+  PASS as expected blocked gate; missing readback confirmation/env blocks
+  combined apply/readback and `database_mutation_performed=false`.
+- `npm run source:truth -- --json`:
+  PASS after canonical Postgres combined apply/readback gate hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after canonical Postgres combined apply/readback gate hardening.
+- `npm run bna:run:validate`:
+  PASS after canonical Postgres combined apply/readback gate hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1106/1106 after canonical Postgres combined apply/readback gate
+  hardening.
 - `node --check scripts/bna-production-closeout-gate.mjs`:
   PASS after release-gate deploy integration-readiness hardening.
 - `node --test tests/bna-production-closeout-gate.test.js tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js`:

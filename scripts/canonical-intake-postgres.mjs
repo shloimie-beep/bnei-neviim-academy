@@ -33,6 +33,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     json: false,
     stdin: false,
     confirm: '',
+    confirmReadback: '',
     databaseUrlEnv: 'DATABASE_URL',
     sourceProvider: DEFAULT_SOURCE_PROVIDER,
     sourceKind: DEFAULT_SOURCE_KIND,
@@ -50,6 +51,10 @@ export function parseArgs(argv = process.argv.slice(2)) {
       options.confirm = readNext(argv, index, '--confirm');
       index += 1;
     } else if (arg.startsWith('--confirm=')) options.confirm = arg.slice('--confirm='.length);
+    else if (arg === '--confirm-readback') {
+      options.confirmReadback = readNext(argv, index, '--confirm-readback');
+      index += 1;
+    } else if (arg.startsWith('--confirm-readback=')) options.confirmReadback = arg.slice('--confirm-readback='.length);
     else if (arg === '--database-url-env') {
       options.databaseUrlEnv = readNext(argv, index, '--database-url-env');
       index += 1;
@@ -111,11 +116,12 @@ export function usage() {
   node scripts/canonical-intake-postgres.mjs --packet packet.json [--json]
   node scripts/canonical-intake-postgres.mjs --readback --raw-intake-stable-id ID --confirm ${READBACK_CONFIRM_PHRASE}
   node scripts/canonical-intake-postgres.mjs --apply --packet packet.json --confirm ${APPLY_CONFIRM_PHRASE}
+  node scripts/canonical-intake-postgres.mjs --apply --readback --packet packet.json --confirm ${APPLY_CONFIRM_PHRASE} --confirm-readback ${READBACK_CONFIRM_PHRASE}
 
 Dry-run by default. Readback requires ${READBACK_APPROVAL_ENV}=approved and a
 database URL. Apply requires ${APPLY_APPROVAL_ENV}=approved, --confirm
-${APPLY_CONFIRM_PHRASE}, and a packet/text input. The script never prints the
-database URL, SQL text, or SQL values.`;
+${APPLY_CONFIRM_PHRASE}, and a packet/text input. Combined apply/readback
+requires both approval gates and both confirmation phrases. The script never prints the database URL, SQL text, or SQL values.`;
 }
 
 function approved(value) {
@@ -128,6 +134,11 @@ function hasPacketInput(options = {}) {
 
 function hasReadbackLocator(options = {}) {
   return Boolean(options.rawIntakeStableId || options.parseRunId || options.parentPromptId);
+}
+
+function readbackConfirmed(options = {}) {
+  if (options.confirmReadback === READBACK_CONFIRM_PHRASE) return true;
+  return !options.apply && options.confirm === READBACK_CONFIRM_PHRASE;
 }
 
 function normalizeLoadedPacket(value) {
@@ -174,9 +185,11 @@ export function buildGuardReport(options = {}, env = process.env) {
     if (!hasPacketInput(options)) {
       blockers.push('Apply mode requires --packet, --text, --file, or --stdin.');
     }
-  } else if (options.readback) {
-    if (options.confirm !== READBACK_CONFIRM_PHRASE) {
-      blockers.push(`Missing confirmation phrase: --confirm ${READBACK_CONFIRM_PHRASE}`);
+  }
+  if (options.readback) {
+    if (!readbackConfirmed(options)) {
+      const flag = options.apply ? '--confirm-readback' : '--confirm';
+      blockers.push(`Missing readback confirmation phrase: ${flag} ${READBACK_CONFIRM_PHRASE}`);
     }
     if (!approved(env[READBACK_APPROVAL_ENV])) {
       blockers.push(`${READBACK_APPROVAL_ENV}=approved is required before readback.`);
@@ -184,7 +197,8 @@ export function buildGuardReport(options = {}, env = process.env) {
     if (!hasPacketInput(options) && !hasReadbackLocator(options)) {
       blockers.push('Readback mode requires --raw-intake-stable-id, --parse-run-id, --parent-prompt-id, or packet/text input.');
     }
-  } else if (!hasPacketInput(options)) {
+  }
+  if (!options.apply && !options.readback && !hasPacketInput(options)) {
     blockers.push('Dry-run mode requires --packet, --text, --file, or --stdin.');
   }
 
@@ -304,7 +318,7 @@ export async function buildReport(options = {}, env = process.env) {
 
   const report = {
     ok: guard.ok,
-    mode: options.apply ? 'apply' : options.readback ? 'readback' : 'dry_run',
+    mode: options.apply && options.readback ? 'apply_readback' : options.apply ? 'apply' : options.readback ? 'readback' : 'dry_run',
     database_url_env: guard.database_url_env,
     database_mutation_performed: false,
     blockers: [...guard.blockers],
