@@ -44,6 +44,12 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.equal(report.redacted_repo_summary.includes_private_raw_source, false);
   assert.equal(report.redacted_repo_summary.includes_secret_values, false);
   assert.ok(report.system_truth.branch);
+  if (report.agent_work.some((item) => item.package === 'REQ-20260623-210')) {
+    assert.equal(report.next_automatic_action.package, 'none');
+    assert.match(report.next_automatic_action.command, /No unblocked automatic package/);
+    assert.doesNotMatch(report.next_automatic_action.command, /continue the next unblocked canonical hardening slice/);
+    assert.equal(report.verdict, 'PARTIAL - APPROVAL-GATED WORK REMAINS');
+  }
 });
 
 test('GitHub intake preview is idempotent and redacts secret-like text', async () => {

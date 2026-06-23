@@ -3,6 +3,48 @@
 ## Passed
 
 - `npm run bna:return-packet -- --json`:
+  PASS; regenerated private ignored packet and tracked redacted packet after queue/verdict hardening.
+- Redacted return packet `NEXT AUTOMATIC ACTION` check:
+  PASS; reports `package: none` and `PARTIAL - APPROVAL-GATED WORK REMAINS`.
+- Redacted return packet full-home-path leakage check:
+  PASS; no full local home path string found in the tracked packet.
+- Redacted return packet obvious secret-marker check:
+  PASS; no obvious secret-marker strings found in the tracked packet.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `node --check scripts/bna-execution-run.mjs`:
+  PASS.
+- `node --test tests/bna-execution-run.test.js`:
+  PASS, 26/26.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:next`:
+  PASS; no unblocked executable batch while `REQ-20260623-210` is approval-gated.
+- `npm run bna:run:blockers`:
+  PASS; reports `REQ-20260623-209` as blocked and `REQ-20260623-210` as approval-gated.
+- `npm run bna:run:resume`:
+  PASS; handoff reports no unblocked executable batch and lists approval-gated `REQ-20260623-210`.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `node --test tests/bna-execution-run.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 35/35.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `npm test`:
+  PASS, 1099/1099.
+- `node --check scripts/system-truth.mjs`:
+  PASS.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 4/4.
+- `node --test tests/bna-execution-run.test.js tests/system-truth-scripts.test.js`:
+  PASS, 30/30.
+- `npm run bna:return-packet -- --json`:
+  PASS; regenerated private ignored packet and tracked redacted packet with `package: none` and `PARTIAL - APPROVAL-GATED WORK REMAINS`.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm run bna:return-packet -- --json`:
   PASS; regenerated ignored private packet files and refreshed the redacted repo packet against pushed head `2ceb514052ca19e40dc49e6c8d12aa479fe43480`.
 - Redacted return packet full-home-path leakage check:
   PASS; no full local home path string found in the tracked packet.

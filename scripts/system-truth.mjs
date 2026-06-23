@@ -485,6 +485,7 @@ function summarizeRequirements(requirements = []) {
     implementation_status: requirement.implementation_status,
     batch_id: requirement.batch_id,
     category: requirement.category,
+    depends_on: Array.isArray(requirement.depends_on) ? requirement.depends_on : [],
     deployment_required: Boolean(requirement.deployment_required),
     can_continue_without_operator: Boolean(requirement.can_continue_without_operator),
     blocker: requirement.blocker || '',
@@ -494,6 +495,50 @@ function summarizeRequirements(requirements = []) {
     evidence: Array.isArray(requirement.evidence) ? requirement.evidence.slice(0, 12) : [],
     verification_count: Array.isArray(requirement.verification) ? requirement.verification.length : 0
   }));
+}
+
+const RETURN_PACKET_CLOSED_STATUSES = new Set([
+  'done',
+  'already_satisfied',
+  'verified',
+  'failed',
+  'archived',
+  'superseded'
+]);
+
+const RETURN_PACKET_WORK_REMAINS_STATUSES = new Set([
+  'not_started',
+  'in_progress',
+  'needs_verification',
+  'blocked',
+  'needs_operator_decision'
+]);
+
+const RETURN_PACKET_BLOCKER_STATUSES = new Set(['blocked', 'needs_operator_decision']);
+
+function dependenciesClosedForPacket(requirement, requirementsById) {
+  return (requirement.depends_on || []).every((dependencyId) => {
+    const dependency = requirementsById.get(dependencyId);
+    return dependency && RETURN_PACKET_CLOSED_STATUSES.has(dependency.status);
+  });
+}
+
+function nextExecutableRequirement(requirements = []) {
+  const requirementsById = new Map(
+    requirements.filter((requirement) => requirement?.id).map((requirement) => [requirement.id, requirement])
+  );
+  return requirements.find((requirement) => {
+    if (!requirement || !RETURN_PACKET_WORK_REMAINS_STATUSES.has(requirement.status)) {
+      return false;
+    }
+    if (RETURN_PACKET_BLOCKER_STATUSES.has(requirement.status)) {
+      return false;
+    }
+    if (requirement.can_continue_without_operator === false) {
+      return false;
+    }
+    return dependenciesClosedForPacket(requirement, requirementsById);
+  });
 }
 
 function summarizeLatestTests(runDir) {
@@ -521,6 +566,7 @@ async function returnPacketReport() {
   const summarizedRequirements = summarizeRequirements(requirements);
   const blocked = summarizedRequirements.filter((item) => item.status === 'blocked' || item.can_continue_without_operator === false);
   const inProgress = summarizedRequirements.filter((item) => item.status === 'in_progress');
+  const nextExecutable = nextExecutableRequirement(summarizedRequirements);
   const dirty = repo.dirty || { total: 0, sample: [] };
   const privatePacketPath = '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md';
   const privatePacketJsonPath = '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json';
@@ -637,10 +683,14 @@ async function returnPacketReport() {
         next_action: item.blocker_next_action || item.next_action
       })),
     next_automatic_action: {
-      package: inProgress[0]?.id || 'REQ-20260623-210',
-      command: 'npm run bna:return-packet -- --json, then continue the next unblocked canonical hardening slice'
+      package: nextExecutable?.id || 'none',
+      command: nextExecutable
+        ? `npm run bna:return-packet -- --json, then continue ${nextExecutable.id}: ${nextExecutable.next_action || nextExecutable.title}`
+        : 'No unblocked automatic package. Run npm run bna:run:blockers after required external approvals are configured.'
     },
-    verdict: 'PARTIAL - UNBLOCKED IMPLEMENTATION REMAINS'
+    verdict: nextExecutable
+      ? 'PARTIAL - UNBLOCKED IMPLEMENTATION REMAINS'
+      : 'PARTIAL - APPROVAL-GATED WORK REMAINS'
   };
 }
 

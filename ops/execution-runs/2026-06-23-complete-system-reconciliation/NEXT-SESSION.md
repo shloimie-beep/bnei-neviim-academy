@@ -11,7 +11,7 @@ Worktree:
 Open requirements:
 
 - `REQ-20260623-209`: blocked on approved external readback/backfill gates.
-- `REQ-20260623-210`: in progress; stable display ID, prompt lifecycle bridge,
+- `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
   verified. Local synthetic E2E now covers canonical intake/readback, local
@@ -24,8 +24,9 @@ Open requirements:
   production closeout gate now checks branch/run/dirty-state readiness before
   approved deploy/live verification, and it supports explicit clean detached
   release-candidate validation via `--allow-detached --remote-branch`.
-  Remaining approved production database apply, deploy, and live verification
-  work remain open.
+  Remaining production database apply, deploy, and live verification work
+  remain open and must not be advertised as an unblocked executable batch until
+  the required external gates are configured and explicitly approved.
   A redacted external readback/backfill gate now reports database, Railway, and
   Drive readiness by configured state only.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
@@ -40,6 +41,7 @@ git fetch origin
 git switch codex/issue-8-complete-system-reconciliation
 git pull --ff-only origin codex/issue-8-complete-system-reconciliation
 npm run bna:run:resume
+npm run bna:run:blockers
 npm run bna:return-packet -- --json
 ```
 
@@ -86,6 +88,12 @@ Completed implementation slice:
 - Reproducible ChatGPT return packet generator exposed as
   `npm run bna:return-packet`, writing private ignored `.runtime/` packet files
   plus the redacted repo packet.
+- Execution-run queue hardening now separates approval-gated in-progress rows
+  from unblocked executable batches in `bna:run:next`, `bna:run:resume`, and
+  `bna:run:blockers`.
+- The ChatGPT return packet now uses the same executable-batch rules for
+  `NEXT AUTOMATIC ACTION` and reports no automatic package while the remaining
+  closeout work is approval-gated.
 
 Follow-on implementation scope:
 

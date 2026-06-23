@@ -217,6 +217,22 @@ Production closeout gate slice verified:
   passed, 9/9. Stale-evidence, action watchdog, and security watchdog checks
   also passed.
 
+Approval-gated queue hardening slice verified:
+
+- `scripts/bna-execution-run.mjs` now separates approval-gated in-progress
+  requirements from unblocked executable batches.
+- `REQ-20260623-210` is explicitly marked `can_continue_without_operator:
+  false` until the required DB/Railway/Drive targets and approval gates are
+  configured.
+- `npm run bna:run:next` reports no unblocked executable batch while showing
+  approval-gated `REQ-20260623-210`.
+- `npm run bna:run:blockers` reports both the blocked external readback
+  requirement and the approval-gated production closeout work.
+- The return packet generator derives `NEXT AUTOMATIC ACTION` from executable
+  requirement state and now reports no unblocked automatic package when
+  remaining work is approval-gated.
+- Full `npm test` passed, 1099/1099.
+
 External readback/backfill gate slice verified:
 
 - `scripts/bna-external-readback-gate.mjs` reports database, Railway, and Drive

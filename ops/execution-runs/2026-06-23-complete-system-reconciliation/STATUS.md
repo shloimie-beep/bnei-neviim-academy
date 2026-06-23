@@ -1,5 +1,38 @@
 # Status
 
+## 2026-06-23T16:37:18+03:00
+
+Status: running, with the nineteenth approval-gated queue hardening slice
+complete.
+
+Extended the execution-run CLI so an in-progress requirement with
+`can_continue_without_operator: false` is not advertised as the next unblocked
+executable batch. `REQ-20260623-210` is now explicitly approval-gated until the
+DB/Railway/Drive targets and external readback/apply/deploy/live verification
+gates are configured and approved.
+
+Verified in this slice:
+
+- `npm run bna:run:next` reports no unblocked executable batch and lists
+  `REQ-20260623-210` under approval-gated open requirements.
+- `npm run bna:run:blockers` reports the existing `REQ-20260623-209` external
+  blocker and the approval-gated `REQ-20260623-210` closeout work.
+- `npm run bna:run:resume` carries the same approval-gated handoff.
+- The ChatGPT return packet generator now derives `NEXT AUTOMATIC ACTION` from
+  the same executable-batch rules, so it reports `package: none` and
+  `PARTIAL - APPROVAL-GATED WORK REMAINS` when no safe automatic package is
+  available.
+- Full `npm test` passed, 1099/1099.
+- No production mutation, deploy, external read, send, upload, charge, or
+  backfill was performed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T16:29:08+03:00
 
 Status: running, with the eighteenth return-packet pointer refresh slice
