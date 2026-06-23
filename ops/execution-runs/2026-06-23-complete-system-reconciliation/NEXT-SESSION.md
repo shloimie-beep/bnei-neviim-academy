@@ -11,17 +11,25 @@ Worktree:
 Open requirements:
 
 - `REQ-20260623-209`: blocked on approved external readback/backfill gates.
-- `REQ-20260623-210`: follow-on canonical implementation package.
+- `REQ-20260623-210`: in progress; stable display ID slice is verified, with
+  remaining canonical persistence/lifecycle/adapters/UI/watchdog/E2E work open.
 
-Next exact commands after this PR is reviewed:
+Next exact commands for continuation:
 
 ```powershell
 git fetch origin
-git switch master
-git pull --ff-only origin master
-git switch -c codex/issue-8-canonical-persistence
+git switch codex/issue-8-complete-system-reconciliation
+git pull --ff-only origin codex/issue-8-complete-system-reconciliation
 npm run bna:run:resume
 ```
+
+Completed implementation slice:
+
+- Shared canonical display ID helper.
+- Source-aware parser/protocol/goal-memory IDs.
+- Operations-timezone display date handling for timestamps.
+- Regression tests for same-day source collisions, task/ticket prefix
+  collisions, and Jerusalem date rendering.
 
 Follow-on implementation scope:
 

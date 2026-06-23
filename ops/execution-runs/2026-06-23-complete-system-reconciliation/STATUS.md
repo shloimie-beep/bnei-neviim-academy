@@ -1,5 +1,29 @@
 # Status
 
+## 2026-06-23T14:06:45+03:00
+
+Status: running, with the first canonical implementation slice complete.
+
+Advanced `REQ-20260623-210` from queued/not started to `in_progress` by
+hardening canonical display IDs. Intake/parser/protocol/goal-memory IDs now use
+a shared source-aware helper that preserves readable `TYPE-YYYYMMDD-###`
+prefixes, adds deterministic source/item disambiguation, and renders timestamp
+dates in the operations timezone.
+
+Verified in this slice:
+
+- Same-day rambles from different sources no longer collide.
+- Task and ticket records no longer collide even though both display as `TASK`.
+- Late-night UTC timestamps render as the next Jerusalem date where applicable.
+- Focused intake/source/goal tests passed, 32/32.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; remaining canonical persistence, lifecycle,
+  adapters, UI, watchdog, synthetic E2E, deploy, and live verification are not
+  complete yet.
+
 ## 2026-06-23T13:58:00+03:00
 
 Status: running, with safe reconciliation batch complete.

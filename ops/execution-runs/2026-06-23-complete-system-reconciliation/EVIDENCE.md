@@ -29,6 +29,22 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+## Implementation Evidence
+
+- `src/platform/ingestion/canonical-ids.js`
+- `src/platform/ingestion/intake-source.js`
+- `src/lib/bna/ramble-protocol.js`
+- `src/lib/bna/intake-parser.js`
+- `src/lib/bna/goal-memory.js`
+- `tests/ingestion/canonical-ids.test.js`
+- `tests/intake-parser.test.js`
+
+Stable display ID slice verified:
+
+- Same-day source disambiguation for parser task IDs.
+- Task/ticket uniqueness despite shared `TASK` display prefix.
+- Timestamped intake display dates rendered in the operations timezone.
+
 ## Privacy Boundary
 
 - The full Goal Mode prompt is not committed; only a local pointer/hash is.

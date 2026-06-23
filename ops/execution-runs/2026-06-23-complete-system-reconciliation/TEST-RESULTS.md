@@ -2,8 +2,12 @@
 
 ## Passed
 
+- `node --check src/platform/ingestion/canonical-ids.js src/platform/ingestion/intake-source.js src/lib/bna/ramble-protocol.js src/lib/bna/intake-parser.js src/lib/bna/goal-memory.js`:
+  PASS.
+- `node --test tests/ingestion/canonical-ids.test.js tests/intake-parser.test.js tests/intake-parser-goals.test.js tests/agentic-goal-memory-hardening.test.js tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js`:
+  PASS, 32/32.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1066/1066.
+- `npm test`: PASS, 1071/1071.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

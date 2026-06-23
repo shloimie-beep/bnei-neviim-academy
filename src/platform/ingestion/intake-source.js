@@ -1,4 +1,5 @@
 const crypto = require('node:crypto');
+const { dateStamp } = require('./canonical-ids');
 
 const INTAKE_SOURCE_CONTRACT_VERSION = 'w3-intake-source-v1';
 const SOURCE_ENVELOPE_VERSION = 'source-envelope-v2';
@@ -184,10 +185,12 @@ function detectSourceLanguage(text = '') {
 }
 
 function sourceDateFromInput(input = {}, uploadTime = '') {
-  const explicit = String(input.source_date || input.sourceDate || input.recorded_at || input.recordedAt || '').match(/\b(20\d{2}-\d{2}-\d{2})\b/);
+  const explicit = String(input.source_date || input.sourceDate || '').match(/^\s*(20\d{2}-\d{2}-\d{2})\s*$/);
   if (explicit) return explicit[1];
-  const fromUpload = String(uploadTime || '').match(/\b(20\d{2}-\d{2}-\d{2})\b/);
-  return fromUpload ? fromUpload[1] : null;
+  const timestamp = input.recorded_at || input.recordedAt || uploadTime || '';
+  if (!timestamp) return null;
+  const stamp = dateStamp(timestamp);
+  return `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)}`;
 }
 
 function sourceTitleFromInput(input = {}) {

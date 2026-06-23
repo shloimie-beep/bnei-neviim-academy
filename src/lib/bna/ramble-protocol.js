@@ -1,10 +1,13 @@
-const crypto = require('crypto');
-
 const {
   INTAKE_SOURCE_CHANNELS,
   RAW_PARSE_STATUSES,
   STABLE_ID_PREFIX_BY_ITEM_TYPE,
 } = require('./intake-schema');
+const {
+  canonicalDisplayId,
+  dateStamp: canonicalDateStamp,
+  stableHash,
+} = require('../../platform/ingestion/canonical-ids');
 
 const RAMBLE_PROTOCOL_VERSION = 'bna-ramble-protocol-v3';
 const RAMBLE_INTAKE_TEMPLATE_PATH = 'tasks-pending/_template-ramble-intake.md';
@@ -51,14 +54,8 @@ function compactWhitespace(value = '') {
   return String(value || '').replace(/\s+/g, ' ').trim();
 }
 
-function stableHash(value = '') {
-  return crypto.createHash('sha256').update(String(value || '')).digest('hex');
-}
-
 function dateStamp(value = null) {
-  const explicit = String(value || '').match(/\b(20\d{2})-?(\d{2})-?(\d{2})\b/);
-  if (explicit) return `${explicit[1]}${explicit[2]}${explicit[3]}`;
-  return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  return canonicalDateStamp(value);
 }
 
 function isoDate(value = null) {
@@ -66,10 +63,9 @@ function isoDate(value = null) {
   return `${stamp.slice(0, 4)}-${stamp.slice(4, 6)}-${stamp.slice(6, 8)}`;
 }
 
-function formatStableId(prefixOrType, dateValue, index = 1) {
+function formatStableId(prefixOrType, dateValue, index = 1, disambiguator = '') {
   const prefix = STABLE_ID_PREFIX_BY_TYPE[prefixOrType] || String(prefixOrType || 'ITEM').toUpperCase();
-  const number = Math.max(1, Number(index || 1));
-  return `${prefix}-${dateStamp(dateValue)}-${String(number).padStart(3, '0')}`;
+  return canonicalDisplayId({ prefix, dateValue, index, disambiguator });
 }
 
 function normalizeSourceChannel(value = '') {
@@ -140,12 +136,20 @@ function buildProtocolItem({
   confidence = 0.8,
   needs_review,
   source_quote,
+  id_disambiguator = null,
   metadata = {},
 } = {}) {
   const itemType = String(type || 'requirement').trim();
   const quote = sourceQuote(source_quote || text);
   const protocolTitle = title || titleFromText(text, `Review ${itemType.replace(/_/g, ' ')}`);
-  const stable_id = formatStableId(itemType, date, index);
+  const stable_id = formatStableId(itemType, date, index, {
+    ...(id_disambiguator && typeof id_disambiguator === 'object' ? id_disambiguator : {}),
+    itemType,
+    text,
+    title: protocolTitle,
+    target_lane,
+    expected_result,
+  });
   return {
     stable_id,
     item_key: `${itemType}:${stable_id}`,
@@ -189,7 +193,15 @@ function extractedItemCounts(parsed = {}) {
 }
 
 function buildRawIntakeMetadata(input = {}, parsed = {}) {
-  const sourceDate = isoDate(input.source_date || input.created_at || input.recorded_at || null);
+  const sourceDate = isoDate(
+    input.source_date
+    || input.sourceDate
+    || input.created_at
+    || input.createdAt
+    || input.recorded_at
+    || input.recordedAt
+    || null
+  );
   const sourceChannel = normalizeSourceChannel(input.source_channel || input.source_type || input.source || 'manual');
   const counts = extractedItemCounts(parsed);
   const rawText = input.raw_input || input.raw_text || input.text || '';

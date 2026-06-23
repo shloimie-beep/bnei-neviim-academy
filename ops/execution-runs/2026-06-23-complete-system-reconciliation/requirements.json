@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T13:58:00+03:00",
+  "updated_at": "2026-06-23T14:06:45+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -564,13 +564,14 @@
         "REQ-20260623-203",
         "REQ-20260623-204"
       ],
-      "status": "not_started",
-      "implementation_status": "follow_on_implementation_required",
+      "status": "in_progress",
+      "implementation_status": "canonical_display_id_hardening_slice_complete",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Implement canonical persistence, adapters, lifecycle, Operations UI, watchdogs, synthetic E2E, deploy, and live verification in a follow-on PR.",
+      "next_action": "Continue remaining canonical persistence, adapters, lifecycle, Operations UI, watchdogs, synthetic E2E, deploy, and live verification after this stable-ID slice.",
       "acceptance_criteria": [
+        "Stable display IDs do not collide across same-day sources or shared item prefixes",
         "Canonical persistence model is implemented",
         "Adapters use one intake service",
         "Decision auto-resume is tested",
@@ -578,13 +579,36 @@
         "Synthetic E2E passes"
       ],
       "evidence": [
-        "ops/return-packets/2026-06-23-complete-system-reality-redacted.md"
+        "ops/return-packets/2026-06-23-complete-system-reality-redacted.md",
+        "src/platform/ingestion/canonical-ids.js",
+        "src/platform/ingestion/intake-source.js",
+        "src/lib/bna/ramble-protocol.js",
+        "src/lib/bna/intake-parser.js",
+        "src/lib/bna/goal-memory.js",
+        "tests/ingestion/canonical-ids.test.js",
+        "tests/intake-parser.test.js"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "node --check src/platform/ingestion/canonical-ids.js src/platform/ingestion/intake-source.js src/lib/bna/ramble-protocol.js src/lib/bna/intake-parser.js src/lib/bna/goal-memory.js: PASS",
+        "node --test tests/ingestion/canonical-ids.test.js tests/intake-parser.test.js tests/intake-parser-goals.test.js tests/agentic-goal-memory-hardening.test.js tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js: PASS, 32/32",
+        "npm run bna:run:validate: PASS",
+        "npm run bna:run:source-coverage: PASS",
+        "npm test: PASS, 1071/1071",
+        "node scripts/audit-secrets.mjs: PASS",
+        "git diff --check: PASS with line-ending warnings only"
+      ],
+      "implementation_files": [
+        "src/platform/ingestion/canonical-ids.js",
+        "src/platform/ingestion/intake-source.js",
+        "src/lib/bna/ramble-protocol.js",
+        "src/lib/bna/intake-parser.js",
+        "src/lib/bna/goal-memory.js",
+        "tests/ingestion/canonical-ids.test.js",
+        "tests/intake-parser.test.js"
+      ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T13:56:00+03:00",
-      "expected_result": "Canonical persistence model is implemented; Adapters use one intake service; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
+      "updated_at": "2026-06-23T14:06:45+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Canonical persistence model is implemented; Adapters use one intake service; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
     },
     {
       "id": "REQ-20260623-211",

@@ -27,6 +27,7 @@ const {
   formatStableId,
   goalModeExecutionRequested,
   gptCorrectionPacketDetected,
+  isoDate,
   normalizeSourceChannel,
   requirementRegisterPath,
   sourceQuote,
@@ -90,9 +91,11 @@ function hasAmbiguousWorkspaceRouting(text = '', input = {}) {
 }
 
 function intakeSourceDate(input = {}) {
-  const explicit = String(input.source_date || input.created_at || input.recorded_at || '').match(/\b(20\d{2}-\d{2}-\d{2})\b/);
+  const explicit = String(input.source_date || input.sourceDate || '').match(/^\s*(20\d{2}-\d{2}-\d{2})\s*$/);
   if (explicit) return explicit[1];
-  return new Date().toISOString().slice(0, 10);
+  const timestamp = input.created_at || input.createdAt || input.recorded_at || input.recordedAt || '';
+  if (timestamp) return isoDate(timestamp);
+  return isoDate();
 }
 
 function sourceExcerpt(text = '', start = 0, max = 420) {
@@ -376,12 +379,19 @@ function visibleFilingTargets(output = {}) {
 
 function makeProtocolIntakeItem(type, fragment, index, input = {}, fields = {}) {
   const sourceDate = intakeSourceDate(input);
+  const sourceEnvelope = buildParserSourceEnvelope(input, input.raw_input || input.raw_text || input.text || fragment?.text || '');
   return buildProtocolItem({
     type,
     date: sourceDate,
     index: index + 1,
     text: fragment?.text || '',
     source_quote: fragment?.excerpt || fragment?.text || '',
+    id_disambiguator: {
+      raw_id: input.raw_id || input.raw_intake?.stable_id || null,
+      source_id: input.source_id || input.sourceId || sourceEnvelope.source_id || null,
+      source_fingerprint: input.fingerprint || sourceEnvelope.fingerprint || null,
+      source_type: input.source_type || input.source || null,
+    },
     ...fields,
   });
 }
@@ -511,7 +521,17 @@ function addStableIdsToCanonicalOutput(output = {}, input = {}) {
     (items || []).forEach((item, index) => {
       const title = item.title || item.label || item.what || item.summary || type.replace(/_/g, ' ');
       const source = item.source_quote || item.source_excerpt || item.raw_excerpt || item.source_span?.excerpt || item.summary || title;
-      if (!item.stable_id) item.stable_id = formatStableId(type, sourceDate, index + 1);
+      const idDisambiguator = {
+        raw_id: input.raw_id || input.raw_intake?.stable_id || null,
+        source_id: input.source_id || input.sourceId || sourceEnvelope.source_id || null,
+        source_fingerprint: input.fingerprint || sourceEnvelope.fingerprint || null,
+        item_key: item.item_key || null,
+        item_type: type,
+        item_index: index + 1,
+        title,
+        source,
+      };
+      if (!item.stable_id) item.stable_id = formatStableId(type, sourceDate, index + 1, idDisambiguator);
       if (!item.item_key) item.item_key = `${type}:${item.stable_id}`;
       if (!item.short_title) item.short_title = title;
       if (!item.source_quote) item.source_quote = sourceQuote(source);
@@ -583,7 +603,12 @@ function buildRambleProtocol(output = {}, input = {}) {
     source_channel: normalizeSourceChannel(input.source_channel || sourceType),
     source_date: sourceDate,
     raw_id_format: 'RAW-YYYYMMDD-###',
-    raw_id: formatStableId('raw', sourceDate, 1),
+    raw_id: formatStableId('raw', sourceDate, 1, {
+      source_type: sourceType,
+      raw_text_hash: stableHash(rawText),
+      source_id: input.source_id || input.sourceId || null,
+      raw_id: input.raw_id || input.raw_intake?.stable_id || null,
+    }),
     raw_queue_table: 'bna_raw_intake',
     raw_capture_required: true,
     raw_capture_path: `memory/${sourceDate}.md`,
@@ -606,7 +631,7 @@ function buildRambleProtocol(output = {}, input = {}) {
     correction_audit_required: isCorrectionLikeInput(output.raw_input || input.raw_input || input.text || ''),
     filing_targets: filingTargets,
     confirmations: [
-      `Raw queue: bna_raw_intake using ${formatStableId('raw', sourceDate, 1)}-style IDs.`,
+      `Raw queue: bna_raw_intake using ${formatStableId('raw', sourceDate, 1, 'source-specific')}-style IDs.`,
       `Raw saved: memory/${sourceDate}.md.`,
       filingTargets.length
         ? `Distilled filing: ${filingTargets.map((item) => `${item.label} ${item.count}`).join(', ')}.`

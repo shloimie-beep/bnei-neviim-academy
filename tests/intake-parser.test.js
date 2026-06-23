@@ -49,6 +49,13 @@ function assertCanonicalShape(parsed) {
   }
 }
 
+function allStableIds(parsed) {
+  return CANONICAL_ARRAY_KEYS
+    .flatMap((key) => parsed[key] || [])
+    .map((item) => item.stable_id)
+    .filter(Boolean);
+}
+
 test('parser returns the canonical top-level shape and shaped task fields', () => {
   const parsed = parseIntakeText({
     raw_input: [
@@ -66,6 +73,49 @@ test('parser returns the canonical top-level shape and shaped task fields', () =
   assert.ok(parsed.tickets.length >= 1);
   assert.ok(parsed.goals.length >= 1);
   assert.ok(parsed.diet_nutrition_notes.length >= 1);
+});
+
+test('parser stable IDs include source context so same-day rambles do not collide', () => {
+  const input = {
+    raw_input: 'Task: Codex should fix the intake source.',
+    source_type: 'codex_chat',
+    source_date: '2026-06-23',
+  };
+  const first = parseIntakeText({ ...input, source_id: 'chat-a' });
+  const second = parseIntakeText({ ...input, source_id: 'chat-b' });
+  const repeat = parseIntakeText({ ...input, source_id: 'chat-a' });
+
+  assert.match(first.tasks[0].stable_id, /^TASK-20260623-001-[A-F0-9]{8}$/);
+  assert.equal(first.tasks[0].stable_id, repeat.tasks[0].stable_id);
+  assert.notEqual(first.tasks[0].stable_id, second.tasks[0].stable_id);
+});
+
+test('task and ticket display IDs remain unique even with the same TASK prefix', () => {
+  const parsed = parseIntakeText({
+    raw_input: 'Task: Codex should update parser. Ticket: operations parser is broken.',
+    source_type: 'codex_chat',
+    source_date: '2026-06-23',
+  });
+  const ids = allStableIds(parsed);
+
+  assert.equal(new Set(ids).size, ids.length);
+  assert.match(parsed.tasks[0].stable_id, /^TASK-20260623-001-[A-F0-9]{8}$/);
+  assert.match(parsed.tickets[0].stable_id, /^TASK-20260623-001-[A-F0-9]{8}$/);
+  assert.notEqual(parsed.tasks[0].stable_id, parsed.tickets[0].stable_id);
+});
+
+test('parser display IDs use Jerusalem dates for timestamped intake', () => {
+  const parsed = parseIntakeText({
+    raw_input: 'Task: Codex should verify Jerusalem display IDs.',
+    source_type: 'manual',
+    createdAt: '2026-06-16T22:30:00.000Z',
+  });
+
+  assert.equal(parsed.ramble_protocol.source_date, '2026-06-17');
+  assert.equal(parsed.ramble_protocol.raw_input_queue.source_date, '2026-06-17');
+  assert.match(parsed.tasks[0].stable_id, /^TASK-20260617-001-[A-F0-9]{8}$/);
+  assert.match(parsed.ramble_protocol.raw_id, /^RAW-20260617-001-[A-F0-9]{8}$/);
+  assert.equal(parsed.source_envelope.source_date, '2026-06-17');
 });
 
 test('parent transcript can extract people, relationship, goal, diet note, and custom section review', () => {
