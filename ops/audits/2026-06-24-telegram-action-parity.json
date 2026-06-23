@@ -1,0 +1,18 @@
+{
+  "requirement_id": "REQ-20260623-026",
+  "visible_controls": 22,
+  "visible_controls_classified": 22,
+  "total_registry_rows": 138,
+  "detailed_action_rows": 80,
+  "runtime_actions": 79,
+  "missing_contract": 0,
+  "missing_handler": 0,
+  "missing_tests": 0,
+  "risky_without_approval": 0,
+  "one_time_controls": 40,
+  "watchdog_actions": {
+    "status": "pass",
+    "finding_count": 0,
+    "latest_report": "ops/watchdog-audits/2026-06-23T21-03-watchdog-action-audit.md"
+  }
+}
