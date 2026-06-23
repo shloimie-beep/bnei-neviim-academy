@@ -94,3 +94,11 @@ test('assistant data model adds indexes for status, scope, and replay queues', (
     assert.match(server, new RegExp(`CREATE INDEX IF NOT EXISTS ${indexName}`));
   }
 });
+
+test('assistant data model exposes a protected read-only readiness route', () => {
+  assert.match(server, /app\.get\('\/api\/bna\/assistant\/control-plane\/readiness', requireAdmin/);
+  assert.match(server, /read_only_information_schema_and_pg_indexes_queries_only/);
+  assert.match(server, /no_assistant_rows_created_or_updated/);
+  assert.match(server, /channel_metadata_adapter_scoped: true/);
+  assert.match(server, /legacy_bna_assistant_tables_preserved: true/);
+});

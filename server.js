@@ -146,6 +146,9 @@ const {
   buildOneTimeIntegrationReadinessPayload,
 } = require('./src/platform/integrations/readiness');
 const {
+  ASSISTANT_DATA_MODEL_TABLES,
+} = require('./src/platform/assistant/control-plane');
+const {
   buildOneTimeRuntimeFlags,
 } = require('./src/platform/instances/one-time-separate-deployment');
 const {
@@ -8427,6 +8430,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/helper/knowledge' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/helper/action-log' && method === 'GET') return true;
   if (/^\/api\/bna\/helper\/runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/assistant/control-plane/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/intake/parse' && method === 'POST') return true;
   if (routePath === '/api/bna/intake/parse-runs' && method === 'GET') return true;
   if (/^\/api\/bna\/intake\/parse-runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
@@ -41213,6 +41217,78 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
     res.json(await buildIntegrationStatusPayload());
   } catch (err) {
     const safe = safeIntegrationError(err, 'Integration status failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, res) => {
+  try {
+    const expectedTables = [...ASSISTANT_DATA_MODEL_TABLES];
+    const expectedIndexes = [
+      'idx_assistant_identities_scope',
+      'idx_assistant_conversations_scope',
+      'idx_assistant_messages_conversation',
+      'idx_assistant_context_objects_scope',
+      'idx_assistant_action_plans_status',
+      'idx_assistant_action_runs_status',
+      'idx_assistant_previews_status',
+      'idx_assistant_approvals_status',
+      'idx_assistant_drafts_object',
+      'idx_assistant_draft_versions_draft',
+      'idx_assistant_templates_scope',
+      'idx_assistant_saved_views_owner',
+      'idx_assistant_reminders_status',
+      'idx_assistant_notifications_status',
+      'idx_assistant_onboarding_sessions_status',
+      'idx_assistant_delivery_outbox_status',
+      'idx_assistant_dead_letters_status',
+    ];
+    const [tableResult, indexResult] = await Promise.all([
+      pool.query(
+        `SELECT table_name
+           FROM information_schema.tables
+          WHERE table_schema = 'public'
+            AND table_name = ANY($1::text[])
+          ORDER BY table_name`,
+        [expectedTables]
+      ),
+      pool.query(
+        `SELECT indexname
+           FROM pg_indexes
+          WHERE schemaname = 'public'
+            AND indexname = ANY($1::text[])
+          ORDER BY indexname`,
+        [expectedIndexes]
+      ),
+    ]);
+    const tablesPresent = tableResult.rows.map((row) => row.table_name).sort();
+    const indexesPresent = indexResult.rows.map((row) => row.indexname).sort();
+    const tableSet = new Set(tablesPresent);
+    const indexSet = new Set(indexesPresent);
+    const missingTables = expectedTables.filter((table) => !tableSet.has(table));
+    const missingIndexes = expectedIndexes.filter((indexName) => !indexSet.has(indexName));
+    res.json({
+      success: true,
+      requirement_id: 'REQ-20260623-012',
+      status: missingTables.length || missingIndexes.length ? 'incomplete' : 'implemented_read_only',
+      canonical_model: 'assistant_control_plane_v1',
+      tables_expected: expectedTables.length,
+      tables_present: tablesPresent.length,
+      missing_tables: missingTables,
+      indexes_expected: expectedIndexes.length,
+      indexes_present: indexesPresent.length,
+      missing_indexes: missingIndexes,
+      channel_metadata_adapter_scoped: true,
+      legacy_bna_assistant_tables_preserved: true,
+      no_write_guard: [
+        'read_only_information_schema_and_pg_indexes_queries_only',
+        'no_assistant_rows_created_or_updated',
+        'no_external_send_publish_charge_dns_oauth_or_connector_call',
+        'no_secret_values_returned',
+      ],
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant control-plane readiness failed');
     res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
   }
 });
