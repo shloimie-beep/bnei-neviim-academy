@@ -3,32 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { google } from 'googleapis';
+import { loadSmokeEnv, resolveOpsCredentials } from './lib/live-smoke-auth.mjs';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const secretsDir = path.join(repoRoot, '.secrets');
 const reportDir = path.join(repoRoot, 'ops', 'live-smokes');
-
-function parseEnvFile(filePath) {
-  if (!fs.existsSync(filePath)) return {};
-  const result = {};
-  for (const rawLine of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) continue;
-    const separator = line.indexOf('=');
-    if (separator <= 0) continue;
-    const key = line.slice(0, separator).trim();
-    let value = line.slice(separator + 1).trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    result[key] = value;
-  }
-  return result;
-}
 
 function readJsonIfExists(filePath) {
   if (!fs.existsSync(filePath)) return null;
@@ -41,11 +21,13 @@ function readSecret(name) {
 }
 
 function loadConfig() {
-  const env = { ...parseEnvFile(envLocalPath), ...process.env };
+  const env = loadSmokeEnv({ root: repoRoot, envFile: envLocalPath });
+  const opsCredentials = resolveOpsCredentials({ env, cwd: repoRoot });
   return {
     appUrl: env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org',
-    opsUsername: env.OPS_USERNAME || '',
-    opsPassword: env.OPS_PASSWORD || '',
+    opsUsername: opsCredentials.username,
+    opsPassword: opsCredentials.password,
+    opsAuthSource: opsCredentials.source,
     requireDrive: process.argv.includes('--require-drive'),
     requireBuffer: process.argv.includes('--require-buffer') || process.argv.includes('--require-legacy CRM'),
     googleRefreshToken: env.GOOGLE_REFRESH_TOKEN || readSecret('google-refresh-token.txt'),
@@ -242,12 +224,13 @@ function writeReports(report) {
 async function main() {
   const config = loadConfig();
   if (!config.opsUsername || !config.opsPassword) {
-    throw new Error('OPS_USERNAME and OPS_PASSWORD are required for live app smoke tests');
+    throw new Error('OPS_USERNAME and OPS_PASSWORD are required for live app smoke tests; set them locally or allow Railway auth fallback.');
   }
 
   const report = {
     started_at: new Date().toISOString(),
     app_url: config.appUrl,
+    auth_source: config.opsAuthSource,
     steps: [],
   };
   let sessionCookie = '';

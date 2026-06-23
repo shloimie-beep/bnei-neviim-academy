@@ -2,29 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
+import { loadSmokeEnv, loginOperations } from './lib/live-smoke-auth.mjs';
 
 const root = process.cwd();
 const reportDir = path.join(root, 'ops', 'live-smokes');
-
-function loadEnvFile(filePath) {
-  if (!filePath || !fs.existsSync(filePath)) return {};
-  const env = {};
-  for (const rawLine of fs.readFileSync(filePath, 'utf8').split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#') || !line.includes('=')) continue;
-    const index = line.indexOf('=');
-    const key = line.slice(0, index).trim();
-    let value = line.slice(index + 1).trim();
-    if (
-      (value.startsWith('"') && value.endsWith('"')) ||
-      (value.startsWith("'") && value.endsWith("'"))
-    ) {
-      value = value.slice(1, -1);
-    }
-    env[key] = value;
-  }
-  return env;
-}
 
 function parseArgs(argv) {
   const options = {
@@ -49,13 +30,6 @@ function parseArgs(argv) {
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
-}
-
-function parseCookie(setCookieHeader = '') {
-  const pair = String(setCookieHeader || '').split(';')[0] || '';
-  const index = pair.indexOf('=');
-  if (index <= 0) return null;
-  return { name: pair.slice(0, index), value: pair.slice(index + 1) };
 }
 
 function writeReports(report, options) {
@@ -92,25 +66,8 @@ function writeReports(report, options) {
   };
 }
 
-async function login(baseUrl, env) {
-  const username = env.OPS_USERNAME || '';
-  const password = env.OPS_PASSWORD || '';
-  if (!username || !password) return null;
-  const response = await fetch(`${baseUrl}/api/operations/login`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ username, password }),
-  });
-  const data = await response.json().catch(() => ({}));
-  assert(response.status === 200 && data.success === true, 'Operations login did not succeed');
-  const cookie = parseCookie(response.headers.get('set-cookie') || '');
-  assert(cookie?.name === 'bna_ops_session' && cookie.value, 'Operations login did not set session cookie');
-  return cookie;
-}
-
 async function main() {
-  const envFile = process.env.BNA_ENV_FILE || path.join(root, '.env.local');
-  const env = { ...loadEnvFile(envFile), ...process.env };
+  const env = loadSmokeEnv({ root });
   const options = parseArgs(process.argv.slice(2));
   const startedAt = new Date().toISOString();
   const viewports = [
@@ -190,6 +147,7 @@ async function main() {
     app_url: options.baseUrl,
     routes: routes.map(({ label, path: routePath }) => ({ label, path: routePath })),
     viewports,
+    auth_source: 'unknown',
     checks: [],
   };
 
@@ -210,7 +168,9 @@ async function main() {
 
   const browser = await chromium.launch({ headless: true });
   try {
-    const sessionCookie = await login(options.baseUrl, env);
+    const session = await loginOperations({ baseUrl: options.baseUrl, env, cwd: root });
+    const sessionCookie = session.cookie;
+    report.auth_source = session.source || 'missing';
     await check('public health endpoint', async () => {
       const response = await fetch(`${options.baseUrl}/api/health`, { headers: { accept: 'application/json' } });
       const data = await response.json();
@@ -229,7 +189,7 @@ async function main() {
         for (const route of routes) {
           const checkName = `${route.label} ${viewport.name}`;
           if (route.needsSession && !sessionCookie) {
-            const reason = 'OPS_USERNAME/OPS_PASSWORD unavailable; authenticated Operations route not checked.';
+            const reason = session.reason || 'Operations authentication unavailable; authenticated Operations route not checked.';
             report.checks.push({ name: checkName, ok: true, skipped: true, duration_ms: 0, details: { reason } });
             console.log(`SKIP ${checkName}: ${reason}`);
             continue;
