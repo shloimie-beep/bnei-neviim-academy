@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T15:03:24+03:00",
+  "updated_at": "2026-06-23T15:09:48+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -565,11 +565,11 @@
         "REQ-20260623-204"
       ],
       "status": "in_progress",
-      "implementation_status": "canonical_auto_resume_lifecycle_slice_complete",
+      "implementation_status": "canonical_auto_resume_watchdog_slice_complete",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Continue approved production persistence apply/readback, production auto-resume watchdog wiring, Operations UI, broader watchdogs, deploy, and live verification after this local lifecycle slice.",
+      "next_action": "Continue approved production persistence apply/readback, Operations UI source/audit tabs, deploy, and live verification after this local watchdog contract slice.",
       "acceptance_criteria": [
         "Stable display IDs do not collide across same-day sources or shared item prefixes",
         "Passed verification packages close through canonical parent prompt statuses",
@@ -581,6 +581,7 @@
         "Synthetic E2E exercises canonical intake service/readback locally",
         "Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows",
         "Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally",
+        "Raw-intake watchdog guards the prompt auto-resume lifecycle contract",
         "Canonical persistence model is implemented",
         "Decision auto-resume is tested",
         "Operations compact views are verified",
@@ -642,6 +643,9 @@
         "npm run platform:synthetic-e2e: PASS, lifecycle auto-resume artifact updated",
         "node --check tests/service-provider-studio-browser-smoke.test.js: PASS",
         "node --test tests/service-provider-studio-browser-smoke.test.js: PASS, 1/1",
+        "node --check scripts/watchdog-raw-intake-drift.mjs: PASS",
+        "node --test tests/watchdog-raw-intake-drift.test.js tests/ingestion/w3-parser-queue.test.js: PASS, 9/9",
+        "npm run watchdog:raw: PASS, ok true, severity medium, findings 2; prompt auto-resume contract guarded",
         "npm run bna:run:validate: PASS",
         "npm run bna:run:source-coverage: PASS",
         "npm test: PASS, 1082/1082",
@@ -676,8 +680,8 @@
         "tests/system-truth-scripts.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T15:03:24+03:00",
-      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
+      "updated_at": "2026-06-23T15:09:48+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
     },
     {
       "id": "REQ-20260623-211",

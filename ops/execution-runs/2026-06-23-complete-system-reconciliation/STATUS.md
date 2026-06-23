@@ -1,5 +1,29 @@
 # Status
 
+## 2026-06-23T15:09:48+03:00
+
+Status: running, with the tenth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with raw-intake watchdog parity for the parent
+prompt auto-resume lifecycle contract. The watchdog now guards the prompt queue
+auto-resume planner/apply helper, resolved-decision action, stale-heartbeat
+routing, and no-external-write marker.
+
+Verified in this slice:
+
+- `scripts/watchdog-raw-intake-drift.mjs` checks the prompt queue lifecycle
+  contract alongside intake service/readback contracts.
+- `tests/watchdog-raw-intake-drift.test.js` expects the new prompt-queue
+  contract check.
+- `npm run watchdog:raw` passed with `ok: true`; the two existing medium raw
+  provenance findings remain non-failing.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  Operations UI, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T15:03:24+03:00
 
 Status: running, with the ninth canonical implementation slice complete.

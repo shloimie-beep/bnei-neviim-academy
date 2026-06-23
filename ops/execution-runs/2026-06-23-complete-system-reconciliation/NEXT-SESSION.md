@@ -15,9 +15,10 @@ Open requirements:
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
   verified. Local synthetic E2E now covers canonical intake/readback, local
-  memory persistence projects parsed entity rows, and local prompt auto-resume
-  planning is covered. Remaining approved production persistence apply,
-  UI/broader watchdog, deploy, and live verification work remain open.
+  memory persistence projects parsed entity rows, local prompt auto-resume
+  planning is covered, and the raw-intake watchdog guards the auto-resume
+  contract. Remaining approved production persistence apply, UI, deploy, and
+  live verification work remain open.
 
 Next exact commands for continuation:
 
@@ -51,6 +52,8 @@ Completed implementation slice:
   community, integration, notes, and unresolved review rows.
 - Local prompt auto-resume planner for resolved Decisions, all-terminal child
   outcomes, and stale heartbeats routed to `needs_decision`.
+- Raw-intake watchdog contract guard for the prompt auto-resume lifecycle
+  planner/apply helper.
 
 Follow-on implementation scope:
 
@@ -59,8 +62,8 @@ Follow-on implementation scope:
   recordings, approved uploads, and the now-normalized GitHub/ChatGPT source
   providers.
 - Approved production persistence apply/readback for canonical parsed entities.
-- Production auto-resume watchdog wiring, Operations UI source/audit tabs,
-  deploy, and live read-only verification.
+- Approved production persistence apply/readback, Operations UI source/audit
+  tabs, deploy, and live read-only verification.
 
 Do not deploy, delete worktrees, rewrite Git history, apply production backfill,
 send messages, upload to Vimeo, or charge cards without explicit gates.

@@ -30,6 +30,12 @@
 - `node --test tests/watchdog-raw-intake-drift.test.js tests/ingestion/w3-intake-persistence.test.js tests/ingestion/w3-intake-service.test.js`:
   PASS, 7/7.
 - `npm run watchdog:raw`: PASS, `ok: true`, severity `medium`, findings 2.
+- `node --check scripts/watchdog-raw-intake-drift.mjs`:
+  PASS.
+- `node --test tests/watchdog-raw-intake-drift.test.js tests/ingestion/w3-parser-queue.test.js`:
+  PASS, 9/9.
+- `npm run watchdog:raw`:
+  PASS, `ok: true`, severity `medium`, findings 2; prompt auto-resume contract guarded.
 - `node --check scripts/platform-synthetic-e2e.mjs`:
   PASS.
 - `node --test tests/one-time-synthetic-pilot.test.js tests/ingestion/w3-intake-persistence.test.js`:

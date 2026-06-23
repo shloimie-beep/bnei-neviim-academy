@@ -136,6 +136,15 @@ Canonical auto-resume lifecycle slice verified:
   stable in-page query, avoiding the unrelated DOM-detach flake observed during
   full-suite verification.
 
+Canonical auto-resume watchdog contract slice verified:
+
+- `scripts/watchdog-raw-intake-drift.mjs` guards the prompt queue auto-resume
+  planner/apply helper alongside intake service and readback contracts.
+- Watchdog contract markers cover resolved-decision resume, stale-heartbeat
+  routing, and the no-external-write marker.
+- Focused watchdog/queue tests passed, 9/9, and `npm run watchdog:raw` passed
+  with the existing non-failing medium raw provenance findings.
+
 ## Privacy Boundary
 
 - The full Goal Mode prompt is not committed; only a local pointer/hash is.

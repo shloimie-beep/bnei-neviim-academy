@@ -114,6 +114,18 @@ export function buildRawIntakeDriftAudit() {
     recommended_fix: 'Restore local apply/readback coverage before approving any production persistence path.',
   });
   requireCanonicalContract({
+    file: 'src/platform/ingestion/prompt-queue.js',
+    label: 'Parent prompt auto-resume lifecycle',
+    patterns: [
+      ['auto-resume planner', /\bbuildPromptAutoResumePlan\b/],
+      ['auto-resume apply helper', /\bapplyPromptAutoResumePlan\b/],
+      ['resolved decision action', /resume_after_decision/],
+      ['stale heartbeat routing', /stale_heartbeat/],
+      ['no external write flag', /external_write_performed:\s*false/],
+    ],
+    recommended_fix: 'Restore local prompt auto-resume planning before enabling production watchdog resume paths.',
+  });
+  requireCanonicalContract({
     file: 'scripts/intake-github.mjs',
     label: 'GitHub intake adapter',
     patterns: [
