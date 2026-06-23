@@ -84,3 +84,22 @@ Integration gates passed:
 Next work: push the verified integration HEAD to `origin/master`, confirm the
 default branch commit, then run the normal deploy/live-smoke proof or record
 the exact deploy blocker.
+
+## 2026-06-23T10:36:00+03:00
+
+Status: complete.
+
+Pushed the verified integration HEAD to `origin/master`, advancing the actual
+default branch from `4d412797` to
+`2d49578e26e15499615de8df5c003da0232b2423`.
+
+Post-push proof:
+
+- `npm run app:smoke`: PASS; report
+  `ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md`.
+- Read-only Studio live smoke: PASS; report
+  `ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md`.
+- `npm run railway:doctor`: blocked by missing `RAILWAY_TOKEN` in the isolated
+  worktree; live endpoint smoke passed after deploy catch-up.
+
+All `REQ-20260623-001` through `REQ-20260623-015` are terminal Done.

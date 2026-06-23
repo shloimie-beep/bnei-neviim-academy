@@ -6,14 +6,14 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] Execute `RAW-20260623-001`: Universal Service Provider Studio goal-mode
+- [x] Execute `RAW-20260623-001`: Universal Service Provider Studio goal-mode
   implementation in clean worktree
   `C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio`.
   Register: `tasks-pending/2026-06-23-universal-service-provider-studio.md`.
   Active run: `ops/execution-runs/2026-06-23-service-provider-studio/`.
-  Current batch: baseline/canonical audit, then complete credential-free
-  Studio implementation, tests, independent verification, and merge to actual
-  default branch only after gates pass.
+  Completed: raw/register, canonical audit, credential-free Studio
+  implementation, clean integration from latest default, default-branch push,
+  standard live smoke, read-only Studio live smoke, and final evidence closeout.
 - [ ] Continue `RAW-20260621-001` / `REQ-20260619-301` in the active run
   `ops/execution-runs/2026-06-21-one-time-master-completion/`: Batch 0 is
   committed and PR #5 was advanced to `e1706a8e` through a workflow-safe

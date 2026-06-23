@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-service-provider-studio",
   "title": "Universal Service Provider Studio",
-  "updated_at": "2026-06-23T10:28:00+03:00",
+  "updated_at": "2026-06-23T10:36:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-001",
@@ -266,12 +266,12 @@
       "depends_on": [
         "REQ-20260623-002"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Migration reruns safely",
         "Raw source immutable/versioned",
@@ -286,7 +286,10 @@
         "tests/service-provider-studio-domain.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -310,7 +313,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "server.js",
@@ -319,8 +326,19 @@
         "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Migration reruns safely; Raw source immutable/versioned; Stages separated from approvals/render/publish; No large media binaries in PostgreSQL"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Migration reruns safely; Raw source immutable/versioned; Stages separated from approvals/render/publish; No large media binaries in PostgreSQL",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-004",
@@ -339,12 +357,12 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Cross-provider enumeration rejected",
         "ID tampering rejected",
@@ -358,7 +376,10 @@
         "docs/security/service-provider-studio-privacy.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -382,7 +403,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "server.js",
@@ -390,8 +415,19 @@
         "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Cross-provider enumeration rejected; ID tampering rejected; Public/member routes cannot access Studio drafts; Super Admin aggregate labels explicit"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Cross-provider enumeration rejected; ID tampering rejected; Public/member routes cannot access Studio drafts; Super Admin aggregate labels explicit",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-005",
@@ -410,12 +446,12 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Plain/rich/Hebrew/mixed RTL paste works",
         "Raw source never overwritten",
@@ -431,7 +467,10 @@
         "tests/service-provider-studio-browser-smoke.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -455,7 +494,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -464,8 +507,19 @@
         "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Plain/rich/Hebrew/mixed RTL paste works; Raw source never overwritten; Emphasis stored as annotation; Unsafe clipboard HTML stripped; WebKit paste tests pass"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Plain/rich/Hebrew/mixed RTL paste works; Raw source never overwritten; Emphasis stored as annotation; Unsafe clipboard HTML stripped; WebKit paste tests pass",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-006",
@@ -484,12 +538,12 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Layers visible/versioned/compiled in deterministic order",
         "Untrusted source delimited",
@@ -504,7 +558,10 @@
         "docs/architecture/service-provider-studio-prompt-engine.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -528,7 +585,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -537,8 +598,19 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Layers visible/versioned/compiled in deterministic order; Untrusted source delimited; Invalid structured output rejected or repaired; Adversarial source cannot override policy"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Layers visible/versioned/compiled in deterministic order; Untrusted source delimited; Invalid structured output rejected or repaired; Adversarial source cannot override policy",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-007",
@@ -557,12 +629,12 @@
       "depends_on": [
         "REQ-20260623-006"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Corrections become structured patches",
         "Broad changes show affected layers and require confirmation",
@@ -576,7 +648,10 @@
         "tests/service-provider-studio-browser-smoke.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -600,7 +675,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -609,8 +688,19 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Corrections become structured patches; Broad changes show affected layers and require confirmation; Every material change has history and rollback"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Corrections become structured patches; Broad changes show affected layers and require confirmation; Every material change has history and rollback",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-008",
@@ -629,12 +719,12 @@
       "depends_on": [
         "REQ-20260623-004"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Studio appears before Content for service providers",
         "Unauthorized/family workspaces do not see it",
@@ -650,7 +740,10 @@
         "tests/ui-01-public-operations-shell.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -674,7 +767,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -684,8 +781,19 @@
         "tests/service-provider-studio-operations-ui.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Studio appears before Content for service providers; Unauthorized/family workspaces do not see it; Dashboard shows project facts, usage, job errors, and next actions"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Studio appears before Content for service providers; Unauthorized/family workspaces do not see it; Dashboard shows project facts, usage, job errors, and next actions",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-009",
@@ -704,12 +812,12 @@
       "depends_on": [
         "REQ-20260623-008"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Add/duplicate/delete/reorder scenes",
         "Edit title/body/narration/assets/duration/transition/text styling/focal point/characters",
@@ -724,7 +832,10 @@
         "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -748,7 +859,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -756,8 +871,19 @@
         "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Add/duplicate/delete/reorder scenes; Edit title/body/narration/assets/duration/transition/text styling/focal point/characters; Preview sequence; No horizontal overflow at required viewports"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Add/duplicate/delete/reorder scenes; Edit title/body/narration/assets/duration/transition/text styling/focal point/characters; Preview sequence; No horizontal overflow at required viewports",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-010",
@@ -776,12 +902,12 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Jobs scoped/idempotent/observable/retryable/cancellable",
         "Deterministic mock generation/render works without live credentials",
@@ -795,7 +921,10 @@
         "tests/service-provider-studio-domain.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -819,7 +948,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "server.js",
@@ -828,8 +961,19 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Jobs scoped/idempotent/observable/retryable/cancellable; Deterministic mock generation/render works without live credentials; Assets carry rights/privacy metadata"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Jobs scoped/idempotent/observable/retryable/cancellable; Deterministic mock generation/render works without live credentials; Assets carry rights/privacy metadata",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-011",
@@ -848,12 +992,12 @@
       "depends_on": [
         "REQ-20260623-010"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Every Studio attempt logs scoped cost metadata",
         "Provider sees own totals only",
@@ -868,7 +1012,10 @@
         "tests/service-provider-studio-domain.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -892,7 +1039,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -901,8 +1052,19 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Every Studio attempt logs scoped cost metadata; Provider sees own totals only; Super Admin sees explicit aggregate; Soft alerts, hard limits, and audited override work"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Every Studio attempt logs scoped cost metadata; Provider sees own totals only; Super Admin sees explicit aggregate; Soft alerts, hard limits, and audited override work",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-012",
@@ -922,12 +1084,12 @@
         "REQ-20260623-009",
         "REQ-20260623-010"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Handoff is idempotent",
         "Provenance, rights, usage, and manifest data travel",
@@ -943,7 +1105,10 @@
         "tests/service-provider-studio-api-contract.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -967,7 +1132,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -976,8 +1145,19 @@
         "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Handoff is idempotent; Provenance, rights, usage, and manifest data travel; Canonical content draft created; No automatic publication or member access grant"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Handoff is idempotent; Provenance, rights, usage, and manifest data travel; Canonical content draft created; No automatic publication or member access grant",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-013",
@@ -997,12 +1177,12 @@
         "REQ-20260623-003",
         "REQ-20260623-012"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Mishnah source fixture",
         "Goal, three scenes, two characters, Jewish context pack",
@@ -1015,7 +1195,10 @@
         "tests/service-provider-studio-domain.test.js",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -1039,15 +1222,30 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "src/lib/bna/service-provider-studio.js",
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Mishnah source fixture; Goal, three scenes, two characters, Jewish context pack; Correction patches, mock image/render, content draft handoff, usage rollups; No private child data"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Mishnah source fixture; Goal, three scenes, two characters, Jewish context pack; Correction patches, mock image/render, content draft handoff, usage rollups; No private child data",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": "",
+      "deployed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "live_smoke": "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+      "deployment_evidence": [
+        "default branch pushed commit 2d49578e26e15499615de8df5c003da0232b2423",
+        "live smoke passed: ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "standard live app smoke passed: ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Railway doctor blocked by missing RAILWAY_TOKEN; live endpoint smoke passed after deploy catch-up."
+      ]
     },
     {
       "id": "REQ-20260623-014",
@@ -1076,12 +1274,12 @@
         "REQ-20260623-012",
         "REQ-20260623-013"
       ],
-      "status": "needs_verification",
-      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Required docs exist",
         "Focused/full tests pass",
@@ -1105,7 +1303,10 @@
         "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -1129,7 +1330,11 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "docs/product/service-provider-studio.md",
@@ -1141,8 +1346,11 @@
         "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Required docs exist; Focused/full tests pass; Watchdogs pass; Secret/large-file scans pass; Migration repeat passes; Chromium/WebKit 390/768/1440 pass; Independent verification passes or blockers explicit"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Required docs exist; Focused/full tests pass; Watchdogs pass; Secret/large-file scans pass; Migration repeat passes; Chromium/WebKit 390/768/1440 pass; Independent verification passes or blockers explicit",
+      "implementation_commit": "4936394ae0a942ad5cfc096dc281b6229bdf2fa1",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": ""
     },
     {
       "id": "REQ-20260623-015",
@@ -1161,12 +1369,12 @@
       "depends_on": [
         "REQ-20260623-014"
       ],
-      "status": "in_progress",
-      "implementation_status": "clean_integration_gates_passed_default_push_pending",
+      "status": "done",
+      "implementation_status": "pushed_to_default_live_smoked",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Push HEAD to origin/master, confirm default branch commit, then run deploy/live-smoke proof or record exact blocker.",
+      "next_action": "None; monitor live app and continue only if operator reports follow-up refinements.",
       "acceptance_criteria": [
         "Clean integration worktree from latest default",
         "Conflicts reviewed",
@@ -1178,7 +1386,9 @@
         "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md",
+        "ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md"
       ],
       "verification": [
         "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
@@ -1192,14 +1402,21 @@
         "git diff --check: PASS in integration worktree",
         "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
         "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
-        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md",
+        "git push origin HEAD:master: PASS, origin/master advanced from 4d412797 to 2d49578e",
+        "npm run railway:doctor: BLOCKED, missing RAILWAY_TOKEN in isolated worktree",
+        "npm run app:smoke: PASS, report ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md",
+        "Read-only Studio live smoke: PASS, /operations?view=studio 200, /api/bna/studio/dashboard 200 success true, /api/bna/studio/usage 200 success true"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T10:28:00+03:00",
-      "expected_result": "Clean integration worktree from latest default; Conflicts reviewed; Feature merged/pushed to actual default or exact branch-protection blocker recorded; Final default worktree clean"
+      "updated_at": "2026-06-23T10:36:00+03:00",
+      "expected_result": "Clean integration worktree from latest default; Conflicts reviewed; Feature merged/pushed to actual default or exact branch-protection blocker recorded; Final default worktree clean",
+      "implementation_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "pushed_commit": "2d49578e26e15499615de8df5c003da0232b2423",
+      "blocker_next_action": ""
     }
   ]
 }

@@ -25531,3 +25531,26 @@ Integration verification passed: `node --check server.js`,
 `npm run watchdog:security`. The next step is pushing the verified integration
 HEAD to `origin/master`, then recording deploy/live-smoke proof before
 terminal Done.
+
+## 2026-06-23T10:36:00+03:00 - Universal Service Provider Studio Done, Default Pushed, Live Verified
+
+Closed `RAW-20260623-001` / `TASK-20260623-001` / `REQ-20260623-001` through
+`REQ-20260623-015`. The verified integration HEAD was pushed to the actual
+default branch, advancing `origin/master` to
+`2d49578e26e15499615de8df5c003da0232b2423`.
+
+Post-push proof passed through the standard live app smoke
+`ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md` and the read-only
+Studio live smoke
+`ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md`.
+The Studio API initially returned 404/500 during deploy catch-up, then returned
+200 with `success: true`; `/operations?view=studio` and `/api/bna/studio/usage`
+also passed. `npm run railway:doctor` could not read Railway metadata because
+the isolated worktree had no `RAILWAY_TOKEN`, but live endpoint verification
+passed.
+
+Durable memory was updated to keep Studio as a separate service-provider module
+before Content. No live vendor generation, external send, public publish,
+charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
+external CRM/GHL write, raw private source readback, or secret exposure was
+performed.

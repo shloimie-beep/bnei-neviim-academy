@@ -92,3 +92,14 @@ Browser evidence:
 - `npm run watchdog:security`: PASS; report
   `ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md`,
   severity `ok`, finding_count `0`.
+
+## Post-Push Live Gates
+
+- `git push origin HEAD:master`: PASS; `origin/master` advanced from
+  `4d412797` to `2d49578e`.
+- `npm run railway:doctor`: BLOCKED; no `RAILWAY_TOKEN` found in
+  `.secrets\railway-token.txt` in the isolated integration worktree.
+- `npm run app:smoke`: PASS; report
+  `ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md`.
+- Read-only Studio live smoke: PASS; report
+  `ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md`.

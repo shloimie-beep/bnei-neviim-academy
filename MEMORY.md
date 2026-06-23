@@ -982,6 +982,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
      and available class options.
    - First seeded provider/class option to account for: the 7:00 Rabbi Scheller
      Mishnah class.
+   - Service-provider workspaces have a separate `Studio` module before
+     `Content` for pre-production lesson/media preparation: source intake,
+     storyboard/prompt/correction work, mock renders, usage metering, and
+     no-publish handoff into Content/Library drafts.
 
 4. **Affiliate Business Apprenticeship**
    - Student teams do real work for real businesses

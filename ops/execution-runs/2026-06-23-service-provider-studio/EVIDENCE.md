@@ -86,3 +86,17 @@ Vimeo upload, paid API call, DNS change, or Railway provisioning was performed.
   `ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md`
 - Integration tests:
   `npm test` PASS 1063/1063; `npm run studio:smoke` PASS 1/1.
+
+## Default Push And Live Smoke Evidence
+
+- Default push:
+  `git push origin HEAD:master` advanced `origin/master` to
+  `2d49578e26e15499615de8df5c003da0232b2423`.
+- Standard live app smoke:
+  `ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md`
+- Read-only Studio live smoke:
+  `ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md`
+- Railway doctor:
+  blocked by missing `.secrets\railway-token.txt` / `RAILWAY_TOKEN` in the
+  isolated integration worktree; live endpoint smoke passed after the Studio
+  API came up.
