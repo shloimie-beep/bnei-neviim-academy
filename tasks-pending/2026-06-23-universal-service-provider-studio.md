@@ -65,7 +65,7 @@ real credential/account/legal/financial/privacy choice blocks a requirement.
 
 | ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
 |---|---|---|---|---|---|---|---|---|
-| TASK-20260623-001 | studio-goal-mode-execution | Implement and verify Universal Service Provider Studio from the registered prompt. | Codex | all service-provider workspaces | RAW-20260623-001 | REQ-20260623-001..REQ-20260623-015 | Execute batches A-J in the isolated worktree. | Agent lifecycle | running |
+| TASK-20260623-001 | studio-goal-mode-execution | Implement and verify Universal Service Provider Studio from the registered prompt. | Codex | all service-provider workspaces | RAW-20260623-001 | REQ-20260623-001..REQ-20260623-015 | Local implementation/gates passed; create clean default integration worktree, merge, push, then record deploy/live-smoke proof. | Agent lifecycle | running |
 
 ## Decisions
 
@@ -94,9 +94,9 @@ topology changes are explicitly out of scope unless separately approved.
 |---|---|---|---|---|---|---|
 | REQ-20260623-001 | raw-input, memory, tasks-pending, ops/execution-runs | Register source and active run in clean worktree. | `npm run bna:run:validate` PASS; `npm run bna:run:next` PASS. | pending | pending | n/a |
 | REQ-20260623-002 | docs/product baseline plus inspected files | Inspected canonical Operations, provider workspace, content/prompt, job, Remotion, usage, registry, and browser-smoke patterns; documented reuse plan. | Baseline artifact created at `docs/product/service-provider-studio-baseline-2026-06-23.md`. | pending | pending | n/a |
-| REQ-20260623-003..REQ-20260623-013 | server.js, public, src, migrations, tests, registries | Implement complete credential-free Studio product slice. | Focused tests, full tests, Playwright/WebKit, watchdogs. | pending | pending | pending default auto-deploy state |
-| REQ-20260623-014 | docs, ops, screenshots, verification reports | Independent second pass from clean state. | Required gates. | pending | pending | pending |
-| REQ-20260623-015 | clean integration worktree/default branch | Merge only after gates. | Final git status/remote default verification. | pending | pending | pending |
+| REQ-20260623-003..REQ-20260623-013 | server.js, public, src, migrations, tests, registries | Implement complete credential-free Studio product slice. | `npm test` PASS 1060/1060; `npm run studio:smoke` PASS; focused Studio tests PASS; watchdogs PASS; secret scan PASS; `git diff --check` PASS. | pending feature commit | pending default push | pending default auto-deploy state |
+| REQ-20260623-014 | docs, ops, screenshots, verification reports | Independent second pass from clean state. | Docs, route/action registries, watchdog reports, and browser screenshots created; `npm run bna:run:validate` PASS with work remaining by design. | pending feature commit | pending default push | pending deploy/live proof |
+| REQ-20260623-015 | clean integration worktree/default branch | Merge only after gates. | Local gates passed; clean integration worktree still pending. | pending feature commit | pending default push | pending |
 
 ## Final audit
 
@@ -104,16 +104,16 @@ topology changes are explicitly out of scope unless separately approved.
 |---|---|---|---|---|---|
 | REQ-20260623-001 | Done | Raw prompt, memory record, requirement register, active execution run, `npm run bna:run:validate` PASS. | raw-input, memory, tasks-pending, ops/execution-runs | `npm run bna:run:validate` PASS; `npm run bna:run:next` PASS. | none |
 | REQ-20260623-002 | Done | `docs/product/service-provider-studio-baseline-2026-06-23.md`; inspected `server.js`, `public/operations.html`, `src/remotion`, content APIs, scope helpers, registries, and Playwright smoke patterns. | docs/product/service-provider-studio-baseline-2026-06-23.md, tasks-pending register, run docs | Canonical baseline audit completed before product-code edits. | none |
-| REQ-20260623-003 | Pending | pending | pending | pending | not started |
-| REQ-20260623-004 | Pending | pending | pending | pending | not started |
-| REQ-20260623-005 | Pending | pending | pending | pending | not started |
-| REQ-20260623-006 | Pending | pending | pending | pending | not started |
-| REQ-20260623-007 | Pending | pending | pending | pending | not started |
-| REQ-20260623-008 | Pending | pending | pending | pending | not started |
-| REQ-20260623-009 | Pending | pending | pending | pending | not started |
-| REQ-20260623-010 | Pending | pending | pending | pending | not started |
-| REQ-20260623-011 | Pending | pending | pending | pending | not started |
-| REQ-20260623-012 | Pending | pending | pending | pending | not started |
-| REQ-20260623-013 | Pending | pending | pending | pending | not started |
-| REQ-20260623-014 | Pending | pending | pending | pending | not started |
-| REQ-20260623-015 | Pending | pending | pending | pending | not started |
+| REQ-20260623-003 | Pending | Additive schema/domain implemented and locally verified. | `railway-migration-2026-06-23-service-provider-studio.sql`; `src/lib/bna/service-provider-studio.js`; `server.js`; tests | Focused Studio tests PASS; `npm test` PASS 1060/1060. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-004 | Pending | Scoped API allowlist, project ownership checks, and private route registry implemented. | `server.js`; `ops/route-registry.json`; `docs/security/service-provider-studio-privacy.md`; tests | Route-security watchdog PASS; focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-005 | Pending | Source paste/sanitize/normalize and annotation flow implemented; raw source withheld from API readback. | `src/lib/bna/service-provider-studio.js`; `server.js`; `public/operations.html`; tests | Browser smoke PASS; focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-006 | Pending | Layered prompt compiler, untrusted source boundaries, schema validation, and injection defense implemented. | `src/lib/bna/service-provider-studio.js`; `server.js`; `public/operations.html`; docs/tests | Focused domain tests PASS; full suite PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-007 | Pending | Correction preview/apply workflow implemented with structured patches and confirmation path. | `src/lib/bna/service-provider-studio.js`; `server.js`; `public/operations.html`; tests | Browser smoke PASS; focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-008 | Pending | Operations Studio module added before Content for provider/platform views; family/household excluded. | `public/operations.html`; `server.js`; registries; tests | Action watchdog PASS; route-security watchdog PASS; focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-009 | Pending | Storyboard editor, scene rail/inspector, preview, and responsive handoff flow implemented. | `public/operations.html`; `src/lib/bna/service-provider-studio.js`; browser smoke screenshots | `npm run studio:smoke` PASS; desktop/mobile screenshots saved. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-010 | Pending | Mock render/job/export/asset records and retry/cancel flow implemented without vendor writes. | `src/lib/bna/service-provider-studio.js`; `server.js`; migration; tests/docs | Focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-011 | Pending | Usage events, price catalog, budget rollups, and API Usage Studio cards implemented. | `src/lib/bna/service-provider-studio.js`; `server.js`; `public/operations.html`; docs/tests | Focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-012 | Pending | No-publish Content handoff implemented with provenance and idempotent local draft creation. | `src/lib/bna/service-provider-studio.js`; `server.js`; `public/operations.html`; tests/docs | Focused/full tests PASS; browser handoff smoke PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-013 | Pending | One Time/Rabbi pilot fixture implemented as configuration-only helper data, not global hard-coding. | `src/lib/bna/service-provider-studio.js`; `docs/product/service-provider-studio.md`; tests | Focused/full tests PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-014 | Pending | Docs, registry rows, browser evidence, full suite, secret scan, diff check, and watchdogs passed locally. | docs, tests, `ops/watchdog-audits/2026-06-23T07-19-*`, `ops/playwright-smokes/2026-06-23-service-provider-studio-local/` | `npm test` PASS 1060/1060; watchdogs PASS; secret scan PASS; `git diff --check` PASS. | Needs clean default merge and deploy/live proof before Done. |
+| REQ-20260623-015 | Pending | Local gates passed in isolated feature worktree. | run docs and git state | Clean integration worktree not yet created for final merge. | Needs clean default integration, push/merge, and post-merge proof. |

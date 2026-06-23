@@ -28,3 +28,33 @@ parallel app.
 
 Next work: begin Batch B with additive Studio domain/schema/RBAC work
 (`REQ-20260623-003` and `REQ-20260623-004`).
+
+## 2026-06-23T10:20:00+03:00
+
+Status: running; local implementation verified, clean default integration
+pending.
+
+Implemented the credential-free Universal Service Provider Studio slice in the
+isolated worktree. Requirements `REQ-20260623-003` through
+`REQ-20260623-014` are locally implemented and verified, but remain
+`needs_verification` until the feature is merged through a clean default-branch
+integration worktree and deploy/live-smoke evidence is recorded.
+`REQ-20260623-015` is now `in_progress`.
+
+Local gates passed:
+
+- `npm test`: PASS, 1060/1060.
+- `npm run studio:smoke`: PASS, 1/1 with desktop/mobile screenshots.
+- `node --check server.js`: PASS.
+- `node --check src\lib\bna\service-provider-studio.js`: PASS.
+- Focused Studio/contract tests: PASS, 20/20.
+- `node scripts\audit-secrets.mjs`: PASS, 0 tracked secret-risk files.
+- `git diff --check`: PASS.
+- `npm run watchdog:audit`: PASS, severity `ok`, finding_count `0`.
+- `npm run watchdog:actions`: PASS, severity `ok`, finding_count `0`.
+- `npm run watchdog:security`: PASS, severity `ok`, finding_count `0`.
+
+Next work: commit the feature branch, create a clean integration worktree from
+latest `origin/master`, merge the verified branch there, rerun required gates,
+then push/merge the actual default branch only if the integration worktree is
+clean.

@@ -10,19 +10,21 @@ Current branch/worktree:
 
 Open requirements:
 
-- `REQ-20260623-001` through `REQ-20260623-015`
+- `REQ-20260623-003` through `REQ-20260623-014`: locally implemented and
+  verified; terminal Done waits on clean default integration plus deploy/live
+  evidence.
+- `REQ-20260623-015`: in progress; clean default integration and merge remain.
 
 Exact next command:
 
 ```powershell
-npm run bna:run:next
+git fetch origin --prune
 ```
 
-Then continue with `REQ-20260623-002`: inspect canonical provider shell,
-Content/Library, prompt storage, AI adapters, Remotion tooling, jobs, usage,
-migrations, routes, and tests; write
-`docs/product/service-provider-studio-baseline-2026-06-23.md` before editing
-product code.
+Then create a clean integration worktree from latest `origin/master`, merge the
+verified feature branch `codex/service-provider-studio-20260623`, rerun the
+required gates in that integration worktree, and push/merge to the actual
+default branch only if the integration tree is clean.
 
 Do not edit `C:\Users\User\BNA v2.0`. Do not deploy, send, charge, provision
 Railway resources, mutate DNS, upload to Vimeo, or run live external writes.

@@ -37,3 +37,33 @@ before closeout.
   files changed before product-code implementation.
 - Canonical audit: PASS; documented reuse/missing/conflict classification in
   `docs/product/service-provider-studio-baseline-2026-06-23.md`.
+
+## Local Feature Gates
+
+- `node --check server.js`: PASS.
+- `node --check src\lib\bna\service-provider-studio.js`: PASS.
+- Inline Operations script syntax extraction: PASS before full suite.
+- Focused Studio and navigation contract tests:
+  `node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js`:
+  PASS, 20/20.
+- `npm test`: PASS, 1060/1060.
+- `npm run studio:smoke`: PASS, 1/1.
+- `node scripts\audit-secrets.mjs`: PASS; tracked secret audit passed with
+  4072 tracked paths checked and 0 tracked secret-risk files found.
+- `git diff --check`: PASS.
+- `npm run bna:run:validate`: PASS; work remains by design until default
+  integration/deploy evidence exists.
+- `npm run watchdog:audit`: PASS; report
+  `ops/watchdog-audits/2026-06-23T07-19-watchdog-audit.md`, severity `ok`,
+  finding_count `0`.
+- `npm run watchdog:actions`: PASS; report
+  `ops/watchdog-audits/2026-06-23T07-19-watchdog-action-audit.md`, severity
+  `ok`, finding_count `0`.
+- `npm run watchdog:security`: PASS; report
+  `ops/watchdog-audits/2026-06-23T07-19-watchdog-security-routes.md`,
+  severity `ok`, finding_count `0`.
+
+Browser evidence:
+
+- `ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png`
+- `ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png`

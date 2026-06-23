@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-service-provider-studio",
   "title": "Universal Service Provider Studio",
-  "updated_at": "2026-06-23T09:46:00+03:00",
+  "updated_at": "2026-06-23T10:20:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-001",
@@ -266,28 +266,45 @@
       "depends_on": [
         "REQ-20260623-002"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Implement additive migration and domain services.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Migration reruns safely",
         "Raw source immutable/versioned",
         "Stages separated from approvals/render/publish",
         "No large media binaries in PostgreSQL"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "railway-migration-2026-06-23-service-provider-studio.sql",
+        "src/lib/bna/service-provider-studio.js",
+        "server.js",
+        "tests/service-provider-studio-api-contract.test.js",
+        "tests/service-provider-studio-domain.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
       "implementation_files": [
         "server.js",
-        "src/",
+        "src/lib/bna/service-provider-studio.js",
         "railway-migration-2026-06-23-service-provider-studio.sql",
-        "tests/"
+        "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Migration reruns safely; Raw source immutable/versioned; Stages separated from approvals/render/publish; No large media binaries in PostgreSQL"
     },
     {
@@ -307,27 +324,43 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Add permission checks and negative tests.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Cross-provider enumeration rejected",
         "ID tampering rejected",
         "Public/member routes cannot access Studio drafts",
         "Super Admin aggregate labels explicit"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "server.js",
+        "ops/route-registry.json",
+        "tests/service-provider-studio-api-contract.test.js",
+        "docs/security/service-provider-studio-privacy.md"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
       "implementation_files": [
         "server.js",
-        "src/",
-        "tests/"
+        "ops/route-registry.json",
+        "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Cross-provider enumeration rejected; ID tampering rejected; Public/member routes cannot access Studio drafts; Super Admin aggregate labels explicit"
     },
     {
@@ -347,12 +380,12 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Implement source intake UI/API and paste tests.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Plain/rich/Hebrew/mixed RTL paste works",
         "Raw source never overwritten",
@@ -360,17 +393,33 @@
         "Unsafe clipboard HTML stripped",
         "WebKit paste tests pass"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "public/",
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
         "server.js",
-        "src/",
-        "tests/",
-        "scripts/"
+        "public/operations.html",
+        "tests/service-provider-studio-domain.test.js",
+        "tests/service-provider-studio-browser-smoke.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Plain/rich/Hebrew/mixed RTL paste works; Raw source never overwritten; Emphasis stored as annotation; Unsafe clipboard HTML stripped; WebKit paste tests pass"
     },
     {
@@ -390,28 +439,45 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Implement prompt compiler and injection tests.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Layers visible/versioned/compiled in deterministic order",
         "Untrusted source delimited",
         "Invalid structured output rejected or repaired",
         "Adversarial source cannot override policy"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "src/",
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
         "server.js",
-        "public/",
-        "tests/"
+        "public/operations.html",
+        "tests/service-provider-studio-domain.test.js",
+        "docs/architecture/service-provider-studio-prompt-engine.md"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Layers visible/versioned/compiled in deterministic order; Untrusted source delimited; Invalid structured output rejected or repaired; Adversarial source cannot override policy"
     },
     {
@@ -431,27 +497,44 @@
       "depends_on": [
         "REQ-20260623-006"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Implement structured correction patch engine and UI controls.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Corrections become structured patches",
         "Broad changes show affected layers and require confirmation",
         "Every material change has history and rollback"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "src/",
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
         "server.js",
-        "public/",
-        "tests/"
+        "public/operations.html",
+        "tests/service-provider-studio-domain.test.js",
+        "tests/service-provider-studio-browser-smoke.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Corrections become structured patches; Broad changes show affected layers and require confirmation; Every material change has history and rollback"
     },
     {
@@ -471,28 +554,47 @@
       "depends_on": [
         "REQ-20260623-004"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Add Studio module to provider shell and dashboard.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Studio appears before Content for service providers",
         "Unauthorized/family workspaces do not see it",
         "Dashboard shows project facts, usage, job errors, and next actions"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "public/",
+      "evidence": [
+        "public/operations.html",
         "server.js",
         "ops/action-registry.json",
         "ops/route-registry.json",
-        "tests/"
+        "tests/service-provider-studio-operations-ui.test.js",
+        "tests/google-workspace-settings-contract.test.js",
+        "tests/ui-01-public-operations-shell.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/service-provider-studio-operations-ui.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Studio appears before Content for service providers; Unauthorized/family workspaces do not see it; Dashboard shows project facts, usage, job errors, and next actions"
     },
     {
@@ -512,28 +614,44 @@
       "depends_on": [
         "REQ-20260623-008"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Build editor panels, storyboard controls, preview, timeline, and tests.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Add/duplicate/delete/reorder scenes",
         "Edit title/body/narration/assets/duration/transition/text styling/focal point/characters",
         "Preview sequence",
         "No horizontal overflow at required viewports"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "public/operations.html",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-browser-smoke.test.js",
+        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
+        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
       "implementation_files": [
-        "public/",
-        "src/",
-        "tests/",
-        "scripts/"
+        "public/operations.html",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Add/duplicate/delete/reorder scenes; Edit title/body/narration/assets/duration/transition/text styling/focal point/characters; Preview sequence; No horizontal overflow at required viewports"
     },
     {
@@ -553,27 +671,44 @@
       "depends_on": [
         "REQ-20260623-003"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Implement durable job queue contracts, mock adapters, and render/export state.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Jobs scoped/idempotent/observable/retryable/cancellable",
         "Deterministic mock generation/render works without live credentials",
         "Assets carry rights/privacy metadata"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "src/",
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
         "server.js",
-        "scripts/",
-        "tests/"
+        "railway-migration-2026-06-23-service-provider-studio.sql",
+        "docs/architecture/service-provider-studio-render-jobs.md",
+        "tests/service-provider-studio-domain.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/service-provider-studio.js",
+        "railway-migration-2026-06-23-service-provider-studio.sql",
+        "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Jobs scoped/idempotent/observable/retryable/cancellable; Deterministic mock generation/render works without live credentials; Assets carry rights/privacy metadata"
     },
     {
@@ -593,28 +728,45 @@
       "depends_on": [
         "REQ-20260623-010"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Add usage events, rollups, budgets, provider and Super Admin views.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Every Studio attempt logs scoped cost metadata",
         "Provider sees own totals only",
         "Super Admin sees explicit aggregate",
         "Soft alerts, hard limits, and audited override work"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "src/",
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
         "server.js",
-        "public/",
-        "tests/"
+        "public/operations.html",
+        "docs/architecture/ai-usage-metering.md",
+        "tests/service-provider-studio-domain.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Every Studio attempt logs scoped cost metadata; Provider sees own totals only; Super Admin sees explicit aggregate; Soft alerts, hard limits, and audited override work"
     },
     {
@@ -635,28 +787,46 @@
         "REQ-20260623-009",
         "REQ-20260623-010"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Map approved Studio package into canonical Content/Library draft.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Handoff is idempotent",
         "Provenance, rights, usage, and manifest data travel",
         "Canonical content draft created",
         "No automatic publication or member access grant"
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "src/",
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
         "server.js",
-        "public/",
-        "tests/"
+        "public/operations.html",
+        "docs/product/service-provider-studio.md",
+        "tests/service-provider-studio-domain.test.js",
+        "tests/service-provider-studio-api-contract.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Handoff is idempotent; Provenance, rights, usage, and manifest data travel; Canonical content draft created; No automatic publication or member access grant"
     },
     {
@@ -677,28 +847,41 @@
         "REQ-20260623-003",
         "REQ-20260623-012"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Add One Time Studio config/fixture without global hard-coding.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Mishnah source fixture",
         "Goal, three scenes, two characters, Jewish context pack",
         "Correction patches, mock image/render, content draft handoff, usage rollups",
         "No private child data"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "src/lib/bna/service-provider-studio.js",
+        "docs/product/service-provider-studio.md",
+        "tests/service-provider-studio-domain.test.js"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
       "implementation_files": [
-        "config/",
-        "src/",
-        "tests/",
-        "docs/"
+        "src/lib/bna/service-provider-studio.js",
+        "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Mishnah source fixture; Goal, three scenes, two characters, Jewish context pack; Correction patches, mock image/render, content draft handoff, usage rollups; No private child data"
     },
     {
@@ -728,12 +911,12 @@
         "REQ-20260623-012",
         "REQ-20260623-013"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "needs_verification",
+      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Run required gates and write verification docs.",
+      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Required docs exist",
         "Focused/full tests pass",
@@ -743,16 +926,42 @@
         "Chromium/WebKit 390/768/1440 pass",
         "Independent verification passes or blockers explicit"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "docs/product/service-provider-studio.md",
+        "docs/architecture/service-provider-studio-prompt-engine.md",
+        "docs/architecture/service-provider-studio-render-jobs.md",
+        "docs/architecture/ai-usage-metering.md",
+        "docs/integrations/studio-model-adapters.md",
+        "docs/security/service-provider-studio-privacy.md",
+        "ops/watchdog-audits/2026-06-23T07-19-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-19-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-19-watchdog-security-routes.md",
+        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
+        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png"
+      ],
+      "verification": [
+        "node --check server.js: PASS",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS",
+        "node --test tests/google-workspace-settings-contract.test.js tests/ui-01-public-operations-shell.test.js tests/service-provider-studio-domain.test.js tests/service-provider-studio-api-contract.test.js tests/service-provider-studio-operations-ui.test.js: PASS 20/20",
+        "npm test: PASS 1060/1060",
+        "npm run studio:smoke: PASS 1/1, screenshots saved under ops/playwright-smokes/2026-06-23-service-provider-studio-local/",
+        "node scripts\\audit-secrets.mjs: PASS, 0 tracked secret-risk files",
+        "git diff --check: PASS",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0",
+        "npm run watchdog:security: PASS severity ok, finding_count 0"
+      ],
       "implementation_files": [
-        "docs/",
-        "ops/",
-        "tests/",
-        "scripts/"
+        "docs/product/service-provider-studio.md",
+        "docs/architecture/service-provider-studio-prompt-engine.md",
+        "docs/architecture/service-provider-studio-render-jobs.md",
+        "docs/architecture/ai-usage-metering.md",
+        "docs/integrations/studio-model-adapters.md",
+        "docs/security/service-provider-studio-privacy.md",
+        "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Required docs exist; Focused/full tests pass; Watchdogs pass; Secret/large-file scans pass; Migration repeat passes; Chromium/WebKit 390/768/1440 pass; Independent verification passes or blockers explicit"
     },
     {
@@ -772,26 +981,32 @@
       "depends_on": [
         "REQ-20260623-014"
       ],
-      "status": "not_started",
-      "implementation_status": "pending",
+      "status": "in_progress",
+      "implementation_status": "local_gates_passed_clean_integration_pending",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "After verification, create clean integration worktree from latest default and merge/push or record exact branch-protection blocker.",
+      "next_action": "Create a clean integration worktree from latest origin/master, merge the verified feature branch, rerun required gates, then push default branch only if clean.",
       "acceptance_criteria": [
         "Clean integration worktree from latest default",
         "Conflicts reviewed",
         "Feature merged/pushed to actual default or exact branch-protection blocker recorded",
         "Final default worktree clean"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-23-service-provider-studio/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
+      ],
+      "verification": [
+        "origin/HEAD confirmed as origin/master before feature worktree creation",
+        "PR #5 confirmed merged into master before implementation",
+        "Local feature gates passed; integration worktree pending"
+      ],
       "implementation_files": [
-        "ops/",
-        "docs/"
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T09:17:35+03:00",
+      "updated_at": "2026-06-23T10:20:00+03:00",
       "expected_result": "Clean integration worktree from latest default; Conflicts reviewed; Feature merged/pushed to actual default or exact branch-protection blocker recorded; Final default worktree clean"
     }
   ]

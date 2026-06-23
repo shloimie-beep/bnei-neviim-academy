@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-22T20:00:00+03:00",
+  "updated_at": "2026-06-23T10:05:23+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -937,6 +937,299 @@
         "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations?view=studio",
+      "surface": "operations_service_provider_studio",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized_or_redirect_to_operations_login",
+      "expected_logged_in_behavior": "render_scoped_service_provider_studio_dashboard_without_cross_workspace_data",
+      "privacy_risk": "critical",
+      "canonical_target": "/operations?view=studio",
+      "security_expectation": "Available only inside Operations for platform or service-provider workspaces; family/household workspaces are routed away and provider scope sees only its own Studio projects, jobs, usage, assets, and handoffs.",
+      "smoke_expectation": "tests/service-provider-studio-browser-smoke.test.js renders desktop and mobile Studio views with mocked scoped API responses.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/dashboard",
+      "surface": "operations_api_service_provider_studio_dashboard",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_scoped_studio_projects_jobs_usage_price_catalog_and_optional_one_time_fixture",
+      "privacy_risk": "critical",
+      "security_expectation": "Uses appendStudioScope plus requireAdmin; returns no raw private source bodies and performs no external writes.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects",
+      "surface": "operations_api_service_provider_studio_projects",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "list_or_create_scoped_studio_projects_only",
+      "privacy_risk": "critical",
+      "security_expectation": "GET is workspace/project scoped; POST resolves the target first-party BNA project and workspace before creating a Studio project.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id",
+      "surface": "operations_api_service_provider_studio_project_detail",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "read_or_update_only_the_scoped_studio_project",
+      "privacy_risk": "critical",
+      "security_expectation": "Detail reads use assertProjectAccess and assertWorkspaceAccess before returning sources, scenes, jobs, assets, exports, and usage.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/source",
+      "surface": "operations_api_service_provider_studio_source",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "save_hash_and_normalize_source_for_scoped_project",
+      "privacy_risk": "critical",
+      "security_expectation": "Stores raw source privately, returns only preview/normalized metadata to the UI, and does not send or publish source content.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/outline",
+      "surface": "operations_api_service_provider_studio_outline",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_deterministic_outline_job_and_usage_event_for_scoped_project",
+      "privacy_risk": "critical",
+      "security_expectation": "Uses deterministic mock generation and local usage rows only; no vendor call or external write.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/storyboard",
+      "surface": "operations_api_service_provider_studio_storyboard",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "generate_and_version_scoped_storyboard_scenes",
+      "privacy_risk": "critical",
+      "security_expectation": "Writes first-party storyboard rows and scene versions only after scoped project access checks.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/prompt-compile",
+      "surface": "operations_api_service_provider_studio_prompt_compile",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "compile_prompt_layers_with_delimited_untrusted_source",
+      "privacy_risk": "critical",
+      "security_expectation": "Compiled prompts include policy layers, delimited untrusted source context, no-send output contract, and local usage only.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/corrections/preview",
+      "surface": "operations_api_service_provider_studio_correction_preview",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_reversible_correction_patch_preview_without_writing",
+      "privacy_risk": "critical",
+      "security_expectation": "Preview returns a local reversible patch only and performs no mutation or external write.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/corrections/apply",
+      "surface": "operations_api_service_provider_studio_correction_apply",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "apply_confirmed_reversible_correction_patch_to_scoped_project",
+      "privacy_risk": "critical",
+      "security_expectation": "Broad/project-level corrections require explicit confirmation and remain local revision-patch rows.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/scenes/:id",
+      "surface": "operations_api_service_provider_studio_scene_update",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "update_scoped_scene_and_append_version_snapshot",
+      "privacy_risk": "critical",
+      "security_expectation": "Scene owner project/workspace is loaded before update; cross-workspace scene edits are rejected.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/scenes/:id/regenerate",
+      "surface": "operations_api_service_provider_studio_scene_regenerate",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_local_mock_scene_regeneration_job",
+      "privacy_risk": "critical",
+      "security_expectation": "Creates deterministic mock job only after scoped scene ownership checks.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/render",
+      "surface": "operations_api_service_provider_studio_render",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_local_mock_render_job_assets_and_usage",
+      "privacy_risk": "critical",
+      "security_expectation": "Mock render creates first-party job/assets/usage only and reports external_write_performed=false.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/jobs/:id/retry",
+      "surface": "operations_api_service_provider_studio_job_retry",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "retry_only_scoped_studio_job",
+      "privacy_risk": "critical",
+      "security_expectation": "Job owner project/workspace is checked before retry.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/jobs/:id/cancel",
+      "surface": "operations_api_service_provider_studio_job_cancel",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "cancel_only_scoped_studio_job",
+      "privacy_risk": "critical",
+      "security_expectation": "Job owner project/workspace is checked before cancellation.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/usage",
+      "surface": "operations_api_service_provider_studio_usage",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_scoped_studio_usage_events_rollup_budgets",
+      "privacy_risk": "critical",
+      "security_expectation": "Usage events and budget rows are filtered through appendStudioScope before return.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/studio/projects/:id/handoff",
+      "surface": "operations_api_service_provider_studio_handoff",
+      "access": "private",
+      "required_role": "super_admin_or_provider_workspace_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_idempotent_local_content_handoff_without_publish_or_send",
+      "privacy_risk": "critical",
+      "security_expectation": "Creates local Content job/output rows only; no publish, Buffer, email, access grant, upload, payment, or external CRM write.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
         "GOAL-CORE-015"
       ]
     }
