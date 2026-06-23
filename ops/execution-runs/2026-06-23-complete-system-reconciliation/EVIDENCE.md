@@ -54,6 +54,17 @@ Latest integration-readiness slice:
   summary and blocks deploy/live/final closeout when integration readiness is
   incomplete.
 
+Latest integration placeholder secret slice:
+
+- The shared secret loader rejects common placeholder values such as `None`,
+  `null`, `undefined`, `not configured`, `TODO`, `TBD`, `n/a`, and template
+  placeholders before they can satisfy readiness checks.
+- Integration readiness also verifies injected loaded values are usable, so a
+  custom loader cannot mark OpenAI, Vimeo, Resend, Stripe, or Rabbi Telegram
+  ready with placeholder text.
+- Placeholder integration values are reported only as a source label; actual
+  loaded values remain redacted from JSON and markdown output.
+
 Latest external-readback closeout slice:
 
 - The external readback gate now exports the sanitized scope/count summary used

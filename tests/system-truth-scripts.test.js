@@ -33,6 +33,27 @@ test('system truth script reports readiness by variable state only', () => {
   assert.match(script, /return-packet/);
 });
 
+test('integration readiness rejects placeholder loaded values without leaking them', async () => {
+  const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'lib', 'integration-readiness.mjs')).href);
+  const report = mod.buildIntegrationReadinessSummary({
+    generatedAt: '2026-06-23T00:00:00.000Z',
+    loadSecretFn: ({ envName }) => ({
+      configured: true,
+      value: envName === 'OPENAI_API_KEY' ? 'TODO' : `secret-value-for-${envName}`,
+      env_name: envName,
+      source_type: 'env',
+    }),
+  });
+
+  const groups = Object.fromEntries(report.groups.map((group) => [group.integration, group]));
+  const openaiKey = groups.openai.fields.find((field) => field.name === 'OPENAI_API_KEY');
+  assert.equal(groups.openai.ready, false);
+  assert.equal(openaiKey.configured, false);
+  assert.equal(openaiKey.source, 'placeholder');
+  assert.ok(groups.openai.blockers.some((blocker) => /OPENAI_API_KEY is not configured/.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report), /TODO|secret-value-for|sk_live_|sk_test_|postgres:\/\//);
+});
+
 test('return packet report keeps private and redacted packet paths explicit', async () => {
   const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'system-truth.mjs')).href);
   const report = await mod.buildReport('return-packet');

@@ -1,5 +1,48 @@
 # Status
 
+## 2026-06-23T19:34:26+03:00
+
+Status: running, with the thirty-fifth integration placeholder secret readiness
+gate slice complete.
+
+Hardened the shared secret loader and integration readiness summary so common
+placeholder values such as `None`, `null`, `undefined`, `not configured`,
+`TODO`, `TBD`, `n/a`, and template placeholders do not count as configured
+OpenAI/Vimeo/Resend/Stripe/Rabbi Telegram readiness. Placeholder-loaded values
+are marked by source label only and the actual values remain redacted. No
+external read, Railway read, Drive read, database connection, production
+mutation, deploy, live verification, send, upload, charge, GitHub
+acknowledgement, or backfill was performed.
+
+Verified in this slice:
+
+- `node --check src/lib/integrations/secret-loader.js
+  scripts/lib/integration-readiness.mjs scripts/system-truth.mjs
+  scripts/bna-production-closeout-gate.mjs` passed.
+- `node --test tests/integrations-secret-loader.test.js
+  tests/system-truth-scripts.test.js tests/bna-production-closeout-gate.test.js`
+  passed, 23/23.
+- Runtime integration readiness proof with injected placeholder
+  `OPENAI_API_KEY=TODO` remained blocked and did not print the dummy values.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with
+  placeholder integration readiness summarized.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1112/1112.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured non-placeholder DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T19:22:12+03:00
 
 Status: running, with the thirty-fourth external placeholder config gate slice

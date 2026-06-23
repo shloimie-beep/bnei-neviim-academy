@@ -2,7 +2,7 @@ import process from 'node:process';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const { loadSecret, safeSecretSourceLabel } = require('../../src/lib/integrations/secret-loader');
+const { loadSecret, safeSecretSourceLabel, usableSecretValue } = require('../../src/lib/integrations/secret-loader');
 
 export const INTEGRATION_READINESS_FIELDS = [
   ['OPENAI_API_KEY', ['openai-api-key.txt', 'OPENAI_API_KEY.txt']],
@@ -56,10 +56,11 @@ function defaultNowIso() {
 function loadReadinessField([key, fileNames], context = {}) {
   const loadSecretFn = context.loadSecretFn || loadSecret;
   const loaded = loadSecretFn({ envName: key, fileNames, repoRoot: context.repoRoot || process.cwd() });
+  const configured = Boolean(loaded?.configured && usableSecretValue(loaded?.value));
   return {
     key,
-    configured: Boolean(loaded?.configured),
-    source: loaded?.configured ? safeSecretSourceLabel(loaded) : 'not configured'
+    configured,
+    source: configured ? safeSecretSourceLabel(loaded) : loaded?.configured ? 'placeholder' : 'not configured'
   };
 }
 
@@ -78,10 +79,11 @@ function readinessFieldByKey(fields = [], key) {
 function summarizeIntegrationGroup(fields, spec) {
   const groupFields = spec.fields.map((key) => {
     const field = readinessFieldByKey(fields, key);
+    const configured = Boolean(field.configured);
     return {
       name: field.key,
-      configured: Boolean(field.configured),
-      source: field.configured ? field.source : 'not configured'
+      configured,
+      source: configured ? field.source : field.source === 'placeholder' ? 'placeholder' : 'not configured'
     };
   });
   const missing = groupFields.filter((field) => !field.configured).map((field) => field.name);

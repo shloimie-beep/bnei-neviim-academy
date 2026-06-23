@@ -2,6 +2,30 @@
 
 ## Passed
 
+- `node --check src/lib/integrations/secret-loader.js scripts/lib/integration-readiness.mjs scripts/system-truth.mjs scripts/bna-production-closeout-gate.mjs`:
+  PASS after integration placeholder secret readiness hardening.
+- `node --test tests/integrations-secret-loader.test.js tests/system-truth-scripts.test.js tests/bna-production-closeout-gate.test.js`:
+  PASS, 23/23; placeholder-loaded integration values are reported as missing
+  readiness without leaking values.
+- Runtime `buildIntegrationReadinessSummary` proof with injected placeholder `OPENAI_API_KEY=TODO`:
+  PASS as expected blocked readiness; OpenAI key source is `placeholder`, and
+  dummy values were not printed.
+- `npm run source:truth -- --json`:
+  PASS after integration placeholder secret readiness hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after integration placeholder secret readiness hardening.
+- `npm run bna:run:validate`:
+  PASS after integration placeholder secret readiness hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1112/1112 after integration placeholder secret readiness hardening.
 - `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
   PASS after external placeholder config readiness hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
