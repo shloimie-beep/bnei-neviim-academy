@@ -200,7 +200,7 @@ function objectResolution(input = {}) {
 
 function inferOutcomeKind(input = {}, mediaType = 'unknown') {
   const text = `${input.intent || ''} ${input.caption || ''} ${input.raw_text || input.rawText || input.text || ''} ${input.filename || ''}`.toLowerCase();
-  if (/\b(logo|brand|colors?|profile photo|headshot)\b/.test(text)) return 'provider_brand_asset';
+  if (/\b(logo|brand|colors?|profile photo|headshot|hero|photo|gallery|image)\b/.test(text)) return 'provider_brand_asset';
   if (/\b(worksheet|pdf|source sheet|resource|handout)\b/.test(text)) return 'worksheet_resource';
   if (/\b(recording|lesson|class|transcript|vimeo|course)\b/.test(text) || ['audio', 'video', 'transcript'].includes(mediaType)) return 'class_course_media';
   if (/\b(parent update|voice note|announcement|message)\b/.test(text)) return 'draft_version';
