@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-service-provider-studio",
   "title": "Universal Service Provider Studio",
-  "updated_at": "2026-06-23T10:20:00+03:00",
+  "updated_at": "2026-06-23T10:28:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-001",
@@ -267,11 +267,11 @@
         "REQ-20260623-002"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Migration reruns safely",
         "Raw source immutable/versioned",
@@ -283,7 +283,10 @@
         "src/lib/bna/service-provider-studio.js",
         "server.js",
         "tests/service-provider-studio-api-contract.test.js",
-        "tests/service-provider-studio-domain.test.js"
+        "tests/service-provider-studio-domain.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -295,7 +298,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "server.js",
@@ -304,7 +319,7 @@
         "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Migration reruns safely; Raw source immutable/versioned; Stages separated from approvals/render/publish; No large media binaries in PostgreSQL"
     },
     {
@@ -325,11 +340,11 @@
         "REQ-20260623-003"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Cross-provider enumeration rejected",
         "ID tampering rejected",
@@ -340,7 +355,10 @@
         "server.js",
         "ops/route-registry.json",
         "tests/service-provider-studio-api-contract.test.js",
-        "docs/security/service-provider-studio-privacy.md"
+        "docs/security/service-provider-studio-privacy.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -352,7 +370,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "server.js",
@@ -360,7 +390,7 @@
         "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Cross-provider enumeration rejected; ID tampering rejected; Public/member routes cannot access Studio drafts; Super Admin aggregate labels explicit"
     },
     {
@@ -381,11 +411,11 @@
         "REQ-20260623-003"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Plain/rich/Hebrew/mixed RTL paste works",
         "Raw source never overwritten",
@@ -398,7 +428,10 @@
         "server.js",
         "public/operations.html",
         "tests/service-provider-studio-domain.test.js",
-        "tests/service-provider-studio-browser-smoke.test.js"
+        "tests/service-provider-studio-browser-smoke.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -410,7 +443,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -419,7 +464,7 @@
         "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Plain/rich/Hebrew/mixed RTL paste works; Raw source never overwritten; Emphasis stored as annotation; Unsafe clipboard HTML stripped; WebKit paste tests pass"
     },
     {
@@ -440,11 +485,11 @@
         "REQ-20260623-003"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Layers visible/versioned/compiled in deterministic order",
         "Untrusted source delimited",
@@ -456,7 +501,10 @@
         "server.js",
         "public/operations.html",
         "tests/service-provider-studio-domain.test.js",
-        "docs/architecture/service-provider-studio-prompt-engine.md"
+        "docs/architecture/service-provider-studio-prompt-engine.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -468,7 +516,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -477,7 +537,7 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Layers visible/versioned/compiled in deterministic order; Untrusted source delimited; Invalid structured output rejected or repaired; Adversarial source cannot override policy"
     },
     {
@@ -498,11 +558,11 @@
         "REQ-20260623-006"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Corrections become structured patches",
         "Broad changes show affected layers and require confirmation",
@@ -513,7 +573,10 @@
         "server.js",
         "public/operations.html",
         "tests/service-provider-studio-domain.test.js",
-        "tests/service-provider-studio-browser-smoke.test.js"
+        "tests/service-provider-studio-browser-smoke.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -525,7 +588,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -534,7 +609,7 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Corrections become structured patches; Broad changes show affected layers and require confirmation; Every material change has history and rollback"
     },
     {
@@ -555,11 +630,11 @@
         "REQ-20260623-004"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Studio appears before Content for service providers",
         "Unauthorized/family workspaces do not see it",
@@ -572,7 +647,10 @@
         "ops/route-registry.json",
         "tests/service-provider-studio-operations-ui.test.js",
         "tests/google-workspace-settings-contract.test.js",
-        "tests/ui-01-public-operations-shell.test.js"
+        "tests/ui-01-public-operations-shell.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -584,7 +662,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -594,7 +684,7 @@
         "tests/service-provider-studio-operations-ui.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Studio appears before Content for service providers; Unauthorized/family workspaces do not see it; Dashboard shows project facts, usage, job errors, and next actions"
     },
     {
@@ -615,11 +705,11 @@
         "REQ-20260623-008"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Add/duplicate/delete/reorder scenes",
         "Edit title/body/narration/assets/duration/transition/text styling/focal point/characters",
@@ -631,7 +721,10 @@
         "src/lib/bna/service-provider-studio.js",
         "tests/service-provider-studio-browser-smoke.test.js",
         "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
-        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png"
+        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -643,7 +736,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -651,7 +756,7 @@
         "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Add/duplicate/delete/reorder scenes; Edit title/body/narration/assets/duration/transition/text styling/focal point/characters; Preview sequence; No horizontal overflow at required viewports"
     },
     {
@@ -672,11 +777,11 @@
         "REQ-20260623-003"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Jobs scoped/idempotent/observable/retryable/cancellable",
         "Deterministic mock generation/render works without live credentials",
@@ -687,7 +792,10 @@
         "server.js",
         "railway-migration-2026-06-23-service-provider-studio.sql",
         "docs/architecture/service-provider-studio-render-jobs.md",
-        "tests/service-provider-studio-domain.test.js"
+        "tests/service-provider-studio-domain.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -699,7 +807,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "server.js",
@@ -708,7 +828,7 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Jobs scoped/idempotent/observable/retryable/cancellable; Deterministic mock generation/render works without live credentials; Assets carry rights/privacy metadata"
     },
     {
@@ -729,11 +849,11 @@
         "REQ-20260623-010"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Every Studio attempt logs scoped cost metadata",
         "Provider sees own totals only",
@@ -745,7 +865,10 @@
         "server.js",
         "public/operations.html",
         "docs/architecture/ai-usage-metering.md",
-        "tests/service-provider-studio-domain.test.js"
+        "tests/service-provider-studio-domain.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -757,7 +880,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -766,7 +901,7 @@
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Every Studio attempt logs scoped cost metadata; Provider sees own totals only; Super Admin sees explicit aggregate; Soft alerts, hard limits, and audited override work"
     },
     {
@@ -788,11 +923,11 @@
         "REQ-20260623-010"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Handoff is idempotent",
         "Provenance, rights, usage, and manifest data travel",
@@ -805,7 +940,10 @@
         "public/operations.html",
         "docs/product/service-provider-studio.md",
         "tests/service-provider-studio-domain.test.js",
-        "tests/service-provider-studio-api-contract.test.js"
+        "tests/service-provider-studio-api-contract.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -817,7 +955,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -826,7 +976,7 @@
         "tests/service-provider-studio-api-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Handoff is idempotent; Provenance, rights, usage, and manifest data travel; Canonical content draft created; No automatic publication or member access grant"
     },
     {
@@ -848,11 +998,11 @@
         "REQ-20260623-012"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Mishnah source fixture",
         "Goal, three scenes, two characters, Jewish context pack",
@@ -862,7 +1012,10 @@
       "evidence": [
         "src/lib/bna/service-provider-studio.js",
         "docs/product/service-provider-studio.md",
-        "tests/service-provider-studio-domain.test.js"
+        "tests/service-provider-studio-domain.test.js",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -874,14 +1027,26 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "src/lib/bna/service-provider-studio.js",
         "tests/service-provider-studio-domain.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Mishnah source fixture; Goal, three scenes, two characters, Jewish context pack; Correction patches, mock image/render, content draft handoff, usage rollups; No private child data"
     },
     {
@@ -912,11 +1077,11 @@
         "REQ-20260623-013"
       ],
       "status": "needs_verification",
-      "implementation_status": "local_implemented_and_verified_pending_clean_default_merge_deploy",
+      "implementation_status": "clean_integration_verified_pending_default_push_deploy",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Commit the feature branch, merge it in a clean default-branch integration worktree, push the actual default branch, then record deploy/live-smoke evidence before terminal Done.",
+      "next_action": "Push the verified integration branch to actual default, then record deploy/live-smoke evidence before terminal Done.",
       "acceptance_criteria": [
         "Required docs exist",
         "Focused/full tests pass",
@@ -937,7 +1102,10 @@
         "ops/watchdog-audits/2026-06-23T07-19-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-23T07-19-watchdog-security-routes.md",
         "ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png",
-        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png"
+        "ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
         "node --check server.js: PASS",
@@ -949,7 +1117,19 @@
         "git diff --check: PASS",
         "npm run watchdog:audit: PASS severity ok, finding_count 0",
         "npm run watchdog:actions: PASS severity ok, finding_count 0",
-        "npm run watchdog:security: PASS severity ok, finding_count 0"
+        "npm run watchdog:security: PASS severity ok, finding_count 0",
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "docs/product/service-provider-studio.md",
@@ -961,7 +1141,7 @@
         "tests/service-provider-studio-browser-smoke.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Required docs exist; Focused/full tests pass; Watchdogs pass; Secret/large-file scans pass; Migration repeat passes; Chromium/WebKit 390/768/1440 pass; Independent verification passes or blockers explicit"
     },
     {
@@ -982,11 +1162,11 @@
         "REQ-20260623-014"
       ],
       "status": "in_progress",
-      "implementation_status": "local_gates_passed_clean_integration_pending",
+      "implementation_status": "clean_integration_gates_passed_default_push_pending",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Create a clean integration worktree from latest origin/master, merge the verified feature branch, rerun required gates, then push default branch only if clean.",
+      "next_action": "Push HEAD to origin/master, confirm default branch commit, then run deploy/live-smoke proof or record exact blocker.",
       "acceptance_criteria": [
         "Clean integration worktree from latest default",
         "Conflicts reviewed",
@@ -995,18 +1175,30 @@
       ],
       "evidence": [
         "ops/execution-runs/2026-06-23-service-provider-studio/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
+        "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "verification": [
-        "origin/HEAD confirmed as origin/master before feature worktree creation",
-        "PR #5 confirmed merged into master before implementation",
-        "Local feature gates passed; integration worktree pending"
+        "Clean integration worktree created from origin/master at 4d412797 after git fetch origin --prune",
+        "Merged codex/service-provider-studio-20260623 into codex/service-provider-studio-integration-20260623 with no conflicts",
+        "node --check server.js: PASS in integration worktree",
+        "node --check src\\lib\\bna\\service-provider-studio.js: PASS in integration worktree",
+        "npm run studio:smoke: PASS 1/1 in integration worktree",
+        "npm test: PASS 1063/1063 in integration worktree",
+        "npm run bna:run:validate: PASS in integration worktree with work remaining by design",
+        "node scripts\\audit-secrets.mjs: PASS in integration worktree, 4092 tracked paths, 0 tracked secret-risk files",
+        "git diff --check: PASS in integration worktree",
+        "npm run watchdog:audit: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md",
+        "npm run watchdog:actions: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md",
+        "npm run watchdog:security: PASS severity ok, finding_count 0, report ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-06-23-service-provider-studio/DEPLOYMENT.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T10:20:00+03:00",
+      "updated_at": "2026-06-23T10:28:00+03:00",
       "expected_result": "Clean integration worktree from latest default; Conflicts reviewed; Feature merged/pushed to actual default or exact branch-protection blocker recorded; Final default worktree clean"
     }
   ]

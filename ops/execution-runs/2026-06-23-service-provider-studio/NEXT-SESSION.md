@@ -21,10 +21,10 @@ Exact next command:
 git fetch origin --prune
 ```
 
-Then create a clean integration worktree from latest `origin/master`, merge the
-verified feature branch `codex/service-provider-studio-20260623`, rerun the
-required gates in that integration worktree, and push/merge to the actual
-default branch only if the integration tree is clean.
+Clean integration has already passed from updated `origin/master` at
+`4d412797`. The next step is to push the verified integration HEAD to
+`origin/master`, confirm the remote default commit, then run Railway/live smoke
+proof or record the exact blocker.
 
 Do not edit `C:\Users\User\BNA v2.0`. Do not deploy, send, charge, provision
 Railway resources, mutate DNS, upload to Vimeo, or run live external writes.

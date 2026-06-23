@@ -25515,3 +25515,19 @@ Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation, external CRM/GHL write,
 raw private source readback, or secret exposure was performed. Terminal Done
 for app-visible Studio requirements remains pending clean default-branch
 integration plus deploy/live-smoke proof.
+
+## 2026-06-23T10:28:00+03:00 - Universal Service Provider Studio Clean Integration Verified
+
+Created a clean integration worktree from updated `origin/master` at
+`4d412797`, merged `codex/service-provider-studio-20260623` without conflicts,
+installed dependencies from the lockfile, and reran the required gates in the
+integration tree.
+
+Integration verification passed: `node --check server.js`,
+`node --check src\lib\bna\service-provider-studio.js`,
+`npm run studio:smoke` 1/1, full `npm test` 1063/1063,
+`npm run bna:run:validate`, tracked secret audit with 0 findings,
+`git diff --check`, `npm run watchdog:audit`, `npm run watchdog:actions`, and
+`npm run watchdog:security`. The next step is pushing the verified integration
+HEAD to `origin/master`, then recording deploy/live-smoke proof before
+terminal Done.

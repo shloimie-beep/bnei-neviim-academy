@@ -21,3 +21,9 @@ Do not mark app-visible Studio requirements Done until this file records:
 - pushed/default commit
 - deployment ID or explicit no-auto-deploy blocker
 - live smoke or exact live-smoke blocker
+
+## 2026-06-23T10:28:00+03:00
+
+Clean integration is verified but not pushed yet. The integration branch is
+ready to push to `origin/master`; deployment/live-smoke proof remains pending
+until that push completes and the default-branch deploy path can be inspected.

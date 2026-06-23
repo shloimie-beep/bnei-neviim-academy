@@ -67,3 +67,28 @@ Browser evidence:
 
 - `ops/playwright-smokes/2026-06-23-service-provider-studio-local/desktop-overview.png`
 - `ops/playwright-smokes/2026-06-23-service-provider-studio-local/mobile-handoff.png`
+
+## Clean Integration Gates
+
+- Integration worktree:
+  `C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio-integration`
+- Base: `origin/master` at `4d412797`.
+- Merge: `codex/service-provider-studio-20260623` merged with no conflicts.
+- `node --check server.js`: PASS.
+- `node --check src\lib\bna\service-provider-studio.js`: PASS.
+- `npm run studio:smoke`: PASS, 1/1.
+- `npm test`: PASS, 1063/1063.
+- `npm run bna:run:validate`: PASS; work remains by design until default
+  push/deploy proof exists.
+- `node scripts\audit-secrets.mjs`: PASS; tracked secret audit checked 4092
+  tracked paths and found 0 tracked secret-risk files.
+- `git diff --check`: PASS.
+- `npm run watchdog:audit`: PASS; report
+  `ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md`, severity `ok`,
+  finding_count `0`.
+- `npm run watchdog:actions`: PASS; report
+  `ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md`, severity
+  `ok`, finding_count `0`.
+- `npm run watchdog:security`: PASS; report
+  `ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md`,
+  severity `ok`, finding_count `0`.

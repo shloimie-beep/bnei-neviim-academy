@@ -12,4 +12,4 @@
 | G | REQ-20260623-011 | needs_verification | usage metering, price catalog, budget view, and API Usage rollup implemented and tested | clean integration/default merge/deploy proof |
 | H | REQ-20260623-012, REQ-20260623-013 | needs_verification | no-publish Content handoff and One Time pilot fixture implemented and tested | clean integration/default merge/deploy proof |
 | I | REQ-20260623-014 | needs_verification | docs, focused/full tests, secret scan, diff check, watchdogs, and browser evidence passed locally | clean integration/default merge/deploy proof |
-| J | REQ-20260623-015 | in_progress | local gates passed in feature worktree | create clean integration worktree from latest default, merge, rerun gates, push only if clean |
+| J | REQ-20260623-015 | in_progress | clean integration worktree merged with no conflicts; integration gates passed | push verified HEAD to actual default, then record deploy/live proof |

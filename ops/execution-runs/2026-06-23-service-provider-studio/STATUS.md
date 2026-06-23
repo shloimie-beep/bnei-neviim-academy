@@ -58,3 +58,29 @@ Next work: commit the feature branch, create a clean integration worktree from
 latest `origin/master`, merge the verified branch there, rerun required gates,
 then push/merge the actual default branch only if the integration worktree is
 clean.
+
+## 2026-06-23T10:28:00+03:00
+
+Status: running; clean integration verified, default push pending.
+
+Fetched `origin/master`, created clean integration worktree
+`C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio-integration`
+from updated default commit `4d412797`, and merged
+`codex/service-provider-studio-20260623` with no conflicts.
+
+Integration gates passed:
+
+- `node --check server.js`: PASS.
+- `node --check src\lib\bna\service-provider-studio.js`: PASS.
+- `npm run studio:smoke`: PASS, 1/1.
+- `npm test`: PASS, 1063/1063.
+- `npm run bna:run:validate`: PASS with work remaining by design.
+- `node scripts\audit-secrets.mjs`: PASS, 4092 tracked paths, 0 findings.
+- `git diff --check`: PASS.
+- `npm run watchdog:audit`: PASS, severity `ok`, finding_count `0`.
+- `npm run watchdog:actions`: PASS, severity `ok`, finding_count `0`.
+- `npm run watchdog:security`: PASS, severity `ok`, finding_count `0`.
+
+Next work: push the verified integration HEAD to `origin/master`, confirm the
+default branch commit, then run the normal deploy/live-smoke proof or record
+the exact deploy blocker.

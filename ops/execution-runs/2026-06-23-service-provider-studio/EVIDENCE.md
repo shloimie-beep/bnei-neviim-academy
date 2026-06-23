@@ -72,3 +72,17 @@
 
 No live vendor generation, public publishing, access grant, external send,
 Vimeo upload, paid API call, DNS change, or Railway provisioning was performed.
+
+## Clean Integration Evidence
+
+- Integration worktree:
+  `C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio-integration`
+- Updated default base: `origin/master` at `4d412797`.
+- Merge result: `codex/service-provider-studio-20260623` merged with no
+  conflicts.
+- Integration watchdog evidence:
+  `ops/watchdog-audits/2026-06-23T07-28-watchdog-audit.md`,
+  `ops/watchdog-audits/2026-06-23T07-28-watchdog-action-audit.md`,
+  `ops/watchdog-audits/2026-06-23T07-28-watchdog-security-routes.md`
+- Integration tests:
+  `npm test` PASS 1063/1063; `npm run studio:smoke` PASS 1/1.
