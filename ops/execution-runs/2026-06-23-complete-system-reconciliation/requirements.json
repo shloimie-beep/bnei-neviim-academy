@@ -1,0 +1,638 @@
+{
+  "run_id": "2026-06-23-complete-system-reconciliation",
+  "title": "Complete System Reconciliation And Ramble Hardening",
+  "updated_at": "2026-06-23T13:58:00+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260623-002",
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "captured_at": "2026-06-23T13:45:00+03:00",
+      "content_fingerprint": "sha256:5E07B20BA59D8D34FFC03FD4B2798CD681EEAABE59D9DCFE406D722E2FF4494B",
+      "privacy_classification": "redacted_repo_safe",
+      "workspace": "repository",
+      "project": "complete-system-reconciliation",
+      "source_type": "codex_goal_mode_prompt"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "SRC-20260623-201",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Create one clean branch/worktree from current origin/master and do not disturb dirty legacy worktrees.",
+      "requirement_id": "REQ-20260623-201",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-202",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Register this prompt as a successor execution run and preserve a redacted raw-source pointer.",
+      "requirement_id": "REQ-20260623-201",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-203",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Verify Issues #7 and #8, current master, branch history, active run state, Studio truth, and deployment evidence.",
+      "requirement_id": "REQ-20260623-202",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-204",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Contain autonomous fleet/shared-worktree deploy risk and add watchdogs/tests for that boundary.",
+      "requirement_id": "REQ-20260623-203",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-205",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Add truth commands for system, worktree, source, asset, Drive intake, UI source coverage, and GitHub intake dry-run.",
+      "requirement_id": "REQ-20260623-204",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-206",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Create reviewed worktree cleanup manifests and do not delete or stage mixed dirty trees.",
+      "requirement_id": "REQ-20260623-205",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-207",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Run GitHub issue intake dry-runs for Issues #7 and #8 without posting private data or creating duplicates.",
+      "requirement_id": "REQ-20260623-206",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-208",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Audit class intake jobs 75-79 and older jobs 64-74; do not apply production backfill without explicit gates.",
+      "requirement_id": "REQ-20260623-207",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-209",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Audit One Time assets, Drive truth, and UI/source coverage with evidence tied to commit/deployment where possible.",
+      "requirement_id": "REQ-20260623-208",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-210",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Verify live database, Railway deployment metadata, Drive source IDs, and guarded production backfill only through approved read-only or apply gates.",
+      "requirement_id": "REQ-20260623-209",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-211",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Implement full canonical persistence, lifecycle, adapters, auto-resume, Operations UI, watchdogs, synthetic E2E, deploy, and live verification.",
+      "requirement_id": "REQ-20260623-210",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-212",
+      "source_id": "RAW-20260623-002",
+      "source_statement": "Produce private ChatGPT return packet and redacted repo summary.",
+      "requirement_id": "REQ-20260623-211",
+      "classification": "requirement"
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "task_id": "TASK-20260623-201",
+      "canonical_task_key": "complete-system-reconciliation-safe-audit-batch",
+      "title": "Complete safe reconciliation audit and containment batch",
+      "owner": "Codex",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "source_id": "RAW-20260623-002",
+      "requirement_id": "REQ-20260623-201",
+      "visible": false,
+      "status": "running"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260623-201",
+      "title": "Register source, create clean branch/worktree, and establish successor run.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-201",
+        "SRC-20260623-202"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "registered_clean_worktree",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Run truth commands and focused tests.",
+      "acceptance_criteria": [
+        "Redacted raw pointer exists",
+        "Clean branch/worktree exists from origin/master",
+        "Previous completed Studio run is no longer the active run",
+        "Successor run validates"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+        "tasks-pending/2026-06-23-complete-system-reconciliation.md",
+        "ops/execution-runs/2026-06-23-complete-system-reconciliation/SOURCE.md",
+        "ops/execution-runs/latest.json"
+      ],
+      "verification": [
+        "git worktree add -b codex/issue-8-complete-system-reconciliation ... origin/master: PASS"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+        "tasks-pending/2026-06-23-complete-system-reconciliation.md",
+        "ops/execution-runs/2026-06-23-complete-system-reconciliation/",
+        "ops/execution-runs/latest.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:45:00+03:00",
+      "expected_result": "Redacted raw pointer exists; Clean branch/worktree exists from origin/master; Previous completed Studio run is no longer the active run; Successor run validates"
+    },
+    {
+      "id": "REQ-20260623-202",
+      "title": "Audit GitHub/default branch/run/Studio/deployment truth and record current gaps.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-203"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [
+        "REQ-20260623-201"
+      ],
+      "status": "done",
+      "implementation_status": "truth_reports_recorded",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Use the follow-on implementation requirement for remaining canonical build work.",
+      "acceptance_criteria": [
+        "Current master/head recorded",
+        "Issue #7/#8 state recorded",
+        "Studio truth classified",
+        "Deployment metadata gaps named"
+      ],
+      "evidence": [
+        "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
+        "ops/source-truth/2026-06-23-source-truth.md",
+        "ops/source-truth/2026-06-23T10-45-18-453Z-github-issue-7-dry-run.md",
+        "ops/source-truth/2026-06-23T10-45-18-359Z-github-issue-8-dry-run.md"
+      ],
+      "verification": [
+        "npm run system:truth: PASS",
+        "npm run source:truth: PASS",
+        "npm run intake:github -- --issue 7 --dry-run: PASS",
+        "npm run intake:github -- --issue 8 --dry-run: PASS"
+      ],
+      "implementation_files": [
+        "scripts/system-truth.mjs",
+        "scripts/intake-github.mjs",
+        "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
+        "ops/source-truth/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "Current master/head recorded; Issue #7/#8 state recorded; Studio truth classified; Deployment metadata gaps named"
+    },
+    {
+      "id": "REQ-20260623-203",
+      "title": "Contain autonomous fleet deployment risk.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-204"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "safety",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260623-201"
+      ],
+      "status": "done",
+      "implementation_status": "auto_deploy_default_off",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Keep deploy actions gated by explicit operator/environment opt-in.",
+      "acceptance_criteria": [
+        "Agent fleet auto deploy defaults to off",
+        ".env.example documents opt-in deploy",
+        "Regression test covers the default"
+      ],
+      "evidence": [
+        ".env.example",
+        "scripts/agent-fleet-supervisor.mjs",
+        "tests/observable-codex-queue.test.js",
+        "ops/watchdog-audits/2026-06-23T10-52-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "node --test tests/system-truth-scripts.test.js tests/observable-codex-queue.test.js: PASS",
+        "npm run watchdog:actions: PASS, findings 0",
+        "npm run watchdog:security: PASS, findings 0"
+      ],
+      "implementation_files": [
+        ".env.example",
+        "scripts/agent-fleet-supervisor.mjs",
+        "tests/observable-codex-queue.test.js"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:58:00+03:00",
+      "expected_result": "Agent fleet auto deploy defaults to off; .env.example documents opt-in deploy; Regression test covers the default"
+    },
+    {
+      "id": "REQ-20260623-204",
+      "title": "Add system/worktree/source/asset/Drive-intake/UI/GitHub truth commands.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-205"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "tooling",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260623-201"
+      ],
+      "status": "done",
+      "implementation_status": "truth_commands_added",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Use truth commands as preflight evidence for follow-on implementation PRs.",
+      "acceptance_criteria": [
+        "Required npm scripts exist",
+        "Commands write structured evidence reports",
+        "Readiness reports variable state without secret values",
+        "GitHub intake dry-run is idempotent"
+      ],
+      "evidence": [
+        "package.json",
+        "scripts/system-truth.mjs",
+        "scripts/intake-github.mjs",
+        "tests/system-truth-scripts.test.js",
+        "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
+        "ops/watchdog-audits/2026-06-23T10-52-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "npm run system:truth: PASS",
+        "npm run worktree:truth: PASS",
+        "npm run source:truth: PASS",
+        "npm run asset:truth: PASS",
+        "npm run drive:intake:truth: PASS",
+        "npm run ui:source-coverage: PASS",
+        "npm test: PASS, 1066/1066",
+        "npm run watchdog:actions: PASS, findings 0",
+        "npm run watchdog:security: PASS, findings 0"
+      ],
+      "implementation_files": [
+        "package.json",
+        "scripts/system-truth.mjs",
+        "scripts/intake-github.mjs",
+        "tests/system-truth-scripts.test.js"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:58:00+03:00",
+      "expected_result": "Required npm scripts exist; Commands write structured evidence reports; Readiness reports variable state without secret values; GitHub intake dry-run is idempotent"
+    },
+    {
+      "id": "REQ-20260623-205",
+      "title": "Generate reviewed worktree cleanup manifest.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-206"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260623-204"
+      ],
+      "status": "done",
+      "implementation_status": "cleanup_manifest_generated_no_delete",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Review cleanup manifest manually before removing any stale worktree.",
+      "acceptance_criteria": [
+        "ops/worktree-reconciliation cleanup plan md/json exist",
+        "Known dirty audit worktree is classified",
+        "No deletion performed"
+      ],
+      "evidence": [
+        "ops/worktree-reconciliation/2026-06-23-worktree-cleanup-plan.md",
+        "ops/worktree-reconciliation/2026-06-23-worktree-cleanup-plan.json"
+      ],
+      "verification": [
+        "npm run worktree:truth: PASS"
+      ],
+      "implementation_files": [
+        "scripts/system-truth.mjs",
+        "ops/worktree-reconciliation/2026-06-23-worktree-cleanup-plan.md",
+        "ops/worktree-reconciliation/2026-06-23-worktree-cleanup-plan.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "ops/worktree-reconciliation cleanup plan md/json exist; Known dirty audit worktree is classified; No deletion performed"
+    },
+    {
+      "id": "REQ-20260623-206",
+      "title": "Run GitHub issue intake dry-runs for Issues #7 and #8.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-207"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "intake",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260623-204"
+      ],
+      "status": "done",
+      "implementation_status": "github_issue_intake_dry_runs_complete",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Keep database apply and GitHub acknowledgement gated outside dry-run mode.",
+      "acceptance_criteria": [
+        "Dry-run source envelope is stable",
+        "No GitHub comment posted by dry-run",
+        "No private data or secrets printed"
+      ],
+      "evidence": [
+        "ops/source-truth/2026-06-23T10-45-18-453Z-github-issue-7-dry-run.md",
+        "ops/source-truth/2026-06-23T10-45-18-359Z-github-issue-8-dry-run.md"
+      ],
+      "verification": [
+        "npm run intake:github -- --issue 7 --dry-run: PASS",
+        "npm run intake:github -- --issue 8 --dry-run: PASS"
+      ],
+      "implementation_files": [
+        "scripts/intake-github.mjs",
+        "tests/system-truth-scripts.test.js",
+        "ops/source-truth/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "Dry-run source envelope is stable; No GitHub comment posted by dry-run; No private data or secrets printed"
+    },
+    {
+      "id": "REQ-20260623-207",
+      "title": "Audit class/Drive intake truth for jobs 64-79 without applying production backfill.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-208"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "class-intake",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260623-204"
+      ],
+      "status": "done",
+      "implementation_status": "repo_intake_truth_generated_external_apply_blocked",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Approve read-only DB connection before live readback or guarded backfill.",
+      "acceptance_criteria": [
+        "jobs 75-79 and 64-74 evidence matrix exists",
+        "Dry-run/no-apply boundary is explicit",
+        "Production backfill blocker is precise"
+      ],
+      "evidence": [
+        "ops/drive-audits/2026-06-23-class-intake-complete-truth.md",
+        "ops/drive-audits/2026-06-23-guarded-progress-question-backfill.md"
+      ],
+      "verification": [
+        "npm run drive:intake:truth: PASS"
+      ],
+      "implementation_files": [
+        "scripts/system-truth.mjs",
+        "ops/drive-audits/2026-06-23-class-intake-complete-truth.md",
+        "ops/drive-audits/2026-06-23-guarded-progress-question-backfill.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "jobs 75-79 and 64-74 evidence matrix exists; Dry-run/no-apply boundary is explicit; Production backfill blocker is precise"
+    },
+    {
+      "id": "REQ-20260623-208",
+      "title": "Audit assets/Drive/UI source coverage with repo evidence and explicit live-proof gaps.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-209"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "one-time-assets-ui",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P1",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260623-204"
+      ],
+      "status": "done",
+      "implementation_status": "asset_ui_repo_truth_generated",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Run live render proof after deploy/readback gates are approved.",
+      "acceptance_criteria": [
+        "Asset truth md/json exists",
+        "UI source coverage md/json exists",
+        "Live proof gaps are named"
+      ],
+      "evidence": [
+        "ops/audits/2026-06-23-one-time-asset-drive-and-render-truth.md",
+        "ops/ui-audits/2026-06-23-ui-source-coverage.md",
+        "ops/ui-audits/2026-06-23-one-time-asset-contact-sheet/README.md"
+      ],
+      "verification": [
+        "npm run asset:truth: PASS",
+        "npm run ui:source-coverage: PASS",
+        "Google Drive read-only metadata search: PASS"
+      ],
+      "implementation_files": [
+        "scripts/system-truth.mjs",
+        "ops/audits/2026-06-23-one-time-asset-drive-and-render-truth.md",
+        "ops/ui-audits/2026-06-23-ui-source-coverage.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "Asset truth md/json exists; UI source coverage md/json exists; Live proof gaps are named"
+    },
+    {
+      "id": "REQ-20260623-209",
+      "title": "Perform live database/Railway/Drive readback and production-safe backfill only after required gates.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-210"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "external-readback",
+      "owner": "Codex",
+      "category": "external_blocker",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260623-207",
+        "REQ-20260623-208"
+      ],
+      "status": "blocked",
+      "implementation_status": "external_readback_not_authorized_or_not_configured",
+      "can_continue_without_operator": false,
+      "blocker": "Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection.",
+      "blocker_owner": "Operator",
+      "blocker_next_action": "Approve or provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets.",
+      "next_action": "Provide/approve read-only DB and Railway service readback gates before production verification or guarded backfill.",
+      "acceptance_criteria": [
+        "Database proof is from live readback, not repo comments",
+        "Railway deployment is tied to commit/deployment ID",
+        "Drive assets/classes have source IDs and permissions verified",
+        "Backfill apply is gated and idempotent"
+      ],
+      "evidence": [
+        "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
+        "ops/drive-audits/2026-06-23-class-intake-complete-truth.md"
+      ],
+      "verification": [
+        "railway status: PASS, Project one-time-production / Environment production / Service None",
+        "npm run drive:intake:truth: PASS, live_database_verified=false and safe_apply_performed=false"
+      ],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent"
+    },
+    {
+      "id": "REQ-20260623-210",
+      "title": "Implement remaining canonical persistence/lifecycle/adapters/auto-resume/UI/watchdog/synthetic E2E system.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-211"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "canonical-ramble-to-done",
+      "owner": "Codex",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260623-202",
+        "REQ-20260623-203",
+        "REQ-20260623-204"
+      ],
+      "status": "not_started",
+      "implementation_status": "follow_on_implementation_required",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Implement canonical persistence, adapters, lifecycle, Operations UI, watchdogs, synthetic E2E, deploy, and live verification in a follow-on PR.",
+      "acceptance_criteria": [
+        "Canonical persistence model is implemented",
+        "Adapters use one intake service",
+        "Decision auto-resume is tested",
+        "Operations compact views are verified",
+        "Synthetic E2E passes"
+      ],
+      "evidence": [
+        "ops/return-packets/2026-06-23-complete-system-reality-redacted.md"
+      ],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "Canonical persistence model is implemented; Adapters use one intake service; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
+    },
+    {
+      "id": "REQ-20260623-211",
+      "title": "Produce private ChatGPT return packet and redacted repo summary.",
+      "source_id": "RAW-20260623-002",
+      "source_statement_ids": [
+        "SRC-20260623-212"
+      ],
+      "source_path": "raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md",
+      "workspace_key": "repository",
+      "project_key": "complete-system-reconciliation",
+      "owner": "Codex",
+      "category": "evidence",
+      "priority": "P0",
+      "batch_id": "Z",
+      "depends_on": [
+        "REQ-20260623-202",
+        "REQ-20260623-205",
+        "REQ-20260623-206",
+        "REQ-20260623-207",
+        "REQ-20260623-208"
+      ],
+      "status": "done",
+      "implementation_status": "private_and_redacted_return_packets_generated",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Use the packet to resume follow-on implementation work.",
+      "acceptance_criteria": [
+        "Private return packet exists outside Git",
+        "Redacted repo summary exists",
+        "Final response includes copy-ready packet"
+      ],
+      "evidence": [
+        "ops/return-packets/2026-06-23-complete-system-reality-redacted.md",
+        ".runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md",
+        ".runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json"
+      ],
+      "verification": [
+        "Redacted repo packet created: PASS",
+        "Private local packet created outside committed tree: PASS"
+      ],
+      "implementation_files": [
+        "ops/return-packets/2026-06-23-complete-system-reality-redacted.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T13:56:00+03:00",
+      "expected_result": "Private return packet exists outside Git; Redacted repo summary exists; Final response includes copy-ready packet"
+    }
+  ]
+}
