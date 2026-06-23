@@ -42,6 +42,7 @@
 - `src/platform/ingestion/prompt-queue.js`
 - `scripts/intake-github.mjs`
 - `scripts/ramble-intake-contract.mjs`
+- `scripts/watchdog-raw-intake-drift.mjs`
 - `docs/product/ramble-queue-contract.md`
 - `tests/ingestion/canonical-ids.test.js`
 - `tests/intake-parser.test.js`
@@ -49,6 +50,7 @@
 - `tests/ingestion/w3-intake-source.test.js`
 - `tests/ingestion/w3-intake-service.test.js`
 - `tests/ingestion/w3-intake-persistence.test.js`
+- `tests/watchdog-raw-intake-drift.test.js`
 - `tests/system-truth-scripts.test.js`
 
 Stable display ID slice verified:
@@ -85,6 +87,14 @@ Canonical persistence readback slice verified:
 - Readback can locate linked rows by raw intake ID or parent prompt ID.
 - `scripts/ramble-intake-contract.mjs --memory-readback` exercises the adapter
   without production database writes.
+
+Canonical watchdog contract slice verified:
+
+- `npm run watchdog:raw` checks canonical service/readback, GitHub adapter, and
+  ramble contract script drift markers.
+- Focused watchdog test confirms all canonical contract checks pass.
+- Existing medium raw provenance findings remain non-failing and unrelated to
+  this service/readback contract.
 
 ## Privacy Boundary
 

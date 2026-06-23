@@ -1,5 +1,30 @@
 # Status
 
+## 2026-06-23T14:44:33+03:00
+
+Status: running, with the sixth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with raw-intake watchdog coverage for the canonical
+service/readback contracts. `npm run watchdog:raw` now checks that the shared
+intake service, local persistence readback adapter, GitHub adapter, and ramble
+contract script keep their required contract markers.
+
+Verified in this slice:
+
+- Watchdog contract checks cover `intake-service.js` and
+  `intake-persistence.js`.
+- GitHub dry-run and ramble contract script canonical entrypoints are guarded.
+- Focused watchdog/service/readback tests passed, 7/7.
+- `npm run watchdog:raw` passed with `ok: true`; two existing medium raw
+  provenance findings remain non-failing.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  Operations UI, broader watchdog parity, synthetic E2E, deploy, and live
+  verification are not complete yet.
+
 ## 2026-06-23T14:39:23+03:00
 
 Status: running, with the fifth canonical implementation slice complete.

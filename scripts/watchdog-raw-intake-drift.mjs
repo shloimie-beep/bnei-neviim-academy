@@ -17,6 +17,7 @@ import {
 export function buildRawIntakeDriftAudit() {
   const findings = [];
   const rawDir = path.join(repoRoot, 'raw-input');
+  const canonicalContracts = [];
   const rawFiles = walkFiles(rawDir, (file) => file.endsWith('.md') && !file.endsWith('README.md'));
   const memoryFiles = walkFiles(path.join(repoRoot, 'memory'), (file) => file.endsWith('.md'));
   const registers = walkFiles(path.join(repoRoot, 'tasks-pending'), (file) => file.endsWith('.md'));
@@ -55,6 +56,86 @@ export function buildRawIntakeDriftAudit() {
       }
     }
   }
+
+  function requireCanonicalContract({ file, label, patterns, recommended_fix }) {
+    const filePath = path.join(repoRoot, file);
+    const text = readText(filePath);
+    const missing = [];
+    if (!text) {
+      missing.push('file is missing or unreadable');
+    } else {
+      for (const [name, pattern] of patterns) {
+        if (!pattern.test(text)) missing.push(name);
+      }
+    }
+    canonicalContracts.push({
+      file,
+      label,
+      checked: patterns.length,
+      ok: missing.length === 0,
+      missing,
+    });
+    if (missing.length) {
+      addFinding(findings, {
+        severity: 'high',
+        category: 'canonical-intake',
+        title: `${label} contract drift`,
+        details: `Missing required markers: ${missing.join(', ')}.`,
+        evidence: [file],
+        recommended_fix,
+        goal_ids: ['GOAL-CORE-007', 'GOAL-CORE-015'],
+      });
+    }
+  }
+
+  requireCanonicalContract({
+    file: 'src/platform/ingestion/intake-service.js',
+    label: 'Canonical intake service',
+    patterns: [
+      ['buildCanonicalIntakePacket export', /\bbuildCanonicalIntakePacket\b/],
+      ['source record creation', /\bcreateIntakeSourceRecord\b/],
+      ['platform parser bridge', /\bparsePlatformIntake\b/],
+      ['parent prompt bridge', /\bcreateParentPrompt\b/],
+      ['persistence plan', /\bbuildPersistencePlan\b/],
+      ['no external write flag', /external_write_performed:\s*false/],
+    ],
+    recommended_fix: 'Restore the shared source/parse/parent-prompt/persistence packet service before adapters bypass it.',
+  });
+  requireCanonicalContract({
+    file: 'src/platform/ingestion/intake-persistence.js',
+    label: 'Canonical intake persistence readback',
+    patterns: [
+      ['memory store factory', /\bcreateMemoryIntakePersistenceStore\b/],
+      ['memory apply function', /\bapplyCanonicalIntakePacketToMemory\b/],
+      ['readback function', /\breadCanonicalIntakePersistence\b/],
+      ['idempotent map upsert', /\.set\(rows\.(?:raw_intake|parse_run|parent_prompt)/],
+      ['no external write flag', /external_write_performed:\s*false/],
+    ],
+    recommended_fix: 'Restore local apply/readback coverage before approving any production persistence path.',
+  });
+  requireCanonicalContract({
+    file: 'scripts/intake-github.mjs',
+    label: 'GitHub intake adapter',
+    patterns: [
+      ['canonical packet service import', /\bbuildCanonicalIntakePacket\b/],
+      ['github provider', /source_provider:\s*'github'/],
+      ['github issue kind', /source_kind:\s*'github_issue'/],
+      ['persistence plan summary', /\bpersistence_plan\b/],
+    ],
+    recommended_fix: 'Route GitHub dry-run intake through the canonical service with first-class GitHub source metadata.',
+  });
+  requireCanonicalContract({
+    file: 'scripts/ramble-intake-contract.mjs',
+    label: 'Ramble intake contract script',
+    patterns: [
+      ['canonical packet service import', /\bbuildCanonicalIntakePacket\b/],
+      ['memory readback adapter import', /\bapplyCanonicalIntakePacketToMemory\b/],
+      ['memory readback flag', /--memory-readback/],
+      ['persistence output', /\bpersistence:\s*packet\.persistence\b/],
+    ],
+    recommended_fix: 'Keep the local contract script on the canonical service and readback adapter.',
+  });
+
   const report = writeWatchdogReport({
     kind: 'raw-intake-drift',
     title: 'Raw Intake Drift Watchdog',
@@ -62,11 +143,26 @@ export function buildRawIntakeDriftAudit() {
       `Raw fallback files: ${rawFiles.length}`,
       `Memory files: ${memoryFiles.length}`,
       `Requirement registers: ${registers.length}`,
+      `Canonical intake contract checks: ${canonicalContracts.reduce((sum, item) => sum + item.checked, 0)}`,
     ],
     findings,
+    extraSections: [
+      {
+        title: 'Canonical Intake Contract Checks',
+        lines: canonicalContracts.map((item) => (
+          `- ${item.ok ? 'PASS' : 'FAIL'} ${item.label}: ${item.file}${item.missing.length ? ` missing ${item.missing.join(', ')}` : ''}`
+        )),
+      },
+    ],
   });
   const severity = overallSeverity(findings);
-  return { ok: !findings.some((finding) => isFailureSeverity(finding.severity)), severity, findings, report };
+  return {
+    ok: !findings.some((finding) => isFailureSeverity(finding.severity)),
+    severity,
+    findings,
+    report,
+    canonical_contract_checks: canonicalContracts,
+  };
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

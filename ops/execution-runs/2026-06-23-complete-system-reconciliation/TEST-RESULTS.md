@@ -25,8 +25,13 @@
   PASS, 14/14.
 - `node scripts/ramble-intake-contract.mjs --text="Task: Codex should verify canonical memory readback." --memory-readback | Out-Null`:
   PASS.
+- `node --check scripts/watchdog-raw-intake-drift.mjs`:
+  PASS.
+- `node --test tests/watchdog-raw-intake-drift.test.js tests/ingestion/w3-intake-persistence.test.js tests/ingestion/w3-intake-service.test.js`:
+  PASS, 7/7.
+- `npm run watchdog:raw`: PASS, `ok: true`, severity `medium`, findings 2.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1079/1079.
+- `npm test`: PASS, 1080/1080.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

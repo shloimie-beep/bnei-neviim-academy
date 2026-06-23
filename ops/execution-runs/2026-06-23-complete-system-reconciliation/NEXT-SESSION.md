@@ -13,8 +13,9 @@ Open requirements:
 - `REQ-20260623-209`: blocked on approved external readback/backfill gates.
 - `REQ-20260623-210`: in progress; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
-  packet plus local persistence readback slices are verified, with remaining
-  approved production persistence apply, UI/watchdog/E2E work open.
+  packet plus local persistence readback and watchdog contract slices are
+  verified, with remaining approved production persistence apply, UI/broader
+  watchdog/E2E work open.
 
 Next exact commands for continuation:
 
@@ -40,6 +41,8 @@ Completed implementation slice:
   prompt/persistence-ready packet for adapters and contract scripts.
 - Local canonical persistence memory adapter with idempotent apply/readback by
   raw intake, parse run, or parent prompt locator.
+- Raw-intake watchdog contract checks for canonical service/readback and
+  adapter/script drift.
 
 Follow-on implementation scope:
 
