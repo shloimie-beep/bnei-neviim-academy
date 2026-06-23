@@ -114,6 +114,20 @@ export function buildRawIntakeDriftAudit() {
     recommended_fix: 'Restore local apply/readback coverage before approving any production persistence path.',
   });
   requireCanonicalContract({
+    file: 'src/platform/ingestion/intake-postgres-persistence.js',
+    label: 'Canonical intake Postgres persistence',
+    patterns: [
+      ['postgres plan builder', /\bbuildCanonicalIntakePostgresPlan\b/],
+      ['postgres apply helper', /\bapplyCanonicalIntakePacketToPostgres\b/],
+      ['postgres readback helper', /\breadCanonicalIntakePersistenceFromPostgres\b/],
+      ['injected client guard', /Postgres client with query\(sql, values\) is required/],
+      ['parent prompt table', /\bbna_canonical_parent_prompts\b/],
+      ['parsed entities table', /\bbna_canonical_parsed_entities\b/],
+      ['no external write flag', /external_write_performed:\s*false/],
+    ],
+    recommended_fix: 'Keep approved production persistence on the canonical Postgres apply/readback adapter with injected-client gating.',
+  });
+  requireCanonicalContract({
     file: 'src/platform/ingestion/prompt-queue.js',
     label: 'Parent prompt auto-resume lifecycle',
     patterns: [
@@ -142,7 +156,9 @@ export function buildRawIntakeDriftAudit() {
     patterns: [
       ['canonical packet service import', /\bbuildCanonicalIntakePacket\b/],
       ['memory readback adapter import', /\bapplyCanonicalIntakePacketToMemory\b/],
+      ['postgres plan adapter import', /\bbuildCanonicalIntakePostgresPlan\b/],
       ['memory readback flag', /--memory-readback/],
+      ['postgres plan flag', /--postgres-plan/],
       ['persistence output', /\bpersistence:\s*packet\.persistence\b/],
     ],
     recommended_fix: 'Keep the local contract script on the canonical service and readback adapter.',

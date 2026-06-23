@@ -10,6 +10,7 @@ const INTAKE_SOURCE_CHANNELS = [
   'github_pr',
   'operations_ui',
   'drive',
+  'approved_upload',
   'class_recording',
   'website_helper',
   'operations_helper',

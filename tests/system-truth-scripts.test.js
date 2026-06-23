@@ -30,7 +30,9 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   assert.match(read('scripts/intake-github.mjs'), /intake-service/);
   assert.match(read('scripts/ramble-intake-contract.mjs'), /buildCanonicalIntakePacket/);
   assert.match(read('scripts/ramble-intake-contract.mjs'), /applyCanonicalIntakePacketToMemory/);
+  assert.match(read('scripts/ramble-intake-contract.mjs'), /buildCanonicalIntakePostgresPlan/);
   assert.match(read('scripts/ramble-intake-contract.mjs'), /--memory-readback/);
+  assert.match(read('scripts/ramble-intake-contract.mjs'), /--postgres-plan/);
   const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'intake-github.mjs')).href);
   const issue = {
     number: 7,

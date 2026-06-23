@@ -37,6 +37,7 @@
 - `src/platform/ingestion/intake-source.js`
 - `src/platform/ingestion/intake-service.js`
 - `src/platform/ingestion/intake-persistence.js`
+- `src/platform/ingestion/intake-postgres-persistence.js`
 - `src/lib/bna/intake-schema.js`
 - `src/lib/bna/ramble-protocol.js`
 - `src/lib/bna/intake-parser.js`
@@ -158,6 +159,24 @@ Canonical Operations source/audit readback slice verified:
   new Operations sections.
 - Focused parser/UI tests passed, 16/16, and the Operations inline scripts
   parsed successfully.
+
+Canonical Postgres persistence/readback slice verified:
+
+- Additive schema tables now cover canonical stable parse runs, parent prompts,
+  and parsed entity projection without replacing the existing raw-intake,
+  parse-run, parse-item, or review queue tables.
+- Raw-intake source channels now accept the first-class provider set required
+  for GitHub, ChatGPT, approved uploads, helper sources, email, WhatsApp, and
+  WAPI.
+- `src/platform/ingestion/intake-postgres-persistence.js` builds a no-write
+  Postgres plan, applies only through an injected client, and reads back
+  canonical rows by raw intake, parse run, or parent prompt IDs.
+- `scripts/ramble-intake-contract.mjs --postgres-plan` emits a redacted
+  production persistence preview without SQL values or live database writes.
+- The raw-intake watchdog guards the Postgres adapter and plan flag.
+- Focused persistence/parser/watchdog/system tests passed, 27/27, and
+  `npm run watchdog:raw` passed with the existing non-failing medium raw
+  provenance findings.
 
 ## Privacy Boundary
 

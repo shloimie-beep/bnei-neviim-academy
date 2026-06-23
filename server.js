@@ -16497,7 +16497,7 @@ CREATE INDEX IF NOT EXISTS idx_bna_person_relationships_related ON bna_person_re
 CREATE TABLE IF NOT EXISTS bna_raw_intake (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   stable_id TEXT UNIQUE NOT NULL,
-  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other')),
+  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other')),
   source_message_id TEXT,
   source_user TEXT,
   raw_text TEXT,
@@ -16518,6 +16518,9 @@ CREATE TABLE IF NOT EXISTS bna_raw_intake (
   parsed_at TIMESTAMPTZ,
   archived_at TIMESTAMPTZ
 );
+ALTER TABLE bna_raw_intake DROP CONSTRAINT IF EXISTS bna_raw_intake_source_channel_check;
+ALTER TABLE bna_raw_intake ADD CONSTRAINT bna_raw_intake_source_channel_check
+  CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other'));
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_stable_id ON bna_raw_intake(stable_id);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_source_channel ON bna_raw_intake(source_channel);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_parse_status ON bna_raw_intake(parse_status);
@@ -16575,6 +16578,72 @@ CREATE TABLE IF NOT EXISTS bna_intake_parse_items (
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_run ON bna_intake_parse_items(parse_run_id, status);
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_type ON bna_intake_parse_items(item_type, status);
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_target ON bna_intake_parse_items(target_table, target_id);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_intake_parse_runs (
+  parse_run_id TEXT PRIMARY KEY,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parent_prompt_id TEXT,
+  legacy_parse_run_id INTEGER REFERENCES bna_intake_parse_runs(id) ON DELETE SET NULL,
+  parser_version TEXT,
+  status TEXT NOT NULL DEFAULT 'parsed',
+  parse_run_json JSONB NOT NULL DEFAULT '{}',
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_intake_parse_runs_raw ON bna_canonical_intake_parse_runs(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_intake_parse_runs_prompt ON bna_canonical_intake_parse_runs(parent_prompt_id);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_parent_prompts (
+  prompt_id TEXT PRIMARY KEY,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parse_run_id TEXT REFERENCES bna_canonical_intake_parse_runs(parse_run_id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'queued',
+  child_outcome_count INTEGER NOT NULL DEFAULT 0,
+  prompt_json JSONB NOT NULL DEFAULT '{}',
+  metadata JSONB NOT NULL DEFAULT '{}',
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_raw ON bna_canonical_parent_prompts(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_run ON bna_canonical_parent_prompts(parse_run_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_status ON bna_canonical_parent_prompts(status, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_parsed_entities (
+  entity_id TEXT PRIMARY KEY,
+  parse_item_id TEXT,
+  parse_run_id TEXT REFERENCES bna_canonical_intake_parse_runs(parse_run_id) ON DELETE CASCADE,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parent_prompt_id TEXT REFERENCES bna_canonical_parent_prompts(prompt_id) ON DELETE SET NULL,
+  item_id TEXT,
+  entity_key TEXT,
+  entity_group TEXT NOT NULL DEFAULT 'unknown',
+  entity_type TEXT NOT NULL DEFAULT 'unknown',
+  title TEXT,
+  status TEXT NOT NULL DEFAULT 'parsed',
+  target_lane TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  confidence NUMERIC,
+  owner TEXT,
+  expected_result TEXT,
+  next_action TEXT,
+  reason TEXT,
+  idempotency_key TEXT,
+  source_stable_key TEXT,
+  source_id TEXT,
+  source_excerpt TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  sort_index INTEGER DEFAULT 0,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_run ON bna_canonical_parsed_entities(parse_run_id, sort_index);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_raw ON bna_canonical_parsed_entities(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_prompt ON bna_canonical_parsed_entities(parent_prompt_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_group ON bna_canonical_parsed_entities(entity_group, status);
 
 CREATE TABLE IF NOT EXISTS bna_section_definitions (
   id SERIAL PRIMARY KEY,
@@ -20337,12 +20406,13 @@ async function createRawIntakeRecord({
 function normalizeRawIntakeSourceChannel(value = '') {
   const rawValue = String(value || '').trim();
   const channel = normalizeSourceChannel(rawValue);
-  if (['telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other'].includes(channel)) {
+  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
+  if (channel === 'class_recording') return 'class_recording';
+  if (['telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other'].includes(channel)) {
     return channel;
   }
   if (channel === 'operations_helper') return 'operations_ui';
   if (channel === 'website_helper') return 'website_bot';
-  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
   return 'other';
 }
 

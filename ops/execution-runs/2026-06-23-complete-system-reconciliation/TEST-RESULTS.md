@@ -2,6 +2,14 @@
 
 ## Passed
 
+- `node --check scripts/ramble-intake-contract.mjs scripts/watchdog-raw-intake-drift.mjs src/platform/ingestion/intake-postgres-persistence.js server.js`:
+  PASS.
+- `node --test tests/ingestion/w3-intake-persistence.test.js tests/intake-parser.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
+  PASS, 27/27.
+- `node scripts/ramble-intake-contract.mjs --text="Task: Codex should preview canonical Postgres persistence." --postgres-plan | node -e "..."`
+  PASS; emitted a no-write Postgres plan summary.
+- `npm run watchdog:raw`:
+  PASS, `ok: true`, severity `medium`, findings 2; Postgres persistence contract guarded.
 - `node --check server.js`:
   PASS.
 - `node --test tests/intake-parser.test.js`:
@@ -67,7 +75,7 @@
 - `node --test tests/service-provider-studio-browser-smoke.test.js`:
   PASS, 1/1.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1082/1082.
+- `npm test`: PASS, 1085/1085.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

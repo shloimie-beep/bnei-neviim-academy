@@ -1,5 +1,36 @@
 # Status
 
+## 2026-06-23T15:32:28+03:00
+
+Status: running, with the twelfth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a production-shaped canonical Postgres
+persistence/readback adapter. The schema now has additive canonical side tables
+for stable parse runs, parent prompts, and parsed entities; raw-intake source
+channels now include GitHub, ChatGPT, approved uploads, helpers, email, WhatsApp,
+and WAPI. The adapter builds an explicit no-write plan, applies only through an
+injected Postgres client, and reads back raw intake, parse run, parent prompt,
+parse items, and parsed entities by canonical IDs.
+
+Verified in this slice:
+
+- `src/platform/ingestion/intake-postgres-persistence.js` exposes
+  `buildCanonicalIntakePostgresPlan()`,
+  `applyCanonicalIntakePacketToPostgres()`, and
+  `readCanonicalIntakePersistenceFromPostgres()`.
+- `scripts/ramble-intake-contract.mjs --postgres-plan` emits a redacted
+  no-write production persistence preview.
+- The raw-intake watchdog guards the Postgres persistence contract.
+- Focused persistence/parser/watchdog/system coverage passed, 27/27.
+- `npm run watchdog:raw` passed with `ok: true`; the two existing medium raw
+  provenance findings remain non-failing.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T15:18:18+03:00
 
 Status: running, with the eleventh canonical implementation slice complete.

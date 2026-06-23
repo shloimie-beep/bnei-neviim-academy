@@ -18,8 +18,9 @@ Open requirements:
   memory persistence projects parsed entity rows, local prompt auto-resume
   planning is covered, and the raw-intake watchdog guards the auto-resume
   contract. Operations source/audit readback tabs now expose linked raw-intake
-  detail locally. Remaining approved production persistence apply, deploy, and
-  live verification work remain open.
+  detail locally. The local Postgres persistence/readback adapter and no-write
+  `--postgres-plan` preview are implemented. Remaining approved production
+  database apply, deploy, and live verification work remain open.
 
 Next exact commands for continuation:
 
@@ -57,16 +58,17 @@ Completed implementation slice:
   planner/apply helper.
 - Operations Intake source/audit tabs backed by parse-run detail readback and
   linked raw-intake records.
+- Additive canonical Postgres persistence/readback adapter for raw intake,
+  stable parse runs, parent prompts, parse items, and parsed entities, guarded
+  by injected-client apply and a no-write `--postgres-plan` preview.
 
 Follow-on implementation scope:
 
-- Approved production persistence apply/readback for source envelopes and
-  adapter ingestion records across Telegram, Codex, Operations, Drive,
-  recordings, approved uploads, and the now-normalized GitHub/ChatGPT source
-  providers.
-- Approved production persistence apply/readback for canonical parsed entities.
-- Approved production persistence apply/readback, deploy, and live read-only
-  verification.
+- Approved production database apply/readback using the canonical Postgres
+  adapter after explicit gate approval.
+- Deploy of the app-visible/schema changes after explicit deployment approval.
+- Live read-only verification after deploy and approved credentials/service
+  selection.
 
 Do not deploy, delete worktrees, rewrite Git history, apply production backfill,
 send messages, upload to Vimeo, or charge cards without explicit gates.
