@@ -71,8 +71,20 @@ test('return packet report keeps private and redacted packet paths explicit', as
     assert.equal(report.system_truth.validated_agent_work_head, run.git_refs.last_validated_head);
     for (const item of report.agent_work) {
       assert.equal(item.commit, run.git_refs.last_validated_head);
+      assert.equal(item.validated_commit, run.git_refs.last_validated_head);
+      assert.ok(['current_branch_head', 'execution_run_last_validated_head'].includes(item.commit_basis));
+      if (item.validated_commit !== item.current_branch_head) {
+        assert.equal(item.commit_basis, 'execution_run_last_validated_head');
+      }
     }
   }
+  for (const item of report.agent_work) {
+    assert.equal(item.current_branch_head, report.system_truth.head);
+  }
+  const renderedPacket = mod.renderReturnPacketReport(report, { redacted: true });
+  assert.match(renderedPacket, /- branch head: [0-9a-f]{40}/);
+  assert.match(renderedPacket, /- validated Agent Work head: [0-9a-f]{40}/);
+  assert.match(renderedPacket, /AGENT WORK[\s\S]*branch [0-9a-f]{12} \/ validated [0-9a-f]{12}/);
   if (report.agent_work.some((item) => item.package === 'REQ-20260623-210')) {
     assert.equal(report.next_automatic_action.package, 'none');
     assert.match(report.next_automatic_action.command, /No unblocked automatic package/);

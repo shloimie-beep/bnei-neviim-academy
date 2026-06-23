@@ -1,5 +1,39 @@
 # Status
 
+## 2026-06-23T17:37:36+03:00
+
+Status: running, with the twenty-fourth return-packet commit-basis clarity
+slice complete.
+
+Updated the return-packet generator so system truth and Agent Work rows show
+the current branch head separately from the validated Agent Work commit basis.
+This keeps the packet honest when handoff/evidence commits advance the branch
+after the last validated implementation checkpoint.
+
+Verified in this slice:
+
+- `node --check scripts/system-truth.mjs` passed.
+- `node --test tests/system-truth-scripts.test.js` passed, 5/5.
+- `npm run bna:return-packet -- --json` regenerated the private ignored
+  packet and tracked redacted packet with branch-head and validated-head
+  fields.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4148 tracked paths checked and
+  0 tracked secret-risk files.
+- Full `npm test` passed, 1101/1101.
+- `git diff --check` passed with line-ending warnings only.
+- No production mutation, deploy, live verification, external read, send,
+  upload, charge, or backfill was performed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T17:27:37+03:00
 
 Status: running, with the twenty-third return-packet resume/private-file

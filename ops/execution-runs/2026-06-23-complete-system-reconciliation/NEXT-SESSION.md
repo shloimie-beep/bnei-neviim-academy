@@ -34,7 +34,8 @@ Open requirements:
   the redacted handoff.
   The return packet also reports branch ahead/behind/local-only commit counts,
   exact resume commands, and private `.runtime` packet files as gitignored/not
-  pushed.
+  pushed. It now distinguishes the current branch head from the validated Agent
+  Work commit basis in system truth and Agent Work rows.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.

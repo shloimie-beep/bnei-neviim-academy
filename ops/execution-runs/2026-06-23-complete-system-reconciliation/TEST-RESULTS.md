@@ -3,6 +3,30 @@
 ## Passed
 
 - `node --check scripts/system-truth.mjs`:
+  PASS after return-packet commit-basis clarity hardening.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 5/5; return packet reports current branch head separately from the
+  validated Agent Work commit basis.
+- `npm run bna:return-packet -- --json`:
+  PASS; packet reports branch head and validated Agent Work head in the
+  redacted markdown and private JSON.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- Redacted return packet branch/validated-head field checks:
+  PASS; system truth includes both full commit hashes, Agent Work includes
+  `branch 750de9868b0c / validated 68649b1a3454`, and the verdict remains
+  `PARTIAL - APPROVAL-GATED WORK REMAINS`.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1101/1101 after return-packet commit-basis clarity hardening.
+- `node --check scripts/system-truth.mjs`:
   PASS after return-packet resume/private-file summary hardening.
 - `node --test tests/system-truth-scripts.test.js`:
   PASS, 5/5; return packet reports branch local-only commit counts, exact

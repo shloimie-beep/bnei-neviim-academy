@@ -29,6 +29,13 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+Latest return-packet slice:
+
+- The private and redacted return packets now report both the current branch
+  head and the validated Agent Work commit basis.
+- Agent Work rows include `current_branch_head`, `validated_commit`, and
+  `commit_basis` in the JSON packet.
+
 ## Implementation Evidence
 
 - `server.js`

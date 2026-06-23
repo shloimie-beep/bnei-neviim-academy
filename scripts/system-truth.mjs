@@ -755,6 +755,9 @@ async function returnPacketReport() {
       phase: item.implementation_status,
       branch: repo.branch,
       commit: agentWorkCommit,
+      current_branch_head: repo.head,
+      validated_commit: agentWorkCommit,
+      commit_basis: agentWorkCommit === repo.head ? 'current_branch_head' : 'execution_run_last_validated_head',
       next_step: item.next_action
     })),
     tests_deployment: {
@@ -819,6 +822,8 @@ function renderReturnPacketMarkdown(report, options = {}) {
     `- master: ${report.system_truth.master || 'unknown'}`,
     `- deployed commit/deployment: ${report.system_truth.deployed_commit || 'unknown'} / ${report.system_truth.deployment_id || 'unknown'}`,
     `- branch/PR: ${report.system_truth.branch || 'unknown'} / ${report.system_truth.pr || 'none'}`,
+    `- branch head: ${report.system_truth.head || 'unknown'}`,
+    `- validated Agent Work head: ${report.system_truth.validated_agent_work_head || 'unknown'}`,
     `- active run: ${report.system_truth.active_run || 'unknown'}`,
     `- branch sync: ahead ${report.system_truth.ahead ?? 'unknown'}, behind ${report.system_truth.behind ?? 'unknown'}, local-only commits ${report.system_truth.local_only_commits ?? 'unknown'}`,
     `- source coverage: errors ${report.source_coverage?.validation?.errors?.length ?? 'unknown'}, unmapped ${report.source_coverage?.source_statements?.unmapped_executable ?? 'unknown'}`,
@@ -896,7 +901,13 @@ function renderReturnPacketMarkdown(report, options = {}) {
     ...(myTasks.length ? myTasks.map((task) => `- ${task.id} / ${task.deep_link || 'no link'} / ${task.action}`) : ['- none']),
     '',
     'AGENT WORK',
-    ...(agentWork.length ? agentWork.map((item) => `- ${item.package} / ${item.phase} / ${item.branch} / ${String(item.commit || '').slice(0, 12)} / ${item.next_step}`) : ['- none']),
+    ...(agentWork.length
+      ? agentWork.map((item) => {
+          const branchHead = String(item.current_branch_head || report.system_truth.head || '').slice(0, 12) || 'unknown';
+          const validatedHead = String(item.validated_commit || item.commit || '').slice(0, 12) || 'unknown';
+          return `- ${item.package} / ${item.phase} / ${item.branch} / branch ${branchHead} / validated ${validatedHead} / ${item.next_step}`;
+        })
+      : ['- none']),
     '',
     'TESTS / DEPLOYMENT',
     `- tests: ${latestTests.npm_test || 'see execution-run TEST-RESULTS.md'}`,
@@ -1072,6 +1083,10 @@ export async function buildReport(mode = 'system') {
   if (mode === 'readiness') return readinessReport();
   if (mode === 'return-packet') return returnPacketReport();
   return systemReport();
+}
+
+export function renderReturnPacketReport(report, options = {}) {
+  return renderReturnPacketMarkdown(report, options);
 }
 
 function parseArgs(argv) {
