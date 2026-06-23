@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T16:51:01+03:00",
+  "updated_at": "2026-06-23T17:11:14+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -577,7 +577,7 @@
         "REQ-20260623-204"
       ],
       "status": "in_progress",
-      "implementation_status": "porcelain_dirty_state_reporting_hardened",
+      "implementation_status": "validated_agent_work_handoff_hardened",
       "can_continue_without_operator": false,
       "blocker": "Production database apply/readback, deploy, and live verification require configured DB/Railway/Drive targets plus explicit approval gates before execution.",
       "blocker_owner": "Operator",
@@ -600,6 +600,7 @@
         "Production closeout gate checks branch, pushed HEAD, dirty worktree, run metadata, and deploy/live approval gates",
         "Detached release-candidate checkout validation is explicit and verifies HEAD against a named pushed remote branch",
         "Production closeout and return-packet dirty-state reporting preserve Git porcelain leading whitespace so unstaged dirty files are not reported as staged",
+        "Return packet Agent Work commit is sourced from the execution run validated checkpoint instead of transient pre-commit worktree HEAD",
         "Canonical persistence model is implemented",
         "Decision auto-resume is tested",
         "Operations compact views are verified",
@@ -705,6 +706,12 @@
         "node scripts/audit-secrets.mjs: PASS, 4148 tracked paths checked and 0 tracked secret-risk files found",
         "npm test: PASS, 1101/1101",
         "npm run bna:return-packet -- --json: PASS, packet dirty sample reports unstaged modified files as status space-M",
+        "node --check scripts/system-truth.mjs: PASS after validated Agent Work checkpoint hardening",
+        "node --test tests/system-truth-scripts.test.js: PASS, return packet Agent Work commit matches run git_refs.last_validated_head",
+        "npm test: PASS, 1101/1101 after validated Agent Work handoff hardening",
+        "npm run bna:run:source-coverage: PASS, 0 unmapped executable statements after validated Agent Work handoff hardening",
+        "npm run bna:run:stale-evidence: PASS, stale evidence detection none after validated Agent Work handoff hardening",
+        "node scripts/audit-secrets.mjs: PASS, 4148 tracked paths checked and 0 tracked secret-risk files found after validated Agent Work handoff hardening",
         "npm run watchdog:actions: PASS, ok true, severity ok, findings 0",
         "npm run watchdog:security: PASS, ok true, severity ok, findings 0",
         "node --test tests/bna-production-closeout-gate.test.js tests/canonical-intake-postgres-cli.test.js tests/ingestion/w3-intake-persistence.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js: PASS, 16/16",
@@ -762,8 +769,8 @@
         "tests/system-truth-scripts.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T16:51:01+03:00",
-      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Operations source/audit tabs expose raw-intake detail readback; Production Postgres apply/readback adapter is implemented with injected-client gating; Production Postgres operator CLI is dry-run first and requires explicit readback/apply gates; Production closeout gate checks branch, pushed HEAD, dirty worktree, run metadata, and deploy/live approval gates; Detached release-candidate checkout validation is explicit and verifies HEAD against a named pushed remote branch; Production closeout and return-packet dirty-state reporting preserve Git porcelain leading whitespace so unstaged dirty files are not reported as staged; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes; Approval-gated in-progress requirements are not advertised as unblocked executable batches; Return packet next automatic action uses executable-batch state and reports no automatic package when approval-gated"
+      "updated_at": "2026-06-23T17:04:58+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Operations source/audit tabs expose raw-intake detail readback; Production Postgres apply/readback adapter is implemented with injected-client gating; Production Postgres operator CLI is dry-run first and requires explicit readback/apply gates; Production closeout gate checks branch, pushed HEAD, dirty worktree, run metadata, and deploy/live approval gates; Detached release-candidate checkout validation is explicit and verifies HEAD against a named pushed remote branch; Production closeout and return-packet dirty-state reporting preserve Git porcelain leading whitespace so unstaged dirty files are not reported as staged; Return packet Agent Work commit is sourced from the execution run validated checkpoint instead of transient pre-commit worktree HEAD; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes; Approval-gated in-progress requirements are not advertised as unblocked executable batches; Return packet next automatic action uses executable-batch state and reports no automatic package when approval-gated"
     },
     {
       "id": "REQ-20260623-211",

@@ -1,5 +1,38 @@
 # Status
 
+## 2026-06-23T17:04:58+03:00
+
+Status: running, with the twenty-first validated Agent Work handoff slice
+complete.
+
+Updated the return-packet generator so the Agent Work commit is sourced from
+the execution run's `git_refs.last_validated_head`, not from the transient
+worktree HEAD at packet-generation time. This keeps the handoff tied to the
+last pushed and verified implementation checkpoint even though the packet is
+committed by a later evidence-refresh commit.
+
+Verified in this slice:
+
+- `ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json`
+  now records `68649b1a345446a413b567f708a39708adbccfa9` as the last validated
+  head.
+- `scripts/system-truth.mjs` reports the same value as
+  `validated_agent_work_head` and uses it for return-packet Agent Work rows.
+- Focused return-packet coverage asserts Agent Work commit equals
+  `git_refs.last_validated_head`.
+- Full `npm test` passed, 1101/1101; source coverage remained at 0 unmapped
+  executable statements, stale-evidence detection passed, and the tracked
+  secret audit found 0 tracked secret-risk files.
+- No production mutation, deploy, live verification, external read, send,
+  upload, charge, or backfill was performed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T16:51:01+03:00
 
 Status: running, with the twentieth dirty-state reporting hardening slice

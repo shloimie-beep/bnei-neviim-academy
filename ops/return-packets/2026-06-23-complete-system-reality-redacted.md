@@ -1,5 +1,5 @@
 CHATGPT RETURN PACKET
-Generated: 2026-06-23T14:00:50.725Z
+Generated: 2026-06-23T14:13:00.306Z
 Privacy: redacted_repo_safe
 
 SYSTEM TRUTH
@@ -8,7 +8,7 @@ SYSTEM TRUTH
 - branch/PR: codex/issue-8-complete-system-reconciliation / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12
 - active run: ops/execution-runs/2026-06-23-complete-system-reconciliation
 - source coverage: errors 0, unmapped 0
-- local-only work: dirty files 106
+- local-only work: dirty files 109
 - unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet
 - merged-not-deployed: deployment readback not verified in current local state
 - deployed-not-verified: live proof not verified in current local state
@@ -58,7 +58,7 @@ WORKTREES
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-6cfe7a25 / (detached) / 6cfe7a258489 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-8a67ebb9 / (detached) / 4d43160be025 / safety_snapshot / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-95aab80a / (detached) / 95aab80a7fc5 / safety_snapshot / recovery: retain until owner confirms cleanup
-- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 1629073e8b3d / active_owned / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 68649b1a3454 / active_owned / recovery: review file-level diff before porting; do not stage all
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio / codex/service-provider-studio-20260623 / 4936394ae0a9 / clean_stale / recovery: retain until owner confirms cleanup
 - [local-user]/Documents/Codex/2026-06-23/service-provider-studio-integration / codex/service-provider-studio-integration-20260623 / a9528b2d9467 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
 
@@ -128,7 +128,7 @@ MY TASKS
 - MYTASK-REQ-20260623-210 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the approved DB/Railway/Drive targets and approve the external readback, production apply, deploy, and live verification gates.
 
 AGENT WORK
-- REQ-20260623-210 / porcelain_dirty_state_reporting_hardened / codex/issue-8-complete-system-reconciliation / 1629073e8b3d / After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
+- REQ-20260623-210 / validated_agent_work_handoff_hardened / codex/issue-8-complete-system-reconciliation / 68649b1a3454 / After explicit approvals and configured targets, run the guarded Postgres apply/readback, then run the production closeout gate from a clean branch or explicit detached release-candidate checkout before deploy/live verification.
 
 TESTS / DEPLOYMENT
 - tests: - `npm test`:

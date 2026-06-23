@@ -2,6 +2,24 @@
 
 ## Passed
 
+- `node --check scripts/system-truth.mjs`:
+  PASS after validated Agent Work handoff hardening.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 5/5; return-packet Agent Work commit matches `git_refs.last_validated_head`.
+- `npm test`:
+  PASS, 1101/1101 after validated Agent Work handoff hardening.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `npm run bna:return-packet -- --json`:
+  PASS; Agent Work row reports commit `68649b1a345446a413b567f708a39708adbccfa9`
+  from `git_refs.last_validated_head` and phase
+  `validated_agent_work_handoff_hardened`.
 - `node --check scripts/bna-production-closeout-gate.mjs`:
   PASS.
 - `node --check scripts/system-truth.mjs`:

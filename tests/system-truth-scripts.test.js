@@ -44,6 +44,13 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.equal(report.redacted_repo_summary.includes_private_raw_source, false);
   assert.equal(report.redacted_repo_summary.includes_secret_values, false);
   assert.ok(report.system_truth.branch);
+  const run = JSON.parse(read('ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json'));
+  if (run.git_refs?.last_validated_head) {
+    assert.equal(report.system_truth.validated_agent_work_head, run.git_refs.last_validated_head);
+    for (const item of report.agent_work) {
+      assert.equal(item.commit, run.git_refs.last_validated_head);
+    }
+  }
   if (report.agent_work.some((item) => item.package === 'REQ-20260623-210')) {
     assert.equal(report.next_automatic_action.package, 'none');
     assert.match(report.next_automatic_action.command, /No unblocked automatic package/);

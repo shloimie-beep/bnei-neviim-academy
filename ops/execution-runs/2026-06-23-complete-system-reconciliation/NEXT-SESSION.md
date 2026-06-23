@@ -26,7 +26,8 @@ Open requirements:
   release-candidate validation via `--allow-detached --remote-branch`.
   Release-gate and return-packet dirty-state reporting now preserve Git
   porcelain leading whitespace, so unstaged changes are not misreported as
-  staged.
+  staged. Return-packet Agent Work rows now use the execution run's validated
+  checkpoint head instead of the transient packet-generation HEAD.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
@@ -100,6 +101,9 @@ Completed implementation slice:
 - The production closeout gate and return-packet system-truth report now
   preserve Git porcelain leading whitespace and report the current mixed
   worktree as unstaged/untracked dirty state, not staged deploy-ready work.
+- Return-packet Agent Work rows are anchored to
+  `git_refs.last_validated_head`; the current validated checkpoint is
+  `68649b1a345446a413b567f708a39708adbccfa9`.
 
 Follow-on implementation scope:
 

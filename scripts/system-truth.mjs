@@ -559,6 +559,11 @@ function summarizeLatestTests(runDir) {
   };
 }
 
+function validatedAgentWorkCommit(repo = {}, runDoc = {}) {
+  const validatedHead = String(runDoc?.git_refs?.last_validated_head || '').trim();
+  return validatedHead || repo.head || '';
+}
+
 async function returnPacketReport() {
   const { latest, runDir, requirementsDoc, runDoc } = currentRunState();
   const repo = gitIdentity(repoRoot);
@@ -573,6 +578,7 @@ async function returnPacketReport() {
   const inProgress = summarizedRequirements.filter((item) => item.status === 'in_progress');
   const nextExecutable = nextExecutableRequirement(summarizedRequirements);
   const dirty = repo.dirty || { total: 0, sample: [] };
+  const agentWorkCommit = validatedAgentWorkCommit(repo, runDoc);
   const privatePacketPath = '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md';
   const privatePacketJsonPath = '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json';
   const redactedRepoPath = `ops/return-packets/${dateStamp()}-complete-system-reality-redacted.md`;
@@ -596,6 +602,7 @@ async function returnPacketReport() {
       branch: repo.branch,
       head: repo.head,
       upstream: repo.upstream || '',
+      validated_agent_work_head: agentWorkCommit,
       pr: runDoc?.git_refs?.pr_url || '',
       active_run: latest?.path || '',
       deployed_commit: 'not verified by current local state',
@@ -669,7 +676,7 @@ async function returnPacketReport() {
       package: item.id,
       phase: item.implementation_status,
       branch: repo.branch,
-      commit: repo.head,
+      commit: agentWorkCommit,
       next_step: item.next_action
     })),
     tests_deployment: {

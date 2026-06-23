@@ -212,6 +212,12 @@ Production closeout gate slice verified:
 - The gate and return-packet system-truth report preserve leading whitespace in
   Git porcelain output so unstaged dirty files are not reported as staged in
   deploy-readiness JSON or handoff evidence.
+- The return-packet Agent Work row is anchored to
+  `git_refs.last_validated_head`, so it names the last pushed verified
+  implementation checkpoint rather than the transient packet-generation HEAD.
+- Full `npm test` passed, 1101/1101, after the validated Agent Work handoff
+  hardening; source coverage, stale-evidence detection, and tracked secret
+  audit checks also passed.
 - The gate does not deploy, live-smoke, mutate a database, call Railway, or
   print secret values.
 - The real local gate run confirmed the current branch HEAD is pushed but
