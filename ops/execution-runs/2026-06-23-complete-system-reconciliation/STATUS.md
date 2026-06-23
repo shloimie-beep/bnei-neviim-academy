@@ -1,5 +1,50 @@
 # Status
 
+## 2026-06-23T19:03:05+03:00
+
+Status: running, with the thirty-second external backfill gate hardening slice
+complete.
+
+Hardened the external readback/backfill gate so guarded backfill apply now
+requires the readback confirmation phrase in addition to the readback approval
+env and backfill approval gate. `--job-range` is now validated as positive
+numeric job IDs/ranges instead of any non-empty string, and the release-gate
+next-command plan includes both readback and backfill confirmation phrases for
+the backfill apply gate. No external read, database connection, production
+mutation, deploy, live verification, send, upload, charge, or backfill was
+performed.
+
+Verified in this slice:
+
+- `node --check scripts/bna-external-readback-gate.mjs
+  scripts/bna-production-closeout-gate.mjs` passed.
+- `node --test tests/bna-external-readback-gate.test.js
+  tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`
+  passed, 20/20.
+- `npm run bna:external-readback-gate -- --json --backfill-apply --database
+  --job-range 64-74 --confirm-backfill APPLY_GUARDED_CLASS_BACKFILL` with a
+  dummy `DATABASE_URL`, `BNA_EXTERNAL_READBACK_APPROVED=approved`, and
+  `BNA_BACKFILL_APPLY_APPROVED=approved` remained blocked on the missing
+  readback confirmation phrase, with no external read or production mutation.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with the
+  hardened external backfill command plan.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1108/1108.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T18:48:04+03:00
 
 Status: running, with the thirty-first canonical Postgres combined

@@ -92,11 +92,12 @@ export function usage() {
   return `Usage:
   node scripts/bna-external-readback-gate.mjs --json
   node scripts/bna-external-readback-gate.mjs --readback --all --confirm-readback ${READBACK_CONFIRM_PHRASE}
-  node scripts/bna-external-readback-gate.mjs --backfill-apply --database --job-range 64-74 --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}
+  node scripts/bna-external-readback-gate.mjs --backfill-apply --database --job-range 64-74 --confirm-readback ${READBACK_CONFIRM_PHRASE} --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}
 
 Dry-run by default. This command reports configured/not-configured readiness
 for database, Railway, and Drive gates by source label only. It does not perform
-external reads, database writes, backfills, deploys, or live smokes.`;
+external reads, database writes, backfills, deploys, or live smokes. Backfill
+apply requires both readback and backfill gates plus a numeric job ID range.`;
 }
 
 function approved(value) {
@@ -162,6 +163,65 @@ function selectedScopes(options = {}) {
   return [...(options.scopes || new Set(['database', 'railway', 'drive']))];
 }
 
+function validateJobRange(jobRange = '') {
+  const raw = String(jobRange || '').trim();
+  if (!raw) {
+    return {
+      ok: false,
+      blocker: 'Backfill apply gate requires --job-range.',
+      normalized: '',
+    };
+  }
+  const parts = raw.split(',').map((part) => part.trim()).filter(Boolean);
+  if (parts.length === 0) {
+    return {
+      ok: false,
+      blocker: 'Backfill apply gate requires --job-range.',
+      normalized: '',
+    };
+  }
+  const normalized = [];
+  for (const part of parts) {
+    const match = /^(\d+)(?:-(\d+))?$/.exec(part);
+    if (!match) {
+      return {
+        ok: false,
+        blocker: 'Backfill apply gate requires --job-range as positive numeric IDs or ranges, for example 64-74.',
+        normalized: '',
+      };
+    }
+    const start = Number(match[1]);
+    const end = Number(match[2] || match[1]);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start <= 0 || end <= 0) {
+      return {
+        ok: false,
+        blocker: 'Backfill apply gate requires --job-range as positive numeric IDs or ranges, for example 64-74.',
+        normalized: '',
+      };
+    }
+    if (end < start) {
+      return {
+        ok: false,
+        blocker: `Backfill apply gate job range start must be <= end: ${part}.`,
+        normalized: '',
+      };
+    }
+    normalized.push(start === end ? String(start) : `${start}-${end}`);
+  }
+  return {
+    ok: true,
+    blocker: '',
+    normalized: normalized.join(','),
+  };
+}
+
+function reportMode(options = {}) {
+  if (options.readback && options.backfillApply) return 'external_readback_backfill_apply_gate';
+  if (options.backfillApply) return 'backfill_apply_gate';
+  if (options.readback) return 'external_readback_gate';
+  return 'dry_run';
+}
+
 function buildBlockers(options = {}, readiness = {}, context = {}) {
   const env = context.env || process.env;
   const blockers = [];
@@ -170,12 +230,12 @@ function buildBlockers(options = {}, readiness = {}, context = {}) {
       blockers.push(`${scope} readback gate is not ready; required configured state is missing.`);
     }
   }
-  if (options.readback) {
+  if (options.readback || options.backfillApply) {
     if (options.confirmReadback !== READBACK_CONFIRM_PHRASE) {
       blockers.push(`Missing readback confirmation phrase: --confirm-readback ${READBACK_CONFIRM_PHRASE}`);
     }
     if (!approved(env[READBACK_APPROVAL_ENV])) {
-      blockers.push(`${READBACK_APPROVAL_ENV}=approved is required before external readback.`);
+      blockers.push(`${READBACK_APPROVAL_ENV}=approved is required before external readback or guarded backfill apply.`);
     }
   }
   if (options.backfillApply) {
@@ -185,12 +245,8 @@ function buildBlockers(options = {}, readiness = {}, context = {}) {
     if (!approved(env[BACKFILL_APPROVAL_ENV])) {
       blockers.push(`${BACKFILL_APPROVAL_ENV}=approved is required before guarded backfill apply.`);
     }
-    if (!approved(env[READBACK_APPROVAL_ENV])) {
-      blockers.push(`${READBACK_APPROVAL_ENV}=approved is required before applying backfill after readback.`);
-    }
-    if (!String(options.jobRange || '').trim()) {
-      blockers.push('Backfill apply gate requires --job-range.');
-    }
+    const jobRange = validateJobRange(options.jobRange);
+    if (!jobRange.ok) blockers.push(jobRange.blocker);
     if (!selectedScopes(options).includes('database')) {
       blockers.push('Backfill apply gate must include --database.');
     }
@@ -202,11 +258,17 @@ export function buildExternalReadbackGateReport(options = {}, context = {}) {
   const scopes = selectedScopes(options);
   const readiness = Object.fromEntries(scopes.map((scope) => [scope, scopeReadiness(scope, context)]));
   const blockers = buildBlockers(options, readiness, context);
+  const jobRange = validateJobRange(options.jobRange);
   return {
     ok: blockers.length === 0,
-    mode: options.backfillApply ? 'backfill_apply_gate' : options.readback ? 'external_readback_gate' : 'dry_run',
+    mode: reportMode(options),
     generated_at: new Date().toISOString(),
     scopes,
+    job_range: options.backfillApply ? {
+      requested: String(options.jobRange || '').trim(),
+      valid: jobRange.ok,
+      normalized: jobRange.ok ? jobRange.normalized : '',
+    } : null,
     external_read_performed: false,
     production_mutation_performed: false,
     safe_apply_performed: false,
@@ -216,7 +278,7 @@ export function buildExternalReadbackGateReport(options = {}, context = {}) {
     readiness,
     approval_gates: {
       readback: {
-        requested: Boolean(options.readback),
+        requested: Boolean(options.readback || options.backfillApply),
         confirmation_phrase: READBACK_CONFIRM_PHRASE,
         approval_env: READBACK_APPROVAL_ENV,
         approved: approved((context.env || process.env)[READBACK_APPROVAL_ENV]),
@@ -230,7 +292,7 @@ export function buildExternalReadbackGateReport(options = {}, context = {}) {
     },
     next_command_plan: [
       `npm run bna:external-readback-gate -- --readback --all --confirm-readback ${READBACK_CONFIRM_PHRASE}`,
-      `npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}`,
+      `npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-readback ${READBACK_CONFIRM_PHRASE} --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}`,
       'npm run drive:intake:truth',
       'npm run bna:intake:postgres -- --readback --confirm READ_CANONICAL_INTAKE_POSTGRES',
       'npm run bna:release-gate -- --json',

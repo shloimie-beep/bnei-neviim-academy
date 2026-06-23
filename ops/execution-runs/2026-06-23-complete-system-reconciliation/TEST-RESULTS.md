@@ -2,6 +2,31 @@
 
 ## Passed
 
+- `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
+  PASS after external backfill readback-confirmation and job-range hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 20/20; external backfill apply requires readback confirmation and a
+  positive numeric job range.
+- `npm run bna:external-readback-gate -- --json --backfill-apply --database --job-range 64-74 --confirm-backfill APPLY_GUARDED_CLASS_BACKFILL` with dummy `DATABASE_URL`, `BNA_EXTERNAL_READBACK_APPROVED=approved`, and `BNA_BACKFILL_APPLY_APPROVED=approved`:
+  PASS as expected blocked gate; missing readback confirmation blocks guarded
+  backfill apply and no external read or production mutation is performed.
+- `npm run source:truth -- --json`:
+  PASS after external backfill readback-confirmation and job-range hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after external backfill readback-confirmation and job-range hardening.
+- `npm run bna:run:validate`:
+  PASS after external backfill readback-confirmation and job-range hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1108/1108 after external backfill readback-confirmation and job-range
+  hardening.
 - `node --check scripts/canonical-intake-postgres.mjs`:
   PASS after canonical Postgres combined apply/readback gate hardening.
 - `node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:

@@ -520,7 +520,7 @@
         "REQ-20260623-208"
       ],
       "status": "blocked",
-      "implementation_status": "external_readback_gate_slice_complete_blocked_on_configuration",
+      "implementation_status": "external_backfill_readback_confirmation_and_job_range_gate_hardened",
       "can_continue_without_operator": false,
       "blocker": "Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing in this environment.",
       "blocker_owner": "Operator",
@@ -530,15 +530,28 @@
         "Database proof is from live readback, not repo comments",
         "Railway deployment is tied to commit/deployment ID",
         "Drive assets/classes have source IDs and permissions verified",
-        "Backfill apply is gated and idempotent"
+        "Backfill apply is gated and idempotent",
+        "Backfill apply requires readback confirmation and a positive numeric job range"
       ],
       "evidence": [
         "ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md",
         "ops/drive-audits/2026-06-23-class-intake-complete-truth.md",
         "scripts/bna-external-readback-gate.mjs",
+        "scripts/bna-production-closeout-gate.mjs",
         "tests/bna-external-readback-gate.test.js"
       ],
       "verification": [
+        "node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs: PASS after external backfill readback-confirmation and job-range hardening",
+        "node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js: PASS, 20/20; external backfill apply requires readback confirmation and positive numeric job range",
+        "npm run bna:external-readback-gate -- --json --backfill-apply --database --job-range 64-74 --confirm-backfill APPLY_GUARDED_CLASS_BACKFILL with dummy DATABASE_URL, BNA_EXTERNAL_READBACK_APPROVED=approved, and BNA_BACKFILL_APPLY_APPROVED=approved: PASS as expected blocked gate; missing readback confirmation blocks guarded backfill apply with no external read or production mutation",
+        "npm run source:truth -- --json: PASS after external backfill readback-confirmation and job-range hardening",
+        "npm run bna:return-packet -- --json: PASS after external backfill readback-confirmation and job-range hardening",
+        "npm run bna:run:validate: PASS after external backfill readback-confirmation and job-range hardening",
+        "npm run bna:run:source-coverage: PASS, 0 unmapped executable statements after external backfill readback-confirmation and job-range hardening",
+        "npm run bna:run:stale-evidence: PASS, stale evidence detection none after external backfill readback-confirmation and job-range hardening",
+        "node scripts/audit-secrets.mjs: PASS, 4149 tracked paths checked and 0 tracked secret-risk files found after external backfill readback-confirmation and job-range hardening",
+        "git diff --check: PASS with line-ending warnings only after external backfill readback-confirmation and job-range hardening",
+        "npm test: PASS, 1108/1108 after external backfill readback-confirmation and job-range hardening",
         "railway status: PASS, Project one-time-production / Environment production / Service None",
         "npm run drive:intake:truth: PASS, live_database_verified=false and safe_apply_performed=false",
         "node --check scripts/bna-external-readback-gate.mjs: PASS",
@@ -551,11 +564,12 @@
       ],
       "implementation_files": [
         "scripts/bna-external-readback-gate.mjs",
+        "scripts/bna-production-closeout-gate.mjs",
         "tests/bna-external-readback-gate.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T16:01:20+03:00",
-      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent; External readback/backfill gate is implemented and currently blocked on configured DB/Railway/Drive targets plus approval"
+      "updated_at": "2026-06-23T19:03:05+03:00",
+      "expected_result": "Database proof is from live readback, not repo comments; Railway deployment is tied to commit/deployment ID; Drive assets/classes have source IDs and permissions verified; Backfill apply is gated and idempotent; Backfill apply requires readback confirmation and a positive numeric job range; External readback/backfill gate is implemented and currently blocked on configured DB/Railway/Drive targets plus approval"
     },
     {
       "id": "REQ-20260623-210",

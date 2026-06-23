@@ -82,6 +82,7 @@ test('external readback gate requires job range and approvals before backfill ap
   });
 
   assert.equal(blocked.ok, false);
+  assert.ok(blocked.blockers.some((blocker) => /READ_EXTERNAL_PRODUCTION_STATE/.test(blocker)));
   assert.ok(blocked.blockers.some((blocker) => /APPLY_GUARDED_CLASS_BACKFILL/.test(blocker)));
   assert.ok(blocked.blockers.some((blocker) => /BNA_BACKFILL_APPLY_APPROVED=approved/.test(blocker)));
   assert.ok(blocked.blockers.some((blocker) => /BNA_EXTERNAL_READBACK_APPROVED=approved/.test(blocker)));
@@ -89,6 +90,7 @@ test('external readback gate requires job range and approvals before backfill ap
 
   const approved = mod.buildExternalReadbackGateReport({
     backfillApply: true,
+    confirmReadback: mod.READBACK_CONFIRM_PHRASE,
     confirmBackfill: mod.BACKFILL_CONFIRM_PHRASE,
     jobRange: '64-74',
     scopes: new Set(['database']),
@@ -103,6 +105,58 @@ test('external readback gate requires job range and approvals before backfill ap
 
   assert.equal(approved.ok, true);
   assert.equal(approved.mode, 'backfill_apply_gate');
+  assert.equal(approved.job_range.normalized, '64-74');
+  assert.equal(approved.approval_gates.readback.requested, true);
   assert.equal(approved.safe_apply_performed, false);
   assert.equal(approved.production_mutation_performed, false);
+});
+
+test('external backfill gate rejects non-numeric job ranges without leaking configured values', async () => {
+  const mod = await loadGate();
+  const report = mod.buildExternalReadbackGateReport({
+    backfillApply: true,
+    confirmReadback: mod.READBACK_CONFIRM_PHRASE,
+    confirmBackfill: mod.BACKFILL_CONFIRM_PHRASE,
+    jobRange: '64-all',
+    scopes: new Set(['database']),
+  }, {
+    repoRoot,
+    env: {
+      [mod.READBACK_APPROVAL_ENV]: 'approved',
+      [mod.BACKFILL_APPROVAL_ENV]: 'approved',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['DATABASE_URL'])),
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.job_range.valid, false);
+  assert.ok(report.blockers.some((blocker) => /positive numeric IDs or ranges/.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report), /secret-value-for|postgres:\/\//);
+});
+
+test('external readback and backfill can be requested together only with both gates', async () => {
+  const mod = await loadGate();
+  const report = mod.buildExternalReadbackGateReport({
+    readback: true,
+    backfillApply: true,
+    confirmReadback: mod.READBACK_CONFIRM_PHRASE,
+    confirmBackfill: mod.BACKFILL_CONFIRM_PHRASE,
+    jobRange: '64,73-74',
+    scopes: new Set(['database']),
+  }, {
+    repoRoot,
+    env: {
+      [mod.READBACK_APPROVAL_ENV]: 'approved',
+      [mod.BACKFILL_APPROVAL_ENV]: 'approved',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['DATABASE_URL'])),
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.mode, 'external_readback_backfill_apply_gate');
+  assert.equal(report.job_range.normalized, '64,73-74');
+  assert.equal(report.approval_gates.readback.requested, true);
+  assert.equal(report.approval_gates.backfill_apply.requested, true);
+  assert.equal(report.external_read_performed, false);
+  assert.equal(report.production_mutation_performed, false);
 });

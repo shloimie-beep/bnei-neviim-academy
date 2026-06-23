@@ -64,6 +64,18 @@ Latest external-readback closeout slice:
 - The release-gate next-command plan now includes the guarded external readback
   and backfill gate commands before deploy/live closeout commands.
 
+Latest external-backfill gate slice:
+
+- Guarded external backfill apply now requires both
+  `READ_EXTERNAL_PRODUCTION_STATE` and `APPLY_GUARDED_CLASS_BACKFILL`
+  confirmation phrases with their approval env gates before it can become
+  ready.
+- `--job-range` is validated as positive numeric job IDs/ranges such as
+  `64-74`; arbitrary non-empty strings are blocked before any external action.
+- The dry-run report keeps external read, production mutation, safe apply,
+  deploy, and secret-value flags false/redacted while reporting the normalized
+  job range.
+
 ## Implementation Evidence
 
 - `server.js`

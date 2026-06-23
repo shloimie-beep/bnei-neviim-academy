@@ -248,7 +248,7 @@ function commandPlan() {
     'node scripts/audit-secrets.mjs',
     'git diff --check',
     `npm run bna:external-readback-gate -- --readback --all --confirm-readback ${READBACK_CONFIRM_PHRASE}`,
-    `npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}`,
+    `npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-readback ${READBACK_CONFIRM_PHRASE} --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}`,
     `npm run bna:release-gate -- --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE}`,
     `npm run bna:release-gate -- --live-verify --confirm-live ${LIVE_VERIFY_CONFIRM_PHRASE}`,
   ];
