@@ -25474,3 +25474,20 @@ mutation, external CRM/GHL write, raw private export, or secret exposure was
 performed. Remaining blockers are explicit operator decisions for campaign
 deadline, email sender/audience, Stripe live policy, new asset rights/consent,
 and deployment target approval.
+
+## 2026-06-23T09:43:00+03:00 - Universal Service Provider Studio Intake And Baseline
+
+Registered `RAW-20260623-001` from the attached Universal Service Provider
+Studio prompt, created the clean isolated worktree
+`C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio`, initialized
+the active execution run `2026-06-23-service-provider-studio`, and verified the
+actual default branch is `origin/master` with PR #5 already merged into master.
+
+Completed the canonical implementation audit before product-code edits. The
+baseline is recorded in
+`docs/product/service-provider-studio-baseline-2026-06-23.md` and confirms the
+Studio should reuse the live Operations shell, provider workspace scoping,
+Content jobs/prompts/bundles, One Time service-provider model, Remotion scripts,
+route/action registries, and existing local Playwright smoke patterns. No live
+send, publish, charge, access grant, external provider write, Railway/DNS
+mutation, or secret exposure was performed.

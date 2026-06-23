@@ -1,0 +1,798 @@
+{
+  "run_id": "2026-06-23-service-provider-studio",
+  "title": "Universal Service Provider Studio",
+  "updated_at": "2026-06-23T09:46:00+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260623-001",
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "captured_at": "2026-06-23T09:17:35+03:00",
+      "content_fingerprint": "sha256:3B6B88280C25591236CFEE5676A84733C0E775019BBF8569B90C630A6F49657E",
+      "privacy_classification": "internal_product_prompt",
+      "workspace": "all service-provider workspaces",
+      "project": "service-provider-studio",
+      "source_type": "codex_goal_mode_prompt"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "SRC-20260623-001",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Execute the attached Universal Service Provider Studio prompt in goal mode.",
+      "requirement_id": "REQ-20260623-001",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-002",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Audit and reuse the canonical implementation first.",
+      "requirement_id": "REQ-20260623-002",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-003",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Work only in a clean isolated worktree.",
+      "requirement_id": "REQ-20260623-001",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-004",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Integrate and merge into the repository's actual default branch only after every required gate passes.",
+      "requirement_id": "REQ-20260623-015",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-005",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Read and reconcile the actual repository first, including canonical source of truth, provider routes, Content/Research, prompt UI/storage, AI adapters, Remotion tooling, usage implementation, migrations, tests, and PR #5.",
+      "requirement_id": "REQ-20260623-002",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-006",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Implement a reusable Studio module for every service_provider workspace, separate from Content/Library.",
+      "requirement_id": "REQ-20260623-008",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-007",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Studio must preserve immutable pasted source text and support structured brief, audience, format, tone, and output definition.",
+      "requirement_id": "REQ-20260623-005",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-008",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Add domain models for Studio projects, sources, briefs, characters, guardrails, scenes, prompt layers, assets, exports, jobs, and usage.",
+      "requirement_id": "REQ-20260623-003",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-009",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Every Studio query and write must validate authenticated actor, workspace membership, role/capability, project ownership/scope, and requested action.",
+      "requirement_id": "REQ-20260623-004",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-010",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Implement a deterministic layered prompt compiler with versioning, visible compiled/diff/history views, schema-validated outputs, and prompt-injection defense.",
+      "requirement_id": "REQ-20260623-006",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-011",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Natural-language corrections must become previewable structured patches scoped to scene, character, project, or future workspace defaults.",
+      "requirement_id": "REQ-20260623-007",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-012",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Implement a lightweight structured slideshow/video editor with scene ordering, timing, text styling, assets, transitions, narration, preview, render, and mobile/tablet responsive behavior.",
+      "requirement_id": "REQ-20260623-009",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-013",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Background generation and render jobs must be reliable, observable, retryable, idempotent, and testable without live vendor credentials.",
+      "requirement_id": "REQ-20260623-010",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-014",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Every AI/vendor call is metered by workspace, provider, user, model, operation, tokens/media units, latency, status, and estimated cost, with provider and Super Admin visibility.",
+      "requirement_id": "REQ-20260623-011",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-015",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Approved Studio outputs can be handed off into the existing Content/Library workflow without automatic publication.",
+      "requirement_id": "REQ-20260623-012",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-016",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Rabbi Eli Scheller / One Time is the first configured pilot, but One Time behavior must be provider-configurable and not hard-coded into shared layers.",
+      "requirement_id": "REQ-20260623-013",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260623-017",
+      "source_id": "RAW-20260623-001",
+      "source_statement": "Run focused tests, full tests, execution-run validation, watchdogs, secret audit, diff hygiene, migration repeat tests, Chromium/WebKit browser tests, independent verification, and final documentation.",
+      "requirement_id": "REQ-20260623-014",
+      "classification": "requirement"
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "task_id": "TASK-20260623-001",
+      "canonical_task_key": "service-provider-studio-goal-mode-execution",
+      "title": "Implement and verify Universal Service Provider Studio",
+      "owner": "Codex",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "source_id": "RAW-20260623-001",
+      "requirement_id": "REQ-20260623-001",
+      "visible": false,
+      "status": "running"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260623-001",
+      "title": "Establish raw intake, clean worktree, active execution run, and merge-safe git truth.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-001",
+        "SRC-20260623-003"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "verified_register_and_clean_worktree",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Validate the new active run and start canonical baseline audit.",
+      "acceptance_criteria": [
+        "Raw prompt preserved",
+        "Feature worktree clean before implementation",
+        "Actual default branch and PR #5 state recorded",
+        "Studio run validates"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+        "memory/2026-06-23.md",
+        "tasks-pending/2026-06-23-universal-service-provider-studio.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/EVIDENCE.md"
+      ],
+      "verification": [
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:next PASS selected REQ-20260623-001"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+        "memory/2026-06-23.md",
+        "tasks-pending/2026-06-23-universal-service-provider-studio.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T09:20:00+03:00",
+      "expected_result": "Raw prompt preserved; Feature worktree clean before implementation; Actual default branch and PR #5 state recorded; Studio run validates"
+    },
+    {
+      "id": "REQ-20260623-002",
+      "title": "Audit and reuse canonical provider, content, prompt, Remotion, job, usage, and RBAC primitives before building.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-002",
+        "SRC-20260623-005"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [
+        "REQ-20260623-001"
+      ],
+      "status": "done",
+      "implementation_status": "complete",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Inspect canonical files/routes/migrations/tests and create docs/product/service-provider-studio-baseline-2026-06-23.md.",
+      "acceptance_criteria": [
+        "Baseline artifact classifies requested capabilities as already_verified, partial, missing, conflicting, or blocked_external"
+      ],
+      "evidence": [
+        "docs/product/service-provider-studio-baseline-2026-06-23.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/EVIDENCE.md#canonical-baseline-audit",
+        "tasks-pending/2026-06-23-universal-service-provider-studio.md"
+      ],
+      "verification": [
+        "Canonical baseline audit completed before product-code edits.",
+        "Audited Operations shell, scoped provider identity, Content jobs/prompts/bundles, Remotion scripts, registries, and Playwright smoke patterns."
+      ],
+      "implementation_files": [
+        "docs/product/service-provider-studio-baseline-2026-06-23.md",
+        "tasks-pending/2026-06-23-universal-service-provider-studio.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/STATUS.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/EVIDENCE.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-23-service-provider-studio/BATCH-STATUS.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T09:46:00+03:00",
+      "expected_result": "Baseline artifact classifies requested capabilities as already_verified, partial, missing, conflicting, or blocked_external",
+      "continuation": "Batch B can start: additive Studio schema/domain/RBAC.",
+      "deployment_live_smoke": "n/a - documentation/baseline gate only."
+    },
+    {
+      "id": "REQ-20260623-003",
+      "title": "Add additive Studio schema/domain services for projects, immutable sources, briefs, characters, guardrails, scenes, versions, assets, exports, and idempotent migration repeatability.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-008"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "backend",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260623-002"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Implement additive migration and domain services.",
+      "acceptance_criteria": [
+        "Migration reruns safely",
+        "Raw source immutable/versioned",
+        "Stages separated from approvals/render/publish",
+        "No large media binaries in PostgreSQL"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "server.js",
+        "src/",
+        "railway-migration-2026-06-23-service-provider-studio.sql",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Migration reruns safely; Raw source immutable/versioned; Stages separated from approvals/render/publish; No large media binaries in PostgreSQL"
+    },
+    {
+      "id": "REQ-20260623-004",
+      "title": "Enforce Studio RBAC and tenancy across provider, editor, reviewer, viewer, and Super Admin access.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-009"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "security",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260623-003"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Add permission checks and negative tests.",
+      "acceptance_criteria": [
+        "Cross-provider enumeration rejected",
+        "ID tampering rejected",
+        "Public/member routes cannot access Studio drafts",
+        "Super Admin aggregate labels explicit"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "server.js",
+        "src/",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Cross-provider enumeration rejected; ID tampering rejected; Public/member routes cannot access Studio drafts; Super Admin aggregate labels explicit"
+    },
+    {
+      "id": "REQ-20260623-005",
+      "title": "Implement source paste, sanitization, normalization, annotations, and WebKit/Safari paste recovery.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-007"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "frontend_backend",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260623-003"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Implement source intake UI/API and paste tests.",
+      "acceptance_criteria": [
+        "Plain/rich/Hebrew/mixed RTL paste works",
+        "Raw source never overwritten",
+        "Emphasis stored as annotation",
+        "Unsafe clipboard HTML stripped",
+        "WebKit paste tests pass"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/",
+        "server.js",
+        "src/",
+        "tests/",
+        "scripts/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Plain/rich/Hebrew/mixed RTL paste works; Raw source never overwritten; Emphasis stored as annotation; Unsafe clipboard HTML stripped; WebKit paste tests pass"
+    },
+    {
+      "id": "REQ-20260623-006",
+      "title": "Implement deterministic layered prompt compiler, version history, schema validation, and prompt-injection defense.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-010"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "prompt_engine",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260623-003"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Implement prompt compiler and injection tests.",
+      "acceptance_criteria": [
+        "Layers visible/versioned/compiled in deterministic order",
+        "Untrusted source delimited",
+        "Invalid structured output rejected or repaired",
+        "Adversarial source cannot override policy"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/",
+        "server.js",
+        "public/",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Layers visible/versioned/compiled in deterministic order; Untrusted source delimited; Invalid structured output rejected or repaired; Adversarial source cannot override policy"
+    },
+    {
+      "id": "REQ-20260623-007",
+      "title": "Implement natural-language correction preview/apply/revert with scene, character, project, and workspace-default scopes.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-011"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "prompt_engine",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260623-006"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Implement structured correction patch engine and UI controls.",
+      "acceptance_criteria": [
+        "Corrections become structured patches",
+        "Broad changes show affected layers and require confirmation",
+        "Every material change has history and rollback"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/",
+        "server.js",
+        "public/",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Corrections become structured patches; Broad changes show affected layers and require confirmation; Every material change has history and rollback"
+    },
+    {
+      "id": "REQ-20260623-008",
+      "title": "Add Studio as a separate provider module before Content with canonical shell, dashboard, project tabs, and responsive layout.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-006"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "frontend",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260623-004"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Add Studio module to provider shell and dashboard.",
+      "acceptance_criteria": [
+        "Studio appears before Content for service providers",
+        "Unauthorized/family workspaces do not see it",
+        "Dashboard shows project facts, usage, job errors, and next actions"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/",
+        "server.js",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Studio appears before Content for service providers; Unauthorized/family workspaces do not see it; Dashboard shows project facts, usage, job errors, and next actions"
+    },
+    {
+      "id": "REQ-20260623-009",
+      "title": "Implement storyboard/slideshow/video editor v1 with preview, scene rail, inspector, timeline, responsive mobile/tablet behavior, and version compare.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-012"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "frontend",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260623-008"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Build editor panels, storyboard controls, preview, timeline, and tests.",
+      "acceptance_criteria": [
+        "Add/duplicate/delete/reorder scenes",
+        "Edit title/body/narration/assets/duration/transition/text styling/focal point/characters",
+        "Preview sequence",
+        "No horizontal overflow at required viewports"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "public/",
+        "src/",
+        "tests/",
+        "scripts/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Add/duplicate/delete/reorder scenes; Edit title/body/narration/assets/duration/transition/text styling/focal point/characters; Preview sequence; No horizontal overflow at required viewports"
+    },
+    {
+      "id": "REQ-20260623-010",
+      "title": "Implement durable Studio jobs, deterministic mock generation/rendering, asset metadata, retry/cancel/stale visibility, and render/export records.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-013"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "jobs_rendering",
+      "priority": "P0",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260623-003"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Implement durable job queue contracts, mock adapters, and render/export state.",
+      "acceptance_criteria": [
+        "Jobs scoped/idempotent/observable/retryable/cancellable",
+        "Deterministic mock generation/render works without live credentials",
+        "Assets carry rights/privacy metadata"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/",
+        "server.js",
+        "scripts/",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Jobs scoped/idempotent/observable/retryable/cancellable; Deterministic mock generation/render works without live credentials; Assets carry rights/privacy metadata"
+    },
+    {
+      "id": "REQ-20260623-011",
+      "title": "Implement Studio AI usage metering, price catalog, budgets, limits, alerts, provider usage view, and Super Admin aggregate view.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-014"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "usage_metering",
+      "priority": "P0",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260623-010"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Add usage events, rollups, budgets, provider and Super Admin views.",
+      "acceptance_criteria": [
+        "Every Studio attempt logs scoped cost metadata",
+        "Provider sees own totals only",
+        "Super Admin sees explicit aggregate",
+        "Soft alerts, hard limits, and audited override work"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/",
+        "server.js",
+        "public/",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Every Studio attempt logs scoped cost metadata; Provider sees own totals only; Super Admin sees explicit aggregate; Soft alerts, hard limits, and audited override work"
+    },
+    {
+      "id": "REQ-20260623-012",
+      "title": "Implement approved Studio output handoff to existing Content/Library drafts without automatic publication.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-015"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "content_handoff",
+      "priority": "P0",
+      "batch_id": "H",
+      "depends_on": [
+        "REQ-20260623-009",
+        "REQ-20260623-010"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Map approved Studio package into canonical Content/Library draft.",
+      "acceptance_criteria": [
+        "Handoff is idempotent",
+        "Provenance, rights, usage, and manifest data travel",
+        "Canonical content draft created",
+        "No automatic publication or member access grant"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "src/",
+        "server.js",
+        "public/",
+        "tests/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Handoff is idempotent; Provenance, rights, usage, and manifest data travel; Canonical content draft created; No automatic publication or member access grant"
+    },
+    {
+      "id": "REQ-20260623-013",
+      "title": "Seed and verify Rabbi Eli Scheller / One Time as a configuration-only pilot fixture.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-016"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "fixture",
+      "priority": "P1",
+      "batch_id": "H",
+      "depends_on": [
+        "REQ-20260623-003",
+        "REQ-20260623-012"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Add One Time Studio config/fixture without global hard-coding.",
+      "acceptance_criteria": [
+        "Mishnah source fixture",
+        "Goal, three scenes, two characters, Jewish context pack",
+        "Correction patches, mock image/render, content draft handoff, usage rollups",
+        "No private child data"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "config/",
+        "src/",
+        "tests/",
+        "docs/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Mishnah source fixture; Goal, three scenes, two characters, Jewish context pack; Correction patches, mock image/render, content draft handoff, usage rollups; No private child data"
+    },
+    {
+      "id": "REQ-20260623-014",
+      "title": "Complete documentation, route/action registries, security/privacy docs, tests, watchdogs, browser evidence, independent verification, and final audit.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-017"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "all_service_provider_workspaces",
+      "project_key": "service-provider-studio",
+      "owner": "Codex",
+      "category": "verification",
+      "priority": "P0",
+      "batch_id": "I",
+      "depends_on": [
+        "REQ-20260623-003",
+        "REQ-20260623-004",
+        "REQ-20260623-005",
+        "REQ-20260623-006",
+        "REQ-20260623-007",
+        "REQ-20260623-008",
+        "REQ-20260623-009",
+        "REQ-20260623-010",
+        "REQ-20260623-011",
+        "REQ-20260623-012",
+        "REQ-20260623-013"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "Run required gates and write verification docs.",
+      "acceptance_criteria": [
+        "Required docs exist",
+        "Focused/full tests pass",
+        "Watchdogs pass",
+        "Secret/large-file scans pass",
+        "Migration repeat passes",
+        "Chromium/WebKit 390/768/1440 pass",
+        "Independent verification passes or blockers explicit"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "docs/",
+        "ops/",
+        "tests/",
+        "scripts/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Required docs exist; Focused/full tests pass; Watchdogs pass; Secret/large-file scans pass; Migration repeat passes; Chromium/WebKit 390/768/1440 pass; Independent verification passes or blockers explicit"
+    },
+    {
+      "id": "REQ-20260623-015",
+      "title": "Integrate from a clean integration worktree and merge to the actual default branch only after all gates pass.",
+      "source_id": "RAW-20260623-001",
+      "source_statement_ids": [
+        "SRC-20260623-004"
+      ],
+      "source_path": "raw-input/RAW-20260623-001-universal-service-provider-studio.md",
+      "workspace_key": "repository",
+      "project_key": "master",
+      "owner": "Codex",
+      "category": "integration",
+      "priority": "P0",
+      "batch_id": "J",
+      "depends_on": [
+        "REQ-20260623-014"
+      ],
+      "status": "not_started",
+      "implementation_status": "pending",
+      "can_continue_without_operator": true,
+      "blocker": "",
+      "blocker_owner": "",
+      "next_action": "After verification, create clean integration worktree from latest default and merge/push or record exact branch-protection blocker.",
+      "acceptance_criteria": [
+        "Clean integration worktree from latest default",
+        "Conflicts reviewed",
+        "Feature merged/pushed to actual default or exact branch-protection blocker recorded",
+        "Final default worktree clean"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "ops/",
+        "docs/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-23T09:17:35+03:00",
+      "expected_result": "Clean integration worktree from latest default; Conflicts reviewed; Feature merged/pushed to actual default or exact branch-protection blocker recorded; Final default worktree clean"
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+# Universal Service Provider Studio - Goal Mode Register
+
+## Raw intake
+
+Shloimie provided the attached prompt
+`C:\Users\User\Downloads\CODEX_UNIVERSAL_SERVICE_PROVIDER_STUDIO_2026-06-23.md`
+and instructed Codex to execute it in goal mode: audit and reuse canonical
+implementation first, work only in a clean isolated worktree, implement and
+test the complete feature, independently verify it, then integrate and merge it
+into the repository's actual default branch only after all required gates pass.
+
+Full raw wording is preserved at
+`raw-input/RAW-20260623-001-universal-service-provider-studio.md`.
+
+## Raw queue record
+
+| Field | Value |
+|---|---|
+| Raw ID | RAW-20260623-001 |
+| Source | codex_chat / attached Downloads Markdown prompt |
+| Source path | `C:\Users\User\Downloads\CODEX_UNIVERSAL_SERVICE_PROVIDER_STUDIO_2026-06-23.md` |
+| Repo raw path | `raw-input/RAW-20260623-001-universal-service-provider-studio.md` |
+| SHA-256 | `3B6B88280C25591236CFEE5676A84733C0E775019BBF8569B90C630A6F49657E` |
+| Parse status | Registered |
+| Requirement register | `tasks-pending/2026-06-23-universal-service-provider-studio.md` |
+
+## Goal-mode execution
+
+| Field | Value |
+|---|---|
+| Goal-mode requested | yes |
+| Active goal objective | Execute the Universal Service Provider Studio prompt end to end: intake/register, canonical audit, implementation, tests, independent verification, and merge to actual default branch after gates pass. |
+| Goal tool used | yes |
+| GPT output contract | `tasks-pending/_template-goal-mode-correction-output.md` |
+| Execution directive | Register first, then work requirements in batches until terminal statuses. |
+| Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
+| Deploy/live-smoke required for app-visible work | yes, unless default-branch auto-deploy is unavailable or explicitly blocked |
+| Next requirement IDs to work | REQ-20260623-001 through REQ-20260623-015 |
+
+## Parsed requirements
+
+| ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-20260623-001 | Establish raw intake, clean worktree, active execution run, and merge-safe git truth. | RAW-20260623-001 / SRC-20260623-001..004 | all / service-provider-studio | Codex | run_control | P0 | A | none | Raw prompt preserved; dirty checkout untouched; feature worktree clean; actual default branch and PR #5 state recorded; active Studio run validates. | raw-input, memory, tasks-pending, ops/execution-runs | no | Done |
+| REQ-20260623-002 | Audit and reuse canonical provider, content, prompt, Remotion, job, usage, and RBAC primitives before building. | RAW-20260623-001 / SRC-20260623-005 | service_provider / all | Codex | audit | P0 | A | REQ-20260623-001 | `docs/product/service-provider-studio-baseline-2026-06-23.md` classifies every major capability as already_verified, partial, missing, conflicting, or blocked_external. | docs/product, server.js, public, src, tests | no | Done |
+| REQ-20260623-003 | Add additive Studio schema/domain services for projects, immutable sources, briefs, characters, guardrails, scenes, versions, assets, exports, and idempotent migration repeatability. | RAW-20260623-001 / SRC-20260623-006..009 | service_provider / all | Codex | backend | P0 | B | REQ-20260623-002 | Additive migration reruns safely; raw source is immutable/versioned; stages are separate from approvals/render/publish; no large binaries in Postgres. | server.js, src, railway migrations, tests | yes | Pending |
+| REQ-20260623-004 | Enforce Studio RBAC and tenancy across provider, editor, reviewer, viewer, and Super Admin access. | RAW-20260623-001 / SRC-20260623-010 | service_provider / all | Codex | security | P0 | B | REQ-20260623-003 | Provider A cannot enumerate provider B Studio objects or usage; public/member routes cannot access drafts; Super Admin aggregation is explicit. | server.js, src, tests | yes | Pending |
+| REQ-20260623-005 | Implement source paste, sanitization, normalization, annotations, and WebKit/Safari paste recovery. | RAW-20260623-001 / SRC-20260623-011..014 | service_provider / all | Codex | frontend_backend | P0 | D | REQ-20260623-003 | Plain/rich/Hebrew/mixed RTL paste works; raw source is never overwritten; emphasis is stored as annotation; unsafe clipboard HTML is stripped; WebKit paste tests pass. | public, server.js, src, tests, scripts | yes | Pending |
+| REQ-20260623-006 | Implement deterministic layered prompt compiler, version history, schema validation, and prompt-injection defense. | RAW-20260623-001 / SRC-20260623-015..017 | service_provider / all | Codex | prompt_engine | P0 | C | REQ-20260623-003 | Prompt layers are visible/versioned/compiled in order; untrusted source is delimited; invalid structured output is rejected or repaired; adversarial pasted instructions cannot override policy. | src, server.js, public, tests | yes | Pending |
+| REQ-20260623-007 | Implement natural-language correction preview/apply/revert with scene, character, project, and workspace-default scopes. | RAW-20260623-001 / SRC-20260623-018 | service_provider / all | Codex | prompt_engine | P0 | C | REQ-20260623-006 | Corrections become structured patches; broad changes show affected layers and require confirmation; every material change has history and rollback. | src, server.js, public, tests | yes | Pending |
+| REQ-20260623-008 | Add Studio as a separate provider module before Content with canonical shell, dashboard, project tabs, and responsive layout. | RAW-20260623-001 / SRC-20260623-019..020 | service_provider / all | Codex | frontend | P0 | D | REQ-20260623-004 | Studio appears before Content for service providers, not for unauthorized/family workspaces; dashboard shows operational project facts, usage, job errors, and next actions. | public, server.js, ops/action-registry.json, ops/route-registry.json, tests | yes | Pending |
+| REQ-20260623-009 | Implement storyboard/slideshow/video editor v1 with preview, scene rail, inspector, timeline, responsive mobile/tablet behavior, and version compare. | RAW-20260623-001 / SRC-20260623-021 | service_provider / all | Codex | frontend | P0 | E | REQ-20260623-008 | Add/duplicate/delete/reorder scenes; edit title/body/narration/assets/duration/transition/text styling/focal point/characters; preview sequence; no horizontal overflow at 390/768/1440. | public, src, tests, scripts | yes | Pending |
+| REQ-20260623-010 | Implement durable Studio jobs, deterministic mock generation/rendering, asset metadata, retry/cancel/stale visibility, and render/export records. | RAW-20260623-001 / SRC-20260623-022..023 | service_provider / all | Codex | jobs_rendering | P0 | F | REQ-20260623-003 | Jobs are scoped, idempotent, observable, retryable, cancellable, and mockable without live vendor credentials; assets carry rights/privacy metadata. | src, server.js, scripts, tests | yes | Pending |
+| REQ-20260623-011 | Implement Studio AI usage metering, price catalog, budgets, limits, alerts, provider usage view, and Super Admin aggregate view. | RAW-20260623-001 / SRC-20260623-024 | service_provider / all | Codex | usage_metering | P0 | G | REQ-20260623-010 | Every mock/vendor attempt logs workspace/provider/user/model/operation/tokens/media/latency/status/cost; provider sees own totals only; Super Admin sees explicit aggregate; hard limits and audited override work. | src, server.js, public, tests | yes | Pending |
+| REQ-20260623-012 | Implement approved Studio output handoff to existing Content/Library drafts without automatic publication. | RAW-20260623-001 / SRC-20260623-025 | service_provider / all | Codex | content_handoff | P0 | H | REQ-20260623-009, REQ-20260623-010 | Handoff is idempotent, carries provenance/rights/usage/manifest data, creates canonical content draft, and never publishes or grants member access automatically. | src, server.js, public, tests | yes | Pending |
+| REQ-20260623-013 | Seed and verify Rabbi Eli Scheller / One Time as a configuration-only pilot fixture. | RAW-20260623-001 / SRC-20260623-026 | rabbi_sheller_provider / one_time_mishnah_class | Codex | fixture | P1 | H | REQ-20260623-003, REQ-20260623-012 | One Time config includes Mishnah source, goal, three scenes, two characters, Jewish context pack, correction patches, mock image/render, content draft handoff, and usage rollups without hard-coding global behavior. | config, src, tests, docs | yes | Pending |
+| REQ-20260623-014 | Complete documentation, route/action registries, security/privacy docs, tests, watchdogs, browser evidence, independent verification, and final audit. | RAW-20260623-001 / SRC-20260623-027..030 | all / service-provider-studio | Codex | verification | P0 | I | REQ-20260623-003..REQ-20260623-013 | Required docs exist; focused/full tests, watchdogs, secret/large-file scans, migration repeat tests, Chromium/WebKit 390/768/1440, and independent verification pass or blockers are explicit. | docs, ops, tests, scripts | no | Pending |
+| REQ-20260623-015 | Integrate from a clean integration worktree and merge to the actual default branch only after all gates pass. | RAW-20260623-001 / SRC-20260623-031 | repository / master | Codex | integration | P0 | J | REQ-20260623-014 | Clean integration worktree from latest default; conflicts reviewed; feature branch merged/pushed to actual default branch or exact branch-protection blocker recorded; final default worktree clean. | git, ops, docs | no | Pending |
+
+## Parsed tasks
+
+Visible human task fan-out is intentionally not created. This is Codex-owned
+goal-mode implementation work. Human/external decisions are listed only if a
+real credential/account/legal/financial/privacy choice blocks a requirement.
+
+| ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
+|---|---|---|---|---|---|---|---|---|
+| TASK-20260623-001 | studio-goal-mode-execution | Implement and verify Universal Service Provider Studio from the registered prompt. | Codex | all service-provider workspaces | RAW-20260623-001 | REQ-20260623-001..REQ-20260623-015 | Execute batches A-J in the isolated worktree. | Agent lifecycle | running |
+
+## Decisions
+
+No human/external blocker is required at intake. Live paid/vendor generation,
+real provider sends, billing, DNS, Vimeo/Zoom/Google/Buffer writes, and Railway
+topology changes are explicitly out of scope unless separately approved.
+
+| ID | Decision | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required | Blocks requirements | Status |
+|---|---|---|---|---|---|---|---|---|
+
+## Open questions
+
+| ID | Question | Why it matters | Blocking? | Status |
+|---|---|---|---|---|
+| Q-20260623-001 | Does the default branch auto-deploy after push/merge? | App-visible Done status needs deploy/live proof unless unavailable or blocked. | no for local implementation; yes for deploy/live closeout if no auto-deploy occurs | open |
+
+## Durable memory candidates
+
+| ID | Memory candidate | Promote to MEMORY.md? | Reason |
+|---|---|---|---|
+| MEM-20260623-001 | Service-provider workspaces need a separate Studio module before Content for pre-production lesson/media preparation. | yes after implementation | Stable product requirement if merged. |
+
+## Implementation map
+
+| ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
+|---|---|---|---|---|---|---|
+| REQ-20260623-001 | raw-input, memory, tasks-pending, ops/execution-runs | Register source and active run in clean worktree. | `npm run bna:run:validate` PASS; `npm run bna:run:next` PASS. | pending | pending | n/a |
+| REQ-20260623-002 | docs/product baseline plus inspected files | Inspected canonical Operations, provider workspace, content/prompt, job, Remotion, usage, registry, and browser-smoke patterns; documented reuse plan. | Baseline artifact created at `docs/product/service-provider-studio-baseline-2026-06-23.md`. | pending | pending | n/a |
+| REQ-20260623-003..REQ-20260623-013 | server.js, public, src, migrations, tests, registries | Implement complete credential-free Studio product slice. | Focused tests, full tests, Playwright/WebKit, watchdogs. | pending | pending | pending default auto-deploy state |
+| REQ-20260623-014 | docs, ops, screenshots, verification reports | Independent second pass from clean state. | Required gates. | pending | pending | pending |
+| REQ-20260623-015 | clean integration worktree/default branch | Merge only after gates. | Final git status/remote default verification. | pending | pending | pending |
+
+## Final audit
+
+| ID | Status | Evidence | Files changed | Verification | Remaining issue |
+|---|---|---|---|---|---|
+| REQ-20260623-001 | Done | Raw prompt, memory record, requirement register, active execution run, `npm run bna:run:validate` PASS. | raw-input, memory, tasks-pending, ops/execution-runs | `npm run bna:run:validate` PASS; `npm run bna:run:next` PASS. | none |
+| REQ-20260623-002 | Done | `docs/product/service-provider-studio-baseline-2026-06-23.md`; inspected `server.js`, `public/operations.html`, `src/remotion`, content APIs, scope helpers, registries, and Playwright smoke patterns. | docs/product/service-provider-studio-baseline-2026-06-23.md, tasks-pending register, run docs | Canonical baseline audit completed before product-code edits. | none |
+| REQ-20260623-003 | Pending | pending | pending | pending | not started |
+| REQ-20260623-004 | Pending | pending | pending | pending | not started |
+| REQ-20260623-005 | Pending | pending | pending | pending | not started |
+| REQ-20260623-006 | Pending | pending | pending | pending | not started |
+| REQ-20260623-007 | Pending | pending | pending | pending | not started |
+| REQ-20260623-008 | Pending | pending | pending | pending | not started |
+| REQ-20260623-009 | Pending | pending | pending | pending | not started |
+| REQ-20260623-010 | Pending | pending | pending | pending | not started |
+| REQ-20260623-011 | Pending | pending | pending | pending | not started |
+| REQ-20260623-012 | Pending | pending | pending | pending | not started |
+| REQ-20260623-013 | Pending | pending | pending | pending | not started |
+| REQ-20260623-014 | Pending | pending | pending | pending | not started |
+| REQ-20260623-015 | Pending | pending | pending | pending | not started |
