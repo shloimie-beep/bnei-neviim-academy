@@ -21,6 +21,8 @@ const SECRET_GROUPS = {
     { envName: 'GOOGLE_APPLICATION_CREDENTIALS', names: ['google-application-credentials', 'GOOGLE_APPLICATION_CREDENTIALS'] },
     { envName: 'GOOGLE_CLIENT_EMAIL', names: ['google-client-email', 'GOOGLE_CLIENT_EMAIL'] },
     { envName: 'GOOGLE_PRIVATE_KEY', names: ['google-private-key', 'GOOGLE_PRIVATE_KEY'] },
+    { envName: 'GOOGLE_CLIENT_ID', names: ['google-client-id', 'GOOGLE_CLIENT_ID'] },
+    { envName: 'GOOGLE_CLIENT_SECRET', names: ['google-client-secret', 'GOOGLE_CLIENT_SECRET'] },
     { envName: 'GOOGLE_REFRESH_TOKEN', names: ['google-refresh-token', 'GOOGLE_REFRESH_TOKEN'] },
   ],
 };
@@ -139,11 +141,44 @@ function allConfigured(states = []) {
   return states.every((state) => state.configured);
 }
 
+function byName(states = []) {
+  return Object.fromEntries(states.map((state) => [state.name, state]));
+}
+
+function driveAuthPaths(secrets = []) {
+  const secret = byName(secrets);
+  const pathSpecs = [
+    {
+      path: 'application_credentials',
+      required: ['GOOGLE_APPLICATION_CREDENTIALS'],
+    },
+    {
+      path: 'service_account_pair',
+      required: ['GOOGLE_CLIENT_EMAIL', 'GOOGLE_PRIVATE_KEY'],
+    },
+    {
+      path: 'oauth_refresh_token',
+      required: ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN'],
+    },
+  ];
+  return pathSpecs.map((spec) => {
+    const required = spec.required.map((name) => secret[name]).filter(Boolean);
+    const configured = required.filter((state) => state.configured);
+    return {
+      path: spec.path,
+      ready: required.length === spec.required.length && configured.length === required.length,
+      configured_count: configured.length,
+      required_count: spec.required.length,
+    };
+  });
+}
+
 function scopeReadiness(scope, context = {}) {
   const env = context.env || process.env;
   const secrets = (SECRET_GROUPS[scope] || []).map((spec) => secretState(spec, context));
   const config = safeConfigState(env, CONFIG_GROUPS[scope] || []);
-  const secretReady = scope === 'drive' ? anyConfigured(secrets) : allConfigured(secrets);
+  const authPaths = scope === 'drive' ? driveAuthPaths(secrets) : [];
+  const secretReady = scope === 'drive' ? authPaths.some((authPath) => authPath.ready) : allConfigured(secrets);
   const configReady = scope === 'railway'
     ? anyConfigured(config.filter((state) => /PROJECT/.test(state.name))) &&
       anyConfigured(config.filter((state) => /ENVIRONMENT/.test(state.name))) &&
@@ -156,6 +191,7 @@ function scopeReadiness(scope, context = {}) {
     ready: Boolean(secretReady && configReady),
     secrets,
     config,
+    ...(scope === 'drive' ? { auth_paths: authPaths } : {}),
   };
 }
 

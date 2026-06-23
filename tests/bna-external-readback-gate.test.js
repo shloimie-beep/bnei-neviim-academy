@@ -46,7 +46,55 @@ test('external readback gate reports readiness without leaking secret values', a
   assert.equal(report.readiness.database.ready, true);
   assert.equal(report.readiness.railway.ready, true);
   assert.equal(report.readiness.drive.ready, true);
+  assert.ok(report.readiness.drive.auth_paths.some((authPath) => authPath.path === 'application_credentials' && authPath.ready));
   assert.doesNotMatch(JSON.stringify(report), /secret-value-for|postgres:\/\/|project-id-secretish|drive-folder-secretish/);
+});
+
+test('external readback gate requires a complete Drive authentication path', async () => {
+  const mod = await loadGate();
+  const partial = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['drive']),
+  }, {
+    repoRoot,
+    env: {
+      BNA_DRIVE_ROOT_FOLDER_ID: 'drive-folder-secretish',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['GOOGLE_CLIENT_EMAIL'])),
+  });
+
+  assert.equal(partial.ok, false);
+  assert.equal(partial.readiness.drive.ready, false);
+  assert.ok(partial.blockers.some((blocker) => /drive readback gate is not ready/i.test(blocker)));
+  assert.ok(partial.readiness.drive.auth_paths.some((authPath) => authPath.path === 'service_account_pair' && !authPath.ready));
+  assert.doesNotMatch(JSON.stringify(partial), /secret-value-for|drive-folder-secretish/);
+
+  const serviceAccount = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['drive']),
+  }, {
+    repoRoot,
+    env: {
+      BNA_DRIVE_ROOT_FOLDER_ID: 'drive-folder-secretish',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['GOOGLE_CLIENT_EMAIL', 'GOOGLE_PRIVATE_KEY'])),
+  });
+
+  assert.equal(serviceAccount.ok, true);
+  assert.equal(serviceAccount.readiness.drive.ready, true);
+  assert.ok(serviceAccount.readiness.drive.auth_paths.some((authPath) => authPath.path === 'service_account_pair' && authPath.ready));
+
+  const oauth = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['drive']),
+  }, {
+    repoRoot,
+    env: {
+      BNA_DRIVE_ROOT_FOLDER_ID: 'drive-folder-secretish',
+    },
+    loadSecretFn: fakeLoadSecret(new Set(['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH_TOKEN'])),
+  });
+
+  assert.equal(oauth.ok, true);
+  assert.equal(oauth.readiness.drive.ready, true);
+  assert.ok(oauth.readiness.drive.auth_paths.some((authPath) => authPath.path === 'oauth_refresh_token' && authPath.ready));
 });
 
 test('external readback gate blocks missing readback approval and missing configured state', async () => {

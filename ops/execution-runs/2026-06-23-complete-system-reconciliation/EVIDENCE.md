@@ -76,6 +76,17 @@ Latest external-backfill gate slice:
   deploy, and secret-value flags false/redacted while reporting the normalized
   job range.
 
+Latest external Drive readiness slice:
+
+- The external readback/backfill gate now requires Drive to have a complete
+  authentication path before readiness: application credentials,
+  service-account email/private-key pair, or OAuth client ID/client
+  secret/refresh-token set.
+- Partial Google secret state no longer marks Drive ready, even when a Drive
+  folder config value is present.
+- The Drive readiness report exposes only configured/not-configured source
+  labels and auth-path counts; secret values and config values remain redacted.
+
 ## Implementation Evidence
 
 - `server.js`

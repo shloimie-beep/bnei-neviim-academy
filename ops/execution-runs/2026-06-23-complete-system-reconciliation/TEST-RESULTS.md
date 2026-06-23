@@ -3,6 +3,31 @@
 ## Passed
 
 - `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
+  PASS after external Drive authentication-path readiness hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 21/21; Drive readiness requires a complete application-credentials,
+  service-account, or OAuth refresh-token auth path.
+- `npm run bna:external-readback-gate -- --json --drive` with dummy `GOOGLE_CLIENT_EMAIL` and `BNA_DRIVE_ROOT_FOLDER_ID`:
+  PASS as expected blocked gate; partial Drive auth no longer marks Drive
+  ready, and dummy values were not printed.
+- `npm run source:truth -- --json`:
+  PASS after external Drive authentication-path readiness hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after external Drive authentication-path readiness hardening.
+- `npm run bna:run:validate`:
+  PASS after external Drive authentication-path readiness hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1109/1109 after external Drive authentication-path readiness
+  hardening.
+- `node --check scripts/bna-external-readback-gate.mjs scripts/bna-production-closeout-gate.mjs`:
   PASS after external backfill readback-confirmation and job-range hardening.
 - `node --test tests/bna-external-readback-gate.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
   PASS, 20/20; external backfill apply requires readback confirmation and a
