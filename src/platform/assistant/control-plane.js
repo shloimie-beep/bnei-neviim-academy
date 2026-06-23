@@ -9,6 +9,111 @@ const CANONICAL_CHANNELS = Object.freeze([
   'future_approved_channel',
 ]);
 
+const SHARED_CONTROL_PLANE_LAYERS = Object.freeze([
+  'authenticated_identity',
+  'workspace_and_role',
+  'conversation_state',
+  'source_envelope',
+  'file_media_intake',
+  'action_registry',
+  'action_planner',
+  'permission_engine',
+  'preview_system',
+  'approval_system',
+  'audit_event',
+  'draft_template_versioning',
+  'reminders_notifications',
+  'ticketing',
+  'agent_work_handoff',
+  'progress_completion_state',
+]);
+
+const ADAPTER_ONLY_RESPONSIBILITIES = Object.freeze({
+  telegram: Object.freeze([
+    'telegram_buttons',
+    'telegram_reminders',
+    'forwarded_messages',
+    'telegram_file_downloads',
+    'telegram_status_replies',
+    'secure_deep_links',
+  ]),
+  website_assistant: Object.freeze([
+    'website_cards',
+    'browser_previews',
+    'page_aware_context',
+    'website_upload_controls',
+    'apply_undo_buttons',
+    'secure_deep_links',
+  ]),
+  operations_helper: Object.freeze([
+    'operations_page_context',
+    'control_center_filters',
+    'admin_review_links',
+  ]),
+  provider_portal_assistant: Object.freeze([
+    'provider_page_context',
+    'studio_deep_links',
+    'provider_preview_cards',
+  ]),
+  parent_portal_assistant: Object.freeze([
+    'parent_page_context',
+    'linked_child_picker',
+    'parent_preview_cards',
+  ]),
+  student_portal_assistant: Object.freeze([
+    'student_page_context',
+    'student_safe_preview_cards',
+  ]),
+  future_approved_channel: Object.freeze([
+    'transport_specific_rendering',
+    'secure_deep_links',
+  ]),
+});
+
+const FORBIDDEN_DUPLICATE_SYSTEMS = Object.freeze([
+  'telegram_architecture',
+  'website_bot_action_system',
+  'action_registry',
+  'intake_pipeline',
+  'agent_queue',
+  'provider_onboarding_system',
+  'provider_page_builder',
+  'browser_click_substitution',
+]);
+
+const CONTROL_PLANE_CONTRACT = Object.freeze({
+  requirement_id: 'REQ-20260623-011',
+  source_id: 'RAW-20260623-005',
+  canonical_parent_id: 'PARENT-20260622-001',
+  shared_layers: SHARED_CONTROL_PLANE_LAYERS,
+  adapter_only_responsibilities: ADAPTER_ONLY_RESPONSIBILITIES,
+  forbidden_duplicate_systems: FORBIDDEN_DUPLICATE_SYSTEMS,
+  provider_creation_system: 'service_provider_studio',
+  typed_actions_required: true,
+  browser_click_substitution_allowed: false,
+});
+
+const ASSISTANT_DATA_MODEL_TABLES = Object.freeze([
+  'assistant_channels',
+  'assistant_identities',
+  'assistant_conversations',
+  'assistant_messages',
+  'assistant_context_objects',
+  'assistant_action_plans',
+  'assistant_action_runs',
+  'assistant_previews',
+  'assistant_approvals',
+  'assistant_drafts',
+  'assistant_draft_versions',
+  'assistant_templates',
+  'assistant_saved_views',
+  'assistant_reminders',
+  'assistant_notifications',
+  'assistant_onboarding_sessions',
+  'assistant_delivery_outbox',
+  'assistant_dead_letters',
+]);
+
 const CHANNEL_ALIASES = Object.freeze({
   website: 'website_assistant',
   website_bot: 'website_assistant',
@@ -338,7 +443,12 @@ function assertActionPolicy(input = {}) {
 
 module.exports = {
   ACTION_CATEGORIES,
+  ADAPTER_ONLY_RESPONSIBILITIES,
+  ASSISTANT_DATA_MODEL_TABLES,
   CANONICAL_CHANNELS,
+  CONTROL_PLANE_CONTRACT,
+  FORBIDDEN_DUPLICATE_SYSTEMS,
+  SHARED_CONTROL_PLANE_LAYERS,
   actionPolicy,
   actorWorkspaceScope,
   assertActionPolicy,

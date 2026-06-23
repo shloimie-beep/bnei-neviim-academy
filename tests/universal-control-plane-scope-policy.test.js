@@ -3,7 +3,11 @@ const test = require('node:test');
 
 const {
   ACTION_CATEGORIES,
+  ADAPTER_ONLY_RESPONSIBILITIES,
   CANONICAL_CHANNELS,
+  CONTROL_PLANE_CONTRACT,
+  FORBIDDEN_DUPLICATE_SYSTEMS,
+  SHARED_CONTROL_PLANE_LAYERS,
   actionPolicy,
   actorWorkspaceScope,
   assertActionPolicy,
@@ -198,4 +202,59 @@ test('unsupported channels and unknown action categories are rejected', () => {
     }),
     /permission_denied/
   );
+});
+
+test('shared control-plane contract covers required layers without duplicate systems', () => {
+  for (const layer of [
+    'authenticated_identity',
+    'workspace_and_role',
+    'conversation_state',
+    'source_envelope',
+    'file_media_intake',
+    'action_registry',
+    'action_planner',
+    'permission_engine',
+    'preview_system',
+    'approval_system',
+    'audit_event',
+    'draft_template_versioning',
+    'reminders_notifications',
+    'ticketing',
+    'agent_work_handoff',
+    'progress_completion_state',
+  ]) {
+    assert.ok(SHARED_CONTROL_PLANE_LAYERS.includes(layer), `${layer} is part of the shared contract`);
+  }
+
+  assert.equal(CONTROL_PLANE_CONTRACT.requirement_id, 'REQ-20260623-011');
+  assert.equal(CONTROL_PLANE_CONTRACT.provider_creation_system, 'service_provider_studio');
+  assert.equal(CONTROL_PLANE_CONTRACT.typed_actions_required, true);
+  assert.equal(CONTROL_PLANE_CONTRACT.browser_click_substitution_allowed, false);
+
+  for (const forbidden of [
+    'telegram_architecture',
+    'website_bot_action_system',
+    'action_registry',
+    'intake_pipeline',
+    'agent_queue',
+    'provider_onboarding_system',
+    'provider_page_builder',
+    'browser_click_substitution',
+  ]) {
+    assert.ok(FORBIDDEN_DUPLICATE_SYSTEMS.includes(forbidden), `${forbidden} is explicitly forbidden`);
+  }
+});
+
+test('channel adapters expose transport responsibilities only', () => {
+  assert.deepEqual(
+    ADAPTER_ONLY_RESPONSIBILITIES.telegram.filter((item) => item.includes('registry') || item.includes('planner')),
+    []
+  );
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.telegram.includes('telegram_buttons'));
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.telegram.includes('forwarded_messages'));
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.website_assistant.includes('browser_previews'));
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.website_assistant.includes('page_aware_context'));
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.provider_portal_assistant.includes('studio_deep_links'));
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.parent_portal_assistant.includes('linked_child_picker'));
+  assert.ok(ADAPTER_ONLY_RESPONSIBILITIES.student_portal_assistant.includes('student_safe_preview_cards'));
 });
