@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-06-23T20:29:51.377Z.
+Generated at 2026-06-23T20:42:29.320Z.
 
 Requirement: REQ-20260623-013
 
@@ -12,14 +12,14 @@ Requirement: REQ-20260623-013
 - zero_missing_handlers: pass (0)
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
-- telegram_request_parity_present: pass (79)
-- website_assistant_request_parity_present: pass (137)
+- telegram_request_parity_present: pass (80)
+- website_assistant_request_parity_present: pass (138)
 - agent_work_handoff_parity_present: pass (75)
 
 ## Summary
 
 - Root registry actions: 58
-- Detailed typed actions: 79
+- Detailed typed actions: 80
 - Visible UI hooks: 22
 - Visible UI hooks classified: 22
 - Missing contracts: 0
@@ -32,10 +32,10 @@ Requirement: REQ-20260623-013
 | Source | Count |
 | --- | ---: |
 | ui_button | 22 |
-| telegram_request | 79 |
-| website_assistant_request | 137 |
-| operations_helper_request | 130 |
-| automation_action | 73 |
+| telegram_request | 80 |
+| website_assistant_request | 138 |
+| operations_helper_request | 131 |
+| automation_action | 74 |
 | agent_work_handoff | 75 |
 
 ## Visible Control Classifications

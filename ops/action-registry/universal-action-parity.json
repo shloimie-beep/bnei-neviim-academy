@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-23T20:29:51.377Z",
+  "generated_at": "2026-06-23T20:42:29.320Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,10 +16,10 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "8e6d2771b0a222155317f28a4e21a569f2acfb0ad601cd802f87f80c7f3fdc99",
+  "content_hash": "06e1ab38e4eb3c924e91e7320e176afa5c582029daa384704fa74bc0d829afd6",
   "source_hashes": {
     "ops/action-registry.json": "571b5ad6604f4456c8d98e9c0c38b09ec88950f6f71aa8625cece8bdfb6d4d74",
-    "ops/action-registry/actions.json": "ccc7bf45d461b4ad1ed5b29e0d567d044c66c3245ba54cf83acf6ea45930f877",
+    "ops/action-registry/actions.json": "d14449dbfad1fc46dce7f89ed3899f25fea6e98159c428f054c3229b060423cf",
     "public/operations.html": "4c331a81fc53f56066653e85026ad919df8736ca923b4a8c075f97d022b2f42a",
     "public/parent.html": "f165af4e0d52fb9d634db205603ead0a36096dc931e02d00459e691c4bdf60dc",
     "public/student.html": "698a6cacb1d76cfd7fdade8b7c199be575dcbf2e0af9c740c49f0908e8c609b6",
@@ -28,15 +28,15 @@
   },
   "summary": {
     "root_actions": 58,
-    "detailed_actions": 79,
-    "total_registry_rows": 137,
+    "detailed_actions": 80,
+    "total_registry_rows": 138,
     "visible_controls": 22,
     "visible_controls_classified": 22,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 6,
-    "risky_actions": 72,
+    "risky_actions": 73,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 2,
@@ -48,7 +48,7 @@
     "registry_by_classification": {
       "secure_deep_link_only": 9,
       "executable": 10,
-      "preview_then_approve": 65,
+      "preview_then_approve": 66,
       "read_only": 45,
       "blocked_connector": 6,
       "not_applicable": 2
@@ -59,16 +59,16 @@
       "count": 22
     },
     "telegram_request": {
-      "count": 79
+      "count": 80
     },
     "website_assistant_request": {
-      "count": 137
+      "count": 138
     },
     "operations_helper_request": {
-      "count": 130
+      "count": 131
     },
     "automation_action": {
-      "count": 73
+      "count": 74
     },
     "agent_work_handoff": {
       "count": 75
@@ -104,12 +104,12 @@
       {
         "name": "telegram_request_parity_present",
         "passed": true,
-        "value": 79
+        "value": 80
       },
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 137
+        "value": 138
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -6514,6 +6514,71 @@
         "/operations?view=automations",
         "/operations?view=communications"
       ]
+    },
+    {
+      "action_id": "schedule_assistant_reminder",
+      "label": "Schedule assistant reminder",
+      "registry_layer": "detailed",
+      "category": "communications",
+      "surface": "communications",
+      "route": "/operations?view=calendar",
+      "permission": "super_admin/admin/operator/provider_admin/provider_manager/parent/student/system",
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "parent",
+        "student",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "platform",
+        "bna",
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "reminders.scheduleAssistantReminder",
+      "status": "approval_required",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [
+        "Remind me tomorrow to finish the website",
+        "Notify me if attendance drops below 70%",
+        "Remind this parent before every class"
+      ],
+      "website_examples": [
+        "Set Reminder",
+        "Schedule Reminder",
+        "Notify Me"
+      ],
+      "result_renderer": "Reminder plan previewed.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "assistant_reminder_planned",
+      "page_contexts": [
+        "communications",
+        "calendar",
+        "automations",
+        "operations_helper",
+        "telegram",
+        "bot",
+        "parent_helper",
+        "provider_workspace"
+      ],
+      "related_routes": [
+        "/operations?view=calendar",
+        "/operations?view=communications",
+        "/operations?view=automations",
+        "/parent",
+        "/provider"
+      ]
     }
   ],
   "category_coverage": [
@@ -6782,6 +6847,7 @@
         "open_calendar_event",
         "pause_scheduled_email",
         "preview_social_schedule_package",
+        "schedule_assistant_reminder",
         "schedule_email",
         "schedule_task_on_date",
         "update_calendar_event"

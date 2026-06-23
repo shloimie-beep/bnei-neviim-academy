@@ -138,6 +138,23 @@ function inferInputs(actionId, message = '', provided = {}) {
         attendance_percent: /\battendance.{0,40}(below|drops?|under)\b/i.test(text) ? 65 : undefined,
       },
     });
+  } else if (actionId === 'schedule_assistant_reminder') {
+    const deliveryChannels = [
+      /\btelegram|bot\b/i.test(text) ? 'telegram' : '',
+      /\bin[-\s]?app|website|portal\b/i.test(text) ? 'in_app' : '',
+      /\bemail\b/i.test(text) ? 'email' : '',
+      /\bsms|text message\b/i.test(text) ? 'sms' : '',
+      /\bwhatsapp|whats\s*app\b/i.test(text) ? 'whatsapp' : '',
+    ].filter(Boolean);
+    Object.assign(inferred, {
+      message: text,
+      title,
+      timezone: 'Asia/Jerusalem',
+      delivery_channels: deliveryChannels,
+      audience_scope: {
+        audience: /\bparent\b/i.test(text) ? 'parent' : /\bstudent\b/i.test(text) ? 'student' : /\bprovider\b/i.test(text) ? 'provider' : 'self',
+      },
+    });
   } else {
     Object.assign(inferred, {
       title,
@@ -194,6 +211,9 @@ function scoreAction(action, message = '', requestedActionId = '') {
   if (/\b(drip|sequence|nurture|follow[-\s]?up series|six[-\s]?email|6[-\s]?email)\b/.test(text) && id === 'draft_drip_sequence') score += 85;
   if (/\b(automation|automate|trigger|when .+ then|if .+ then|turn it on|workflow)\b/.test(text) && id === 'draft_automation') score += 82;
   if (/\b(parent signs up|payment succeeds|payment fails|payment pending|email bounces|attendance drops|class reminder)\b/.test(text) && id === 'draft_automation') score += 45;
+  if (/\b(remind|reminder|notify|notification|alert|tell me when)\b/.test(text) && id === 'schedule_assistant_reminder') score += 92;
+  if (/\b(tomorrow|next week|before every class|before class|attendance drops|payment fails?|quiet hours)\b/.test(text) && id === 'schedule_assistant_reminder') score += 38;
+  if (/\b(remind|notify|alert)\b/.test(text) && id === 'draft_automation') score -= 45;
   return score;
 }
 

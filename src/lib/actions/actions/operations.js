@@ -10,6 +10,9 @@ const {
 const {
   planProblemResolution,
 } = require('../../../platform/assistant/problem-resolution');
+const {
+  buildReminderPlan,
+} = require('../../../platform/assistant/reminder-notifications');
 
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
@@ -365,6 +368,22 @@ function draftAutomationPreview(inputs = {}, context = {}) {
     message: inputs.message || inputs.goal || inputs.title || 'Automation draft',
     definition: inputs.definition || null,
     sample_event: inputs.sample_event || inputs.sampleEvent || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
+}
+
+function scheduleAssistantReminderPreview(inputs = {}, context = {}) {
+  return buildReminderPlan({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    message: inputs.message || inputs.title || inputs.body || 'Assistant reminder',
+    timezone: inputs.timezone || 'Asia/Jerusalem',
+    audience_scope: inputs.audience_scope || inputs.audienceScope || {},
+    delivery_channels: inputs.delivery_channels || inputs.deliveryChannels || [],
+    quiet_hours: inputs.quiet_hours || inputs.quietHours || { start: '21:00', end: '08:00' },
+    consent_state: inputs.consent_state || inputs.consentState || {},
+    current_time: inputs.current_time || inputs.currentTime || new Date(),
     workspace_key: inputs.workspace_key,
     project_key: inputs.project_key,
   });
@@ -3547,6 +3566,8 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return draftDripSequencePreview(inputs, context);
     case 'communications.draftAutomation':
       return draftAutomationPreview(inputs, context);
+    case 'reminders.scheduleAssistantReminder':
+      return scheduleAssistantReminderPreview(inputs, context);
     case 'decisions.create':
       return createDecision(inputs, context);
     case 'timeline.addNote':
