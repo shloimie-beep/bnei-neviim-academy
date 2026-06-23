@@ -16,7 +16,9 @@ Open requirements:
   `--job-range`. Drive readiness now requires a complete application
   credentials, service-account, or OAuth refresh-token auth path. Railway/Drive
   config readiness rejects placeholders such as `None`, `null`, `undefined`,
-  `not configured`, `TODO`, and template placeholders.
+  `not configured`, `TODO`, and template placeholders. Loaded secret values are
+  also re-checked for usable non-placeholder content before external readback
+  readiness can become true.
 - `REQ-20260623-210`: in progress but approval-gated; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
@@ -64,7 +66,9 @@ Open requirements:
   requires readback confirmation and validates `--job-range` as positive
   numeric job IDs/ranges. Drive readiness now blocks partial Google auth state
   instead of treating any single Google secret as ready, and placeholder
-  Railway/Drive config values are not treated as configured targets.
+  Railway/Drive config values are not treated as configured targets. The
+  guarded canonical Postgres CLI now rejects placeholder `DATABASE_URL` values
+  before connect in readback/apply modes.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
   ignored private ChatGPT return packet and the tracked redacted repo summary
   from current run evidence, with `latest.json` kept aligned to the active run
@@ -114,7 +118,8 @@ Completed implementation slice:
 - Guarded canonical Postgres operator CLI exposed as
   `npm run bna:intake:postgres`, with redacted dry-run output and explicit
   readback/apply confirmation gates. Combined apply/readback requests require
-  both approval gates before any database connection.
+  both approval gates before any database connection, and placeholder
+  `DATABASE_URL` values are rejected before connect.
 - Dry-run production closeout gate exposed as `npm run bna:release-gate`, with
   branch, pushed HEAD, dirty worktree, required script, run metadata, and
   deploy/live approval checks, plus explicit clean detached release-candidate

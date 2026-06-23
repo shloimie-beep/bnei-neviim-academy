@@ -138,6 +138,29 @@ test('external readback gate rejects placeholder Railway and Drive config values
   assert.doesNotMatch(JSON.stringify(drive), /secret-value-for|TODO/);
 });
 
+test('external readback gate rejects placeholder loaded secret values', async () => {
+  const mod = await loadGate();
+  const report = mod.buildExternalReadbackGateReport({
+    scopes: new Set(['database']),
+  }, {
+    repoRoot,
+    env: {},
+    loadSecretFn: ({ envName }) => ({
+      configured: true,
+      env_name: envName,
+      source_type: 'env',
+      value: 'TODO',
+    }),
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.readiness.database.ready, false);
+  assert.equal(report.readiness.database.secrets[0].configured, false);
+  assert.equal(report.readiness.database.secrets[0].source, 'placeholder');
+  assert.ok(report.blockers.some((blocker) => /database readback gate is not ready/i.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report), /TODO|postgres:\/\//);
+});
+
 test('external readback gate blocks missing readback approval and missing configured state', async () => {
   const mod = await loadGate();
   const report = mod.buildExternalReadbackGateReport({

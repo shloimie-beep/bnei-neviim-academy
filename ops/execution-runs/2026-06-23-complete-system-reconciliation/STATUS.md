@@ -1,5 +1,51 @@
 # Status
 
+## 2026-06-23T19:45:51+03:00
+
+Status: running, with the thirty-sixth external/Postgres placeholder gate
+slice complete.
+
+Hardened the external readback gate so loaded secret values are re-checked for
+usable non-placeholder content even when an injected loader reports
+`configured: true`. Hardened the guarded canonical Postgres operator CLI so
+placeholder `DATABASE_URL` values such as `TODO` are blocked before any
+database client can be constructed. No external read, Railway read, Drive read,
+database connection, production mutation, deploy, live verification, send,
+upload, charge, GitHub acknowledgement, or backfill was performed.
+
+Verified in this slice:
+
+- `node --check scripts/bna-external-readback-gate.mjs
+  scripts/canonical-intake-postgres.mjs
+  scripts/bna-production-closeout-gate.mjs` passed.
+- `node --test tests/bna-external-readback-gate.test.js
+  tests/canonical-intake-postgres-cli.test.js
+  tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`
+  passed, 28/28.
+- Runtime external readback proof with an injected placeholder loaded
+  `DATABASE_URL` value remained blocked with source `placeholder` and did not
+  print the dummy value.
+- Runtime canonical Postgres readback proof with `DATABASE_URL=TODO` remained
+  blocked before connect and did not print the placeholder value.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with
+  external/Postgres placeholder gate hardening summarized.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4149 tracked paths checked and
+  0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+- Full `npm test` passed, 1114/1114.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured non-placeholder DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T19:34:26+03:00
 
 Status: running, with the thirty-fifth integration placeholder secret readiness

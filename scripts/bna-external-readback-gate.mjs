@@ -3,7 +3,7 @@ import { createRequire } from 'node:module';
 import { pathToFileURL } from 'node:url';
 
 const require = createRequire(import.meta.url);
-const { loadSecret, safeSecretSourceLabel } = require('../src/lib/integrations/secret-loader');
+const { loadSecret, safeSecretSourceLabel, usableSecretValue } = require('../src/lib/integrations/secret-loader');
 
 export const READBACK_CONFIRM_PHRASE = 'READ_EXTERNAL_PRODUCTION_STATE';
 export const BACKFILL_CONFIRM_PHRASE = 'APPLY_GUARDED_CLASS_BACKFILL';
@@ -143,10 +143,11 @@ function secretState(spec, context = {}) {
     fileNames: spec.fileNames || [],
     repoRoot: context.repoRoot || process.cwd(),
   });
+  const configured = Boolean(loaded?.configured && usableSecretValue(loaded?.value));
   return {
     name: spec.envName,
-    configured: Boolean(loaded?.configured),
-    source: loaded?.configured ? safeSecretSourceLabel(loaded) : 'not configured',
+    configured,
+    source: configured ? safeSecretSourceLabel(loaded) : loaded?.configured ? 'placeholder' : 'not configured',
   };
 }
 

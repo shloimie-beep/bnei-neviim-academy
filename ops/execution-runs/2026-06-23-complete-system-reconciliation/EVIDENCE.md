@@ -29,6 +29,17 @@
 - `ops/watchdog-audits/2026-06-23T10-52-watchdog-security-routes.md`
 - `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`
 
+Latest external/Postgres placeholder gate slice:
+
+- External readback secret readiness now verifies loaded secret values are
+  usable even when an injected loader reports `configured: true`; placeholder
+  loaded values are demoted to source `placeholder`.
+- The guarded canonical Postgres operator CLI now rejects placeholder
+  `DATABASE_URL` values before any database client construction, readback, or
+  apply path can run.
+- Regression and runtime coverage verifies both gates block placeholder values
+  without printing dummy secret/config text.
+
 Latest return-packet slice:
 
 - The private and redacted return packets now report both the current branch

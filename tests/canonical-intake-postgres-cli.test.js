@@ -99,3 +99,21 @@ test('canonical intake postgres CLI requires readback gate for combined apply an
   assert.equal(approved.ok, true);
   assert.doesNotMatch(JSON.stringify(approved), /postgres:\/\/redacted\.invalid/);
 });
+
+test('canonical intake postgres CLI rejects placeholder database URLs before connect', async () => {
+  const mod = await loadCli();
+  const report = await mod.buildReport({
+    readback: true,
+    confirm: mod.READBACK_CONFIRM_PHRASE,
+    rawIntakeStableId: 'intake_source_placeholder_db_url_probe',
+  }, {
+    DATABASE_URL: 'TODO',
+    [mod.READBACK_APPROVAL_ENV]: 'approved',
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.mode, 'readback');
+  assert.equal(report.database_mutation_performed, false);
+  assert.ok(report.blockers.some((blocker) => /DATABASE_URL is not configured with a usable non-placeholder value/.test(blocker)));
+  assert.doesNotMatch(JSON.stringify(report), /TODO|postgres:\/\//);
+});

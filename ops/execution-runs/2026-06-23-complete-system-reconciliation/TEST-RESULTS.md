@@ -2,6 +2,37 @@
 
 ## Passed
 
+- `node --check scripts/bna-external-readback-gate.mjs scripts/canonical-intake-postgres.mjs scripts/bna-production-closeout-gate.mjs`:
+  PASS after external/Postgres placeholder gate hardening.
+- `node --test tests/bna-external-readback-gate.test.js tests/canonical-intake-postgres-cli.test.js tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 28/28; external readback loaded-secret placeholders and placeholder
+  Postgres database URLs are blocked without external actions or value leaks.
+- Runtime `buildExternalReadbackGateReport` proof with an injected placeholder loaded `DATABASE_URL` value:
+  PASS as expected blocked readiness; database secret source is `placeholder`,
+  and the dummy value was not printed.
+- Runtime `bna:intake:postgres` readback proof with `DATABASE_URL=TODO`:
+  PASS as expected blocked before connect; `database_mutation_performed=false`,
+  and the placeholder value was not printed.
+- `npm run source:truth -- --json`:
+  PASS after external/Postgres placeholder gate hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after external/Postgres placeholder gate hardening.
+- `npm run bna:run:validate`:
+  PASS after external/Postgres placeholder gate hardening.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements after external/Postgres placeholder
+  gate hardening.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none after external/Postgres placeholder gate
+  hardening.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4149 tracked paths checked, 0 tracked secret-risk files found after
+  external/Postgres placeholder gate hardening.
+- `git diff --check`:
+  PASS with line-ending warnings only after external/Postgres placeholder gate
+  hardening.
+- `npm test`:
+  PASS, 1114/1114 after external/Postgres placeholder gate hardening.
 - `node --check src/lib/integrations/secret-loader.js scripts/lib/integration-readiness.mjs scripts/system-truth.mjs scripts/bna-production-closeout-gate.mjs`:
   PASS after integration placeholder secret readiness hardening.
 - `node --test tests/integrations-secret-loader.test.js tests/system-truth-scripts.test.js tests/bna-production-closeout-gate.test.js`:

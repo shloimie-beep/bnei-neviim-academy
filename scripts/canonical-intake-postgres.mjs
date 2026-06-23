@@ -11,6 +11,7 @@ const {
   buildCanonicalIntakePostgresPlan,
   readCanonicalIntakePersistenceFromPostgres,
 } = require('../src/platform/ingestion/intake-postgres-persistence');
+const { usableSecretValue } = require('../src/lib/integrations/secret-loader');
 
 export const APPLY_CONFIRM_PHRASE = 'APPLY_CANONICAL_INTAKE_POSTGRES';
 export const READBACK_CONFIRM_PHRASE = 'READ_CANONICAL_INTAKE_POSTGRES';
@@ -173,7 +174,9 @@ export function loadPacket(options = {}) {
 
 export function buildGuardReport(options = {}, env = process.env) {
   const blockers = [];
-  const databaseUrl = String(env[options.databaseUrlEnv || 'DATABASE_URL'] || '').trim();
+  const databaseUrlEnv = options.databaseUrlEnv || 'DATABASE_URL';
+  const rawDatabaseUrl = String(env[databaseUrlEnv] || '').trim();
+  const databaseUrl = usableSecretValue(rawDatabaseUrl);
 
   if (options.apply) {
     if (options.confirm !== APPLY_CONFIRM_PHRASE) {
@@ -203,13 +206,15 @@ export function buildGuardReport(options = {}, env = process.env) {
   }
 
   if ((options.apply || options.readback) && !databaseUrl) {
-    blockers.push(`${options.databaseUrlEnv || 'DATABASE_URL'} is not configured.`);
+    blockers.push(rawDatabaseUrl
+      ? `${databaseUrlEnv} is not configured with a usable non-placeholder value.`
+      : `${databaseUrlEnv} is not configured.`);
   }
 
   return {
     ok: blockers.length === 0,
     blockers,
-    database_url_env: options.databaseUrlEnv || 'DATABASE_URL',
+    database_url_env: databaseUrlEnv,
   };
 }
 
