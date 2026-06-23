@@ -8,6 +8,9 @@ const {
   createIntakeSourceRecord,
 } = require('../../src/platform/ingestion/intake-source');
 const {
+  normalizePromptStatus,
+  normalizeChildOutcomeStatus,
+  isTerminalChildOutcomeStatus,
   createParentPrompt,
   appendChildOutcome,
   transitionPrompt,
@@ -139,4 +142,40 @@ test('W3 prompt queue exposes queue, prompt, and ramble status view models', () 
   assert.match(detail.route, /\/prompt PROMPT-/);
   assert.equal(status.child_outcome_count, 1);
   assert.equal(status.next_action, 'Continue the current work package and update heartbeat/evidence.');
+});
+
+test('W3 prompt queue closes passed verification packages through canonical parent statuses', () => {
+  const source = createIntakeSourceRecord({
+    source_provider: 'manual',
+    raw_text: 'Prompt packet: verify the lifecycle bridge.',
+  });
+  let prompt = createParentPrompt({ source_record: source, status: 'verifying', agent: 'Codex' });
+  prompt = appendChildOutcome(prompt, {
+    item_type: 'work_package',
+    title: 'Verify lifecycle bridge',
+    status: 'passed',
+    evidence: ['ops/playwright-smokes/lifecycle-bridge/report.md'],
+  });
+
+  const status = buildRambleStatusViewModel(prompt);
+  assert.equal(normalizePromptStatus('passed'), 'completed');
+  assert.equal(normalizeChildOutcomeStatus('sealed_pass'), 'passed');
+  assert.equal(isTerminalChildOutcomeStatus('passed'), true);
+  assert.equal(prompt.child_outcomes[0].status, 'passed');
+  assert.equal(status.child_outcome_count, 1);
+  assert.equal(status.terminal_child_outcome_count, 1);
+  assert.equal(
+    status.next_action,
+    'All child outcomes are terminal; move the parent prompt to completed, failed, or needs_decision with evidence.'
+  );
+
+  const closed = transitionPrompt(prompt, 'passed', {
+    timestamp: '2026-06-23T14:20:00.000Z',
+    evidence: ['ops/playwright-smokes/lifecycle-bridge/report.md'],
+    result: 'Lifecycle bridge verified.',
+  });
+  assert.equal(closed.status, 'completed');
+  assert.equal(closed.current_phase, 'completed');
+  assert.equal(closed.completed_at, '2026-06-23T14:20:00.000Z');
+  assert.deepEqual(closed.evidence, ['ops/playwright-smokes/lifecycle-bridge/report.md']);
 });

@@ -64,6 +64,11 @@ failed
 archived
 ```
 
+Incoming verification package statuses `pass`, `passed`, and `sealed_pass`
+normalize to parent `completed` for transitions. Child outcomes with `passed`,
+`completed`, `blocked`, `failed`, or `archived` count as terminal in the
+ramble status rollup.
+
 Visible queue fields:
 
 - prompt number/title

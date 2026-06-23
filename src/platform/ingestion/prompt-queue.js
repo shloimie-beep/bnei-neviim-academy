@@ -15,6 +15,22 @@ const PROMPT_STATUSES = [
 ];
 
 const TERMINAL_PROMPT_STATUSES = new Set(['completed', 'failed', 'archived']);
+const PROMPT_STATUS_ALIASES = {
+  done: 'completed',
+  pass: 'completed',
+  passed: 'completed',
+  sealed_pass: 'completed',
+  sealed_fail: 'failed',
+};
+const CHILD_OUTCOME_STATUS_ALIASES = {
+  done: 'completed',
+  pass: 'passed',
+  sealed_pass: 'passed',
+  sealed_fail: 'failed',
+  needs_operator: 'blocked',
+  needs_operator_decision: 'blocked',
+};
+const TERMINAL_CHILD_OUTCOME_STATUSES = new Set(['passed', 'completed', 'blocked', 'failed', 'archived']);
 
 const PROMPT_STATUS_TRANSITIONS = {
   new: new Set(['triaged', 'queued', 'needs_decision', 'failed', 'archived']),
@@ -40,7 +56,17 @@ function compactWhitespace(value = '') {
 
 function normalizePromptStatus(value = 'new') {
   const status = String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  return PROMPT_STATUSES.includes(status) ? status : 'new';
+  const normalized = PROMPT_STATUS_ALIASES[status] || status;
+  return PROMPT_STATUSES.includes(normalized) ? normalized : 'new';
+}
+
+function normalizeChildOutcomeStatus(value = 'queued') {
+  const status = String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  return CHILD_OUTCOME_STATUS_ALIASES[status] || status || 'queued';
+}
+
+function isTerminalChildOutcomeStatus(value = '') {
+  return TERMINAL_CHILD_OUTCOME_STATUSES.has(normalizeChildOutcomeStatus(value));
 }
 
 function promptTitleFromSource(sourceRecord = {}, fallback = 'Review intake prompt') {
@@ -139,7 +165,7 @@ function appendChildOutcome(prompt = {}, outcome = {}) {
     child_id: outcome.child_id || outcome.childId || `CHILD-${stableHash(JSON.stringify(outcome)).slice(0, 10).toUpperCase()}`,
     item_type: outcome.item_type || outcome.itemType || 'task',
     title: compactWhitespace(outcome.title || outcome.summary || 'Child outcome'),
-    status: outcome.status || 'queued',
+    status: normalizeChildOutcomeStatus(outcome.status || 'queued'),
     owner: outcome.owner || null,
     blocker: outcome.blocker || null,
     evidence: Array.isArray(outcome.evidence) ? outcome.evidence : [],
@@ -229,7 +255,8 @@ function buildPromptDetailViewModel(prompt = {}, { now = new Date().toISOString(
 
 function buildRambleStatusViewModel(prompt = {}, { now = new Date().toISOString() } = {}) {
   const childOutcomes = prompt.child_outcomes || [];
-  const terminalChildren = childOutcomes.filter((child) => ['done', 'completed', 'sealed_pass', 'blocked', 'failed', 'archived'].includes(String(child.status || '').toLowerCase()));
+  const terminalChildren = childOutcomes.filter((child) => isTerminalChildOutcomeStatus(child.status));
+  const allChildrenTerminal = childOutcomes.length > 0 && terminalChildren.length === childOutcomes.length;
   return {
     contract_version: PROMPT_QUEUE_CONTRACT_VERSION,
     route: QUEUE_ROUTE_CONTRACTS.ramble_status,
@@ -244,6 +271,8 @@ function buildRambleStatusViewModel(prompt = {}, { now = new Date().toISOString(
       ? 'Resolve the blocker or move the prompt to needs_decision.'
       : TERMINAL_PROMPT_STATUSES.has(normalizePromptStatus(prompt.status))
         ? 'Review evidence and archive when appropriate.'
+        : allChildrenTerminal
+          ? 'All child outcomes are terminal; move the parent prompt to completed, failed, or needs_decision with evidence.'
         : 'Continue the current work package and update heartbeat/evidence.',
     evidence: prompt.evidence || [],
   };
@@ -253,9 +282,12 @@ module.exports = {
   PROMPT_QUEUE_CONTRACT_VERSION,
   PROMPT_STATUSES,
   TERMINAL_PROMPT_STATUSES,
+  TERMINAL_CHILD_OUTCOME_STATUSES,
   PROMPT_STATUS_TRANSITIONS,
   QUEUE_ROUTE_CONTRACTS,
   normalizePromptStatus,
+  normalizeChildOutcomeStatus,
+  isTerminalChildOutcomeStatus,
   createPromptId,
   createParentPrompt,
   canTransitionPrompt,

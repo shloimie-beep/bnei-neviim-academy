@@ -36,14 +36,24 @@
 - `src/lib/bna/ramble-protocol.js`
 - `src/lib/bna/intake-parser.js`
 - `src/lib/bna/goal-memory.js`
+- `src/platform/ingestion/prompt-queue.js`
+- `docs/product/ramble-queue-contract.md`
 - `tests/ingestion/canonical-ids.test.js`
 - `tests/intake-parser.test.js`
+- `tests/ingestion/w3-parser-queue.test.js`
 
 Stable display ID slice verified:
 
 - Same-day source disambiguation for parser task IDs.
 - Task/ticket uniqueness despite shared `TASK` display prefix.
 - Timestamped intake display dates rendered in the operations timezone.
+
+Prompt lifecycle slice verified:
+
+- Incoming `pass`, `passed`, and `sealed_pass` package statuses normalize to
+  parent `completed`.
+- Child `passed` outcomes count as terminal in ramble status.
+- All-terminal child outcomes prompt parent closeout with evidence.
 
 ## Privacy Boundary
 

@@ -11,8 +11,9 @@ Worktree:
 Open requirements:
 
 - `REQ-20260623-209`: blocked on approved external readback/backfill gates.
-- `REQ-20260623-210`: in progress; stable display ID slice is verified, with
-  remaining canonical persistence/lifecycle/adapters/UI/watchdog/E2E work open.
+- `REQ-20260623-210`: in progress; stable display ID and prompt lifecycle
+  bridge slices are verified, with remaining canonical persistence/adapters/UI/
+  watchdog/E2E work open.
 
 Next exact commands for continuation:
 
@@ -30,6 +31,8 @@ Completed implementation slice:
 - Operations-timezone display date handling for timestamps.
 - Regression tests for same-day source collisions, task/ticket prefix
   collisions, and Jerusalem date rendering.
+- Prompt lifecycle bridge for `pass`/`passed`/`sealed_pass` package closeout
+  through canonical parent `completed` status.
 
 Follow-on implementation scope:
 

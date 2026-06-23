@@ -6,8 +6,11 @@
   PASS.
 - `node --test tests/ingestion/canonical-ids.test.js tests/intake-parser.test.js tests/intake-parser-goals.test.js tests/agentic-goal-memory-hardening.test.js tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js`:
   PASS, 32/32.
+- `node --check src/platform/ingestion/prompt-queue.js`: PASS.
+- `node --test tests/ingestion/w3-parser-queue.test.js tests/ingestion/w3-intake-source.test.js`:
+  PASS, 11/11.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1071/1071.
+- `npm test`: PASS, 1072/1072.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

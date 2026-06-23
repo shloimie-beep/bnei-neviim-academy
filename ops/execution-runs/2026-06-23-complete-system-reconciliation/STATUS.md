@@ -1,5 +1,28 @@
 # Status
 
+## 2026-06-23T14:15:13+03:00
+
+Status: running, with the second canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a parent prompt lifecycle bridge. Incoming
+verification package statuses `pass`, `passed`, and `sealed_pass` now normalize
+to parent `completed`, and child outcomes with `passed` count as terminal in
+the ramble status rollup.
+
+Verified in this slice:
+
+- `passed` verification packages close through canonical parent statuses.
+- Child `sealed_pass` normalizes to `passed`.
+- Ramble status prompts completion once every child outcome is terminal.
+- Focused prompt queue/source tests passed, 11/11.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; remaining canonical persistence, adapters,
+  Operations UI, watchdog parity, synthetic E2E, deploy, and live verification
+  are not complete yet.
+
 ## 2026-06-23T14:06:45+03:00
 
 Status: running, with the first canonical implementation slice complete.
