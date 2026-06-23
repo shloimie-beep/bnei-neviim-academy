@@ -47,6 +47,8 @@ export function parseArgs(argv = process.argv.slice(2)) {
     confirmDeploy: '',
     confirmLive: '',
     repoRoot: DEFAULT_REPO_ROOT,
+    allowDetached: false,
+    remoteBranch: '',
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -55,6 +57,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
     else if (arg === '--deploy') options.deploy = true;
     else if (arg === '--live-verify') options.liveVerify = true;
     else if (arg === '--final-closeout') options.finalCloseout = true;
+    else if (arg === '--allow-detached') options.allowDetached = true;
     else if (arg === '--help' || arg === '-h') options.help = true;
     else if (arg === '--confirm-deploy') {
       options.confirmDeploy = readNext(argv, index, '--confirm-deploy');
@@ -72,6 +75,10 @@ export function parseArgs(argv = process.argv.slice(2)) {
       options.expectedBranch = readNext(argv, index, '--expected-branch');
       index += 1;
     } else if (arg.startsWith('--expected-branch=')) options.expectedBranch = arg.slice('--expected-branch='.length);
+    else if (arg === '--remote-branch') {
+      options.remoteBranch = readNext(argv, index, '--remote-branch');
+      index += 1;
+    } else if (arg.startsWith('--remote-branch=')) options.remoteBranch = arg.slice('--remote-branch='.length);
     else if (arg === '--repo-root') {
       options.repoRoot = path.resolve(readNext(argv, index, '--repo-root'));
       index += 1;
@@ -84,6 +91,7 @@ export function parseArgs(argv = process.argv.slice(2)) {
 export function usage() {
   return `Usage:
   node scripts/bna-production-closeout-gate.mjs --json
+  node scripts/bna-production-closeout-gate.mjs --json --allow-detached --remote-branch codex/issue-8-complete-system-reconciliation
   node scripts/bna-production-closeout-gate.mjs --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE}
   node scripts/bna-production-closeout-gate.mjs --live-verify --confirm-live ${LIVE_VERIFY_CONFIRM_PHRASE}
 
@@ -186,19 +194,22 @@ function loadPackageScripts(repoRoot) {
   return pkg?.scripts && typeof pkg.scripts === 'object' ? pkg.scripts : {};
 }
 
-function loadGitState(repoRoot, expectedBranch, runCommand) {
+function loadGitState(repoRoot, expectedBranch, options, runCommand) {
   const branch = runGit(['branch', '--show-current'], repoRoot, runCommand).stdout || '(detached)';
   const head = runGit(['rev-parse', 'HEAD'], repoRoot, runCommand).stdout;
   const status = parseStatusPorcelain(runGit(['status', '--porcelain=v1'], repoRoot, runCommand).stdout);
-  const remoteBranch = expectedBranch || branch;
+  const remoteBranch = options.remoteBranch || expectedBranch || (branch !== '(detached)' ? branch : '');
   const remoteHeadResult = remoteBranch && remoteBranch !== '(detached)'
     ? runGit(['rev-parse', `origin/${remoteBranch}`], repoRoot, runCommand)
     : { ok: false, stdout: '' };
   const upstreamResult = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], repoRoot, runCommand);
+  const detached_allowed = Boolean(options.allowDetached && branch === '(detached)' && remoteBranch);
   return {
     branch,
     expected_branch: expectedBranch || null,
-    branch_matches_expected: expectedBranch ? branch === expectedBranch : true,
+    allow_detached: Boolean(options.allowDetached),
+    detached_allowed,
+    branch_matches_expected: expectedBranch ? (branch === expectedBranch || detached_allowed) : true,
     head,
     upstream: upstreamResult.ok ? upstreamResult.stdout : '',
     remote_branch: remoteBranch ? `origin/${remoteBranch}` : '',
@@ -234,11 +245,17 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
   const env = context.env || process.env;
   const run = loadRunState(repoRoot, options);
   const expectedBranch = options.expectedBranch || run.expected_branch || null;
-  const git = loadGitState(repoRoot, expectedBranch, runCommand);
+  const git = loadGitState(repoRoot, expectedBranch, options, runCommand);
   const scripts = loadPackageScripts(repoRoot);
   const missingScripts = REQUIRED_PACKAGE_SCRIPTS.filter((name) => !scripts[name]);
   const blockers = [];
 
+  if (git.branch === '(detached)' && !options.allowDetached) {
+    blockers.push('Current checkout is detached; pass --allow-detached with --remote-branch only for a clean release-candidate checkout.');
+  }
+  if (options.allowDetached && git.branch === '(detached)' && !options.remoteBranch) {
+    blockers.push('Detached release-candidate validation requires --remote-branch.');
+  }
   if (!git.branch_matches_expected) {
     blockers.push(`Current branch ${git.branch} does not match expected branch ${expectedBranch}.`);
   }

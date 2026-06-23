@@ -69,6 +69,45 @@ test('production closeout gate blocks dirty or unpushed deploy state', async () 
   assert.ok(report.blockers.some((blocker) => /dirty or untracked files/i.test(blocker)));
 });
 
+test('production closeout gate supports clean detached release-candidate checkouts', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    allowDetached: true,
+    remoteBranch: 'codex/issue-8-complete-system-reconciliation',
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner({ branch: '', head: 'release123', remoteHead: 'release123' }),
+    env: {},
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.git.branch, '(detached)');
+  assert.equal(report.git.allow_detached, true);
+  assert.equal(report.git.detached_allowed, true);
+  assert.equal(report.git.remote_branch, 'origin/codex/issue-8-complete-system-reconciliation');
+  assert.equal(report.git.head_pushed, true);
+  assert.equal(report.production_mutation_performed, false);
+  assert.equal(report.deploy_performed, false);
+  assert.equal(report.live_verification_performed, false);
+});
+
+test('production closeout gate blocks detached checkout without explicit release-candidate mode', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner({ branch: '', head: 'release123', remoteHead: 'release123' }),
+    env: {},
+  });
+
+  assert.equal(report.ok, false);
+  assert.ok(report.blockers.some((blocker) => /detached/i.test(blocker)));
+  assert.equal(report.git.head_pushed, true);
+  assert.equal(report.production_mutation_performed, false);
+});
+
 test('production closeout gate requires explicit deploy and live verification approvals', async () => {
   const mod = await loadGate();
   const blocked = await mod.buildProductionCloseoutGateReport({

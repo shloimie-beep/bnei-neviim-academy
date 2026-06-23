@@ -204,12 +204,18 @@ Production closeout gate slice verified:
 - `scripts/bna-production-closeout-gate.mjs` checks branch alignment, pushed
   HEAD, dirty worktree state, required npm scripts, active run metadata, and
   explicit deploy/live approval gates before production closeout.
+- It supports explicit clean detached release-candidate validation with
+  `--allow-detached --remote-branch`, requiring the detached HEAD to match the
+  named pushed remote branch.
+- Detached checkout mode without the explicit release-candidate flags remains
+  blocked.
 - The gate does not deploy, live-smoke, mutate a database, call Railway, or
   print secret values.
 - The real local gate run confirmed the current branch HEAD is pushed but
   blocked deploy because this worktree still has mixed dirty/untracked files.
-- Focused release-gate/system tests passed, 6/6. Stale-evidence, action
-  watchdog, and security watchdog checks also passed.
+- Focused release-gate tests passed, 5/5. Focused release-gate/system tests
+  passed, 9/9. Stale-evidence, action watchdog, and security watchdog checks
+  also passed.
 
 External readback/backfill gate slice verified:
 

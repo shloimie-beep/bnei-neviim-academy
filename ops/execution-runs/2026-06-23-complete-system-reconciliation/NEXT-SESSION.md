@@ -22,8 +22,10 @@ Open requirements:
   `--postgres-plan` preview are implemented. A guarded dry-run-first Postgres
   operator CLI is now available for approved readback/apply gates. A dry-run
   production closeout gate now checks branch/run/dirty-state readiness before
-  approved deploy/live verification. Remaining approved production database
-  apply, deploy, and live verification work remain open.
+  approved deploy/live verification, and it supports explicit clean detached
+  release-candidate validation via `--allow-detached --remote-branch`.
+  Remaining approved production database apply, deploy, and live verification
+  work remain open.
   A redacted external readback/backfill gate now reports database, Railway, and
   Drive readiness by configured state only.
 - `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
@@ -75,7 +77,8 @@ Completed implementation slice:
   readback/apply confirmation gates.
 - Dry-run production closeout gate exposed as `npm run bna:release-gate`, with
   branch, pushed HEAD, dirty worktree, required script, run metadata, and
-  deploy/live approval checks.
+  deploy/live approval checks, plus explicit clean detached release-candidate
+  validation support.
 - Redacted external readback/backfill gate exposed as
   `npm run bna:external-readback-gate`, with explicit readback/backfill
   confirmation gates and no external reads or writes in dry-run mode.

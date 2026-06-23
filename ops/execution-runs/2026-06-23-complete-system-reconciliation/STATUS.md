@@ -1,5 +1,33 @@
 # Status
 
+## 2026-06-23T16:22:32+03:00
+
+Status: running, with the seventeenth release-candidate gate hardening slice
+complete.
+
+Extended `REQ-20260623-210` so the production closeout gate can validate a
+clean detached release-candidate checkout when it is explicitly paired with the
+pushed PR branch via `--allow-detached --remote-branch`. Detached checkout mode
+still performs no deploy, no live smoke, and no production mutation.
+
+Verified in this slice:
+
+- `scripts/bna-production-closeout-gate.mjs` accepts detached release-candidate
+  mode only when explicit and still proves HEAD is pushed to the named remote
+  branch.
+- Detached checkout without explicit release-candidate mode remains blocked.
+- Focused production closeout coverage passed, 5/5.
+- Focused production/system coverage passed, 9/9.
+- Real dry-run gate in this mixed worktree still blocks deploy because dirty
+  and untracked files are present while confirming HEAD is pushed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T16:13:43+03:00
 
 Status: running, with the sixteenth return-packet reproducibility slice

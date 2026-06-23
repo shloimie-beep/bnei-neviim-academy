@@ -2,6 +2,24 @@
 
 ## Passed
 
+- `node --check scripts/bna-production-closeout-gate.mjs`:
+  PASS.
+- `node --test tests/bna-production-closeout-gate.test.js`:
+  PASS, 5/5.
+- `node --test tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 9/9.
+- `npm --silent run bna:release-gate -- --json`:
+  PASS as a blocked dry-run gate; branch HEAD pushed, deploy blocked because the worktree is mixed dirty/untracked.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm test`:
+  PASS, 1096/1096.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
 - `node --check scripts/system-truth.mjs`:
   PASS.
 - `node --test tests/system-truth-scripts.test.js`:
