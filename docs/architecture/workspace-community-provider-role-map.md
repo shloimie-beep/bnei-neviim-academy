@@ -89,5 +89,13 @@ X=export, B=trigger bot action.
 - Action execution/audit: `src/lib/actions/runner.js`,
   `src/lib/actions/actions/operations.js`,
   `src/lib/actions/audit-log.js`
+- Cross-channel assistant/control-plane scope policy:
+  `src/platform/assistant/control-plane.js`. This is the shared policy layer
+  for Telegram, website assistant, Operations helper, provider portal
+  assistant, parent portal assistant, and student portal assistant. It
+  normalizes channels, roles, action categories, workspace/project scope,
+  linked-child/student scope, preview requirements, approval requirements, and
+  the rule that typed actions must be used instead of browser-click
+  substitution.
 - Core app tables/APIs: `server.js`
 - Public/portal UI: `public/`

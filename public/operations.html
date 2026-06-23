@@ -8976,7 +8976,7 @@
             { id: 'pending', label: 'Blocked' },
             { id: 'due_soon', label: 'Due Soon' },
             { id: 'schedule', label: 'Calendar' },
-            { id: 'done_activity', label: 'Completed / Activity' },
+            { id: 'done_activity', label: 'Done / Activity' },
             { id: 'archived', label: 'Archived' },
             { id: 'decisions', label: 'Decisions' },
             { id: 'needs_my_decision', label: 'Needs My Decision' },
@@ -9015,7 +9015,7 @@
             { id: 'pending', label: 'Blocked/access', note: 'Missing access, assets, or outside systems.' },
             { id: 'codex_queue', label: 'Codex / Agent', note: 'Observable agent jobs and machine-owned work.' },
             { id: 'tasks', label: 'Tasks', note: 'Human work that can move.' },
-            { id: 'done_activity', label: 'Completed / Activity', note: 'Completed and verified trail.' }
+            { id: 'done_activity', label: 'Done / Activity', note: 'Completed and verified trail.' }
         ];
         const TASK_SIGNAL_FILTERS = [
             { id: 'all', label: 'All owners' },
@@ -11536,7 +11536,7 @@
                 codex_queue: 'Codex / Agent Work',
                 due_soon: 'Due Soon',
                 schedule: 'Calendar',
-                done_activity: 'Completed / Activity',
+                done_activity: 'Done / Activity',
                 archived: 'Archived',
                 needs_my_decision: 'Needs My Decision',
                 needs_rabbi_decision: 'Needs Rabbi Scheller',
@@ -12852,7 +12852,7 @@
                         ${renderMetricButton('Due Soon', state.dueSoonCount, 'Open work due within seven days.', "setTaskFocus('due_soon')")}
                         ${renderMetricButton('All Tasks', state.taskCount, 'Actionable work that can move now.', "setTaskFocus('tasks')")}
                         ${renderMetricButton('Codex / Agent Work', state.codexQueueCount, 'Machine work that is queued, running, failed, or waiting for a decision.', "setTaskFocus('codex_queue')")}
-                        ${renderMetricButton('Completed / Activity', state.activityCount, 'Completed work and recent task history.', "setTaskFocus('done_activity')")}
+                        ${renderMetricButton('Done / Activity', state.activityCount, 'Completed work and recent task history.', "setTaskFocus('done_activity')")}
                     </div>
                     <details class="workflow-details">
                         <summary>Workflow rule</summary>
