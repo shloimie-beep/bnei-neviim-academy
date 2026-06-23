@@ -1,5 +1,32 @@
 # Status
 
+## 2026-06-23T15:03:24+03:00
+
+Status: running, with the ninth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with local prompt auto-resume lifecycle planning.
+The queue can now plan and explicitly apply no-write transitions for resolved
+operator decisions, all-terminal child outcomes, and stale heartbeats that must
+route back to `needs_decision` instead of silently continuing.
+
+Verified in this slice:
+
+- `src/platform/ingestion/prompt-queue.js` exposes
+  `buildPromptAutoResumePlan()` and `applyPromptAutoResumePlan()`.
+- Focused lifecycle coverage verifies decision resume, terminal-child closeout,
+  and stale-heartbeat decision routing.
+- The synthetic acceptance artifact records a decision-resume apply with
+  `external_write_performed: false`.
+- The Studio browser smoke scroll was stabilized after an unrelated DOM-detach
+  flake so the full suite can verify cleanly.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  Operations UI, broader watchdog parity, deploy, and live verification are
+  not complete yet.
+
 ## 2026-06-23T14:56:54+03:00
 
 Status: running, with the eighth canonical implementation slice complete.

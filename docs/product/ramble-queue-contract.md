@@ -98,6 +98,15 @@ View-model functions:
 - `buildQueueViewModel()` for `/queue`
 - `buildPromptDetailViewModel()` for `/prompt <id>`
 - `buildRambleStatusViewModel()` for `/ramble_status`
+- `buildPromptAutoResumePlan()` for local no-write lifecycle planning
+- `applyPromptAutoResumePlan()` for explicit local/test transition application
+
+Auto-resume planning is local and dry-run safe. It records
+`external_write_performed: false` and covers three cases before any production
+watchdog path is approved: resume a `needs_decision` prompt after a resolved
+operator decision, close a verifying prompt when all child outcomes are
+terminal, and route stale in-progress/verifying heartbeats back to
+`needs_decision` instead of silently continuing.
 
 ## Parser Contract
 

@@ -13,7 +13,7 @@ const { attachVideoToLesson, createCourse, createCourseModule, createLesson, cre
 const { assignReward, awardReward, createGoal, createMilestone, createRewardCatalogItem, createRewardRule, evaluateRewardEligibility, redeemReward } = require('../src/platform/rewards');
 const { buildCanonicalIntakePacket } = require('../src/platform/ingestion/intake-service');
 const { applyCanonicalIntakePacketToMemory, createMemoryIntakePersistenceStore } = require('../src/platform/ingestion/intake-persistence');
-const { transitionPrompt, buildQueueViewModel, buildRambleStatusViewModel } = require('../src/platform/ingestion/prompt-queue');
+const { transitionPrompt, buildPromptAutoResumePlan, applyPromptAutoResumePlan, buildQueueViewModel, buildRambleStatusViewModel } = require('../src/platform/ingestion/prompt-queue');
 const { createWorkPackage, claimWorkPackage, recordEvidence, recordProgress: recordWorkPackageProgress, sealWorkPackage, requeueFindingOrDecision } = require('../src/platform/agent-control/closed-loop');
 const { buildOneTimeInstanceConfig, assertNoBnaPrivateData } = require('../src/platform/instances/one-time');
 const { buildOneTimeTestIdentityPreview, assertOneTimeTestFixtureSafety } = require('../src/platform/instances/one-time-test-fixtures');
@@ -215,6 +215,21 @@ const duplicateParsed = duplicatePacket.parsed;
 
 let parentPrompt = collectId(created, 'parent_prompt', intakePacket.parent_prompt);
 parentPrompt = transitionPrompt(parentPrompt, 'in_progress', { current_phase: 'implementation' });
+const decisionBlockedPrompt = {
+  ...parentPrompt,
+  status: 'needs_decision',
+  current_phase: 'needs_decision',
+  blocker: 'Synthetic operator decision resolved before resume.',
+};
+const autoResumePlan = buildPromptAutoResumePlan(decisionBlockedPrompt, {
+  now: checkedAt,
+  decision_resolution: { status: 'resolved', summary: 'Synthetic approval to continue.' },
+  resume_status: 'in_progress',
+});
+const autoResumeApply = applyPromptAutoResumePlan(decisionBlockedPrompt, autoResumePlan, {
+  timestamp: checkedAt,
+  current_phase: 'implementation',
+});
 const queueView = buildQueueViewModel([parentPrompt], { now: checkedAt });
 const rambleStatus = buildRambleStatusViewModel(parentPrompt, { now: checkedAt });
 
@@ -289,6 +304,9 @@ if (!persistenceApply.readback.found || persistenceApply.readback.parse_items.le
 if (persistenceApply.readback.parsed_entities.length !== persistenceApply.readback.parse_items.length) {
   throw new Error('Synthetic E2E canonical entity readback did not match parse items.');
 }
+if (!autoResumeApply.applied || autoResumeApply.prompt.status !== 'in_progress') {
+  throw new Error('Synthetic E2E prompt auto-resume plan did not resume the decision prompt.');
+}
 if (!leakCheck.ok || blockedLeakCheck.ok || bnaVisibility.length) {
   throw new Error('Synthetic E2E workspace isolation check failed.');
 }
@@ -337,6 +355,14 @@ const artifact = {
     readback_parsed_entity_count: persistenceApply.readback.parsed_entities.length,
     readback_entity_counts_by_group: persistenceApply.readback.entity_counts_by_group,
     external_write_performed: persistenceApply.external_write_performed,
+  },
+  lifecycle_auto_resume: {
+    action: autoResumePlan.action,
+    reason: autoResumePlan.reason,
+    target_status: autoResumePlan.target_status,
+    applied: autoResumeApply.applied,
+    resumed_status: autoResumeApply.prompt.status,
+    external_write_performed: autoResumePlan.external_write_performed || autoResumeApply.external_write_performed,
   },
   idempotent_rerun: {
     deduplication_keys: parsed.deduplication_keys.length,

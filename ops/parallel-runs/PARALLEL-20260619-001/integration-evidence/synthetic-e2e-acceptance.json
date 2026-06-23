@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-06-23T11:56:37.600Z",
+  "checked_at": "2026-06-23T12:02:50.509Z",
   "run_id": "PARALLEL-20260619-001",
   "mode": "local_in_memory_fixtures_no_external_writes",
   "external_write_performed": false,
@@ -137,6 +137,14 @@
       "community_items": 1,
       "notes": 2
     },
+    "external_write_performed": false
+  },
+  "lifecycle_auto_resume": {
+    "action": "resume_after_decision",
+    "reason": "operator_decision_resolved",
+    "target_status": "in_progress",
+    "applied": true,
+    "resumed_status": "in_progress",
     "external_write_performed": false
   },
   "idempotent_rerun": {

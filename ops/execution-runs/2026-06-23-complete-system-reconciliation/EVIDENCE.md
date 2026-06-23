@@ -54,6 +54,7 @@
 - `tests/ingestion/w3-intake-persistence.test.js`
 - `tests/watchdog-raw-intake-drift.test.js`
 - `tests/one-time-synthetic-pilot.test.js`
+- `tests/service-provider-studio-browser-smoke.test.js`
 - `tests/system-truth-scripts.test.js`
 
 Stable display ID slice verified:
@@ -119,6 +120,21 @@ Canonical parsed entity projection slice verified:
   integration, notes, and unresolved review rows with idempotent readback.
 - The synthetic artifact records parsed entity totals and group counts without
   external writes.
+
+Canonical auto-resume lifecycle slice verified:
+
+- `src/platform/ingestion/prompt-queue.js` plans prompt lifecycle actions for
+  resolved operator decisions, all-terminal child outcomes, stale heartbeats,
+  and explicit blockers.
+- `applyPromptAutoResumePlan()` only applies transitions that are already valid
+  under the canonical parent prompt state machine.
+- Focused coverage verifies decision resume, completed child closeout, and
+  stale-heartbeat routing to `needs_decision`.
+- The synthetic artifact records a local decision auto-resume apply with no
+  external writes.
+- The Studio browser smoke now scrolls to the mobile handoff section through a
+  stable in-page query, avoiding the unrelated DOM-detach flake observed during
+  full-suite verification.
 
 ## Privacy Boundary
 
