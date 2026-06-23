@@ -7864,6 +7864,7 @@
             cancelAgentRun(runKey, payload = {}) { return this.request('POST', '/agent-runs/' + encodeURIComponent(runKey) + '/cancel', payload); },
             getQueueHealth() { return this.request('GET', '/ops/queue-health'); },
             requeueQueueItem(payload = {}) { return this.request('POST', '/ops/queue/requeue', payload); },
+            getAssistantControlCenter() { return this.request('GET', '/assistant/control-center'); },
             getAssistantAgentStatus(limit = 12) { return this.request('GET', '/assistant/agent-status?limit=' + encodeURIComponent(limit)); },
             sendAssistantMessage(payload = {}) { return this.request('POST', '/assistant/message', payload); },
             getHelperContext() { return this.request('GET', '/helper/context'); },
@@ -8582,6 +8583,7 @@
         let operationsAssistantStatus = '';
         let operationsAssistantBusy = false;
         let operationsAssistantAgentStatus = null;
+        let operationsAssistantControlCenter = null;
         let bnaHelperOpen = false;
         let bnaHelperMessages = [];
         let bnaHelperCurrentPlan = null;
@@ -32817,6 +32819,42 @@
             `;
         }
 
+        function assistantControlStatusTotal(key) {
+            return Number(operationsAssistantControlCenter?.statuses?.[key]?.total || 0);
+        }
+
+        function renderAssistantControlCenterSnapshot() {
+            if (!operationsAssistantControlCenter) {
+                return '<div class="settings-disabled-note">Assistant Control Center snapshot has not loaded yet.</div>';
+            }
+            const coverage = operationsAssistantControlCenter.registry_coverage || {};
+            const blockers = operationsAssistantControlCenter.blockers || [];
+            return `
+                <div class="task-overview-grid" data-assistant-control-center="summary">
+                    ${renderMetricButton('Conversations', assistantControlStatusTotal('conversations'), 'Shared assistant conversations across Telegram, website, portals, and Operations.', "refreshOperationsAssistantAgentStatus()")}
+                    ${renderMetricButton('Plans', assistantControlStatusTotal('action_plans'), 'Typed assistant action plans.', "refreshOperationsAssistantAgentStatus()")}
+                    ${renderMetricButton('Approvals', assistantControlStatusTotal('approvals'), 'Pending or historical approval records.', "refreshOperationsAssistantAgentStatus()")}
+                    ${renderMetricButton('Drafts', assistantControlStatusTotal('drafts'), 'Shared assistant drafts and versions.', "refreshOperationsAssistantAgentStatus()")}
+                    ${renderMetricButton('Reminders', assistantControlStatusTotal('reminders'), 'Unified reminders and notifications.', "refreshOperationsAssistantAgentStatus()")}
+                    ${renderMetricButton('Failures', assistantControlStatusTotal('dead_letters') + Number(operationsAssistantControlCenter?.statuses?.delivery_outbox?.by_status?.failed || 0), 'Dead letters and failed deliveries.', "refreshOperationsAssistantAgentStatus()")}
+                </div>
+                <div class="assistant-action-grid">
+                    <div class="assistant-action-card">
+                        <strong>Action Coverage</strong>
+                        <div>${Number(coverage.total_actions || 0)} actions, ${Number(coverage.telegram_ready || 0)} Telegram-ready, ${Number(coverage.website_ready || 0)} website-ready.</div>
+                        <div class="task-meta">
+                            <span>${Number(coverage.approval_required || 0)} approval-gated</span>
+                            <span>${(coverage.missing_handlers || []).length} missing handlers</span>
+                        </div>
+                    </div>
+                    <div class="assistant-action-card ${blockers.length ? 'failed' : ''}">
+                        <strong>Current Blockers</strong>
+                        <div>${blockers.length ? blockers.map(item => item.replace(/_/g, ' ')).join(', ') : 'No control-center blockers reported.'}</div>
+                        <div class="task-meta"><span>Read-only snapshot</span><span>No raw bodies</span></div>
+                    </div>
+                </div>
+            `;
+        }
         function renderOperationsAssistantPanel() {
             const queue = operationsAssistantAgentStatus?.queue || agentFleetStatus?.queue || {};
             const entries = operationsAssistantMessages.slice(-6);
@@ -32834,6 +32872,7 @@
                         ${renderMetricButton('Running', Number(queue.running || queue.in_progress || 0), 'Codex jobs currently running.', "refreshOperationsAssistantAgentStatus()")}
                         ${renderMetricButton('Blocked', Number(queue.blocked || queue.needs_decision || 0), 'Agent jobs needing a human decision.', "switchView('tasks')")}
                     </div>
+                    ${renderAssistantControlCenterSnapshot()}
                     <form class="settings-control-grid compact" onsubmit="submitOperationsAssistantMessage(event)">
                         <label class="settings-wide">Ask or assign
                             <textarea id="operationsAssistantInput" rows="3" maxlength="4000" placeholder="What did Codex do? Or: create a Codex ticket to fix the student portal assistant panel."></textarea>
@@ -34545,14 +34584,20 @@
         }
 
         async function refreshOperationsAssistantAgentStatus() {
-            operationsAssistantStatus = 'Checking Codex queue...';
+            operationsAssistantStatus = 'Checking assistant control center...';
             render();
             try {
-                operationsAssistantAgentStatus = await api.getAssistantAgentStatus(12);
+                const [agentStatus, controlCenter] = await Promise.all([
+                    api.getAssistantAgentStatus(12),
+                    api.getAssistantControlCenter()
+                ]);
+                operationsAssistantAgentStatus = agentStatus;
+                operationsAssistantControlCenter = controlCenter;
                 const queue = operationsAssistantAgentStatus?.queue || {};
-                operationsAssistantStatus = `Codex: ${Number(queue.queued || queue.pending || 0)} queued, ${Number(queue.running || queue.in_progress || 0)} running, ${Number(queue.blocked || queue.needs_decision || 0)} blocked.`;
+                const blockers = (operationsAssistantControlCenter?.blockers || []).length;
+                operationsAssistantStatus = `Codex: ${Number(queue.queued || queue.pending || 0)} queued, ${Number(queue.running || queue.in_progress || 0)} running, ${Number(queue.blocked || queue.needs_decision || 0)} blocked. Control Center: ${blockers} blocker${blockers === 1 ? '' : 's'}.`;
             } catch (error) {
-                operationsAssistantStatus = error.message || 'Could not load Codex status.';
+                operationsAssistantStatus = error.message || 'Could not load assistant control center.';
             }
             render();
         }

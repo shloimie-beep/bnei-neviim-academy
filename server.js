@@ -149,6 +149,9 @@ const {
   ASSISTANT_DATA_MODEL_TABLES,
 } = require('./src/platform/assistant/control-plane');
 const {
+  buildAssistantControlCenterSnapshot,
+} = require('./src/platform/assistant/control-center');
+const {
   buildOneTimeRuntimeFlags,
 } = require('./src/platform/instances/one-time-separate-deployment');
 const {
@@ -41293,6 +41296,20 @@ app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, 
   }
 });
 
+app.get('/api/bna/assistant/control-center', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') {
+      return res.status(403).json({ success: false, error: 'Assistant Control Center is Super Admin only.' });
+    }
+    res.json(await buildAssistantControlCenterSnapshot({
+      db: pool,
+      actor: req.opsIdentity || {},
+    }));
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant Control Center failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
 app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, res) => {
   try {
     const resendConfig = resendServerRuntimeConfig();
