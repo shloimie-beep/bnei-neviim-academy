@@ -48,6 +48,7 @@
 - `scripts/canonical-intake-postgres.mjs`
 - `scripts/bna-production-closeout-gate.mjs`
 - `scripts/bna-external-readback-gate.mjs`
+- `scripts/system-truth.mjs`
 - `scripts/watchdog-raw-intake-drift.mjs`
 - `scripts/platform-synthetic-e2e.mjs`
 - `docs/product/ramble-queue-contract.md`
@@ -223,11 +224,29 @@ External readback/backfill gate slice verified:
 - No external read, production mutation, deploy, live smoke, or safe apply was
   performed.
 
+Return packet reproducibility slice verified:
+
+- `scripts/system-truth.mjs return-packet` builds the copy-ready ChatGPT return
+  packet from current run, requirement, worktree, class-intake, asset, UI, and
+  PR state.
+- `npm run bna:return-packet` writes ignored private local files at
+  `.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md` and
+  `.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json`.
+- The tracked redacted summary at
+  `ops/return-packets/2026-06-23-complete-system-reality-redacted.md` is
+  generated from the same report and redacts local home paths as
+  `[local-user]`.
+- Focused system-truth coverage passed, 4/4, and the tracked redacted packet
+  was checked for full local home path leakage.
+
 ## Privacy Boundary
 
 - The full Goal Mode prompt is not committed; only a local pointer/hash is.
 - Secret readiness reports include variable state and source labels only.
 - Drive IDs/URLs are kept out of the redacted repo packet.
+- The private ChatGPT return packet is generated under ignored `.runtime/`
+  local state and is not committed.
+- The tracked redacted return packet redacts local home paths.
 - The Postgres operator CLI dry-run evidence excludes database URLs, SQL text,
   and SQL values.
 - No production database mutation, external send, Vimeo upload, charge, deploy,

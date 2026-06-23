@@ -19,6 +19,7 @@ test('system truth commands are exposed through package scripts', () => {
   assert.equal(pkg.scripts['bna:intake:postgres'], 'node scripts/canonical-intake-postgres.mjs');
   assert.equal(pkg.scripts['bna:release-gate'], 'node scripts/bna-production-closeout-gate.mjs');
   assert.equal(pkg.scripts['bna:external-readback-gate'], 'node scripts/bna-external-readback-gate.mjs');
+  assert.equal(pkg.scripts['bna:return-packet'], 'node scripts/system-truth.mjs return-packet');
 });
 
 test('system truth script reports readiness by variable state only', () => {
@@ -27,6 +28,22 @@ test('system truth script reports readiness by variable state only', () => {
   assert.doesNotMatch(script, /fingerprint\(loaded\.value\)|value: loaded\.value/);
   assert.match(script, /VIMEO_ACCESS_TOKEN/);
   assert.match(script, /RESEND_DOMAIN/);
+  assert.match(script, /CHATGPT-RETURN-PACKET\.md/);
+  assert.match(script, /return-packet/);
+});
+
+test('return packet report keeps private and redacted packet paths explicit', async () => {
+  const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'system-truth.mjs')).href);
+  const report = await mod.buildReport('return-packet');
+  assert.equal(report.packet_contract, 'chatgpt-return-packet-v1');
+  assert.equal(report.privacy_classification, 'internal_local_only');
+  assert.equal(report.redacted_repo_classification, 'redacted_repo_safe');
+  assert.equal(report.private_packet.markdown_path, '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md');
+  assert.equal(report.private_packet.json_path, '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json');
+  assert.match(report.redacted_repo_summary.markdown_path, /^ops\/return-packets\/\d{4}-\d{2}-\d{2}-complete-system-reality-redacted\.md$/);
+  assert.equal(report.redacted_repo_summary.includes_private_raw_source, false);
+  assert.equal(report.redacted_repo_summary.includes_secret_values, false);
+  assert.ok(report.system_truth.branch);
 });
 
 test('GitHub intake preview is idempotent and redacts secret-like text', async () => {

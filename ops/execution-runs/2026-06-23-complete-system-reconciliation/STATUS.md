@@ -1,5 +1,33 @@
 # Status
 
+## 2026-06-23T16:13:43+03:00
+
+Status: running, with the sixteenth return-packet reproducibility slice
+complete.
+
+Repaired `REQ-20260623-211` so the mandatory private ChatGPT return packet is
+reproducible from the truth tooling and exists in ignored local runtime state.
+The redacted repo packet is regenerated from the same source and redacts local
+home paths in worktree rows.
+
+Verified in this slice:
+
+- `package.json` exposes `npm run bna:return-packet`.
+- `scripts/system-truth.mjs return-packet` writes
+  `.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md`,
+  `.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json`, and
+  `ops/return-packets/2026-06-23-complete-system-reality-redacted.md`.
+- The tracked redacted packet reports public-safe continuation status and does
+  not include full local home paths.
+- Focused system-truth coverage passed, 4/4.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T16:01:20+03:00
 
 Status: running, with the fifteenth gated-readback slice complete.

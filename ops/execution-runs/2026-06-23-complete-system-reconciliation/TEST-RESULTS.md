@@ -2,6 +2,24 @@
 
 ## Passed
 
+- `node --check scripts/system-truth.mjs`:
+  PASS.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 4/4.
+- `node scripts/system-truth.mjs return-packet --json`:
+  PASS; generated ignored private packet files and refreshed the redacted repo packet.
+- Redacted return packet full-home-path leakage check:
+  PASS; no full local home path string found in the tracked packet.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm test`:
+  PASS, 1094/1094.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `git diff --check`:
+  PASS with line-ending warnings only.
 - `node --check scripts/bna-external-readback-gate.mjs`:
   PASS.
 - `node --test tests/bna-external-readback-gate.test.js tests/system-truth-scripts.test.js`:

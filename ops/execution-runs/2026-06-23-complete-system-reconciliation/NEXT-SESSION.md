@@ -26,6 +26,9 @@ Open requirements:
   apply, deploy, and live verification work remain open.
   A redacted external readback/backfill gate now reports database, Railway, and
   Drive readiness by configured state only.
+- `REQ-20260623-211`: complete; `npm run bna:return-packet` now regenerates the
+  ignored private ChatGPT return packet and the tracked redacted repo summary
+  from current run evidence.
 
 Next exact commands for continuation:
 
@@ -34,6 +37,7 @@ git fetch origin
 git switch codex/issue-8-complete-system-reconciliation
 git pull --ff-only origin codex/issue-8-complete-system-reconciliation
 npm run bna:run:resume
+npm run bna:return-packet -- --json
 ```
 
 Completed implementation slice:
@@ -75,6 +79,9 @@ Completed implementation slice:
 - Redacted external readback/backfill gate exposed as
   `npm run bna:external-readback-gate`, with explicit readback/backfill
   confirmation gates and no external reads or writes in dry-run mode.
+- Reproducible ChatGPT return packet generator exposed as
+  `npm run bna:return-packet`, writing private ignored `.runtime/` packet files
+  plus the redacted repo packet.
 
 Follow-on implementation scope:
 

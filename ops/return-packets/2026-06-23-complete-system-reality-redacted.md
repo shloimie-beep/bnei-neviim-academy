@@ -1,52 +1,153 @@
-# Complete System Reality Return Packet (Redacted)
+CHATGPT RETURN PACKET
+Generated: 2026-06-23T13:16:25.250Z
+Privacy: redacted_repo_safe
 
-Generated: 2026-06-23T13:52:00+03:00
+SYSTEM TRUTH
+- master: a9528b2d9467174d76d4c25bfb028f9308f24b4f
+- deployed commit/deployment: not verified by current local state / not verified by current local state
+- branch/PR: codex/issue-8-complete-system-reconciliation / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12
+- active run: ops/execution-runs/2026-06-23-complete-system-reconciliation
+- source coverage: errors 0, unmapped 0
+- local-only work: dirty files 88
+- unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet
+- merged-not-deployed: deployment readback not verified in current local state
+- deployed-not-verified: live proof not verified in current local state
 
-## Verdict
+WORKTREES
+- [local-user]/BNA v2.0 / integration/20260619-platform-finish / 25609511186e / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/AppData/Local/Temp/bna-parser-fix-worktree-20260622111219 / (detached) / e4cf9980a07a / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/AppData/Local/Temp/bna-release-deploy-22fcff0d / (detached) / 22fcff0d9665 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/AppData/Local/Temp/bna-release-deploy-48343f1f / (detached) / 48343f1fd833 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-ops-audit-publish / codex/operations-ui-audit-harness-clean / b8baede8c043 / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-protocol-pr-worktree / codex/ramble-to-done-protocol / e4c062f37040 / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-recovery-20260618 / codex/2026-06-18-bna-platform-completion / 4fd14782de7c / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/bna-release-clean / release/operations-parent-student-action-registry-2026-06-11 / 09f419e78be1 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/BNA-stripe-checkpoint / (detached) / bd84112a1c95 / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-worktrees/20260619-core / parallel/20260619-core / f539ec80dd5e / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-worktrees/20260619-ingestion / parallel/20260619-ingestion / 3f0c7b309caa / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-worktrees/20260619-onetime / parallel/20260619-onetime / b2fd5039990e / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/BNA-worktrees/20260619-ui / parallel/20260619-ui / c978b63ad65d / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-14-b89c17c0 / (detached) / b89c17c0ec34 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-15-39b5db0e / (detached) / 39b5db0ea0fb / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-15-68e62775 / (detached) / 68e62775a0f0 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-16-be7e46ae / (detached) / be7e46ae9fef / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-17-7efc8ce3 / (detached) / 7efc8ce3cd3b / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-19-34c74f22 / (detached) / 34c74f22145a / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-9h-98b293d / (detached) / 98b293d9b895 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-9h-b71b14c5 / (detached) / b71b14c5252c / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-9i-f741fa91 / (detached) / f741fa91a909 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/deploy-9j-6c45c4a4 / (detached) / 6c45c4a4f5be / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff / codex/agent-control-center-20260619 / a8190b042883 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-23e16a12 / (detached) / 23e16a126f6e / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-32708bfa-9f / (detached) / 32708bfa5aa1 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-35db6c0e-9e / (detached) / 35db6c0e8762 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-37ef4c3a / (detached) / 37ef4c3a2b58 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-4edeef1f-9f / (detached) / 4edeef1fdbcf / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-53c66d20-9g / (detached) / 53c66d204604 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-5858f658 / (detached) / 5858f658ea4f / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-62715fd6 / (detached) / 62715fd68ad0 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-aedb04aa / (detached) / aedb04aade8d / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-master-pr-ff-deploy-b2371cdc-9e / (detached) / b2371cdc5a58 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-21/one-time-req313-clean-a8190b04 / (detached) / a8190b042883 / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-22/goal-c-users-user-downloads-codex/work/bna-active / codex/bna-full-audit-20260622 / 7fd06a1d0cf3 / dirty_required / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-a8190b04 / (detached) / 04d93788c48f / dirty_unknown / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-08229f73 / (detached) / 08229f739478 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-168bda1f / (detached) / 168bda1f18fb / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-61de54e2 / (detached) / 61de54e291b0 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-68b939a4 / (detached) / 68b939a43ff2 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-6cfe7a25 / (detached) / 6cfe7a258489 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-8a67ebb9 / (detached) / 4d43160be025 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-22/one-time-shared-review-deploy-95aab80a / (detached) / 95aab80a7fc5 / safety_snapshot / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-23/goal-c-users-user-downloads-bna/work/bna-reconciliation / codex/issue-8-complete-system-reconciliation / 2d8058fec458 / active_owned / recovery: review file-level diff before porting; do not stage all
+- [local-user]/Documents/Codex/2026-06-23/service-provider-studio / codex/service-provider-studio-20260623 / 4936394ae0a9 / clean_stale / recovery: retain until owner confirms cleanup
+- [local-user]/Documents/Codex/2026-06-23/service-provider-studio-integration / codex/service-provider-studio-integration-20260623 / a9528b2d9467 / clean_current / recovery: retain until owner confirms cleanup
 
-PARTIAL - safe reconciliation, containment, and evidence generation are complete.
-Follow-on canonical persistence/UI/autonomous execution work remains open.
+RAMBLE PROTOCOL
+- canonical source: raw-input/RAW-20260623-002-complete-system-reconciliation-redacted-pointer.md
+- parent persistence: canonical packet and local/Postgres adapters implemented; live DB persistence remains gated
+- source statements: 12
+- modes: brainstorm, capture, goal
+- adapters: github, chatgpt, codex/manual, operations, drive/transcript planned through canonical service
+- GitHub intake: dry-run and canonical packet preview implemented; production persistence gated
+- Decisions: canonical Decision lane tested locally through parser/projection/auto-resume contracts
+- My Tasks: human work stays separate from Agent Work in canonical parser/projection contracts
+- Agent Work: machine work packages tracked in execution-run requirements
+- auto-resume: local prompt auto-resume planner and watchdog contract implemented
+- session resume: execution run, next-session file, PR comments, and return-packet generator carry continuation state
 
-## Public-Safe Truth
+GOALS
+- canonical registry: ops/execution-runs/2026-06-23-complete-system-reconciliation
+- active goals: {"done":9,"blocked":1,"in_progress":1}
+- progress: 9 done, 1 in progress
+- blockers: REQ-20260623-209 Operator
+- evidence: execution-run requirements, test results, PR comments, and generated truth reports
 
-- Canonical repo line for this batch: `origin/master`.
-- Working branch: `codex/issue-8-complete-system-reconciliation`.
-- Base commit: `a9528b2d9467174d76d4c25bfb028f9308f24b4f`.
-- The local shared repo/worktrees remain dirty and were not edited, deleted, or mass-staged.
-- Service Provider Studio is present on `origin/master`; its completed run was marked inactive and this reconciliation run is now active.
-- `origin/main` remains unrelated to `origin/master` and is not treated as canonical.
+CLASS / DRIVE INTAKE
+- jobs 75-79: 75:repo-evidence, 76:repo-evidence, 77:repo-evidence, 78:repo-evidence, 79:repo-evidence
+- jobs 64-74: 64:repo-evidence, 65:repo-evidence, 66:repo-evidence, 67:repo-evidence, 68:repo-evidence, 69:repo-evidence, 70:repo-evidence, 71:repo-evidence, 72:repo-evidence, 73:repo-evidence, 74:repo-evidence
+- transcription: live state requires external readback
+- parsing: repo evidence exists where audits found it; live state requires external readback
+- questions: live state requires database readback
+- scores/progress: live state requires database readback
+- profiles: live state requires database readback
+- remaining backfill: jobs 64-74 production apply remains gated by external readback/backfill approval
 
-## Implemented Safe Changes
+ASSETS / DRIVE
+- logo: repo match count 0
+- portrait: repo evidence scan only
+- hero video/Vimeo: access token/readback remains gated
+- teaching stills: repo evidence scan only
+- labels: repo evidence scan only
+- contact sheets: generated location exists in repo summary when asset truth runs
+- Drive writes: not performed by return-packet generation
+- repo usage: sample asset candidates are listed below
+- deployed proof: not verified by current local state
+- asset sample: docs/imports/2026-06-12-onetimeonetime-streaming-app-export.md
+- asset sample: ops/playwright-smokes/2026-06-10T13-58-10-415Z-one-time-meeting-student-nav-local/content-meeting-drops-desktop.png
+- asset sample: ops/playwright-smokes/2026-06-10T13-58-10-415Z-one-time-meeting-student-nav-local/mobile-full-nav.png
+- asset sample: ops/playwright-smokes/2026-06-10T13-58-10-415Z-one-time-meeting-student-nav-local/student-workspace-desktop.png
+- asset sample: ops/playwright-smokes/2026-06-10T13-58-10-415Z-one-time-meeting-student-nav-local/students-list-desktop.png
+- asset sample: ops/playwright-smokes/2026-06-10T14-01-30-743Z-one-time-meeting-student-nav-local/content-meeting-drops-desktop.png
+- asset sample: ops/playwright-smokes/2026-06-10T14-01-30-743Z-one-time-meeting-student-nav-local/mobile-full-nav.png
+- asset sample: ops/playwright-smokes/2026-06-10T14-01-30-743Z-one-time-meeting-student-nav-local/student-workspace-desktop.png
 
-- Agent fleet auto-deploy now defaults off unless `AGENT_FLEET_AUTO_DEPLOY=1`.
-- `.env.example` documents `AGENT_FLEET_AUTO_DEPLOY=0`.
-- Added deterministic truth/report commands for system, worktree, source, asset, Drive intake, UI source coverage, and GitHub intake dry-runs.
-- Added GitHub issue intake dry-runs for Issues #7 and #8 with redacted source envelopes and no external writes.
-- Added execution-run source mapping for the current prompt without committing private prompt contents.
+UI / STUDIO
+- routes: /operations(3/32), /one-time(18/10), /provider.html(0/1), /parent.html(0/0), /student.html(0/0), /one-time-classroom.html(0/0), /one-time-email-review.html(0/0)
+- missing requested changes: live proof gaps remain where deployment/readback is not verified
+- real vs mock: local/static coverage distinguishes repo evidence from live proof
+- screenshots: 979 repo screenshot files scanned
+- deployed proof: not verified by current local state
+- Service Provider Studio: present in repo evidence and covered by local smoke tests; live deployed proof remains gated
 
-## Evidence Files
+DECISIONS FOR SHLOIMIE
+- DECISION-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / recommendation: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate. / action: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
 
-- `ops/system-audits/2026-06-23T10-46-07-456Z-system-truth.md`
-- `ops/worktree-reconciliation/2026-06-23-worktree-cleanup-plan.md`
-- `ops/source-truth/2026-06-23-source-truth.md`
-- `ops/source-truth/2026-06-23T10-45-18-453Z-github-issue-7-dry-run.md`
-- `ops/source-truth/2026-06-23T10-45-18-359Z-github-issue-8-dry-run.md`
-- `ops/drive-audits/2026-06-23-class-intake-complete-truth.md`
-- `ops/drive-audits/2026-06-23-guarded-progress-question-backfill.md`
-- `ops/audits/2026-06-23-one-time-asset-drive-and-render-truth.md`
-- `ops/ui-audits/2026-06-23-ui-source-coverage.md`
+MY TASKS
+- MYTASK-REQ-20260623-209 / https://github.com/shloimie-beep/bnei-neviim-academy/pull/12 / Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
 
-## External-Readback Boundary
+AGENT WORK
+- REQ-20260623-210 / production_closeout_gate_slice_complete / codex/issue-8-complete-system-reconciliation / 2d8058fec458 / Continue approved production database apply/readback through the guarded Postgres operator CLI, then use the production closeout gate from a deploy-safe worktree before deploy and live verification.
 
-- Railway status was readable, but the CLI is not linked to a service in this worktree.
-- Readiness reporting records only configured/missing state and source labels, never secret values.
-- Live database readback, Drive source-ID proof, and guarded production backfill remain blocked until explicitly approved.
-- No production DB mutation, Railway deploy, external send, Vimeo upload, real charge, Git history rewrite, or worktree deletion was performed.
+TESTS / DEPLOYMENT
+- tests: - `npm test`:
+- Playwright: not run by return-packet generation
+- PRs: https://github.com/shloimie-beep/bnei-neviim-academy/pull/12
+- migrations: additive/local verified where implemented; production apply remains gated
+- deployment: not performed by this packet generation
+- live smokes: not performed by this packet generation
 
-## Drive Metadata Signal
+WHAT IS STILL NOT DONE
+- REQ-20260623-209 / Live database readback/backfill and Railway service metadata require approved external gates and configured read-only credentials/service selection; the redacted local gate reports DB/Railway/Drive configured state is currently missing in this environment. / owner: Operator / next: Configure/provide the specific read-only/live gate for DATABASE_URL, Railway service metadata, and Drive file/folder targets, then approve the external readback gate.
+- REQ-20260623-210 / Continue approved production database apply/readback through the guarded Postgres operator CLI, then use the production closeout gate from a deploy-safe worktree before deploy and live verification. / owner: Codex / next: Continue approved production database apply/readback through the guarded Postgres operator CLI, then use the production closeout gate from a deploy-safe worktree before deploy and live verification.
 
-Read-only Drive metadata searches found One Time/BNA exported markdown and asset audit artifacts, but the public repo packet omits Drive IDs and URLs. These results prove likely Drive-side source material exists; they do not prove live database state or deployed rendering.
+NEXT AUTOMATIC ACTION
+- package: REQ-20260623-210
+- command: npm run bna:return-packet -- --json, then continue the next unblocked canonical hardening slice
 
-## Next Action
+CHATGPT RETURN PACKET
+- local path: .runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md
+- redacted repo path: ops/return-packets/2026-06-23-complete-system-reality-redacted.md
+- copy-ready packet follows in this file
 
-Review and merge the draft PR as a safe audit/containment batch, then run the follow-on implementation branch for canonical persistence, source adapters, lifecycle/queue UI, auto-resume, watchdogs, synthetic E2E, deploy, and live smoke verification.
+VERDICT
+PARTIAL - UNBLOCKED IMPLEMENTATION REMAINS

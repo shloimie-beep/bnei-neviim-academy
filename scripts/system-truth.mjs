@@ -213,11 +213,25 @@ function readJsonSafe(filePath) {
   }
 }
 
-async function sourceReport() {
+function readTextSafe(filePath) {
+  try {
+    return fs.readFileSync(filePath, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
+function currentRunState() {
   const latestPath = path.join(repoRoot, 'ops', 'execution-runs', 'latest.json');
   const latest = readJsonSafe(latestPath);
   const runDir = latest?.path ? path.resolve(repoRoot, latest.path) : null;
   const requirementsDoc = runDir ? readJsonSafe(path.join(runDir, 'requirements.json')) : null;
+  const runDoc = runDir ? readJsonSafe(path.join(runDir, 'run.json')) : null;
+  return { latest, runDir, requirementsDoc, runDoc };
+}
+
+async function sourceReport() {
+  const { latest, runDir, requirementsDoc } = currentRunState();
   const { validateExecutionRun } = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'bna-execution-run.mjs')).href);
   const validation = validateExecutionRun(repoRoot);
   const rawInputDir = path.join(repoRoot, 'raw-input');
@@ -448,9 +462,311 @@ function requiredScriptsStatus() {
     'asset:truth',
     'drive:intake:truth',
     'ui:source-coverage',
-    'intake:github'
+    'intake:github',
+    'bna:return-packet'
   ];
   return Object.fromEntries(required.map((name) => [name, Boolean(scripts[name])]));
+}
+
+function countRequirementsByStatus(requirements = []) {
+  const counts = {};
+  for (const requirement of requirements) {
+    const status = requirement.status || 'unknown';
+    counts[status] = (counts[status] || 0) + 1;
+  }
+  return counts;
+}
+
+function summarizeRequirements(requirements = []) {
+  return requirements.map((requirement) => ({
+    id: requirement.id,
+    title: requirement.title,
+    status: requirement.status,
+    implementation_status: requirement.implementation_status,
+    batch_id: requirement.batch_id,
+    category: requirement.category,
+    deployment_required: Boolean(requirement.deployment_required),
+    can_continue_without_operator: Boolean(requirement.can_continue_without_operator),
+    blocker: requirement.blocker || '',
+    blocker_owner: requirement.blocker_owner || '',
+    blocker_next_action: requirement.blocker_next_action || '',
+    next_action: requirement.next_action || '',
+    evidence: Array.isArray(requirement.evidence) ? requirement.evidence.slice(0, 12) : [],
+    verification_count: Array.isArray(requirement.verification) ? requirement.verification.length : 0
+  }));
+}
+
+function summarizeLatestTests(runDir) {
+  const testResults = runDir ? readTextSafe(path.join(runDir, 'TEST-RESULTS.md')) : '';
+  const lines = testResults.split(/\r?\n/).filter(Boolean);
+  return {
+    path: runDir ? rel(path.join(runDir, 'TEST-RESULTS.md')) : '',
+    latest_lines: lines.slice(0, 24),
+    npm_test: lines.find((line) => /npm test/i.test(line)) || '',
+    source_coverage: lines.find((line) => /bna:run:source-coverage/i.test(line)) || '',
+    validation: lines.find((line) => /bna:run:validate/i.test(line)) || '',
+    secret_audit: lines.find((line) => /audit-secrets/i.test(line)) || ''
+  };
+}
+
+async function returnPacketReport() {
+  const { latest, runDir, requirementsDoc, runDoc } = currentRunState();
+  const repo = gitIdentity(repoRoot);
+  const source = await sourceReport();
+  const worktree = worktreeReport();
+  const drive = driveIntakeReport();
+  const asset = assetReport();
+  const ui = uiSourceCoverageReport();
+  const requirements = Array.isArray(requirementsDoc?.requirements) ? requirementsDoc.requirements : [];
+  const summarizedRequirements = summarizeRequirements(requirements);
+  const blocked = summarizedRequirements.filter((item) => item.status === 'blocked' || item.can_continue_without_operator === false);
+  const inProgress = summarizedRequirements.filter((item) => item.status === 'in_progress');
+  const dirty = repo.dirty || { total: 0, sample: [] };
+  const privatePacketPath = '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md';
+  const privatePacketJsonPath = '.runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json';
+  const redactedRepoPath = `ops/return-packets/${dateStamp()}-complete-system-reality-redacted.md`;
+  return {
+    generated_at: nowIso(),
+    privacy_classification: 'internal_local_only',
+    redacted_repo_classification: 'redacted_repo_safe',
+    packet_contract: 'chatgpt-return-packet-v1',
+    private_packet: {
+      markdown_path: privatePacketPath,
+      json_path: privatePacketJsonPath,
+      gitignored: true
+    },
+    redacted_repo_summary: {
+      markdown_path: redactedRepoPath,
+      includes_private_raw_source: false,
+      includes_secret_values: false
+    },
+    system_truth: {
+      master: repo.origin_master,
+      branch: repo.branch,
+      head: repo.head,
+      upstream: repo.upstream || '',
+      pr: runDoc?.git_refs?.pr_url || '',
+      active_run: latest?.path || '',
+      deployed_commit: 'not verified by current local state',
+      deployment_id: 'not verified by current local state',
+      dirty_total: dirty.total,
+      dirty_sample: dirty.sample || []
+    },
+    source_coverage: source,
+    worktrees: worktree.worktrees,
+    ramble_protocol: {
+      canonical_source: requirementsDoc?.sources?.[0]?.source_path || '',
+      parent_persistence: 'canonical packet and local/Postgres adapters implemented; live DB persistence remains gated',
+      source_statements: requirementsDoc?.source_statements?.length || 0,
+      modes: ['brainstorm', 'capture', 'goal'],
+      adapters: ['github', 'chatgpt', 'codex/manual', 'operations', 'drive/transcript planned through canonical service'],
+      github_intake: 'dry-run and canonical packet preview implemented; production persistence gated',
+      decisions: 'canonical Decision lane tested locally through parser/projection/auto-resume contracts',
+      my_tasks: 'human work stays separate from Agent Work in canonical parser/projection contracts',
+      agent_work: 'machine work packages tracked in execution-run requirements',
+      auto_resume: 'local prompt auto-resume planner and watchdog contract implemented',
+      session_resume: 'execution run, next-session file, PR comments, and return-packet generator carry continuation state'
+    },
+    goals: {
+      canonical_registry: latest?.path || '',
+      counts_by_status: countRequirementsByStatus(requirements),
+      requirements: summarizedRequirements,
+      blockers: blocked.map((item) => ({
+        id: item.id,
+        owner: item.blocker_owner || 'Operator',
+        reason: item.blocker || item.next_action,
+        next_action: item.blocker_next_action || item.next_action
+      })),
+      progress: inProgress.map((item) => ({
+        id: item.id,
+        status: item.implementation_status,
+        next_action: item.next_action
+      }))
+    },
+    class_drive_intake: {
+      jobs: drive.jobs,
+      blockers: drive.blockers,
+      live_database_verified: false,
+      safe_apply_performed: false,
+      remaining_backfill: 'jobs 64-74 production apply remains gated by external readback/backfill approval'
+    },
+    assets_drive: {
+      known_targets: asset.known_targets,
+      match_count: asset.matches.length,
+      sample_matches: asset.matches.slice(0, 20),
+      drive_writes: 'not performed by return-packet generation',
+      deployed_proof: 'not verified by current local state'
+    },
+    ui_studio: {
+      routes: ui.routes,
+      totals: ui.totals,
+      service_provider_studio: 'present in repo evidence and covered by local smoke tests; live deployed proof remains gated',
+      deployed_proof: 'not verified by current local state'
+    },
+    decisions_for_shloimie: blocked.map((item) => ({
+      id: `DECISION-${item.id}`,
+      deep_link: runDoc?.git_refs?.pr_url || '',
+      recommendation: item.blocker_next_action || item.next_action,
+      exact_action: item.blocker_next_action || item.next_action
+    })),
+    my_tasks: blocked.map((item) => ({
+      id: `MYTASK-${item.id}`,
+      deep_link: runDoc?.git_refs?.pr_url || '',
+      action: item.blocker_next_action || item.next_action
+    })),
+    agent_work: inProgress.map((item) => ({
+      package: item.id,
+      phase: item.implementation_status,
+      branch: repo.branch,
+      commit: repo.head,
+      next_step: item.next_action
+    })),
+    tests_deployment: {
+      latest_tests: summarizeLatestTests(runDir),
+      pr: runDoc?.git_refs?.pr_url || '',
+      migrations: 'additive/local verified where implemented; production apply remains gated',
+      deployment: 'not performed by this packet generation',
+      live_smokes: 'not performed by this packet generation'
+    },
+    what_is_still_not_done: summarizedRequirements
+      .filter((item) => !['done', 'superseded'].includes(item.status))
+      .map((item) => ({
+        item: item.id,
+        reason: item.blocker || item.next_action || item.implementation_status,
+        owner: item.blocker_owner || item.owner || 'Codex',
+        next_action: item.blocker_next_action || item.next_action
+      })),
+    next_automatic_action: {
+      package: inProgress[0]?.id || 'REQ-20260623-210',
+      command: 'npm run bna:return-packet -- --json, then continue the next unblocked canonical hardening slice'
+    },
+    verdict: 'PARTIAL - UNBLOCKED IMPLEMENTATION REMAINS'
+  };
+}
+
+function redactLocalPath(value, redacted) {
+  if (!redacted) return value;
+  if (!value) return value;
+  return String(value).replace(/[A-Z]:[\\/]+Users[\\/]+[^\\/]+/gi, '[local-user]');
+}
+
+function renderReturnPacketMarkdown(report, options = {}) {
+  const redacted = Boolean(options.redacted);
+  const pathLabel = (value) => redactLocalPath(value || '', redacted);
+  const worktrees = Array.isArray(report.worktrees) ? report.worktrees : [];
+  const requirements = Array.isArray(report.goals?.requirements) ? report.goals.requirements : [];
+  const blockers = Array.isArray(report.goals?.blockers) ? report.goals.blockers : [];
+  const agentWork = Array.isArray(report.agent_work) ? report.agent_work : [];
+  const decisions = Array.isArray(report.decisions_for_shloimie) ? report.decisions_for_shloimie : [];
+  const myTasks = Array.isArray(report.my_tasks) ? report.my_tasks : [];
+  const openItems = Array.isArray(report.what_is_still_not_done) ? report.what_is_still_not_done : [];
+  const routeRows = Array.isArray(report.ui_studio?.routes) ? report.ui_studio.routes : [];
+  const assetSamples = Array.isArray(report.assets_drive?.sample_matches) ? report.assets_drive.sample_matches : [];
+  const jobRows = report.class_drive_intake?.jobs || {};
+  const latestTests = report.tests_deployment?.latest_tests || {};
+  const lines = [
+    'CHATGPT RETURN PACKET',
+    `Generated: ${report.generated_at}`,
+    `Privacy: ${redacted ? report.redacted_repo_classification : report.privacy_classification}`,
+    '',
+    'SYSTEM TRUTH',
+    `- master: ${report.system_truth.master || 'unknown'}`,
+    `- deployed commit/deployment: ${report.system_truth.deployed_commit || 'unknown'} / ${report.system_truth.deployment_id || 'unknown'}`,
+    `- branch/PR: ${report.system_truth.branch || 'unknown'} / ${report.system_truth.pr || 'none'}`,
+    `- active run: ${report.system_truth.active_run || 'unknown'}`,
+    `- source coverage: errors ${report.source_coverage?.validation?.errors?.length ?? 'unknown'}, unmapped ${report.source_coverage?.source_statements?.unmapped_executable ?? 'unknown'}`,
+    `- local-only work: dirty files ${report.system_truth.dirty_total ?? 0}`,
+    '- unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet',
+    '- merged-not-deployed: deployment readback not verified in current local state',
+    '- deployed-not-verified: live proof not verified in current local state',
+    '',
+    'WORKTREES',
+    ...(worktrees.length ? worktrees.map((wt) => `- ${pathLabel(wt.path)} / ${wt.branch} / ${String(wt.head || '').slice(0, 12)} / ${wt.state} / recovery: ${wt.recovery_action}`) : ['- none recorded']),
+    '',
+    'RAMBLE PROTOCOL',
+    `- canonical source: ${report.ramble_protocol.canonical_source || 'unknown'}`,
+    `- parent persistence: ${report.ramble_protocol.parent_persistence}`,
+    `- source statements: ${report.ramble_protocol.source_statements}`,
+    `- modes: ${report.ramble_protocol.modes.join(', ')}`,
+    `- adapters: ${report.ramble_protocol.adapters.join(', ')}`,
+    `- GitHub intake: ${report.ramble_protocol.github_intake}`,
+    `- Decisions: ${report.ramble_protocol.decisions}`,
+    `- My Tasks: ${report.ramble_protocol.my_tasks}`,
+    `- Agent Work: ${report.ramble_protocol.agent_work}`,
+    `- auto-resume: ${report.ramble_protocol.auto_resume}`,
+    `- session resume: ${report.ramble_protocol.session_resume}`,
+    '',
+    'GOALS',
+    `- canonical registry: ${report.goals.canonical_registry || 'unknown'}`,
+    `- active goals: ${JSON.stringify(report.goals.counts_by_status)}`,
+    `- progress: ${requirements.filter((item) => item.status === 'done').length} done, ${requirements.filter((item) => item.status === 'in_progress').length} in progress`,
+    `- blockers: ${blockers.map((item) => `${item.id} ${item.owner}`).join('; ') || 'none'}`,
+    '- evidence: execution-run requirements, test results, PR comments, and generated truth reports',
+    '',
+    'CLASS / DRIVE INTAKE',
+    `- jobs 75-79: ${['75', '76', '77', '78', '79'].map((id) => `${id}:${jobRows[id]?.repo_evidence_found ? 'repo-evidence' : 'missing-repo-evidence'}`).join(', ')}`,
+    `- jobs 64-74: ${Array.from({ length: 11 }, (_, index) => String(64 + index)).map((id) => `${id}:${jobRows[id]?.repo_evidence_found ? 'repo-evidence' : 'missing-repo-evidence'}`).join(', ')}`,
+    '- transcription: live state requires external readback',
+    '- parsing: repo evidence exists where audits found it; live state requires external readback',
+    '- questions: live state requires database readback',
+    '- scores/progress: live state requires database readback',
+    '- profiles: live state requires database readback',
+    `- remaining backfill: ${report.class_drive_intake.remaining_backfill}`,
+    '',
+    'ASSETS / DRIVE',
+    `- logo: repo match count ${assetSamples.filter((item) => /logo/i.test(item.path)).length}`,
+    '- portrait: repo evidence scan only',
+    '- hero video/Vimeo: access token/readback remains gated',
+    '- teaching stills: repo evidence scan only',
+    '- labels: repo evidence scan only',
+    '- contact sheets: generated location exists in repo summary when asset truth runs',
+    `- Drive writes: ${report.assets_drive.drive_writes}`,
+    '- repo usage: sample asset candidates are listed below',
+    `- deployed proof: ${report.assets_drive.deployed_proof}`,
+    ...assetSamples.slice(0, 8).map((item) => `- asset sample: ${item.path}`),
+    '',
+    'UI / STUDIO',
+    `- routes: ${routeRows.map((row) => `${row.route}(${row.registry_rows}/${row.action_rows})`).join(', ')}`,
+    '- missing requested changes: live proof gaps remain where deployment/readback is not verified',
+    '- real vs mock: local/static coverage distinguishes repo evidence from live proof',
+    `- screenshots: ${report.ui_studio.totals?.screenshot_files ?? 0} repo screenshot files scanned`,
+    `- deployed proof: ${report.ui_studio.deployed_proof}`,
+    `- Service Provider Studio: ${report.ui_studio.service_provider_studio}`,
+    '',
+    'DECISIONS FOR SHLOIMIE',
+    ...(decisions.length ? decisions.map((decision) => `- ${decision.id} / ${decision.deep_link || 'no link'} / recommendation: ${decision.recommendation} / action: ${decision.exact_action}`) : ['- none']),
+    '',
+    'MY TASKS',
+    ...(myTasks.length ? myTasks.map((task) => `- ${task.id} / ${task.deep_link || 'no link'} / ${task.action}`) : ['- none']),
+    '',
+    'AGENT WORK',
+    ...(agentWork.length ? agentWork.map((item) => `- ${item.package} / ${item.phase} / ${item.branch} / ${String(item.commit || '').slice(0, 12)} / ${item.next_step}`) : ['- none']),
+    '',
+    'TESTS / DEPLOYMENT',
+    `- tests: ${latestTests.npm_test || 'see execution-run TEST-RESULTS.md'}`,
+    '- Playwright: not run by return-packet generation',
+    `- PRs: ${report.tests_deployment.pr || 'none'}`,
+    `- migrations: ${report.tests_deployment.migrations}`,
+    `- deployment: ${report.tests_deployment.deployment}`,
+    `- live smokes: ${report.tests_deployment.live_smokes}`,
+    '',
+    'WHAT IS STILL NOT DONE',
+    ...(openItems.length ? openItems.map((item) => `- ${item.item} / ${item.reason} / owner: ${item.owner} / next: ${item.next_action}`) : ['- none']),
+    '',
+    'NEXT AUTOMATIC ACTION',
+    `- package: ${report.next_automatic_action.package}`,
+    `- command: ${report.next_automatic_action.command}`,
+    '',
+    'CHATGPT RETURN PACKET',
+    `- local path: ${report.private_packet.markdown_path}`,
+    `- redacted repo path: ${report.redacted_repo_summary.markdown_path}`,
+    '- copy-ready packet follows in this file',
+    '',
+    'VERDICT',
+    report.verdict,
+    ''
+  ];
+  return lines.join('\n');
 }
 
 function renderMarkdown(title, report) {
@@ -515,6 +831,23 @@ function renderMarkdown(title, report) {
 
 function writeReport(mode, report) {
   const stamp = slugStamp();
+  if (mode === 'return-packet') {
+    const runtimeDir = path.join(repoRoot, '.runtime', 'system-reality-audit');
+    const repoDir = path.join(repoRoot, 'ops', 'return-packets');
+    ensureDir(runtimeDir);
+    ensureDir(repoDir);
+    const privateMd = path.join(runtimeDir, 'CHATGPT-RETURN-PACKET.md');
+    const privateJson = path.join(runtimeDir, 'CHATGPT-RETURN-PACKET.json');
+    const redactedMd = path.join(repoDir, `${dateStamp()}-complete-system-reality-redacted.md`);
+    fs.writeFileSync(privateMd, renderReturnPacketMarkdown(report));
+    fs.writeFileSync(privateJson, `${JSON.stringify(report, null, 2)}\n`);
+    fs.writeFileSync(redactedMd, renderReturnPacketMarkdown(report, { redacted: true }));
+    return {
+      private_md: rel(privateMd),
+      private_json: rel(privateJson),
+      redacted_md: rel(redactedMd)
+    };
+  }
   if (mode === 'worktree') {
     const dir = path.join(repoRoot, 'ops', 'worktree-reconciliation');
     ensureDir(dir);
@@ -575,6 +908,7 @@ export async function buildReport(mode = 'system') {
   if (mode === 'drive-intake') return driveIntakeReport();
   if (mode === 'ui') return uiSourceCoverageReport();
   if (mode === 'readiness') return readinessReport();
+  if (mode === 'return-packet') return returnPacketReport();
   return systemReport();
 }
 
@@ -586,7 +920,8 @@ function parseArgs(argv) {
     asset: 'asset',
     'drive-intake': 'drive-intake',
     ui: 'ui',
-    readiness: 'readiness'
+    readiness: 'readiness',
+    'return-packet': 'return-packet'
   };
   const args = { mode: 'system', json: false, noWrite: false };
   for (const arg of argv) {

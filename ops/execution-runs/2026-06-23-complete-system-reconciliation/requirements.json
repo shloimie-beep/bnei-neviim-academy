@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T16:01:20+03:00",
+  "updated_at": "2026-06-23T16:13:43+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -754,31 +754,40 @@
         "REQ-20260623-208"
       ],
       "status": "done",
-      "implementation_status": "private_and_redacted_return_packets_generated",
+      "implementation_status": "return_packet_generator_verified",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Use the packet to resume follow-on implementation work.",
+      "next_action": "Regenerate the packet with npm run bna:return-packet -- --json before private handoff or final response.",
       "acceptance_criteria": [
         "Private return packet exists outside Git",
         "Redacted repo summary exists",
-        "Final response includes copy-ready packet"
+        "Final response includes copy-ready packet",
+        "Packet can be regenerated from current run evidence"
       ],
       "evidence": [
         "ops/return-packets/2026-06-23-complete-system-reality-redacted.md",
         ".runtime/system-reality-audit/CHATGPT-RETURN-PACKET.md",
-        ".runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json"
+        ".runtime/system-reality-audit/CHATGPT-RETURN-PACKET.json",
+        "scripts/system-truth.mjs",
+        "tests/system-truth-scripts.test.js",
+        "package.json"
       ],
       "verification": [
-        "Redacted repo packet created: PASS",
-        "Private local packet created outside committed tree: PASS"
+        "node --check scripts/system-truth.mjs: PASS",
+        "node --test tests/system-truth-scripts.test.js: PASS, 4/4",
+        "node scripts/system-truth.mjs return-packet --json: PASS, generated ignored private packet and redacted repo summary",
+        "Tracked redacted packet full-home-path leakage check: PASS"
       ],
       "implementation_files": [
+        "package.json",
+        "scripts/system-truth.mjs",
+        "tests/system-truth-scripts.test.js",
         "ops/return-packets/2026-06-23-complete-system-reality-redacted.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-23T13:56:00+03:00",
-      "expected_result": "Private return packet exists outside Git; Redacted repo summary exists; Final response includes copy-ready packet"
+      "updated_at": "2026-06-23T16:13:43+03:00",
+      "expected_result": "Private return packet exists outside Git; Redacted repo summary exists; Final response includes copy-ready packet; Packet can be regenerated from current run evidence"
     }
   ]
 }
