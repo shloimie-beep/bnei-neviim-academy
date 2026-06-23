@@ -54,6 +54,16 @@ Latest integration-readiness slice:
   summary and blocks live/final closeout when integration readiness is
   incomplete.
 
+Latest external-readback closeout slice:
+
+- The external readback gate now exports the sanitized scope/count summary used
+  by the return packet.
+- The production closeout gate reports database, Railway, and Drive readiness
+  through that sanitized summary and blocks live/final closeout when any of
+  those scopes is not ready.
+- The release-gate next-command plan now includes the guarded external readback
+  and backfill gate commands before deploy/live closeout commands.
+
 ## Implementation Evidence
 
 - `server.js`

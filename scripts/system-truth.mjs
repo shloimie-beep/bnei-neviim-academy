@@ -5,7 +5,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { buildExternalReadbackGateReport } from './bna-external-readback-gate.mjs';
+import { buildExternalReadbackGateReport, summarizeExternalReadbackGateReport } from './bna-external-readback-gate.mjs';
 import { buildIntegrationReadinessSummary, collectIntegrationReadinessFields } from './lib/integration-readiness.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -591,44 +591,6 @@ function validatedAgentWorkCommit(repo = {}, runDoc = {}) {
   return validatedHead || repo.head || '';
 }
 
-function summarizeExternalGate(report = {}) {
-  const readiness = Object.entries(report.readiness || {}).map(([scope, state]) => {
-    const secrets = Array.isArray(state.secrets) ? state.secrets : [];
-    const config = Array.isArray(state.config) ? state.config : [];
-    return {
-      scope,
-      ready: Boolean(state.ready),
-      secrets_configured: secrets.filter((item) => item.configured).length,
-      secrets_required: secrets.length,
-      config_configured: config.filter((item) => item.configured).length,
-      config_required: config.length
-    };
-  });
-  const approvalGates = report.approval_gates || {};
-  return {
-    ok: Boolean(report.ok),
-    mode: report.mode || 'unknown',
-    scopes: readiness,
-    external_read_performed: Boolean(report.external_read_performed),
-    production_mutation_performed: Boolean(report.production_mutation_performed),
-    safe_apply_performed: Boolean(report.safe_apply_performed),
-    deploy_performed: Boolean(report.deploy_performed),
-    secrets_redacted: report.secrets_redacted !== false,
-    blockers: Array.isArray(report.blockers) ? report.blockers : [],
-    approval_gates: {
-      readback: {
-        requested: Boolean(approvalGates.readback?.requested),
-        approved: Boolean(approvalGates.readback?.approved)
-      },
-      backfill_apply: {
-        requested: Boolean(approvalGates.backfill_apply?.requested),
-        approved: Boolean(approvalGates.backfill_apply?.approved)
-      }
-    },
-    next_command_plan: Array.isArray(report.next_command_plan) ? report.next_command_plan : []
-  };
-}
-
 function returnPacketResumeCommands(runDoc = {}) {
   const branch = runDoc?.git_refs?.pr_branch || runDoc?.git_refs?.expected_branch || 'codex/issue-8-complete-system-reconciliation';
   return [
@@ -669,7 +631,7 @@ async function returnPacketReport() {
   const asset = assetReport();
   const ui = uiSourceCoverageReport();
   const integrationReadiness = buildIntegrationReadinessSummary({ repoRoot });
-  const externalGates = summarizeExternalGate(buildExternalReadbackGateReport());
+  const externalGates = summarizeExternalReadbackGateReport(buildExternalReadbackGateReport());
   const requirements = Array.isArray(requirementsDoc?.requirements) ? requirementsDoc.requirements : [];
   const summarizedRequirements = summarizeRequirements(requirements);
   const blocked = summarizedRequirements.filter((item) => item.status === 'blocked' || item.can_continue_without_operator === false);

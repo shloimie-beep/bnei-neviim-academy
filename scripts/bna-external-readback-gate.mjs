@@ -238,6 +238,62 @@ export function buildExternalReadbackGateReport(options = {}, context = {}) {
   };
 }
 
+export function summarizeExternalReadbackGateReport(report = {}) {
+  const alreadySummarized = Array.isArray(report.scopes) &&
+    report.scopes.some((scope) => scope && typeof scope === 'object' && Object.hasOwn(scope, 'ready'));
+  const scopes = alreadySummarized
+    ? report.scopes.map((scope) => ({
+        scope: String(scope.scope || ''),
+        ready: Boolean(scope.ready),
+        secrets_configured: Number(scope.secrets_configured || 0),
+        secrets_required: Number(scope.secrets_required || 0),
+        config_configured: Number(scope.config_configured || 0),
+        config_required: Number(scope.config_required || 0),
+      }))
+    : Object.entries(report.readiness || {}).map(([scope, state]) => {
+        const secrets = Array.isArray(state.secrets) ? state.secrets : [];
+        const config = Array.isArray(state.config) ? state.config : [];
+        return {
+          scope,
+          ready: Boolean(state.ready),
+          secrets_configured: secrets.filter((item) => item.configured).length,
+          secrets_required: secrets.length,
+          config_configured: config.filter((item) => item.configured).length,
+          config_required: config.length,
+        };
+      });
+  const approvalGates = report.approval_gates || {};
+  return {
+    ok: Boolean(report.ok),
+    mode: report.mode || 'unknown',
+    scopes,
+    external_read_performed: Boolean(report.external_read_performed),
+    production_mutation_performed: Boolean(report.production_mutation_performed),
+    safe_apply_performed: Boolean(report.safe_apply_performed),
+    deploy_performed: Boolean(report.deploy_performed),
+    secrets_redacted: report.secrets_redacted !== false,
+    blockers: Array.isArray(report.blockers) ? report.blockers : [],
+    approval_gates: {
+      readback: {
+        requested: Boolean(approvalGates.readback?.requested),
+        approved: Boolean(approvalGates.readback?.approved),
+      },
+      backfill_apply: {
+        requested: Boolean(approvalGates.backfill_apply?.requested),
+        approved: Boolean(approvalGates.backfill_apply?.approved),
+      },
+    },
+    next_command_plan: Array.isArray(report.next_command_plan) ? report.next_command_plan : [],
+  };
+}
+
+export function externalReadbackGateBlockers(report = {}) {
+  const summary = summarizeExternalReadbackGateReport(report);
+  return summary.scopes
+    .filter((scope) => !scope.ready)
+    .map((scope) => `${scope.scope} external readback readiness is blocked.`);
+}
+
 function printReport(report, options = {}) {
   if (options.json) {
     process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);

@@ -4,6 +4,13 @@ import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import {
+  BACKFILL_CONFIRM_PHRASE,
+  buildExternalReadbackGateReport,
+  externalReadbackGateBlockers,
+  READBACK_CONFIRM_PHRASE,
+  summarizeExternalReadbackGateReport,
+} from './bna-external-readback-gate.mjs';
 import { buildIntegrationReadinessSummary, integrationReadinessBlockers } from './lib/integration-readiness.mjs';
 
 export const DEPLOY_CONFIRM_PHRASE = 'DEPLOY_BNA_PRODUCTION_CLOSEOUT';
@@ -240,6 +247,8 @@ function commandPlan() {
     'npm run watchdog:raw',
     'node scripts/audit-secrets.mjs',
     'git diff --check',
+    `npm run bna:external-readback-gate -- --readback --all --confirm-readback ${READBACK_CONFIRM_PHRASE}`,
+    `npm run bna:external-readback-gate -- --backfill-apply --database --job-range 64-74 --confirm-backfill ${BACKFILL_CONFIRM_PHRASE}`,
     `npm run bna:release-gate -- --deploy --confirm-deploy ${DEPLOY_CONFIRM_PHRASE}`,
     `npm run bna:release-gate -- --live-verify --confirm-live ${LIVE_VERIFY_CONFIRM_PHRASE}`,
   ];
@@ -256,6 +265,14 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
   const missingScripts = REQUIRED_PACKAGE_SCRIPTS.filter((name) => !scripts[name]);
   const integrationReadiness = context.integrationReadiness || buildIntegrationReadinessSummary({ repoRoot });
   const integrationBlockers = integrationReadinessBlockers(integrationReadiness);
+  const externalReadbackGate = summarizeExternalReadbackGateReport(
+    context.externalReadbackGate || buildExternalReadbackGateReport({}, {
+      repoRoot,
+      env,
+      loadSecretFn: context.loadSecretFn,
+    }),
+  );
+  const externalReadbackBlockers = externalReadbackGateBlockers(externalReadbackGate);
   const blockers = [];
 
   if (git.branch === '(detached)' && !options.allowDetached) {
@@ -295,12 +312,14 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
       blockers.push(`${LIVE_VERIFY_APPROVAL_ENV}=approved is required before live verification closeout.`);
     }
     blockers.push(...integrationBlockers);
+    blockers.push(...externalReadbackBlockers);
   }
   if (options.finalCloseout && run.open_requirements.length) {
     blockers.push(`Final closeout still has open requirements: ${run.open_requirements.map((item) => item.id).join(', ')}.`);
   }
   if (options.finalCloseout) {
     blockers.push(...integrationBlockers);
+    blockers.push(...externalReadbackBlockers);
   }
 
   return {
@@ -314,6 +333,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     blockers,
     git,
     run,
+    external_readback_gate: externalReadbackGate,
     integration_readiness: integrationReadiness,
     package_scripts: {
       required: REQUIRED_PACKAGE_SCRIPTS,

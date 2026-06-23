@@ -43,6 +43,27 @@ const readyIntegrationReadiness = integrationReadiness([
   { integration: 'rabbi_telegram', label: 'Rabbi Telegram worker', ready: true, fields: [], blockers: [] },
 ]);
 
+const readyExternalReadbackGate = {
+  ok: true,
+  mode: 'dry_run',
+  scopes: [
+    { scope: 'database', ready: true, secrets_configured: 1, secrets_required: 1, config_configured: 0, config_required: 0 },
+    { scope: 'railway', ready: true, secrets_configured: 1, secrets_required: 1, config_configured: 3, config_required: 6 },
+    { scope: 'drive', ready: true, secrets_configured: 1, secrets_required: 4, config_configured: 1, config_required: 4 },
+  ],
+  external_read_performed: false,
+  production_mutation_performed: false,
+  safe_apply_performed: false,
+  deploy_performed: false,
+  secrets_redacted: true,
+  blockers: [],
+  approval_gates: {
+    readback: { requested: false, approved: false },
+    backfill_apply: { requested: false, approved: false },
+  },
+  next_command_plan: [],
+};
+
 test('production closeout gate passes a clean pushed dry-run without external actions', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({
@@ -60,12 +81,20 @@ test('production closeout gate passes a clean pushed dry-run without external ac
   assert.equal(report.live_verification_performed, false);
   assert.equal(report.git.head_pushed, true);
   assert.equal(report.git.dirty.total, 0);
+  assert.equal(report.external_readback_gate.external_read_performed, false);
+  assert.equal(report.external_readback_gate.production_mutation_performed, false);
+  assert.equal(report.external_readback_gate.secrets_redacted, true);
+  assert.ok(report.external_readback_gate.scopes.some((scope) => scope.scope === 'database'));
+  assert.ok(report.external_readback_gate.scopes.some((scope) => scope.scope === 'railway'));
+  assert.ok(report.external_readback_gate.scopes.some((scope) => scope.scope === 'drive'));
   assert.equal(report.integration_readiness.variable_state_only, true);
   assert.equal(report.integration_readiness.secret_values_printed, false);
   assert.equal(report.integration_readiness.external_read_performed, false);
   assert.equal(report.package_scripts.missing.length, 0);
   assert.ok(report.run.open_requirements.some((requirement) => requirement.id === 'REQ-20260623-210'));
   assert.ok(report.next_command_plan.some((command) => /bna:release-gate/.test(command)));
+  assert.ok(report.next_command_plan.some((command) => /bna:external-readback-gate/.test(command)));
+  assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
   assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|DATABASE_URL=|RAILWAY_TOKEN=|secret-value/i);
 });
 
@@ -171,6 +200,7 @@ test('production closeout gate requires explicit deploy and live verification ap
     repoRoot,
     runCommand: fakeGitRunner(),
     integrationReadiness: readyIntegrationReadiness,
+    externalReadbackGate: readyExternalReadbackGate,
     env: {
       [mod.DEPLOY_APPROVAL_ENV]: 'approved',
       [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
@@ -195,6 +225,7 @@ test('production closeout gate blocks live verification on missing integration r
     env: {
       [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
     },
+    externalReadbackGate: readyExternalReadbackGate,
     integrationReadiness: integrationReadiness([
       {
         integration: 'vimeo',
@@ -213,4 +244,41 @@ test('production closeout gate blocks live verification on missing integration r
   assert.ok(report.blockers.some((blocker) => /Vimeo video\/member library readiness is blocked/i.test(blocker)));
   assert.match(JSON.stringify(report.integration_readiness), /VIMEO_ACCESS_TOKEN/);
   assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|sk_live_|sk_test_|postgres:\/\//);
+});
+
+test('production closeout gate blocks live verification on missing external readback readiness', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    liveVerify: true,
+    confirmLive: mod.LIVE_VERIFY_CONFIRM_PHRASE,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {
+      [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
+    },
+    integrationReadiness: readyIntegrationReadiness,
+    externalReadbackGate: {
+      ...readyExternalReadbackGate,
+      ok: false,
+      scopes: [
+        { scope: 'database', ready: true, secrets_configured: 1, secrets_required: 1, config_configured: 0, config_required: 0 },
+        { scope: 'railway', ready: false, secrets_configured: 0, secrets_required: 1, config_configured: 0, config_required: 6 },
+        { scope: 'drive', ready: false, secrets_configured: 0, secrets_required: 4, config_configured: 0, config_required: 4 },
+      ],
+      blockers: [
+        'railway readback gate is not ready; required configured state is missing.',
+        'drive readback gate is not ready; required configured state is missing.',
+      ],
+    },
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.live_verification_performed, false);
+  assert.ok(report.blockers.some((blocker) => /railway external readback readiness is blocked/i.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /drive external readback readiness is blocked/i.test(blocker)));
+  assert.equal(report.external_readback_gate.external_read_performed, false);
+  assert.equal(report.external_readback_gate.production_mutation_performed, false);
+  assert.doesNotMatch(JSON.stringify(report.external_readback_gate), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
 });
