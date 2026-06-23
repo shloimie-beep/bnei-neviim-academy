@@ -101,7 +101,7 @@ enough to request the separately approved production deploy/live-verification
 steps.`;
 }
 
-function defaultRunCommand(command, args = [], options = {}) {
+export function defaultRunCommand(command, args = [], options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd || DEFAULT_REPO_ROOT,
     env: options.env || process.env,
@@ -112,8 +112,8 @@ function defaultRunCommand(command, args = [], options = {}) {
   return {
     ok: result.status === 0 && !result.error,
     status: result.status,
-    stdout: String(result.stdout || '').trim(),
-    stderr: String(result.stderr || '').trim(),
+    stdout: String(result.stdout || ''),
+    stderr: String(result.stderr || ''),
     error: result.error ? String(result.error.message || result.error) : '',
   };
 }
@@ -132,6 +132,10 @@ function readJsonSafe(filePath) {
 
 function normalizeRepoPath(value) {
   return String(value || '').trim().replaceAll('\\', '/');
+}
+
+function trimmedOutput(value) {
+  return String(value || '').trim();
 }
 
 function parseStatusPorcelain(text = '') {
@@ -195,14 +199,15 @@ function loadPackageScripts(repoRoot) {
 }
 
 function loadGitState(repoRoot, expectedBranch, options, runCommand) {
-  const branch = runGit(['branch', '--show-current'], repoRoot, runCommand).stdout || '(detached)';
-  const head = runGit(['rev-parse', 'HEAD'], repoRoot, runCommand).stdout;
+  const branch = trimmedOutput(runGit(['branch', '--show-current'], repoRoot, runCommand).stdout) || '(detached)';
+  const head = trimmedOutput(runGit(['rev-parse', 'HEAD'], repoRoot, runCommand).stdout);
   const status = parseStatusPorcelain(runGit(['status', '--porcelain=v1'], repoRoot, runCommand).stdout);
   const remoteBranch = options.remoteBranch || expectedBranch || (branch !== '(detached)' ? branch : '');
   const remoteHeadResult = remoteBranch && remoteBranch !== '(detached)'
     ? runGit(['rev-parse', `origin/${remoteBranch}`], repoRoot, runCommand)
     : { ok: false, stdout: '' };
   const upstreamResult = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], repoRoot, runCommand);
+  const remoteHead = trimmedOutput(remoteHeadResult.stdout);
   const detached_allowed = Boolean(options.allowDetached && branch === '(detached)' && remoteBranch);
   return {
     branch,
@@ -211,10 +216,10 @@ function loadGitState(repoRoot, expectedBranch, options, runCommand) {
     detached_allowed,
     branch_matches_expected: expectedBranch ? (branch === expectedBranch || detached_allowed) : true,
     head,
-    upstream: upstreamResult.ok ? upstreamResult.stdout : '',
+    upstream: upstreamResult.ok ? trimmedOutput(upstreamResult.stdout) : '',
     remote_branch: remoteBranch ? `origin/${remoteBranch}` : '',
-    remote_head: remoteHeadResult.ok ? remoteHeadResult.stdout : '',
-    head_pushed: Boolean(head && remoteHeadResult.ok && remoteHeadResult.stdout === head),
+    remote_head: remoteHeadResult.ok ? remoteHead : '',
+    head_pushed: Boolean(head && remoteHeadResult.ok && remoteHead === head),
     dirty: status,
   };
 }

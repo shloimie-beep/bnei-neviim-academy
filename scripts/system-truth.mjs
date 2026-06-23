@@ -68,7 +68,7 @@ function rel(target, root = repoRoot) {
   return path.relative(root, target).replaceAll(path.sep, '/');
 }
 
-function run(command, args = [], options = {}) {
+export function run(command, args = [], options = {}) {
   const result = spawnSync(command, args, {
     cwd: options.cwd || repoRoot,
     env: options.env || process.env,
@@ -79,14 +79,18 @@ function run(command, args = [], options = {}) {
   return {
     ok: result.status === 0 && !result.error,
     status: result.status,
-    stdout: String(result.stdout || '').trim(),
-    stderr: String(result.stderr || '').trim(),
+    stdout: String(result.stdout || ''),
+    stderr: String(result.stderr || ''),
     error: result.error ? String(result.error.message || result.error) : ''
   };
 }
 
 function runGit(args, cwd = repoRoot) {
   return run('git', args, { cwd });
+}
+
+function trimmedOutput(value) {
+  return String(value || '').trim();
 }
 
 function parseStatusPorcelain(text = '') {
@@ -106,21 +110,22 @@ function parseStatusPorcelain(text = '') {
 
 function gitIdentity(root = repoRoot) {
   const status = runGit(['status', '--porcelain=v1'], root);
-  const branch = runGit(['branch', '--show-current'], root).stdout || '(detached)';
-  const head = runGit(['rev-parse', 'HEAD'], root).stdout;
+  const branch = trimmedOutput(runGit(['branch', '--show-current'], root).stdout) || '(detached)';
+  const head = trimmedOutput(runGit(['rev-parse', 'HEAD'], root).stdout);
   const upstream = runGit(['rev-parse', '--abbrev-ref', '--symbolic-full-name', '@{u}'], root);
-  const upstreamHead = upstream.ok ? runGit(['rev-parse', '@{u}'], root).stdout : '';
-  const originMaster = runGit(['rev-parse', 'origin/master'], root).stdout;
-  const remote = runGit(['remote', '-v'], root).stdout.split(/\r?\n/).filter(Boolean);
-  const aheadBehind = upstream.ok
-    ? runGit(['rev-list', '--left-right', '--count', `${upstream.stdout}...HEAD`], root).stdout
+  const upstreamName = upstream.ok ? trimmedOutput(upstream.stdout) : '';
+  const upstreamHead = upstreamName ? trimmedOutput(runGit(['rev-parse', '@{u}'], root).stdout) : '';
+  const originMaster = trimmedOutput(runGit(['rev-parse', 'origin/master'], root).stdout);
+  const remote = runGit(['remote', '-v'], root).stdout.split(/\r?\n/).map(trimmedOutput).filter(Boolean);
+  const aheadBehind = upstreamName
+    ? trimmedOutput(runGit(['rev-list', '--left-right', '--count', `${upstreamName}...HEAD`], root).stdout)
     : '';
   const [behind = '', ahead = ''] = aheadBehind.split(/\s+/);
   return {
     path: root,
     branch,
     head,
-    upstream: upstream.ok ? upstream.stdout : '',
+    upstream: upstreamName,
     upstream_head: upstreamHead,
     origin_master: originMaster,
     ahead: Number(ahead || 0),
@@ -429,8 +434,8 @@ function readinessReport() {
     railway_status: {
       attempted: true,
       ok: railwayStatus.ok,
-      stdout: railwayStatus.stdout,
-      stderr_first_line: railwayStatus.stderr.split(/\r?\n/)[0] || ''
+      stdout: trimmedOutput(railwayStatus.stdout),
+      stderr_first_line: railwayStatus.stderr.split(/\r?\n/).map(trimmedOutput).find(Boolean) || ''
     }
   };
 }

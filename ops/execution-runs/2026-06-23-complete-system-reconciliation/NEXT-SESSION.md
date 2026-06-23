@@ -24,6 +24,9 @@ Open requirements:
   production closeout gate now checks branch/run/dirty-state readiness before
   approved deploy/live verification, and it supports explicit clean detached
   release-candidate validation via `--allow-detached --remote-branch`.
+  Release-gate and return-packet dirty-state reporting now preserve Git
+  porcelain leading whitespace, so unstaged changes are not misreported as
+  staged.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
@@ -94,6 +97,9 @@ Completed implementation slice:
 - The ChatGPT return packet now uses the same executable-batch rules for
   `NEXT AUTOMATIC ACTION` and reports no automatic package while the remaining
   closeout work is approval-gated.
+- The production closeout gate and return-packet system-truth report now
+  preserve Git porcelain leading whitespace and report the current mixed
+  worktree as unstaged/untracked dirty state, not staged deploy-ready work.
 
 Follow-on implementation scope:
 

@@ -65,8 +65,23 @@ test('production closeout gate blocks dirty or unpushed deploy state', async () 
   assert.equal(report.ok, false);
   assert.equal(report.git.head_pushed, false);
   assert.equal(report.git.dirty.total, 2);
+  assert.equal(report.git.dirty.staged, 0);
+  assert.equal(report.git.dirty.modified, 1);
+  assert.equal(report.git.dirty.untracked, 1);
   assert.ok(report.blockers.some((blocker) => /not confirmed pushed/i.test(blocker)));
   assert.ok(report.blockers.some((blocker) => /dirty or untracked files/i.test(blocker)));
+});
+
+test('default command runner preserves leading Git porcelain whitespace', async () => {
+  const mod = await loadGate();
+  const result = mod.defaultRunCommand(process.execPath, [
+    '-e',
+    'process.stdout.write(" M first.js\\n?? second.js\\n")',
+  ], { cwd: repoRoot });
+
+  assert.equal(result.ok, true);
+  assert.match(result.stdout, /^ M first\.js/);
+  assert.match(result.stdout, /\?\? second\.js/);
 });
 
 test('production closeout gate supports clean detached release-candidate checkouts', async () => {

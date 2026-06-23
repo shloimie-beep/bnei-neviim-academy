@@ -2,8 +2,30 @@
 
 ## Passed
 
+- `node --check scripts/bna-production-closeout-gate.mjs`:
+  PASS.
+- `node --check scripts/system-truth.mjs`:
+  PASS.
+- `node --test tests/bna-production-closeout-gate.test.js`:
+  PASS, 6/6.
+- `npm --silent run bna:release-gate -- --json`:
+  PASS as a blocked dry-run gate; branch HEAD pushed, dirty-state reporting
+  shows `staged: 0`, and deploy remains blocked by mixed dirty/untracked
+  worktree state.
+- `node --test tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 11/11.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `npm test`:
+  PASS, 1101/1101.
 - `npm run bna:return-packet -- --json`:
-  PASS; regenerated private ignored packet and tracked redacted packet after queue/verdict hardening.
+  PASS; regenerated private ignored packet and tracked redacted packet after dirty-state reporting hardening.
+- Return packet JSON dirty-state sample check:
+  PASS; generated report keeps `status: " M"` for an unstaged modified file.
 - Redacted return packet `NEXT AUTOMATIC ACTION` check:
   PASS; reports `package: none` and `PARTIAL - APPROVAL-GATED WORK REMAINS`.
 - Redacted return packet full-home-path leakage check:

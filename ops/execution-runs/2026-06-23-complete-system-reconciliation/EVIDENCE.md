@@ -209,13 +209,18 @@ Production closeout gate slice verified:
   named pushed remote branch.
 - Detached checkout mode without the explicit release-candidate flags remains
   blocked.
+- The gate and return-packet system-truth report preserve leading whitespace in
+  Git porcelain output so unstaged dirty files are not reported as staged in
+  deploy-readiness JSON or handoff evidence.
 - The gate does not deploy, live-smoke, mutate a database, call Railway, or
   print secret values.
 - The real local gate run confirmed the current branch HEAD is pushed but
-  blocked deploy because this worktree still has mixed dirty/untracked files.
-- Focused release-gate tests passed, 5/5. Focused release-gate/system tests
-  passed, 9/9. Stale-evidence, action watchdog, and security watchdog checks
+  blocked deploy because this worktree still has mixed dirty/untracked files;
+  after the porcelain whitespace fix it reports `staged: 0`.
+- Focused release-gate tests passed, 6/6. Focused release-gate/system tests
+  passed, 11/11. Stale-evidence, action watchdog, and security watchdog checks
   also passed.
+- Full `npm test` passed, 1101/1101, after the dirty-state reporting fix.
 
 Approval-gated queue hardening slice verified:
 

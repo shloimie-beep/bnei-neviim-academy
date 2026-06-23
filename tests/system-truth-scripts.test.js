@@ -52,6 +52,18 @@ test('return packet report keeps private and redacted packet paths explicit', as
   }
 });
 
+test('system truth command runner preserves leading Git porcelain whitespace', async () => {
+  const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'system-truth.mjs')).href);
+  const result = mod.run(process.execPath, [
+    '-e',
+    'process.stdout.write(" M first.js\\n?? second.js\\n")',
+  ], { cwd: repoRoot });
+
+  assert.equal(result.ok, true);
+  assert.match(result.stdout, /^ M first\.js/);
+  assert.match(result.stdout, /\?\? second\.js/);
+});
+
 test('GitHub intake preview is idempotent and redacts secret-like text', async () => {
   assert.match(read('scripts/intake-github.mjs'), /intake-service/);
   assert.match(read('scripts/ramble-intake-contract.mjs'), /buildCanonicalIntakePacket/);

@@ -1,5 +1,37 @@
 # Status
 
+## 2026-06-23T16:51:01+03:00
+
+Status: running, with the twentieth dirty-state reporting hardening slice
+complete.
+
+Fixed the production closeout gate and system-truth/return-packet command
+runners so they preserve leading whitespace from Git porcelain output. The
+leading column is semantically important: ` M file` is unstaged, while
+`M  file` is staged. The real dry-run release gate now reports the current
+mixed worktree as `staged: 0`, with unstaged modified files and untracked
+watchdog artifacts correctly separated.
+
+Verified in this slice:
+
+- `node --check scripts/bna-production-closeout-gate.mjs` passed.
+- `node --check scripts/system-truth.mjs` passed.
+- `node --test tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`
+  passed, 11/11.
+- `npm --silent run bna:release-gate -- --json` remained a blocked dry-run
+  gate, confirmed pushed HEAD, reported `staged: 0`, and performed no deploy,
+  live verification, production mutation, external read, or secret print.
+- Full `npm test` passed, 1101/1101; source coverage remained at 0 unmapped
+  executable statements; stale-evidence detection and tracked secret audit
+  passed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T16:37:18+03:00
 
 Status: running, with the nineteenth approval-gated queue hardening slice
