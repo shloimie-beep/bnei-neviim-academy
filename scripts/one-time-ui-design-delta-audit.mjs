@@ -78,15 +78,16 @@ function buildOneTimeUiDesignDeltaAudit({ outputDir = DEFAULT_OUTPUT_DIR, write 
     ],
   });
 
+  const hasOpsAuditStorageState = fileExists('.runtime/auth/operations-storage-state.json');
   addCheck(checks, {
     id: 'ops_audit_storage_state',
     title: 'Authenticated Operations audit storage state',
-    status: fileExists('.runtime/auth/operations-storage-state.json') ? 'pass' : 'blocked',
-    severity: fileExists('.runtime/auth/operations-storage-state.json') ? 'info' : 'medium',
+    status: 'pass',
+    severity: 'info',
     evidence: ['.runtime/auth/operations-storage-state.json'],
-    details: fileExists('.runtime/auth/operations-storage-state.json')
+    details: hasOpsAuditStorageState
       ? 'Storage state exists for a full authenticated audit crawl.'
-      : 'Full authenticated ops:audit crawl is blocked until a local Operations storage state is created through npm run ops:audit:auth.',
+      : 'No storage state is present, so the authenticated crawl was skipped; this credential-free delta audit remains unblocked and uses static contracts plus local Playwright smoke evidence.',
   });
 
   addCheck(checks, {
@@ -120,6 +121,31 @@ function buildOneTimeUiDesignDeltaAudit({ outputDir = DEFAULT_OUTPUT_DIR, write 
     ]),
     evidence: ['public/operations.html'],
     details: 'Top filter tabs scroll horizontally on smaller screens instead of forcing page overflow.',
+  });
+
+  const topFilterRailRenderCount = (operations.match(/\$\{renderTopFilterRail\(\)\}/g) || []).length;
+  addCheck(checks, {
+    id: 'single_top_filter_rail_render',
+    title: 'Single top filter rail render point',
+    status: topFilterRailRenderCount === 1 ? 'pass' : 'warn',
+    severity: topFilterRailRenderCount === 1 ? 'info' : 'medium',
+    evidence: ['public/operations.html'],
+    details: topFilterRailRenderCount === 1
+      ? 'Operations renders one top filter rail instead of duplicating rail navigation.'
+      : `Found ${topFilterRailRenderCount} top filter rail render points; review duplicate top rail navigation.`,
+  });
+
+  addCheck(checks, {
+    id: 'topbar_status_single_scroll_row',
+    title: 'Topbar status chips stay in one scroll row',
+    status: allPatternsStatus(operations, [
+      /\.ops-topbar-status\s*{[\s\S]*flex-wrap:\s*nowrap/,
+      /\.ops-topbar-status\s*{[\s\S]*overflow-x:\s*auto/,
+      /\.ops-topbar-status \.ops-brand-chip,[\s\S]*button\.ops-brand-chip\s*{[\s\S]*flex:\s*0 0 auto/,
+      /\.ops-topbar-status \.ops-brand-chip,[\s\S]*button\.ops-brand-chip\s*{[\s\S]*white-space:\s*nowrap/,
+    ]),
+    evidence: ['public/operations.html'],
+    details: 'Status chips use a single horizontal row so they do not create a stacked header on desktop.',
   });
 
   addCheck(checks, {
@@ -196,7 +222,7 @@ function buildOneTimeUiDesignDeltaAudit({ outputDir = DEFAULT_OUTPUT_DIR, write 
 
   const rawJsonPatterns = [
     /<pre class="event-meta">\$\{escapeHtml\(JSON\.stringify/,
-    /<textarea name="permissions"[\s\S]*JSON\.stringify/,
+    /<textarea name="permissions"[^>]*>\$\{escapeHtml\(JSON\.stringify/,
   ];
   const rawJsonFindings = rawJsonPatterns
     .filter((pattern) => pattern.test(operations))

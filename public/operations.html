@@ -2399,6 +2399,37 @@
             font-size: 12px;
         }
 
+        .identity-review-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .identity-review-detail {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 8px;
+            padding: 8px 10px;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .identity-review-detail span {
+            display: block;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .identity-review-detail strong {
+            display: block;
+            margin-top: 4px;
+            color: #e2e8f0;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -6519,6 +6550,19 @@
             color: var(--bna-muted);
         }
 
+        .identity-review-detail {
+            border-color: var(--bna-line);
+            background: #ffffff;
+        }
+
+        .identity-review-detail span {
+            color: #9b7412;
+        }
+
+        .identity-review-detail strong {
+            color: var(--bna-blue-dark);
+        }
+
         .ops-sidebar-button {
             border-radius: 8px;
             color: #333333;
@@ -6937,6 +6981,8 @@
 
         .saas-topbar {
             min-height: 66px;
+            flex-wrap: wrap;
+            row-gap: 8px;
         }
 
         .breadcrumb-line {
@@ -6950,8 +6996,9 @@
         }
 
         .ops-topbar-center {
-            flex: 1 1 360px;
-            max-width: 560px;
+            order: 3;
+            flex: 0 0 100%;
+            max-width: 100%;
             min-width: 0;
         }
 
@@ -6980,6 +7027,7 @@
             font: 850 10.5px 'Inter', sans-serif;
             padding: 6px 8px;
             text-transform: none;
+            white-space: nowrap;
         }
 
         .ops-topbar-status .ops-brand-chip strong {
@@ -11802,7 +11850,54 @@
         function automationPermissionsSummary(permissions = {}) {
             const entries = Object.entries(permissions && typeof permissions === 'object' ? permissions : {});
             if (!entries.length) return 'No explicit permissions recorded.';
-            return entries.slice(0, 8).map(([key, value]) => `${escapeHtml(automationOptionLabel(key))}: ${escapeHtml(typeof value === 'string' ? value : JSON.stringify(value))}`).join('<br>');
+            return entries.slice(0, 8).map(([key, value]) => `${escapeHtml(automationOptionLabel(key))}: ${escapeHtml(automationPermissionValueLabel(value))}`).join('<br>');
+        }
+
+        function automationPermissionValueLabel(value) {
+            if (value === true) return 'Allowed';
+            if (value === false) return 'Blocked';
+            if (value == null || value === '') return 'Not specified';
+            if (Array.isArray(value)) return value.map(automationPermissionValueLabel).join(', ');
+            if (typeof value === 'object') {
+                return Object.entries(value)
+                    .slice(0, 6)
+                    .map(([key, item]) => `${automationOptionLabel(key)}: ${automationPermissionValueLabel(item)}`)
+                    .join('; ');
+            }
+            return String(value).replace(/_/g, ' ');
+        }
+
+        function automationPermissionsToEditableText(permissions = {}) {
+            const entries = Object.entries(permissions && typeof permissions === 'object' ? permissions : {});
+            if (!entries.length) return '';
+            return entries.map(([key, value]) => `${key}: ${automationPermissionValueLabel(value)}`).join('\n');
+        }
+
+        function parseAutomationPermissionScalar(value) {
+            const text = String(value || '').trim();
+            const normalized = text.toLowerCase();
+            if (['allowed', 'allow', 'yes', 'true', 'enabled'].includes(normalized)) return true;
+            if (['blocked', 'block', 'no', 'false', 'disabled'].includes(normalized)) return false;
+            if (text.includes(',') && !text.includes(':')) {
+                return text.split(',').map(item => item.trim()).filter(Boolean);
+            }
+            return text;
+        }
+
+        function parseAutomationPermissionsInput(rawValue) {
+            const raw = String(rawValue || '').trim();
+            if (!raw) return {};
+            if (raw.startsWith('{') || raw.startsWith('[')) return JSON.parse(raw);
+            return raw.split(/\r?\n/).reduce((permissions, line) => {
+                const trimmed = line.trim();
+                if (!trimmed) return permissions;
+                const match = trimmed.match(/^([^:=]+)\s*[:=]\s*(.*)$/);
+                if (!match) return permissions;
+                const key = match[1].trim();
+                if (!key) return permissions;
+                permissions[key] = parseAutomationPermissionScalar(match[2]);
+                return permissions;
+            }, {});
         }
 
         function renderAutomationSetupBlockers(automation) {
@@ -11885,8 +11980,9 @@
                     <label>Related Task IDs
                         <input name="related_task_ids" value="${escapeHtml((automation.related_task_ids || []).join(', '))}">
                     </label>
-                    <label>Permissions
-                        <textarea name="permissions" rows="4">${escapeHtml(JSON.stringify(automation.permissions || {}, null, 2))}</textarea>
+                    <label>Permission Rules
+                        <textarea name="permissions" rows="4" placeholder="send_email: Blocked&#10;publish_content: Allowed">${escapeHtml(automationPermissionsToEditableText(automation.permissions || {}))}</textarea>
+                        <small>Use one rule per line. Legacy JSON paste still works for advanced repair.</small>
                     </label>
                     <div class="task-row-actions">
                         <button type="submit" class="task-action primary">Save Metadata</button>
@@ -12015,9 +12111,9 @@
             let permissions = {};
             try {
                 const rawPermissions = String(data.get('permissions') || '').trim();
-                permissions = rawPermissions ? JSON.parse(rawPermissions) : {};
+                permissions = parseAutomationPermissionsInput(rawPermissions);
             } catch (error) {
-                automationNotice = 'Permissions must be valid JSON before saving.';
+                automationNotice = 'Permission rules must use key: value lines or valid JSON before saving.';
                 render();
                 return;
             }
@@ -20668,6 +20764,40 @@
             `;
         }
 
+        function renderIdentityReviewDetails(signals = {}, metadata = {}) {
+            const details = [];
+            const addDetail = (label, value) => {
+                if (value == null || value === '') return;
+                const text = typeof value === 'object'
+                    ? Object.entries(value).map(([key, item]) => `${automationOptionLabel(key)}: ${automationPermissionValueLabel(item)}`).join('; ')
+                    : String(value);
+                if (!text.trim()) return;
+                details.push({ label, value: text });
+            };
+            addDetail('Email Signal', signals.email);
+            addDetail('Phone Signal', signals.phone);
+            addDetail('Match Reason', metadata.match_reason || metadata.reason);
+            addDetail('Source', metadata.source || metadata.source_channel || signals.source);
+            addDetail('Confidence', metadata.confidence || signals.confidence);
+            Object.entries(metadata)
+                .filter(([key]) => !['match_reason', 'reason', 'source', 'source_channel', 'confidence'].includes(key))
+                .slice(0, 4)
+                .forEach(([key, value]) => addDetail(automationOptionLabel(key), value));
+            if (!details.length) {
+                return '<div class="event-meta">No additional review signals are recorded.</div>';
+            }
+            return `
+                <div class="identity-review-details" aria-label="Identity review signals">
+                    ${details.slice(0, 8).map(item => `
+                        <div class="identity-review-detail">
+                            <span>${escapeHtml(item.label)}</span>
+                            <strong>${escapeHtml(item.value)}</strong>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         function renderIdentityReviewCard(review = {}) {
             const signals = parseJsonField(review.signals) || {};
             const metadata = parseJsonField(review.metadata) || {};
@@ -20691,7 +20821,7 @@
                         ${signals.email ? `<span>email ${escapeHtml(signals.email)}</span>` : ''}
                         ${signals.phone ? `<span>phone ${escapeHtml(signals.phone)}</span>` : ''}
                     </div>
-                    <pre class="event-meta">${escapeHtml(JSON.stringify({ signals, metadata }, null, 2)).slice(0, 1200)}</pre>
+                    ${renderIdentityReviewDetails(signals, metadata)}
                     <div class="task-actions">
                         ${status !== 'resolved' ? `<button class="task-action primary" onclick="updateIdentityMergeReview(event, ${Number(review.id)}, 'resolved')">Mark Resolved</button>` : ''}
                         ${status !== 'rejected' ? `<button class="task-action" onclick="updateIdentityMergeReview(event, ${Number(review.id)}, 'rejected')">Reject Merge</button>` : ''}
