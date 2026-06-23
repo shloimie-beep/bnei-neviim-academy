@@ -43,7 +43,9 @@
 - `scripts/intake-github.mjs`
 - `scripts/ramble-intake-contract.mjs`
 - `scripts/watchdog-raw-intake-drift.mjs`
+- `scripts/platform-synthetic-e2e.mjs`
 - `docs/product/ramble-queue-contract.md`
+- `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`
 - `tests/ingestion/canonical-ids.test.js`
 - `tests/intake-parser.test.js`
 - `tests/ingestion/w3-parser-queue.test.js`
@@ -51,6 +53,7 @@
 - `tests/ingestion/w3-intake-service.test.js`
 - `tests/ingestion/w3-intake-persistence.test.js`
 - `tests/watchdog-raw-intake-drift.test.js`
+- `tests/one-time-synthetic-pilot.test.js`
 - `tests/system-truth-scripts.test.js`
 
 Stable display ID slice verified:
@@ -95,6 +98,15 @@ Canonical watchdog contract slice verified:
 - Focused watchdog test confirms all canonical contract checks pass.
 - Existing medium raw provenance findings remain non-failing and unrelated to
   this service/readback contract.
+
+Canonical synthetic E2E slice verified:
+
+- `npm run platform:synthetic-e2e` now exercises the canonical intake service
+  and local memory readback adapter.
+- The synthetic artifact records packet/readback contracts, parse run/item
+  counts, and no external writes.
+- Static synthetic pilot coverage guards the runner against drifting back to a
+  hand-built source/parse/prompt path.
 
 ## Privacy Boundary
 

@@ -30,6 +30,12 @@
 - `node --test tests/watchdog-raw-intake-drift.test.js tests/ingestion/w3-intake-persistence.test.js tests/ingestion/w3-intake-service.test.js`:
   PASS, 7/7.
 - `npm run watchdog:raw`: PASS, `ok: true`, severity `medium`, findings 2.
+- `node --check scripts/platform-synthetic-e2e.mjs`:
+  PASS.
+- `node --test tests/one-time-synthetic-pilot.test.js tests/ingestion/w3-intake-persistence.test.js`:
+  PASS, 8/8.
+- `npm run platform:synthetic-e2e`:
+  PASS; updated `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`.
 - `npm ci`: PASS.
 - `npm test`: PASS, 1080/1080.
 - `node --check scripts/system-truth.mjs`: PASS.

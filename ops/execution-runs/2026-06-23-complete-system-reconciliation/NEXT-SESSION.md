@@ -14,8 +14,9 @@ Open requirements:
 - `REQ-20260623-210`: in progress; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
-  verified, with remaining approved production persistence apply, UI/broader
-  watchdog/E2E work open.
+  verified. Local synthetic E2E now covers canonical intake/readback, with
+  remaining approved production persistence apply, UI/broader watchdog, deploy,
+  and live verification work open.
 
 Next exact commands for continuation:
 
@@ -43,6 +44,8 @@ Completed implementation slice:
   raw intake, parse run, or parent prompt locator.
 - Raw-intake watchdog contract checks for canonical service/readback and
   adapter/script drift.
+- Local platform synthetic E2E wired through canonical intake service/readback
+  with an updated no-external-write artifact.
 
 Follow-on implementation scope:
 
@@ -52,7 +55,7 @@ Follow-on implementation scope:
   providers.
 - Canonical tasks/decisions/content/community/integration persistence.
 - Lifecycle state machine, auto-resume watchdogs, Operations UI source/audit
-  tabs, synthetic E2E, deploy, and live read-only verification.
+  tabs, deploy, and live read-only verification.
 
 Do not deploy, delete worktrees, rewrite Git history, apply production backfill,
 send messages, upload to Vimeo, or charge cards without explicit gates.

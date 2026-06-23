@@ -11,9 +11,9 @@ const { buildPersonUpsertPlan, buildServiceProviderProfile, buildStudentProfile 
 const { createCommunity, createCommunityGroup, createCommunityPost, pinCommunityResource, visibleCommunityRecords } = require('../src/platform/community');
 const { attachVideoToLesson, createCourse, createCourseModule, createLesson, createVideoAssetReference, enrollMember, recordProgress } = require('../src/platform/courses');
 const { assignReward, awardReward, createGoal, createMilestone, createRewardCatalogItem, createRewardRule, evaluateRewardEligibility, redeemReward } = require('../src/platform/rewards');
-const { createIntakeSourceRecord } = require('../src/platform/ingestion/intake-source');
-const { parsePlatformIntake } = require('../src/platform/ingestion/canonical-parser');
-const { createParentPrompt, appendChildOutcome, transitionPrompt, buildQueueViewModel, buildRambleStatusViewModel } = require('../src/platform/ingestion/prompt-queue');
+const { buildCanonicalIntakePacket } = require('../src/platform/ingestion/intake-service');
+const { applyCanonicalIntakePacketToMemory, createMemoryIntakePersistenceStore } = require('../src/platform/ingestion/intake-persistence');
+const { transitionPrompt, buildQueueViewModel, buildRambleStatusViewModel } = require('../src/platform/ingestion/prompt-queue');
 const { createWorkPackage, claimWorkPackage, recordEvidence, recordProgress: recordWorkPackageProgress, sealWorkPackage, requeueFindingOrDecision } = require('../src/platform/agent-control/closed-loop');
 const { buildOneTimeInstanceConfig, assertNoBnaPrivateData } = require('../src/platform/instances/one-time');
 const { buildOneTimeTestIdentityPreview, assertOneTimeTestFixtureSafety } = require('../src/platform/instances/one-time-test-fixtures');
@@ -178,49 +178,43 @@ const rawText = [
   'Schedule a calendar event for the review lesson tomorrow.',
   'Message the community with a short announcement draft only.',
 ].join(' ');
-const intakeSource = createIntakeSourceRecord({
+const intakePacket = buildCanonicalIntakePacket({
   source_provider: 'manual',
+  source_kind: 'text',
+  source_id: 'RAW-SYNTHETIC-E2E',
   raw_text: rawText,
-  workspace: oneTimeWorkspaceKey,
-});
-const parsed = parsePlatformIntake({
-  raw_text: rawText,
-  source_provider: 'manual',
-  source_id: intakeSource.stable_key,
   raw_id: 'RAW-SYNTHETIC-E2E',
   workspace_key: oneTimeWorkspaceKey,
+  project_key: oneTimeWorkspaceKey,
   existing_records: [],
+}, {
+  generated_at: checkedAt,
+  agent: 'Codex',
 });
-const duplicateParsed = parsePlatformIntake({
-  raw_text: rawText,
+const intakeSource = intakePacket.source_record;
+const parsed = intakePacket.parsed;
+const persistenceStore = createMemoryIntakePersistenceStore();
+const persistenceApply = applyCanonicalIntakePacketToMemory(intakePacket, {
+  store: persistenceStore,
+  applied_at: checkedAt,
+});
+const duplicatePacket = buildCanonicalIntakePacket({
   source_provider: 'manual',
-  source_id: intakeSource.stable_key,
+  source_kind: 'text',
+  source_id: 'RAW-SYNTHETIC-E2E',
+  raw_text: rawText,
   raw_id: 'RAW-SYNTHETIC-E2E',
   workspace_key: oneTimeWorkspaceKey,
+  project_key: oneTimeWorkspaceKey,
   existing_records: parsed.deduplication_keys.map((idempotency_key) => ({ idempotency_key })),
-});
-
-let parentPrompt = collectId(created, 'parent_prompt', createParentPrompt({
-  source_record: intakeSource,
-  status: 'queued',
+}, {
+  generated_at: checkedAt,
   agent: 'Codex',
-  workspace_key: oneTimeWorkspaceKey,
-}));
+});
+const duplicateParsed = duplicatePacket.parsed;
+
+let parentPrompt = collectId(created, 'parent_prompt', intakePacket.parent_prompt);
 parentPrompt = transitionPrompt(parentPrompt, 'in_progress', { current_phase: 'implementation' });
-for (const item of [
-  parsed.decisions[0],
-  parsed.tasks[0],
-  parsed.calendar_events[0],
-  parsed.community_items[0] || parsed.content_items[0],
-].filter(Boolean)) {
-  parentPrompt = appendChildOutcome(parentPrompt, {
-    child_id: item.item_id,
-    item_type: item.item_type,
-    title: item.title,
-    status: 'queued',
-    idempotency_key: item.idempotency_key,
-  });
-}
 const queueView = buildQueueViewModel([parentPrompt], { now: checkedAt });
 const rambleStatus = buildRambleStatusViewModel(parentPrompt, { now: checkedAt });
 
@@ -289,6 +283,9 @@ for (const [type, count] of Object.entries(required)) {
 if (duplicateParsed.tasks.length || duplicateParsed.decisions.length || duplicateParsed.calendar_events.length) {
   throw new Error('Synthetic E2E idempotent rerun produced duplicate task, decision, or calendar records.');
 }
+if (!persistenceApply.readback.found || persistenceApply.readback.parse_items.length < parentPrompt.child_outcomes.length) {
+  throw new Error('Synthetic E2E canonical intake persistence readback failed.');
+}
 if (!leakCheck.ok || blockedLeakCheck.ok || bnaVisibility.length) {
   throw new Error('Synthetic E2E workspace isolation check failed.');
 }
@@ -320,6 +317,20 @@ const artifact = {
     community_items: parsed.community_items.length,
     content_items: parsed.content_items.length,
     unresolved: parsed.unresolved.length,
+  },
+  canonical_intake: {
+    packet_contract_version: intakePacket.contract_version,
+    source_stable_key: intakeSource.stable_key,
+    source_provider: intakeSource.source_provider,
+    parent_prompt_id: intakePacket.parent_prompt.prompt_id,
+    child_outcome_count: intakePacket.parent_prompt.child_outcomes.length,
+    persistence_contract_version: persistenceApply.contract_version,
+    raw_intake_stable_id: persistenceApply.raw_intake_stable_id,
+    parse_run_id: persistenceApply.parse_run_id,
+    parse_item_count: persistenceApply.parse_item_ids.length,
+    readback_found: persistenceApply.readback.found,
+    readback_parse_item_count: persistenceApply.readback.parse_items.length,
+    external_write_performed: persistenceApply.external_write_performed,
   },
   idempotent_rerun: {
     deduplication_keys: parsed.deduplication_keys.length,

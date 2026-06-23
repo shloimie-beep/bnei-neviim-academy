@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T14:45:57+03:00",
+  "updated_at": "2026-06-23T14:49:24+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -565,7 +565,7 @@
         "REQ-20260623-204"
       ],
       "status": "in_progress",
-      "implementation_status": "canonical_watchdog_contract_slice_complete",
+      "implementation_status": "canonical_synthetic_e2e_readback_slice_complete",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
@@ -578,6 +578,7 @@
         "Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt",
         "Local canonical persistence apply/readback is idempotently verified without external writes",
         "Canonical intake watchdog detects service/readback adapter drift",
+        "Synthetic E2E exercises canonical intake service/readback locally",
         "Canonical persistence model is implemented",
         "Decision auto-resume is tested",
         "Operations compact views are verified",
@@ -597,7 +598,9 @@
         "scripts/intake-github.mjs",
         "scripts/ramble-intake-contract.mjs",
         "scripts/watchdog-raw-intake-drift.mjs",
+        "scripts/platform-synthetic-e2e.mjs",
         "docs/product/ramble-queue-contract.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
         "tests/ingestion/canonical-ids.test.js",
         "tests/intake-parser.test.js",
         "tests/ingestion/w3-parser-queue.test.js",
@@ -605,6 +608,7 @@
         "tests/ingestion/w3-intake-service.test.js",
         "tests/ingestion/w3-intake-persistence.test.js",
         "tests/watchdog-raw-intake-drift.test.js",
+        "tests/one-time-synthetic-pilot.test.js",
         "tests/system-truth-scripts.test.js"
       ],
       "verification": [
@@ -623,6 +627,9 @@
         "node --check scripts/watchdog-raw-intake-drift.mjs: PASS",
         "node --test tests/watchdog-raw-intake-drift.test.js tests/ingestion/w3-intake-persistence.test.js tests/ingestion/w3-intake-service.test.js: PASS, 7/7",
         "npm run watchdog:raw: PASS, ok true, severity medium, findings 2",
+        "node --check scripts/platform-synthetic-e2e.mjs: PASS",
+        "node --test tests/one-time-synthetic-pilot.test.js tests/ingestion/w3-intake-persistence.test.js: PASS, 8/8",
+        "npm run platform:synthetic-e2e: PASS, canonical intake/readback artifact updated",
         "npm run bna:run:validate: PASS",
         "npm run bna:run:source-coverage: PASS",
         "npm test: PASS, 1080/1080",
@@ -642,7 +649,9 @@
         "scripts/intake-github.mjs",
         "scripts/ramble-intake-contract.mjs",
         "scripts/watchdog-raw-intake-drift.mjs",
+        "scripts/platform-synthetic-e2e.mjs",
         "docs/product/ramble-queue-contract.md",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
         "tests/ingestion/canonical-ids.test.js",
         "tests/intake-parser.test.js",
         "tests/ingestion/w3-parser-queue.test.js",
@@ -650,11 +659,12 @@
         "tests/ingestion/w3-intake-service.test.js",
         "tests/ingestion/w3-intake-persistence.test.js",
         "tests/watchdog-raw-intake-drift.test.js",
+        "tests/one-time-synthetic-pilot.test.js",
         "tests/system-truth-scripts.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T14:45:57+03:00",
-      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
+      "updated_at": "2026-06-23T14:49:24+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
     },
     {
       "id": "REQ-20260623-211",

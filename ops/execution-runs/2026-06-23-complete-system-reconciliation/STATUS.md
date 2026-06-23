@@ -1,5 +1,28 @@
 # Status
 
+## 2026-06-23T14:49:24+03:00
+
+Status: running, with the seventh canonical implementation slice complete.
+
+Extended `REQ-20260623-210` by routing the local platform synthetic E2E through
+the canonical intake service and local persistence readback adapter. The
+synthetic acceptance artifact now records the canonical packet contract,
+readback parse-run/items, and `external_write_performed: false`.
+
+Verified in this slice:
+
+- `scripts/platform-synthetic-e2e.mjs` uses `buildCanonicalIntakePacket`.
+- The synthetic run applies the packet through local memory readback.
+- The acceptance artifact includes canonical intake/readback IDs and counts.
+- Focused synthetic/readback tests passed, 8/8.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  Operations UI, broader watchdog parity, deploy, and live verification are
+  not complete yet.
+
 ## 2026-06-23T14:44:33+03:00
 
 Status: running, with the sixth canonical implementation slice complete.

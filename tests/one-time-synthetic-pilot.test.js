@@ -108,6 +108,9 @@ test('server, Operations, route registry, and actions expose the guarded preview
 
 test('platform synthetic E2E artifact records the TEST identity safety summary', () => {
   assert.equal(packageJson.scripts['platform:synthetic-e2e'], 'node scripts/platform-synthetic-e2e.mjs');
+  assert.match(platformSynthetic, /buildCanonicalIntakePacket/);
+  assert.match(platformSynthetic, /applyCanonicalIntakePacketToMemory/);
+  assert.match(platformSynthetic, /canonical_intake/);
   assert.match(platformSynthetic, /buildOneTimeTestIdentityPreview/);
   assert.match(platformSynthetic, /assertOneTimeTestFixtureSafety/);
   assert.match(platformSynthetic, /test_identities_and_mock_data/);
