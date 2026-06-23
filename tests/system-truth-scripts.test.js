@@ -24,10 +24,11 @@ test('system truth commands are exposed through package scripts', () => {
 
 test('system truth script reports readiness by variable state only', () => {
   const script = read('scripts/system-truth.mjs');
+  const readinessHelper = read('scripts/lib/integration-readiness.mjs');
   assert.match(script, /variable_state_only: true/);
   assert.doesNotMatch(script, /fingerprint\(loaded\.value\)|value: loaded\.value/);
-  assert.match(script, /VIMEO_ACCESS_TOKEN/);
-  assert.match(script, /RESEND_DOMAIN/);
+  assert.match(readinessHelper, /VIMEO_ACCESS_TOKEN/);
+  assert.match(readinessHelper, /RESEND_DOMAIN/);
   assert.match(script, /CHATGPT-RETURN-PACKET\.md/);
   assert.match(script, /return-packet/);
 });

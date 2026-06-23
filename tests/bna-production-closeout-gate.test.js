@@ -26,6 +26,23 @@ function fakeGitRunner({ status = '', branch = 'codex/issue-8-complete-system-re
   };
 }
 
+function integrationReadiness(groups) {
+  return {
+    variable_state_only: true,
+    secret_values_printed: false,
+    external_read_performed: false,
+    groups,
+  };
+}
+
+const readyIntegrationReadiness = integrationReadiness([
+  { integration: 'openai', label: 'OpenAI transcription/parser', ready: true, fields: [], blockers: [] },
+  { integration: 'vimeo', label: 'Vimeo video/member library', ready: true, fields: [], blockers: [] },
+  { integration: 'resend', label: 'Resend email sending/domain', ready: true, fields: [], blockers: [] },
+  { integration: 'stripe', label: 'Stripe payment mode', ready: true, fields: [], blockers: [] },
+  { integration: 'rabbi_telegram', label: 'Rabbi Telegram worker', ready: true, fields: [], blockers: [] },
+]);
+
 test('production closeout gate passes a clean pushed dry-run without external actions', async () => {
   const mod = await loadGate();
   const report = await mod.buildProductionCloseoutGateReport({
@@ -43,10 +60,13 @@ test('production closeout gate passes a clean pushed dry-run without external ac
   assert.equal(report.live_verification_performed, false);
   assert.equal(report.git.head_pushed, true);
   assert.equal(report.git.dirty.total, 0);
+  assert.equal(report.integration_readiness.variable_state_only, true);
+  assert.equal(report.integration_readiness.secret_values_printed, false);
+  assert.equal(report.integration_readiness.external_read_performed, false);
   assert.equal(report.package_scripts.missing.length, 0);
   assert.ok(report.run.open_requirements.some((requirement) => requirement.id === 'REQ-20260623-210'));
   assert.ok(report.next_command_plan.some((command) => /bna:release-gate/.test(command)));
-  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|DATABASE_URL=|RAILWAY_TOKEN=/i);
+  assert.doesNotMatch(JSON.stringify(report), /postgres:\/\/|DATABASE_URL=|RAILWAY_TOKEN=|secret-value/i);
 });
 
 test('production closeout gate blocks dirty or unpushed deploy state', async () => {
@@ -150,6 +170,7 @@ test('production closeout gate requires explicit deploy and live verification ap
   }, {
     repoRoot,
     runCommand: fakeGitRunner(),
+    integrationReadiness: readyIntegrationReadiness,
     env: {
       [mod.DEPLOY_APPROVAL_ENV]: 'approved',
       [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
@@ -160,4 +181,36 @@ test('production closeout gate requires explicit deploy and live verification ap
   assert.equal(approved.approval_gates.deploy.approved, true);
   assert.equal(approved.approval_gates.live_verify.approved, true);
   assert.equal(approved.production_mutation_performed, false);
+});
+
+test('production closeout gate blocks live verification on missing integration readiness', async () => {
+  const mod = await loadGate();
+  const report = await mod.buildProductionCloseoutGateReport({
+    liveVerify: true,
+    confirmLive: mod.LIVE_VERIFY_CONFIRM_PHRASE,
+    expectedBranch: 'codex/issue-8-complete-system-reconciliation',
+  }, {
+    repoRoot,
+    runCommand: fakeGitRunner(),
+    env: {
+      [mod.LIVE_VERIFY_APPROVAL_ENV]: 'approved',
+    },
+    integrationReadiness: integrationReadiness([
+      {
+        integration: 'vimeo',
+        label: 'Vimeo video/member library',
+        ready: false,
+        fields: [
+          { name: 'VIMEO_ACCESS_TOKEN', configured: false, source: 'not configured' },
+        ],
+        blockers: ['VIMEO_ACCESS_TOKEN is not configured.'],
+      },
+    ]),
+  });
+
+  assert.equal(report.ok, false);
+  assert.equal(report.live_verification_performed, false);
+  assert.ok(report.blockers.some((blocker) => /Vimeo video\/member library readiness is blocked/i.test(blocker)));
+  assert.match(JSON.stringify(report.integration_readiness), /VIMEO_ACCESS_TOKEN/);
+  assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|sk_live_|sk_test_|postgres:\/\//);
 });

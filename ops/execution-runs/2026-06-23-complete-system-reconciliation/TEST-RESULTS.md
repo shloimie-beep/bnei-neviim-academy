@@ -2,6 +2,35 @@
 
 ## Passed
 
+- `node --check scripts/lib/integration-readiness.mjs`:
+  PASS after release-gate integration-readiness hardening.
+- `node --check scripts/bna-production-closeout-gate.mjs`:
+  PASS.
+- `node --check scripts/system-truth.mjs`:
+  PASS after shared integration-readiness helper extraction.
+- `node --test tests/bna-production-closeout-gate.test.js tests/system-truth-scripts.test.js`:
+  PASS, 12/12; release gate reports integration readiness and blocks live
+  verification when readiness is incomplete.
+- `npm run bna:release-gate -- --json`:
+  PASS as expected blocked dry-run; integration readiness is included and no
+  external read/write/deploy/live verification is performed.
+- `npm run bna:release-gate -- --json --live-verify --confirm-live VERIFY_BNA_LIVE_CLOSEOUT` with `BNA_LIVE_VERIFY_APPROVED=approved`:
+  PASS as expected blocked gate; missing integration readiness blocks live
+  verification and `live_verification_performed=false`.
+- `npm run source:truth -- --json`:
+  PASS after release-gate integration-readiness hardening.
+- `npm run bna:return-packet -- --json`:
+  PASS after release-gate integration-readiness hardening.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `npm test`:
+  PASS, 1102/1102 after release-gate integration-readiness hardening.
 - `node --check scripts/system-truth.mjs`:
   PASS after return-packet integration-readiness hardening.
 - `node --test tests/system-truth-scripts.test.js`:

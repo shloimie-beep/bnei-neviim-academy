@@ -4,6 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildIntegrationReadinessSummary, integrationReadinessBlockers } from './lib/integration-readiness.mjs';
 
 export const DEPLOY_CONFIRM_PHRASE = 'DEPLOY_BNA_PRODUCTION_CLOSEOUT';
 export const LIVE_VERIFY_CONFIRM_PHRASE = 'VERIFY_BNA_LIVE_CLOSEOUT';
@@ -253,6 +254,8 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
   const git = loadGitState(repoRoot, expectedBranch, options, runCommand);
   const scripts = loadPackageScripts(repoRoot);
   const missingScripts = REQUIRED_PACKAGE_SCRIPTS.filter((name) => !scripts[name]);
+  const integrationReadiness = context.integrationReadiness || buildIntegrationReadinessSummary({ repoRoot });
+  const integrationBlockers = integrationReadinessBlockers(integrationReadiness);
   const blockers = [];
 
   if (git.branch === '(detached)' && !options.allowDetached) {
@@ -291,9 +294,13 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     if (!approved(env[LIVE_VERIFY_APPROVAL_ENV])) {
       blockers.push(`${LIVE_VERIFY_APPROVAL_ENV}=approved is required before live verification closeout.`);
     }
+    blockers.push(...integrationBlockers);
   }
   if (options.finalCloseout && run.open_requirements.length) {
     blockers.push(`Final closeout still has open requirements: ${run.open_requirements.map((item) => item.id).join(', ')}.`);
+  }
+  if (options.finalCloseout) {
+    blockers.push(...integrationBlockers);
   }
 
   return {
@@ -307,6 +314,7 @@ export async function buildProductionCloseoutGateReport(options = {}, context = 
     blockers,
     git,
     run,
+    integration_readiness: integrationReadiness,
     package_scripts: {
       required: REQUIRED_PACKAGE_SCRIPTS,
       missing: missingScripts,

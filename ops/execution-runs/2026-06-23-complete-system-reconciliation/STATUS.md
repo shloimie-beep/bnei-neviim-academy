@@ -1,5 +1,49 @@
 # Status
 
+## 2026-06-23T18:09:38+03:00
+
+Status: running, with the twenty-seventh release-gate integration-readiness
+slice complete.
+
+Extracted the integration readiness summary into a shared helper and wired the
+production closeout gate to report OpenAI, Vimeo, Resend, Stripe, and Rabbi
+Telegram readiness by configured/missing variable state only. The release gate
+now blocks live/final closeout when integration readiness is incomplete, even
+if the live verification approval env/phrase is present. No external read,
+production mutation, deploy, live verification, send, upload, charge, or
+backfill was performed.
+
+Verified in this slice:
+
+- `node --check scripts/lib/integration-readiness.mjs` passed.
+- `node --check scripts/bna-production-closeout-gate.mjs` passed.
+- `node --check scripts/system-truth.mjs` passed.
+- `node --test tests/bna-production-closeout-gate.test.js
+  tests/system-truth-scripts.test.js` passed, 12/12.
+- `npm run bna:release-gate -- --json` remained an expected blocked dry-run
+  and included integration readiness with no secret values.
+- `npm run bna:release-gate -- --json --live-verify --confirm-live
+  VERIFY_BNA_LIVE_CLOSEOUT` with `BNA_LIVE_VERIFY_APPROVED=approved` remained
+  blocked on dirty worktree plus missing integration readiness, with
+  `live_verification_performed=false`.
+- `npm run source:truth -- --json` and `npm run bna:return-packet -- --json`
+  regenerated source truth and the private/redacted return packets with this
+  slice as the Agent Work phase.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4148 tracked paths checked and
+  0 tracked secret-risk files.
+- Full `npm test` passed, 1102/1102.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, live verification, and integration live checks are
+  not complete yet.
+
 ## 2026-06-23T17:58:55+03:00
 
 Status: running, with the twenty-sixth return-packet integration-readiness

@@ -50,6 +50,9 @@ Latest integration-readiness slice:
 - The integration readiness section reports no external read and no secret
   values; production reads, sends, uploads, charges, deploys, and worker
   verification remain gated.
+- The production closeout gate now uses the same shared integration-readiness
+  summary and blocks live/final closeout when integration readiness is
+  incomplete.
 
 ## Implementation Evidence
 

@@ -41,6 +41,8 @@ Open requirements:
   The return packet now includes OpenAI, Vimeo, Resend, Stripe, and Rabbi
   Telegram readiness by configured/missing variable state only, without
   external reads or secret values.
+  The production closeout gate now reports the same integration readiness and
+  blocks live/final closeout when integration readiness is incomplete.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
@@ -123,6 +125,9 @@ Completed implementation slice:
 - Return-packet resume/private-file summary reports exact continuation
   commands and confirms the private `.runtime` packet files are gitignored and
   not pushed.
+- Release-gate integration-readiness guard reports OpenAI, Vimeo, Resend,
+  Stripe, and Rabbi Telegram readiness by configured/missing variable state
+  only and blocks live/final closeout while readiness is incomplete.
 
 Follow-on implementation scope:
 

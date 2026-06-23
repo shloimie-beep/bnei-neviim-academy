@@ -4,12 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { spawnSync } from 'node:child_process';
-import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildExternalReadbackGateReport } from './bna-external-readback-gate.mjs';
-
-const require = createRequire(import.meta.url);
-const { loadSecret, safeSecretSourceLabel } = require('../src/lib/integrations/secret-loader');
+import { buildIntegrationReadinessSummary, collectIntegrationReadinessFields } from './lib/integration-readiness.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -29,24 +26,6 @@ const KNOWN_ASSET_TERMS = [
   'Mishpacha',
   'Naki',
   'contact sheet'
-];
-
-const READINESS_FIELDS = [
-  ['DATABASE_URL', ['railway-database-url.txt', 'DATABASE_URL.txt']],
-  ['RAILWAY_TOKEN', ['railway-token.txt', 'RAILWAY_TOKEN.txt']],
-  ['OPENAI_API_KEY', ['openai-api-key.txt', 'OPENAI_API_KEY.txt']],
-  ['VIMEO_CLIENT_ID', ['vimeo-client-id.txt', 'VIMEO_CLIENT_ID.txt', 'vimeo.txt']],
-  ['VIMEO_CLIENT_SECRET', ['vimeo-client-secret.txt', 'VIMEO_CLIENT_SECRET.txt', 'vimeo.txt']],
-  ['VIMEO_ACCESS_TOKEN', ['vimeo-access-token.txt', 'VIMEO_ACCESS_TOKEN.txt', 'vimeo.txt']],
-  ['RESEND_API_KEY', ['resend-api-key.txt', 'RESEND_API_KEY.txt', 'resend.txt']],
-  ['RESEND_FROM', ['resend-from.txt', 'RESEND_FROM.txt', 'resend.txt']],
-  ['RESEND_FROM_EMAIL', ['resend-from-email.txt', 'RESEND_FROM_EMAIL.txt', 'resend.txt']],
-  ['RESEND_DOMAIN', ['resend-domain.txt', 'RESEND_DOMAIN.txt', 'resend.txt']],
-  ['RESEND_WEBHOOK_SECRET', ['resend-webhook-secret.txt', 'RESEND_WEBHOOK_SECRET.txt']],
-  ['STRIPE_SECRET_KEY', ['stripe-secret-key.txt', 'STRIPE_SECRET_KEY.txt', 'stripe.txt']],
-  ['RABBI_STRIPE_SECRET_KEY', ['rabbi-stripe-secret-key.txt', 'RABBI_STRIPE_SECRET_KEY.txt', 'stripe.txt']],
-  ['RABBI_STRIPE_MODE', ['rabbi-stripe-mode.txt', 'RABBI_STRIPE_MODE.txt', 'stripe-mode.txt']],
-  ['TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER', ['telegram-rabbi-elie-scheller-bot-token.txt', 'TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER.txt']]
 ];
 
 function nowIso() {
@@ -473,14 +452,7 @@ function uiSourceCoverageReport() {
 }
 
 function readinessReport() {
-  const fields = READINESS_FIELDS.map(([key, fileNames]) => {
-    const loaded = loadSecret({ envName: key, fileNames, repoRoot });
-    return {
-      key,
-      configured: Boolean(loaded.configured),
-      source: loaded.configured ? safeSecretSourceLabel(loaded) : 'not configured'
-    };
-  });
+  const fields = collectIntegrationReadinessFields({ repoRoot });
   const railwayStatus = run(process.platform === 'win32' ? 'cmd.exe' : 'railway', process.platform === 'win32' ? ['/d', '/s', '/c', 'railway.cmd', 'status'] : ['status']);
   return {
     generated_at: nowIso(),
@@ -657,74 +629,6 @@ function summarizeExternalGate(report = {}) {
   };
 }
 
-function readinessFieldByKey(readiness = {}, key) {
-  const fields = Array.isArray(readiness.fields) ? readiness.fields : [];
-  return fields.find((field) => field.key === key) || {
-    key,
-    configured: false,
-    source: 'not configured'
-  };
-}
-
-function summarizeIntegrationGroup(readiness, integration, label, fieldKeys, options = {}) {
-  const fields = fieldKeys.map((key) => {
-    const field = readinessFieldByKey(readiness, key);
-    return {
-      name: field.key,
-      configured: Boolean(field.configured),
-      source: field.configured ? field.source : 'not configured'
-    };
-  });
-  const missing = fields.filter((field) => !field.configured).map((field) => field.name);
-  const blockers = [
-    ...missing.map((name) => `${name} is not configured.`),
-    ...(options.blockers || [])
-  ];
-  return {
-    integration,
-    label,
-    ready: blockers.length === 0,
-    fields,
-    blockers
-  };
-}
-
-function summarizeIntegrationReadiness(readiness = {}) {
-  return {
-    generated_at: readiness.generated_at || nowIso(),
-    variable_state_only: readiness.variable_state_only === true,
-    secret_values_printed: false,
-    external_read_performed: false,
-    groups: [
-      summarizeIntegrationGroup(readiness, 'openai', 'OpenAI transcription/parser', [
-        'OPENAI_API_KEY'
-      ]),
-      summarizeIntegrationGroup(readiness, 'vimeo', 'Vimeo video/member library', [
-        'VIMEO_CLIENT_ID',
-        'VIMEO_CLIENT_SECRET',
-        'VIMEO_ACCESS_TOKEN'
-      ]),
-      summarizeIntegrationGroup(readiness, 'resend', 'Resend email sending/domain', [
-        'RESEND_API_KEY',
-        'RESEND_FROM',
-        'RESEND_FROM_EMAIL',
-        'RESEND_DOMAIN',
-        'RESEND_WEBHOOK_SECRET'
-      ]),
-      summarizeIntegrationGroup(readiness, 'stripe', 'Stripe payment mode', [
-        'STRIPE_SECRET_KEY',
-        'RABBI_STRIPE_SECRET_KEY',
-        'RABBI_STRIPE_MODE'
-      ]),
-      summarizeIntegrationGroup(readiness, 'rabbi_telegram', 'Rabbi Telegram worker', [
-        'TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER'
-      ], {
-        blockers: ['Worker deployment state is not verified by local readiness scanning.']
-      })
-    ]
-  };
-}
-
 function returnPacketResumeCommands(runDoc = {}) {
   const branch = runDoc?.git_refs?.pr_branch || runDoc?.git_refs?.expected_branch || 'codex/issue-8-complete-system-reconciliation';
   return [
@@ -764,7 +668,7 @@ async function returnPacketReport() {
   const drive = driveIntakeReport();
   const asset = assetReport();
   const ui = uiSourceCoverageReport();
-  const integrationReadiness = summarizeIntegrationReadiness(readinessReport());
+  const integrationReadiness = buildIntegrationReadinessSummary({ repoRoot });
   const externalGates = summarizeExternalGate(buildExternalReadbackGateReport());
   const requirements = Array.isArray(requirementsDoc?.requirements) ? requirementsDoc.requirements : [];
   const summarizedRequirements = summarizeRequirements(requirements);
