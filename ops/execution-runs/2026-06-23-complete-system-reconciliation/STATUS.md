@@ -1,5 +1,39 @@
 # Status
 
+## 2026-06-23T17:19:46+03:00
+
+Status: running, with the twenty-second external gate return-packet summary
+slice complete.
+
+Updated the return-packet generator so it embeds a redacted external gate
+summary from the same dry-run gate used by
+`npm run bna:external-readback-gate`. The packet now shows database, Railway,
+and Drive readiness counts, explicit no-read/no-write safety flags, gate
+blockers, and the next approved-command plan without rendering secret/config
+variable names in the redacted handoff.
+
+Verified in this slice:
+
+- `node --check scripts/system-truth.mjs` passed.
+- `node --test tests/system-truth-scripts.test.js` passed, 5/5.
+- `npm run bna:return-packet -- --json` regenerated the private ignored
+  packet and tracked redacted packet with the new external gate section.
+- Full `npm test` passed, 1101/1101; source coverage remained at 0 unmapped
+  executable statements, stale-evidence detection passed, and the tracked
+  secret audit found 0 tracked secret-risk files.
+- `npm run bna:external-readback-gate -- --json` remained an expected blocked
+  dry-run with no external read, production mutation, safe apply, deploy, or
+  secret value print.
+- No production mutation, deploy, live verification, external read, send,
+  upload, charge, or backfill was performed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T17:04:58+03:00
 
 Status: running, with the twenty-first validated Agent Work handoff slice

@@ -28,6 +28,10 @@ Open requirements:
   porcelain leading whitespace, so unstaged changes are not misreported as
   staged. Return-packet Agent Work rows now use the execution run's validated
   checkpoint head instead of the transient packet-generation HEAD.
+  The return packet now includes a redacted external gate readiness summary
+  with database/Railway/Drive readiness counts, blockers, safety flags, and the
+  next approved-command plan without rendering secret/config variable names in
+  the redacted handoff.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.
@@ -104,6 +108,9 @@ Completed implementation slice:
 - Return-packet Agent Work rows are anchored to
   `git_refs.last_validated_head`; the current validated checkpoint is
   `68649b1a345446a413b567f708a39708adbccfa9`.
+- Return-packet external gate summary is backed by the same dry-run external
+  readback gate logic and reports no external read, production mutation, safe
+  apply, deploy, or secret values.
 
 Follow-on implementation scope:
 

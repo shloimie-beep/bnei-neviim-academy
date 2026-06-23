@@ -3,6 +3,28 @@
 ## Passed
 
 - `node --check scripts/system-truth.mjs`:
+  PASS after external gate return-packet summary hardening.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 5/5; return-packet external gate summary reports no external read,
+  production mutation, safe apply, deploy, or secret values.
+- `npm run bna:return-packet -- --json`:
+  PASS; redacted packet now includes database/Railway/Drive external gate
+  readiness counts, blockers, safety flags, and approved-command plan without
+  secret/config variable names.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- `npm run bna:external-readback-gate -- --json`:
+  PASS as expected blocked dry-run; no external read, production mutation,
+  safe apply, deploy, or secret value print.
+- `npm test`:
+  PASS, 1101/1101 after external gate return-packet summary hardening.
+- `node --check scripts/system-truth.mjs`:
   PASS after validated Agent Work handoff hardening.
 - `node --test tests/system-truth-scripts.test.js`:
   PASS, 5/5; return-packet Agent Work commit matches `git_refs.last_validated_head`.

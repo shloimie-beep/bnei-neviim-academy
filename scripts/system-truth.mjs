@@ -6,6 +6,7 @@ import process from 'node:process';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { buildExternalReadbackGateReport } from './bna-external-readback-gate.mjs';
 
 const require = createRequire(import.meta.url);
 const { loadSecret, safeSecretSourceLabel } = require('../src/lib/integrations/secret-loader');
@@ -564,6 +565,44 @@ function validatedAgentWorkCommit(repo = {}, runDoc = {}) {
   return validatedHead || repo.head || '';
 }
 
+function summarizeExternalGate(report = {}) {
+  const readiness = Object.entries(report.readiness || {}).map(([scope, state]) => {
+    const secrets = Array.isArray(state.secrets) ? state.secrets : [];
+    const config = Array.isArray(state.config) ? state.config : [];
+    return {
+      scope,
+      ready: Boolean(state.ready),
+      secrets_configured: secrets.filter((item) => item.configured).length,
+      secrets_required: secrets.length,
+      config_configured: config.filter((item) => item.configured).length,
+      config_required: config.length
+    };
+  });
+  const approvalGates = report.approval_gates || {};
+  return {
+    ok: Boolean(report.ok),
+    mode: report.mode || 'unknown',
+    scopes: readiness,
+    external_read_performed: Boolean(report.external_read_performed),
+    production_mutation_performed: Boolean(report.production_mutation_performed),
+    safe_apply_performed: Boolean(report.safe_apply_performed),
+    deploy_performed: Boolean(report.deploy_performed),
+    secrets_redacted: report.secrets_redacted !== false,
+    blockers: Array.isArray(report.blockers) ? report.blockers : [],
+    approval_gates: {
+      readback: {
+        requested: Boolean(approvalGates.readback?.requested),
+        approved: Boolean(approvalGates.readback?.approved)
+      },
+      backfill_apply: {
+        requested: Boolean(approvalGates.backfill_apply?.requested),
+        approved: Boolean(approvalGates.backfill_apply?.approved)
+      }
+    },
+    next_command_plan: Array.isArray(report.next_command_plan) ? report.next_command_plan : []
+  };
+}
+
 async function returnPacketReport() {
   const { latest, runDir, requirementsDoc, runDoc } = currentRunState();
   const repo = gitIdentity(repoRoot);
@@ -572,6 +611,7 @@ async function returnPacketReport() {
   const drive = driveIntakeReport();
   const asset = assetReport();
   const ui = uiSourceCoverageReport();
+  const externalGates = summarizeExternalGate(buildExternalReadbackGateReport());
   const requirements = Array.isArray(requirementsDoc?.requirements) ? requirementsDoc.requirements : [];
   const summarizedRequirements = summarizeRequirements(requirements);
   const blocked = summarizedRequirements.filter((item) => item.status === 'blocked' || item.can_continue_without_operator === false);
@@ -648,6 +688,7 @@ async function returnPacketReport() {
       safe_apply_performed: false,
       remaining_backfill: 'jobs 64-74 production apply remains gated by external readback/backfill approval'
     },
+    external_gates: externalGates,
     assets_drive: {
       known_targets: asset.known_targets,
       match_count: asset.matches.length,
@@ -726,6 +767,10 @@ function renderReturnPacketMarkdown(report, options = {}) {
   const assetSamples = Array.isArray(report.assets_drive?.sample_matches) ? report.assets_drive.sample_matches : [];
   const jobRows = report.class_drive_intake?.jobs || {};
   const latestTests = report.tests_deployment?.latest_tests || {};
+  const externalGates = report.external_gates || {};
+  const gateScopes = Array.isArray(externalGates.scopes) ? externalGates.scopes : [];
+  const gateBlockers = Array.isArray(externalGates.blockers) ? externalGates.blockers : [];
+  const gateCommands = Array.isArray(externalGates.next_command_plan) ? externalGates.next_command_plan : [];
   const lines = [
     'CHATGPT RETURN PACKET',
     `Generated: ${report.generated_at}`,
@@ -774,6 +819,15 @@ function renderReturnPacketMarkdown(report, options = {}) {
     '- scores/progress: live state requires database readback',
     '- profiles: live state requires database readback',
     `- remaining backfill: ${report.class_drive_intake.remaining_backfill}`,
+    '',
+    'EXTERNAL READBACK / APPLY GATES',
+    `- gate status: ${externalGates.ok ? 'ready' : 'blocked'} (${externalGates.mode || 'unknown'})`,
+    `- safety: external_read=${externalGates.external_read_performed ? 'yes' : 'no'}, production_mutation=${externalGates.production_mutation_performed ? 'yes' : 'no'}, safe_apply=${externalGates.safe_apply_performed ? 'yes' : 'no'}, deploy=${externalGates.deploy_performed ? 'yes' : 'no'}, secrets_redacted=${externalGates.secrets_redacted ? 'yes' : 'no'}`,
+    ...(gateScopes.length
+      ? gateScopes.map((scope) => `- ${scope.scope}: ${scope.ready ? 'ready' : 'blocked'}; secrets ${scope.secrets_configured}/${scope.secrets_required}; config ${scope.config_configured}/${scope.config_required}`)
+      : ['- scopes: none recorded']),
+    ...(gateBlockers.length ? gateBlockers.map((blocker) => `- blocker: ${blocker}`) : ['- blockers: none']),
+    ...(gateCommands.length ? gateCommands.map((command) => `- next: ${command}`) : ['- next: see execution-run blockers']),
     '',
     'ASSETS / DRIVE',
     `- logo: repo match count ${assetSamples.filter((item) => /logo/i.test(item.path)).length}`,

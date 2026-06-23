@@ -44,6 +44,15 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.equal(report.redacted_repo_summary.includes_private_raw_source, false);
   assert.equal(report.redacted_repo_summary.includes_secret_values, false);
   assert.ok(report.system_truth.branch);
+  assert.equal(report.external_gates.external_read_performed, false);
+  assert.equal(report.external_gates.production_mutation_performed, false);
+  assert.equal(report.external_gates.safe_apply_performed, false);
+  assert.equal(report.external_gates.deploy_performed, false);
+  assert.equal(report.external_gates.secrets_redacted, true);
+  assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'database'));
+  assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'railway'));
+  assert.ok(report.external_gates.scopes.some((scope) => scope.scope === 'drive'));
+  assert.doesNotMatch(JSON.stringify(report.external_gates), /DATABASE_URL|RAILWAY_TOKEN|GOOGLE_PRIVATE_KEY|secret-value|postgres:\/\//);
   const run = JSON.parse(read('ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json'));
   if (run.git_refs?.last_validated_head) {
     assert.equal(report.system_truth.validated_agent_work_head, run.git_refs.last_validated_head);

@@ -215,6 +215,15 @@ Production closeout gate slice verified:
 - The return-packet Agent Work row is anchored to
   `git_refs.last_validated_head`, so it names the last pushed verified
   implementation checkpoint rather than the transient packet-generation HEAD.
+- The return packet now embeds a redacted external gate summary built from the
+  same dry-run gate logic as `npm run bna:external-readback-gate`; it reports
+  database, Railway, and Drive readiness counts, approval blockers, next
+  approved commands, and explicit no-read/no-write safety flags without
+  rendering secret/config variable names in the redacted handoff.
+- Full `npm test` passed, 1101/1101, after the external gate return-packet
+  summary hardening; run validation, source coverage, stale-evidence detection,
+  tracked secret audit, and the expected-blocked external gate dry-run also
+  passed.
 - Full `npm test` passed, 1101/1101, after the validated Agent Work handoff
   hardening; source coverage, stale-evidence detection, and tracked secret
   audit checks also passed.
