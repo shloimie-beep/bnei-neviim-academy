@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-06-21T17:26:37.835Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 1641,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "provider public and portal routes expose directory, join, classroom, and plan markers",
+      "ok": false,
+      "duration_ms": 1568,
+      "error": "/service-providers missing markers: Become a Service Provider"
+    }
+  ],
+  "summary": {
+    "provider_routes_checked": 0,
+    "operations_markers_checked": 0,
+    "helper_tools_present": [],
+    "recording_raw_intake_id": "",
+    "calendar_events_loaded": 0,
+    "automations_loaded": 0
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "started_at": "2026-06-14T19:28:47.541Z",
+  "finished_at": "2026-06-14T19:29:06.116Z",
+  "app_url": "https://bneineviimacademy.org",
+  "success": true,
+  "content_jobs": 61,
+  "one_time_candidates": 1,
+  "steps": [
+    {
+      "name": "live operations login session",
+      "ok": true,
+      "duration_ms": 625,
+      "details": {
+        "user": "SHLOIMIE",
+        "role": "super_admin",
+        "scoped": "all"
+      }
+    },
+    {
+      "name": "content jobs readback includes One Time candidates",
+      "ok": true,
+      "duration_ms": 3018,
+      "details": {
+        "content_jobs": 61,
+        "one_time_candidates": 1
+      }
+    },
+    {
+      "name": "invalid hosted media URL rejected before write",
+      "ok": true,
+      "duration_ms": 237,
+      "details": {
+        "status": 400,
+        "error": "media_url must be a full http:// or https:// URL"
+      }
+    },
+    {
+      "name": "served Operations bundle contains One Time library code",
+      "ok": true,
+      "duration_ms": 734,
+      "details": {
+        "html_bytes": 1166235
+      }
+    },
+    {
+      "name": "desktop One Time Library UI renders without overflow",
+      "ok": true,
+      "duration_ms": 6709,
+      "details": {
+        "viewport": {
+          "width": 1440,
+          "height": 1100
+        },
+        "lanes": [
+          "Library Card",
+          "Transcript",
+          "Thumbnail",
+          "Worksheet / Source Sheet",
+          "Social Plan",
+          "Newsletter Plan"
+        ],
+        "metrics": [
+          "0",
+          "0",
+          "0",
+          "0 / 0"
+        ],
+        "screenshot": "ops/playwright-smokes/2026-06-14-one-time-content-library-live/desktop.png",
+        "layout": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "bodyScrollWidth": 1440,
+          "bodyClientWidth": 1440
+        }
+      }
+    },
+    {
+      "name": "mobile One Time Library UI renders without overflow",
+      "ok": true,
+      "duration_ms": 7076,
+      "details": {
+        "viewport": {
+          "width": 390,
+          "height": 900
+        },
+        "lanes": [
+          "Library Card",
+          "Transcript",
+          "Thumbnail",
+          "Worksheet / Source Sheet",
+          "Social Plan",
+          "Newsletter Plan"
+        ],
+        "metrics": [
+          "0",
+          "0",
+          "0",
+          "0 / 0"
+        ],
+        "screenshot": "ops/playwright-smokes/2026-06-14-one-time-content-library-live/mobile.png",
+        "layout": {
+          "scrollWidth": 390,
+          "clientWidth": 390,
+          "bodyScrollWidth": 390,
+          "bodyClientWidth": 390
+        }
+      }
+    }
+  ]
+}

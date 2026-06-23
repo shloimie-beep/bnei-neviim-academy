@@ -9,7 +9,7 @@ drive_stage: "05 WhatsApp Ready"
 drive_file_id: "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J"
 media_url: "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk"
 transcript_chars: 66752
-outputs: "whatsapp_update:archived#29, teaching_philosophy_note:archived#28, facebook_post:archived#30"
+outputs: "facebook_post:archived#30, teaching_philosophy_note:archived#28, whatsapp_update:archived#29"
 ---
 
 # Setting Personal Learning and Fitness Goals Discussion
@@ -17,7 +17,7 @@ outputs: "whatsapp_update:archived#29, teaching_philosophy_note:archived#28, fac
 - Content job: #18
 - Drive stage: 05 WhatsApp Ready
 - Source file: https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk
-- Outputs: whatsapp_update:archived#29, teaching_philosophy_note:archived#28, facebook_post:archived#30
+- Outputs: facebook_post:archived#30, teaching_philosophy_note:archived#28, whatsapp_update:archived#29
 
 ## Transcript
 

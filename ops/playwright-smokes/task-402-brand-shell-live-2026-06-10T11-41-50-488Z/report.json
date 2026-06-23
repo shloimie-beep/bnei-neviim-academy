@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-06-10T11:42:22.823Z",
+  "baseUrl": "https://bneineviimacademy.org",
+  "deployment": "7c4fcc07-38fb-4041-ab3e-00bf36a883d7",
+  "outDir": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z",
+  "results": [
+    {
+      "surface": "operations-providers-desktop",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/operations-providers-desktop.png",
+      "topbarVisible": true,
+      "topbarText": "BNA Bnei Neviim Academy Contacts / Approved Providers Operations Command Center / BNA Academy Workspace Wed 10 Jun",
+      "sidebarBg": "rgba(255, 255, 255, 0.94)",
+      "dropdownButtons": 0,
+      "nativeSelectVisible": false
+    },
+    {
+      "surface": "operations-mobile",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/operations-mobile.png",
+      "drawerScreenshot": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/operations-mobile-drawer.png",
+      "mobileHeaderVisible": true
+    },
+    {
+      "surface": "parent-mobile",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/parent-mobile.png",
+      "topbarText": "BNA Bnei Neviim Academy Parent portal"
+    },
+    {
+      "surface": "student-mobile",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-live-2026-06-10T11-41-50-488Z/student-mobile.png",
+      "topbarText": "BNA Bnei Neviim Academy Student goal board"
+    }
+  ]
+}

@@ -9,7 +9,7 @@ drive_stage: "04 Parsed"
 drive_file_id: "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa"
 media_url: "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk"
 transcript_chars: 58246
-outputs: "facebook_post:archived#36, whatsapp_update:archived#35, teaching_philosophy_note:archived#34, weekly_newsletter:needs_approval#37"
+outputs: "teaching_philosophy_note:archived#34, whatsapp_update:archived#35, facebook_post:archived#36, weekly_newsletter:needs_approval#37"
 ---
 
 # Torah Learning Goals and Camping Trip Incentive
@@ -17,7 +17,7 @@ outputs: "facebook_post:archived#36, whatsapp_update:archived#35, teaching_philo
 - Content job: #20
 - Drive stage: 04 Parsed
 - Source file: https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk
-- Outputs: facebook_post:archived#36, whatsapp_update:archived#35, teaching_philosophy_note:archived#34, weekly_newsletter:needs_approval#37
+- Outputs: teaching_philosophy_note:archived#34, whatsapp_update:archived#35, facebook_post:archived#36, weekly_newsletter:needs_approval#37
 
 ## Transcript
 

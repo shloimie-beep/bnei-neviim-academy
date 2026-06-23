@@ -5,13 +5,19 @@ build/
 dist/
 .deploy-railway/
 .runtime/
+.runtime/auth/
+.tmp-lighthouse/
+tmp/
 
 # env
 .env
 .env.local
 .env*.local
 !.env.example
+keyholder/
+.keyholder/
 .secrets/
+BNA-Keyholder/
 
 # editor
 .vscode/
@@ -21,7 +27,12 @@ Thumbs.db
 
 # logs
 *.log
+*.pid
 npm-debug.log*
+*.secret
+*.secrets
+*api-key*.txt
+*token*.txt
 
 # local media intake
 media-drop/
@@ -32,9 +43,11 @@ renders/*
 !renders/.gitkeep
 src/remotion/generated/*.json
 !src/remotion/generated/.gitkeep
+public/organic-clip-assets/
 
 # PWA build artifacts
 public/sw.js
+!public/sw.js
 public/sw.js.map
 public/workbox-*.js
 public/workbox-*.js.map
@@ -45,3 +58,17 @@ public/fallback-*.js
 # misc
 *.tsbuildinfo
 next-env.d.ts
+
+# generated operation receipts
+install-packages/
+ops/agent-fleet-runs/
+ops/live-smokes/
+ops/openai-smokes/
+ops/remotion-smokes/
+ops/pending/
+ops/system-audits/*.json
+ops/system-audits/*-watchdog.md
+ops/system-audits/*-watchdog-improvements.md
+screenshots/
+ops/ui-audits/runs/
+ops/ui-audits/latest.json

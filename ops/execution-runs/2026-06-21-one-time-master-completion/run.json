@@ -1,0 +1,33 @@
+{
+  "run_id": "2026-06-21-one-time-master-completion",
+  "title": "One Time Master Completion",
+  "created_at": "2026-06-21T11:05:00+03:00",
+  "updated_at": "2026-06-21T22:05:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260621-001",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "predecessor_runs": [
+    "ops/execution-runs/2026-06-19-onetime-local-beta-hardening",
+    "ops/execution-runs/2026-06-19-parallel-platform-finish",
+    "ops/execution-runs/2026-06-18-bna-platform-completion"
+  ],
+  "git_refs": {
+    "expected_branch": "integration/20260619-platform-finish",
+    "expected_head": "4cb03da4f21c94933a06a729fcf757bd2259652b",
+    "pr_number": 5,
+    "pr_branch": "codex/agent-control-center-20260619",
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+    "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
+    "latest_pushed_head": "d2c47edb789504c3c06c308714073a30ef2c4ecd",
+    "latest_deployed_commit": "34c74f22145a4422777515b740b8e33eef3f539d"
+  },
+  "current_batch": {
+    "batch_id": "batch-18",
+    "requirement_id": "REQ-20260619-313",
+    "title": "One Time deployment readiness",
+    "status": "blocked"
+  }
+}

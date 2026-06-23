@@ -1,0 +1,102 @@
+﻿
+Mode   Length  LastWriteTime         Name                                                
+----   ------  -------------         ----                                                
+d-----         6/3/2026 6:27:45 PM   .codex                                              
+-a---- 3448    6/12/2026 5:12:49 PM  .env.example                                        
+-a---- 3912    6/10/2026 8:44:57 AM  .env.local                                          
+-a---- 40      5/12/2026 6:08:36 PM  .eslintrc.json                                      
+d--h--         6/13/2026 11:43:10 PM .git                                                
+-a---- 846     6/10/2026 2:13:13 PM  .gitignore                                          
+-a---- 308     6/8/2026 9:59:32 AM   .mcp.json                                           
+d-----         5/24/2026 8:19:01 PM  .next                                               
+d-----         6/11/2026 3:20:18 PM  .runtime                                            
+d-----         6/10/2026 8:43:07 AM  .secrets                                            
+d-----         6/12/2026 10:56:56 AM .tmp-lighthouse                                     
+d-----         6/5/2026 10:45:34 AM  agents                                              
+-a---- 8374    6/12/2026 1:29:46 PM  AGENTS.md                                           
+d-----         6/12/2026 1:29:37 PM  brand-kit                                           
+d-----         6/10/2026 4:36:48 PM  content-memory                                      
+-a---- 134     6/10/2026 11:00:26 AM Dockerfile                                          
+d-----         6/12/2026 12:58:20 PM docs                                                
+d-----         6/10/2026 2:11:11 PM  install-packages                                    
+-a---- 1590    6/10/2026 6:25:30 AM  KIMI-BOOTSTRAP.md                                   
+-a---- 803123  6/12/2026 3:52:08 PM  lighthouse-report.html                              
+d-----         6/9/2026 9:07:54 AM   logs                                                
+d-----         5/27/2026 4:04:43 PM  media-drop                                          
+d-----         6/11/2026 1:10:45 PM  media-inbox                                         
+d-----         6/13/2026 10:39:18 PM memory                                              
+-a---- 56966   6/13/2026 10:39:18 PM MEMORY.md                                           
+-a---- 3516    6/9/2026 9:29:32 AM   migrate-railway.sql                                 
+-a---- 228     5/12/2026 10:50:09 PM next-env.d.ts                                       
+d-----         6/3/2026 6:37:36 PM   node_modules                                        
+d-----         6/13/2026 11:43:10 PM ops                                                 
+-a---- 4792    6/12/2026 5:25:37 PM  package.json                                        
+-a---- 248810  6/3/2026 6:39:27 PM   package-lock.json                                   
+-a---- 1504    6/10/2026 7:27:12 AM  PROJECT-NOTES.md                                    
+d-----         6/11/2026 7:09:35 PM  public                                              
+-a---- 103     6/10/2026 10:55:19 AM railway.json                                        
+-a---- 1579    6/1/2026 2:31:04 PM   RAILWAY_TOKEN_SETUP.md                              
+-a---- 5863    6/5/2026 7:47:19 PM   railway-migration-2026-06-05-device-control-mock.sql
+-a---- 5675    6/9/2026 9:29:16 AM   railway-migration-2026-06-05-one-time-projects.sql  
+-a---- 2967    6/10/2026 7:27:12 AM  README.md                                           
+-a---- 117     6/3/2026 6:34:50 PM   remotion.config.ts                                  
+d-----         6/9/2026 10:15:44 PM  renders                                             
+d-----         6/9/2026 10:16:19 PM  screenshots                                         
+d-----         6/13/2026 10:44:43 PM scripts                                             
+-a---- 1406462 6/13/2026 11:41:34 PM server.js                                           
+d-----         6/10/2026 7:25:47 AM  src                                                 
+-a---- 583     6/10/2026 7:14:30 AM  SUPABASE_SETUP.md                                   
+-a---- 99661   6/12/2026 3:09:08 PM  SYSTEM-STATE.md                                     
+-a---- 64727   6/13/2026 11:05:05 PM TASKS.md                                            
+d-----         6/13/2026 10:39:18 PM tasks-pending                                       
+d-----         6/13/2026 10:52:58 PM tests                                               
+d-----         6/13/2026 10:59:55 PM tmp                                                 
+-a---- 390     6/3/2026 5:47:50 PM   tmp-blog-server.err.log                             
+-a---- 32      6/3/2026 5:47:49 PM   tmp-blog-server.out.log                             
+-a---- 0       6/7/2026 6:13:14 AM   tmp-codex-ui-server.err.log                         
+-a---- 74      6/7/2026 6:13:40 AM   tmp-codex-ui-server.out.log                         
+-a---- 1050    6/9/2026 11:22:39 AM  tmp-filter-server.err.log                           
+-a---- 0       6/9/2026 11:22:38 AM  tmp-filter-server.out.log                           
+-a---- 0       6/9/2026 10:21:55 PM  tmp-google-assignment-8098.err.log                  
+-a---- 122     6/12/2026 4:21:58 PM  tmp-google-assignment-8098.out.log                  
+-a---- 0       6/9/2026 9:58:30 PM   tmp-google-assignment-server.err.log                
+-a---- 74      6/9/2026 9:59:03 PM   tmp-google-assignment-server.out.log                
+-a---- 501     6/12/2026 6:05:49 PM  tmp-leads-server.err.log                            
+-a---- 74      6/9/2026 6:06:11 PM   tmp-leads-server.out.log                            
+-a---- 0       6/5/2026 3:50:02 PM   tmp-one-time-server.err.log                         
+-a---- 75      6/5/2026 3:50:53 PM   tmp-one-time-server.out.log                         
+-a---- 0       6/4/2026 6:12:05 PM   tmp-ops-cards-server.err.log                        
+-a---- 74      6/4/2026 6:12:53 PM   tmp-ops-cards-server.out.log                        
+-a---- 463     6/9/2026 8:29:43 PM   tmp-ops-redesign-server.err.log                     
+-a---- 122     6/7/2026 5:38:14 PM   tmp-ops-redesign-server.out.log                     
+-a---- 0       6/9/2026 9:08:15 PM   tmp-parent-link-server.err.log                      
+-a---- 74      6/9/2026 9:08:45 PM   tmp-parent-link-server.out.log                      
+-a---- 0       6/9/2026 8:52:40 PM   tmp-prompt-fix-server.err.log                       
+-a---- 119     6/9/2026 8:53:13 PM   tmp-prompt-fix-server.out.log                       
+-a---- 0       6/11/2026 7:22:39 PM  tmp-provider-foundation-server.err.log              
+-a---- 79      6/11/2026 7:24:18 PM  tmp-provider-foundation-server.out.log              
+-a---- 0       6/9/2026 6:50:45 AM   tmp-pwa-server.err.log                              
+-a---- 33      6/9/2026 6:50:46 AM   tmp-pwa-server.out.log                              
+-a---- 49      6/13/2026 11:42:47 PM tmp-registration-nav-8097.err.log                   
+-a---- 0       6/13/2026 11:42:46 PM tmp-registration-nav-8097.out.log                   
+-a---- 0       6/10/2026 5:56:57 PM  tmp-saas-redesign-server.err.log                    
+-a---- 77      6/10/2026 5:58:26 PM  tmp-saas-redesign-server.out.log                    
+-a---- 0       6/1/2026 2:59:22 PM   tmp-server.err.log                                  
+-a---- 74      6/1/2026 2:59:31 PM   tmp-server.out.log                                  
+-a---- 1250    5/26/2026 7:08:20 PM  tmp-server-8090.err.log                             
+-a---- 52      5/26/2026 7:08:20 PM  tmp-server-8090.out.log                             
+-a---- 3426    5/26/2026 7:11:04 PM  tmp-server-8090b.err.log                            
+-a---- 106     5/26/2026 7:08:53 PM  tmp-server-8090b.out.log                            
+-a---- 0       6/3/2026 4:03:16 PM   tmp-server-stderr.log                               
+-a---- 32      6/3/2026 4:03:17 PM   tmp-server-stdout.log                               
+-a---- 0       6/8/2026 3:53:05 PM   tmp-student-analysis-server.err.log                 
+-a---- 32      6/8/2026 3:53:06 PM   tmp-student-analysis-server.out.log                 
+-a---- 0       6/7/2026 11:39:52 AM  tmp-task130-server.err.log                          
+-a---- 33      6/7/2026 11:39:53 AM  tmp-task130-server.out.log                          
+-a---- 0       6/10/2026 12:53:56 PM tmp-task379-classroom-server.err.log                
+-a---- 74      6/10/2026 12:54:42 PM tmp-task379-classroom-server.out.log                
+d-----         5/25/2026 9:28:29 PM  tools                                               
+-a---- 383     6/3/2026 6:34:45 PM   tsconfig.json                                       
+-a---- 124218  5/24/2026 8:55:44 PM  tsconfig.tsbuildinfo                                
+
+

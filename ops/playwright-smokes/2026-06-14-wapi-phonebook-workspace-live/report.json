@@ -1,0 +1,58 @@
+{
+  "started_at": "2026-06-14T18:52:39.621Z",
+  "finished_at": "2026-06-14T18:53:32.868Z",
+  "app_url": "https://bneineviimacademy.org",
+  "target": "/operations?view=communications&section=whatsapp",
+  "success": true,
+  "desktop_load_path": "auto",
+  "mobile_load_path": "auto",
+  "desktop": {
+    "hasWorkspace": true,
+    "panes": 3,
+    "paneWidths": [
+      253,
+      402,
+      283
+    ],
+    "paneTops": [
+      726,
+      726,
+      726
+    ],
+    "gridColumns": "253.109px 402px 282.891px",
+    "bodyOverflowX": 0,
+    "workspaceWidth": 962,
+    "hasNoSendCopy": true,
+    "hasInternalNoteAction": true,
+    "hasTimeline": true,
+    "hasDetails": true,
+    "phonebookButtons": 100,
+    "timelineItems": 8,
+    "hasReport": true
+  },
+  "mobile": {
+    "hasWorkspace": true,
+    "panes": 3,
+    "paneWidths": [
+      344,
+      344,
+      344
+    ],
+    "paneTops": [
+      1094,
+      21074,
+      22873
+    ],
+    "gridColumns": "344px",
+    "bodyOverflowX": 0,
+    "workspaceWidth": 344,
+    "hasNoSendCopy": true,
+    "hasInternalNoteAction": true,
+    "hasTimeline": true,
+    "hasDetails": true,
+    "phonebookButtons": 100,
+    "timelineItems": 8,
+    "hasReport": true
+  },
+  "errors": []
+}

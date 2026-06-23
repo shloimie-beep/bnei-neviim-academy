@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-06-21T17:34:50.924Z",
+  "app_url": "https://bneineviimacademy.org",
+  "signup_id": 12,
+  "dry_run": true,
+  "no_send": true,
+  "external_write_performed": false,
+  "local_write_performed": false,
+  "recipient_count": 2,
+  "payment_link_status": "included",
+  "body_contains_payment_link": true,
+  "recipients_redacted": [
+    "s***@gmail.com",
+    "a***@gmail.com"
+  ]
+}

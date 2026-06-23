@@ -1,0 +1,295 @@
+{
+  "started_at": "2026-06-17T11:15:31.250Z",
+  "base_url": "http://127.0.0.1:8091",
+  "result": "passed",
+  "results": [
+    {
+      "page": "home",
+      "route": "/",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 14235,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 11350,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 10800,
+        "button_overflows": []
+      },
+      "screenshot": "home-desktop.png"
+    },
+    {
+      "page": "provider-index",
+      "route": "/service-providers",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 3485,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 1063,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 1085,
+        "button_overflows": []
+      },
+      "screenshot": "provider-index-desktop.png"
+    },
+    {
+      "page": "provider-join",
+      "route": "/become-service-provider?onboard=provider",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 1572,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 2284,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 2212,
+        "button_overflows": []
+      },
+      "screenshot": "provider-join-desktop.png"
+    },
+    {
+      "page": "provider-portal",
+      "route": "/provider",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 1400,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 900,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 423,
+        "button_overflows": []
+      },
+      "screenshot": "provider-portal-desktop.png"
+    },
+    {
+      "page": "operations-calendar-classroom",
+      "route": "/operations?view=settings&section=calendar_classroom&workspace=platform",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13110,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 900,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 1638,
+        "button_overflows": []
+      },
+      "screenshot": "operations-calendar-classroom-desktop.png"
+    },
+    {
+      "page": "operations-automations",
+      "route": "/operations?view=automations&section=center&workspace=platform",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13147,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 900,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 1255,
+        "button_overflows": []
+      },
+      "screenshot": "operations-automations-desktop.png"
+    },
+    {
+      "page": "operations-intake",
+      "route": "/operations?view=intake&workspace=platform",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13111,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 900,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 1148,
+        "button_overflows": []
+      },
+      "screenshot": "operations-intake-desktop.png"
+    },
+    {
+      "page": "operations-calendar",
+      "route": "/operations?view=calendar&workspace=platform",
+      "viewport": "desktop",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13173,
+      "metrics": {
+        "viewport_width": 1366,
+        "scroll_width": 1366,
+        "scroll_height": 900,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 1453,
+        "button_overflows": []
+      },
+      "screenshot": "operations-calendar-desktop.png"
+    },
+    {
+      "page": "home",
+      "route": "/",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13929,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 13582,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 10717,
+        "button_overflows": []
+      },
+      "screenshot": "home-mobile.png"
+    },
+    {
+      "page": "provider-index",
+      "route": "/service-providers",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 1642,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 1420,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 998,
+        "button_overflows": []
+      },
+      "screenshot": "provider-index-mobile.png"
+    },
+    {
+      "page": "provider-join",
+      "route": "/become-service-provider?onboard=provider",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 1427,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 3497,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 2125,
+        "button_overflows": []
+      },
+      "screenshot": "provider-join-mobile.png"
+    },
+    {
+      "page": "provider-portal",
+      "route": "/provider",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 1379,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 844,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 397,
+        "button_overflows": []
+      },
+      "screenshot": "provider-portal-mobile.png"
+    },
+    {
+      "page": "operations-calendar-classroom",
+      "route": "/operations?view=settings&section=calendar_classroom&workspace=platform",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13168,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 972,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 1070,
+        "button_overflows": []
+      },
+      "screenshot": "operations-calendar-classroom-mobile.png"
+    },
+    {
+      "page": "operations-automations",
+      "route": "/operations?view=automations&section=center&workspace=platform",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13109,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 1088,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 780,
+        "button_overflows": []
+      },
+      "screenshot": "operations-automations-mobile.png"
+    },
+    {
+      "page": "operations-intake",
+      "route": "/operations?view=intake&workspace=platform",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13177,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 844,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 707,
+        "button_overflows": []
+      },
+      "screenshot": "operations-intake-mobile.png"
+    },
+    {
+      "page": "operations-calendar",
+      "route": "/operations?view=calendar&workspace=platform",
+      "viewport": "mobile",
+      "status": 200,
+      "ok": true,
+      "error": "",
+      "duration_ms": 13097,
+      "metrics": {
+        "viewport_width": 390,
+        "scroll_width": 390,
+        "scroll_height": 844,
+        "horizontal_overflow": 0,
+        "visible_text_chars": 935,
+        "button_overflows": []
+      },
+      "screenshot": "operations-calendar-mobile.png"
+    }
+  ]
+}

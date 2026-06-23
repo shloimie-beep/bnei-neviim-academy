@@ -1,0 +1,51 @@
+{
+  "started_at": "2026-06-21T13:21:36.456Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 636,
+      "data": {
+        "cookie": "[redacted]",
+        "role": "super_admin",
+        "scope": {
+          "type": "all",
+          "projectKey": "[redacted]"
+        }
+      }
+    },
+    {
+      "name": "manual Vimeo API workflow",
+      "ok": true,
+      "duration_ms": 3148,
+      "data": {
+        "selected_provider": "vimeo",
+        "manual_ready": true,
+        "automated_upload_enabled": false,
+        "created_class_id": 449,
+        "published_item_id": 3,
+        "rolled_back": true,
+        "smoke_visible_before": 1,
+        "smoke_visible_after": 0
+      }
+    },
+    {
+      "name": "operations content library ui 1440px",
+      "ok": false,
+      "duration_ms": 32628,
+      "error": "page.waitForSelector: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-one-time-recording-vimeo-readiness]') to be visible\u001b[22m\n"
+    }
+  ],
+  "summary": {
+    "vimeo_selected": true,
+    "manual_vimeo_ready": true,
+    "automated_upload_enabled": false,
+    "temporary_class_created": true,
+    "temporary_item_published": true,
+    "temporary_item_rolled_back": true,
+    "member_library_smoke_rolled_back": true,
+    "operations_widths_checked": [],
+    "member_library_widths_checked": []
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "stamp": "2026-06-14T07-47-09-155Z",
+  "base": "http://127.0.0.1:8099",
+  "viewport": "390x844",
+  "results": [
+    {
+      "name": "tasks-all",
+      "route": "/operations?view=tasks",
+      "metrics": {
+        "url": "http://127.0.0.1:8099/operations?view=tasks&cachebust=2026-06-14T07-47-09-155Z&section=tasks&workspace=platform",
+        "width": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390,
+        "clientWidth": 390,
+        "hasHorizontalOverflow": false,
+        "taskRows": 0,
+        "bodyText": "BNA\nBnei Neviim Academy\nPlatform / Super Admin / Operations / Tasks\n14 Jun\nWORKSPACE WORK\nDecisions, Pending, Tasks\n\nPending is only for human or external blockers. Agent work stays in Tasks with live status and staleness handling.\n\nAGENT WORK\nNo queued agent work is waiting right now\nAgent work appears as Tasks with an Agent Working filter, never as human Pending.\nNo heartbeat recorded yet\nQUEUED\n0\nRUNNING\n0\nURGENT/TODAY\n0\nWORKSPACE BUCKET\nTasks\n\n0 visible items. Agent status is a signal, not a Pending bucket.\n\nDecisions\n0\nPending\n0\nTasks\n0\nCalendar\n0\nDone\n0\nActivity\n0\nFilter\nURGENCY\nAll (0)\nDATE\nAll\nToday\n7 days\n30 days\nPROJECT\nAll (0)\nCATEGORY\nAll (0)\nShowing 0 of 0 tasks.\nTasks\n0 items\nNo actionable tasks match these filters.\nBNA Helper\nBNA Helper\nAdmin assistant\nH\nx\nHi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI responses, and tracked Codex/system work.\nSend",
+        "taskishClasses": [
+          {
+            "cls": "page-heading task-heading",
+            "text": "Workspace Work\n                            Decisions, Pending, Tasks\n                            Pending is only for hum"
+          },
+          {
+            "cls": "local-toolbar task-status-toolbar",
+            "text": "Workspace Bucket\n                            Tasks\n                            0 visible items. Agent status is a signal"
+          },
+          {
+            "cls": "task-list-section",
+            "text": "Tasks\n                        0 items\n                    \n                    \n                        No actionable ta"
+          },
+          {
+            "cls": "task-section-header",
+            "text": "Tasks\n                        0 items"
+          },
+          {
+            "cls": "task-list",
+            "text": "No actionable tasks match these filters."
+          },
+          {
+            "cls": "task-empty",
+            "text": "No actionable tasks match these filters."
+          }
+        ]
+      }
+    },
+    {
+      "name": "tasks-rabbi-project",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=tasks&project=one_time_mishnah_class",
+      "metrics": {
+        "url": "http://127.0.0.1:8099/operations?workspace=rabbi_sheller_provider&view=tasks&project=one_time_mishnah_class&cachebust=2026-06-14T07-47-09-155Z&section=tasks",
+        "width": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390,
+        "clientWidth": 390,
+        "hasHorizontalOverflow": false,
+        "taskRows": 0,
+        "bodyText": "BNA\nBnei Neviim Academy\nRabbi Sheller Provider Workspace / Tasks / Tasks\n14 Jun\nWORKSPACE WORK\nDecisions, Pending, Tasks\n\nPending is only for human or external blockers. Agent work stays in Tasks with live status and staleness handling.\n\nAGENT WORK\nNo queued agent work is waiting right now\nAgent work appears as Tasks with an Agent Working filter, never as human Pending.\nNo heartbeat recorded yet\nQUEUED\n0\nRUNNING\n0\nURGENT/TODAY\n0\nWORKSPACE BUCKET\nTasks\n\n0 visible items after 1 filter. Agent status is a signal, not a Pending bucket.\n\nClear filters\nDecisions\n0\nPending\n0\nTasks\n0\nCalendar\n0\nDone\n0\nActivity\n0\nFilter\nURGENCY\nAll (0)\nDATE\nAll\nToday\n7 days\n30 days\nPROJECT\nOne Time (0)\nCATEGORY\nAll (0)\nShowing 0 of 0 tasks.\nTasks\n0 items\nNo actionable tasks match these filters.\nBNA Helper\nBNA Helper\nAdmin assistant\nH\nx\nHi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI responses, and tracked Codex/system work.\nSend",
+        "taskishClasses": [
+          {
+            "cls": "page-heading task-heading",
+            "text": "Workspace Work\n                            Decisions, Pending, Tasks\n                            Pending is only for hum"
+          },
+          {
+            "cls": "local-toolbar task-status-toolbar",
+            "text": "Workspace Bucket\n                            Tasks\n                            0 visible items after 1 filter. Agent sta"
+          },
+          {
+            "cls": "task-list-section",
+            "text": "Tasks\n                        0 items\n                    \n                    \n                        No actionable ta"
+          },
+          {
+            "cls": "task-section-header",
+            "text": "Tasks\n                        0 items"
+          },
+          {
+            "cls": "task-list",
+            "text": "No actionable tasks match these filters."
+          },
+          {
+            "cls": "task-empty",
+            "text": "No actionable tasks match these filters."
+          }
+        ]
+      }
+    },
+    {
+      "name": "tasks-calendar-rabbi-project",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=tasks&section=schedule&project=one_time_mishnah_class",
+      "metrics": {
+        "url": "http://127.0.0.1:8099/operations?workspace=rabbi_sheller_provider&view=tasks&section=schedule&project=one_time_mishnah_class&cachebust=2026-06-14T07-47-09-155Z&calendar_mode=month&date=2026-06-14",
+        "width": 390,
+        "scrollWidth": 390,
+        "bodyScrollWidth": 390,
+        "clientWidth": 390,
+        "hasHorizontalOverflow": false,
+        "taskRows": 0,
+        "bodyText": "BNA\nBnei Neviim Academy\nRabbi Sheller Provider Workspace / Tasks / Calendar\n14 Jun\nWORKSPACE WORK\nDecisions, Pending, Tasks\n\nPending is only for human or external blockers. Agent work stays in Tasks with live status and staleness handling.\n\nAGENT WORK\nNo queued agent work is waiting right now\nAgent work appears as Tasks with an Agent Working filter, never as human Pending.\nNo heartbeat recorded yet\nQUEUED\n0\nRUNNING\n0\nURGENT/TODAY\n0\nWORKSPACE BUCKET\nCalendar\n\n0 visible items after 1 filter. Agent status is a signal, not a Pending bucket.\n\nClear filters\nDecisions\n0\nPending\n0\nTasks\n0\nCalendar\n0\nDone\n0\nActivity\n0\nFilter\nURGENCY\nAll (0)\nDATE\nAll\nToday\n7 days\n30 days\nPROJECT\nOne Time (0)\nCATEGORY\nAll (0)\nShowing 0 of 0 tasks.\nNo calendar items match these filters.\nBNA Helper\nBNA Helper\nAdmin assistant\nH\nx\nHi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI responses, and tracked Codex/system work.\nSend",
+        "taskishClasses": [
+          {
+            "cls": "page-heading task-heading",
+            "text": "Workspace Work\n                            Decisions, Pending, Tasks\n                            Pending is only for hum"
+          },
+          {
+            "cls": "local-toolbar task-status-toolbar",
+            "text": "Workspace Bucket\n                            Calendar\n                            0 visible items after 1 filter. Agent "
+          },
+          {
+            "cls": "task-empty",
+            "text": "No calendar items match these filters."
+          }
+        ]
+      }
+    },
+    {
+      "name": "task-detail-sheet",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=tasks&project=one_time_mishnah_class",
+      "metrics": {
+        "hasOverlay": true,
+        "hasSheet": true,
+        "sheetWidth": 390,
+        "sheetText": "HEADER\nDecide One Time Zoom/access sharing policy\nTask\nONE TIME\nTODAY\nREADY\nACTION: SHLOIMIE\nx\nDecision / Action\nEdit task\nReport problem\nBack to Tasks\nSummary\n\nFinal proposal remaining decision: Zoom/access sharing policy. Capture the answer before public launch.\n\nOWNER\nShloimie\nNEEDS ACTION\nShloimie\nSTAGE\nReady\nCATEGORY\nAdmin\nSOURCE\ngoogle_drive\nPROJECT\nOne Time\nURGENCY\nToday\nDetails\nFinal proposal remaining decision: Zoom/access sharing policy. Capture the answer before public launch.\nOriginal Capture\nComments / Internal Dialogue\nLoading comments...\nAdd comment\nActivity\nCreated\n\n10 Jun, 05:10\n\nUpdated\n\n14 Jun, 04:06\n\nPlanned\n\n10 Jun, 09:00\n\nDue\n\n11 Jun\n\nStale\n\nTask due date has passed\n\nNext action\n\nReschedule, start, or mark done",
+        "hasHorizontalOverflow": false,
+        "clicked": {
+          "selector": ".task-row",
+          "text": "\n                    \n                        \n                            Task\n                            \n                            Stale\n                        \n                        Decide One Time Zoom/access "
+        }
+      }
+    }
+  ],
+  "failures": [
+    "tasks-all: no task rows/cards rendered",
+    "tasks-rabbi-project: no task rows/cards rendered",
+    "calendar route missing mode controls",
+    "calendar route missing Hebrew calendar label"
+  ]
+}

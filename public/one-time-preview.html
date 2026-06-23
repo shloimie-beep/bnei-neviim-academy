@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>One Time Mishnah Preview</title>
+  <link rel="stylesheet" href="/css/bna-app-shell.css">
+  <style>
+    :root {
+      --one-blue: #1e3a5f;
+      --one-blue-2: #2c5282;
+      --one-gold: #c9a227;
+      --one-soft-blue: #e8f0f8;
+      --one-parchment: #f7f3e8;
+      --one-ink: #1f2933;
+      --one-muted: #4b5563;
+      --one-line: #d7dfec;
+      --one-card: #ffffff;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--one-parchment);
+      color: var(--one-ink);
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .preview-topbar {
+      align-items: center;
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid var(--one-line);
+      display: flex;
+      gap: 14px;
+      justify-content: space-between;
+      min-height: 64px;
+      padding: 10px clamp(16px, 4vw, 42px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand-lockup {
+      align-items: center;
+      display: flex;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-lockup img {
+      display: block;
+      object-fit: contain;
+    }
+
+    .bna-mark {
+      border-radius: 8px;
+      height: 36px;
+      width: 36px;
+    }
+
+    .one-logo {
+      height: 34px;
+      max-width: 150px;
+    }
+
+    .preview-status {
+      border: 1px solid rgba(201, 162, 39, 0.52);
+      border-radius: 999px;
+      color: var(--one-blue);
+      font-size: 12px;
+      font-weight: 850;
+      padding: 8px 12px;
+      white-space: nowrap;
+    }
+
+    .hero {
+      align-items: end;
+      background-image:
+        linear-gradient(90deg, rgba(12, 26, 45, 0.88), rgba(12, 26, 45, 0.58), rgba(12, 26, 45, 0.16)),
+        url("/images/one-time-existing-site-preview.jpg");
+      background-position: center top;
+      background-size: cover;
+      color: #ffffff;
+      display: grid;
+      min-height: min(720px, calc(100vh - 64px));
+      padding: clamp(40px, 7vw, 92px) clamp(18px, 6vw, 72px);
+    }
+
+    .hero-content {
+      max-width: 780px;
+    }
+
+    .eyebrow {
+      color: #f6e8b8;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      margin: 0 0 12px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(38px, 7vw, 74px);
+      line-height: 0.96;
+      margin: 0;
+      max-width: 840px;
+    }
+
+    .hero-copy {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: clamp(17px, 2.4vw, 22px);
+      line-height: 1.45;
+      margin: 20px 0 0;
+      max-width: 690px;
+    }
+
+    .hero-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .primary-cta,
+    .quiet-link {
+      align-items: center;
+      border-radius: 8px;
+      display: inline-flex;
+      font-weight: 900;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      text-decoration: none;
+    }
+
+    .primary-cta {
+      background: var(--one-gold);
+      color: #152338;
+    }
+
+    .primary-cta:hover {
+      background: #e0bd42;
+    }
+
+    .quiet-link {
+      border: 1px solid rgba(255, 255, 255, 0.52);
+      color: #ffffff;
+    }
+
+    .page-band {
+      background: #ffffff;
+      padding: clamp(36px, 6vw, 72px) clamp(18px, 6vw, 72px);
+    }
+
+    .page-band.alt {
+      background: linear-gradient(180deg, var(--one-soft-blue), var(--one-parchment));
+    }
+
+    .section-inner {
+      margin: 0 auto;
+      max-width: 1120px;
+    }
+
+    .section-heading {
+      max-width: 760px;
+    }
+
+    .section-heading h2 {
+      color: var(--one-blue);
+      font-size: clamp(28px, 4vw, 46px);
+      line-height: 1.05;
+      margin: 0;
+    }
+
+    .section-heading p {
+      color: var(--one-muted);
+      font-size: 17px;
+      line-height: 1.6;
+      margin: 14px 0 0;
+    }
+
+    .offer-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .offer-card,
+    .library-card,
+    .note-card {
+      background: var(--one-card);
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      box-shadow: 0 16px 40px rgba(30, 58, 95, 0.1);
+      padding: 18px;
+    }
+
+    .offer-card span,
+    .library-card span,
+    .note-card span {
+      color: var(--one-muted);
+      display: block;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .offer-card strong,
+    .library-card strong,
+    .note-card strong {
+      color: var(--one-blue);
+      display: block;
+      font-size: 22px;
+      line-height: 1.15;
+      margin-top: 8px;
+    }
+
+    .offer-card p,
+    .library-card p,
+    .note-card p {
+      color: var(--one-muted);
+      line-height: 1.55;
+      margin: 12px 0 0;
+    }
+
+    .library-layout {
+      align-items: stretch;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      margin-top: 24px;
+    }
+
+    .library-visual {
+      align-items: center;
+      background: #111827;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      min-height: 260px;
+      overflow: hidden;
+      padding: 26px;
+    }
+
+    .library-visual img {
+      max-height: 180px;
+      max-width: min(360px, 90%);
+      object-fit: contain;
+    }
+
+    .approval-list,
+    .onboarding-layout {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .onboarding-layout {
+      align-items: start;
+      gap: 18px;
+      grid-template-columns: minmax(0, 0.86fr) minmax(320px, 1.14fr);
+    }
+
+    .intake-panel {
+      background: #ffffff;
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      box-shadow: 0 16px 40px rgba(30, 58, 95, 0.1);
+      padding: 20px;
+    }
+
+    .intake-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label,
+    .intent-label,
+    .ack-row {
+      color: var(--one-blue);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field textarea {
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      color: var(--one-ink);
+      font: inherit;
+      min-height: 44px;
+      padding: 10px 12px;
+      width: 100%;
+    }
+
+    .field textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .intent-options {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .intent-option {
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      padding: 12px;
+    }
+
+    .intent-option input {
+      margin: 0;
+    }
+
+    .intent-option span {
+      color: var(--one-blue);
+      font-weight: 900;
+    }
+
+    .intent-option small {
+      color: var(--one-muted);
+      line-height: 1.35;
+    }
+
+    .ack-row {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: auto minmax(0, 1fr);
+      line-height: 1.4;
+    }
+
+    .intake-submit {
+      background: var(--one-blue);
+      border: 0;
+      border-radius: 8px;
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+      min-height: 46px;
+      padding: 0 18px;
+    }
+
+    .intake-submit:hover {
+      background: var(--one-blue-2);
+    }
+
+    .form-status {
+      border-radius: 8px;
+      color: var(--one-blue);
+      display: none;
+      font-weight: 800;
+      line-height: 1.45;
+      padding: 12px;
+    }
+
+    .form-status.visible {
+      display: block;
+    }
+
+    .form-status.success {
+      background: #eaf8ef;
+      border: 1px solid #a8d8b5;
+    }
+
+    .form-status.error {
+      background: #fff1f0;
+      border: 1px solid #f3b4ad;
+      color: #8a1f17;
+    }
+
+    .note-card {
+      box-shadow: none;
+    }
+
+    footer {
+      background: var(--one-blue);
+      color: rgba(255, 255, 255, 0.82);
+      padding: 22px clamp(18px, 6vw, 72px);
+    }
+
+    footer strong {
+      color: #ffffff;
+    }
+
+    @media (max-width: 840px) {
+      .hero {
+        min-height: 620px;
+      }
+
+      .offer-grid,
+      .library-layout,
+      .approval-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .preview-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        min-height: 570px;
+      }
+
+      .hero-actions {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .primary-cta,
+      .quiet-link {
+        width: 100%;
+      }
+
+      .field-grid,
+      .intent-options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body class="bna-shell one-time-preview-page">
+  <header class="preview-topbar">
+    <div class="brand-lockup">
+      <img class="bna-mark" src="/icons/icon-192.png" alt="BNA">
+      <img class="one-logo" src="/images/one-time-logo-black.png" alt="One Time">
+    </div>
+    <div class="preview-status">Preview only. Not live checkout.</div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">One Time Mishnah draft funnel</p>
+        <h1>One Time Mishnah: live learning, sharp questions, real growth.</h1>
+        <p class="hero-copy">A focused preview for Rabbi Scheller's live Mishnah membership: one offer, one join path, and a quiet video-library fallback for families who are not ready to join live yet.</p>
+        <div class="hero-actions">
+          <a class="primary-cta" href="#one-time-onboarding">Join the Mishnah Shiur</a>
+          <a class="quiet-link" href="#library">Preview the Video Library</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-band" id="membership">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Monthly membership</h2>
+          <p>Payment structure is intentionally inactive in this preview. Shloimie still needs to confirm the billing provider, refund policy, currencies, and start-date handling before any live payment link is connected.</p>
+        </div>
+        <div class="offer-grid">
+          <article class="offer-card">
+            <span>Offer</span>
+            <strong>Live Mishnah membership</strong>
+            <p>Primary product: the recurring live shiur and member access.</p>
+          </article>
+          <article class="offer-card">
+            <span>ILS price</span>
+            <strong>TBD</strong>
+            <p>Green Invoice and recurring billing structure still need approval.</p>
+          </article>
+          <article class="offer-card">
+            <span>USD price</span>
+            <strong>TBD</strong>
+            <p>US funnel and payment path are planned but not active.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-band alt" id="library">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Video library fallback</h2>
+          <p>The library is secondary. It should appear when someone is not ready for the live membership or backs out of the join path, without competing with the main CTA.</p>
+        </div>
+        <div class="library-layout">
+          <div class="library-visual" aria-label="One Time library preview">
+            <img src="/images/one-time-logo-black.png" alt="One Time video library">
+          </div>
+          <article class="library-card">
+            <span>Fallback action</span>
+            <strong>Preview the Video Library</strong>
+            <p>Collect email or phone only after the copy, consent language, and access rules are approved. No live video-library payment or account creation is enabled on this page.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-band" id="one-time-onboarding">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Join interest review</h2>
+          <p>Share the basics and the One Time team will review the right next step before any payment link, access link, email, WhatsApp, or public automation is sent.</p>
+        </div>
+        <div class="onboarding-layout">
+          <article class="note-card">
+            <span>Preview-safe intake</span>
+            <strong>Scoped One Time follow-up</strong>
+            <p>This creates a local review record for the One Time Mishnah workspace. It does not create checkout, grant member access, or message anyone automatically.</p>
+          </article>
+          <div class="intake-panel">
+            <form class="intake-form" data-one-time-onboarding>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="otParentName">Contact name</label>
+                  <input id="otParentName" name="parent_name" autocomplete="name" required>
+                </div>
+                <div class="field">
+                  <label for="otEmail">Email</label>
+                  <input id="otEmail" name="parent_email" type="email" autocomplete="email">
+                </div>
+                <div class="field">
+                  <label for="otPhone">Phone or WhatsApp</label>
+                  <input id="otPhone" name="parent_phone" autocomplete="tel">
+                </div>
+                <div class="field">
+                  <label for="otLearnerName">Learner/member name</label>
+                  <input id="otLearnerName" name="learner_name">
+                </div>
+                <div class="field">
+                  <label for="otLearnerAge">Age or stage</label>
+                  <input id="otLearnerAge" name="learner_age">
+                </div>
+                <div class="field">
+                  <label for="otLocation">Location/time zone</label>
+                  <input id="otLocation" name="city" autocomplete="address-level2">
+                </div>
+              </div>
+              <div>
+                <div class="intent-label">Interest path</div>
+                <div class="intent-options">
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="live" checked>
+                    <span>Live membership</span>
+                    <small>Interested in the recurring Mishnah shiur.</small>
+                  </label>
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="library">
+                    <span>Video library</span>
+                    <small>Not ready for live, wants recordings first.</small>
+                  </label>
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="future_cohort">
+                    <span>Later cohort</span>
+                    <small>Interested, but timing is not right yet.</small>
+                  </label>
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="question">
+                    <span>Ask first</span>
+                    <small>Needs a human answer before joining.</small>
+                  </label>
+                </div>
+              </div>
+              <div class="field full">
+                <label for="otGoals">Schedule, goals, or questions</label>
+                <textarea id="otGoals" name="questions"></textarea>
+              </div>
+              <label class="ack-row">
+                <input type="checkbox" name="preview_ack" required>
+                <span>I understand this preview only queues a review. It does not create payment, access, email, WhatsApp, or public posting.</span>
+              </label>
+              <button class="intake-submit" type="submit">Send for review</button>
+              <div class="form-status" data-one-time-onboarding-status></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-band">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Approval checklist</h2>
+          <p>The phrase "biggest" or "most popular" should stay out of live copy until Rabbi Scheller or Shloimie confirms proof. This preview uses safer draft language.</p>
+        </div>
+        <div class="approval-list">
+          <article class="note-card">
+            <span>Billing</span>
+            <strong>No payment link yet</strong>
+            <p>Confirm ILS/USD prices, billing date, first payment, refund policy, and provider.</p>
+          </article>
+          <article class="note-card">
+            <span>Access</span>
+            <strong>No automatic login yet</strong>
+            <p>Confirm which existing backend, app, or BNA workspace should grant access.</p>
+          </article>
+          <article class="note-card">
+            <span>Referral</span>
+            <strong>Ledger before credits</strong>
+            <p>Store referral attribution first. Apply billing credit only after paid conversion and admin review.</p>
+          </article>
+          <article class="note-card">
+            <span>Forum</span>
+            <strong>Moderation first</strong>
+            <p>Student questions and comments require AI filtering plus human review for severe content.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Preview route:</strong> /preview/one-time-mishnah. Do not replace the live Rabbi Scheller site until Shloimie approves this direction.
+  </footer>
+  <script src="/js/bna-helper-knowledge.js" defer></script>
+  <script src="/js/bna-bot-widget.js" defer></script>
+  <script>
+    (() => {
+      const form = document.querySelector('[data-one-time-onboarding]');
+      const status = document.querySelector('[data-one-time-onboarding-status]');
+      if (!form || !status) return;
+
+      function showStatus(type, message) {
+        status.className = `form-status visible ${type}`;
+        status.textContent = message;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        if (!data.get('preview_ack')) {
+          showStatus('error', 'Please confirm the preview-only review notice first.');
+          return;
+        }
+        const payload = Object.fromEntries(data.entries());
+        delete payload.preview_ack;
+        payload.route = window.location.pathname;
+        payload.viewport = {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          device_scale_factor: window.devicePixelRatio || 1,
+        };
+        showStatus('success', 'Sending for review...');
+        try {
+          const response = await fetch('/api/one-time/mishnah/onboarding', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || 'Could not save this review request.');
+          showStatus('success', 'Received for review. No payment, access, email, WhatsApp, or public posting was created.');
+          form.reset();
+          const liveOption = form.querySelector('input[name="intent"][value="live"]');
+          if (liveOption) liveOption.checked = true;
+        } catch (error) {
+          showStatus('error', error.message || 'Could not save this review request.');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

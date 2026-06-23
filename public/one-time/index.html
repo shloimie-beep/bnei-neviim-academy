@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Learn Mishnayos Live with Rabbi Elie Scheller</title>
+  <meta name="description" content="Live shiurim, daily accountability, practical worksheets, and direct interaction with Rabbi Elie Scheller from anywhere in the world.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta property="og:title" content="Learn Mishnayos Live with Rabbi Elie Scheller">
+  <meta property="og:description" content="Start with 30 days free, then $67 USD per month after trial when live checkout is approved.">
+  <meta property="og:image" content="/images/one-time/social/one-time-og-20260622.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#080910">
+  <link rel="canonical" href="/one-time">
+  <link rel="preload" href="/images/one-time/brand/onetime-hero-vertical.webp" as="image">
+  <style>
+    :root {
+      --ot-black: #080910;
+      --ot-charcoal: #10131a;
+      --ot-navy: #081323;
+      --ot-navy-2: #102634;
+      --ot-teal: #08779c;
+      --ot-cyan: #0b9fc9;
+      --ot-yellow: #ede518;
+      --ot-cream: #faf9f4;
+      --ot-white: #ffffff;
+      --ot-muted: #aeb9c6;
+      --ot-line: rgba(255,255,255,0.14);
+      --ot-light-line: rgba(8,9,16,0.12);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ot-white);
+      background: var(--ot-black);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.5;
+    }
+    body, button, input, select, textarea { font: inherit; }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+    h1 {
+      max-width: 760px;
+      margin-bottom: 14px;
+      font-size: clamp(42px, 8vw, 88px);
+      line-height: 0.94;
+    }
+    h2 {
+      margin-bottom: 12px;
+      font-size: clamp(28px, 4vw, 48px);
+      line-height: 1.02;
+    }
+    h3 { margin-bottom: 8px; font-size: 1.08rem; line-height: 1.15; }
+    p { color: rgba(255,255,255,0.76); }
+    .wrap {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+    .campaign-bar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      color: #101010;
+      background: var(--ot-yellow);
+      border-bottom: 1px solid rgba(8,9,16,0.2);
+    }
+    .campaign-inner {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 0.88rem;
+      font-weight: 860;
+    }
+    .countdown {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #101010;
+      font-variant-numeric: tabular-nums;
+    }
+    .site-header {
+      position: sticky;
+      top: 44px;
+      z-index: 40;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      background: rgba(8,9,16,0.9);
+      backdrop-filter: blur(16px);
+    }
+    .topbar {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .brand img {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: var(--ot-yellow);
+    }
+    .brand strong { display: block; font-size: 0.98rem; line-height: 1.05; }
+    .brand span { display: block; color: var(--ot-muted); font-size: 0.78rem; line-height: 1.2; }
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav a {
+      border: 1px solid transparent;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: rgba(255,255,255,0.78);
+      font-size: 0.86rem;
+      font-weight: 760;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav a:hover,
+    .nav a:focus-visible {
+      border-color: var(--ot-line);
+      color: var(--ot-white);
+      outline: none;
+    }
+    .hero {
+      min-height: 86vh;
+      position: relative;
+      display: grid;
+      align-items: end;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(8,9,16,0.96) 0%, rgba(8,9,16,0.78) 50%, rgba(8,9,16,0.34) 100%),
+        url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 90% no-repeat,
+        var(--ot-black);
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 120px;
+      background: linear-gradient(180deg, transparent, var(--ot-black));
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.65fr);
+      gap: 28px;
+      align-items: end;
+      padding: 80px 0 42px;
+    }
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--ot-yellow);
+      font-size: 0.78rem;
+      font-weight: 860;
+      text-transform: uppercase;
+    }
+    .hero-copy {
+      max-width: 700px;
+      font-size: 1.08rem;
+    }
+    .hero-media {
+      display: grid;
+      gap: 10px;
+    }
+    .video-frame {
+      overflow: hidden;
+      border: 1px solid rgba(237,229,24,0.32);
+      border-radius: 8px;
+      aspect-ratio: 16 / 9;
+      background: #111;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.34);
+    }
+    .video-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    .video-note {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.9rem;
+    }
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .button,
+    button.button {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--ot-white);
+      background: rgba(255,255,255,0.08);
+      font-weight: 820;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .button.primary {
+      color: #101010;
+      border-color: var(--ot-yellow);
+      background: var(--ot-yellow);
+    }
+    .button.ghost {
+      color: var(--ot-white);
+      background: rgba(8,119,156,0.2);
+      border-color: rgba(11,159,201,0.42);
+    }
+    .section {
+      padding: 70px 0;
+      background: var(--ot-black);
+    }
+    .section.alt {
+      color: var(--ot-black);
+      background: var(--ot-cream);
+    }
+    .section.alt p { color: #4d5966; }
+    .section.alt .eyebrow { color: var(--ot-teal); }
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 28px;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tile,
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--ot-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      padding: 18px;
+    }
+    .section.alt .tile,
+    .section.alt .panel {
+      color: var(--ot-black);
+      border-color: var(--ot-light-line);
+      background: var(--ot-white);
+    }
+    .proof-strip {
+      display: grid;
+      grid-template-columns: minmax(0, 0.72fr) minmax(260px, 1.28fr);
+      gap: 18px;
+      align-items: center;
+    }
+    .logo-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: center;
+    }
+    .logo-tile {
+      min-height: 84px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--ot-light-line);
+      border-radius: 8px;
+      background: var(--ot-white);
+      padding: 12px;
+    }
+    .logo-tile img { max-height: 48px; object-fit: contain; }
+    .feature-band {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 0.82fr);
+      gap: 26px;
+      align-items: center;
+    }
+    .portrait-frame {
+      overflow: hidden;
+      border: 1px solid var(--ot-line);
+      border-radius: 8px;
+      background: var(--ot-navy);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.24);
+    }
+    .portrait-frame img {
+      width: 100%;
+      height: 520px;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .form-grid { display: grid; gap: 12px; }
+    .field-pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    label {
+      display: grid;
+      gap: 6px;
+      color: #344252;
+      font-size: 0.84rem;
+      font-weight: 780;
+    }
+    .checkbox-label {
+      grid-template-columns: 20px minmax(0, 1fr);
+      align-items: start;
+      color: #344252;
+      line-height: 1.35;
+    }
+    .checkbox-label input { width: auto; margin-top: 3px; }
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--ot-light-line);
+      border-radius: 8px;
+      padding: 11px 12px;
+      color: var(--ot-black);
+      background: var(--ot-white);
+    }
+    textarea { min-height: 96px; resize: vertical; }
+    .form-status {
+      min-height: 22px;
+      color: var(--ot-teal);
+      font-weight: 760;
+    }
+    footer {
+      border-top: 1px solid var(--ot-line);
+      padding: 28px 0 34px;
+      background: var(--ot-black);
+    }
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .footer-row a {
+      color: rgba(255,255,255,0.74);
+      text-decoration: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+    @media (max-width: 920px) {
+      .campaign-inner, .topbar, .hero-inner, .feature-band, .proof-strip {
+        grid-template-columns: 1fr;
+      }
+      .campaign-inner {
+        display: grid;
+        justify-items: start;
+        padding: 8px 0;
+      }
+      .site-header { top: 60px; }
+      .hero {
+        background:
+          linear-gradient(180deg, rgba(8,9,16,0.98), rgba(8,9,16,0.82)),
+          url("/images/one-time/brand/onetime-hero-vertical.webp") right bottom / auto 72% no-repeat,
+          var(--ot-black);
+      }
+      .grid.three, .grid.two { grid-template-columns: 1fr; }
+      .logo-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .portrait-frame img { height: 420px; }
+    }
+    @media (max-width: 620px) {
+      .brand span span { display: none; }
+      .nav a { padding: 7px 8px; font-size: 0.8rem; }
+      .hero-inner { padding-top: 54px; }
+      .section { padding: 48px 0; }
+      .field-pair { grid-template-columns: 1fr; }
+      .button { width: 100%; }
+      .logo-row { grid-template-columns: 1fr; }
+      .portrait-frame img { height: 360px; }
+    }
+  </style>
+</head>
+<body data-site-config="/config/service-provider-sites/one-time.json">
+  <div class="campaign-bar">
+    <div class="wrap campaign-inner">
+      <span id="campaignHeadline">30 DAYS TO JOIN - START WITH 30 DAYS FREE</span>
+      <span class="countdown" id="campaignCountdown" aria-live="polite">Checking campaign deadline...</span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap topbar">
+      <a class="brand" href="/one-time" aria-label="OneTimeOneTime Mishnah home">
+        <img src="/images/one-time/brand/onetimelogo.webp" alt="">
+        <span>
+          <strong>OneTimeOneTime Mishnah</strong>
+          <span>Worldwide Live Mishnayos</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="One Time navigation">
+        <a href="#watch-rabbi">Watch</a>
+        <a href="#what-you-get">Program</a>
+        <a href="#worldwide">Worldwide</a>
+        <a href="#signup">Start Free</a>
+        <a href="/one-time/member-login">Member Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="wrap hero-inner">
+        <div>
+          <p class="eyebrow">Worldwide Live Mishnayos</p>
+          <h1>Learn Mishnayos Live with Rabbi Elie Scheller</h1>
+          <p class="hero-copy">Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - wherever you live.</p>
+          <div class="button-row">
+            <a class="button primary" href="#signup">START 30 DAYS FREE</a>
+            <a class="button ghost" href="#watch-rabbi">WATCH RABBI SCHELLER</a>
+          </div>
+        </div>
+        <div class="hero-media" id="watch-rabbi">
+          <div class="video-frame">
+            <iframe
+              src="https://player.vimeo.com/video/1158542993?h=daa31d3417"
+              title="Rabbi Elie Scheller One Time promo"
+              loading="eager"
+              allow="fullscreen; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
+          <div class="video-note">Promo video ID 1158542993. The longer Pesachim lesson is reserved for the member classroom.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="what-you-get">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">What You Get</p>
+          <h2>A live Mishnayos class your child can stay with.</h2>
+          <p>One Time combines Rabbi Scheller's live shiur, structured review, simple worksheets, and family-visible progress so learning keeps moving between classes.</p>
+        </div>
+        <div class="grid three">
+          <article class="tile">
+            <h3>Live Shiurim</h3>
+            <p>Join Rabbi Scheller for live Mishnayos learning with a clear weekly rhythm.</p>
+          </article>
+          <article class="tile">
+            <h3>Daily Accountability</h3>
+            <p>Students have a steady review path and parents can see the learning progress.</p>
+          </article>
+          <article class="tile">
+            <h3>Worksheets and Library</h3>
+            <p>Practical worksheets and member videos help students review the class material.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="worldwide">
+      <div class="wrap proof-strip">
+        <div>
+          <p class="eyebrow">Across The Jewish World</p>
+          <h2>A shiur built for families in many communities.</h2>
+          <p>New location and crowd assets are organized in the private asset library for rights review. Until consent is clear, the public page uses only approved existing One Time visuals.</p>
+        </div>
+        <div class="logo-row" aria-label="Media and platform references">
+          <div class="logo-tile"><img src="/images/one-time/press/torahanytime-logo.png" alt="TorahAnytime"></div>
+          <div class="logo-tile"><img src="/images/one-time/press/twentyfour-six-logo.png" alt="24Six"></div>
+          <div class="logo-tile"><img src="/images/one-time/press/loop-logo.png" alt="Loop"></div>
+          <div class="logo-tile"><img src="/images/one-time/press/mishpacha.webp" alt="Mishpacha"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt">
+      <div class="wrap feature-band">
+        <div>
+          <p class="eyebrow">Rabbi Elie Scheller</p>
+          <h2>Warm, clear teaching that keeps boys connected to Mishnayos.</h2>
+          <p>The One Time experience is centered on the Rabbi, the live class, and the follow-through families need after each shiur.</p>
+          <p><strong>$67 USD per month after a 30-day free trial</strong>, subject to final live Stripe configuration and launch approval.</p>
+        </div>
+        <div class="portrait-frame">
+          <img src="/images/one-time/brand/onetime-hero-vertical.webp" alt="Rabbi Elie Scheller">
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="library">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Member Classroom</p>
+          <h2>Watch the lesson inside the site.</h2>
+          <p>The member classroom embeds the Pesachim Perek 10 sample lesson with video ID 1178363755. It does not send students to a raw external page as the primary path.</p>
+        </div>
+        <div class="grid three">
+          <article class="tile">
+            <h3>Class Video</h3>
+            <p>Embedded Vimeo lesson playback, with fallback link only for recovery.</p>
+          </article>
+          <article class="tile">
+            <h3>Worksheets</h3>
+            <p>Worksheet cards stay inside the One Time classroom flow.</p>
+          </article>
+          <article class="tile">
+            <h3>Questions</h3>
+            <p>Private questions and Rabbi-reviewed replies stay scoped to One Time.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="signup">
+      <div class="wrap feature-band">
+        <div>
+          <p class="eyebrow">Start Free</p>
+          <h2>Start with 30 days free.</h2>
+          <p>After the trial, the intended membership is $67 USD per month. The campaign deadline is server-backed and will not reset on refresh.</p>
+        </div>
+        <form id="interestForm" class="panel form-grid">
+          <div class="field-pair">
+            <label>
+              Parent name
+              <input name="parent_name" autocomplete="name" required>
+            </label>
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email">
+            </label>
+          </div>
+          <div class="field-pair">
+            <label>
+              Phone / WhatsApp
+              <input name="phone" autocomplete="tel">
+            </label>
+            <label>
+              Region
+              <select name="region">
+                <option value="us">US</option>
+                <option value="uk">UK</option>
+                <option value="israel">Israel</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Notes
+            <textarea name="notes" placeholder="Best time zone, child's age range, or class questions"></textarea>
+          </label>
+          <label class="checkbox-label">
+            <input name="consent" type="checkbox" value="yes" required>
+            <span>I agree to be contacted about One Time Mishnayos and understand that live checkout, charges, and emails require approved launch configuration.</span>
+          </label>
+          <button class="button primary" type="submit">START 30 DAYS FREE</button>
+          <p class="form-status" id="interestStatus" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row">
+      <span>OneTimeOneTime Mishnayos</span>
+      <span>
+        <a href="/one-time/privacy.html">Privacy</a> |
+        <a href="/one-time/terms.html">Terms</a> |
+        <a href="/one-time/member-login">Member Login</a>
+      </span>
+    </div>
+  </footer>
+
+  <script>
+    const campaignHeadline = document.getElementById('campaignHeadline');
+    const campaignCountdown = document.getElementById('campaignCountdown');
+    const form = document.getElementById('interestForm');
+    const status = document.getElementById('interestStatus');
+    let campaignDeadlineMs = 0;
+    let campaignServerOffsetMs = 0;
+
+    function renderCountdown() {
+      if (!campaignDeadlineMs) return;
+      const now = Date.now() + campaignServerOffsetMs;
+      const remaining = campaignDeadlineMs - now;
+      if (remaining <= 0) {
+        campaignCountdown.textContent = 'Enrollment window expired';
+        form?.querySelector('button[type="submit"]')?.setAttribute('disabled', 'disabled');
+        return;
+      }
+      const days = Math.floor(remaining / 86400000);
+      const hours = Math.floor((remaining % 86400000) / 3600000);
+      const minutes = Math.floor((remaining % 3600000) / 60000);
+      const seconds = Math.floor((remaining % 60000) / 1000);
+      campaignCountdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s left`;
+    }
+
+    async function loadCampaign() {
+      try {
+        const response = await fetch('/api/one-time/campaign', { credentials: 'same-origin' });
+        const data = await response.json();
+        const campaign = data.campaign || {};
+        campaignHeadline.textContent = campaign.headline || '30 DAYS TO JOIN - START WITH 30 DAYS FREE';
+        if (!campaign.deadline_configured) {
+          campaignCountdown.textContent = 'Campaign deadline pending launch approval';
+          return;
+        }
+        campaignDeadlineMs = Date.parse(campaign.deadline_at);
+        campaignServerOffsetMs = Date.parse(campaign.server_now) - Date.now();
+        const dateText = new Intl.DateTimeFormat([], {
+          dateStyle: 'medium',
+          timeStyle: 'short',
+          timeZone: campaign.time_zone || 'Asia/Jerusalem',
+        }).format(new Date(campaignDeadlineMs));
+        campaignCountdown.setAttribute('aria-label', `Enrollment deadline ${dateText}`);
+        renderCountdown();
+        setInterval(renderCountdown, 1000);
+      } catch {
+        campaignCountdown.textContent = 'Campaign deadline unavailable';
+      }
+    }
+
+    function formPayload(formElement) {
+      const data = new FormData(formElement);
+      return Object.fromEntries(data.entries());
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = 'Saving your request...';
+      const button = form.querySelector('button[type="submit"]');
+      button.disabled = true;
+      try {
+        const payload = formPayload(form);
+        if (payload.consent !== 'yes') throw new Error('Consent is required before submitting.');
+        const response = await fetch('/api/one-time/interest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Could not save your request');
+        status.textContent = data.message || 'Your request was saved. No charge or external send was performed.';
+        form.reset();
+      } catch (error) {
+        status.textContent = error.message || 'Could not save your request.';
+      } finally {
+        if (!campaignDeadlineMs || campaignDeadlineMs > Date.now() + campaignServerOffsetMs) {
+          button.disabled = false;
+        }
+      }
+    });
+
+    loadCampaign();
+  </script>
+  <script src="/js/app-select.js"></script>
+</body>
+</html>

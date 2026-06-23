@@ -1,0 +1,111 @@
+{
+  "key": "one_time",
+  "brand_key": "one_time",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "slug": "one-time",
+  "base_routes": [
+    "/one-time",
+    "/one-time/mishnayos",
+    "/one-time/us",
+    "/one-time/uk",
+    "/one-time/israel",
+    "/one-time/interest",
+    "/one-time/member-login"
+  ],
+  "status": "shared_review",
+  "external_write_performed": false,
+  "review_only": true,
+  "identity": {
+    "name": "OneTimeOneTime Mishnah",
+    "owner_label": "Rabbi Elie Scheller",
+    "category": "Worldwide Live Mishnah Learning"
+  },
+  "assets": {
+    "logo": "/images/one-time/brand/onetimelogo.webp",
+    "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
+    "vimeo_promo_embed": "https://player.vimeo.com/video/1158542993?h=daa31d3417",
+    "social_og": "/images/one-time/social/one-time-og-20260622.jpg",
+    "press_logos": [
+      {
+        "label": "TorahAnytime",
+        "src": "/images/one-time/press/torahanytime-logo.png"
+      },
+      {
+        "label": "24Six",
+        "src": "/images/one-time/press/twentyfour-six-logo.png"
+      },
+      {
+        "label": "Loop",
+        "src": "/images/one-time/press/loop-logo.png"
+      },
+      {
+        "label": "Mishpacha",
+        "src": "/images/one-time/press/mishpacha.webp"
+      }
+    ],
+    "teaching_gallery": [
+      {
+        "label": "Live teaching stage",
+        "src": "/images/one-time/teaching/promo-stage-still-01.webp"
+      },
+      {
+        "label": "Rabbi teaching moment",
+        "src": "/images/one-time/teaching/promo-stage-still-02.webp"
+      },
+      {
+        "label": "Stage review setting",
+        "src": "/images/one-time/teaching/promo-stage-still-03.webp"
+      }
+    ]
+  },
+  "copy": {
+    "campaign_bar": "30 DAYS TO JOIN - START WITH 30 DAYS FREE",
+    "eyebrow": "Worldwide Live Mishnayos",
+    "headline": "Learn Mishnayos Live with Rabbi Elie Scheller",
+    "subhead": "Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - wherever you live.",
+    "primary_cta": "START 30 DAYS FREE",
+    "secondary_cta": "WATCH RABBI SCHELLER",
+    "member_cta": "Member Login",
+    "offer": "$67 USD per month after a 30-day free trial",
+    "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
+    "no_send_note": "Signup interest does not charge a card, grant access, send bulk email, or write to an external CRM."
+  },
+  "nav": [
+    {
+      "label": "Watch",
+      "href": "#watch-rabbi"
+    },
+    {
+      "label": "Program",
+      "href": "#what-you-get"
+    },
+    {
+      "label": "Worldwide",
+      "href": "#worldwide"
+    },
+    {
+      "label": "Start Free",
+      "href": "#signup"
+    },
+    {
+      "label": "Member Login",
+      "href": "/one-time/member-login"
+    }
+  ],
+  "proof_note": "Legacy site media/publication references are inventoried for review only and do not imply sponsorship, endorsement, or permission status.",
+  "review_links": {
+    "provider": "/provider.html?review=one-time",
+    "parent": "/parent.html?review=one-time",
+    "student": "/student.html?review=one-time",
+    "classroom": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+    "email_preview": "/one-time-email-review.html"
+  },
+  "blocked_live_actions": [
+    "live_email_send",
+    "live_charge_or_checkout",
+    "real_zoom_meeting_creation",
+    "automated_vimeo_upload",
+    "dns_or_separate_railway_provisioning"
+  ]
+}

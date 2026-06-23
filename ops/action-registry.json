@@ -1,0 +1,667 @@
+{
+  "registry_version": "bna-action-registry-v1",
+  "updated_at": "2026-06-22T20:00:00+03:00",
+  "policy": {
+    "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
+    "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
+    "related_goal_ids": [
+      "GOAL-CORE-002",
+      "GOAL-CORE-010",
+      "GOAL-CORE-015"
+    ]
+  },
+  "actions": [
+    {
+      "action_id": "ACTION-OPERATIONS-HELPER-OPEN",
+      "label": "BNA Helper",
+      "surface": "operations",
+      "route": "/operations",
+      "selector_hint": "[data-helper-open], .local-toolbar-helper, .mobile-helper-button",
+      "expected_behavior": "Opens the scoped Operations helper drawer.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Helper context returns scoped tools and no duplicate public helper widget."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-PARENT-STUDENT-LOGIN-RESET",
+      "label": "Save login for child",
+      "surface": "parent_portal",
+      "route": "/parent",
+      "selector_hint": "student login reset form",
+      "expected_behavior": "Parent can set/reset only their own child's student username/password and sees the child name.",
+      "permission": "parent",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "Parent-scoped endpoint rejects cross-household student IDs."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
+      "label": "Create automation with helper",
+      "surface": "operations",
+      "route": "/operations?view=settings&section=automation_center",
+      "selector_hint": "create automation helper entry",
+      "expected_behavior": "Creates local automation metadata draft only after confirmation.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Planner maps create automation/billing workflow language to create_automation without external writes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-HELPER-CAPTURE-RAW-INTAKE",
+      "label": "Capture raw intake",
+      "surface": "operations_helper",
+      "route": "/operations",
+      "selector_hint": "helper tool capture_raw_intake",
+      "expected_behavior": "Helper preserves raw natural-language input, parses it into canonical lanes, returns raw ID/counts, and does not echo private raw text.",
+      "permission": "super_admin/project/provider scoped helper",
+      "status": "active",
+      "helper_tool": "capture_raw_intake",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Planner maps ramble/goal-mode language to capture_raw_intake and parser returns raw ID/counts."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-007",
+        "GOAL-CORE-008",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-HELPER-RUN-WATCHDOG-AUDIT",
+      "label": "Request watchdog audit",
+      "surface": "operations_helper",
+      "route": "/operations?view=watchdog",
+      "selector_hint": "helper tool run_watchdog_audit",
+      "expected_behavior": "Helper creates a Codex-owned local-safe watchdog audit task without external writes.",
+      "permission": "super_admin/project/provider scoped helper",
+      "status": "active",
+      "helper_tool": "run_watchdog_audit",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Planner maps watchdog audit language to run_watchdog_audit."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-CLASSROOM-DRAFT",
+      "label": "Start a classroom draft",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "selector_hint": "data-provider-classroom-setup",
+      "expected_behavior": "Creates a first-party provider classroom/community setup draft only.",
+      "permission": "provider",
+      "status": "active",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "No Google Classroom, payment, send, or access grant is performed."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
+      "label": "Start 30 Days Free",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "a[href=\"#signup\"].button.primary",
+      "expected_behavior": "Scrolls to the first-party interest form for a 30-day-free trial request; does not create checkout, send messages, create a Zoom meeting, or grant access.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Primary CTA points to #signup and no payment, send, Zoom creation, or access grant fires."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-WATCH-RABBI-CTA",
+      "label": "Watch Rabbi Scheller",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "a[href=\"#watch-rabbi\"].button.ghost",
+      "expected_behavior": "Scrolls to the embedded public Vimeo promo without exposing private member-library videos or TEST review links.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Secondary CTA targets #watch-rabbi and public page embeds Vimeo 1158542993 only for the public promo."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CAMPAIGN-TIMER-READBACK",
+      "label": "Read Campaign Timer",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "[data-countdown]",
+      "expected_behavior": "Reads /api/one-time/campaign for server time and the configured deadline; if no deadline is configured it shows an operator-decision state instead of a fake reset timer.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_guarded",
+        "expected_result": "/api/one-time/campaign is read-only and exposes ONE_TIME_CAMPAIGN_DEADLINE_AT dependency without external writes."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-INTEREST-FORM",
+      "label": "Request 30-Day Trial",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "#interestForm button[type=\"submit\"]",
+      "expected_behavior": "Creates a first-party OneTime interest lead with explicit consent for review only; no checkout, external send, live charge, or access grant.",
+      "permission": "public",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Posts only to /api/one-time/interest after consent and returns a no-checkout/no-send/no-access-grant confirmation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-LOGIN-LINK",
+      "label": "Member Login",
+      "surface": "one_time_public_focused_offer",
+      "route": "/one-time",
+      "selector_hint": "a[href=\"/one-time/member-login\"]",
+      "expected_behavior": "Opens the member login entry shell without exposing private library data to logged-out visitors.",
+      "permission": "public_entry",
+      "status": "active",
+      "test": {
+        "type": "route_privacy",
+        "expected_result": "/rabbi-member or member entry shows safe login shell unless valid scoped member access is present."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-START",
+      "label": "Start View as Rabbi",
+      "surface": "operations_api_one_time_view_as_rabbi_start",
+      "route": "/api/bna/one-time/view-as-rabbi/start",
+      "selector_hint": "POST /api/bna/one-time/view-as-rabbi/start",
+      "expected_behavior": "Platform super-admin receives a short-lived signed read-only One Time provider preview URL for Rabbi Elie Scheller only.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Endpoint requires all-scope admin identity, returns read_only=true, and performs no provider/member write."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-VIEW-AS-RABBI-EXIT",
+      "label": "Exit View as Rabbi",
+      "surface": "one_time_provider_view_as_rabbi",
+      "route": "/provider.html?review=one-time&view_as_rabbi=<signed>",
+      "selector_hint": "#oneTimeExitViewAs",
+      "expected_behavior": "Ends the local read-only view-as preview session and returns the operator to the normal One Time provider review view.",
+      "permission": "platform_super_admin",
+      "status": "active",
+      "test": {
+        "type": "static_and_api_guarded",
+        "expected_result": "Banner exit posts only to /api/bna/one-time/view-as-rabbi/end with the signed token and no provider/member mutation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-PRIVATE-QUESTION",
+      "label": "Submit Question",
+      "surface": "one_time_member_entry",
+      "route": "/rabbi-member",
+      "selector_hint": "#questionForm button[type=\"submit\"]",
+      "expected_behavior": "Creates an authenticated member-scoped private question review record only; no forum post, member feed, external send, or unrestricted study bot answer.",
+      "permission": "member",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "POST /api/rabbi/member/questions requires a member session token and returns a sanitized question number without internal notes or source context."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-MEMBER-SUPPORT-TICKET",
+      "label": "Open Ticket",
+      "surface": "one_time_member_entry",
+      "route": "/rabbi-member",
+      "selector_hint": "#supportForm button[type=\"submit\"]",
+      "expected_behavior": "Creates an authenticated member-scoped support ticket with ticket-only bot metadata; no external notification or cross-member data is returned.",
+      "permission": "member",
+      "status": "active",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "POST /api/rabbi/member/support-tickets requires a member session token, returns OT-SUP ticket numbers, hides source context/internal notes, and sets unrestricted_mishnah_study_bot=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-PREPARE",
+      "label": "Prepare Agent Run",
+      "surface": "operations_agent_control_center",
+      "route": "/operations?view=agents",
+      "selector_hint": "button:contains('Prepare Run'), task agent verification form",
+      "expected_behavior": "Creates or reuses a scoped bna_agent_runs record, stores the prompt, marks the task verification state ready, and records task/run events.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "POST /api/bna/tasks/:taskId/agent-runs is Super Admin only and the Operations UI exposes the action only inside the Agents surface/task drawer."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-HANDOFF",
+      "label": "Copy Agent Prompt / Open ChatGPT Agent",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Copy Agent Prompt, Open ChatGPT Agent",
+      "expected_behavior": "Copies the scoped prompt locally or opens ChatGPT without production writes, and records a passive copied/opened event on the agent run.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "static",
+        "expected_result": "Progress endpoint treats copied/opened as passive audit events and does not transition the run to running."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-PROGRESS-EVIDENCE",
+      "label": "Post Progress / Attach Evidence",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Post Progress, Attach Evidence",
+      "expected_behavior": "Records scoped progress and evidence artifacts on the assigned agent run with redaction status; it does not send, publish, delete, charge, or deploy.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "Progress/artifact routes require Super Admin scope and append run events/artifacts."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-SUBMIT-SEAL",
+      "label": "Submit Result / Seal Run",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Submit Result, Seal Run",
+      "expected_behavior": "Requires every criterion to be marked and browser/mixed evidence unless exempt; pass only closes the task when implementation is complete and automated gates passed.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "validateSealPayload enforces summary, criteria, and evidence; task close is gated by implementation_status and automated_gates_passed."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
+      "label": "Block / Resume / Reopen / Cancel Agent Run",
+      "surface": "operations_agent_control_center",
+      "route": "/operations/agents/runs/:runKey",
+      "selector_hint": "Mark Blocked, Resume, Reopen Fresh Run, Cancel Stale Run",
+      "expected_behavior": "Moves the run through allowed lifecycle transitions, creates a linked operator decision when blocked, and never mutates production data.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_static",
+        "expected_result": "Lifecycle routes require Super Admin scope, allowed transitions, and append audit events."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-SCOPED-AGENT-STATUS",
+      "label": "One Time Agent Status",
+      "surface": "operations_agent_control_center",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=agents",
+      "selector_hint": "[data-scoped-agent-status] Refresh, Codex Queue, Open Tasks, Open Task",
+      "expected_behavior": "Shows scoped One Time machine-work status, queue heartbeat, blockers, and task links for project owner/admin users without exposing Super Admin claim, submit, seal, or production mutation controls.",
+      "permission": "project_owner/project_admin",
+      "status": "active",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "tests/one-time-operations-ui-smoke.test.js renders [data-scoped-agent-status], verifies One Time tasks, and confirms Claim/Seal controls are absent for scoped users."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-DRIVE-BRIEF-PREVIEW",
+      "label": "Preview Drive Brief",
+      "surface": "operations_content_meeting_drops",
+      "route": "/operations?view=content&section=meetings",
+      "selector_hint": "[data-preview-one-time-drive-brief]",
+      "expected_behavior": "Runs a no-write preview of the latest Rabbi Elie / One Time Drive brief, proves One Time-only scope, displays owner/admin assignments, and lists credential or owner-only blockers.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "POST /api/bna/project-meetings/one-time-drive-brief/preview returns dry_run=true and Operations exposes only the preview action, not production mutation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
+      "label": "Review Checkouts",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS\"]",
+      "expected_behavior": "Navigates to the Rabbi launch/checkout review panel without creating checkout sessions, payment links, charges, or access grants.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify the payment/access panel ships without no-write guardrail regressions."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS",
+      "label": "Review Class Links",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS\"]",
+      "expected_behavior": "Navigates to the live classes review surface without exposing member join URLs or Zoom host/start URLs.",
+      "permission": "super_admin/project_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify class-link visibility remains relationship scoped."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED",
+      "label": "Grant Access",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED\"]",
+      "expected_behavior": "Remains disabled until an approved local/test payment event and manual admin confirmation exist; this panel never performs a real access grant.",
+      "permission": "super_admin/project_admin",
+      "status": "disabled",
+      "disabled_reason": "Requires approved local/test payment event and manual admin confirmation.",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify automated_access_grants_enabled=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED",
+      "label": "Reveal Join Link",
+      "surface": "operations_provider_workspace",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=service_providers&section=tiers",
+      "selector_hint": "[data-action-id=\"ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED\"]",
+      "expected_behavior": "Remains disabled until a relationship-scoped protected join reference is approved; raw Zoom join URLs and host/start URLs are never exposed.",
+      "permission": "super_admin/project_admin",
+      "status": "disabled",
+      "disabled_reason": "Requires relationship-scoped protected join reference; raw Zoom host/start URLs are never exposed.",
+      "test": {
+        "type": "unit_and_live_smoke",
+        "expected_result": "tests/rabbi-checkout-access.test.js and app:smoke:one-time-payment-access-class-links verify raw_zoom_join_url_returned_to_members=false and zoom_host_start_url_returned=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-OPERATIONS-PLATFORM-SUITE-NAV",
+      "label": "Platform Suite",
+      "surface": "operations",
+      "route": "/operations?view=platform_suite",
+      "selector_hint": "ops sidebar/module toolbar Platform Suite navigation",
+      "expected_behavior": "Opens the mounted Platform UI suite with scoped BNA or One Time fixture data and no external writes.",
+      "permission": "super_admin/project_owner/project_admin",
+      "status": "active",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "Operations platform_suite view mounts [data-platform-ui-root] across desktop and mobile viewports without exposing secret values or live provider mutation controls."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEST-IDENTITIES-REVIEW-AUTH-MATRIX",
+      "label": "Review Auth Matrix",
+      "surface": "one_time_test_identities_preview",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-test-identities-preview] button.primary",
+      "expected_behavior": "Navigates to the security/settings context for reviewing the no-write negative authorization matrix.",
+      "permission": "workspace_admin",
+      "status": "active",
+      "test": {
+        "type": "ui_static_and_api_guarded",
+        "expected_result": "Operations renders the action and /api/bna/one-time/test-identities-preview returns TEST-prefixed negative authorization cases."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEST-IDENTITIES-APPLY-MOCK-DATA",
+      "label": "Apply Mock Data",
+      "surface": "one_time_test_identities_preview",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-test-identities-preview] button[disabled]",
+      "expected_behavior": "Disabled preview-only action with a clear setup reason; no production record is created without explicit dry-run/apply authorization.",
+      "permission": "workspace_admin",
+      "status": "disabled_with_reason",
+      "disabled_reason": "Preview only. Apply requires an explicit dry-run cleanup/apply command and TEST-prefix review.",
+      "test": {
+        "type": "ui_static",
+        "expected_result": "Button is disabled and the API reports records_created=false and external_write_performed=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-TEST-IDENTITIES-CLEANUP",
+      "label": "Cleanup TEST Records",
+      "surface": "one_time_test_identities_preview",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-test-identities-preview] button[disabled]",
+      "expected_behavior": "Disabled cleanup action with a clear dry-run requirement and TEST-prefix guard.",
+      "permission": "workspace_admin",
+      "status": "disabled_with_reason",
+      "disabled_reason": "Cleanup is a dry-run manifest only until an operator confirms target TEST records.",
+      "test": {
+        "type": "api_guarded",
+        "expected_result": "Fixture cleanup_manifest.cleanup_ready is true and requires TEST- prefix."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
+      "label": "View Agent Status",
+      "surface": "one_time_agent_mode_acceptance",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-agent-mode-acceptance] button.primary",
+      "expected_behavior": "Navigates to the Agents overview without starting an external/autonomous agent run.",
+      "permission": "workspace_admin",
+      "status": "active",
+      "test": {
+        "type": "ui_static_and_api_guarded",
+        "expected_result": "Operations renders the action and the acceptance API returns status=pass with no-write flags."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-EVIDENCE",
+      "label": "View Acceptance Evidence",
+      "surface": "one_time_agent_mode_acceptance",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-agent-mode-acceptance] button",
+      "expected_behavior": "Navigates to Codex/Agent work evidence context using existing in-app navigation only.",
+      "permission": "workspace_admin",
+      "status": "active",
+      "test": {
+        "type": "ui_static",
+        "expected_result": "Button is present and mapped to switchView/tasks evidence navigation."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ONETIME-AGENT-ACCEPTANCE-RUN-LIVE",
+      "label": "Run Live Agent Mode",
+      "surface": "one_time_agent_mode_acceptance",
+      "route": "/operations",
+      "selector_hint": "[data-one-time-agent-mode-acceptance] button[disabled]",
+      "expected_behavior": "Disabled with explicit authorization blocker; no autonomous external agent is launched by this batch.",
+      "permission": "workspace_admin",
+      "status": "disabled_with_reason",
+      "disabled_reason": "Read-only acceptance. Running an external/autonomous agent requires explicit operator authorization.",
+      "test": {
+        "type": "ui_static_and_api_guarded",
+        "expected_result": "Button is disabled and the API reports production_mutation_performed=false and external_write_performed=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    }
+  ]
+}

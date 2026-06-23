@@ -1,0 +1,244 @@
+{
+  "checked_at": "2026-06-21T15:49:28.596Z",
+  "run_id": "PARALLEL-20260619-001",
+  "mode": "local_in_memory_fixtures_no_external_writes",
+  "external_write_performed": false,
+  "instance": {
+    "one_time_workspace_key": "one_time_mishnah_class",
+    "single_tenant_split_ready": true,
+    "deployment_mode": "single_tenant_partner"
+  },
+  "created_record_ids": [
+    {
+      "type": "member",
+      "id": "PERSON-af8a2b0921642883"
+    },
+    {
+      "type": "student",
+      "id": "STUDENTPROFILE-b5267012e2a80c61"
+    },
+    {
+      "type": "provider",
+      "id": "PROVIDERPROFILE-9400dd6223c83f10"
+    },
+    {
+      "type": "community",
+      "id": "COMMUNITY-f91e6ce1839304b2"
+    },
+    {
+      "type": "community_group",
+      "id": "COMMUNITYGROUP-31eff1606270aabd"
+    },
+    {
+      "type": "community_post",
+      "id": "COMMUNITYPOST-8ec691165f758a6d"
+    },
+    {
+      "type": "pinned_resource",
+      "id": "COMMUNITYRESOURCE-e643996ec72462f8"
+    },
+    {
+      "type": "course",
+      "id": "COURSE-2d50fcfb51af5db5"
+    },
+    {
+      "type": "course_module",
+      "id": "COURSEMODULE-efe741e7239dc039"
+    },
+    {
+      "type": "lesson",
+      "id": "LESSON-e3605758fb8334e7"
+    },
+    {
+      "type": "video_reference",
+      "id": "VIDEOASSET-ecfb9ed2e6f14a8d"
+    },
+    {
+      "type": "lesson_video",
+      "id": "LESSONVIDEO-88d44b76175a307c"
+    },
+    {
+      "type": "enrollment",
+      "id": "ENROLLMENT-1c5127fdb5184be5"
+    },
+    {
+      "type": "progress",
+      "id": "PROGRESS-12162a678a0faf2e"
+    },
+    {
+      "type": "goal",
+      "id": "GOAL-9dfb537cbcb11065"
+    },
+    {
+      "type": "milestone",
+      "id": "MILESTONE-b12428d6c34b7d5f"
+    },
+    {
+      "type": "reward",
+      "id": "REWARD-982f2b0225230ea2"
+    },
+    {
+      "type": "reward_rule",
+      "id": "REWARDRULE-4d2eef9ee78b441a"
+    },
+    {
+      "type": "reward_assignment",
+      "id": "REWARDASSIGNMENT-2634f67b2bc4b731"
+    },
+    {
+      "type": "reward_award",
+      "id": "REWARDASSIGNMENT-2634f67b2bc4b731"
+    },
+    {
+      "type": "reward_redemption",
+      "id": "REWARDASSIGNMENT-2634f67b2bc4b731"
+    },
+    {
+      "type": "parent_prompt",
+      "id": "PROMPT-20260621-001-C34964C1"
+    },
+    {
+      "type": "work_package",
+      "id": "WP-7A4D794E5B26"
+    }
+  ],
+  "duplicate_identity": {
+    "first_action": "create_person",
+    "variant_action": "update_existing_person",
+    "matched_person_id": "PERSON-af8a2b0921642883"
+  },
+  "parsed_counts": {
+    "decisions": 2,
+    "tasks": 1,
+    "calendar_events": 2,
+    "community_items": 1,
+    "content_items": 1,
+    "unresolved": 0
+  },
+  "idempotent_rerun": {
+    "deduplication_keys": 9,
+    "duplicate_tasks_created": 0,
+    "duplicate_decisions_created": 0,
+    "duplicate_calendar_events_created": 0,
+    "unresolved_duplicates": 11,
+    "passed": true
+  },
+  "course_progress": {
+    "course_id": "COURSE-2d50fcfb51af5db5",
+    "lesson_id": "LESSON-e3605758fb8334e7",
+    "video_asset_id": "VIDEOASSET-ecfb9ed2e6f14a8d",
+    "enrollment_id": "ENROLLMENT-1c5127fdb5184be5",
+    "progress_id": "PROGRESS-12162a678a0faf2e",
+    "progress_status": "completed"
+  },
+  "rewards": {
+    "goal_id": "GOAL-9dfb537cbcb11065",
+    "milestone_id": "MILESTONE-b12428d6c34b7d5f",
+    "reward_id": "REWARD-982f2b0225230ea2",
+    "assignment_id": "REWARDASSIGNMENT-2634f67b2bc4b731",
+    "eligible": true,
+    "award_state": "awarded",
+    "redeem_state": "redeemed"
+  },
+  "agent_loop": {
+    "parent_prompt_id": "PROMPT-20260621-001-C34964C1",
+    "queue_position": 1,
+    "ramble_phase": "in_progress",
+    "work_package_id": "WP-7A4D794E5B26",
+    "pass_status": "passed",
+    "requeue_status": "requeued",
+    "missing_credential_status": "needs_operator_decision"
+  },
+  "readiness": {
+    "preview_only": true,
+    "secret_values_included": false,
+    "providers": [
+      {
+        "provider": "vimeo",
+        "test_connection_mode": "mock",
+        "external_write_performed": false,
+        "status": "needs_credentials"
+      },
+      {
+        "provider": "zoom",
+        "test_connection_mode": "mock",
+        "external_write_performed": false,
+        "status": "needs_credentials"
+      },
+      {
+        "provider": "resend",
+        "test_connection_mode": "mock",
+        "external_write_performed": false,
+        "status": "needs_credentials"
+      }
+    ]
+  },
+  "isolation": {
+    "one_time_export_without_bna_private_ok": true,
+    "bna_private_record_blocked": true,
+    "bna_context_visible_one_time_records": 0
+  },
+  "cleanup": {
+    "temporary_fixture_count": 21,
+    "deleted_or_archived_ids": [
+      "PERSON-af8a2b0921642883",
+      "STUDENTPROFILE-b5267012e2a80c61",
+      "PROVIDERPROFILE-9400dd6223c83f10",
+      "COMMUNITY-f91e6ce1839304b2",
+      "COMMUNITYGROUP-31eff1606270aabd",
+      "COMMUNITYPOST-8ec691165f758a6d",
+      "COMMUNITYRESOURCE-e643996ec72462f8",
+      "COURSE-2d50fcfb51af5db5",
+      "COURSEMODULE-efe741e7239dc039",
+      "LESSON-e3605758fb8334e7",
+      "VIDEOASSET-ecfb9ed2e6f14a8d",
+      "LESSONVIDEO-88d44b76175a307c",
+      "ENROLLMENT-1c5127fdb5184be5",
+      "PROGRESS-12162a678a0faf2e",
+      "GOAL-9dfb537cbcb11065",
+      "MILESTONE-b12428d6c34b7d5f",
+      "REWARD-982f2b0225230ea2",
+      "REWARDRULE-4d2eef9ee78b441a",
+      "REWARDASSIGNMENT-2634f67b2bc4b731",
+      "PROMPT-20260621-001-C34964C1",
+      "WP-7A4D794E5B26"
+    ],
+    "remaining_in_memory_records": 0,
+    "passed": true
+  },
+  "test_identities_and_mock_data": {
+    "requirement_id": "REQ-20260621-909",
+    "fixture_prefix": "TEST-",
+    "identity_count": 8,
+    "relationship_count": 2,
+    "mock_record_count": 5,
+    "scenario_count": 5,
+    "negative_authorization_count": 12,
+    "cleanup_ready": true,
+    "no_bna_private_data": true,
+    "private_export_sources_included": false,
+    "raw_private_rows_included": false,
+    "external_write_performed": false,
+    "scenario_categories": [
+      "crm",
+      "payment_access",
+      "class_links",
+      "questions",
+      "support"
+    ],
+    "negative_authorization_keys": [
+      "TEST-AUTH-RABBI-BLOCKED-BNA-STUDENT",
+      "TEST-AUTH-RABBI-BLOCKED-BNA-ACCOUNTING",
+      "TEST-AUTH-ONETIME-STAFF-BLOCKED-BNA-PARENT-NOTES",
+      "TEST-AUTH-BNA-STAFF-BLOCKED-ONETIME-PRIVATE",
+      "TEST-AUTH-PARENT-BLOCKED-OTHER-CHILD",
+      "TEST-AUTH-STUDENT-BLOCKED-OTHER-STUDENT",
+      "TEST-AUTH-MANAGER-BLOCKED-PLATFORM-ROLE",
+      "TEST-AUTH-QUERY-PARAM-CROSS-SCOPE-BLOCKED",
+      "TEST-AUTH-CROSS-TASK-BLOCKED",
+      "TEST-AUTH-CROSS-DECISION-BLOCKED",
+      "TEST-AUTH-CROSS-MESSAGE-BLOCKED",
+      "TEST-AUTH-CROSS-RECORDING-BLOCKED"
+    ]
+  }
+}

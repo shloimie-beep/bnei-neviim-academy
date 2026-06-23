@@ -1,0 +1,292 @@
+{
+  "generatedAt": "2026-06-12T13:14:14.825Z",
+  "root": {
+    "id": "root",
+    "name": "Google Drive My Drive root",
+    "webViewLink": "https://drive.google.com/drive/my-drive"
+  },
+  "projectFolder": {
+    "parents": [
+      "0ALM4jp4XIf7AUk9PVA"
+    ],
+    "webViewLink": "https://drive.google.com/drive/folders/16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2",
+    "id": "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2",
+    "name": "One Time Mishnah Class - Rabbi Elie Scheller",
+    "created": false
+  },
+  "subfolders": [
+    {
+      "key": "startHere",
+      "name": "00 Start Here - Proposal and Project Map",
+      "purpose": "Canonical proposal, project map, task map, and rules for what belongs in this project.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1Kz2D-Rl_JeOzMACUdJw6wRip4c5G8H-C",
+      "id": "1Kz2D-Rl_JeOzMACUdJw6wRip4c5G8H-C",
+      "created": false
+    },
+    {
+      "key": "agreementValues",
+      "name": "01 Agreement and Values",
+      "purpose": "Drafts and decisions for values, partnership terms, responsibilities, buyout, dispute resolution, and formal agreement language.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1M8l1eP-3B3Lfk42s4rLJSDv6SQfFEYYj",
+      "id": "1M8l1eP-3B3Lfk42s4rLJSDv6SQfFEYYj",
+      "created": false
+    },
+    {
+      "key": "offerPricing",
+      "name": "02 Offer, Pricing, and Policies",
+      "purpose": "Library tier, Live Membership, later Premium Cohort, refund/cancellation policy, family/device rules, and launch offer decisions.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/18mBk4g6g0diGdSwZzQmf51f5V_u1qSI0",
+      "id": "18mBk4g6g0diGdSwZzQmf51f5V_u1qSI0",
+      "created": false
+    },
+    {
+      "key": "ghlCommunity",
+      "name": "03 GHL and Community Setup",
+      "purpose": "GHL location, contacts, tags, pipelines, workflows, payments, access control, reporting, and smoke-test notes.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/18byCmpD47UX6IeasKXSie2tSTlCfqZIB",
+      "id": "18byCmpD47UX6IeasKXSie2tSTlCfqZIB",
+      "created": false
+    },
+    {
+      "key": "contentMedia",
+      "name": "04 Content and Media Intake",
+      "purpose": "Rabbi video drops, worksheets, source sheets, recordings, organic clips, ad candidates, and publishing handoff notes.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
+      "id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
+      "created": false
+    },
+    {
+      "key": "marketingLaunch",
+      "name": "05 Marketing and Launch",
+      "purpose": "Landing pages, email list launch, old customer reactivation, ads, testimonials, tracking, and launch copy.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1o4_VIEC7J2OCAz5wWzVfiPXIgeKrIETX",
+      "id": "1o4_VIEC7J2OCAz5wWzVfiPXIgeKrIETX",
+      "created": false
+    },
+    {
+      "key": "botAgentLoop",
+      "name": "06 Bot and Agent Loop",
+      "purpose": "Rabbi Telegram bot, scoped task collaboration, Codex GHL workflow cards, browser/API boundaries, and status reports.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1Oqbh2vQGQL1L5xcPegTJZftPwkhg9JT7",
+      "id": "1Oqbh2vQGQL1L5xcPegTJZftPwkhg9JT7",
+      "created": false
+    },
+    {
+      "key": "financeAdmin",
+      "name": "07 Finance, Reporting, and Admin",
+      "purpose": "Billing, expenses, monthly split reports, refunds, failed payments, bookkeeping, and approved hard expense records.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/14Z8totFGh46lLwJhoow5cG5xJJ8B4A-x",
+      "id": "14Z8totFGh46lLwJhoow5cG5xJJ8B4A-x",
+      "created": false
+    },
+    {
+      "key": "shiurPrep",
+      "name": "08 Shiur and Source Materials",
+      "purpose": "Mishnayos class prep, source sheets, worksheets, question digests, and Torah product planning.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1Nri9BqFvLyOCLu_aOOhgeVVF9be8iUCN",
+      "id": "1Nri9BqFvLyOCLu_aOOhgeVVF9be8iUCN",
+      "created": false
+    },
+    {
+      "key": "claudeDrafting",
+      "name": "09 Claude Drafting Tasks",
+      "purpose": "Draft-only work for Claude or another writing assistant: proposal cleanup, copy variants, policies, prompts, and summaries.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1VLxC09xOODeSqWN9G-pLmt_UGGeUXyKL",
+      "id": "1VLxC09xOODeSqWN9G-pLmt_UGGeUXyKL",
+      "created": false
+    },
+    {
+      "key": "done",
+      "name": "90 Completed and Approved",
+      "purpose": "Final approved documents, launch assets, exported reports, and completed workflow evidence.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1YsWptYKOjU7texBD5bugZgEd75HuP7HD",
+      "id": "1YsWptYKOjU7texBD5bugZgEd75HuP7HD",
+      "created": false
+    },
+    {
+      "key": "needsDecision",
+      "name": "99 Needs Shloimie Decision",
+      "purpose": "Blocked items that need a human partnership, offer, legal, budget, or access decision.",
+      "parents": [
+        "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1nBpiTdbsbOZDA0KmQiNm2_5xNMNjt6n6",
+      "id": "1nBpiTdbsbOZDA0KmQiNm2_5xNMNjt6n6",
+      "created": false
+    }
+  ],
+  "contentMediaIntakeFolders": [
+    {
+      "key": "videoDrop",
+      "name": "04.00 Upload Here - Rabbi Video Drops",
+      "driveStage": "one_time_video_drop",
+      "purpose": "Raw Rabbi video/audio drops and source media waiting for ingestion.",
+      "backendUse": "bna_content_jobs.project_id=one_time_mishnah_class, source_type=google_drive, drive_stage=one_time_video_drop",
+      "id": "1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+      "created": true
+    },
+    {
+      "key": "ingestionQueue",
+      "name": "04.10 Ingestion Queue - Transcribe and Parse",
+      "driveStage": "one_time_ingestion_queue",
+      "purpose": "Files being turned into transcripts, source notes, clip plans, and draft content jobs.",
+      "backendUse": "bna_content_jobs.status=ingested|parsed with Drive file/folder IDs preserved",
+      "id": "1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8",
+      "created": true
+    },
+    {
+      "key": "socialOutputs",
+      "name": "04.30 Social Output Drafts - Platform Review",
+      "driveStage": "one_time_social_output_review",
+      "purpose": "Facebook, LinkedIn, YouTube, Instagram, WhatsApp status, and email/newsletter drafts awaiting Shloimie/Rabbi review.",
+      "backendUse": "bna_content_outputs output_type/platform metadata before any Buffer or platform write",
+      "id": "17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h",
+      "created": true
+    },
+    {
+      "key": "approvedPosted",
+      "name": "04.90 Approved and Posted Social Outputs",
+      "driveStage": "one_time_social_approved_posted",
+      "purpose": "Approved exports, destination URLs, screenshots, metrics, and rollback notes after an approved post/draft.",
+      "backendUse": "Buffer/social destination evidence and Workflow Q/R reporting after approval",
+      "id": "1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh",
+      "created": true
+    }
+  ],
+  "proposal": {
+    "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "parents": [
+      "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+    ],
+    "webViewLink": "https://docs.google.com/document/d/1ZHr8ZNg6q_YDTvg4vG-T3jdK0P6GrPIn/edit?usp=drivesdk&ouid=100660933609436915831&rtpof=true&sd=true",
+    "id": "1ZHr8ZNg6q_YDTvg4vG-T3jdK0P6GrPIn",
+    "name": "Rabbi_Sheller_Shloimie_50_50_Full_Workflow_Proposal_2026-06-10.docx",
+    "modifiedTime": "2026-06-10T04:22:14.641Z"
+  },
+  "proposalCopy": {
+    "copied": false,
+    "reason": "copy-already-exists",
+    "sourceFile": {
+      "id": "1ZHr8ZNg6q_YDTvg4vG-T3jdK0P6GrPIn",
+      "name": "Rabbi_Sheller_Shloimie_50_50_Full_Workflow_Proposal_2026-06-10.docx",
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "parents": [
+        "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+      ],
+      "webViewLink": "https://docs.google.com/document/d/1ZHr8ZNg6q_YDTvg4vG-T3jdK0P6GrPIn/edit?usp=drivesdk&ouid=100660933609436915831&rtpof=true&sd=true",
+      "modifiedTime": "2026-06-10T04:22:14.641Z"
+    },
+    "file": {
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "parents": [
+        "1Kz2D-Rl_JeOzMACUdJw6wRip4c5G8H-C"
+      ],
+      "webViewLink": "https://docs.google.com/document/d/1fOqY1fgje49rD9gW9xWmW2RZ3hRQ8Whq/edit?usp=drivesdk&ouid=100660933609436915831&rtpof=true&sd=true",
+      "id": "1fOqY1fgje49rD9gW9xWmW2RZ3hRQ8Whq",
+      "name": "Rabbi_Sheller_Shloimie_50_50_Full_Workflow_Proposal_2026-06-10.docx",
+      "modifiedTime": "2026-06-10T05:35:35.498Z"
+    }
+  },
+  "historicalDraftsFolder": {
+    "parents": [
+      "1YsWptYKOjU7texBD5bugZgEd75HuP7HD"
+    ],
+    "webViewLink": "https://drive.google.com/drive/folders/135t9gDYoEhgTT3nQMhM9-meGP4MZ-QRG",
+    "id": "135t9gDYoEhgTT3nQMhM9-meGP4MZ-QRG",
+    "name": "Historical Drafts",
+    "created": false
+  },
+  "archivedProposal": {
+    "archived": false,
+    "reason": "already-archived",
+    "file": {
+      "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "parents": [
+        "135t9gDYoEhgTT3nQMhM9-meGP4MZ-QRG"
+      ],
+      "webViewLink": "https://docs.google.com/document/d/1egcDUVYcP5oAW4-h-JWfF1vhZmUzul7N/edit?usp=drivesdk&ouid=100660933609436915831&rtpof=true&sd=true",
+      "id": "1egcDUVYcP5oAW4-h-JWfF1vhZmUzul7N",
+      "name": "Rabbi_Sheller_Shloimie_50_50_Partnership_Proposal_2026-06-09.docx",
+      "modifiedTime": "2026-06-09T20:06:32.490Z"
+    }
+  },
+  "archivedSupersededProposalCopies": [],
+  "docs": [
+    {
+      "parents": [
+        "1Kz2D-Rl_JeOzMACUdJw6wRip4c5G8H-C"
+      ],
+      "webViewLink": "https://docs.google.com/document/d/1r67dYC-fXNIc8_Gv7WqPq0ud-4sdgN_2QIv6fSRYjTE/edit?usp=drivesdk",
+      "id": "1r67dYC-fXNIc8_Gv7WqPq0ud-4sdgN_2QIv6fSRYjTE",
+      "name": "00 One Time Partnership Project Map",
+      "created": false
+    },
+    {
+      "parents": [
+        "1Kz2D-Rl_JeOzMACUdJw6wRip4c5G8H-C"
+      ],
+      "webViewLink": "https://docs.google.com/document/d/1g2qW8n_D_nH9hrFdaItQXy-c0u6r29PKV-mQd4aER7Q/edit?usp=drivesdk",
+      "id": "1g2qW8n_D_nH9hrFdaItQXy-c0u6r29PKV-mQd4aER7Q",
+      "name": "01 Task Map - Codex Claude Shloimie Rabbi Elie",
+      "created": false
+    },
+    {
+      "parents": [
+        "1Kz2D-Rl_JeOzMACUdJw6wRip4c5G8H-C"
+      ],
+      "webViewLink": "https://docs.google.com/document/d/1sWzJe8bY9PVk7C-atvUyTH6WtpOcYqTsUqE8HO43jC8/edit?usp=drivesdk",
+      "id": "1sWzJe8bY9PVk7C-atvUyTH6WtpOcYqTsUqE8HO43jC8",
+      "name": "02 Drive Folder Rules",
+      "created": false
+    }
+  ]
+}

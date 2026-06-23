@@ -1,0 +1,49 @@
+{
+  "app": "https://bneineviimacademy.org",
+  "result": "passed",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 3354,
+      "data": {
+        "title": "BNA Operations",
+        "url": "https://bneineviimacademy.org/operations?view=settings&section=google_workspace&workspace=platform"
+      }
+    },
+    {
+      "name": "live Google approval decision preview is dry-run only",
+      "ok": true,
+      "duration_ms": 506,
+      "data": {
+        "action_id": "create_decision",
+        "dry_run": true,
+        "executed": false,
+        "decision_created": false
+      }
+    },
+    {
+      "name": "live One Time approval decision preview is dry-run only",
+      "ok": true,
+      "duration_ms": 1890,
+      "data": {
+        "action_id": "create_decision",
+        "dry_run": true,
+        "executed": false,
+        "decision_created": false
+      }
+    },
+    {
+      "name": "no browser errors and no horizontal overflow",
+      "ok": true,
+      "duration_ms": 3,
+      "data": {
+        "width": 1366,
+        "scrollWidth": 1366,
+        "bodyScrollWidth": 1366
+      }
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": []
+}

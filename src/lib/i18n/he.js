@@ -1,0 +1,40 @@
+export const he = {
+  workspace: {
+    superAdmin: 'ניהול על',
+    school: 'בית ספר BNA',
+    family: 'אחריות משפחתית',
+    household: 'בית',
+    serviceProvider: 'ספק שירות',
+  },
+  portal: {
+    overview: 'סקירה',
+    goals: 'יעדים',
+    attendance: 'נוכחות',
+    assignments: 'משימות',
+    notes: 'הערות',
+    providers: 'ספקי שירות',
+    setup: 'התקנה',
+    assistant: 'מסייע',
+  },
+  setup: {
+    installOnTablet: 'התקנה בטאבלט',
+    filterSetup: 'התקנת טאבלט וסינון',
+    notStarted: 'לא התחיל',
+    instructionsSent: 'הוראות נשלחו',
+    waitingForParent: 'ממתין להורה',
+    submitted: 'קוד נשלח',
+    verified: 'אומת',
+    blocked: 'חסום',
+  },
+  provider: {
+    profile: 'פרופיל',
+    services: 'שירותים',
+    gallery: 'גלריה',
+    comments: 'תגובות',
+    googleBusiness: 'פרופיל עסקי בגוגל',
+    upgradeNotConfigured: 'השדרוג עדיין לא מוגדר.',
+  },
+  assistant: {
+    greeting: 'אני המסייע שלך. אפשר לומר לי מה תרצה להגדיר או לשנות.',
+  },
+};

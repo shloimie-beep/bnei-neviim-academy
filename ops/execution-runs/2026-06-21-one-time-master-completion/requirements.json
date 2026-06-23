@@ -1,0 +1,2881 @@
+{
+  "run_id": "2026-06-21-one-time-master-completion",
+  "title": "One Time Master Completion",
+  "updated_at": "2026-06-22T16:37:00+03:00",
+  "raw_id": "RAW-20260621-001",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "git_refs": {
+    "remote_branch": "codex/agent-control-center-20260619",
+    "pr_number": 5,
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+    "pr_head_before_run": "cae87855f1e140668741cb2eeba90dc9dd68abf9",
+    "local_preflight_branch": "integration/20260619-platform-finish",
+    "local_preflight_head": "4cb03da4f21c94933a06a729fcf757bd2259652b",
+    "current_branch": "codex/agent-control-center-20260619",
+    "branch": "codex/agent-control-center-20260619",
+    "pr_branch": "codex/agent-control-center-20260619"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260621-001",
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "captured_at": "2026-06-21T11:05:00+03:00",
+      "content_fingerprint": "codex-chat-current-master-completion-goal",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260619-005",
+      "source_path": "raw-input/RAW-20260619-005-one-time-master-recovery-backlog-ui-launch.md",
+      "captured_at": "2026-06-19T00:00:00+03:00",
+      "content_fingerprint": "sha256:9fd055ef13e78ec3371a085810afc557c22f22305e6f02f98127d1d54f894e7e",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_attachment"
+    },
+    {
+      "source_id": "SOURCE-INVENTORY-20260621",
+      "source_path": "ops/one-time-mishnah/master-backlog-reconciliation.json",
+      "captured_at": "2026-06-21T08:37:58.667Z",
+      "content_fingerprint": "sha256:1d02cfbf9b2d89d8c35f4db4adb98a3f",
+      "privacy_classification": "internal_operations_summary",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "reconciliation_inventory"
+    },
+    {
+      "source_id": "DRIVE-20260619-SCHELLER-BRIEF",
+      "source_path": "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json",
+      "captured_at": "2026-06-19T00:00:00.000Z",
+      "content_fingerprint": "sha256:023c6c44dde92f7c460ca999c1f16143257928531d4609c2ac1aac4a95eb423b",
+      "privacy_classification": "redacted_drive_parse_summary",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "google_drive_dry_run_parse"
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "captured_at": "2026-06-21T16:05:00+03:00",
+      "content_fingerprint": "sha256:5d894fba7eb9427956a2c808a84a7c91310a23aa7fe3dbaa7dbb8ae83c7c5e9e",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_attachment"
+    },
+    {
+      "source_id": "RAW-20260621-003",
+      "source_path": "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
+      "captured_at": "2026-06-21T21:10:00+03:00",
+      "content_fingerprint": "codex-chat-one-time-separate-instance-authorization",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260622-002",
+      "source_path": "raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md",
+      "captured_at": "2026-06-22T00:00:00+03:00",
+      "content_fingerprint": "codex-chat-one-time-brand-shared-review-deployment",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "STMT-20260621-001-0001",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Create exactly one successor active run for One Time master completion and do not leave two active runs.",
+      "requirement_id": "REQ-20260619-300",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0002",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Repair the ramble-to-done protocol, validator, schema, resume, next-batch, source coverage, and blocker reporting behavior.",
+      "requirement_id": "REQ-20260619-301",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0003",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Refresh the master backlog reconciliation before implementation and collapse source statements into canonical executable requirements.",
+      "requirement_id": "REQ-20260621-501",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0004",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Clean up production Tasks and Decisions so default views are scoped, relevant, deduped, and reversible.",
+      "requirement_id": "REQ-20260619-302",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0005",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Implement One Time workspace users, roles, role updates, audit logs, relationship enforcement, and negative authorization tests.",
+      "requirement_id": "REQ-20260619-303",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0006",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Audit every visible action and ensure visible controls work, are disabled with exact blockers, or are intentionally informational.",
+      "requirement_id": "REQ-20260621-502",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0007",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Correct Operations UI navigation, horizontal filter rails, sticky toolbar, mobile toolbar, buttons, cards, and responsive behavior.",
+      "requirement_id": "REQ-20260619-304",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0008",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Complete WhatsApp UX using the existing first-party WAPI/Whapi system without sending WhatsApp messages.",
+      "requirement_id": "REQ-20260621-503",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0009",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Complete Email and Resend UX without live sends, including domain/status readback, webhook code, and one sender/domain Decision.",
+      "requirement_id": "REQ-20260621-504",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0010",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Complete product, scheduling, booking, parent portal, student portal, provider portal, and billing/access foundations without live charges.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0011",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Implement manual Vimeo library workflow now and automated Vimeo upload readiness behind disabled feature flag.",
+      "requirement_id": "REQ-20260619-308",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0012",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Implement Zoom API client, session workflow, webhooks, and attendance foundation without creating a real class meeting.",
+      "requirement_id": "REQ-20260619-307",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0013",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Implement transcript privacy with review states, matching confidence, visibility classes, and no cross-child exposure.",
+      "requirement_id": "REQ-20260619-309",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0014",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Implement server-side event-driven gamification badges with thresholds, idempotency, reversal, audit, and no public individual leaderboard.",
+      "requirement_id": "REQ-20260619-310",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0015",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Complete community moderation, private questions, parent-visible communication, edit/archive history, reporting, and private-to-public anonymization.",
+      "requirement_id": "REQ-20260619-311",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0016",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Prepare approved Sefaria source model and disabled study-assistant readiness with scoped retrieval and citation guardrails.",
+      "requirement_id": "REQ-20260619-312",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-001-0017",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Prepare Option B separate One Time deployment readiness without provisioning paid infrastructure or DNS.",
+      "requirement_id": "REQ-20260619-313",
+      "classification": "superseded_by_authorization"
+    },
+    {
+      "statement_id": "STMT-20260621-003-0001",
+      "source_id": "RAW-20260621-003",
+      "source_statement": "Provision a separate One Time Railway project, Postgres database, web service, required worker if needed, isolated One Time seed data, stable deployment, app.onetimeonetime.com domain binding, focused live smokes, and UI review package without copying BNA private data or exposing secrets.",
+      "requirement_id": "REQ-20260619-313",
+      "classification": "blocked",
+      "blocker": "Account-level Railway authentication or a pre-created separate One Time project token is required before the separate project, database, deployment, and service-specific DNS records can be created."
+    },
+    {
+      "statement_id": "STMT-20260621-001-0018",
+      "source_id": "RAW-20260621-001",
+      "source_statement": "Run final verification, push PR #5 branch, deploy safe bundle, smoke production, and leave only genuine external actions.",
+      "requirement_id": "REQ-20260619-314",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0001",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Record the product scope: BNA and One Time/Rabbi Ellie Scheller only, not standalone SaaS or generic reseller onboarding.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0002",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Use the stated operating priority: privacy/auth, reliable intake, CRM/leads, email campaigns, payment/trial/access, class links, community questions, authenticated support, beta QA, Vimeo/Zoom, then advanced gamification/study bot.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0003",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Keep complex setup admin-first and build only essential customer-facing actions such as signup, auth, payment method/cancel renewal, class/library, private/community questions, support tickets, and appropriate progress/communications.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0004",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Keep BNA and One Time data private and workspace/relationship-scoped, including tickets, questions, recordings, class links, and transcripts.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "supersedes_existing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0005",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Authenticated users may open support tickets through the bot without receiving unrestricted Mishnah study bot access.",
+      "requirement_id": "REQ-20260621-908",
+      "classification": "partially_implemented"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0006",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Implement configurable warm-lead 30-day trial with card required, $67 monthly renewal, exact renewal date/amount, reminder, one-introductory-trial rule, offer version, and no live charge/bulk send without approval.",
+      "requirement_id": "REQ-20260621-906",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0007",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Implement configurable referral credit model that activates only after the referred customer completes the first successful paid billing cycle after trial, prevents abuse, and does not apply real invoice credits in this wave.",
+      "requirement_id": "REQ-20260621-906",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0008",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Record cancellation/refund intent, store policy versions and acceptances, and create one operator Decision for final customer-facing legal wording without blocking test-mode implementation.",
+      "requirement_id": "REQ-20260621-906",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0009",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Split parent REQ-20260619-306 into child requirements and do not mark the parent complete until all required children are terminal.",
+      "requirement_id": "REQ-20260619-306",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0010",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Sub-batch 9A must add a first-pass source-envelope classifier so one global keyword does not incorrectly scope every fragment of a mixed source.",
+      "requirement_id": "REQ-20260621-901",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0011",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Source envelopes must include source metadata, hash, filename/title, channel, upload/source date, uploader, language, default workspace/project/context type, confidence, privacy level, parser version, and processing status.",
+      "requirement_id": "REQ-20260621-901",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0012",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Title and filename set a strong default context, such as Dratler family meeting, Rabbi Scheller class, Operations ramble, or One Time meeting, while local segments may override it.",
+      "requirement_id": "REQ-20260621-901",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0013",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for today's class-upload trace.",
+      "requirement_id": "REQ-20260621-902",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0014",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for Downloads spreadsheet inventory.",
+      "requirement_id": "REQ-20260621-903",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0015",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for CRM import and deduplication.",
+      "requirement_id": "REQ-20260621-904",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0016",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for CRM Contacts UX.",
+      "requirement_id": "REQ-20260621-905",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0017",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for payment-to-access and class-link flow.",
+      "requirement_id": "REQ-20260621-907",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0018",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for test identities and mock data.",
+      "requirement_id": "REQ-20260621-909",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260621-002-0019",
+      "source_id": "RAW-20260621-002",
+      "source_statement": "Create child requirement for Agent Mode end-to-end acceptance.",
+      "requirement_id": "REQ-20260621-910",
+      "classification": "missing"
+    },
+    {
+      "statement_id": "STMT-20260622-002-0001",
+      "source_id": "RAW-20260622-002",
+      "source_statement": "Turn the existing shared One Time review routes into a polished branded experience using supplied legacy assets, then deploy the shared review build for Shloimie UI/workflow review.",
+      "requirement_id": "REQ-20260622-002",
+      "classification": "implemented_verified_deployed"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260619-300",
+      "title": "Batch 0 preflight and successor run",
+      "expected_result": "The closed local-only run is preserved, exactly one successor run is active, preflight evidence is recorded, and the next unblocked batch is clear.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0001"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "preflight",
+      "priority": "P0",
+      "batch_id": "batch-0",
+      "depends_on": [],
+      "implementation_status": "verified_local",
+      "can_continue_without_operator": true,
+      "next_action": "Proceed to REQ-20260619-301 protocol repair.",
+      "acceptance_criteria": [
+        "latest.json points to this run",
+        "no other run is active",
+        "run validation passes"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/BASELINE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/live-smokes/2026-06-21T07-57-58-409Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "npm run bna:run:status",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/",
+        "ops/execution-runs/latest.json"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-21T11:11:03+03:00"
+    },
+    {
+      "id": "REQ-20260619-301",
+      "title": "Repair ramble-to-done protocol and execution CLI",
+      "expected_result": "Protocol, schema, templates, validator, resume, next-batch, external-blocker, and source-coverage behavior prevent broad rambles from stalling or closing without proof.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0002"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "protocol",
+      "priority": "P0",
+      "batch_id": "batch-1",
+      "depends_on": [
+        "REQ-20260619-300"
+      ],
+      "implementation_status": "verified_local",
+      "can_continue_without_operator": true,
+      "next_action": "Proceed to REQ-20260621-501 master backlog reconciliation.",
+      "acceptance_criteria": [
+        "validator supports required fields",
+        "resume identifies next unblocked batch",
+        "tests cover failure modes"
+      ],
+      "evidence": [
+        "AGENTS.md",
+        "BNA-START-HERE.md",
+        "docs/BNA-RAMBLE-TO-DONE.md",
+        "templates/BNA-CODEX-IMPLEMENTATION-PROMPT.md",
+        "templates/BNA-CODEX-VERIFICATION-PROMPT.md",
+        "tasks-pending/_template-ramble-intake.md",
+        "tasks-pending/_template-goal-mode-correction-output.md",
+        "tasks-pending/2026-06-16-prompt-intake-register.md",
+        "TASKS.md",
+        "scripts/bna-execution-run.mjs",
+        "tests/bna-execution-run.test.js",
+        "ops/execution-runs/requirements.schema.json",
+        "src/lib/bna/intake-schema.js"
+      ],
+      "verification": [
+        "node --check scripts/bna-execution-run.mjs",
+        "node --check src/lib/bna/intake-schema.js",
+        "node --test tests/bna-execution-run.test.js",
+        "npm run bna:run:validate",
+        "npm run bna:run:next",
+        "npm run bna:run:blockers",
+        "npm run bna:run:source-coverage",
+        "npm run bna:run:stale-evidence",
+        "git diff --check",
+        "node scripts/audit-secrets.mjs"
+      ],
+      "implementation_files": [
+        "AGENTS.md",
+        "BNA-START-HERE.md",
+        "docs/BNA-RAMBLE-TO-DONE.md",
+        "templates/BNA-CODEX-IMPLEMENTATION-PROMPT.md",
+        "templates/BNA-CODEX-VERIFICATION-PROMPT.md",
+        "tasks-pending/_template-ramble-intake.md",
+        "tasks-pending/_template-goal-mode-correction-output.md",
+        "tasks-pending/2026-06-16-prompt-intake-register.md",
+        "TASKS.md",
+        "package.json",
+        "scripts/bna-execution-run.mjs",
+        "tests/bna-execution-run.test.js",
+        "ops/execution-runs/requirements.schema.json",
+        "src/lib/bna/intake-schema.js"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-21T11:24:48+03:00"
+    },
+    {
+      "id": "REQ-20260621-501",
+      "title": "Refresh master backlog reconciliation",
+      "expected_result": "Source statements are classified and collapsed into canonical executable requirements without visible Task fan-out.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0003"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "backlog",
+      "priority": "P0",
+      "batch_id": "batch-2",
+      "depends_on": [
+        "REQ-20260619-301"
+      ],
+      "implementation_status": "verified_local",
+      "can_continue_without_operator": true,
+      "next_action": "Proceed to REQ-20260619-302 production Task and Decision cleanup.",
+      "acceptance_criteria": [
+        "master-backlog-reconciliation.md updated",
+        "master-backlog-reconciliation.json updated",
+        "source coverage validation passes"
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/master-backlog-reconciliation.md",
+        "ops/one-time-mishnah/master-backlog-reconciliation.json"
+      ],
+      "verification": [
+        "node --check scripts/generate-one-time-master-completion-reconciliation.mjs",
+        "node scripts/generate-one-time-master-completion-reconciliation.mjs",
+        "node --test tests/one-time-master-backlog-reconciliation.test.js tests/rabbi-scheller-meeting-reconciliation.test.js",
+        "npm run bna:run:validate",
+        "npm run bna:run:source-coverage",
+        "git diff --check",
+        "node scripts/audit-secrets.mjs"
+      ],
+      "implementation_files": [
+        "ops/one-time-mishnah/master-backlog-reconciliation.md",
+        "ops/one-time-mishnah/master-backlog-reconciliation.json",
+        "scripts/generate-one-time-master-completion-reconciliation.mjs",
+        "tests/one-time-master-backlog-reconciliation.test.js"
+      ],
+      "implementation_commit": "",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": false,
+      "deployment_evidence": [],
+      "live_required": false,
+      "updated_at": "2026-06-21T08:38:33.874Z"
+    },
+    {
+      "id": "REQ-20260619-302",
+      "title": "Production Task and Decision cleanup",
+      "expected_result": "Default Task and Decision views are relevant, deduped, scoped, and backed by reversible cleanup evidence.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0004"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "tasks_decisions",
+      "priority": "P0",
+      "batch_id": "batch-3",
+      "depends_on": [
+        "REQ-20260621-501"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to Batch 4 / REQ-20260619-303 workspace users and roles.",
+      "acceptance_criteria": [
+        "census exists",
+        "cleanup report exists",
+        "default views exclude unrelated records",
+        "tests pass"
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/task-decision-production-census.md",
+        "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json"
+      ],
+      "verification": [
+        "node --check scripts/task-decision-census.mjs",
+        "node --check scripts/task-decision-production-cleanup.mjs",
+        "node --check server.js",
+        "node --test tests/task-decision-census.test.js tests/task-decision-production-cleanup.test.js tests/operations-task-queue-visibility.test.js tests/operations-task-comments-and-dictation.test.js tests/workspace-task-no-stale-agent.test.js tests/telegram-ramble-routing-regression.test.js",
+        "node scripts/task-decision-census.mjs --limit=1000",
+        "node scripts/task-decision-production-cleanup.mjs --limit=1000 --apply"
+      ],
+      "implementation_files": [
+        "scripts/task-decision-census.mjs",
+        "scripts/task-decision-production-cleanup.mjs",
+        "ops/one-time-mishnah/task-decision-production-census.md",
+        "ops/one-time-mishnah/task-decision-production-census.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.json",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup-applied-summary.json",
+        "server.js",
+        "public/operations.html",
+        "tests/task-decision-census.test.js",
+        "tests/task-decision-production-cleanup.test.js",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/operations-task-comments-and-dictation.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "tests/telegram-ramble-routing-regression.test.js"
+      ],
+      "implementation_commit": "c90c007c",
+      "pushed_commit": "f8a2fd62",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T13:23:00+03:00",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T09-19-35-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-19-39-131Z-task-decision-batch3-live-smoke.md"
+      ],
+      "deployed_commit": "f8a2fd62",
+      "deployment_id": "89967278-38dc-49f3-a70d-4536c59f82f6"
+    },
+    {
+      "id": "REQ-20260619-303",
+      "title": "Workspace users and roles",
+      "expected_result": "One Time users and roles are scoped correctly and cross-workspace access is denied.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0005"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "roles_auth",
+      "priority": "P0",
+      "batch_id": "batch-4",
+      "depends_on": [
+        "REQ-20260619-302"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to Batch 5 visible action inventory and no-dead-buttons implementation.",
+      "acceptance_criteria": [
+        "Rabbi Ellie Scheller has One Time workspace_owner/workspace_admin assignment only for authorized One Time data.",
+        "Shloimie retains platform_super_admin and One Time workspace_admin/workspace_manager assignment with intentional workspace switching.",
+        "Scoped Users screen supports no-send invite/member creation, role assignment, deactivate, reactivate, reversible membership archive, and role-change audit readback.",
+        "Canonical platform, workspace, and member roles are validated server-side and reflected in UI role controls.",
+        "Negative authorization tests deny cross-workspace user, task, Decision, message, and recording access or mutation paths."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/one-time-role-model.js",
+        "node --check src/platform/rbac/index.js",
+        "node --test tests/one-time-role-auth-model.test.js tests/platform-core/platform-core-rbac.test.js tests/operations-module-scoping.test.js tests/external-access-persistence-workflow.test.js tests/workspace-user-role-management.test.js tests/operations-pwa-login.test.js tests/workspace-person-household-provider-contract.test.js tests/live-class-infrastructure.test.js tests/agent-control-api-readback.test.js tests/one-time-operations-ui-smoke.test.js",
+        "git diff --check",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "focused workspace-user role live smoke"
+      ],
+      "implementation_files": [
+        "src/lib/bna/one-time-role-model.js",
+        "src/platform/rbac/index.js",
+        "server.js",
+        "public/operations.html",
+        "tests/one-time-role-auth-model.test.js",
+        "tests/external-access-persistence-workflow.test.js",
+        "tests/workspace-user-role-management.test.js"
+      ],
+      "implementation_commit": "c8d93646",
+      "pushed_commit": "c8d93646",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T15:00:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "deployment_id": "04fde749-fca1-4e54-a7c4-f2ece847847b",
+      "deployed_commit": "c8d93646",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T09-51-25-585Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T09-53-03-531Z-workspace-user-role-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260621-502",
+      "title": "Visible action registry and dead-button coverage",
+      "expected_result": "Every visible action is working, disabled with a setup/blocker path, or intentionally informational.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0006"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "actions",
+      "priority": "P0",
+      "batch_id": "batch-5",
+      "depends_on": [
+        "REQ-20260619-303"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to Batch 6 / REQ-20260619-304 Operations UI and design-system correction.",
+      "acceptance_criteria": [
+        "One Time action coverage Markdown and JSON exist.",
+        "Required visible action labels map to working handlers, setup paths, or gated blockers.",
+        "Generic placeholder buttons are removed except scoped workspace denial.",
+        "External-write controls remain disabled, setup-path, preview-only, or exact-approval gated.",
+        "Automated action coverage tests pass."
+      ],
+      "evidence": [
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md"
+      ],
+      "verification": [
+        "node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js",
+        "node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/workspace-user-role-management.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/action-registry-telegram-ui-bot.test.js",
+        "node --check server.js",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "focused one-time-visible-actions live smoke"
+      ],
+      "implementation_files": [
+        "ops/action-registry/one-time-action-coverage.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "public/operations.html",
+        "tests/one-time-action-coverage.test.js"
+      ],
+      "implementation_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
+      "pushed_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T13:12:30+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "deployment_id": "9c31c21f-143e-46f3-b95d-2b458a848d9f",
+      "deployed_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T10-10-19-366Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T10-11-36-599Z-one-time-visible-actions-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-304",
+      "title": "Operations UI and design-system correction",
+      "expected_result": "Operations and One Time surfaces are usable, scan-friendly, responsive, and live-verified.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0007"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui",
+      "priority": "P0",
+      "batch_id": "batch-6",
+      "depends_on": [
+        "REQ-20260621-502"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to Batch 7 / REQ-20260621-503 WhatsApp UX.",
+      "acceptance_criteria": [
+        "no duplicated top rail navigation",
+        "horizontal filters scroll",
+        "no horizontal overflow",
+        "screenshots captured"
+      ],
+      "evidence": [
+        "ops/ui-audits/2026-06-21-batch6-before-prod/ui-audit-report.md",
+        "ops/ui-audits/2026-06-21-batch6-before-prod/manifest.json",
+        "ops/ui-audits/2026-06-21-batch6-before-prod/screenshot-index.csv",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/manifest.json",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/screenshot-index.csv",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md"
+      ],
+      "verification": [
+        "node --test tests/operations-shell-navigation-contract.test.js tests/operations-saas-crm-redesign.test.js tests/bna-brand-shell.test.js tests/ops-ui-audit-harness.test.js tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-ws01-layout-readability.test.js tests/assistant-portal-communications-contract.test.js",
+        "node --check scripts/full-ui-audit.mjs",
+        "node --check tools/ops-ui-audit/config.js",
+        "npm run ops:audit -- smoke-login",
+        "UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-before-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "UI_AUDIT_TARGET_MODE=batch6 UI_AUDIT_SLUG=2026-06-21-batch6-after-prod UI_AUDIT_BASE_URL=https://bneineviimacademy.org node scripts/full-ui-audit.mjs",
+        "focused operations-filter-rail live smoke"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "scripts/full-ui-audit.mjs",
+        "tools/ops-ui-audit/config.js",
+        "tests/bna-brand-shell.test.js",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/operations-saas-crm-redesign.test.js",
+        "tests/operations-shell-navigation-contract.test.js",
+        "tests/ops-ui-audit-harness.test.js"
+      ],
+      "implementation_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
+      "pushed_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md",
+        "ops/ui-audits/2026-06-21-batch6-after-prod/ui-audit-report.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T14:07:12+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "deployment_id": "d6c09c49-8372-42d7-8b3b-a049ab24ad63",
+      "deployed_commit": "c98c06d7735ec19dec1684684a594de0636064c7",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T10-56-35-826Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-06-48-694Z-operations-filter-rail-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-305",
+      "title": "First-party communications parent requirement",
+      "expected_result": "Communications UX is usable, workspace-scoped, and no-send by default.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0008",
+        "STMT-20260621-001-0009"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "communications",
+      "priority": "P1",
+      "batch_id": "batch-7-8-parent",
+      "depends_on": [
+        "REQ-20260619-304"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to Batch 9/10 / REQ-20260619-306 product, schedule, booking, portals, and billing/access foundations.",
+      "acceptance_criteria": [
+        "WhatsApp child verified",
+        "Email child verified"
+      ],
+      "evidence": [
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.json",
+        "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
+      ],
+      "verification": [
+        "Batch 7 WhatsApp child verified live; Batch 8 Email/Resend child remains.",
+        "npm run app:smoke:whatsapp-ux",
+        "node --test tests/resend-client.test.js tests/communications-integrations-contract.test.js tests/one-time-communications-workspace.test.js tests/provider-env-railway-propagate.test.js",
+        "npm run app:smoke",
+        "npm run app:smoke:email-resend-ux"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "ops/communications/wapi-crm-audit-and-plan.md"
+      ],
+      "implementation_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "pushed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T15:14:00+03:00",
+      "deployed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
+      "deployment_id": "3ec03a01-2141-401f-988f-a734176a778c",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260621-503",
+      "title": "WhatsApp UX",
+      "expected_result": "WhatsApp UX shows scoped conversations, details, related work, notes, and no-send guarded controls.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0008"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "whatsapp",
+      "priority": "P1",
+      "batch_id": "batch-7",
+      "depends_on": [
+        "REQ-20260619-304"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to Batch 8 / REQ-20260621-504 Email and Resend UX.",
+      "acceptance_criteria": [
+        "three panes desktop",
+        "mobile back navigation",
+        "raw provider payloads hidden by default"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.json",
+        "ops/live-smokes/2026-06-21T11-31-29-921Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-33-10-414Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-34-54-870Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-35-53-288Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-41-52-261Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.json",
+        "ops/live-smokes/2026-06-21T11-45-19-349Z-whatsapp-ux-live-smoke.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/wapi-phonebook-report.js",
+        "node --test tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js tests/whapi-log-sync-contract.test.js tests/communications-screening-import-ui.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js",
+        "node --test tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/operations-shell-navigation-contract.test.js",
+        "npm run ops:audit -- smoke-login",
+        "npm run bna:run:validate",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node --check scripts/smoke-whatsapp-ux-live.mjs",
+        "npm run app:smoke:whatsapp-ux"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/wapi-phonebook-report.js",
+        "scripts/smoke-whatsapp-ux-live.mjs",
+        "package.json",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js",
+        "tests/communications-integrations-contract.test.js"
+      ],
+      "implementation_commit": "b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f",
+      "pushed_commit": "b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T14:47:27+03:00",
+      "deployment_id": "3265d380-9a93-488d-844f-f523367aa4e2",
+      "deployed_commit": "b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T11-42-44-606Z-whatsapp-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260621-504",
+      "title": "Email and Resend UX",
+      "expected_result": "Email operations are usable without live sends and Resend readiness is separated from sender/domain readiness.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0009"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "email_resend",
+      "priority": "P1",
+      "batch_id": "batch-8",
+      "depends_on": [
+        "REQ-20260619-304"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to Batch 9/10 / REQ-20260619-306 product, schedule, booking, portals, and billing/access foundations.",
+      "acceptance_criteria": [
+        "send disabled",
+        "domain list/status readable",
+        "webhook route tested with mocks",
+        "one sender/domain Decision exists"
+      ],
+      "evidence": [
+        "docs/integrations/RESEND.md",
+        "ops/one-time-mishnah/resend-sender-domain-decision.md",
+        "ops/one-time-mishnah/resend-sender-domain-decision.json",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-03-06-468Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
+      ],
+      "verification": [
+        "node --check src/lib/integrations/resend-client.js",
+        "node --check server.js",
+        "node --check scripts/smoke-email-resend-ux-live.mjs",
+        "node --check scripts/provider-env-railway-propagate.mjs",
+        "node --test tests/resend-client.test.js tests/communications-integrations-contract.test.js tests/one-time-communications-workspace.test.js tests/provider-env-railway-propagate.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run app:smoke",
+        "npm run app:smoke:email-resend-ux",
+        "npm run railway:doctor"
+      ],
+      "implementation_files": [
+        "docs/integrations/RESEND.md",
+        "src/lib/integrations/resend-client.js",
+        "server.js",
+        "public/operations.html",
+        "tests/resend-client.test.js",
+        "scripts/provider-env-railway-propagate.mjs",
+        "scripts/smoke-email-resend-ux-live.mjs",
+        "ops/one-time-mishnah/resend-sender-domain-decision.md",
+        "ops/one-time-mishnah/resend-sender-domain-decision.json",
+        "tests/communications-integrations-contract.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/provider-env-railway-propagate.test.js"
+      ],
+      "implementation_commit": "fdd39bf327356675f8006bcc4ce04425061ef57e",
+      "pushed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-06-34-002Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-06-50-692Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md",
+        "ops/qa-runs/2026-06-21T12-08-03-312Z-provider-env-railway-propagation.md",
+        "ops/qa-runs/2026-06-21T12-08-11-738Z-provider-env-railway-propagation.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T15:14:00+03:00",
+      "deployment_id": "3ec03a01-2141-401f-988f-a734176a778c",
+      "deployed_commit": "847649198dfaf9f12fd69db958c3f927b460ecd8",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-306",
+      "title": "Product, scheduling, booking, portals, and billing foundations",
+      "expected_result": "One Time product, schedule, booking, portals, and billing/access foundations are usable without live charges.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0010",
+        "STMT-20260621-002-0001",
+        "STMT-20260621-002-0002",
+        "STMT-20260621-002-0003",
+        "STMT-20260621-002-0004",
+        "STMT-20260621-002-0009"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "product_portals",
+      "priority": "P1",
+      "batch_id": "batch-9-10",
+      "depends_on": [
+        "REQ-20260619-304"
+      ],
+      "implementation_status": "verified_live_with_external_blocker",
+      "can_continue_without_operator": true,
+      "next_action": "Closed for all currently possible credential-free work. External transcription remains blocked in REQ-20260621-902 and does not block unrelated batches.",
+      "acceptance_criteria": [
+        "no guessed final pricing entitlements",
+        "booking intent records created",
+        "portals scoped and usable",
+        "child requirements REQ-20260621-901 through REQ-20260621-910 have terminal statuses",
+        "parent remains open until parser, CRM, trial/referral, payment/access, support/questions, beta data, and Agent Mode acceptance are closed or blocked with evidence"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.json",
+        "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md",
+        "ops/one-time-mishnah/agent-mode-acceptance.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/bna/one-time-product-system.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-product-booking-live.mjs",
+        "node --test tests/one-time-product-system.test.js tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-operations-ui-smoke.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node scripts/smoke-one-time-product-booking-live.mjs",
+        "REQ-20260621-901 verified live",
+        "REQ-20260621-910 verified live",
+        "REQ-20260621-902 isolated as external transcription credential blocker"
+      ],
+      "implementation_files": [
+        "src/lib/bna/one-time-product-system.js",
+        "server.js",
+        "public/operations.html",
+        "railway-migration-2026-06-16-one-time-product-system.sql",
+        "tests/one-time-product-system.test.js",
+        "scripts/smoke-one-time-product-booking-live.mjs"
+      ],
+      "implementation_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
+      "pushed_commit": "45ed36787ca519819a1adfb8f372267d96330a64",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T19:07:00+03:00",
+      "deployed_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "deployment_id": "b006acf0-41d5-458c-b661-2b673d8de1f7",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-36-43-923Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-38-45-981Z-one-time-product-booking-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
+      "child_requirement_ids": [
+        "REQ-20260621-901",
+        "REQ-20260621-902",
+        "REQ-20260621-903",
+        "REQ-20260621-904",
+        "REQ-20260621-905",
+        "REQ-20260621-906",
+        "REQ-20260621-907",
+        "REQ-20260621-908",
+        "REQ-20260621-909",
+        "REQ-20260621-910"
+      ],
+      "blocker": "External transcription credential remains isolated in child REQ-20260621-902; no credential-free child work remains in this parent requirement.",
+      "blocker_owner": "External/keyholder",
+      "blocker_next_action": "Provide the hosted transcription credential or approve a manual transcription-only workflow when ready."
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check scripts/smoke-source-envelope-parser-live.mjs",
+        "node --check src/platform/ingestion/intake-source.js",
+        "node --check src/lib/bna/intake-parser.js",
+        "node --check src/platform/ingestion/canonical-parser.js",
+        "node --test tests/ingestion/w3-intake-source.test.js tests/intake-parser-workspace-ambiguity.test.js tests/ingestion/w3-parser-queue.test.js",
+        "node --test tests/intake-parser.test.js tests/ramble-protocol-hardening.test.js tests/telegram-ramble-routing-regression.test.js tests/telegram-media-routing.test.js",
+        "git diff --cached --check",
+        "node scripts/audit-secrets.mjs",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:source-envelope-parser"
+      ],
+      "implementation_commit": "efe1d86d194cef483f5d6d9d418a769e20800989",
+      "pushed_commit": "efe1d86d194cef483f5d6d9d418a769e20800989",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:22:25+03:00",
+      "id": "REQ-20260621-901",
+      "title": "Source-envelope and mixed-context parser v2",
+      "expected_result": "Parser v2 creates a source envelope before item parsing and keeps local fragment scope from being overwritten by a single global keyword.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0010",
+        "STMT-20260621-002-0011",
+        "STMT-20260621-002-0012"
+      ],
+      "category": "parser",
+      "batch_id": "batch-9A",
+      "next_action": "Continue with REQ-20260621-902, today's class-upload trace.",
+      "acceptance_criteria": [
+        "source envelope includes required metadata fields",
+        "supported context types include class_recording, family_meeting, provider_meeting, operations_ramble, crm_spreadsheet, content_recording, mixed, and unknown_needs_review",
+        "title/filename creates a strong but overridable default workspace/project/context",
+        "mixed-context examples do not globally mis-scope local Operations, One Time, BNA, family, class, private question, or content fragments"
+      ],
+      "implementation_files": [
+        "src/platform/ingestion/intake-source.js",
+        "src/platform/ingestion/canonical-parser.js",
+        "src/lib/bna/intake-parser.js",
+        "server.js",
+        "package.json",
+        "scripts/smoke-source-envelope-parser-live.mjs",
+        "tests/ingestion/w3-intake-source.test.js",
+        "tests/intake-parser-workspace-ambiguity.test.js",
+        "tests/ingestion/w3-parser-queue.test.js",
+        "tests/telegram-media-routing.test.js"
+      ],
+      "deployed_commit": "efe1d86d194cef483f5d6d9d418a769e20800989",
+      "deployment_id": "c1623618-a00c-46d0-8be9-5a8e4102b376",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "blocked",
+      "implementation_status": "blocked_transcription_credential",
+      "can_continue_without_operator": false,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md",
+        "ops/one-time-mishnah/hosted-transcription-credential-audit-2026-06-21.md"
+      ],
+      "verification": [
+        "node --check scripts/smoke-class-upload-trace-live.mjs",
+        "node --check scripts/telegram-kimi-bridge.mjs",
+        "node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --dry-run --auto-parse BLOCKER-FREE DRY-RUN",
+        "node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse BLOCKED 401 invalid_credential",
+        "live content-job note sanitization patch PASS",
+        "npm run app:smoke",
+        "npm run app:smoke:class-upload-trace -- 78",
+        "validated approved local OpenAI secret file returned HTTP 401 without printing value",
+        "validated approved .env.local OPENAI_API_KEY returned HTTP 401 without printing value",
+        "Railway variable-name readback unavailable with current auth"
+      ],
+      "implementation_commit": "72b5723a7600587d117b63ae972d617526891c22",
+      "pushed_commit": "72b5723a7600587d117b63ae972d617526891c22",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": false,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T22:20:00+03:00",
+      "id": "REQ-20260621-902",
+      "title": "Today's class-upload trace",
+      "expected_result": "The current class upload path has traceable raw intake, source envelope, parse run, item routing, and review evidence.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0013"
+      ],
+      "category": "class_upload_trace",
+      "batch_id": "batch-9B",
+      "next_action": "Continue with REQ-20260621-903 Downloads spreadsheet inventory while job #78 remains blocked on transcription credentials.",
+      "acceptance_criteria": [
+        "raw/source provenance exists",
+        "parse run and item routing are inspectable",
+        "workspace/project scope is explicit",
+        "private material is not exposed cross-workspace"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "scripts/telegram-kimi-bridge.mjs",
+        "tests/telegram-media-routing.test.js"
+      ],
+      "blocker": "Hosted OpenAI transcription credential returns 401 invalid_credential before job #78 can be transcribed or parsed; approved local replacement candidates also return HTTP 401.",
+      "blocker_owner": "operator/keyholder",
+      "blocker_next_action": "Provide or rotate a valid OpenAI API key for OPENAI_API_KEY through approved secure storage/Railway workflow, restart only the service reading it, then rerun node scripts/telegram-kimi-bridge.mjs --profile bna reprocess-drive-job 78 --parse and npm run app:smoke:class-upload-trace -- 78.",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_local",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.json",
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md"
+      ],
+      "verification": [
+        "node --check scripts/inventory-download-spreadsheets.mjs",
+        "node scripts/inventory-download-spreadsheets.mjs",
+        "npm run inventory:downloads-spreadsheets",
+        "node --test tests/downloads-spreadsheet-inventory.test.js",
+        "inventory JSON parse PASS",
+        "generated-output privacy scan PASS after filename-token redaction",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check for Batch 9C paths"
+      ],
+      "implementation_commit": "0e1f586b7e7880ca9a2d65f57339d88e15794179",
+      "pushed_commit": "0e1f586b7e7880ca9a2d65f57339d88e15794179",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": false,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md"
+      ],
+      "live_required": false,
+      "updated_at": "2026-06-21T16:50:00+03:00",
+      "id": "REQ-20260621-903",
+      "title": "Downloads spreadsheet inventory",
+      "expected_result": "Relevant Downloads spreadsheets are inventoried without committing private exports or secrets, and import candidates are classified.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0014"
+      ],
+      "category": "spreadsheet_inventory",
+      "batch_id": "batch-9C",
+      "next_action": "Continue with REQ-20260621-904 CRM import and deduplication using inventory IDs/hashes, not raw spreadsheet dumps.",
+      "acceptance_criteria": [
+        "inventory avoids raw private exports",
+        "spreadsheet type and source are classified",
+        "import candidates have blockers/next actions",
+        "no GHL runtime added"
+      ],
+      "implementation_files": [
+        "scripts/inventory-download-spreadsheets.mjs",
+        "tests/downloads-spreadsheet-inventory.test.js",
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.json",
+        "ops/one-time-mishnah/downloads-spreadsheet-inventory.md",
+        "package.json"
+      ],
+      "inventory_summary": {
+        "files_inventoried": 203,
+        "import_candidates": 56,
+        "highest_priority_candidate": "Rabbi Scheller Followers.xlsx",
+        "guardrail": "metadata and redacted schema signals only; no raw rows or private exports committed"
+      }
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-crm-import-dedupe-live.mjs",
+        "node --test tests/communications-screening-import-ui.test.js tests/downloads-spreadsheet-inventory.test.js tests/one-time-product-system.test.js tests/one-time-communications-workspace.test.js tests/communications-integrations-contract.test.js tests/assistant-portal-communications-contract.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "Railway deployment poll PASS deployment 4919c095-6301-4806-a712-0d64b4d01850 SUCCESS",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-crm-import-dedupe"
+      ],
+      "implementation_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
+      "pushed_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T17:04:18+03:00",
+      "id": "REQ-20260621-904",
+      "title": "CRM import and deduplication",
+      "expected_result": "First-party One Time CRM import/dedupe can safely ingest approved warm leads without external CRM writes or cross-workspace bleed.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0015"
+      ],
+      "category": "crm_import_dedupe",
+      "batch_id": "batch-9D",
+      "next_action": "Continue with REQ-20260621-905 CRM Contacts UX.",
+      "acceptance_criteria": [
+        "imports are workspace/project scoped",
+        "dedupe preserves audit history",
+        "warm leads stay no-send until approval",
+        "GHL/LeadConnector remain inactive"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "package.json",
+        "scripts/smoke-one-time-crm-import-dedupe-live.mjs",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-product-system.test.js"
+      ],
+      "deployed_commit": "aedb04aade8d518427b9f4df011c8b5a9d07f306",
+      "deployment_id": "4919c095-6301-4806-a712-0d64b4d01850",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md"
+      ],
+      "closeout_summary": "Scoped first-party preview/dedupe plus One Time CRM readiness route and Operations panel deployed and live-smoked with metadata-only source refs, no raw source rows, no-send warm leads, disabled apply, and no local/external/GHL writes."
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "public/operations.html",
+        "server.js",
+        "package.json",
+        "scripts/smoke-one-time-crm-contacts-ux-live.mjs",
+        "tests/operations-contacts-intake-cleanup.test.js",
+        "tests/operations-module-scoping.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "verification": [
+        "PASS node --test tests/operations-contacts-intake-cleanup.test.js tests/operations-module-scoping.test.js tests/one-time-communications-workspace.test.js (15/15)",
+        "PASS node --check server.js",
+        "PASS node --check scripts/smoke-one-time-crm-contacts-ux-live.mjs",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS git diff --check with LF/CRLF warnings only",
+        "PASS npm run watchdog:actions",
+        "PASS npm run railway:doctor for deployment bf53e21c-a793-4af8-8630-a0e855d857c7",
+        "PASS npm run app:smoke -> ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-crm-contacts-ux -> ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md",
+        "KNOWN unrelated full npm test failures remain in agent-control/developer-tester/UI topbar stale assertions, outside Batch 9E focused paths"
+      ],
+      "implementation_commit": "35db6c0e876243e61e7bce2f94db787a44626f06",
+      "pushed_commit": "35db6c0e876243e61e7bce2f94db787a44626f06",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment bf53e21c-a793-4af8-8630-a0e855d857c7 reached SUCCESS for deployed commit 35db6c0e876243e61e7bce2f94db787a44626f06",
+        "ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T17:25:39+03:00",
+      "id": "REQ-20260621-905",
+      "title": "CRM Contacts UX",
+      "expected_result": "Operations Contacts UX organizes One Time leads/members with scoped communication, lead, no-send, and dedupe state.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0016"
+      ],
+      "category": "crm_contacts_ux",
+      "batch_id": "batch-9E",
+      "next_action": "Expose safe One Time CRM/contact views and actions without external sends or CRM writes.",
+      "acceptance_criteria": [
+        "contacts are workspace scoped",
+        "lead source/status and no-send state are visible",
+        "dedupe/review states are explicit",
+        "private BNA data is absent from One Time"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "tests/operations-contacts-intake-cleanup.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "package.json",
+        "scripts/smoke-one-time-crm-contacts-ux-live.mjs"
+      ],
+      "deployed_commit": "35db6c0e876243e61e7bce2f94db787a44626f06",
+      "deployment_id": "bf53e21c-a793-4af8-8630-a0e855d857c7"
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "src/lib/bna/one-time-product-system.js",
+        "src/lib/integrations/stripe.js",
+        "server.js",
+        "public/operations.html",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "tests/one-time-stripe-local-beta.test.js",
+        "scripts/smoke-one-time-trial-referral-live.mjs",
+        "ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md"
+      ],
+      "verification": [
+        "PASS node --test tests/one-time-stripe-local-beta.test.js tests/one-time-product-system.test.js",
+        "PASS node --test tests/operations-module-scoping.test.js tests/one-time-communications-workspace.test.js",
+        "PASS node --check server.js",
+        "PASS node --check scripts/smoke-one-time-trial-referral-live.mjs",
+        "PASS node --check src/lib/integrations/stripe.js",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS npm run watchdog:actions",
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor for deployment 12249b2b-f11c-44b0-b9fa-ba75c511c633",
+        "PASS npm run app:smoke (ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md)",
+        "PASS npm run app:smoke:one-time-trial-referral (ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md)"
+      ],
+      "implementation_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de",
+      "pushed_commit": "4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T17:53:00+03:00",
+      "deployed_commit": "32708bfa5aa1d673a44ed5765178081ad57dc3de",
+      "deployment_id": "12249b2b-f11c-44b0-b9fa-ba75c511c633",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md"
+      ],
+      "closeout_summary": "Warm-lead 30-day trial, $67 renewal, card-required and one-intro-trial rules, policy acceptance storage, referral-after-first-paid-cycle model, legal wording Decision, Stripe local-beta no-write guardrails, and Operations panel are deployed and live-smoked without charges, invoice credits, sends, access grants, or external CRM writes.",
+      "id": "REQ-20260621-906",
+      "title": "Warm-lead trial and referral configuration",
+      "expected_result": "Warm-lead trial, referral credit, policy-version, and acceptance records are configurable in test/local mode without live charges or invoice credits.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0006",
+        "STMT-20260621-002-0007",
+        "STMT-20260621-002-0008"
+      ],
+      "category": "trial_referral_config",
+      "batch_id": "batch-9F",
+      "next_action": "Implement configurable launch promotion and referral model with policy-version acceptance storage and a legal wording Decision.",
+      "acceptance_criteria": [
+        "30-day trial/$67 renewal defaults are configurable",
+        "card-required and one-intro-trial rules are modeled",
+        "referral activates only after first successful paid cycle",
+        "real invoice credits and charges remain disabled",
+        "legal wording Decision exists"
+      ],
+      "implementation_files": [
+        "src/lib/integrations/stripe.js",
+        "src/lib/bna/one-time-product-system.js",
+        "server.js",
+        "public/operations.html",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "ops/route-registry.json",
+        "scripts/smoke-one-time-trial-referral-live.mjs",
+        "tests/one-time-stripe-local-beta.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-9G",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-9G",
+        "ops/watchdog-audits/2026-06-21T15-05-watchdog-action-audit.md",
+        "ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-9g"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check public/js/rabbi-member.js",
+        "PASS node --check scripts/smoke-one-time-payment-access-class-links-live.mjs",
+        "PASS node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js (40/40)",
+        "PASS focused product/Operations/workspace suite (60/60)",
+        "PASS route/action registry JSON parse",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS npm run watchdog:actions",
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor after deployment ec7724a3-76b9-4858-85e2-370af327759a",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-payment-access-class-links ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
+      ],
+      "implementation_commit": "62715fd68ad0956d92134560af303ba9d5fc7720",
+      "pushed_commit": "62715fd68ad0956d92134560af303ba9d5fc7720",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment ec7724a3-76b9-4858-85e2-370af327759a SUCCESS for deployed commit 53c66d204604ac94801a33bfa4c29306bdedb83b",
+        "PASS npm run railway:doctor after deployment ec7724a3-76b9-4858-85e2-370af327759a",
+        "PASS standard live smoke ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "PASS focused live smoke ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T18:13:00+03:00",
+      "id": "REQ-20260621-907",
+      "title": "Payment-to-access and class-link flow",
+      "expected_result": "Test-mode payment/access/class-link state is modeled without live charges, access grants, or real Zoom link exposure.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0017"
+      ],
+      "category": "payment_access_class_links",
+      "batch_id": "batch-9G",
+      "next_action": "Connect test-mode payment state to access/class-link readiness with confirmation gates and scoped portal visibility.",
+      "acceptance_criteria": [
+        "payment state does not create live charges",
+        "access grants require approved local/test event",
+        "class links are relationship scoped",
+        "Zoom host/start URL never exposed"
+      ],
+      "implementation_files": [
+        "src/lib/bna/one-time-product-system.js",
+        "server.js",
+        "public/js/rabbi-member.js",
+        "public/operations.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "package.json",
+        "scripts/smoke-one-time-payment-access-class-links-live.mjs",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-external-user-portal.test.js"
+      ],
+      "deployment_id": "ec7724a3-76b9-4858-85e2-370af327759a",
+      "deployed_commit": "53c66d204604ac94801a33bfa4c29306bdedb83b",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-9h",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-9h",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-9h",
+        "ops/watchdog-audits/2026-06-21T15-29-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T15-29-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check public/js/rabbi-member.js",
+        "PASS node --check scripts/smoke-one-time-authenticated-support-live.mjs",
+        "PASS node --test tests/one-time-member-support-questions.test.js tests/developer-tester-ticket-capture.test.js tests/one-time-community-moderation-workflow.test.js (19/19)",
+        "PASS node --test tests/rabbi-checkout-access.test.js tests/one-time-external-user-portal.test.js tests/one-time-member-library.test.js tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-action-coverage.test.js (59/59)",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor after deployment 977430a7-fa56-480d-9289-5abbd6536658",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-authenticated-support ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
+      ],
+      "implementation_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a",
+      "pushed_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 977430a7-fa56-480d-9289-5abbd6536658 SUCCESS for deployed commit b71b14c5252ca2145b738e11fe4ab547bb412c3a",
+        "PASS npm run railway:doctor after deployment 977430a7-fa56-480d-9289-5abbd6536658",
+        "PASS standard live smoke ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "PASS focused live smoke ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T18:39:23+03:00",
+      "id": "REQ-20260621-908",
+      "title": "Authenticated questions and support-ticket bot",
+      "expected_result": "Authenticated users can open scoped support tickets and private/community questions without exposing other users or internal notes.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0005"
+      ],
+      "category": "questions_support_bot",
+      "batch_id": "batch-9H",
+      "next_action": "Closed. Continue automatically with Batch 9I / REQ-20260621-909 test identities and mock data.",
+      "acceptance_criteria": [
+        "user and workspace are authenticated",
+        "tickets/questions are relationship scoped",
+        "staff internal notes are hidden",
+        "support bot is not unrestricted Mishnah study bot"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/rabbi-member.html",
+        "public/js/rabbi-member.js",
+        "public/operations.html",
+        "scripts/telegram-kimi-bridge.mjs",
+        "scripts/smoke-one-time-authenticated-support-live.mjs",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "package.json",
+        "tests/one-time-member-support-questions.test.js",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/one-time-external-user-portal.test.js",
+        "tests/one-time-classroom-calendar-community-bot.test.js",
+        "tests/one-time-action-coverage.test.js",
+        "tests/app-select-dropdown.test.js",
+        "tests/developer-tester-ticket-capture.test.js"
+      ],
+      "deployment_id": "977430a7-fa56-480d-9289-5abbd6536658",
+      "deployed_commit": "b71b14c5252ca2145b738e11fe4ab547bb412c3a",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-9i",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-9i",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-9i",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
+        "ops/watchdog-audits/2026-06-21T15-49-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T15-49-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check scripts/platform-synthetic-e2e.mjs",
+        "PASS node --check scripts/smoke-one-time-test-identities-live.mjs",
+        "PASS node --test tests/one-time-synthetic-pilot.test.js tests/one-time-rbac-negative-isolation.test.js tests/one-time-external-user-portal.test.js tests/one-time-action-coverage.test.js (49/49)",
+        "PASS npm run platform:synthetic-e2e",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run bna:run:validate",
+        "PASS node scripts/audit-secrets.mjs",
+        "PASS git diff --check with line-ending warnings only",
+        "PASS npm run railway:doctor after deployment 5751098c-2095-4d24-97db-712aba136915",
+        "PASS npm run app:smoke ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-test-identities ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ],
+      "implementation_commit": "f741fa91a909db89a79a33b6de5193c6c481732c",
+      "pushed_commit": "f741fa91a909db89a79a33b6de5193c6c481732c",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 5751098c-2095-4d24-97db-712aba136915 SUCCESS for deployed commit f741fa91a909db89a79a33b6de5193c6c481732c",
+        "PASS npm run railway:doctor after deployment 5751098c-2095-4d24-97db-712aba136915",
+        "PASS standard live smoke ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "PASS focused live smoke ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T18:53:30+03:00",
+      "id": "REQ-20260621-909",
+      "title": "Test identities and mock data",
+      "expected_result": "Realistic beta test identities and mock data exercise BNA/One Time privacy, auth, CRM, payment/access, class links, questions, and support without using real private exports.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0018"
+      ],
+      "category": "beta_mock_data",
+      "batch_id": "batch-9I",
+      "next_action": "Closed. Continue automatically with Batch 9J / REQ-20260621-910 Agent Mode end-to-end acceptance.",
+      "acceptance_criteria": [
+        "TEST-prefixed and cleanup-ready",
+        "no real private exports committed",
+        "workspace privacy cases covered",
+        "negative auth cases covered"
+      ],
+      "implementation_files": [
+        "src/platform/instances/one-time-test-fixtures.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/platform-synthetic-e2e.mjs",
+        "scripts/smoke-one-time-test-identities-live.mjs",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json",
+        "package.json",
+        "tests/one-time-synthetic-pilot.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js",
+        "tests/one-time-external-user-portal.test.js",
+        "tests/one-time-action-coverage.test.js"
+      ],
+      "deployment_id": "5751098c-2095-4d24-97db-712aba136915",
+      "deployed_commit": "f741fa91a909db89a79a33b6de5193c6c481732c",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260621-002",
+      "source_path": "raw-input/RAW-20260621-002-one-time-revenue-launch-parser-followup.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "P0",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "status": "done",
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/one-time-mishnah/agent-mode-acceptance.json",
+        "ops/one-time-mishnah/agent-mode-acceptance.md",
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.json"
+      ],
+      "verification": [
+        "node --check server.js",
+        "node --check scripts/one-time-agent-mode-acceptance.mjs",
+        "node --check scripts/smoke-one-time-agent-mode-acceptance-live.mjs",
+        "node --test tests/one-time-agent-mode-acceptance.test.js tests/one-time-synthetic-pilot.test.js tests/one-time-action-coverage.test.js tests/agent-control-api-readback.test.js",
+        "npm run one-time:agent-mode-acceptance",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-agent-mode-acceptance"
+      ],
+      "implementation_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "pushed_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "Railway deployment b006acf0-41d5-458c-b661-2b673d8de1f7 SUCCESS for deployed commit 6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T19:07:00+03:00",
+      "id": "REQ-20260621-910",
+      "title": "Agent Mode end-to-end acceptance",
+      "expected_result": "Agent Mode acceptance can exercise the launch flow end to end in test mode with evidence, no external writes, and clear remaining blockers.",
+      "source_statement_ids": [
+        "STMT-20260621-002-0019"
+      ],
+      "category": "agent_mode_acceptance",
+      "batch_id": "batch-9J",
+      "next_action": "Closed. Continue automatically with the next unblocked requirement from the execution runner.",
+      "acceptance_criteria": [
+        "acceptance flow has evidence artifacts",
+        "no live charges or sends",
+        "no external CRM/GHL writes",
+        "remaining blockers are explicit"
+      ],
+      "implementation_files": [
+        "src/platform/agent-control/one-time-acceptance.js",
+        "scripts/one-time-agent-mode-acceptance.mjs",
+        "scripts/smoke-one-time-agent-mode-acceptance-live.mjs",
+        "tests/one-time-agent-mode-acceptance.test.js",
+        "server.js",
+        "public/operations.html",
+        "package.json",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "ops/one-time-mishnah/agent-mode-acceptance.json",
+        "ops/one-time-mishnah/agent-mode-acceptance.md",
+        "ops/watchdog-audits/2026-06-21T16-01-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-01-watchdog-security-routes.md"
+      ],
+      "deployment_id": "b006acf0-41d5-458c-b661-2b673d8de1f7",
+      "deployed_commit": "6c45c4a4f5be60ae8b5dcceee66087f3d54430ae",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-307",
+      "title": "Zoom meeting and attendance foundation",
+      "expected_result": "Zoom foundation is production-ready in code without creating a real class meeting.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0012"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "zoom_attendance",
+      "priority": "P1",
+      "batch_id": "batch-12",
+      "depends_on": [
+        "REQ-20260621-504"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Complete. Continue to next unblocked batch from the execution runner.",
+      "acceptance_criteria": [
+        "host start URL never exposed",
+        "dashboard click is not attendance",
+        "webhooks idempotent and replay-protected"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.json",
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.json"
+      ],
+      "verification": [
+        "node --check src/lib/integrations/zoom.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-zoom-attendance-live.mjs",
+        "node --test tests/one-time-zoom-attendance-automation.test.js tests/rabbi-checkout-access.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node scripts/smoke-one-time-zoom-attendance-live.mjs"
+      ],
+      "implementation_files": [
+        "src/lib/integrations/zoom.js",
+        "server.js",
+        "public/operations.html",
+        "ops/route-registry.json",
+        "railway-migration-2026-06-16-one-time-product-system.sql",
+        "tests/one-time-zoom-attendance-automation.test.js",
+        "scripts/smoke-one-time-zoom-attendance-live.mjs"
+      ],
+      "implementation_commit": "7685133a6e675db6883135eb775ae4cae6b44ad2",
+      "pushed_commit": "7685133a6e675db6883135eb775ae4cae6b44ad2",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:05:00+03:00",
+      "deployed_commit": "7685133a6e675db6883135eb775ae4cae6b44ad2",
+      "deployment_id": "b2d02f20-64a8-4183-9dba-3587d0449ef7",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-308",
+      "title": "Vimeo, member-library, recording, transcript, and publication pipeline",
+      "expected_result": "Manual Vimeo member-library pipeline works now; automated upload waits on user token; recordings never publish directly from webhook.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0011"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "vimeo_recording",
+      "priority": "P1",
+      "batch_id": "batch-11-13",
+      "depends_on": [
+        "REQ-20260619-307"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to the next unblocked requirement selected by the execution runner; automated Vimeo upload still requires the operator/user-level Vimeo authorization decision before real uploads.",
+      "acceptance_criteria": [
+        "manual Vimeo URL validation",
+        "review/approve/publish/unpublish states",
+        "upload feature flag disabled",
+        "retention gates enforced"
+      ],
+      "evidence": [
+        "docs/integrations/VIMEO.md",
+        "docs/integrations/onetime-vimeo-zoom-resend-readiness.md",
+        "ops/live-smokes/2026-06-21T13-20-36-541Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-21-13-527Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-21-36-456Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-27-05-481Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/integrations/video-hosting.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-vimeo-member-library-live.mjs",
+        "node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js",
+        "node --test tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-member-library.test.js tests/one-time-product-system.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-checkout-access.test.js",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "node scripts/smoke-one-time-vimeo-member-library-live.mjs"
+      ],
+      "implementation_files": [
+        "src/lib/integrations/video-hosting.js",
+        "server.js",
+        "public/operations.html",
+        "public/member-library.html",
+        "railway-migration-2026-06-16-one-time-product-system.sql",
+        "docs/integrations/VIMEO.md",
+        "docs/integrations/onetime-vimeo-zoom-resend-readiness.md",
+        "scripts/smoke-one-time-vimeo-member-library-live.mjs",
+        "tests/one-time-recording-vimeo-pipeline.test.js",
+        "tests/one-time-member-library.test.js"
+      ],
+      "implementation_commit": "37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92",
+      "pushed_commit": "37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 38393641-ee8e-46ed-8daf-16e67b1cde2a deployed commit 23e16a126f6e7461858b5701f2dbd2ba719a35c7 containing implementation commit 37ef4c3a2b585c0bc7792a8c93cfbec4e417cc92 with status SUCCESS",
+        "ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md confirmed the current deployed bundle retained the preceding source-envelope parser work."
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T16:40:00+03:00",
+      "deployment_id": "38393641-ee8e-46ed-8daf-16e67b1cde2a",
+      "deployed_commit": "23e16a126f6e7461858b5701f2dbd2ba719a35c7",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T13-37-16-293Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T13-37-41-388Z-one-time-vimeo-member-library-live-smoke.md",
+        "ops/live-smokes/2026-06-21T13-38-09-230Z-source-envelope-parser-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-309",
+      "title": "Transcript privacy",
+      "expected_result": "Transcript content cannot expose one child to another and raw guessed speaker identity is never treated as reviewed student data.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0013"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "transcript_privacy",
+      "priority": "P1",
+      "batch_id": "batch-14",
+      "depends_on": [
+        "REQ-20260619-308"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Closed. Continue automatically with the next unblocked requirement from the execution runner.",
+      "acceptance_criteria": [
+        "confidence thresholds enforced",
+        "manual review for uncertain mapping",
+        "parent-visible feedback is reviewed"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.json"
+      ],
+      "verification": [
+        "node --check src/lib/bna/transcript-privacy.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-transcript-privacy-live.mjs",
+        "node --test tests/one-time-transcript-privacy.test.js tests/one-time-member-library.test.js tests/one-time-recording-vimeo-pipeline.test.js tests/one-time-action-coverage.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-transcript-privacy"
+      ],
+      "implementation_files": [
+        "src/lib/bna/transcript-privacy.js",
+        "server.js",
+        "public/operations.html",
+        "package.json",
+        "ops/route-registry.json",
+        "railway-migration-2026-06-21-one-time-transcript-privacy.sql",
+        "scripts/smoke-one-time-transcript-privacy-live.mjs",
+        "tests/one-time-transcript-privacy.test.js",
+        "ops/watchdog-audits/2026-06-21T16-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-23-watchdog-security-routes.md"
+      ],
+      "implementation_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+      "pushed_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "Railway deployment 7feae8ec-f34f-4e33-9e2d-9dcb479b1f14 SUCCESS for deployed commit b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T19:27:20+03:00",
+      "deployment_id": "7feae8ec-f34f-4e33-9e2d-9dcb479b1f14",
+      "deployed_commit": "b89c17c0ec34a9ba871289afbec7b065c3a0d78f",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-310",
+      "title": "Gamification",
+      "expected_result": "Badges are server-side, evidence-backed, reversible, audited, and not public-leaderboard driven.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0014"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "gamification",
+      "priority": "P2",
+      "batch_id": "batch-15",
+      "depends_on": [
+        "REQ-20260619-306",
+        "REQ-20260619-307"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Closed. Continue automatically with the next unblocked requirement from the execution runner.",
+      "acceptance_criteria": [
+        "automatic badges idempotent",
+        "Rabbi-awarded badges audited",
+        "no public individual leaderboard"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md",
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.json",
+        "ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.json"
+      ],
+      "verification": [
+        "node --check src/lib/bna/gamification.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-gamification-live.mjs",
+        "node --test tests/gamification-events.test.js tests/one-time-gamification-badge-audit.test.js",
+        "node --test tests/one-time-operations-ui-smoke.test.js tests/ws11-community-model-contract.test.js tests/parent-progress-privacy.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-gamification"
+      ],
+      "implementation_files": [
+        "src/lib/bna/gamification.js",
+        "server.js",
+        "public/operations.html",
+        "package.json",
+        "ops/route-registry.json",
+        "scripts/smoke-one-time-gamification-live.mjs",
+        "tests/gamification-events.test.js",
+        "tests/one-time-gamification-badge-audit.test.js",
+        "ops/watchdog-audits/2026-06-21T16-34-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-34-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-21T16-38-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T16-38-watchdog-security-routes.md"
+      ],
+      "implementation_commit": "68e62775a0f0414427e6b5e6a592022c78d84742",
+      "pushed_commit": "c098a0ca22c13deafee67040f92c924384c27a1e",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md",
+        "Railway deployment b6f0a4de-2857-4de0-9053-be0c74c7ab74 SUCCESS for deployed app commit 68e62775a0f0414427e6b5e6a592022c78d84742",
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T19:45:00+03:00",
+      "deployment_id": "b6f0a4de-2857-4de0-9053-be0c74c7ab74",
+      "deployed_commit": "68e62775a0f0414427e6b5e6a592022c78d84742",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-311",
+      "title": "Community",
+      "expected_result": "Community is moderated, private-safe, auditable, and has no unrestricted student direct messaging.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0015"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "community",
+      "priority": "P2",
+      "batch_id": "batch-16",
+      "depends_on": [
+        "REQ-20260619-306"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Closed. Continue automatically with Batch 17 Sefaria and study-assistant readiness.",
+      "acceptance_criteria": [
+        "private-to-public workflow preserves original/published link",
+        "no identifying data published",
+        "visibility enforced"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-16---community",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-16-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-16",
+        "ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/bna/community-moderation.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-community-live.mjs",
+        "node --test tests/one-time-action-coverage.test.js tests/one-time-community-moderation-workflow.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-community"
+      ],
+      "implementation_files": [
+        "src/lib/bna/community-moderation.js",
+        "src/platform/community/index.js",
+        "public/operations.html",
+        "scripts/smoke-one-time-community-live.mjs",
+        "package.json",
+        "tests/one-time-community-moderation-workflow.test.js"
+      ],
+      "implementation_commit": "be7e46ae9fefd2ea9f31c403c114b008ec7fc899",
+      "pushed_commit": "be7e46ae9fefd2ea9f31c403c114b008ec7fc899",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 44220c69-fdb0-4796-96fc-80d39771e244 SUCCESS",
+        "ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T19:56:00+03:00",
+      "deployment_id": "44220c69-fdb0-4796-96fc-80d39771e244",
+      "deployed_commit": "be7e46ae9fefd2ea9f31c403c114b008ec7fc899",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-312",
+      "title": "Sefaria and study-assistant readiness",
+      "expected_result": "Study assistant foundation is ready but disabled, with approved sources and authorization before retrieval.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0016"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "sefaria_assistant",
+      "priority": "P2",
+      "batch_id": "batch-17",
+      "depends_on": [
+        "REQ-20260619-309"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Closed. Continue automatically with Batch 18/19 deployment readiness and final release verification as the runner directs.",
+      "acceptance_criteria": [
+        "no arbitrary versions",
+        "no raw unreviewed transcripts",
+        "citations not fabricated",
+        "feature flag disabled"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-17---sefaria-and-study-assistant-readiness",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-17-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-17",
+        "ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md"
+      ],
+      "verification": [
+        "node --check src/lib/bna/study-assistant-readiness.js",
+        "node --check server.js",
+        "node --check scripts/smoke-one-time-study-assistant-live.mjs",
+        "node --test tests/one-time-study-assistant-readiness.test.js",
+        "node --test tests/one-time-study-assistant-readiness.test.js tests/one-time-transcript-privacy.test.js tests/one-time-action-coverage.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:one-time-study-assistant"
+      ],
+      "implementation_files": [
+        "src/lib/bna/study-assistant-readiness.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/smoke-one-time-study-assistant-live.mjs",
+        "package.json",
+        "tests/one-time-study-assistant-readiness.test.js"
+      ],
+      "implementation_commit": "7efc8ce3cd3b03c08b1d573d341efed212124785",
+      "pushed_commit": "7efc8ce3cd3b03c08b1d573d341efed212124785",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 9657afe5-958c-4cfb-bb6c-6afec77bcd05 SUCCESS",
+        "ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T20:10:00+03:00",
+      "deployment_id": "9657afe5-958c-4cfb-bb6c-6afec77bcd05",
+      "deployed_commit": "7efc8ce3cd3b03c08b1d573d341efed212124785",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md"
+      ]
+    },
+    {
+      "id": "REQ-20260619-313",
+      "title": "One Time deployment readiness",
+      "expected_result": "A separate One Time Railway instance is provisioned from the canonical codebase with an isolated Postgres database, One Time-only seed data, portal isolation evidence, and domain/DNS handoff for Shloimie's UI review.",
+      "status": "blocked",
+      "source_id": "RAW-20260621-003",
+      "source_statement_ids": [
+        "STMT-20260621-001-0017",
+        "STMT-20260621-003-0001"
+      ],
+      "source_path": "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "deployment_readiness",
+      "priority": "P2",
+      "batch_id": "batch-18",
+      "depends_on": [
+        "REQ-20260619-306"
+      ],
+      "implementation_status": "blocked_external_railway_account_auth",
+      "can_continue_without_operator": false,
+      "blocker": "Railway account-level authentication is not available in this shell. The operator explicitly forbids adding the separate One Time instance to the shared BNA project skillful-motivation, and unauthenticated account-level Railway list/create actions return unauthorized.",
+      "blocker_owner": "Operator / Railway account owner",
+      "blocker_next_action": "Provide an account-level Railway login/session that can list/create projects, or provide a pre-created separate Railway project token for one-time-production with permission to create/configure one-time-web and one-time-postgres.",
+      "next_action": "After account-level Railway auth or a scoped One Time project token is available, run npm run one-time:railway-provision:apply -- --apply --confirm PROVISION_ONE_TIME_INSTANCE; then run npm run one-time:db:bootstrap -- --apply --confirm BOOTSTRAP_ONE_TIME_DATABASE against the separate One Time database, bind app.onetimeonetime.com, capture fresh DNS records, and run npm run app:smoke:onetime-separate-instance -- <base-url>.",
+      "acceptance_criteria": [
+        "separate Railway project/service/database recorded",
+        "separate Postgres database migrated and seeded with One Time-only review data",
+        "One Time owner/admin, parent, and student portals live-smoked against the separate instance",
+        "BNA private data isolation scan passes",
+        "app.onetimeonetime.com binding and exact DNS records are recorded or one exact external DNS/billing blocker remains",
+        "operator UI review package exists"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260621-003-one-time-separate-instance-authorization.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md",
+        "ops/one-time-mishnah/separate-instance-version-freeze.md",
+        "ops/one-time-mishnah/separate-instance-railway-audit.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.json",
+        "ops/one-time-mishnah/separate-instance-seed.sql",
+        "ops/one-time-mishnah/separate-instance-isolation-scan.sql",
+        "ops/one-time-mishnah/onetime-domain-handoff.md",
+        "ops/one-time-mishnah/operator-ui-review/START-HERE.md",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#req-313-provisioning",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#req-313-separate-instance-package",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#req-313-separate-instance-provisioning",
+        "ops/watchdog-audits/2026-06-21T18-31-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T18-31-watchdog-security-routes.md",
+        "scripts/preflight-onetime-railway-provisioning.mjs",
+        "ops/watchdog-audits/2026-06-21T18-46-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T18-46-watchdog-security-routes.md",
+        "scripts/provision-onetime-railway-instance.mjs",
+        "scripts/bootstrap-onetime-database.mjs",
+        "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
+        "ops/one-time-mishnah/onetime-database-bootstrap-report.json",
+        "ops/one-time-mishnah/railway-auth-followup-2026-06-22.md",
+        "ops/one-time-mishnah/backend-ui-review-readiness-tracker.md",
+        "ops/watchdog-audits/2026-06-22T05-42-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-22T05-42-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "node --test tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js",
+        "npm run one-time:separate-instance-package",
+        "node --test tests/one-time-separate-instance-package.test.js tests/instances/w4-onetime-instance.test.js tests/one-time-deployment-readiness.test.js",
+        "node --check server.js",
+        "node --check scripts/generate-onetime-separate-instance-package.mjs",
+        "node --check scripts/smoke-onetime-separate-instance-live.mjs",
+        "node --check src/platform/instances/one-time-separate-deployment.js",
+        "npm test",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "npm run bna:run:next",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "node --check scripts/preflight-onetime-railway-provisioning.mjs",
+        "npm run one-time:railway-provision:check -- --json",
+        "node scripts/provision-onetime-railway-instance.mjs --json",
+        "node scripts/provision-onetime-railway-instance.mjs --check-auth --json --write-report",
+        "node scripts/bootstrap-onetime-database.mjs --json --write-report",
+        "node --test tests/one-time-database-bootstrap.test.js tests/one-time-railway-provisioner.test.js tests/one-time-separate-instance-package.test.js",
+        "npm test",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "node scripts/audit-secrets.mjs"
+      ],
+      "implementation_files": [
+        "src/platform/instances/one-time.js",
+        "config/brands/one-time.json",
+        "ops/one-time-mishnah/one-time-option-b-deployment-readiness.md",
+        "ops/one-time-mishnah/option-b-deployment-readiness.json",
+        "tests/instances/w4-onetime-instance.test.js",
+        "tests/one-time-deployment-readiness.test.js",
+        "src/platform/instances/one-time-separate-deployment.js",
+        "scripts/generate-onetime-separate-instance-package.mjs",
+        "scripts/smoke-onetime-separate-instance-live.mjs",
+        "public/js/one-time-single-tenant.js",
+        "public/parent.html",
+        "public/student.html",
+        "server.js",
+        "package.json",
+        ".env.example",
+        "tests/one-time-separate-instance-package.test.js",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.md",
+        "ops/one-time-mishnah/separate-instance-provisioning-plan.json",
+        "ops/one-time-mishnah/separate-instance-seed.sql",
+        "ops/one-time-mishnah/separate-instance-isolation-scan.sql",
+        "ops/one-time-mishnah/separate-instance-railway-audit.md",
+        "ops/one-time-mishnah/onetime-domain-handoff.md",
+        "ops/one-time-mishnah/operator-ui-review/START-HERE.md",
+        "ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md",
+        "ops/one-time-mishnah/operator-ui-review/REVIEW-CHECKLIST.md",
+        "ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md",
+        "ops/one-time-mishnah/operator-ui-review/screenshot-index.html",
+        "scripts/preflight-onetime-railway-provisioning.mjs",
+        "scripts/provision-onetime-railway-instance.mjs",
+        "scripts/bootstrap-onetime-database.mjs",
+        "tests/one-time-railway-provisioner.test.js",
+        "tests/one-time-database-bootstrap.test.js",
+        "ops/one-time-mishnah/onetime-railway-provisioning-report.json",
+        "ops/one-time-mishnah/onetime-database-bootstrap-report.json",
+        "ops/one-time-mishnah/railway-auth-followup-2026-06-22.md",
+        "ops/one-time-mishnah/backend-ui-review-readiness-tracker.md",
+        "memory/2026-06-22.md"
+      ],
+      "implementation_commit": "1aed3f2bc3478db9a5c61f192d66d80c14a6f523",
+      "pushed_commit": "",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [],
+      "live_required": true,
+      "updated_at": "2026-06-21T22:50:00+03:00",
+      "deployment_id": "",
+      "deployed_commit": "",
+      "live_smoke": []
+    },
+    {
+      "id": "REQ-20260619-314",
+      "title": "Final verification and release",
+      "expected_result": "All unblocked work is verified, pushed, deployed when safe, and live-smoked; only external actions remain.",
+      "status": "done",
+      "source_id": "RAW-20260621-001",
+      "source_statement_ids": [
+        "STMT-20260621-001-0018"
+      ],
+      "source_path": "raw-input/RAW-20260621-001-one-time-master-completion-goal.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "release",
+      "priority": "P0",
+      "batch_id": "batch-19",
+      "depends_on": [
+        "REQ-20260619-301",
+        "REQ-20260621-501",
+        "REQ-20260619-302",
+        "REQ-20260619-303",
+        "REQ-20260621-502",
+        "REQ-20260619-304",
+        "REQ-20260621-503",
+        "REQ-20260621-504",
+        "REQ-20260619-306",
+        "REQ-20260619-307",
+        "REQ-20260619-308",
+        "REQ-20260619-309",
+        "REQ-20260619-310",
+        "REQ-20260619-311",
+        "REQ-20260619-312"
+      ],
+      "implementation_status": "verified_live",
+      "can_continue_without_operator": true,
+      "next_action": "Closed for Codex-controlled release gate. PR #5 remains unmerged; REQ-20260619-313 remains needs_operator_decision for separate paid infrastructure/DNS approval.",
+      "acceptance_criteria": [
+        "full tests pass",
+        "secret audit passes",
+        "remote HEAD matches",
+        "Railway deploy/live smoke recorded",
+        "PR #5 updated"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md#batch-19---final-verification-and-release",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#batch-19---final-verification-and-release",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#batch-19-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#batch-19",
+        "ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-33-54-274Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-33-57-277Z-ws11-parent-progress-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-35-16-906Z-student-auth-policy-live-smoke.md",
+        "ops/live-smokes/2026-06-21T17-35-23-215Z-public-navigation-positioning-smoke.md",
+        "ops/watchdog-audits/2026-06-21T17-35-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-21T17-35-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "node --test tests/agent-control-center.test.js tests/one-time-intake-api-readback.test.js tests/one-time-ui-design-delta-audit.test.js tests/operations-automation-library.test.js tests/operations-saas-crm-redesign.test.js tests/rabbi-task-dialogue.test.js tests/ui-01-public-operations-shell.test.js tests/operations-shell-navigation-contract.test.js",
+        "npm test",
+        "node --check scripts/smoke-final-register-surfaces-live.mjs",
+        "node --test tests/final-register-surfaces-closeout.test.js tests/service-provider-directory.test.js",
+        "npm run watchdog:actions",
+        "npm run watchdog:security",
+        "npm run bna:run:validate",
+        "node scripts/audit-secrets.mjs",
+        "git diff --check",
+        "npm run railway:redeploy",
+        "npm run railway:doctor",
+        "npm run app:smoke",
+        "npm run app:smoke:final-register-surfaces",
+        "npm run app:smoke:operations-workspace-taxonomy",
+        "npm run app:smoke:ws11-parent-progress",
+        "npm run app:smoke:student-auth",
+        "npm run app:smoke:public-navigation-positioning"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "scripts/one-time-ui-design-delta-audit.mjs",
+        "scripts/smoke-final-register-surfaces-live.mjs",
+        "scripts/smoke-operations-workspace-taxonomy-live.mjs",
+        "scripts/smoke-public-navigation-positioning-live.mjs",
+        "tests/agent-control-center.test.js",
+        "tests/one-time-intake-api-readback.test.js",
+        "tests/operations-automation-library.test.js",
+        "tests/operations-saas-crm-redesign.test.js",
+        "tests/operations-shell-navigation-contract.test.js",
+        "tests/rabbi-task-dialogue.test.js",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/"
+      ],
+      "implementation_commit": "34c74f22145a4422777515b740b8e33eef3f539d",
+      "pushed_commit": "34c74f22145a4422777515b740b8e33eef3f539d",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_required": true,
+      "deployment_evidence": [
+        "Railway deployment 48cf7b0e-5623-43a3-9c5a-278e4d8b7997 SUCCESS",
+        "ops/live-smokes/2026-06-21T17-29-33-860Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-21T17-30-14-986Z-final-register-surfaces-live-smoke.md"
+      ],
+      "live_required": true,
+      "updated_at": "2026-06-21T20:36:00+03:00"
+    },
+    {
+      "id": "REQ-20260622-002",
+      "title": "Shared One Time branded review deployment",
+      "expected_result": "The existing shared One Time landing, provider, parent, student, classroom and email review routes use traced legacy branding assets, remain scoped to TEST One Time data, pass focused checks, are pushed to PR #5, and are deployed/live-smoked on the shared app when safe.",
+      "status": "done",
+      "source_id": "RAW-20260622-002",
+      "source_statement_ids": [
+        "STMT-20260622-002-0001"
+      ],
+      "source_path": "raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "shared_review_branding",
+      "priority": "P0",
+      "batch_id": "shared-review-brand-deploy",
+      "depends_on": [
+        "REQ-20260621-909"
+      ],
+      "implementation_status": "pushed_deployed_live_smoked",
+      "can_continue_without_operator": true,
+      "next_action": "Next step is Shloimie's One Time UI/workflow corrections and full Agent Mode visual QA ramble against the deployed shared review routes.",
+      "acceptance_criteria": [
+        "legacy OneTimeOneTime logo and hero assets are inventoried and used in the shared review UI",
+        "raw promo MP4 is traced but not committed",
+        "provider, parent, student, classroom, email preview and landing routes load with One Time review branding",
+        "review data stays TEST-only and scoped to rabbi_sheller_provider / one_time_mishnah_class",
+        "email templates remain no-send preview only",
+        "focused tests and security/secret checks pass",
+        "PR #5 branch is pushed and shared deployment/live smoke evidence is recorded when safe"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260622-002-one-time-brand-shared-review-deployment.md",
+        "raw-input/RAW-20260622-002-full-source-prompt.md",
+        "brand-kit/one-time/README.md",
+        "brand-kit/one-time/colors.json",
+        "brand-kit/one-time/copy.md",
+        "brand-kit/one-time/assets.json",
+        "brand-kit/one-time/usage.md",
+        "config/brands/one-time.json",
+        "config/service-provider-sites/one-time.json",
+        "docs/product/service-provider-landing-pages.md",
+        "docs/product/service-provider-site-onboarding.md",
+        "ops/one-time-mishnah/brand-site-review/ASSET-INVENTORY.md",
+        "ops/one-time-mishnah/brand-site-review/asset-manifest.json",
+        "ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md",
+        "ops/one-time-mishnah/operator-ui-review/ASSET-REVIEW.md",
+        "ops/one-time-mishnah/operator-ui-review/START-HERE.md",
+        "ops/one-time-mishnah/operator-ui-review/ROUTE-MAP.md",
+        "ops/one-time-mishnah/operator-ui-review/KNOWN-BLOCKERS.md",
+        "ops/one-time-mishnah/operator-ui-review/screenshot-index.html",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/STATUS.md#req-20260622-002---shared-one-time-branded-review",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/EVIDENCE.md#req-20260622-002---shared-one-time-branded-review-evidence",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/TEST-RESULTS.md#req-20260622-002---shared-one-time-branded-review-test-results",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/DEPLOYMENT.md#req-20260622-002-shared-one-time-branded-review",
+        "ops/execution-runs/2026-06-21-one-time-master-completion/NEXT-SESSION.md#shared-one-time-review-handoff",
+        "ops/watchdog-audits/2026-06-22T12-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-22T12-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-22T13-24-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-22T13-24-watchdog-security-routes.md",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.json"
+      ],
+      "verification": [
+        "PASS node --check scripts/smoke-one-time-shared-review-live.mjs; node --check server.js",
+        "PASS focused tests: node --test tests/one-time-focused-landing.test.js tests/one-time-shared-review-branding.test.js tests/one-time-product-system.test.js tests/instances/one-time-shared-review-data.test.js tests/one-time-review-only-server.test.js (21/21)",
+        "PASS local review-only Playwright smoke for /one-time, provider, parent, student, classroom, and email routes at 390x844; no BNA shell, Goal Board, Dratler, language-toggle, overflow, console, or broken-image regressions found",
+        "PASS npm test (1043/1043)",
+        "PASS npm run watchdog:actions report ops/watchdog-audits/2026-06-22T13-24-watchdog-action-audit.md",
+        "PASS npm run watchdog:security report ops/watchdog-audits/2026-06-22T13-24-watchdog-security-routes.md",
+        "PASS node scripts/audit-secrets.mjs (4034 tracked paths, 0 tracked secret-risk files)",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "KNOWN npm run bna:run:validate still fails in this detached/stripped worktree because older requirements reference historical ignored live-smoke evidence files missing from this checkout and git_refs expects a branch name, not HEAD",
+        "PASS npm run railway:doctor for deployment 3671af2d-26e1-4e24-b918-52074d821ad7 after one transient Railway CLI decode retry",
+        "PASS npm run app:smoke -> ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "PASS npm run app:smoke:one-time-shared-review -> ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md (21 route/viewport checks)"
+      ],
+      "implementation_files": [
+        "brand-kit/one-time/",
+        "config/brands/one-time.json",
+        "config/service-provider-sites/one-time.json",
+        "docs/product/service-provider-landing-pages.md",
+        "docs/product/service-provider-site-onboarding.md",
+        "src/platform/brands/index.js",
+        "src/platform/service-provider-sites/index.js",
+        "src/platform/instances/one-time.js",
+        "src/platform/instances/one-time-shared-review-data.js",
+        "public/one-time/index.html",
+        "public/provider.html",
+        "public/parent.html",
+        "public/student.html",
+        "public/one-time-classroom.html",
+        "public/one-time-email-review.html",
+        "public/css/one-time-shared-review.css",
+        "public/images/one-time/brand/",
+        "public/images/one-time/press/",
+        "public/images/one-time/teaching/",
+        "tests/one-time-shared-review-branding.test.js",
+        "tests/instances/one-time-shared-review-data.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/one-time-product-system.test.js",
+        "tests/one-time-review-only-server.test.js",
+        "ops/one-time-mishnah/operator-ui-review/",
+        "ops/one-time-mishnah/brand-site-review/"
+      ],
+      "deployment_required": true,
+      "live_required": true,
+      "updated_at": "2026-06-22T16:37:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "implementation_commit": "168bda1f18fb65864fdf4e75e242f9480c571325",
+      "pushed_commit": "168bda1f18fb65864fdf4e75e242f9480c571325",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/5",
+      "deployment_evidence": [
+        "Railway deployment 3671af2d-26e1-4e24-b918-52074d821ad7 reached SUCCESS on existing shared project/service skillful-motivation / production; no Railway topology, DNS, separate service, or database was created.",
+        "npm run railway:doctor passed for skillful-motivation / production and deployment 3671af2d-26e1-4e24-b918-52074d821ad7.",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md"
+      ],
+      "deployment_id": "3671af2d-26e1-4e24-b918-52074d821ad7",
+      "deployed_commit": "168bda1f18fb65864fdf4e75e242f9480c571325",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.json"
+      ],
+      "closeout_summary": "Shared One Time brand/review experience is pushed to PR #5, deployed to the existing shared Railway app, and live-smoked across landing, provider, parent, student, classroom, email, and One Time Operations review routes at 390x844, 768x1024, and 1440x900. Student review stale BNA/Goal Board shell labels were removed in review mode. Next step is Shloimie UI/workflow correction ramble and Agent Mode visual QA."
+    }
+  ],
+  "source_statement_matrix": {
+    "path": "ops/one-time-mishnah/master-backlog-reconciliation.json",
+    "current_rows": 99,
+    "legacy_rows": 1164,
+    "classification_counts": {
+      "already_satisfied": 19,
+      "blocked": 1,
+      "duplicate": 34,
+      "missing": 1,
+      "needs_operator_decision": 17,
+      "partially_implemented": 24,
+      "supersedes_existing": 1,
+      "unrelated_bna_data": 2
+    }
+  }
+}

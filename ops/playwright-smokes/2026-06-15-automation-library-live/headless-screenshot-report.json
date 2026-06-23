@@ -1,0 +1,18 @@
+{
+  "checked_at": "2026-06-15T00:00:55.347Z",
+  "target": "live Operations Settings Automations screenshot fallback",
+  "assertions": {
+    "has_automation_library": true,
+    "has_prompt_browser": true,
+    "has_no_external_write_copy": true,
+    "card_count": 8,
+    "preview_button_count": 8,
+    "disabled_enable_count": 8,
+    "unsafe_button_labels": [],
+    "console_error_count": 0
+  },
+  "url_path": "/operations",
+  "url_search": "?workspace=platform&view=settings&section=automations",
+  "screenshot": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-15-automation-library-live\\operations-automation-library-live.png",
+  "console_errors": []
+}

@@ -1,12 +1,12 @@
 {
-  "name": "BNA Operations",
-  "short_name": "BNA Ops",
-  "description": "BNA Operations dashboard.",
+  "name": "Bnei Neviim Academy",
+  "short_name": "BNA",
+  "description": "Bnei Neviim Academy Torah learning program.",
   "id": "/",
-  "start_url": "/operations?source=pwa",
+  "start_url": "/?source=public-pwa",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "background_color": "#f8f5ee",
   "theme_color": "#1e3a5f",
   "orientation": "portrait-primary",
   "icons": [

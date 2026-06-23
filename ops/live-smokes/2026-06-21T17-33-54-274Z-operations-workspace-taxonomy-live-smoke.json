@@ -1,0 +1,52 @@
+{
+  "started_at": "2026-06-21T17:33:54.274Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 756,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "workspace directory API canonical taxonomy",
+      "ok": true,
+      "duration_ms": 571,
+      "details": {
+        "categories": [
+          "Super Admin",
+          "School",
+          "Service Provider",
+          "Family"
+        ],
+        "workspace_count": 4
+      }
+    },
+    {
+      "name": "operations HTML exposes explicit selector steps",
+      "ok": true,
+      "duration_ms": 1261,
+      "details": {
+        "checked_terms": [
+          "Workspace type selector",
+          "Specific workspace",
+          "Dratler Family"
+        ]
+      }
+    }
+  ],
+  "taxonomy_summary": {
+    "categories": [
+      "Super Admin",
+      "School",
+      "Service Provider",
+      "Family"
+    ],
+    "workspace_count": 4,
+    "duplicate_keys": [],
+    "stale_visible_terms_found": []
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "started_at": "2026-06-21T17:32:23.769Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Payment/access/class-link API returns no-write readiness",
+      "ok": true,
+      "detail": "no charge, no grant automation, relationship-scoped class links, no host/start URL"
+    },
+    {
+      "name": "Operations ships payment/access/class-link UX markers",
+      "ok": true,
+      "detail": "Payment/access panel markers shipped"
+    },
+    {
+      "name": "Member portal script does not use raw Zoom URL contract",
+      "ok": true,
+      "detail": "member script renders protected join blocker"
+    }
+  ],
+  "requirement_id": "REQ-20260621-907",
+  "checkout_count": 0,
+  "test_paid_checkout_count": 0,
+  "active_grant_count": 0,
+  "live_scoped_session_count": 0
+}

@@ -1,0 +1,3478 @@
+{
+  "tasks": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    }
+  ],
+  "dashboard": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    }
+  ],
+  "internal_dialogue": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "telegram": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_email",
+      "label": "Draft email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Create Email Draft"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "refine_email",
+      "label": "Refine email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
+      ]
+    },
+    {
+      "action_id": "queue_telegram_report",
+      "label": "Queue Telegram report",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Queue Telegram Report"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ],
+  "support_tickets": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ],
+  "parent_helper": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
+      ]
+    },
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "show_child_calendar",
+      "label": "Show child calendar",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Calendar",
+        "Show Calendar"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "draft_message_to_admin",
+      "label": "Draft message to admin",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Message"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "view_parent_visible_notes",
+      "label": "View parent-visible notes",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Visible Notes"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
+      ]
+    }
+  ],
+  "provider_workspace": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_provider_question_post",
+      "label": "Create provider question/post",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Question",
+        "Save Post"
+      ],
+      "related_routes": [
+        "/provider-participant"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "update_provider_profile",
+      "label": "Update provider profile",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Save Provider",
+        "Publish Provider"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    }
+  ],
+  "bot": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "queue_telegram_report",
+      "label": "Queue Telegram report",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Queue Telegram Report"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    }
+  ],
+  "task_detail": [
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "calendar": [
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "update_calendar_event",
+      "label": "Update calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Edit Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "delete_calendar_event",
+      "label": "Archive calendar event",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Archive Event",
+        "Delete Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "open_internal_calendar",
+      "label": "Open internal calendar",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Internal calendar"
+      ],
+      "related_routes": [
+        "/operations?view=tasks&section=schedule",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Calendar"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "open_calendar_event",
+      "label": "Open calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Open Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar",
+        "/parent",
+        "/student",
+        "/provider-participant"
+      ]
+    },
+    {
+      "action_id": "mark_event_parent_visible",
+      "label": "Mark event parent-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Parent Visible"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "mark_event_student_visible",
+      "label": "Mark event student-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Student Visible"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "mark_event_admin_only",
+      "label": "Mark event admin-only",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Admin Only"
+      ],
+      "related_routes": []
+    }
+  ],
+  "settings": [
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Send Test Email"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=email"
+      ]
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "View Email Log"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Calendar"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Classroom"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    }
+  ],
+  "student_detail": [
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
+      ]
+    }
+  ],
+  "provider_detail": [
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "content": [
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "save_newsletter_revision",
+      "label": "Save newsletter revision",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "approve_newsletter",
+      "label": "Approve newsletter",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Approve Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_social_posts_from_newsletter",
+      "label": "Generate social posts from newsletter",
+      "category": "social",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Make Social Posts"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "open_content_item_url",
+      "label": "Open content item",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Open in UI"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    }
+  ],
+  "contacts": [
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
+      ]
+    }
+  ],
+  "communications": [
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "approve_newsletter",
+      "label": "Approve newsletter",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Approve Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_email",
+      "label": "Draft email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Create Email Draft"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "refine_email",
+      "label": "Refine email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "approve_email",
+      "label": "Approve email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Approve Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "schedule_email",
+      "label": "Schedule email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Send Test Email"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=email"
+      ]
+    },
+    {
+      "action_id": "pause_scheduled_email",
+      "label": "Pause scheduled email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Pause Email"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "View Email Log"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_social_posts_from_newsletter",
+      "label": "Generate social posts from newsletter",
+      "category": "social",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Make Social Posts"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
+      ]
+    }
+  ],
+  "parent_portal": [
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "show_assignments",
+      "label": "Show assignments",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Assignments"
+      ],
+      "related_routes": [
+        "/student",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "show_child_calendar",
+      "label": "Show child calendar",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Calendar",
+        "Show Calendar"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "view_parent_visible_notes",
+      "label": "View parent-visible notes",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Visible Notes"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
+      ]
+    }
+  ],
+  "student_portal": [
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "show_today_plan",
+      "label": "Show today plan",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Today Plan",
+        "Ask BNA Helper"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "show_assignments",
+      "label": "Show assignments",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Assignments"
+      ],
+      "related_routes": [
+        "/student",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "explain_assignment",
+      "label": "Explain assignment",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Explain"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ],
+  "provider_participant": [
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_question_post",
+      "label": "Create provider question/post",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Question",
+        "Save Post"
+      ],
+      "related_routes": [
+        "/provider-participant"
+      ]
+    }
+  ],
+  "community": [
+    {
+      "action_id": "create_provider_classroom_draft",
+      "label": "Create provider classroom draft",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Classroom Draft",
+        "Start Classroom Setup"
+      ],
+      "related_routes": [
+        "/provider",
+        "/operations?view=settings&section=provider_onboarding",
+        "/operations?view=community",
+        "/one-time-classroom"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Classroom"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
+      ]
+    }
+  ],
+  "student_helper": [
+    {
+      "action_id": "show_today_plan",
+      "label": "Show today plan",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Today Plan",
+        "Ask BNA Helper"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
+      ]
+    },
+    {
+      "action_id": "explain_assignment",
+      "label": "Explain assignment",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Explain"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
+      ]
+    }
+  ],
+  "messages_help": [
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "draft_message_to_admin",
+      "label": "Draft message to admin",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Message"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    }
+  ],
+  "provider_index": [
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "update_provider_profile",
+      "label": "Update provider profile",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Save Provider",
+        "Publish Provider"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    }
+  ],
+  "google_workspace": [
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    }
+  ],
+  "pipelines": [
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
+      ]
+    }
+  ],
+  "admin": [
+    {
+      "action_id": "queue_telegram_report",
+      "label": "Queue Telegram report",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Queue Telegram Report"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ]
+}

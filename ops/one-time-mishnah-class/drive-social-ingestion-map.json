@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-06-12T13:14:14.825Z",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "root": {
+    "id": "16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2",
+    "name": "One Time Mishnah Class - Rabbi Elie Scheller",
+    "webViewLink": "https://drive.google.com/drive/folders/16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2"
+  },
+  "content_media_folder": {
+    "id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
+    "name": "04 Content and Media Intake",
+    "webViewLink": "https://drive.google.com/drive/folders/1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+  },
+  "lanes": [
+    {
+      "key": "videoDrop",
+      "name": "04.00 Upload Here - Rabbi Video Drops",
+      "drive_stage": "one_time_video_drop",
+      "purpose": "Raw Rabbi video/audio drops and source media waiting for ingestion.",
+      "backend_use": "bna_content_jobs.project_id=one_time_mishnah_class, source_type=google_drive, drive_stage=one_time_video_drop",
+      "id": "1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+      "webViewLink": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+      "created": true
+    },
+    {
+      "key": "ingestionQueue",
+      "name": "04.10 Ingestion Queue - Transcribe and Parse",
+      "drive_stage": "one_time_ingestion_queue",
+      "purpose": "Files being turned into transcripts, source notes, clip plans, and draft content jobs.",
+      "backend_use": "bna_content_jobs.status=ingested|parsed with Drive file/folder IDs preserved",
+      "id": "1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8",
+      "webViewLink": "https://drive.google.com/drive/folders/1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8",
+      "created": true
+    },
+    {
+      "key": "socialOutputs",
+      "name": "04.30 Social Output Drafts - Platform Review",
+      "drive_stage": "one_time_social_output_review",
+      "purpose": "Facebook, LinkedIn, YouTube, Instagram, WhatsApp status, and email/newsletter drafts awaiting Shloimie/Rabbi review.",
+      "backend_use": "bna_content_outputs output_type/platform metadata before any Buffer or platform write",
+      "id": "17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h",
+      "webViewLink": "https://drive.google.com/drive/folders/17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h",
+      "created": true
+    },
+    {
+      "key": "approvedPosted",
+      "name": "04.90 Approved and Posted Social Outputs",
+      "drive_stage": "one_time_social_approved_posted",
+      "purpose": "Approved exports, destination URLs, screenshots, metrics, and rollback notes after an approved post/draft.",
+      "backend_use": "Buffer/social destination evidence and Workflow Q/R reporting after approval",
+      "id": "1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh",
+      "webViewLink": "https://drive.google.com/drive/folders/1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh",
+      "created": true
+    }
+  ],
+  "backend_mapping": {
+    "content_job_project_key": "one_time_mishnah_class",
+    "operations_workspace_key": "rabbi_sheller_provider",
+    "content_job_source_type": "google_drive",
+    "drive_file_id_field": "bna_content_jobs.drive_file_id",
+    "drive_folder_id_field": "bna_content_jobs.drive_folder_id",
+    "drive_stage_field": "bna_content_jobs.drive_stage",
+    "output_table": "bna_content_outputs",
+    "output_types": [
+      "facebook_post",
+      "linkedin_post",
+      "youtube_description",
+      "whatsapp_update",
+      "weekly_newsletter",
+      "website_blog"
+    ],
+    "social_publish_guard": "Buffer/social writes require explicit approval and configured connector settings."
+  },
+  "social_platforms": [
+    {
+      "key": "facebook",
+      "label": "Facebook",
+      "destination": "Buffer Facebook channel or Meta page",
+      "outputType": "facebook_post",
+      "status": "needs_shloimie_channel_mapping",
+      "requiredSetting": "BUFFER_FACEBOOK_CHANNEL_ID or approved manual destination"
+    },
+    {
+      "key": "linkedin",
+      "label": "LinkedIn",
+      "destination": "Buffer LinkedIn channel",
+      "outputType": "linkedin_post",
+      "status": "needs_shloimie_channel_mapping",
+      "requiredSetting": "BUFFER_LINKEDIN_CHANNEL_ID or approved manual destination"
+    },
+    {
+      "key": "youtube",
+      "label": "YouTube",
+      "destination": "YouTube channel upload/description workflow",
+      "outputType": "youtube_description",
+      "status": "needs_shloimie_channel_mapping",
+      "requiredSetting": "BUFFER_YOUTUBE_CHANNEL_ID for text drafts; media upload remains manual/approved"
+    },
+    {
+      "key": "instagram",
+      "label": "Instagram",
+      "destination": "Meta/Instagram or manual uploader",
+      "outputType": "instagram_caption",
+      "status": "manual_destination_pending",
+      "requiredSetting": "approved Instagram account and media-hosted URL path"
+    },
+    {
+      "key": "whatsapp_status",
+      "label": "WhatsApp Status",
+      "destination": "Manual WhatsApp status or community message",
+      "outputType": "whatsapp_update",
+      "status": "manual_destination_pending",
+      "requiredSetting": "Rabbi/Shloimie WhatsApp sender decision"
+    }
+  ],
+  "login_release_guard": {
+    "status": "task_manager_login_handoff_sent_2026_06_14",
+    "sentAt": "2026-06-14T14:45:06+03:00",
+    "requiredBeforeSendingLogin": [
+      "Drive root and content/media intake folders confirmed",
+      "Video-drop, ingestion, and social-output folders mapped in backend settings",
+      "Shloimie reviews platform destinations for Facebook, LinkedIn, YouTube, Instagram, and WhatsApp Status",
+      "Rabbi email collected and stored on the provider/project member record",
+      "Rabbi WhatsApp/contact phone confirmed and stored before any login link is sent",
+      "Scoped username confirmed on the One Time project member/provider record"
+    ],
+    "currentKnownBlockers": [
+      "Personal password setup/change for the scoped One Time Operations account is not yet a finished user-facing flow"
+    ],
+    "whatsappRequestCopy": "Hi Rabbi Elie, this is Shloimie. Here is your One Time task manager access. Right now the task manager is working. We have not configured everything else yet, so the rest of the workspace/social/content setup is still in progress.",
+    "verification": [
+      "Provider/project records have confirmed contact email, WhatsApp/contact phone, and scoped login username",
+      "Gmail sent One Time task manager access on 2026-06-14",
+      "WhatsApp delivered One Time task manager access on communication #1160"
+    ]
+  },
+  "app_access_readiness": {
+    "status": "blocked_pending_owner_approved_external_app_access",
+    "label": "One Time app/admin/member-library readiness",
+    "ready_for_live_app_write": false,
+    "ready_for_admin_access_reset": false,
+    "ready_for_member_library_publish": false,
+    "required_before_live_access": [
+      "Current One Time admin URL and deployment target confirmed",
+      "Owner-approved admin reset path or Shloimie/admin login confirmed",
+      "Rabbi/member test login confirmed for read-only smoke checks",
+      "Production or staging database URL/source confirmed for the One Time app",
+      "Vimeo/media hosting destination and hosted media URL path confirmed",
+      "Resend sender/domain and approved notification copy confirmed before any email send",
+      "Billing provider, tier mapping, refund/cancellation policy, and rollback/revoke path approved",
+      "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING present only for the exact one-item publishing smoke"
+    ],
+    "current_blockers": [
+      "Do not invent or store One Time admin/member credentials in BNA docs.",
+      "External One Time app has not been approved as a BNA write target.",
+      "Member-library destination, audience, visibility rules, hosted media URL, and rollback plan are still required before publish.",
+      "Email/WhatsApp/member notifications remain no-send until sender, recipients, copy, and approval are explicit.",
+      "Billing/access grants remain blocked until trusted payment source, tier mapping, and revoke path are approved."
+    ],
+    "no_write_guard": [
+      "no_admin_password_reset",
+      "no_member_access_grant",
+      "no_member_library_publish",
+      "no_drive_or_video_host_write",
+      "no_resend_email",
+      "no_whatsapp_or_sms",
+      "no_checkout_or_billing_write",
+      "no_external_crm_write"
+    ],
+    "audit_source": "ops/rabbi-scheller/2026-06-14-one-time-app-audit.md"
+  }
+}

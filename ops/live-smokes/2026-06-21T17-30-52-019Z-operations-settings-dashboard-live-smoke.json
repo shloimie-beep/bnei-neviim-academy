@@ -1,0 +1,60 @@
+{
+  "started_at": "2026-06-21T17:30:52.019Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 426,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "operations bundle exposes compact dashboard and settings markers",
+      "ok": true,
+      "duration_ms": 1918,
+      "details": {
+        "markers": 20
+      }
+    },
+    {
+      "name": "automations API loads registry metadata",
+      "ok": true,
+      "duration_ms": 530,
+      "details": {
+        "automations": 10,
+        "filters": [
+          "packages",
+          "services",
+          "projects",
+          "owners",
+          "statuses",
+          "channels",
+          "types"
+        ]
+      }
+    },
+    {
+      "name": "integration readiness API remains available",
+      "ok": true,
+      "duration_ms": 1235,
+      "details": {
+        "keys": [
+          "success",
+          "generated_at",
+          "preview_first",
+          "external_write_performed",
+          "cards"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "operations_markers_checked": 20,
+    "automation_rows_loaded": 10,
+    "integration_readiness_loaded": true,
+    "forbidden_secret_terms_found": []
+  }
+}

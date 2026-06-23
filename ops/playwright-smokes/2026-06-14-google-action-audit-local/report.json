@@ -1,0 +1,70 @@
+{
+  "started_at": "2026-06-14T19:46:27.493Z",
+  "finished_at": "2026-06-14T19:46:34.815Z",
+  "app_url": "http://127.0.0.1:8080",
+  "success": true,
+  "steps": [
+    {
+      "name": "local operations login session",
+      "ok": true,
+      "duration_ms": 1621,
+      "details": {
+        "cookie": {
+          "name": "bna_ops_session",
+          "value": "bG9jYWwtc21va2U6MTc4MTQ2NjM4NzUwMjppdnJoc3ptaHpp"
+        },
+        "user": "local-smoke",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "platform audit log API readable before UI action",
+      "ok": true,
+      "duration_ms": 613,
+      "details": {
+        "total_logs": 14,
+        "google_logs": 7
+      }
+    },
+    {
+      "name": "Google Workspace settings renders audit panel",
+      "ok": true,
+      "duration_ms": 3993,
+      "details": {
+        "url": "http://127.0.0.1:8080/operations?workspace=platform&view=settings&section=google_workspace",
+        "layout": {
+          "scrollWidth": 1440,
+          "clientWidth": 1440,
+          "auditColor": "rgb(19, 34, 56)",
+          "auditBackground": "rgb(255, 255, 255)"
+        }
+      }
+    },
+    {
+      "name": "Drive preview button logs a clean Google audit row",
+      "ok": true,
+      "duration_ms": 73,
+      "details": {
+        "dialogs": [],
+        "audit_excerpt": "Google Action Audit\n8 recent\n\nRead-only preview/execution evidence for Google, Drive, Classroom, Calendar, and Google Business helper actions.\n\nTIME\tACTION\tSTATUS\tACTOR\tSUMMARY\n14 Jun, 19:44\tgoogle drive find file preview\tpreviewed\tlocal-smoke\tfind or list files / Google Drive OAuth or owner pipeline is not connected for this workspace. / not required / Google Drive OAuth or owner pipeline is not connected for this work...\n14 Jun, 19:42\tgoogle drive find file preview\tpreviewed\tlocal-smoke\tfind o"
+      }
+    },
+    {
+      "name": "platform audit log API readable after UI action",
+      "ok": true,
+      "duration_ms": 624,
+      "details": {
+        "before_google_logs": 7,
+        "after_google_logs": 8
+      }
+    },
+    {
+      "name": "browser console stayed clean",
+      "ok": true,
+      "duration_ms": 1,
+      "details": {
+        "screenshot": "ops/playwright-smokes/2026-06-14-google-action-audit-local/desktop.png"
+      }
+    }
+  ]
+}

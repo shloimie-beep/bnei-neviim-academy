@@ -1,0 +1,325 @@
+{
+  "plan": {
+    "requirement_id": "REQ-20260619-313",
+    "generated_at": "2026-06-21T18:45:43.846Z",
+    "railway": {
+      "project_name": "one-time-production",
+      "environment": "production",
+      "web_service_name": "one-time-web",
+      "postgres_service_name": "one-time-postgres",
+      "worker_service": {
+        "required": false,
+        "name": "one-time-worker",
+        "reason": "No always-on One Time worker is required for Shloimie UI review; sends, uploads, Zoom mutations, and transcription jobs stay gated."
+      },
+      "forbidden_project": "skillful-motivation"
+    },
+    "repository": {
+      "branch": "codex/agent-control-center-20260619",
+      "tag": "onetime-pilot-review-2026-06-21"
+    },
+    "runtime_flags": {
+      "app_mode": "single_tenant",
+      "app_instance": "onetime",
+      "single_tenant": true,
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "brand_key": "onetime",
+      "public_language": "en",
+      "student_bot_enabled": false,
+      "bna_accountability_enabled": false,
+      "sefaria_study_assistant_enabled": false,
+      "enabled_modules": [
+        "Overview",
+        "Decisions",
+        "Parents",
+        "Students",
+        "Contacts/CRM",
+        "Communications",
+        "Live Class",
+        "Attendance and Minutes",
+        "Course",
+        "Vimeo Library",
+        "Lessons",
+        "Worksheets/Resources",
+        "Announcements",
+        "Private Questions",
+        "Support Tickets",
+        "Payments/Trial/Access",
+        "Milestones",
+        "Achievements",
+        "Individual Rewards",
+        "Integrations",
+        "Branding/Settings"
+      ],
+      "disabled_features": [
+        "BNA school accountability",
+        "BNA personal-goal coaching",
+        "BNA student tutor bot",
+        "unrestricted Mishnah study bot",
+        "BNA classroom hierarchy",
+        "unrelated BNA/family/student/accounting/content data"
+      ]
+    },
+    "variables": {
+      "non_secret": {
+        "APP_MODE": "single_tenant",
+        "APP_INSTANCE": "onetime",
+        "DEFAULT_WORKSPACE_KEY": "rabbi_sheller_provider",
+        "DEFAULT_PROJECT_KEY": "one_time_mishnah_class",
+        "BRAND_KEY": "onetime",
+        "PUBLIC_LANGUAGE": "en",
+        "BNA_RAILWAY_PROCESS": "web",
+        "BNA_COOKIE_SECURE": "true",
+        "STUDENT_BOT_ENABLED": "false",
+        "BNA_ACCOUNTABILITY_ENABLED": "false",
+        "SEFARIA_STUDY_ASSISTANT_ENABLED": "false",
+        "APP_URL": "https://app.onetimeonetime.com",
+        "BNA_APP_URL": "https://app.onetimeonetime.com",
+        "NEXT_PUBLIC_APP_URL": "https://app.onetimeonetime.com",
+        "PUBLIC_BASE_URL": "https://app.onetimeonetime.com",
+        "APP_BASE_URL": "https://app.onetimeonetime.com"
+      },
+      "required_secret_names": [
+        {
+          "name": "DATABASE_URL",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "SESSION_SECRET",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ONE_TIME_OWNER_USERNAME",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ONE_TIME_OWNER_PASSWORD",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ONE_TIME_MANAGER_USERNAME",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ONE_TIME_MANAGER_PASSWORD",
+          "configured": false,
+          "value": "[redacted]"
+        }
+      ],
+      "optional_secret_names": [
+        {
+          "name": "RESEND_API_KEY",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "RESEND_WEBHOOK_SECRET",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "STRIPE_SECRET_KEY",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "STRIPE_WEBHOOK_SECRET",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ZOOM_ACCOUNT_ID",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ZOOM_CLIENT_ID",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "ZOOM_CLIENT_SECRET",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "VIMEO_CLIENT_ID",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "VIMEO_CLIENT_SECRET",
+          "configured": false,
+          "value": "[redacted]"
+        },
+        {
+          "name": "VIMEO_ACCESS_TOKEN",
+          "configured": false,
+          "value": "[redacted]"
+        }
+      ],
+      "database_reference": "${{ one-time-postgres.DATABASE_URL }}"
+    },
+    "integration_readiness": {
+      "resend": {
+        "credential_presence_does_not_enable_sending": true,
+        "sender_domain_fields_required_later": [
+          "RESEND_DOMAIN",
+          "RESEND_FROM",
+          "RESEND_FROM_EMAIL",
+          "RESEND_REPLY_TO"
+        ]
+      },
+      "stripe": {
+        "mode": "test_readiness_only",
+        "live_charges_enabled": false
+      },
+      "zoom": {
+        "mode": "readiness_and_protected_join_reference_only",
+        "create_real_meetings": false
+      },
+      "vimeo": {
+        "manual_reference_enabled": true,
+        "automated_upload_enabled": false
+      },
+      "transcription": {
+        "requirement_id": "REQ-20260621-902",
+        "status": "blocked_until_valid_hosted_credential"
+      }
+    }
+  },
+  "seed_manifest": {
+    "requirement_id": "REQ-20260619-313",
+    "generated_at": "2026-06-21T18:45:43.846Z",
+    "workspace": {
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "type": "live_class_course",
+      "public_language": "en",
+      "owner": "Rabbi Elie Scheller",
+      "manager": "Shloimie"
+    },
+    "enabled_modules": [
+      "Overview",
+      "Decisions",
+      "Parents",
+      "Students",
+      "Contacts/CRM",
+      "Communications",
+      "Live Class",
+      "Attendance and Minutes",
+      "Course",
+      "Vimeo Library",
+      "Lessons",
+      "Worksheets/Resources",
+      "Announcements",
+      "Private Questions",
+      "Support Tickets",
+      "Payments/Trial/Access",
+      "Milestones",
+      "Achievements",
+      "Individual Rewards",
+      "Integrations",
+      "Branding/Settings"
+    ],
+    "disabled_features": [
+      "BNA school accountability",
+      "BNA personal-goal coaching",
+      "BNA student tutor bot",
+      "unrestricted Mishnah study bot",
+      "BNA classroom hierarchy",
+      "unrelated BNA/family/student/accounting/content data"
+    ],
+    "review_identities": [
+      {
+        "key": "TEST-ONETIME-OWNER-RABBI",
+        "display_name": "TEST Rabbi Elie Owner",
+        "role": "workspace_owner",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "email": "test.onetime.owner.rabbi@example.test",
+        "status": "active",
+        "fixture": true,
+        "cleanup_marker": "REQ-20260619-313"
+      },
+      {
+        "key": "TEST-ONETIME-MANAGER-SHLOIMIE",
+        "display_name": "TEST Shloimie One Time Manager",
+        "role": "workspace_admin",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "email": "test.onetime.manager.shloimie@example.test",
+        "status": "active",
+        "fixture": true,
+        "cleanup_marker": "REQ-20260619-313"
+      },
+      {
+        "key": "TEST-ONETIME-PARENT-REVIEW",
+        "display_name": "TEST One Time Parent Review",
+        "role": "parent",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "email": "test.onetime.parent.review@example.test",
+        "status": "active",
+        "fixture": true,
+        "cleanup_marker": "REQ-20260619-313"
+      },
+      {
+        "key": "TEST-ONETIME-STUDENT-REVIEW",
+        "display_name": "TEST One Time Student Review",
+        "role": "student",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "email": "test.onetime.student.review@example.test",
+        "status": "active",
+        "fixture": true,
+        "cleanup_marker": "REQ-20260619-313"
+      }
+    ],
+    "product_workflow": {
+      "offer_key": "TEST-ONETIME-67-MONTHLY-TRIAL",
+      "price_cents": 6700,
+      "currency": "USD",
+      "trial_days": 30,
+      "live_charge_enabled": false,
+      "checkout_preview_only": true
+    },
+    "course": {
+      "slug": "test-onetime-mishnah-review-course",
+      "title": "TEST One Time Mishnah Review Course",
+      "module": "TEST Masechta Berachos Module",
+      "lesson": "TEST Berachos Mishnah Review Lesson",
+      "worksheet": "TEST Berachos Worksheet",
+      "vimeo_url": "https://vimeo.com/123456789",
+      "vimeo_id": "123456789"
+    },
+    "class_session": {
+      "title": "TEST Weekly Mishnah Live Class",
+      "timezone": "Asia/Jerusalem",
+      "attendance_minutes": 42,
+      "attendance_percentage": 84,
+      "zoom_reference_state": "protected_readiness_only"
+    },
+    "member_activity": {
+      "milestone": "TEST First Mishnah Milestone",
+      "achievement": "TEST First Class Achievement",
+      "reward_state": "review_only",
+      "private_question": "TEST private Mishnah question for Rabbi review",
+      "support_ticket": "TEST support ticket for broken class link"
+    },
+    "isolation": {
+      "no_private_bna_data": true,
+      "disallowed_private_content_guard": true
+    }
+  },
+  "isolation": {
+    "ok": true,
+    "failures": []
+  }
+}

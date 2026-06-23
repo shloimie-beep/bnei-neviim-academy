@@ -1,0 +1,23 @@
+﻿{
+    "checked_at":  "2026-06-14T17:32:28.2116919Z",
+    "url":  "http://127.0.0.1:8080/api/bna/actions/run",
+    "action_id":  "create_one_time_video_library_item",
+    "success":  true,
+    "executed":  false,
+    "dry_run":  true,
+    "approval_required":  true,
+    "project_key":  "one_time_mishnah_class",
+    "content_job_created":  false,
+    "member_visible":  false,
+    "public_visible":  false,
+    "external_write_performed":  false,
+    "no_send":  true,
+    "planned_outputs":  [
+                            "video_library_item",
+                            "transcript_review",
+                            "thumbnail_brief",
+                            "worksheet_draft",
+                            "social_copy_plan",
+                            "newsletter_plan"
+                        ]
+}

@@ -9,7 +9,7 @@ drive_stage: "04 Parsed"
 drive_file_id: "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-"
 media_url: "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk"
 transcript_chars: 68514
-outputs: "teaching_philosophy_note:archived#31, whatsapp_update:archived#32, facebook_post:archived#33"
+outputs: "whatsapp_update:archived#32, teaching_philosophy_note:archived#31, facebook_post:archived#33"
 ---
 
 # Setting Personal Learning and Fitness Goals
@@ -17,7 +17,7 @@ outputs: "teaching_philosophy_note:archived#31, whatsapp_update:archived#32, fac
 - Content job: #19
 - Drive stage: 04 Parsed
 - Source file: https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk
-- Outputs: teaching_philosophy_note:archived#31, whatsapp_update:archived#32, facebook_post:archived#33
+- Outputs: whatsapp_update:archived#32, teaching_philosophy_note:archived#31, facebook_post:archived#33
 
 ## Transcript
 

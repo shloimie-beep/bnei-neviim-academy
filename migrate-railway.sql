@@ -56,7 +56,7 @@ CREATE TABLE bna_tasks (
   title TEXT NOT NULL,
   notes TEXT,
   stage TEXT DEFAULT 'inbox' CHECK (stage IN ('inbox', 'clarify', 'plan', 'execute', 'review', 'complete', 'archive')),
-  category TEXT DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations')),
+  category TEXT DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'ghl_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas')),
   urgency TEXT DEFAULT 'this_week' CHECK (urgency IN ('urgent', 'today', 'this_week', 'low')),
   energy_required TEXT CHECK (energy_required IN ('high', 'medium', 'low')),
   estimated_minutes INTEGER,

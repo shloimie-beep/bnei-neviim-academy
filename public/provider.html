@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNA Provider Portal</title>
+    <style>
+        :root {
+            --bna-blue: #111111;
+            --bna-blue-dark: #050505;
+            --bna-gold: #d6a92d;
+            --bna-orange: #f5d37c;
+            --ink: #111111;
+            --muted: #626262;
+            --paper: #f7f7f4;
+            --panel: #ffffff;
+            --line: rgba(17, 17, 17, 0.14);
+            --shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            background: linear-gradient(180deg, #ffffff 0%, #f7f7f4 100%);
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+            max-width: 100%;
+        }
+
+        .brand-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.92);
+            padding: 12px max(14px, calc((100vw - 1120px) / 2));
+            backdrop-filter: blur(16px);
+        }
+
+        .brand-lockup {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--bna-blue), var(--bna-blue-dark));
+            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+            font-weight: 900;
+        }
+
+        .brand-lockup strong {
+            display: block;
+            color: var(--bna-blue-dark);
+            font-size: 15px;
+            line-height: 1.1;
+        }
+
+        .brand-lockup span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .brand-chip {
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--bna-blue-dark);
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .portal-topbar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .portal-topbar-link {
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--bna-blue-dark);
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .shell {
+            width: min(1120px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 26px 0 48px;
+        }
+
+        .hero {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            color: var(--bna-blue-dark);
+            font-size: clamp(34px, 6vw, 54px);
+            line-height: 0.98;
+            margin-bottom: 8px;
+        }
+
+        h2 { font-size: 24px; }
+        h3 { font-size: 18px; }
+
+        .small {
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .login-panel {
+            width: min(430px, 100%);
+            margin: 40px auto;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        .workspace-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .workspace-nav button {
+            min-height: 42px;
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--bna-blue-dark);
+            cursor: pointer;
+            font-weight: 900;
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .workspace-nav button.active,
+        .workspace-nav button:hover {
+            border-color: rgba(17, 17, 17, 0.24);
+            background: linear-gradient(135deg, rgba(17, 17, 17, 0.06), rgba(214, 169, 45, 0.16));
+        }
+
+        .provider-section-hidden {
+            display: none !important;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .overview-metric {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 14px;
+        }
+
+        .overview-metric strong {
+            display: block;
+            color: var(--bna-blue-dark);
+            font-size: 26px;
+            line-height: 1;
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            color: #333333;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid rgba(17, 17, 17, 0.18);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            padding: 11px 12px;
+        }
+
+        textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn {
+            border: 1px solid rgba(17, 17, 17, 0.18);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--bna-blue-dark);
+            cursor: pointer;
+            font-weight: 900;
+            padding: 10px 13px;
+        }
+
+        .btn.primary {
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--bna-blue), var(--bna-blue-dark));
+            color: #fff;
+        }
+
+        .btn:disabled {
+            cursor: wait;
+            opacity: 0.62;
+        }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--bna-blue-dark);
+            font-size: 11px;
+            font-weight: 900;
+            padding: 6px 9px;
+        }
+
+        .service-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .service-card {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 14px;
+        }
+
+        .service-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .service-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 8px;
+        }
+
+        .notice {
+            border: 1px solid rgba(214, 169, 45, 0.34);
+            border-radius: 8px;
+            background: rgba(255, 250, 240, 0.92);
+            color: #72500e;
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.42;
+            padding: 12px;
+        }
+
+        .error {
+            border: 1px solid rgba(155, 61, 51, 0.28);
+            border-radius: 8px;
+            background: #fff5f3;
+            color: #9b3d33;
+            display: none;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            padding: 11px;
+        }
+
+        .error.show { display: block; }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 820px) {
+            .brand-topbar {
+                align-items: flex-start;
+            }
+            .portal-topbar-actions {
+                max-width: 48%;
+                gap: 6px;
+            }
+            .portal-topbar-link {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+            .brand-chip { display: none; }
+            .hero,
+            .grid {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/css/bna-app-shell.css">
+    <link rel="stylesheet" href="/css/one-time-shared-review.css">
+</head>
+<body class="bna-shell bna-portal-page bna-provider-page">
+    <header class="brand-topbar">
+        <div class="brand-lockup">
+            <span class="brand-mark" aria-hidden="true">BNA</span>
+            <div>
+                <strong>Bnei Neviim Academy</strong>
+                <span>Provider portal</span>
+            </div>
+        </div>
+        <div class="portal-topbar-actions" aria-label="Safe portal navigation">
+            <a class="portal-topbar-link" href="/">Public site</a>
+            <a class="portal-topbar-link" href="/service-providers">Directory</a>
+            <a class="portal-topbar-link" href="/become-service-provider?onboard=provider">Join</a>
+            <span class="brand-chip">Scoped Provider Workspace</span>
+        </div>
+    </header>
+
+    <main class="shell">
+        <section id="loginPanel" class="panel login-panel">
+            <h1>Provider portal</h1>
+            <p class="small">Approved BNA network providers can manage their own profile and services.</p>
+            <div id="loginError" class="error"></div>
+            <form id="loginForm">
+                <label>Username
+                    <input id="username" autocomplete="username" required>
+                </label>
+                <label>Password
+                    <input id="password" type="password" autocomplete="current-password" required>
+                </label>
+                <div class="button-row">
+                    <button id="loginButton" class="btn primary" type="submit">Sign In</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="setupPanel" class="panel login-panel hidden">
+            <h1>Set password</h1>
+            <p id="setupIntro" class="small">Set your BNA provider workspace password.</p>
+            <div id="setupError" class="error"></div>
+            <form id="setupForm">
+                <label>Username
+                    <input id="setupUsername" autocomplete="username" readonly>
+                </label>
+                <label>New password
+                    <input id="setupPassword" type="password" autocomplete="new-password" required minlength="8">
+                </label>
+                <label>Confirm password
+                    <input id="setupPasswordConfirm" type="password" autocomplete="new-password" required minlength="8">
+                </label>
+                <div class="button-row">
+                    <button id="setupButton" class="btn primary" type="submit">Set Password</button>
+                    <a class="btn" href="/provider">Use Existing Login</a>
+                </div>
+            </form>
+        </section>
+
+        <section id="portalPanel" class="hidden">
+            <div class="hero">
+                <div>
+                    <h1 id="providerTitle">Provider portal</h1>
+                    <p id="providerSubtitle" class="small"></p>
+                </div>
+                <button id="logoutButton" class="btn" type="button">Sign Out</button>
+            </div>
+
+            <nav class="workspace-nav" id="providerNav" aria-label="Provider workspace sections"></nav>
+
+            <section class="panel provider-section" data-provider-section="overview">
+                <h2>Overview</h2>
+                <p class="small">Your provider workspace summary. Public profile and service changes stay pending review until BNA approves them.</p>
+                <div class="overview-grid" id="providerOverview"></div>
+            </section>
+
+            <div class="grid provider-section" data-provider-section="profile">
+                <section class="panel">
+                    <h2>Profile</h2>
+                    <div id="profileNotice" class="notice"></div>
+                    <form id="profileForm">
+                        <label>Provider name
+                            <input name="provider_name">
+                        </label>
+                        <label>Contact name
+                            <input name="contact_name">
+                        </label>
+                        <label>Email
+                            <input name="contact_email" type="email">
+                        </label>
+                        <label>Phone
+                            <input name="contact_phone">
+                        </label>
+                        <label>WhatsApp
+                            <input name="whatsapp_phone">
+                        </label>
+                        <label>Category
+                            <input name="category">
+                        </label>
+                        <label>City
+                            <input name="city">
+                        </label>
+                        <label>Service area
+                            <input name="service_area">
+                        </label>
+                        <label>Website
+                            <input name="website_url" type="url">
+                        </label>
+                        <label>Google Business/Profile URL
+                            <input name="google_business_profile_url" type="url">
+                        </label>
+                        <label>Google Place ID
+                            <input name="google_place_id">
+                        </label>
+                        <label>Profile image URL
+                            <input name="profile_image_url" type="url">
+                        </label>
+                        <label>Short description
+                            <textarea name="short_description"></textarea>
+                        </label>
+                        <label>Public notes
+                            <textarea name="public_notes"></textarea>
+                        </label>
+                        <div class="button-row">
+                            <button class="btn primary" type="submit">Save Profile</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <div class="grid provider-section" data-provider-section="services">
+                <section class="panel">
+                    <h2>Services</h2>
+                    <div id="serviceList" class="service-list"></div>
+                    <form id="serviceForm" class="panel" style="box-shadow:none; margin-top:14px;">
+                        <h3>Add service</h3>
+                        <div class="field-grid">
+                            <label>Title
+                                <input name="title" required>
+                            </label>
+                            <label>Type
+                                <input name="service_type" placeholder="learning, tutoring, therapy">
+                            </label>
+                            <label>City
+                                <input name="city">
+                            </label>
+                            <label>Capacity
+                                <input name="capacity" type="number" min="1">
+                            </label>
+                            <label>Price
+                                <input name="price_amount" type="number" min="0" step="0.01">
+                            </label>
+                            <label>Billing period
+                                <input name="billing_period" placeholder="class, month, session">
+                            </label>
+                        </div>
+                        <label>Description
+                            <textarea name="description"></textarea>
+                        </label>
+                        <div class="button-row">
+                            <button class="btn primary" type="submit">Add For Review</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+
+            <section class="panel provider-section" data-provider-section="class_setup" data-provider-classroom-setup>
+                <h2>Classroom / Community Setup</h2>
+                <div class="notice">Describe the classroom in natural language. This creates an internal BNA setup draft only; it does not create Google Classroom courses, publish a public community, send messages, charge anyone, or grant access.</div>
+                <div id="classroomDraftStatus" class="notice" style="display:none; margin-top:12px;"></div>
+                <form id="classroomDraftForm" class="panel" style="box-shadow:none; margin-top:14px;" data-provider-natural-language-classroom>
+                    <h3>Start a classroom draft</h3>
+                    <label>Natural-language setup prompt
+                        <textarea name="raw_prompt" required placeholder="Start an 8-class Mishnah community where students reply privately to the Rabbi, no student-to-student chat, and Rabbi chooses what gets published."></textarea>
+                    </label>
+                    <div class="field-grid">
+                        <label>Title
+                            <input name="title" placeholder="Mishnah classroom setup">
+                        </label>
+                        <label>How many classes
+                            <input name="class_count" type="number" min="1" max="52" placeholder="8">
+                        </label>
+                        <label>Dialogue style
+                            <input name="community_dialogue_style" placeholder="Private Rabbi Q&A / moderated community dialogue">
+                        </label>
+                        <label>Student access
+                            <input name="student_access" placeholder="Members after BNA review">
+                        </label>
+                    </div>
+                    <label>Display rules
+                        <textarea name="display_rules" placeholder="Only Rabbi-approved replies/questions may show on the public/community display."></textarea>
+                    </label>
+                    <label>Message permissions
+                        <textarea name="message_permissions" placeholder="Students can reply privately to the teacher; no student-student chat unless enabled."></textarea>
+                    </label>
+                    <div class="service-meta">
+                        <label class="status-pill"><input name="student_to_teacher_replies" type="checkbox" checked> Private teacher replies</label>
+                        <label class="status-pill"><input name="teacher_moderation_required" type="checkbox" checked> Teacher moderation</label>
+                        <label class="status-pill"><input name="public_display_enabled" type="checkbox"> Public display after approval</label>
+                    </div>
+                    <div class="button-row">
+                        <button class="btn" type="submit" data-classroom-draft-dry-run="true">Preview No-Write</button>
+                        <button class="btn primary" type="submit">Submit Draft</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="class_media">
+                <h2>Class Media</h2>
+                <div class="notice">Manual hosted URLs only. This creates internal One Time review records; it does not upload files, publish to a member library, send messages, or grant access.</div>
+                <div id="classMediaStatus" class="notice" style="display:none; margin-top:12px;"></div>
+                <div id="classMediaList" class="service-list" style="margin-top:12px;"></div>
+                <form id="classMediaForm" class="panel" style="box-shadow:none; margin-top:14px;">
+                    <h3>Add class recording</h3>
+                    <div class="field-grid">
+                        <label>Class title
+                            <input name="title" required placeholder="Mishnah class recording">
+                        </label>
+                        <label>Program / service
+                            <select name="service_id" id="classMediaServiceSelect">
+                                <option value="">No service selected</option>
+                            </select>
+                        </label>
+                        <label>Session
+                            <select name="session_id" id="classMediaSessionSelect">
+                                <option value="">No session selected</option>
+                            </select>
+                        </label>
+                        <label>Media type
+                            <select name="media_type">
+                                <option value="video">Video</option>
+                                <option value="audio">Audio</option>
+                                <option value="document">Document</option>
+                                <option value="link">Link</option>
+                            </select>
+                        </label>
+                        <label>Class date
+                            <input name="class_date" type="date">
+                        </label>
+                        <label>Class time
+                            <input name="class_time" type="time">
+                        </label>
+                        <label>Hosted media URL
+                            <input name="hosted_media_url" type="url" required placeholder="https://...">
+                        </label>
+                        <label>Thumbnail URL
+                            <input name="thumbnail_url" type="url" placeholder="https://...">
+                        </label>
+                    </div>
+                    <label>Summary
+                        <textarea name="summary" placeholder="What is covered in this class?"></textarea>
+                    </label>
+                    <label>Transcript text or transcript notes
+                        <textarea name="transcript_text"></textarea>
+                    </label>
+                    <label>Thumbnail brief
+                        <textarea name="thumbnail_brief"></textarea>
+                    </label>
+                    <label>Worksheet / source-sheet notes
+                        <textarea name="worksheet_notes"></textarea>
+                    </label>
+                    <label>Internal notes
+                        <textarea name="notes"></textarea>
+                    </label>
+                    <div class="button-row">
+                        <button class="btn" type="submit" data-class-media-dry-run="true">Preview No-Write</button>
+                        <button class="btn primary" type="submit">Submit For Review</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="media">
+                <h2>Profile Media</h2>
+                <div class="notice">Free provider profiles can show a profile image and up to 3 gallery images. Use approved image URLs only.</div>
+                <div id="providerMedia" class="service-list" style="margin-top:12px;"></div>
+                <form id="mediaForm" class="panel" style="box-shadow:none; margin-top:14px;">
+                    <h3>Add image</h3>
+                    <div class="field-grid">
+                        <label>Type
+                            <select name="media_type">
+                                <option value="gallery">Gallery</option>
+                                <option value="profile">Profile</option>
+                                <option value="document">Document</option>
+                            </select>
+                        </label>
+                        <label>Image URL
+                            <input name="url" type="url" required>
+                        </label>
+                    </div>
+                    <label>Alt text
+                        <input name="alt_text">
+                    </label>
+                    <div class="button-row">
+                        <button class="btn primary" type="submit">Add Media</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="comments">
+                <h2>Comments / Reviews</h2>
+                <div class="notice">Hide comments instead of deleting them. Parents and public visitors see only visible comments.</div>
+                <div id="providerComments" class="service-list" style="margin-top:12px;"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="website_import">
+                <h2>Website Import</h2>
+                <div class="notice">Coming soon: website import will be available after BNA reviews the crawler policy, source URL fields, and approval workflow.</div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="commercial">
+                <h2>Commercial Model</h2>
+                <div id="commercialSummary" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="entitlements">
+                <h2>Plan / Entitlements</h2>
+                <div class="notice">Entitlements are controlled by BNA. Upgrade-only features stay disabled until your provider plan changes.</div>
+                <div id="entitlementList" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="google_business">
+                <h2>Google Business Profile</h2>
+                <div id="googleBusinessStatus" class="service-list"></div>
+                <div class="button-row">
+                    <button id="googleBusinessConnect" class="btn primary" type="button">Request Google Connection</button>
+                </div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="upgrade">
+                <h2>Upgrade</h2>
+                <div id="providerUpgrade" class="service-list"></div>
+                <div class="button-row">
+                    <button id="upgradeButton" class="btn primary" type="button">Request Upgrade</button>
+                </div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="integrations">
+                <h2>External Apps / Integrations</h2>
+                <div id="integrationList" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="access">
+                <h2>Access Checklist</h2>
+                <div id="accessChecklist" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="communications">
+                <h2>Communications</h2>
+                <div class="notice">Parent/provider messages are stored in the BNA portal. Replies here are logged for parent visibility and admin review.</div>
+                <div id="providerMessages" class="service-list" style="margin-top:12px;"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="activity">
+                <h2>Activity</h2>
+                <div id="providerActivity" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="settings">
+                <h2>Settings</h2>
+                <div class="notice">Settings writes are disabled until BNA adds scoped provider settings, audit history, and role checks.</div>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        let portalState = null;
+        let activeProviderSection = 'overview';
+        const queryParams = new URLSearchParams(window.location.search);
+        const setupToken = queryParams.get('setup') || '';
+        const oneTimeReviewMode = ['one-time', 'onetime', '1', 'true'].includes(String(queryParams.get('review') || '').toLowerCase());
+        const oneTimeViewAsRabbiToken = queryParams.get('view_as_rabbi') || '';
+        let oneTimeViewAsRabbiSession = null;
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            })[char]);
+        }
+
+        function parseJsonField(value) {
+            if (!value) return {};
+            if (typeof value === 'object') return value;
+            try { return JSON.parse(value); } catch (_) { return {}; }
+        }
+
+        function shortText(value, limit = 140) {
+            const text = String(value || '').replace(/\s+/g, ' ').trim();
+            return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
+        }
+
+        function ensureViewAsBanner(session) {
+            let banner = document.getElementById('oneTimeViewAsBanner');
+            if (!banner) {
+                banner = document.createElement('div');
+                banner.id = 'oneTimeViewAsBanner';
+                banner.className = 'one-time-view-as-banner';
+                document.body.prepend(banner);
+            }
+            banner.innerHTML = `
+                <strong>VIEWING AS RABBI - READ ONLY</strong>
+                <span>${escapeHtml(session?.banner || 'You are viewing One Time as Rabbi Elie Scheller')}</span>
+                <button type="button" id="oneTimeExitViewAs">Exit view</button>
+            `;
+            document.getElementById('oneTimeExitViewAs')?.addEventListener('click', async () => {
+                try {
+                    await fetch('/api/bna/one-time/view-as-rabbi/end', {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: oneTimeViewAsRabbiToken }),
+                    });
+                } catch {}
+                window.location.href = session?.exit_url || '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview';
+            });
+        }
+
+        function classMediaServiceOptions(services = []) {
+            return ['<option value="">No service selected</option>']
+                .concat(services.map(service => `<option value="${Number(service.id)}">${escapeHtml(service.title || `Service #${Number(service.id)}`)}</option>`))
+                .join('');
+        }
+
+        function classMediaSessionOptions(services = []) {
+            const rows = [];
+            services.forEach(service => {
+                (Array.isArray(service.sessions) ? service.sessions : []).forEach(session => {
+                    rows.push(`<option value="${Number(session.id)}">${escapeHtml(`${service.title || 'Service'} / ${session.title || `Session #${Number(session.id)}`}`)}</option>`);
+                });
+            });
+            return ['<option value="">No session selected</option>'].concat(rows).join('');
+        }
+
+        function classMediaOutputStatus(job = {}, outputType = '') {
+            const outputs = Array.isArray(job.outputs) ? job.outputs : [];
+            const found = outputs.find(output => output.output_type === outputType);
+            return found ? String(found.status || 'draft').replace(/_/g, ' ') : 'missing';
+        }
+
+        function renderClassMediaList(items = []) {
+            if (!items.length) return '<p class="small">No class media has been submitted yet.</p>';
+            return items.map(item => {
+                const meta = parseJsonField(item.parse_json);
+                return `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.title || 'Class media')}</h3>
+                                <p class="small">${escapeHtml(shortText(item.caption || meta.summary || item.notes || 'Internal One Time review item.'))}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(String(item.status || 'needs_approval').replace(/_/g, ' '))}</span>
+                        </div>
+                        <div class="service-meta">
+                            <span class="status-pill">Submitted from Rabbi portal</span>
+                            <span class="status-pill">${escapeHtml(meta.service_title || 'No service')}</span>
+                            <span class="status-pill">${escapeHtml(meta.session_title || 'No session')}</span>
+                            <span class="status-pill">${escapeHtml(meta.class_date || 'date tbd')}</span>
+                            <span class="status-pill">Library: ${escapeHtml(classMediaOutputStatus(item, 'video_library_item'))}</span>
+                            <span class="status-pill">Transcript: ${escapeHtml(classMediaOutputStatus(item, 'transcript_review'))}</span>
+                        </div>
+                        ${item.media_url ? `<p class="small"><a href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.media_url)}</a></p>` : ''}
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function setClassMediaStatus(message = '', isError = false) {
+            const el = document.getElementById('classMediaStatus');
+            if (!el) return;
+            el.style.display = message ? 'block' : 'none';
+            el.style.borderColor = isError ? 'rgba(180, 35, 24, 0.35)' : 'rgba(17, 17, 17, 0.14)';
+            el.textContent = message;
+        }
+
+        function setClassroomDraftStatus(message = '', isError = false) {
+            const el = document.getElementById('classroomDraftStatus');
+            if (!el) return;
+            el.style.display = message ? 'block' : 'none';
+            el.style.borderColor = isError ? 'rgba(180, 35, 24, 0.35)' : 'rgba(17, 17, 17, 0.14)';
+            el.textContent = message;
+        }
+
+        async function api(path, options = {}) {
+            const response = await fetch(path, {
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                ...options
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || data.message || 'Request failed');
+            return data;
+        }
+
+        function showLogin(error = '') {
+            document.getElementById('loginPanel').classList.remove('hidden');
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('portalPanel').classList.add('hidden');
+            const errorEl = document.getElementById('loginError');
+            errorEl.textContent = error;
+            errorEl.classList.toggle('show', Boolean(error));
+        }
+
+        function showSetup(error = '') {
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('setupPanel').classList.remove('hidden');
+            document.getElementById('portalPanel').classList.add('hidden');
+            const errorEl = document.getElementById('setupError');
+            errorEl.textContent = error;
+            errorEl.classList.toggle('show', Boolean(error));
+        }
+
+        function formObject(form) {
+            return Object.fromEntries(new FormData(form).entries());
+        }
+
+        function portalEntitlementEnabled(key) {
+            const rows = Array.isArray(portalState?.entitlements) ? portalState.entitlements : [];
+            const found = rows.find(item => item.entitlement_key === key);
+            return Boolean(found && found.enabled);
+        }
+
+        function providerSections() {
+            if (oneTimeReviewMode) {
+                return [
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'communications', label: 'Communications' },
+                    { id: 'class_setup', label: 'Live Class' },
+                    { id: 'class_media', label: 'Course/Library' },
+                    { id: 'commercial', label: 'Payments/Trial' },
+                    { id: 'integrations', label: 'Integrations' },
+                    { id: 'activity', label: 'Support/Activity' },
+                ];
+            }
+            const sections = [
+                { id: 'overview', label: 'Overview' },
+                { id: 'profile', label: 'Profile / Listing' },
+                { id: 'services', label: 'Services' },
+                { id: 'class_setup', label: 'Classrooms' },
+                ...(portalState?.one_time_class_media_enabled ? [{ id: 'class_media', label: 'Class Media' }] : []),
+                { id: 'media', label: 'Media' },
+                { id: 'comments', label: 'Comments' },
+                { id: 'commercial', label: 'Commercial Model' },
+                { id: 'entitlements', label: 'Entitlements' },
+                { id: 'google_business', label: 'Google Business' },
+                { id: 'upgrade', label: 'Upgrade' },
+            ];
+            if (portalEntitlementEnabled('landing_page_funnel') || portalEntitlementEnabled('content_video_workflow')) {
+                sections.push({ id: 'website_import', label: 'Website Import' });
+            }
+            sections.push({ id: 'communications', label: 'Communications' });
+            if (portalEntitlementEnabled('provider_admin') || portalEntitlementEnabled('custom_partnership_terms')) {
+                sections.push({ id: 'integrations', label: 'External Apps' });
+                sections.push({ id: 'access', label: 'Access Checklist' });
+            }
+            sections.push({ id: 'activity', label: 'Activity' });
+            sections.push({ id: 'settings', label: 'Settings' });
+            return sections;
+        }
+
+        function setProviderSection(section) {
+            activeProviderSection = providerSections().some(item => item.id === section) ? section : 'overview';
+            document.querySelectorAll('[data-provider-section]').forEach(panel => {
+                panel.classList.toggle('provider-section-hidden', panel.dataset.providerSection !== activeProviderSection);
+            });
+            document.querySelectorAll('[data-provider-nav]').forEach(button => {
+                button.classList.toggle('active', button.dataset.providerNav === activeProviderSection);
+            });
+        }
+
+        function renderProviderNav() {
+            document.getElementById('providerNav').innerHTML = providerSections().map(section => `
+                <button type="button" data-provider-nav="${escapeHtml(section.id)}" class="${section.id === activeProviderSection ? 'active' : ''}">
+                    ${escapeHtml(section.label)}
+                </button>
+            `).join('');
+        }
+
+        function friendlyStatus(value, fallback = 'Coming soon') {
+            const normalized = String(value || '').toLowerCase();
+            const labels = {
+                unknown_pending_access: 'Access review pending',
+                no_access: 'Access review pending',
+                access_requested: 'Access requested',
+                read_only_access: 'Read-only access',
+                full_access: 'Access approved',
+                api_available: 'API available',
+                manual_only: 'Manual process',
+                integrated: 'Connected',
+                not_configured: 'Coming soon',
+                pending_review: 'Pending review',
+                draft: 'Draft',
+                active_partner: 'Active partner',
+                free_listing: 'Free listing',
+                paid_setup: 'Managed setup',
+                school_subscription: 'School workspace',
+                revenue_share: 'Partner',
+            };
+            return labels[normalized] || String(value || fallback).replace(/_/g, ' ');
+        }
+
+        function renderPortal(data) {
+            portalState = data;
+            const provider = data.provider || {};
+            const services = Array.isArray(data.services) ? data.services : [];
+            const classMedia = Array.isArray(data.one_time_class_media) ? data.one_time_class_media : [];
+            const entitlements = Array.isArray(data.entitlements) ? data.entitlements : [];
+            const integrations = Array.isArray(data.integrations) ? data.integrations : [];
+            const accessChecklist = Array.isArray(data.access_checklist) ? data.access_checklist : [];
+            const messages = Array.isArray(data.messages) ? data.messages : [];
+            const profile = data.profile || {};
+            const media = Array.isArray(data.media) ? data.media : [];
+            const comments = Array.isArray(data.comments) ? data.comments : [];
+            const googleBusiness = data.google_business || {};
+            const upgrade = data.upgrade || {};
+            const plan = provider.plan || {};
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('portalPanel').classList.remove('hidden');
+            document.getElementById('providerTitle').textContent = provider.provider_name || 'Provider portal';
+            document.getElementById('providerSubtitle').textContent = `${plan.label || friendlyStatus(provider.entitlement_plan, 'Provider')} / ${friendlyStatus(provider.status || 'review')} workspace`;
+            document.getElementById('profileNotice').textContent = data.guardrails?.public_changes || 'Edits stay pending review until BNA approves them.';
+            document.getElementById('providerOverview').innerHTML = `
+                <div class="overview-metric"><strong>${services.length}</strong><span class="small">Services</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(friendlyStatus(provider.status || 'review'))}</strong><span class="small">Listing status</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(plan.label || friendlyStatus(provider.entitlement_plan, 'Plan'))}</strong><span class="small">Commercial plan</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(friendlyStatus(provider.integration_status || 'no_access'))}</strong><span class="small">Integration status</span></div>
+            `;
+            document.getElementById('commercialSummary').innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(plan.label || provider.entitlement_plan || 'Provider plan')}</h3>
+                            <p class="small">${escapeHtml(plan.helper || 'Commercial settings are managed by BNA Operations.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(friendlyStatus(provider.commercial_model || 'free_listing'))}</span>
+                    </div>
+                    <div class="service-meta">
+                        <span class="status-pill">${escapeHtml(friendlyStatus(provider.provider_status || 'draft'))}</span>
+                        <span class="status-pill">${escapeHtml(friendlyStatus(provider.source_of_truth || 'unknown_pending_access'))}</span>
+                        <span class="status-pill">${escapeHtml(friendlyStatus(provider.integration_status || 'no_access'))}</span>
+                        <span class="status-pill">${provider.public_signup_enabled ? 'Public signup enabled' : 'Public signup review pending'}</span>
+                    </div>
+                </article>
+            `;
+            document.getElementById('entitlementList').innerHTML = entitlements.length
+                ? entitlements.map(item => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(String(item.entitlement_key || '').replace(/_/g, ' '))}</h3>
+                                <p class="small">${escapeHtml(item.notes || (item.enabled ? 'Included in your current provider plan.' : 'Available as an upgrade.'))}</p>
+                            </div>
+                            <span class="status-pill">${item.enabled ? 'Included' : 'Upgrade'}</span>
+                        </div>
+                    </article>
+                `).join('')
+                : '<p class="small">Coming soon: plan details will appear here after BNA review.</p>';
+            document.getElementById('integrationList').innerHTML = integrations.length
+                ? integrations.map(item => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.label || item.integration_key || 'Integration')}</h3>
+                                <p class="small">${escapeHtml(item.notes || 'Integration audit is pending.')}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(friendlyStatus(item.integration_status || 'no_access'))}</span>
+                        </div>
+                        <div class="service-meta">
+                            <span class="status-pill">${escapeHtml(item.external_system || 'External app pending')}</span>
+                            <span class="status-pill">${escapeHtml(friendlyStatus(item.source_of_truth || 'unknown_pending_access'))}</span>
+                        </div>
+                    </article>
+                `).join('')
+                : '<p class="small">Coming soon: external app review details will appear here.</p>';
+            document.getElementById('accessChecklist').innerHTML = accessChecklist.length
+                ? accessChecklist.map(item => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.label || item.item_key || 'Access item')}</h3>
+                                <p class="small">${escapeHtml(item.next_action || item.notes || 'BNA will request or confirm this before enabling sync/import automation.')}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(String(item.status || 'needed').replace(/_/g, ' '))}</span>
+                        </div>
+                    </article>
+                `).join('')
+                : '<p class="small">Coming soon: access checklist items will appear here after BNA review.</p>';
+            document.getElementById('providerMessages').innerHTML = messages.length
+                ? messages.map(item => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.subject || 'Provider message')}</h3>
+                                <p class="small">${escapeHtml([item.parent_email, item.direction ? String(item.direction).replace(/_/g, ' ') : '', item.status].filter(Boolean).join(' / '))}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(new Date(item.created_at || Date.now()).toLocaleDateString('en-GB'))}</span>
+                        </div>
+                        <p class="small">${escapeHtml(item.body || '')}</p>
+                        ${item.direction === 'parent_to_provider' ? `
+                            <form class="chat-form" data-provider-reply-form="${Number(item.id)}">
+                                <label>Reply
+                                    <textarea name="body" required maxlength="3000"></textarea>
+                                </label>
+                                <div class="button-row">
+                                    <button class="btn primary" type="submit">Send Reply</button>
+                                </div>
+                            </form>
+                        ` : ''}
+                    </article>
+                `).join('')
+                : '<p class="small">No provider messages yet.</p>';
+            document.getElementById('providerMedia').innerHTML = media.length
+                ? media.map(item => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.media_type || 'media')}</h3>
+                                <p class="small">${escapeHtml(item.alt_text || item.url || '')}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(item.status || 'active')}</span>
+                        </div>
+                        ${item.url ? `<p class="small"><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a></p>` : ''}
+                    </article>
+                `).join('')
+                : '<p class="small">No media yet.</p>';
+            const hiddenCommentCount = comments.filter(item => item.visibility === 'hidden').length;
+            document.getElementById('providerComments').innerHTML = comments.length
+                ? `
+                    ${hiddenCommentCount ? `<div class="notice">${hiddenCommentCount} hidden comment${hiddenCommentCount === 1 ? '' : 's'} kept for audit history.</div>` : ''}
+                    ${comments.map(item => `
+                        <article class="service-card">
+                            <div class="service-head">
+                                <div>
+                                    <h3>${escapeHtml(item.rating ? `${item.rating}/5` : 'Comment')}</h3>
+                                    <p class="small">${escapeHtml([item.source, item.visibility].filter(Boolean).join(' / '))}</p>
+                                </div>
+                                ${item.visibility !== 'hidden' ? `<button class="btn" type="button" data-hide-comment="${Number(item.id)}">Hide</button>` : '<span class="status-pill">Hidden</span>'}
+                            </div>
+                            <p class="small">${escapeHtml(item.body || '')}</p>
+                            ${item.provider_reply ? `<p class="small"><strong>Reply:</strong> ${escapeHtml(item.provider_reply)}</p>` : ''}
+                        </article>
+                    `).join('')}
+                `
+                : '<p class="small">No public comments yet.</p>';
+            document.getElementById('googleBusinessStatus').innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(friendlyStatus(googleBusiness.status || 'not_connected'))}</h3>
+                            <p class="small">${escapeHtml(googleBusiness.fallback || 'Google Business Profile is not connected yet.')}</p>
+                        </div>
+                        <span class="status-pill">${googleBusiness.reviews_live ? 'Live reviews' : 'Manual fallback'}</span>
+                    </div>
+                    <div class="service-meta">
+                        <span class="status-pill">${googleBusiness.oauth_configured ? 'OAuth configured' : 'OAuth not configured'}</span>
+                        <span class="status-pill">${googleBusiness.maps_key_configured ? 'Maps key configured' : 'Maps key missing'}</span>
+                        ${googleBusiness.manual_profile_url ? `<a class="status-pill" href="${escapeHtml(googleBusiness.manual_profile_url)}" target="_blank" rel="noopener noreferrer">Manual profile</a>` : ''}
+                    </div>
+                </article>
+            `;
+            document.getElementById('providerUpgrade').innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(upgrade.configured ? 'Upgrade available' : 'Upgrade not configured yet')}</h3>
+                            <p class="small">${escapeHtml(upgrade.message || 'Paid provider features are not enabled until BNA configures Stripe links.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(plan.label || provider.entitlement_plan || 'Free listing')}</span>
+                    </div>
+                </article>
+            `;
+            document.getElementById('googleBusinessConnect').dataset.providerProfileId = profile.id || '';
+            document.getElementById('upgradeButton').dataset.providerProfileId = profile.id || '';
+            document.getElementById('providerActivity').innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>Workspace opened</h3>
+                            <p class="small">Current session loaded with ${services.length} service${services.length === 1 ? '' : 's'}.</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(new Date().toLocaleDateString('en-GB'))}</span>
+                    </div>
+                </article>
+                <div class="notice">Coming soon: detailed activity logs will appear here. Operations admins can inspect provider changes from the admin dashboard.</div>
+            `;
+            const profileForm = document.getElementById('profileForm');
+            for (const key of ['provider_name', 'contact_name', 'contact_email', 'contact_phone', 'whatsapp_phone', 'category', 'city', 'service_area', 'website_url', 'google_business_profile_url', 'google_place_id', 'profile_image_url', 'short_description', 'public_notes']) {
+                if (profileForm.elements[key]) profileForm.elements[key].value = provider[key] || '';
+            }
+            document.getElementById('serviceList').innerHTML = services.length
+                ? services.map((service) => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(service.title)}</h3>
+                                <p class="small">${escapeHtml(service.description || 'No description yet.')}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(service.status || 'review')}</span>
+                        </div>
+                        <div class="service-meta">
+                            <span class="status-pill">${escapeHtml(service.service_type || 'service')}</span>
+                            <span class="status-pill">${escapeHtml(service.city || 'city tbd')}</span>
+                            <span class="status-pill">${service.price_amount ? escapeHtml(`${service.price_amount} ${service.currency || ''}`) : 'price tbd'}</span>
+                            <span class="status-pill">${service.capacity ? escapeHtml(`${service.capacity} seats`) : 'capacity tbd'}</span>
+                        </div>
+                    </article>
+                `).join('')
+                : '<p class="small">No services yet.</p>';
+            document.getElementById('classMediaServiceSelect').innerHTML = classMediaServiceOptions(services);
+            document.getElementById('classMediaSessionSelect').innerHTML = classMediaSessionOptions(services);
+            document.getElementById('classMediaList').innerHTML = data.one_time_class_media_enabled
+                ? renderClassMediaList(classMedia)
+                : '<p class="small">Class Media is available only in the Rabbi Sheller / One Time provider workspace.</p>';
+            renderProviderNav();
+            setProviderSection(activeProviderSection);
+        }
+
+        function reviewCard(title, body, status = '') {
+            return `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(title)}</h3>
+                            <p class="small">${escapeHtml(body)}</p>
+                        </div>
+                        ${status ? `<span class="status-pill">${escapeHtml(status)}</span>` : ''}
+                    </div>
+                </article>
+            `;
+        }
+
+        function applyOneTimeReviewBrand(viewAsSession = null) {
+            document.body.classList.add('one-time-review-active');
+            if (viewAsSession) {
+                document.body.classList.add('one-time-view-as-readonly');
+                document.title = 'Viewing One Time as Rabbi Elie Scheller';
+                ensureViewAsBanner(viewAsSession);
+            } else {
+                document.title = 'OneTimeOneTime Provider Review';
+            }
+            const mark = document.querySelector('.brand-mark');
+            if (mark && !mark.querySelector('img')) {
+                mark.textContent = '';
+                const img = document.createElement('img');
+                img.src = '/images/one-time/brand/onetimelogo.webp';
+                img.alt = '';
+                mark.appendChild(img);
+            }
+            const title = document.querySelector('.brand-lockup > div > strong');
+            const subtitle = document.querySelector('.brand-lockup > div > span');
+            if (title) title.textContent = 'OneTimeOneTime';
+            if (subtitle) subtitle.textContent = viewAsSession ? 'Rabbi Scheller workspace owner view' : 'Rabbi/provider review workspace';
+            const actions = document.querySelector('.portal-topbar-actions');
+            if (actions) {
+                actions.innerHTML = viewAsSession
+                    ? `<span class="brand-chip">VIEWING AS RABBI - READ ONLY</span>`
+                    : `
+                        <a class="portal-topbar-link" href="/one-time">One Time</a>
+                        <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
+                        <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                        <span class="brand-chip">TEST review mode</span>
+                    `;
+            }
+        }
+
+        function renderOneTimeProviderReview(data, viewAsSession = null) {
+            applyOneTimeReviewBrand(viewAsSession);
+            portalState = data;
+            const parent = data.parent || {};
+            const student = data.student || {};
+            const classSession = data.class_session || {};
+            const attendance = data.attendance || {};
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('setupPanel').classList.add('hidden');
+            document.getElementById('portalPanel').classList.remove('hidden');
+            document.getElementById('providerTitle').textContent = viewAsSession ? 'One Time as Rabbi Elie Scheller' : 'One Time provider review';
+            document.getElementById('providerSubtitle').textContent = viewAsSession
+                ? 'Workspace owner experience, read-only, same One Time scope'
+                : 'Rabbi/admin TEST review workspace';
+            const navItems = viewAsSession ? [
+                ['overview', 'Overview'],
+                ['class_setup', 'Classes'],
+                ['class_media', 'Video Library'],
+                ['communications', 'Community / Questions'],
+                ['commercial', 'Payments / Access'],
+                ['integrations', 'Integrations'],
+                ['activity', 'Support'],
+            ] : [
+                ['overview', 'Overview'],
+                ['communications', 'Communications'],
+                ['class_setup', 'Live Class'],
+                ['class_media', 'Course/Library'],
+                ['commercial', 'Payments/Trial'],
+                ['integrations', 'Integrations'],
+                ['activity', 'Support/Activity'],
+            ];
+            document.getElementById('providerNav').innerHTML = navItems.map(([id, label], index) => `
+                <button type="button" data-provider-nav="${escapeHtml(id)}" class="${index === 0 ? 'active' : ''}">
+                    ${escapeHtml(label)}
+                </button>
+            `).join('');
+            document.querySelectorAll('[data-provider-section]').forEach(panel => panel.classList.add('provider-section-hidden'));
+            const overviewPanel = document.querySelector('[data-provider-section="overview"]');
+            const commsPanel = document.querySelector('[data-provider-section="communications"]');
+            const classPanel = document.querySelector('[data-provider-section="class_setup"]');
+            const mediaPanel = document.querySelector('[data-provider-section="class_media"]');
+            const commercialPanel = document.querySelector('[data-provider-section="commercial"]');
+            const integrationPanel = document.querySelector('[data-provider-section="integrations"]');
+            const activityPanel = document.querySelector('[data-provider-section="activity"]');
+            if (overviewPanel) overviewPanel.classList.remove('provider-section-hidden');
+            document.getElementById('providerOverview').innerHTML = `
+                <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded TEST review'}</span></div>
+                <div class="overview-metric"><strong>1</strong><span class="small">TEST parent</span></div>
+                <div class="overview-metric"><strong>1</strong><span class="small">TEST student</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(String(data.email_templates?.length || 0))}</strong><span class="small">Email previews</span></div>
+            `;
+            const overviewList = document.createElement('div');
+            overviewList.className = 'service-list';
+            overviewList.innerHTML = (viewAsSession ? [
+                reviewCard('Workspace owner', data.provider?.name || 'Rabbi Elie Scheller', 'workspace_owner'),
+                reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Elie Scheller', 'writes disabled'),
+                reviewCard('Allowed modules', (viewAsSession.allowed_modules || []).join(', '), 'Rabbi scope'),
+            ] : [
+                reviewCard('Rabbi/provider owner', data.provider?.name || 'Rabbi Elie Scheller', data.provider?.role || 'workspace_owner'),
+                reviewCard('Shloimie admin/manager', data.admin?.name || 'Shloimie', data.admin?.role || 'workspace_admin'),
+                reviewCard('TEST parent', `${parent.name || ''} sees only ${student.display_name || student.name || 'one linked TEST student'}`, parent.role || 'parent'),
+                reviewCard('TEST student', `${student.display_name || student.name || ''} has no bot or BNA accountability goals in review mode`, student.role || 'student'),
+            ]).join('');
+            overviewPanel?.appendChild(overviewList);
+            if (classPanel) {
+                classPanel.classList.remove('provider-section-hidden');
+                classPanel.innerHTML = `
+                    <h2>Live Class and Attendance</h2>
+                    <div class="service-list">
+                        ${reviewCard(classSession.title || 'TEST live Mishnah class', `${classSession.masechta || ''} ${classSession.perek || ''} ${classSession.mishnah_range || ''}`, classSession.status || 'review_ready')}
+                        ${reviewCard('Zoom readiness', data.zoom?.student_visible_note || '', data.zoom?.state || 'gated')}
+                        ${reviewCard('Attendance example', `${attendance.exact_minutes || 0} exact minutes / ${attendance.percentage || 0}%`, attendance.status || 'review')}
+                    </div>
+                `;
+            }
+            if (mediaPanel) {
+                mediaPanel.classList.remove('provider-section-hidden');
+                mediaPanel.innerHTML = `
+                    <h2>Course, Library, Worksheets</h2>
+                    <div class="service-list">
+                        ${reviewCard(data.course?.title || 'Course', `${data.module?.title || ''} / ${data.lesson?.title || ''}`, `${data.course?.progress_percent || 0}% progress`)}
+                        ${reviewCard(data.video?.title || 'Manual Vimeo reference', data.video?.description || '', data.video?.media_provider || 'manual reference')}
+                        ${reviewCard(data.worksheet?.title || 'Worksheet', data.worksheet?.url || '', data.worksheet?.status || 'review')}
+                    </div>
+                `;
+            }
+            if (commsPanel) {
+                commsPanel.classList.remove('provider-section-hidden');
+                document.getElementById('providerMessages').innerHTML = [
+                    reviewCard('Announcement', data.announcement?.body || '', data.announcement?.visibility || 'review'),
+                    reviewCard('Private question', data.private_question?.body || '', data.private_question?.status || 'review'),
+                    reviewCard('Support ticket', data.support_ticket?.latest_activity || '', data.support_ticket?.status || 'open'),
+                    reviewCard('Email previews', `${data.email_templates?.length || 0} templates are available at ${data.links?.email_preview || '/one-time-email-review.html'}`, 'preview only'),
+                ].join('');
+            }
+            if (commercialPanel) {
+                commercialPanel.classList.remove('provider-section-hidden');
+                document.getElementById('commercialSummary').innerHTML = reviewCard(data.payment?.offer || 'Offer', `${data.payment?.trial || ''} / ${data.payment?.status || ''}. No real charge in review mode.`, data.payment?.access_state || 'test');
+            }
+            if (integrationPanel) {
+                integrationPanel.classList.remove('provider-section-hidden');
+                document.getElementById('integrationList').innerHTML = [
+                    reviewCard('Stripe', 'Test checkout/readiness can be verified. Live billing still needs account, tax/refund, and launch approval.', 'Needs live policy'),
+                    reviewCard('Resend', 'Templates render in preview. Sender/domain and approved test recipient are required before any send.', 'Needs sender decision'),
+                    reviewCard('Zoom', 'Protected Join Class is modeled. Real meeting creation remains approval-gated.', 'Needs meeting approval'),
+                    reviewCard('Vimeo', 'Lesson embed is ready in the classroom. Automated upload waits for user authorization.', 'Lesson embed ready'),
+                ].join('');
+            }
+            if (activityPanel) {
+                activityPanel.classList.remove('provider-section-hidden');
+                document.getElementById('providerActivity').innerHTML = [
+                    reviewCard('Milestone', data.milestone?.title || '', data.milestone?.status || 'review'),
+                    reviewCard('Achievement', data.achievement?.title || '', data.achievement?.status || 'review'),
+                    reviewCard('Reward', data.reward?.title || '', data.reward?.status || 'review'),
+                ].join('');
+            }
+            setProviderSection('overview');
+        }
+
+        async function loadSession() {
+            if (oneTimeViewAsRabbiToken) {
+                try {
+                    const result = await api(`/api/bna/one-time/view-as-rabbi/session?token=${encodeURIComponent(oneTimeViewAsRabbiToken)}`);
+                    oneTimeViewAsRabbiSession = result.session || null;
+                    renderOneTimeProviderReview(oneTimeViewAsRabbiSession?.provider_portal || {}, oneTimeViewAsRabbiSession);
+                } catch (error) {
+                    showLogin(error.message || 'A valid signed View as Rabbi session is required.');
+                }
+                return;
+            }
+            if (oneTimeReviewMode) {
+                try {
+                    renderOneTimeProviderReview(await api('/api/one-time-review/provider'));
+                } catch (error) {
+                    showLogin(error.message || 'Could not load One Time provider review.');
+                }
+                return;
+            }
+            if (setupToken) {
+                await loadSetupToken();
+                return;
+            }
+            try {
+                renderPortal(await api('/api/provider-portal/session'));
+            } catch {
+                showLogin();
+            }
+        }
+
+        async function loadSetupToken() {
+            showSetup();
+            try {
+                const data = await api(`/api/provider-portal/setup-token?token=${encodeURIComponent(setupToken)}`);
+                const provider = data.provider || {};
+                document.getElementById('setupIntro').textContent = `Create a password for ${provider.provider_name || 'your provider workspace'}.`;
+                document.getElementById('setupUsername').value = provider.login_username || '';
+            } catch (error) {
+                showSetup(error.message);
+                document.getElementById('setupButton').disabled = true;
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = document.getElementById('loginButton');
+            button.disabled = true;
+            try {
+                const data = await api('/api/provider-portal/login', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                renderPortal(data);
+            } catch (error) {
+                showLogin(error.message);
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('setupForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = document.getElementById('setupButton');
+            const password = document.getElementById('setupPassword').value;
+            const confirm = document.getElementById('setupPasswordConfirm').value;
+            if (password !== confirm) {
+                showSetup('Passwords do not match');
+                return;
+            }
+            button.disabled = true;
+            try {
+                const data = await api('/api/provider-portal/setup-password', {
+                    method: 'POST',
+                    body: JSON.stringify({ token: setupToken, password })
+                });
+                window.history.replaceState(null, '', '/provider');
+                renderPortal(data);
+            } catch (error) {
+                showSetup(error.message);
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            await api('/api/provider-portal/logout', { method: 'POST' }).catch(() => {});
+            showLogin();
+        });
+
+        document.getElementById('providerNav').addEventListener('click', (event) => {
+            const button = event.target.closest('[data-provider-nav]');
+            if (button) setProviderSection(button.dataset.providerNav);
+        });
+
+        document.getElementById('profileForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            button.disabled = true;
+            try {
+                renderPortal(await api('/api/provider-portal/profile', {
+                    method: 'PATCH',
+                    body: JSON.stringify(formObject(event.currentTarget))
+                }));
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('serviceForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            button.disabled = true;
+            try {
+                renderPortal(await api('/api/provider-portal/services', {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(event.currentTarget))
+                }));
+                event.currentTarget.reset();
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('classroomDraftForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            const form = event.currentTarget;
+            const payload = {
+                ...formObject(form),
+                student_to_teacher_replies: Boolean(form.elements.student_to_teacher_replies?.checked),
+                teacher_moderation_required: Boolean(form.elements.teacher_moderation_required?.checked),
+                public_display_enabled: Boolean(form.elements.public_display_enabled?.checked),
+                student_to_student_chat_enabled: false
+            };
+            const dryRun = button?.dataset?.classroomDraftDryRun === 'true';
+            if (dryRun) payload.dry_run = true;
+            button.disabled = true;
+            setClassroomDraftStatus(dryRun ? 'Previewing classroom setup without writing...' : 'Submitting classroom setup draft...');
+            try {
+                const result = await api('/api/provider-portal/classroom-drafts', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const questions = Array.isArray(result.setup_questions) && result.setup_questions.length
+                    ? ` Remaining questions: ${result.setup_questions.join(' ')}`
+                    : '';
+                setClassroomDraftStatus(dryRun ? `Preview ready.${questions}` : `Classroom draft saved for BNA review as task #${result.task?.id || 'pending'}.${questions}`);
+                if (!dryRun) {
+                    renderPortal(result);
+                    form.reset();
+                }
+            } catch (error) {
+                setClassroomDraftStatus(error.message || 'Could not save classroom draft.', true);
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('classMediaForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            const form = event.currentTarget;
+            const payload = formObject(form);
+            const dryRun = button?.dataset?.classMediaDryRun === 'true';
+            if (dryRun) payload.dry_run = true;
+            button.disabled = true;
+            setClassMediaStatus(dryRun ? 'Previewing class media without writing...' : 'Submitting class media for internal review...');
+            try {
+                const result = await api('/api/provider-portal/one-time/class-media', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                if (dryRun) {
+                    const planned = result.preview?.planned_outputs?.length || 0;
+                    setClassMediaStatus(`Preview ready: ${planned} internal review lanes would be created. No upload, publish, send, checkout/access, Drive/video-host, Buffer/social, or external write ran.`);
+                } else {
+                    renderPortal(result);
+                    form.reset();
+                    setClassMediaStatus('Class media submitted for internal One Time review. Nothing was published or sent.');
+                }
+            } catch (error) {
+                setClassMediaStatus(error.message || 'Could not submit class media.', true);
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('mediaForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            const profileId = portalState?.profile?.id;
+            if (!profileId) return;
+            button.disabled = true;
+            try {
+                await api(`/api/providers/${encodeURIComponent(profileId)}/media`, {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(event.currentTarget))
+                });
+                renderPortal(await api('/api/provider-portal/session'));
+                event.currentTarget.reset();
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('portalPanel').addEventListener('submit', async (event) => {
+            const form = event.target.closest('[data-provider-reply-form]');
+            if (!form) return;
+            event.preventDefault();
+            const button = event.submitter;
+            button.disabled = true;
+            try {
+                renderPortal(await api(`/api/provider-portal/messages/${encodeURIComponent(form.dataset.providerReplyForm)}/reply`, {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(form))
+                }));
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('portalPanel').addEventListener('click', async (event) => {
+            const hideButton = event.target.closest('[data-hide-comment]');
+            if (hideButton) {
+                const profileId = portalState?.profile?.id;
+                if (!profileId) return;
+                hideButton.disabled = true;
+                try {
+                    await api(`/api/providers/${encodeURIComponent(profileId)}/comments/${encodeURIComponent(hideButton.dataset.hideComment)}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ visibility: 'hidden' })
+                    });
+                    renderPortal(await api('/api/provider-portal/session'));
+                } finally {
+                    hideButton.disabled = false;
+                }
+                return;
+            }
+
+            if (event.target.closest('#upgradeButton')) {
+                const button = event.target.closest('#upgradeButton');
+                const profileId = button.dataset.providerProfileId || portalState?.profile?.id;
+                if (!profileId) return;
+                button.disabled = true;
+                try {
+                    const result = await api(`/api/providers/${encodeURIComponent(profileId)}/upgrade-intent`, { method: 'POST', body: JSON.stringify({}) });
+                    if (result.url) window.open(result.url, '_blank', 'noopener');
+                    else alert(result.message || 'Upgrade is not configured yet.');
+                } finally {
+                    button.disabled = false;
+                }
+                return;
+            }
+
+            if (event.target.closest('#googleBusinessConnect')) {
+                const button = event.target.closest('#googleBusinessConnect');
+                const profileId = button.dataset.providerProfileId || portalState?.profile?.id;
+                if (!profileId) return;
+                button.disabled = true;
+                try {
+                    const result = await api(`/api/providers/${encodeURIComponent(profileId)}/google-business/connect`, { method: 'POST', body: JSON.stringify({}) });
+                    alert(result.fallback || result.blocker || 'Google connection request saved.');
+                    renderPortal(await api('/api/provider-portal/session'));
+                } finally {
+                    button.disabled = false;
+                }
+            }
+        });
+
+        loadSession();
+    </script>
+    <script src="/js/app-select.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
+</body>
+</html>

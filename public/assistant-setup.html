@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BNA Setup Assistant</title>
+  <link rel="stylesheet" href="/css/bna-app-shell.css">
+  <style>
+    body {
+      margin: 0;
+      background: #f6f7f4;
+      color: #172126;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .setup-shell {
+      width: min(920px, calc(100% - 32px));
+      margin: 32px auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    .setup-panel {
+      background: #fff;
+      border: 1px solid #d7ddd5;
+      border-radius: 8px;
+      padding: 22px;
+      box-shadow: 0 16px 34px rgba(23, 33, 38, 0.08);
+    }
+
+    .setup-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .setup-kicker {
+      margin: 0 0 4px;
+      color: #6f7d5b;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .setup-form {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #cbd5c9;
+      border-radius: 8px;
+      padding: 11px 12px;
+      font: inherit;
+      background: #fff;
+      color: #172126;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .setup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-weight: 800;
+      background: #6f7d5b;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: progress;
+    }
+
+    .setup-status {
+      min-height: 22px;
+      font-weight: 700;
+    }
+
+    .setup-status.error {
+      color: #a33a30;
+    }
+
+    .setup-output {
+      display: grid;
+      gap: 10px;
+    }
+
+    .setup-output article {
+      border: 1px solid #d7ddd5;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfa;
+    }
+
+    @media (max-width: 680px) {
+      .setup-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="setup-shell">
+    <section class="setup-panel">
+      <div class="setup-header">
+        <div>
+          <p class="setup-kicker">BNA setup</p>
+          <h1>Setup Assistant</h1>
+        </div>
+        <a href="/">BNA home</a>
+      </div>
+      <form class="setup-form" id="setupForm">
+        <div class="setup-grid">
+          <label>
+            Role
+            <select id="setupMode">
+              <option value="parent">Parent</option>
+              <option value="provider">Provider</option>
+              <option value="developer_tester">Developer tester</option>
+            </select>
+          </label>
+          <label>
+            Name
+            <input id="setupName" autocomplete="name" placeholder="Your name">
+          </label>
+        </div>
+        <div class="setup-grid">
+          <label>
+            Email
+            <input id="setupEmail" type="email" autocomplete="email" placeholder="name@example.com">
+          </label>
+          <label>
+            Phone
+            <input id="setupPhone" type="tel" autocomplete="tel" placeholder="+972...">
+          </label>
+        </div>
+        <label>
+          What should be set up?
+          <textarea id="setupMessage" required placeholder="Tell BNA what you need set up, what is missing, or where you are stuck."></textarea>
+        </label>
+        <button id="setupSubmit" type="submit">Send setup request</button>
+        <div class="setup-status" id="setupStatus"></div>
+      </form>
+    </section>
+    <section class="setup-output" id="setupOutput" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const form = document.getElementById('setupForm');
+    const statusEl = document.getElementById('setupStatus');
+    const outputEl = document.getElementById('setupOutput');
+    const submitButton = document.getElementById('setupSubmit');
+
+    function text(id) {
+      return String(document.getElementById(id)?.value || '').trim();
+    }
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function addOutput(title, body) {
+      outputEl.innerHTML = `<article><strong>${escapeHtml(title)}</strong><p>${escapeHtml(body)}</p></article>` + outputEl.innerHTML;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      submitButton.disabled = true;
+      statusEl.textContent = 'Sending...';
+      statusEl.classList.remove('error');
+      const mode = text('setupMode') || 'parent';
+      const name = text('setupName');
+      const email = text('setupEmail');
+      const phone = text('setupPhone');
+      const request = text('setupMessage');
+      const contact = [name, email, phone].filter(Boolean).join(' / ');
+      const isDeveloperTester = mode === 'developer_tester';
+      const roleTitle = isDeveloperTester ? 'Developer tester bug report' : `${mode === 'provider' ? 'Provider' : 'Parent'} setup request`;
+      try {
+        const response = await fetch('/api/assistant/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode,
+            role: isDeveloperTester ? 'developer_tester' : mode,
+            surface: 'setup_page',
+            action: 'create_ticket',
+            title: roleTitle,
+            tester_name: isDeveloperTester ? name : undefined,
+            tester_email: isDeveloperTester ? email : undefined,
+            message: [contact ? `Contact: ${contact}` : '', request].filter(Boolean).join('\\n\\n'),
+            context: {
+              mode,
+              role: isDeveloperTester ? 'developer_tester' : mode,
+              surface: 'setup_page',
+              path: window.location.pathname,
+              page_title: document.title,
+              user_agent: navigator.userAgent,
+              platform: navigator.platform,
+              language: navigator.language,
+              viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+              },
+            },
+          }),
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error || 'Setup request failed.');
+        statusEl.textContent = 'Saved.';
+        addOutput('Assistant', result.assistant_message?.body || 'Your setup request was saved.');
+        document.getElementById('setupMessage').value = '';
+      } catch (error) {
+        statusEl.textContent = error.message || 'Setup request failed.';
+        statusEl.classList.add('error');
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  </script>
+  <script src="/js/app-select.js"></script>
+</body>
+</html>

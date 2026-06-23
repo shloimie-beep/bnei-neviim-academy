@@ -36,6 +36,7 @@
             --dark-text: #1a202c;
             --white: #ffffff;
             --whatsapp-green: #25d366;
+            --hover-shadow: 0 14px 28px rgba(30, 58, 95, 0.18);
         }
         
         * {
@@ -66,6 +67,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
         }
         
         .logo {
@@ -74,26 +76,36 @@
         
         .nav-btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 50px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
             background: var(--primary-blue);
             color: white;
+            white-space: nowrap;
         }
         
         .nav-btn:hover {
             background: var(--secondary-blue);
             transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
         }
         
         /* Form Section */
         .form-section {
-            padding: 3rem 2rem 5rem;
+            padding: 3rem clamp(1rem, 4vw, 3rem) 5rem;
         }
         
         .container {
-            max-width: 700px;
+            width: min(1120px, 100%);
             margin: 0 auto;
         }
         
@@ -113,13 +125,104 @@
             color: var(--secondary-blue);
             font-size: 1.1rem;
         }
+
+        .language-tabs {
+            display: inline-flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.35rem;
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .language-tab {
+            min-width: 104px;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 800;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .language-tab.active {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .language-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--hover-shadow);
+        }
         
         .form-card {
             background: var(--white);
-            padding: 2.5rem;
-            border-radius: 16px;
+            padding: clamp(1.5rem, 4vw, 3.25rem);
+            border-radius: 12px;
             box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
             border: 1px solid rgba(30, 58, 95, 0.1);
+        }
+
+        .signup-assistant {
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.35rem;
+            background: #f8fafc;
+        }
+
+        .signup-assistant h2 {
+            font-size: 1.05rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.35rem;
+        }
+
+        .signup-assistant p,
+        .signup-assistant-status,
+        .signup-assistant-output {
+            color: var(--text-dark);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .signup-assistant textarea {
+            width: 100%;
+            min-height: 82px;
+            margin-top: 0.75rem;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+            resize: vertical;
+        }
+
+        .signup-assistant-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .signup-assistant-actions button {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            background: #fff;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .signup-assistant-actions button.primary {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .signup-assistant-output {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e2e8f0;
         }
         
         .form-group {
@@ -174,6 +277,15 @@
             font-size: 1.5rem;
             color: var(--primary-blue);
             margin-bottom: 1.5rem;
+        }
+
+        .parent-section-divider h3,
+        label[for="parent1_name"],
+        label[for="parent2_name"],
+        #parent1_name,
+        #parent2_name {
+            color: #000;
+            -webkit-text-fill-color: #000;
         }
         
         /* Payment Method Selection */
@@ -271,6 +383,57 @@
             color: var(--primary-blue);
             font-size: 0.98rem;
         }
+
+        .permission-intro {
+            margin: -0.25rem 0 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .permission-card {
+            border: 1px solid #dbe3ef;
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 1rem;
+        }
+
+        .permission-card label {
+            display: block;
+            color: var(--primary-blue);
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 0.65rem;
+        }
+
+        .permission-card select {
+            width: 100%;
+        }
+
+        .permission-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(30, 58, 95, 0.15);
+            border-radius: 8px;
+            background: #fffdf5;
+            color: #243953;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        .permission-checkbox input {
+            width: auto;
+            margin-top: 0.2rem;
+            flex: 0 0 auto;
+        }
         
         .submit-btn {
             width: 100%;
@@ -278,7 +441,7 @@
             background: var(--accent-gold);
             color: var(--dark-text);
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
@@ -289,7 +452,7 @@
         .submit-btn:hover {
             background: #d4b43a;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+            box-shadow: 0 14px 28px rgba(201, 162, 39, 0.26);
         }
         
         .submit-btn:disabled {
@@ -319,44 +482,119 @@
             display: block;
         }
 
-        .waiver-box {
+        .document-signature-intro {
+            color: #475569;
+            line-height: 1.65;
+            margin: -0.35rem 0 1rem;
+        }
+
+        .document-signature-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .document-card,
+        .agreement-card {
             background: #f8fafc;
             border: 1px solid #dbe3ef;
-            border-radius: 14px;
+            border-radius: 8px;
             padding: 1.25rem;
             margin-top: 1rem;
         }
 
-        .waiver-box h4 {
+        .document-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.9rem;
+            align-items: start;
+            margin-top: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .document-card.is-signed {
+            border-color: rgba(22, 101, 52, 0.35);
+            background: #f0fdf4;
+        }
+
+        .document-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(30, 58, 95, 0.1);
+        }
+
+        .document-card-number {
+            width: 2.2rem;
+            height: 2.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--primary-blue);
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .document-card-main {
+            min-width: 0;
+        }
+
+        .document-card h4,
+        .agreement-card h4 {
             color: var(--primary-blue);
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.08rem;
+            margin-bottom: 0.55rem;
         }
 
-        .waiver-text {
-            max-height: 230px;
-            overflow-y: auto;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 1rem;
+        .document-card p,
+        .agreement-card p {
             color: #475569;
-            font-size: 0.92rem;
-            line-height: 1.55;
+            line-height: 1.6;
         }
 
-        .waiver-check {
-            display: flex;
-            gap: 0.6rem;
-            align-items: flex-start;
+        .agreement-open-btn {
+            width: 100%;
             margin-top: 1rem;
-            color: #334155;
-            font-weight: 600;
+            padding: 0.95rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 12px 22px rgba(30, 58, 95, 0.18);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
         }
 
-        .waiver-check input {
-            margin-top: 0.2rem;
-            width: auto;
+        .document-open-btn {
+            grid-column: 1 / -1;
+        }
+
+        .agreement-open-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 28px rgba(30, 58, 95, 0.22);
+        }
+
+        .agreement-open-btn:disabled,
+        .agreement-sign-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            box-shadow: none;
+        }
+
+        .signature-status {
+            margin-top: 0.85rem;
+            padding: 0.8rem 0.95rem;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #9a3412;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .signature-status.is-signed {
+            background: #dcfce7;
+            color: #166534;
         }
         
         /* Cash confirmation modal */
@@ -376,6 +614,16 @@
         
         .modal-overlay.show {
             display: flex;
+        }
+
+        .modal-overlay.document-modal {
+            padding: 0;
+            align-items: stretch;
+            background: #fff;
+        }
+
+        body.document-modal-open {
+            overflow: hidden;
         }
         
         .modal {
@@ -408,6 +656,113 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+        .agreement-dialog {
+            width: 100vw;
+            height: 100dvh;
+            max-height: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: none;
+        }
+
+        .agreement-dialog-header,
+        .agreement-dialog-footer {
+            flex: 0 0 auto;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .agreement-dialog-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .agreement-dialog-header h3 {
+            margin: 0 0 0.25rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+        }
+
+        .agreement-close-btn {
+            border: none;
+            background: #e2e8f0;
+            color: #1e293b;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 800;
+            padding: 0.55rem 0.8rem;
+        }
+
+        .agreement-document {
+            overflow-y: auto;
+            padding: clamp(1.2rem, 3vw, 2.2rem);
+            color: #1e293b;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .agreement-document p,
+        .agreement-document li {
+            margin: 0 0 1rem;
+        }
+
+        .agreement-document h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin: 0 0 1rem;
+        }
+
+        .agreement-document h4 {
+            color: var(--secondary-blue);
+            margin: 1.4rem 0 0.7rem;
+            font-size: 1.2rem;
+        }
+
+        .agreement-document h5 {
+            color: var(--primary-blue);
+            margin: 1rem 0 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .agreement-document ul {
+            padding-left: 1.4rem;
+            margin: 0 0 1rem;
+        }
+
+        .agreement-dialog-footer {
+            border-top: 1px solid #e2e8f0;
+            border-bottom: none;
+            background: #f8fafc;
+        }
+
+        .signature-preview {
+            margin-bottom: 0.9rem;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .agreement-sign-btn {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 12px 22px rgba(201, 162, 39, 0.24);
+        }
         
         /* Footer */
         footer {
@@ -416,10 +771,49 @@
             text-align: center;
             padding: 2rem;
         }
+
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            gap: 0.75rem;
+            justify-items: center;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .footer-socials a {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .footer-socials svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
             .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .document-signature-list {
+                grid-template-columns: 1fr;
+            }
+
+            .permission-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -432,40 +826,76 @@
             }
             
             .form-card {
-                padding: 1.5rem;
+                padding: 1.35rem;
+                border-radius: 18px;
+            }
+
+            .modal-overlay.document-modal {
+                padding: 0;
+                align-items: stretch;
+            }
+
+            .agreement-dialog {
+                width: 100vw;
+                height: 100dvh;
+                max-height: none;
+                border-radius: 0;
+            }
+
+            .agreement-dialog-header,
+            .agreement-dialog-footer {
+                padding: 1rem;
+            }
+
+            .agreement-dialog-header h3 {
+                font-size: 1.55rem;
+            }
+
+            .agreement-document {
+                font-size: 1rem;
             }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
     <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="/">
-                <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
-            </a>
-            <div style="display:flex; gap:0.75rem; align-items:center;">
-                <a href="/signup-he.html" class="nav-btn">עברית</a>
-                <a href="/" class="nav-btn">Back to Home</a>
-            </div>
-        </div>
-    </nav>
+    <div id="siteNavMount" data-bna-site-nav data-nav-language="en" data-nav-active="signup"></div>
+    <script src="/js/bna-site-nav.js"></script>
 
     <!-- Form Section -->
     <section class="form-section">
         <div class="container">
             <div class="form-header">
-                <h1>Sign Up</h1>
-                <p>Register your son for Bnei Nevi'im Academy</p>
+                <h1>Bnei Nevi'im Academy Registration</h1>
+                <p>2026-2027 / תשפ"ז</p>
+                <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
+                <div class="language-tabs" aria-label="Registration language">
+                    <a class="language-tab active" href="/signup.html">English</a>
+                    <a class="language-tab" href="/signup-he.html">עברית</a>
+                </div>
             </div>
             
             <div class="form-card">
                 <div id="message" class="message"></div>
+
+                <section class="signup-assistant" aria-label="Registration setup assistant">
+                    <h2>Registration Assistant</h2>
+                    <p>Ask a setup question or tell us where you are stuck. If this needs follow-up, the assistant will create a support ticket and show the ticket ID.</p>
+                    <textarea id="signupAssistantMessage" maxlength="2000" placeholder="Example: I'm stuck on the payment step, or I have a question about the documents."></textarea>
+                    <div class="signup-assistant-actions">
+                        <button class="primary" type="button" id="sendSignupAssistantButton">Ask assistant</button>
+                        <button type="button" id="signupAssistantStuckButton">I'm stuck</button>
+                        <button type="button" id="signupAssistantQuestionButton">Setup question</button>
+                    </div>
+                    <div class="signup-assistant-status" id="signupAssistantStatus"></div>
+                    <div class="signup-assistant-output" id="signupAssistantOutput" hidden></div>
+                </section>
                 
                 <form id="signupForm">
                     <input type="hidden" id="form_language" name="form_language" value="en">
                     <!-- Parent 1 Information -->
-                    <div class="section-divider" style="margin-top: 0; padding-top: 0; border-top: none;">
+                    <div class="section-divider parent-section-divider" style="margin-top: 0; padding-top: 0; border-top: none;">
                         <h3>Parent 1 Information</h3>
                     </div>
                     
@@ -486,7 +916,7 @@
                     </div>
                     
                     <!-- Parent 2 Information -->
-                    <div class="section-divider">
+                    <div class="section-divider parent-section-divider">
                         <h3>Parent 2 Information</h3>
                     </div>
                     
@@ -541,14 +971,101 @@
                         <label for="hobbies">Additional Information</label>
                         <textarea id="hobbies" name="hobbies" placeholder="Optional: interests, strengths, needs, or anything else that would help us understand your son."></textarea>
                     </div>
+
+                    <!-- Parent Permissions -->
+                    <div class="section-divider">
+                        <h3>Parent Guidance & Reporting Preferences</h3>
+                    </div>
+
+                    <p class="permission-intro">
+                        These answers are for awareness and parent alignment. BNA is not taking responsibility to enforce pickup, drop-off, travel, purchases, food, treats, spending, swimming, or staying late. Parents remain responsible for giving their son clear instructions at home. We use this information to know what you allow and to report back if something does not match what was agreed at home.
+                    </p>
+
+                    <div class="permission-grid">
+                        <div class="permission-card">
+                            <label for="permission_leave_premises">May he leave the premises during program hours?</label>
+                            <select id="permission_leave_premises" name="permission_leave_premises">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_walk_unaccompanied">May he walk or travel home unaccompanied?</label>
+                            <select id="permission_walk_unaccompanied" name="permission_walk_unaccompanied">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_swimming">May he participate in swimming or water activities?</label>
+                            <select id="permission_swimming" name="permission_swimming">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_buy_food">May he buy food during supervised outings?</label>
+                            <select id="permission_buy_food" name="permission_buy_food">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_junk_food">May he have junk food or treats if offered or purchased?</label>
+                            <select id="permission_junk_food" name="permission_junk_food">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_spend_money">May he spend personal money during BNA time?</label>
+                            <select id="permission_spend_money" name="permission_spend_money">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_stay_late">May he stay late when timing changes?</label>
+                            <select id="permission_stay_late" name="permission_stay_late">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="permission-checkbox" role="note">
+                        <span>Pickup, drop-off, travel, food, money, and activity choices remain the parent's responsibility. BNA uses the answers above for awareness, value-based coaching, and parent reporting; they are not a separate enforcement agreement.</span>
+                    </div>
+                    <input type="hidden" id="pickup_responsibility_acknowledged" name="pickup_responsibility_acknowledged" value="true">
+
+                    <div class="form-group">
+                        <label for="pickup_dropoff_notes">Pickup/drop-off notes</label>
+                        <textarea id="pickup_dropoff_notes" name="pickup_dropoff_notes" placeholder="Optional: regular pickup plan, authorized adults, walking route, timing limits, or transportation notes."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent_permission_notes">Other permission notes</label>
+                        <textarea id="parent_permission_notes" name="parent_permission_notes" placeholder="Optional: food restrictions, swimming limits, spending limits, or anything staff should know."></textarea>
+                    </div>
                     
                     <!-- Payment Method -->
                     <div class="section-divider">
                         <h3>Payment Method</h3>
                     </div>
-                    
+
+                    <div class="payment-note" role="note">
+                        Registration for the coming year is now open. This form is the current official BNA registration and payment setup; older payment links are no longer active. Billing for this setup begins on July 1. Families who register now lock in the current rate, and the price is expected to increase after this registration window. Families who already paid should still complete this form so BNA has the signed documents, parent permissions, student details, and payment records in one place. Existing payments will be reconciled by BNA before any live billing action, so families are not double-charged.
+                    </div>
+
                     <div class="form-group">
-                        <label>Select how you'd like to pay the ILS 1,000 registration fee</label>
+                        <label>Select how you'd like to pay the ILS 1,000 first tuition payment</label>
                         <div class="payment-options">
                             <label class="payment-option" for="payment-credit">
                                 <input type="radio" id="payment-credit" name="payment_method" value="credit" checked>
@@ -566,25 +1083,26 @@
                                     <span class="payment-desc">Recorded internally</span>
                                 </div>
                             </label>
+                            <label class="payment-option" for="payment-bank-transfer">
+                                <input type="radio" id="payment-bank-transfer" name="payment_method" value="bank_transfer">
+                                <div class="payment-option-card">
+                                    <span class="payment-icon">Bank</span>
+                                    <span class="payment-label">Bank Transfer</span>
+                                    <span class="payment-desc">Instructions after submission</span>
+                                </div>
+                            </label>
                         </div>
-                    </div>
-                    
-                    <div class="section-divider">
-                        <h3>Parent Acknowledgment and Waiver</h3>
                     </div>
 
-                    <div class="waiver-box">
-                        <h4>Bnei Neviim Academy Parent Acknowledgment</h4>
-                        <div class="waiver-text">
-                            <p>I understand that Bnei Neviim Academy is an educational/mentoring program and that my child may meet with the instructor and other students in a home, outdoor area, or other agreed location. I understand that the instructor will make reasonable efforts to supervise the boys and promote a safe, respectful environment.</p>
-                            <p>I acknowledge that the parent/guardian remains responsible for giving clear instructions to their child about travel, crossing streets, leaving or remaining at a location, participation in outings, and any personal safety boundaries or restrictions. If a parent does not want their child to leave a location, cross streets, join an outing, or participate in any activity, the parent is responsible to communicate that clearly to the child and to the instructor in advance.</p>
-                            <p>I understand that participation is voluntary and that a parent may remove their child from the program at any time. To the fullest extent permitted by law, I release the instructor and Bnei Neviim Academy from responsibility for injuries, losses, damages, or incidents that may occur in connection with participation, except where caused by intentional misconduct or gross negligence. I confirm that I have read and agree to this acknowledgment and waiver.</p>
-                        </div>
-                        <label class="waiver-check" for="waiver_accepted">
-                            <input type="checkbox" id="waiver_accepted" name="waiver_accepted" required>
-                            <span>I have read and agree to the parent acknowledgment and waiver. Checking this box is my electronic signature.</span>
-                        </label>
+                    <div class="section-divider">
+                        <h3 id="documentSignatureHeading">Required Registration Documents</h3>
                     </div>
+
+                    <p class="document-signature-intro" id="documentSignatureIntro">
+                        Open each document, read it in the full-screen viewer, scroll to the bottom, and sign.
+                    </p>
+                    <div class="document-signature-list" id="documentSignatureList"></div>
+                    <input type="hidden" id="waiver_accepted" name="waiver_accepted" value="true">
 
                     <button type="submit" class="submit-btn" id="submitBtn">Submit Registration</button>
                 </form>
@@ -601,23 +1119,54 @@
         </div>
     </div>
 
+    <div class="modal-overlay document-modal" id="documentModal" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle">
+        <div class="agreement-dialog">
+            <div class="agreement-dialog-header">
+                <div>
+                    <h3 id="documentModalTitle">Document</h3>
+                    <p id="documentModalSubtitle"></p>
+                </div>
+                <button type="button" class="agreement-close-btn" id="documentModalCloseBtn">Close</button>
+            </div>
+            <div class="agreement-document" id="documentModalBody" tabindex="0"></div>
+            <div class="agreement-dialog-footer">
+                <div class="signature-preview" id="documentModalProgress">Scroll to the bottom of this document to enable signing.</div>
+                <button type="button" class="agreement-sign-btn" id="documentModalSignBtn" disabled>I have read and agree.</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="siteFooterMount" data-bna-site-footer data-nav-language="en"></div>
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
+        <div class="footer-content">
+            <strong>Ramat Beit Shemesh</strong>
+            <div class="footer-socials" aria-label="Social profiles">
+                <a href="https://www.youtube.com/channel/UCKnmIcZqhzNCdAbE6RK-U-g" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg></a>
+                <a href="https://www.linkedin.com/company/108630189/" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.91 1.64-1.86 3.37-1.86 3.61 0 4.28 2.38 4.28 5.47v6.28ZM5.32 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.54V9H7.1v11.45ZM22.23 0H1.76C.79 0 0 .77 0 1.72v20.55C0 23.22.79 24 1.76 24h20.47c.97 0 1.77-.78 1.77-1.73V1.72C24 .77 23.2 0 22.23 0Z"/></svg></a>
+                <a href="https://www.facebook.com/profile.php?id=61590512065756" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.66 4.52-4.66 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.39A12 12 0 0 0 24 12Z"/></svg></a>
+            </div>
+            <span>Registered nonprofit in the State of New Jersey</span>
+            <span>&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</span>
+        </div>
     </footer>
 
+    <script src="/js/app-select.js"></script>
+    <script src="/js/signup-documents.js"></script>
     <script>
-        function getPaymentLabel(paymentMethod) {
-            return paymentMethod === 'cash' ? 'Cash' : 'Credit';
-        }
-
-        function buildThankYouUrl(paymentMethod, paymentLink) {
+        function buildThankYouUrl(paymentMethod, paymentLink, checkoutAttemptId = '', checkoutAttemptToken = '') {
             const params = new URLSearchParams({
                 payment: paymentMethod
             });
 
             if (paymentLink) {
                 params.set('paymentLink', paymentLink);
+            }
+            if (checkoutAttemptId) {
+                params.set('checkoutAttemptId', checkoutAttemptId);
+            }
+            if (checkoutAttemptToken) {
+                params.set('checkoutAttemptToken', checkoutAttemptToken);
             }
 
             return `/signup-thank-you.html?${params.toString()}`;
@@ -626,54 +1175,135 @@
         function initializePaymentUi() {
             const paymentGroup = document.querySelector('.payment-options');
             const paymentLabel = paymentGroup ? paymentGroup.previousElementSibling : null;
-            const paymentInputs = document.querySelectorAll('input[name="payment_method"]');
-            const paymentNames = document.querySelectorAll('.payment-label');
-            const paymentDescriptions = document.querySelectorAll('.payment-desc');
-            const paymentIcons = document.querySelectorAll('.payment-icon');
 
             if (paymentLabel) {
-                paymentLabel.textContent = 'Choose your payment method for the registration fee';
+                paymentLabel.textContent = 'Choose your payment method for the first tuition payment';
             }
 
-            if (paymentInputs[0]) {
-                paymentInputs[0].value = 'credit';
-                paymentInputs[0].id = 'payment-credit';
-            }
-
-            if (paymentInputs[1]) {
-                paymentInputs[1].value = 'cash';
-                paymentInputs[1].id = 'payment-cash';
-            }
-
-            if (paymentNames[0]) {
-                paymentNames[0].textContent = 'Credit';
-            }
-
-            if (paymentNames[1]) {
-                paymentNames[1].textContent = 'Cash';
-            }
-
-            if (paymentDescriptions[0]) {
-                paymentDescriptions[0].textContent = 'Secure online payment';
-            }
-
-            if (paymentDescriptions[1]) {
-                paymentDescriptions[1].textContent = 'Recorded internally';
-            }
-
-            paymentIcons.forEach((icon) => {
-                icon.setAttribute('aria-hidden', 'true');
+            document.querySelectorAll('.payment-option').forEach((option) => {
+                const input = option.querySelector('input[name="payment_method"]');
+                if (!input) return;
+                option.setAttribute('for', input.id);
+                option.addEventListener('click', () => {
+                    input.checked = true;
+                });
             });
 
             if (paymentGroup && !document.querySelector('.payment-note')) {
                 const note = document.createElement('p');
                 note.className = 'payment-note';
-                note.textContent = 'Credit takes you to the secure payment page after submission. Cash is recorded internally for follow-up.';
+                note.textContent = 'Credit takes you to the secure payment page after submission. Cash and bank transfer are recorded internally for follow-up.';
                 paymentGroup.insertAdjacentElement('afterend', note);
             }
         }
 
+        const signupDocumentFlow = window.createSignupDocumentFlow({
+            language: document.getElementById('form_language')?.value || 'en'
+        });
+        signupDocumentFlow.init();
+
         initializePaymentUi();
+
+        function escapeSignupAssistantHtml(value) {
+            return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function signupAssistantContext() {
+            return {
+                surface: 'signup',
+                mode: 'parent',
+                language: 'en',
+                parent_name: document.getElementById('parent1_name')?.value || '',
+                parent_email: document.getElementById('parent1_email')?.value || '',
+                parent_phone: document.getElementById('parent1_phone')?.value || '',
+                student_name: document.getElementById('child_name')?.value || '',
+                payment_method: selectedPaymentMethod(),
+                page_path: `${window.location.pathname}${window.location.search}`
+            };
+        }
+
+        async function sendSignupAssistantMessage(preset = '') {
+            const input = document.getElementById('signupAssistantMessage');
+            const status = document.getElementById('signupAssistantStatus');
+            const output = document.getElementById('signupAssistantOutput');
+            const sendButton = document.getElementById('sendSignupAssistantButton');
+            const message = (preset || input.value || '').trim();
+            if (!message) {
+                status.textContent = 'Write a question or what is stuck first.';
+                return;
+            }
+            status.textContent = 'Sending...';
+            sendButton.disabled = true;
+            try {
+                const context = signupAssistantContext();
+                const response = await fetch('/api/assistant/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message,
+                        language: 'en',
+                        mode: 'parent',
+                        surface: 'signup',
+                        action: 'create_ticket',
+                        title: message.slice(0, 140),
+                        context,
+                        metadata: context
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || result.error) throw new Error(result.error || 'Assistant request failed');
+                const reply = result?.assistant_message?.body || result?.assistant_message?.content || 'Saved.';
+                const actionLines = (result.actions || []).map((action) => {
+                    const objectType = action.created_object_type || action.action?.target_type || 'record';
+                    const objectId = action.created_object_id || action.action?.target_id || '';
+                    return `${action.summary || action.action_name || action.action_type}${objectId ? ` (${objectType} #${objectId})` : ''}`;
+                });
+                output.hidden = false;
+                output.innerHTML = `<strong>Assistant</strong><div>${escapeSignupAssistantHtml(reply)}</div>${actionLines.length ? `<ul>${actionLines.map(line => `<li>${escapeSignupAssistantHtml(line)}</li>`).join('')}</ul>` : ''}`;
+                status.textContent = 'Saved by the assistant.';
+                input.value = '';
+            } catch (error) {
+                status.textContent = error.message || 'Could not reach the assistant.';
+                output.hidden = false;
+                output.innerHTML = `<strong>Assistant</strong><div>${escapeSignupAssistantHtml(status.textContent)}</div>`;
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        document.getElementById('sendSignupAssistantButton')?.addEventListener('click', () => sendSignupAssistantMessage());
+        document.getElementById('signupAssistantStuckButton')?.addEventListener('click', () => sendSignupAssistantMessage("I'm stuck on the registration form. Please help me finish setup."));
+        document.getElementById('signupAssistantQuestionButton')?.addEventListener('click', () => sendSignupAssistantMessage('I have a setup question about BNA registration.'));
+
+        function selectedPaymentMethod() {
+            return document.querySelector('input[name="payment_method"]:checked')?.value || 'credit';
+        }
+
+        function permissionValue(id) {
+            return document.getElementById(id)?.value || 'ask_first';
+        }
+
+        function pickupResponsibilityAcknowledged() {
+            const field = document.getElementById('pickup_responsibility_acknowledged');
+            if (!field) return true;
+            if (field.type === 'checkbox') return Boolean(field.checked);
+            return field.value !== 'false';
+        }
+
+        function collectParentPermissions() {
+            return {
+                leave_premises: permissionValue('permission_leave_premises'),
+                walk_unaccompanied: permissionValue('permission_walk_unaccompanied'),
+                swimming: permissionValue('permission_swimming'),
+                buy_food: permissionValue('permission_buy_food'),
+                junk_food: permissionValue('permission_junk_food'),
+                spend_money: permissionValue('permission_spend_money'),
+                stay_late: permissionValue('permission_stay_late'),
+                pickup_responsibility_acknowledged: pickupResponsibilityAcknowledged(),
+                pickup_dropoff_notes: document.getElementById('pickup_dropoff_notes')?.value || '',
+                parent_permission_notes: document.getElementById('parent_permission_notes')?.value || ''
+            };
+        }
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -685,9 +1315,17 @@
             submitBtn.textContent = 'Submitting...';
             messageDiv.className = 'message';
             messageDiv.textContent = '';
-            
-            // Get selected payment method
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+            const documentValidation = signupDocumentFlow.validateBeforeSubmit();
+            if (!documentValidation.ok) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = documentValidation.message;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Registration';
+                return;
+            }
+            const documentPayload = signupDocumentFlow.payload();
+            const paymentMethod = selectedPaymentMethod();
             
             // Collect form data
             const formData = {
@@ -704,8 +1342,11 @@
                 hobbies: document.getElementById('hobbies').value,
                 payment_method: paymentMethod,
                 form_language: document.getElementById('form_language').value,
-                waiver_accepted: document.getElementById('waiver_accepted').checked,
-                waiver_version: '2026-05-28-v1'
+                parent_permissions: collectParentPermissions(),
+                pickup_responsibility_acknowledged: pickupResponsibilityAcknowledged(),
+                pickup_dropoff_notes: document.getElementById('pickup_dropoff_notes').value,
+                parent_permission_notes: document.getElementById('parent_permission_notes').value,
+                ...documentPayload
             };
             
             try {
@@ -724,11 +1365,19 @@
                     if (result.paymentMethod === 'cash') {
                         document.getElementById('signupForm').reset();
                         window.location.href = buildThankYouUrl('cash');
+                    } else if (result.paymentMethod === 'bank_transfer') {
+                        document.getElementById('signupForm').reset();
+                        window.location.href = buildThankYouUrl('bank_transfer');
                     } else {
                         // Redirect to thank-you page and then payment
                         messageDiv.textContent = 'Thank you! Your registration has been submitted. Taking you to the next step...';
                         document.getElementById('signupForm').reset();
-                        window.location.href = buildThankYouUrl('credit', result.paymentLink || '');
+                        window.location.href = buildThankYouUrl(
+                            'credit',
+                            result.paymentLink || '',
+                            result.checkoutAttemptId || '',
+                            result.checkoutAttemptToken || ''
+                        );
                     }
                 } else {
                     throw new Error(result.error || 'Failed to submit');
@@ -753,5 +1402,7 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

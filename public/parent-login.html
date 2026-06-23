@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNA Parent Login</title>
+    <link rel="manifest" href="/parent-manifest.json">
+    <meta name="theme-color" content="#1e3a5f">
+    <style>
+        :root {
+            --ink: #1f2933;
+            --muted: #64748b;
+            --blue: #1e3a5f;
+            --gold: #c9a227;
+            --paper: #f7f3e8;
+            --line: #d7dfec;
+            --danger: #9b3d33;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            background: linear-gradient(180deg, #ffffff 0%, #e8f0f8 58%, var(--paper) 100%);
+        }
+
+        main {
+            width: min(960px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 42px 0;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.92);
+            padding: 14px max(16px, calc((100vw - 960px) / 2));
+            backdrop-filter: blur(14px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .mark {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--blue);
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .brand strong,
+        h1 {
+            color: var(--blue);
+        }
+
+        .brand span,
+        p,
+        .status {
+            color: var(--muted);
+        }
+
+        .topbar-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(290px, 380px);
+            gap: 28px;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: clamp(36px, 7vw, 58px);
+            line-height: 0.98;
+            letter-spacing: 0;
+        }
+
+        p {
+            max-width: 58ch;
+            margin: 0;
+            font-size: 17px;
+            line-height: 1.55;
+        }
+
+        form {
+            display: grid;
+            gap: 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 18px 44px rgba(30, 58, 95, 0.12);
+            padding: 20px;
+        }
+
+        label {
+            display: grid;
+            gap: 7px;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        input {
+            width: 100%;
+            min-height: 46px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            color: var(--ink);
+            font: inherit;
+            padding: 10px 12px;
+        }
+
+        button,
+        a.button {
+            min-height: 44px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--blue);
+            color: #fff;
+            cursor: pointer;
+            display: inline-grid;
+            place-items: center;
+            font: inherit;
+            font-weight: 900;
+            padding: 10px 14px;
+            text-decoration: none;
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.72;
+        }
+
+        .secondary {
+            background: #ffffff;
+            border: 1px solid var(--line);
+            color: var(--blue);
+        }
+
+        .status {
+            min-height: 20px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .status.error {
+            color: var(--danger);
+        }
+
+        .actions {
+            display: grid;
+            gap: 10px;
+        }
+
+        .hidden { display: none !important; }
+
+        .session-panel {
+            display: grid;
+            gap: 12px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 18px 44px rgba(30, 58, 95, 0.12);
+            padding: 20px;
+        }
+
+        .session-panel strong {
+            color: var(--blue);
+            font-size: 18px;
+        }
+
+        @media (max-width: 760px) {
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .topbar-actions {
+                max-width: 52%;
+                gap: 6px;
+            }
+
+            .topbar-actions .button {
+                padding: 9px 10px;
+                font-size: 12px;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="mark">BNA</div>
+            <div>
+                <strong>Bnei Neviim Academy</strong><br>
+                <span>Parent Portal</span>
+            </div>
+        </div>
+        <div class="topbar-actions" aria-label="Safe portal navigation">
+            <a class="button secondary" href="/">Public site</a>
+            <a class="button secondary" href="/parents">Families</a>
+            <a class="button secondary" href="/student/login">Student login</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="layout">
+            <section>
+                <h1>Parent Login</h1>
+                <p>Use the email or phone number BNA has on file with the access code you received from the office. Parent sessions are separate from Operations and only open your own household.</p>
+            </section>
+
+            <section id="continuePanel" class="session-panel hidden" aria-live="polite">
+                <strong id="continueTitle">Continue to your secure parent portal</strong>
+                <p id="continueCopy">This browser already has a validated parent session. Continue only if this is your account.</p>
+                <div class="actions">
+                    <a class="button" href="/parent">Continue to parent portal</a>
+                    <button class="secondary" id="switchParentButton" type="button">Use a different parent login</button>
+                </div>
+            </section>
+
+            <form id="loginForm" autocomplete="on">
+                <label>
+                    Email or phone
+                    <input name="identity" type="text" inputmode="email" autocomplete="username" required>
+                </label>
+                <label>
+                    Access code
+                    <input name="access_code" type="password" autocomplete="one-time-code" required>
+                </label>
+                <div class="actions">
+                    <button id="loginButton" type="submit">Log In</button>
+                    <a class="button secondary" href="/parent/login?onboard=accountability">Request parent access / Family setup</a>
+                </div>
+                <div id="status" class="status" role="status" aria-live="polite"></div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const button = document.getElementById('loginButton');
+        const statusEl = document.getElementById('status');
+        const continuePanel = document.getElementById('continuePanel');
+        const continueCopy = document.getElementById('continueCopy');
+        const switchParentButton = document.getElementById('switchParentButton');
+
+        async function request(path, options = {}) {
+            const response = await fetch(path, {
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                ...options,
+            });
+            const text = await response.text();
+            const data = text ? JSON.parse(text) : {};
+            if (!response.ok) throw new Error(data.error || 'Request failed');
+            return data;
+        }
+
+        async function checkSession() {
+            try {
+                const me = await request('/api/parent/me');
+                if (me.authenticated) {
+                    const label = me.person?.display_name || me.person?.preferred_name || me.person?.email || 'this parent account';
+                    continueCopy.textContent = `This browser is already signed in as ${label}. Continue only if this is your account.`;
+                    form.classList.add('hidden');
+                    continuePanel.classList.remove('hidden');
+                    statusEl.textContent = '';
+                }
+            } catch {
+                // Not logged in yet.
+            }
+        }
+
+        switchParentButton.addEventListener('click', async () => {
+            switchParentButton.disabled = true;
+            try {
+                await request('/api/parent/auth/logout', { method: 'POST' }).catch(() => {});
+                continuePanel.classList.add('hidden');
+                form.classList.remove('hidden');
+                statusEl.textContent = 'Use the parent login for the household you want to open.';
+                statusEl.classList.remove('error');
+            } finally {
+                switchParentButton.disabled = false;
+            }
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            button.disabled = true;
+            statusEl.textContent = 'Checking access...';
+            statusEl.classList.remove('error');
+            const body = Object.fromEntries(new FormData(form).entries());
+            try {
+                await request('/api/parent/auth/login', {
+                    method: 'POST',
+                    body: JSON.stringify(body),
+                });
+                statusEl.textContent = 'Opening your portal...';
+                window.location.href = '/parent';
+            } catch (error) {
+                statusEl.textContent = error.message || 'Could not log in.';
+                statusEl.classList.add('error');
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        checkSession();
+    </script>
+</body>
+</html>

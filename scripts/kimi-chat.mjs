@@ -65,6 +65,10 @@ const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
+let inputClosed = false;
+rl.on('close', () => {
+  inputClosed = true;
+});
 
 let messages = [
   {
@@ -74,7 +78,15 @@ let messages = [
 ];
 
 function ask(prompt) {
-  return new Promise((resolve) => rl.question(prompt, resolve));
+  if (inputClosed) return Promise.resolve('/exit');
+  return new Promise((resolve) => {
+    try {
+      rl.question(prompt, resolve);
+    } catch (error) {
+      if (error?.code === 'ERR_USE_AFTER_CLOSE') resolve('/exit');
+      else throw error;
+    }
+  });
 }
 
 console.log('Kimi terminal chat is ready.');

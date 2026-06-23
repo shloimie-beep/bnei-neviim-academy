@@ -1,0 +1,312 @@
+{
+  "library_id": "rabbi-video-content",
+  "version": "2026-06-10.1",
+  "owner_project": "One Time Mishnah Class",
+  "primary_person": "Rabbi Elie Scheller",
+  "purpose": "Reusable prompt patches for Rabbi video content generation, camera planning, platform ratios, Jewish thematic visuals, and publishing guardrails.",
+  "defaults": {
+    "duration_seconds": 22,
+    "platform": "shorts_reels_status",
+    "aspect_ratio": "9:16",
+    "resolution": "1080x1920",
+    "workflow_targets": ["AI video prompt", "Remotion plan", "CapCut handoff", "ad candidate", "worksheet/source-sheet B-roll"]
+  },
+  "required_patch_categories": [
+    "project_scope",
+    "privacy_claims",
+    "aspect_ratio",
+    "camera",
+    "jewish_theme",
+    "negative_guardrail"
+  ],
+  "patches": [
+    {
+      "id": "project-one-time-scope",
+      "category": "project_scope",
+      "title": "One Time / Rabbi Scope",
+      "apply_when": "Always for Rabbi Elie Scheller or One Time Mishnah Class video content.",
+      "prompt_lines": [
+        "The content is for One Time Mishnah Class with Rabbi Elie Scheller.",
+        "Frame the product as Mishnayos learning, Torah class prep, parent/student learning support, source sheets, worksheets, and family/community engagement.",
+        "Keep BNA private students, BNA accounting, BNA devices, and operator-only Changelog details out of the video prompt.",
+        "Use Bnei Neviim / BNA context only for shared production workflow, warm Torah-learning tone, and technical style guidance.",
+        "Do not imply this is a full-day BNA school video unless the source context explicitly says so."
+      ],
+      "negative_prompt_lines": [
+        "No private BNA student names or accountability records.",
+        "No fake testimonials from parents or students.",
+        "No claim that Rabbi Elie has approved a final public message unless approval is provided."
+      ]
+    },
+    {
+      "id": "privacy-and-claims-guardrail",
+      "category": "privacy_claims",
+      "title": "Privacy, Claims, And Torah Review",
+      "apply_when": "Always for public or semi-public Rabbi video output.",
+      "prompt_lines": [
+        "Use only facts supplied in the source context or project memory.",
+        "If a Torah source, halacha point, or hashkafa claim is central to the clip, mark it for source-sheet/Rabbi review before publishing.",
+        "Do not present generated text as psak, a direct quote, or a named source unless the source is provided.",
+        "Avoid medical, educational-outcome, financial, or guaranteed-transformation promises.",
+        "Keep parent/student privacy intact; use archetypes like a boy, a parent, a chavrusa, or a family unless names are explicitly approved."
+      ],
+      "negative_prompt_lines": [
+        "No invented pesukim, masechta references, page numbers, quotes, program outcomes, prices, dates, or enrollment claims.",
+        "No sensitive child struggles as public spectacle."
+      ]
+    },
+    {
+      "id": "ratio-vertical-short",
+      "category": "aspect_ratio",
+      "title": "9:16 Vertical Short",
+      "apply_when": "Use for Reels, Shorts, WhatsApp status, TikTok-style clips, and most organic short-form output.",
+      "prompt_lines": [
+        "Target 9:16 vertical video at 1080x1920.",
+        "Keep faces, sefarim, Hebrew text, and captions inside a center-safe crop; leave top and bottom breathing room for platform UI.",
+        "Use large readable text overlays, no more than 6 words per screen unless they are captions.",
+        "Prefer 18-30 seconds unless the operator gives a different duration.",
+        "Use close-up and medium shots more than wide shots, because vertical framing needs strong subject focus."
+      ],
+      "negative_prompt_lines": [
+        "Do not place key captions at the extreme top or bottom.",
+        "Do not rely on tiny Hebrew text as the only message."
+      ]
+    },
+    {
+      "id": "ratio-wide-youtube",
+      "category": "aspect_ratio",
+      "title": "16:9 YouTube / Lesson Preview",
+      "apply_when": "Use for YouTube previews, course library clips, website video headers, and longer lesson excerpts.",
+      "prompt_lines": [
+        "Target 16:9 horizontal video at 1920x1080.",
+        "Use wider establishing shots, desk/table context, and enough negative space for a title or source reference.",
+        "Keep the Rabbi, sefer, and topic readable without overcropping.",
+        "Use lower-third source/title graphics rather than large center captions.",
+        "Maintain a calm lesson-preview rhythm rather than a hyperactive social reel pace."
+      ],
+      "negative_prompt_lines": [
+        "Do not crop the sefer or speaker hands out of the lesson context.",
+        "Do not use vertical-only framing instructions."
+      ]
+    },
+    {
+      "id": "ratio-square-feed",
+      "category": "aspect_ratio",
+      "title": "1:1 / 4:5 Feed Ad Candidate",
+      "apply_when": "Use for Facebook/Instagram/LinkedIn feed ad candidates or static-video hybrids.",
+      "prompt_lines": [
+        "Target a feed-safe square or 4:5 composition.",
+        "Keep a clear headline zone, a subject zone, and a small CTA/source zone.",
+        "Use fewer shots than the vertical version; favor one strong idea and one clear visual anchor.",
+        "Make the first frame meaningful as a thumbnail."
+      ],
+      "negative_prompt_lines": [
+        "Do not make the frame visually crowded.",
+        "Do not shrink the main Torah object or speaker until it becomes decorative."
+      ]
+    },
+    {
+      "id": "camera-learning-sequence",
+      "category": "camera",
+      "title": "Learning Sequence Camera Coverage",
+      "apply_when": "Use for organic clips, ad candidates, and class/storytelling scenes.",
+      "prompt_lines": [
+        "Build a camera sequence, not one static frame.",
+        "Start with an establishing shot of the learning table, room, beis midrash, or home-learning setup.",
+        "Cut to a medium shot of Rabbi Elie teaching or guiding.",
+        "Use an over-the-shoulder angle looking at the Mishnah, source sheet, or worksheet.",
+        "Add close-up detail shots: hands on the sefer, finger following Hebrew words, pencil notes, page turn, or chavrusa exchange.",
+        "Use a slow push-in on the speaker or learner when the idea becomes personal or important.",
+        "Use reaction shots sparingly: listening face, thinking pause, small nod, or question being asked.",
+        "End with a clean closing frame that can hold title, CTA, or source-sheet callout."
+      ],
+      "negative_prompt_lines": [
+        "No random camera movement.",
+        "No fake cinematic drama that distracts from Torah learning.",
+        "No cluttered B-roll that makes the class look staged or stock-like."
+      ]
+    },
+    {
+      "id": "camera-lesson-preview",
+      "category": "camera",
+      "title": "Calm Lesson Preview Camera Coverage",
+      "apply_when": "Use for YouTube course library clips, shiur previews, and evergreen lesson content.",
+      "prompt_lines": [
+        "Use a calm two-camera feeling: one medium Rabbi shot and one close source/table shot.",
+        "Include one wide orientation shot so the viewer understands the learning setting.",
+        "Prefer slow push-in, gentle side angle, and stable tabletop framing.",
+        "Let the sefer/source stay visible when the topic depends on the text.",
+        "Keep transitions simple: cuts, fades, and light reframes only."
+      ],
+      "negative_prompt_lines": [
+        "No whip pans, glitch transitions, heavy zooms, or meme pacing.",
+        "No exaggerated rabbi silhouette or anonymous lecture stock look."
+      ]
+    },
+    {
+      "id": "camera-source-sheet-broll",
+      "category": "camera",
+      "title": "Source Sheet / Worksheet B-Roll",
+      "apply_when": "Use when the output supports worksheets, source sheets, question digests, or mekoros.",
+      "prompt_lines": [
+        "Focus the camera language on the learning artifacts.",
+        "Use close-ups of a source sheet, Hebrew/English side-by-side notes, Mishnah text, highlighted words, and a pen marking a key idea.",
+        "Show an over-the-shoulder view of a learner reading or answering.",
+        "Use one clean top-down table shot for worksheets or source-sheet structure.",
+        "Leave a safe blank area for overlay labels such as Source, Question, Review, or Takeaway."
+      ],
+      "negative_prompt_lines": [
+        "Do not fabricate readable source-sheet text.",
+        "Do not generate fake citations as if they are real."
+      ]
+    },
+    {
+      "id": "jewish-mishnayos-visuals",
+      "category": "jewish_theme",
+      "title": "Mishnayos Visual Language",
+      "apply_when": "Use for core One Time Mishnah Class clips.",
+      "prompt_lines": [
+        "Use authentic Mishnayos/Torah-learning visuals: sefarim, chavrusa table, Hebrew text, source sheets, notes, a learning room, and family/home learning support.",
+        "Make the Jewish theme specific through learning artifacts and behavior, not costume or stereotypes.",
+        "Use warm natural light, real table texture, paper, pen, shelves of sefarim, and human attention.",
+        "When showing Hebrew text, keep it respectful and avoid making fake text the main proof point.",
+        "Tie visuals back to Mishnah learning, review, questions, clarity, consistency, and parent/student follow-through."
+      ],
+      "negative_prompt_lines": [
+        "No generic shtetl, fantasy Temple, glowing scroll, fake ancient prophecy, or costume-drama imagery.",
+        "No disrespectful handling of sefarim.",
+        "No full sacred Divine Names in generated decorative text."
+      ]
+    },
+    {
+      "id": "jewish-family-learning",
+      "category": "jewish_theme",
+      "title": "Family Learning And Parent Trust",
+      "apply_when": "Use when the video is aimed at parents, family learning, or old customer reactivation.",
+      "prompt_lines": [
+        "Show Torah learning as something that enters the home and family routine.",
+        "Use visuals like a parent reviewing a worksheet, a boy preparing a question, a father-son table moment, or a family looking at a class resource.",
+        "Keep the mood practical and trustworthy rather than sentimental.",
+        "Emphasize continuity, review, clarity, and a parent knowing what the child is learning."
+      ],
+      "negative_prompt_lines": [
+        "Do not overpromise family transformation.",
+        "Do not make the parent look incompetent, shamed, or desperate."
+      ]
+    },
+    {
+      "id": "source-sheet-worksheet-hook",
+      "category": "output_goal",
+      "title": "Source Sheet / Worksheet Hook",
+      "apply_when": "Use when a video should lead into source sheets, worksheets, or question digests.",
+      "prompt_lines": [
+        "Include a visual or caption hook that this class has a source sheet, worksheet, or question review path.",
+        "Show the learning moving from Rabbi explanation to source review to student action.",
+        "If the source sheet is not yet produced, say review sheet, worksheet, or source support without naming exact sources.",
+        "Keep the callout short: Learn it, review it, bring a question, or use the worksheet."
+      ],
+      "negative_prompt_lines": [
+        "Do not claim that a specific source sheet exists unless it exists.",
+        "Do not show source links or citations that were not provided."
+      ]
+    },
+    {
+      "id": "ad-candidate-hook",
+      "category": "output_goal",
+      "title": "Ad Candidate Hook",
+      "apply_when": "Use when the clip may become a paid ad or retargeting creative.",
+      "prompt_lines": [
+        "Open with a concrete parent-facing tension or promise of clarity, not a vague slogan.",
+        "Make the first 2 seconds understandable without sound.",
+        "Use one clear idea, one visual proof point, and one soft CTA.",
+        "Keep the CTA appropriate for One Time: watch the Mishnah class, join the list, ask about the library, or request details.",
+        "Leave pricing, launch dates, and guarantee language out unless supplied."
+      ],
+      "negative_prompt_lines": [
+        "No fear-based marketing.",
+        "No exaggerated guarantee that a child will love learning or change behavior.",
+        "No unapproved prices or membership tiers."
+      ]
+    },
+    {
+      "id": "negative-ai-video-guardrail",
+      "category": "negative_guardrail",
+      "title": "AI Video Negative Prompt",
+      "apply_when": "Always for AI-generated or AI-assisted visual prompts.",
+      "prompt_lines": [
+        "Negative prompt: avoid fake Hebrew gibberish as readable source text, inaccurate sefer titles, fantasy Jewish imagery, stock-looking costumes, overdramatic lighting, sacred-name decoration, private student likenesses, cartoon rabbis, exaggerated emotion, and any claim not supplied in the source context.",
+        "Keep visuals grounded, respectful, contemporary, and practical."
+      ],
+      "negative_prompt_lines": [
+        "fake Hebrew text",
+        "invented citations",
+        "generic religious stock footage",
+        "Temple/fantasy visuals",
+        "private child likenesses",
+        "guaranteed outcomes"
+      ]
+    }
+  ],
+  "stacks": [
+    {
+      "id": "one-time-vertical-short",
+      "title": "One Time Vertical Short",
+      "platform": "Shorts/Reels/WhatsApp status",
+      "default_duration_seconds": 22,
+      "patch_ids": [
+        "project-one-time-scope",
+        "privacy-and-claims-guardrail",
+        "ratio-vertical-short",
+        "camera-learning-sequence",
+        "jewish-mishnayos-visuals",
+        "ad-candidate-hook",
+        "negative-ai-video-guardrail"
+      ]
+    },
+    {
+      "id": "one-time-youtube-lesson-preview",
+      "title": "One Time YouTube Lesson Preview",
+      "platform": "YouTube / course library",
+      "default_duration_seconds": 45,
+      "patch_ids": [
+        "project-one-time-scope",
+        "privacy-and-claims-guardrail",
+        "ratio-wide-youtube",
+        "camera-lesson-preview",
+        "jewish-mishnayos-visuals",
+        "source-sheet-worksheet-hook",
+        "negative-ai-video-guardrail"
+      ]
+    },
+    {
+      "id": "one-time-square-ad-candidate",
+      "title": "One Time Square Feed Ad Candidate",
+      "platform": "Facebook/Instagram/LinkedIn feed",
+      "default_duration_seconds": 20,
+      "patch_ids": [
+        "project-one-time-scope",
+        "privacy-and-claims-guardrail",
+        "ratio-square-feed",
+        "camera-learning-sequence",
+        "jewish-family-learning",
+        "ad-candidate-hook",
+        "negative-ai-video-guardrail"
+      ]
+    },
+    {
+      "id": "one-time-source-sheet-broll",
+      "title": "One Time Source Sheet B-Roll",
+      "platform": "Worksheet/source-sheet support",
+      "default_duration_seconds": 15,
+      "patch_ids": [
+        "project-one-time-scope",
+        "privacy-and-claims-guardrail",
+        "ratio-vertical-short",
+        "camera-source-sheet-broll",
+        "jewish-mishnayos-visuals",
+        "source-sheet-worksheet-hook",
+        "negative-ai-video-guardrail"
+      ]
+    }
+  ]
+}

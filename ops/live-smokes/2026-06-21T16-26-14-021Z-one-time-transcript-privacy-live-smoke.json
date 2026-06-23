@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-06-21T16:26:14.021Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Transcript privacy readiness API is body-free and no-write",
+      "ok": true,
+      "detail": "11 classes, 11 segments"
+    },
+    {
+      "name": "Operations ships transcript privacy panel",
+      "ok": true,
+      "detail": "Operations panel marker and guardrail text shipped"
+    }
+  ],
+  "requirement_id": "REQ-20260619-309",
+  "status": "implemented_read_only",
+  "classes_seen": 11,
+  "segments_seen": 11,
+  "guessed_speaker_blocks": 0
+}

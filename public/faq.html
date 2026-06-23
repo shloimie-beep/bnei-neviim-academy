@@ -29,9 +29,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/bna-pages.css">
+  <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-  <div id="navMount"></div>
+  <div id="navMount" data-bna-site-nav data-nav-active="faq"></div>
 
   <header class="page-hero">
     <div class="page-hero__content">
@@ -42,13 +43,13 @@
   </header>
 
   <main class="page-main">
-    <p class="notice" id="faqNotice">Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.</p>
     <section class="faq-list" id="faqList"></section>
   </main>
 
-  <div id="footerMount"></div>
+  <div id="footerMount" data-bna-site-footer></div>
 
   <script src="/js/bna-content.js"></script>
+  <script src="/js/bna-site-nav.js"></script>
   <script src="/js/bna-pages.js"></script>
   <script>
     const lang = BNAPages.language();
@@ -57,7 +58,6 @@
       ? {
           title: "שאלות נפוצות",
           intro: "שאלות נפוצות של הורים על בני נביאים, תוכנית הבוקר ללימודי קודש, והאם הסביבה האלטרנטיבית הזאת מתאימה לבן שלהם.",
-          notice: "בני נביאים אינה תוכנית טיפולית, קלינית או מסגרת חינוך מיוחד פורמלית. זו סביבת לימוד תורה אלטרנטיבית שיכולה להתאים לחלק מהבנים שצריכים מבנה קטן יותר, רגוע יותר, עם יותר תנועה וקשר אישי.",
           metaTitle: "שאלות נפוצות | מסגרת תורנית אלטרנטיבית בבית שמש",
           metaDescription: "שאלות על בני נביאים, מסגרת לימוד תורה אלטרנטיבית בבית שמש לבנים שצריכים סביבה קטנה, רגועה ומבוססת קשר.",
           home: "בית",
@@ -66,7 +66,6 @@
       : {
           title: "Frequently Asked Questions",
           intro: "Here are common questions parents ask about Bnei Neviim Academy, our morning Torah learning program, and whether this alternative school-style environment is right for their son.",
-          notice: "Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.",
           metaTitle: "FAQ | Alternative Torah Learning Program in Beit Shemesh",
           metaDescription: "Questions about Bnei Neviim Academy, an alternative Torah learning environment in Beit Shemesh for boys who need a smaller, calmer, relationship-based program.",
           home: "Home",
@@ -77,7 +76,6 @@
     document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
     document.getElementById("faqTitle").textContent = copy.title;
     document.getElementById("faqIntro").textContent = copy.intro;
-    document.getElementById("faqNotice").textContent = copy.notice;
     BNAPages.setTitle(copy.metaTitle);
     BNAPages.setMeta("description", copy.metaDescription);
     BNAPages.setMeta("keywords", BNAContent.keywords[lang].join(", "));
@@ -130,5 +128,7 @@
       ],
     });
   </script>
+  <script src="/js/bna-helper-knowledge.js"></script>
+  <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

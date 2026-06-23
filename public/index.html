@@ -22,16 +22,6 @@
     <meta name="twitter:description" content="A calm, relationship-based Torah learning environment for boys in Beit Shemesh.">
     <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
     <link rel="canonical" href="https://bneineviimacademy.org/">
-    <script>
-        (function () {
-            var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-            var homePath = window.location.pathname === '/' || window.location.pathname === '/he' || window.location.pathname === '/index.html';
-            var publicBypass = new URLSearchParams(window.location.search).has('public');
-            if (standalone && homePath && !publicBypass) {
-                window.location.replace('/operations');
-            }
-        })();
-    </script>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
@@ -177,6 +167,10 @@
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-btn-contact {
@@ -212,6 +206,11 @@
             padding: 0;
             display: block;
             overflow: hidden;
+            background-color: #111d2b;
+            background-image: url('images/sitting on grass.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center 48%;
         }
 
         .hero-image {
@@ -244,7 +243,7 @@
 
         .hero-verse {
             position: absolute;
-            top: 22px;
+            top: 14px;
             left: 50%;
             transform: translateX(-50%);
             width: min(980px, calc(100% - 80px));
@@ -281,7 +280,7 @@
 
         .hero-headline {
             position: absolute;
-            top: 132px;
+            top: 166px;
             left: 50%;
             transform: translateX(-50%);
             width: min(820px, calc(100% - 120px));
@@ -299,10 +298,77 @@
             text-shadow: 0 3px 16px rgba(0,0,0,0.68);
         }
 
+        .hero-spots-badge {
+            position: absolute;
+            top: 112px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 350px;
+            min-height: 58px;
+            padding: 5px 28px;
+            border-radius: 999px;
+            border: 3px solid #10233f;
+            box-shadow:
+                inset 0 0 0 2px rgba(255, 255, 255, 0.88),
+                0 10px 28px rgba(0, 0, 0, 0.34);
+            background: #c9212d;
+            color: #ffffff;
+            font-size: 20px;
+            line-height: 1.05;
+            font-weight: 900;
+            text-transform: uppercase;
+            white-space: normal;
+            text-align: center;
+            text-shadow: 0 2px 7px rgba(0, 0, 0, 0.36);
+        }
+
+        .hero-spots-badge::before,
+        .hero-spots-badge::after {
+            content: "";
+            flex: 0 0 auto;
+            width: 18px;
+            height: 3px;
+            border-radius: 999px;
+            background: #f4c430;
+            box-shadow:
+                0 -7px 0 -1px #f4c430,
+                0 7px 0 -1px #f4c430;
+        }
+
+        .hero-spots-copy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .hero-spots-main,
+        .hero-spots-sub {
+            display: block;
+        }
+
+        .hero-spots-main {
+            font-size: 21px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .hero-spots-sub {
+            font-size: 13px;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
         .hero-cta-strip {
             position: absolute;
             left: 50%;
-            bottom: 42px;
+            bottom: 64px;
             transform: translateX(-50%);
             width: min(900px, calc(100% - 80px));
             height: auto;
@@ -323,7 +389,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 18px;
+            gap: 16px;
             text-align: center;
         }
 
@@ -346,15 +412,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 18px;
+            gap: 0;
             flex-shrink: 0;
         }
 
         .hero-btn {
-            min-width: 170px;
-            height: 52px;
+            min-width: 158px;
+            height: 48px;
             border-radius: 999px;
-            padding: 0 28px;
+            padding: 0 26px;
             font-size: 16px;
             font-weight: 700;
             display: inline-flex;
@@ -412,6 +478,7 @@
         /* ===== MISSION SECTION ===== */
         .mission {
             background: var(--white);
+            overflow-x: hidden;
         }
 
         .mission-content {
@@ -440,7 +507,7 @@
         /* ===== BELIEFS SECTION ===== */
         .beliefs {
             background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
-                        url('images/reuvane-jump-ball.png') center 70%/cover fixed;
+                        url('images/reuvane-jump-ball.jpg') center 70%/cover fixed;
             color: var(--white);
             padding: 6rem 2rem;
             min-height: 80vh;
@@ -516,6 +583,7 @@
         /* ===== LEARNING SECTION ===== */
         .learning {
             background: var(--light-blue);
+            overflow-x: hidden;
         }
 
         .learning-content {
@@ -765,19 +833,21 @@
 
         .torah-student-grid {
             display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(220px, 1fr));
             gap: 1rem;
             align-items: stretch;
             justify-content: center;
+            max-width: 920px;
+            margin: 0 auto;
         }
 
         .torah-student-card {
             background: rgba(255, 255, 255, 0.96);
             border: 1px solid rgba(30, 58, 95, 0.12);
             border-radius: 20px;
-            padding: 1.15rem 1rem 1rem;
+            padding: 1.2rem 1rem 1.05rem;
             box-shadow: 0 14px 32px rgba(30, 58, 95, 0.1);
-            min-height: 166px;
+            min-height: 184px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -793,24 +863,25 @@
         }
 
         .torah-student-main {
-            display: grid;
-            grid-template-rows: auto auto auto;
-            align-content: start;
-            justify-items: center;
-            gap: 0.48rem;
-            min-height: 112px;
+            display: flex;
+            min-height: 128px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 0.45rem;
         }
 
         .torah-student-name {
             color: var(--primary-blue);
             font-family: 'Cormorant Garamond', serif;
-            font-size: clamp(1.28rem, 1.45vw, 1.5rem);
-            line-height: 1.02;
-            min-height: 3.1rem;
+            font-size: clamp(1.18rem, 1.25vw, 1.42rem);
+            line-height: 1.08;
+            min-height: 3.45rem;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow-wrap: anywhere;
             text-wrap: balance;
         }
 
@@ -819,16 +890,17 @@
             font-size: 0.82rem;
             line-height: 1.35;
             max-width: 11rem;
-            min-height: 2.2rem;
+            min-height: 2.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-wrap: balance;
         }
 
         .torah-student-percent {
             color: var(--accent-gold);
             font-weight: 800;
-            font-size: 1.5rem;
+            font-size: 1.7rem;
             line-height: 1;
         }
 
@@ -922,6 +994,161 @@
             transform: scale(1.2);
         }
 
+        /* ===== LEARNING ECOSYSTEM SECTION ===== */
+        .ecosystem {
+            background: #fffaf0;
+            padding: 5rem 2rem;
+        }
+
+        .ecosystem-shell {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .ecosystem-heading {
+            max-width: 820px;
+            display: grid;
+            gap: 0.9rem;
+        }
+
+        .ecosystem-eyebrow {
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.12rem;
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .ecosystem-heading h2 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--primary-blue);
+            font-size: clamp(2.1rem, 4vw, 3.4rem);
+            line-height: 1.05;
+        }
+
+        .ecosystem-heading p {
+            color: #334155;
+            font-size: 1.08rem;
+            line-height: 1.7;
+        }
+
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .ecosystem-card {
+            background: #ffffff;
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 8px;
+            box-shadow: 0 14px 34px rgba(30, 58, 95, 0.08);
+            padding: 1.15rem;
+            display: grid;
+            gap: 0.95rem;
+            align-content: start;
+            min-width: 0;
+        }
+
+        .ecosystem-media {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(30, 58, 95, 0.1);
+            background: #f8fafc;
+        }
+
+        .ecosystem-media img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .ecosystem-placeholder {
+            min-height: 142px;
+            border: 1px dashed rgba(30, 58, 95, 0.26);
+            border-radius: 14px;
+            background:
+                linear-gradient(135deg, rgba(30, 58, 95, 0.08), rgba(217, 170, 24, 0.08)),
+                #f8fafc;
+            display: grid;
+            place-items: center;
+            color: #475569;
+            text-align: center;
+            font-size: 0.84rem;
+            font-weight: 800;
+            padding: 1rem;
+        }
+
+        .ecosystem-card h3 {
+            color: var(--primary-blue);
+            font-size: 1.15rem;
+            line-height: 1.22;
+        }
+
+        .ecosystem-card p {
+            color: #475569;
+            line-height: 1.6;
+            font-size: 0.96rem;
+        }
+
+        .ecosystem-ctas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .ecosystem-cta {
+            border: 0;
+            border-radius: 999px;
+            background: var(--primary-blue);
+            color: #ffffff;
+            padding: 0.9rem 1.25rem;
+            font: 800 0.95rem "Trebuchet MS", Verdana, sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .ecosystem-cta--gold {
+            background: var(--accent-gold);
+            color: #10233f;
+        }
+
+        .ecosystem-cta--quiet {
+            background: #eef6ff;
+            color: var(--primary-blue);
+            border: 1px solid rgba(30, 58, 95, 0.14);
+        }
+
+        @media (max-width: 980px) {
+            .ecosystem-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 620px) {
+            .ecosystem {
+                padding: 4rem 1.1rem;
+            }
+
+            .ecosystem-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ecosystem-ctas,
+            .ecosystem-cta {
+                width: 100%;
+            }
+
+            .ecosystem-cta {
+                text-align: center;
+            }
+        }
+
         /* ===== REVIEWS SECTION ===== */
         .reviews {
             background: var(--light-blue);
@@ -982,7 +1209,7 @@
         /* ===== CTA SECTION ===== */
         .cta-section {
             background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
-                        url('images/huddle.png') center/cover fixed;
+                        url('images/huddle.jpg') center/cover fixed;
             color: var(--white);
             text-align: center;
             padding: 6rem 2rem;
@@ -1305,7 +1532,7 @@
                 min-height: 0;
                 background-size: cover;
                 background-repeat: no-repeat;
-                background-position: center 50%;
+                background-position: 48% 50%;
             }
 
             .hero-image::before {
@@ -1350,6 +1577,39 @@
                 line-height: 1.12;
             }
 
+            .hero-spots-badge {
+                top: 258px;
+                left: 18px;
+                transform: rotate(-2deg);
+                min-width: 0;
+                min-height: 0;
+                width: max-content;
+                max-width: 148px;
+                padding: 6px 10px;
+                border-width: 2px;
+                gap: 5px;
+            }
+
+            .hero-spots-badge::before,
+            .hero-spots-badge::after {
+                width: 8px;
+                box-shadow:
+                    0 -4px 0 -1px #f4c430,
+                    0 4px 0 -1px #f4c430;
+            }
+
+            .hero-spots-copy {
+                max-width: 108px;
+            }
+
+            .hero-spots-main {
+                font-size: 14px;
+            }
+
+            .hero-spots-sub {
+                font-size: 9px;
+            }
+
             .hero-cta-strip {
                 position: absolute;
                 left: 50%;
@@ -1364,7 +1624,7 @@
 
             .hero-cta-inner {
                 padding: 0;
-                gap: 14px;
+                gap: 13px;
             }
 
             .hero-subheadline {
@@ -1381,13 +1641,12 @@
 
             .hero-buttons {
                 flex-direction: column;
-                gap: 10px;
                 width: 100%;
             }
 
             .hero-btn {
-                width: min(290px, 100%);
-                height: 50px;
+                width: min(250px, 100%);
+                height: 48px;
                 font-size: 16px;
             }
 
@@ -1459,6 +1718,16 @@
             body {
                 width: 100%;
                 overflow-x: hidden;
+            }
+
+            .slide-in-left,
+            .slide-in-right {
+                transform: translateY(24px);
+            }
+
+            .slide-in-left.visible,
+            .slide-in-right.visible {
+                transform: translateY(0);
             }
 
             section {
@@ -1929,9 +2198,18 @@
 
         .home-blog-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-auto-flow: column;
+            grid-auto-columns: calc((100% - 2.3rem) / 3);
+            grid-template-columns: none;
             gap: 1.15rem;
             align-items: stretch;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 0.05rem 0 1rem;
+            scroll-padding-left: 0;
+            scroll-snap-type: x mandatory;
+            scrollbar-color: rgba(195, 145, 25, 0.72) rgba(30, 58, 95, 0.1);
+            -webkit-overflow-scrolling: touch;
         }
 
         .home-blog-card {
@@ -1943,6 +2221,7 @@
             background: rgba(255, 255, 255, 0.94);
             box-shadow: 0 14px 45px rgba(17, 35, 63, 0.09);
             flex-direction: column;
+            scroll-snap-align: start;
         }
 
         .home-blog-card img {
@@ -2129,6 +2408,10 @@
             .philosophy-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+
+            .home-blog-grid {
+                grid-auto-columns: minmax(270px, calc((100% - 1.15rem) / 2));
+            }
         }
 
         @media (max-width: 640px) {
@@ -2159,15 +2442,9 @@
             }
 
             .home-blog-grid {
-                display: grid;
-                grid-auto-flow: column;
                 grid-auto-columns: minmax(248px, 84vw);
-                grid-template-columns: none;
                 gap: 0.85rem;
-                overflow-x: auto;
                 padding: 0.05rem 0 0.85rem;
-                scroll-snap-type: x mandatory;
-                -webkit-overflow-scrolling: touch;
             }
 
             .home-filter-row {
@@ -2221,8 +2498,11 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
+    <div id="siteNavMount" data-bna-site-nav data-nav-active="home"></div>
+    <script src="/js/bna-site-nav.js"></script>
     <!-- Navigation -->
     <nav>
         <div class="nav-container">
@@ -2254,11 +2534,15 @@
                     </details>
                     <a href="#blog" class="nav-link nav-link--mobile-only" data-i18n="navBlog" data-en-href="#blog" data-he-href="#blog">Blog</a>
                     <a href="#faq" class="nav-link" data-i18n="navFaq" data-en-href="#faq" data-he-href="#faq">FAQ</a>
+                    <a href="/parent/login" class="nav-link" data-i18n="navParentLogin" data-en-href="/parent/login" data-he-href="/parent/login">Parent Login</a>
+                    <a href="/student/login" class="nav-link" data-i18n="navStudentLogin" data-en-href="/student/login" data-he-href="/student/login">Student Login</a>
+                    <a href="/provider" class="nav-link" data-i18n="navProviderAccess" data-en-href="/provider" data-he-href="/provider">Rabbi / Provider Login</a>
+                    <a href="/become-service-provider?onboard=provider" class="nav-link" data-i18n="navProviderJoin" data-en-href="/become-service-provider?onboard=provider" data-he-href="/become-service-provider?onboard=provider">Advertise your program for free</a>
                 </div>
                 <div class="nav-buttons">
                     <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
                     <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
-                    <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="signup">Sign Up</a>
+                    <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="navSignup">Register</a>
                 </div>
             </div>
         </div>
@@ -2275,15 +2559,20 @@
             <div class="hero-headline">
                 <h1 data-i18n="heroHeadline">Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
             </div>
+            <div class="hero-spots-badge">
+                <span class="hero-spots-copy">
+                    <span class="hero-spots-main" data-i18n="heroSpotsMain">7 Spots Left</span>
+                    <span class="hero-spots-sub" data-i18n="heroSpotsSub">At Current Tuition Rate</span>
+                </span>
+            </div>
         </div>
         <div class="hero-cta-strip">
             <div class="hero-cta-inner">
                 <div class="hero-subheadline">
-                    <p data-i18n="heroSubheadline">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+                    <p data-i18n="heroSubheadline">A calm, relationship-based Torah learning environment for boys ready for something more than regular school.</p>
                 </div>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
-                    <a href="/signup.html" class="hero-btn hero-btn-signup" data-i18n="signup">Sign Up</a>
+                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank" data-i18n="heroContact">Call Now</a>
                 </div>
             </div>
         </div>
@@ -2294,7 +2583,7 @@
         <div class="container">
             <div class="mission-content">
                 <div class="mission-image slide-in-left">
-                    <img src="images/meir-bunny.png" alt="Boy learning Torah">
+                    <img src="images/meir-bunny.jpg" alt="Boy learning Torah">
                 </div>
                 <div class="mission-text fade-in">
                     <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;" data-i18n="missionTitle">Our Mission</h2>
@@ -2371,7 +2660,7 @@
     </section>
 
     <!-- What We Learn Section -->
-    <section class="learning">
+    <section class="learning" id="learning">
         <div class="container">
             <div class="learning-content">
                 <div class="learning-image slide-in-left">
@@ -2404,27 +2693,50 @@
             <div class="torah-goal-stack">
                 <div class="goal-card goal-card--full">
                     <div class="program-eyebrow" data-i18n="torahGoalEyebrow">Group Torah Goal</div>
-                    <h3 id="groupGoalTitle">Group Torah Goal: 100%</h3>
-                    <p id="groupGoalLead">The trip is unlocked only when every boy reaches 100% of his own personal goal.</p>
+                    <h3 id="groupGoalTitle">Group Torah Goal: 15%</h3>
+                    <p id="groupGoalLead">Each fully completed day adds one unit toward the shared 30-day trip goal.</p>
                     <div class="goal-meter-header">
                         <div>
-                            <div class="goal-count"><span id="groupGoalPercent">100</span>%</div>
+                            <div class="goal-count"><span id="groupGoalPercent">15</span>%</div>
                             <div class="goal-label" data-i18n="torahGoalLabel">average cumulative trip progress across the group</div>
                         </div>
-                        <div class="goal-status-pill" id="groupGoalPill">Unlocked</div>
+                        <div class="goal-status-pill" id="groupGoalPill">Locked</div>
                     </div>
                     <div class="progress-track" aria-label="Group Torah learning progress">
-                        <div class="progress-fill" id="groupGoalProgressFill" style="--progress: 100%;"></div>
+                        <div class="progress-fill" id="groupGoalProgressFill" style="--progress: 15%;"></div>
                     </div>
                     <p class="goal-note" id="groupGoalStatus">Trip locked — the group goal is not complete yet.</p>
                 </div>
 
                 <div class="torah-student-grid" id="torahStudentList" aria-live="polite">
                     <article class="torah-student-card">
-                        <div class="torah-student-name">Loading students...</div>
-                        <div class="torah-student-meta">Preparing today&apos;s cumulative Torah trip progress.</div>
+                        <div class="torah-student-main">
+                            <div class="torah-student-name">Class trip progress</div>
+                            <div class="torah-student-percent">15%</div>
+                            <div class="torah-student-meta">average cumulative progress across the group</div>
+                        </div>
                         <div class="progress-track" aria-hidden="true">
-                            <div class="progress-fill" style="--progress: 0%;"></div>
+                            <div class="progress-fill" style="--progress: 15%;"></div>
+                        </div>
+                    </article>
+                    <article class="torah-student-card">
+                        <div class="torah-student-main">
+                            <div class="torah-student-name">Current public range</div>
+                            <div class="torah-student-percent">15%</div>
+                            <div class="torah-student-meta">anonymous low-to-high trip progress, no student names</div>
+                        </div>
+                        <div class="progress-track" aria-hidden="true">
+                            <div class="progress-fill" style="--progress: 15%;"></div>
+                        </div>
+                    </article>
+                    <article class="torah-student-card">
+                        <div class="torah-student-main">
+                            <div class="torah-student-name">Trip status</div>
+                            <div class="torah-student-percent">Locked</div>
+                            <div class="torah-student-meta">unlocks when the whole group reaches 100%</div>
+                        </div>
+                        <div class="progress-track" aria-hidden="true">
+                            <div class="progress-fill" style="--progress: 15%;"></div>
                         </div>
                     </article>
                 </div>
@@ -2450,7 +2762,7 @@
                 <div class="program-card">
                     <div class="program-eyebrow" data-i18n="torahHowEyebrow">How it works</div>
                     <h2 data-i18n="torahHowTitle">One trip, shared accountability</h2>
-                    <p class="program-lead" data-i18n="torahHowLead">Each boy chooses his own daily Torah learning goal. Daily tracking stays admin-only, and the public website shows only each boy's cumulative progress toward the shared 30-day trip goal.</p>
+                    <p class="program-lead" data-i18n="torahHowLead">Each boy chooses his own daily Torah learning goal. Daily tracking stays admin-only, and the public website shows only aggregate class progress and anonymous range toward the shared 30-day trip goal.</p>
                     <div class="schedule-list">
                         <div class="schedule-row">
                             <div class="schedule-days" data-i18n="torahHowPointOneLabel">Personal goal</div>
@@ -2478,6 +2790,58 @@
                     </div>
                 </div>
                 <div class="media-dots" id="mediaDots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Ecosystem Section -->
+    <section class="ecosystem" id="learning-ecosystem" aria-labelledby="ecosystemTitle">
+        <div class="ecosystem-shell">
+            <div class="ecosystem-heading">
+                <div class="ecosystem-eyebrow" data-i18n="ecosystemEyebrow">BNA ecosystem</div>
+                <h2 id="ecosystemTitle" data-i18n="ecosystemTitle">A Learning Ecosystem, Not Just a Morning Program</h2>
+                <p data-i18n="ecosystemSubtitle">Bnei Neviim serves schools, families, and service providers from one connected system: a Jewish AI microschool model, a family accountability app, and a provider network that keeps real people in the center while reducing administrative overhead.</p>
+            </div>
+
+            <div class="ecosystem-grid">
+                <article class="ecosystem-card">
+                    <div class="ecosystem-media">
+                        <img src="/images/learning-moments/forest-learning-01-web.jpg" alt="BNA students learning Torah outdoors">
+                    </div>
+                    <h3 data-i18n="ecosystemMorningTitle">Schools / AI Microschool</h3>
+                    <p data-i18n="ecosystemMorningText">BNA is building a one-man Jewish AI microschool model where natural-language school management helps run enrollment, tasks, parent updates, classroom records, and decisions without a heavy office.</p>
+                </article>
+
+                <article class="ecosystem-card">
+                    <div class="ecosystem-media">
+                        <img src="/images/huddle.jpg" alt="BNA students in a small group learning moment">
+                    </div>
+                    <h3 data-i18n="ecosystemFamilyTitle">Families / Parent App</h3>
+                    <p data-i18n="ecosystemFamilyText">Families can use the accountability app to track goals, progress, student login access, provider requests, and next steps when a child needs structure outside standard school.</p>
+                </article>
+
+                <article class="ecosystem-card">
+                    <div class="ecosystem-media">
+                        <img src="/images/learning-moments/forest-learning-03-web.jpg" alt="BNA learning conversation outdoors">
+                    </div>
+                    <h3 data-i18n="ecosystemEveningTitle">Less Overhead, Better Teaching</h3>
+                    <p data-i18n="ecosystemEveningText">AI reduces overhead by turning natural language into school workflows, so more tuition and donor support can go toward teaching, mentorship, and better rabbi pay.</p>
+                </article>
+
+                <article class="ecosystem-card">
+                    <div class="ecosystem-media">
+                        <img src="/images/one-time-existing-site-preview.jpg" alt="Example provider program preview in the BNA network">
+                    </div>
+                    <h3 data-i18n="ecosystemProviderTitle">Service Provider Network</h3>
+                    <p data-i18n="ecosystemProviderText">Providers can join the directory, start with a free profile, share services and classes, and later upgrade for marketing, funnel support, ads, SEO, or profile polish.</p>
+                </article>
+            </div>
+
+            <div class="ecosystem-ctas" aria-label="Learning ecosystem actions">
+                <a class="ecosystem-cta ecosystem-cta--gold" href="/school" data-i18n="ecosystemParentCta">Explore schools</a>
+                <a class="ecosystem-cta" href="/parents" data-i18n="ecosystemFamilyCta">Explore families</a>
+                <a class="ecosystem-cta" href="/become-service-provider?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list</a>
+                <button class="ecosystem-cta ecosystem-cta--quiet" type="button" data-helper-open data-i18n="ecosystemHelperCta">Ask the helper</button>
             </div>
         </div>
     </section>
@@ -2512,7 +2876,7 @@
     <section class="reviews">
         <div class="martin-card fade-in">
             <div class="martin-photo">
-                <img src="images/hillel.png" alt="Martin's son">
+                <img src="images/hillel.jpg" alt="Martin's son">
             </div>
             <div class="martin-content">
                 <div class="martin-name" data-i18n="reviewerName">Martin Braka</div>
@@ -2524,10 +2888,10 @@
 
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
-        <h2 class="fade-in" data-i18n="ctaTitle">Ready to Get Started?</h2>
+        <h2 class="fade-in" data-i18n="ctaTitle">Registration Is Open for This Year</h2>
         <div class="cta-buttons fade-in">
             <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank" data-i18n="contact">Contact Us</a>
-            <a href="/signup.html" class="cta-button cta-signup" data-i18n="signup">Sign Up</a>
+            <a href="/signup.html" class="cta-button cta-signup" data-i18n="signup">Register for This Year</a>
         </div>
     </section>
 
@@ -2548,6 +2912,7 @@
     </section>
 
     <!-- Footer -->
+    <div id="siteFooterMount" data-bna-site-footer></div>
     <footer>
         <div class="footer-content">
             <p class="footer-location" data-i18n="footerLocation">Ramat Beit Shemesh</p>
@@ -2611,13 +2976,20 @@
             updateSlider();
         }, 5000);
 
+        const torahGoalFallbackMetrics = {
+            activeStudentCount: null,
+            completedStudentCount: 0,
+            minPercentage: 15,
+            maxPercentage: 15
+        };
+
         const torahGoalState = {
             date: null,
             group: {
-                groupPercentage: 0,
+                groupPercentage: 15,
                 tripUnlocked: false
             },
-            students: []
+            metrics: { ...torahGoalFallbackMetrics }
         };
 
         function escapeHtml(value) {
@@ -2631,21 +3003,21 @@
         const learningMoments = [
             {
                 type: 'image',
-                src: 'images/learning-moments/forest-learning-01-web.jpg',
+                src: '/images/learning-moments/forest-learning-01-web.jpg',
                 title: 'Forest learning with the boys',
                 description: 'A day of Torah learning and shared goals in the hills around Ramat Beit Shemesh.',
                 timestamp: '28 May 2026'
             },
             {
                 type: 'image',
-                src: 'images/learning-moments/forest-learning-02-web.jpg',
+                src: '/images/learning-moments/forest-learning-02-web.jpg',
                 title: 'Real life learning',
                 description: 'The forest gives the boys room to move, notice, ask questions, and connect the learning to the world around them.',
                 timestamp: '28 May 2026'
             },
             {
                 type: 'image',
-                src: 'images/learning-moments/forest-learning-03-web.jpg',
+                src: '/images/learning-moments/forest-learning-03-web.jpg',
                 title: 'Conversation, movement, and Torah',
                 description: 'Learning stays alive when the boys can think together, challenge ideas, and take ownership of the day.',
                 timestamp: '28 May 2026'
@@ -2669,8 +3041,25 @@
             }
         }
 
+        function normalizeLearningMomentSrc(src) {
+            const value = String(src || '').trim();
+            if (!value) return '';
+            try {
+                const url = new URL(value, window.location.origin);
+                return url.origin === window.location.origin ? url.pathname : url.href;
+            } catch {
+                return value.startsWith('/') ? value : `/${value}`;
+            }
+        }
+
         function getLearningMoments() {
-            return [...extraLearningMoments, ...learningMoments];
+            const seen = new Set();
+            return [...extraLearningMoments, ...learningMoments].filter((item) => {
+                const normalizedSrc = normalizeLearningMomentSrc(item?.src);
+                if (!normalizedSrc || seen.has(normalizedSrc)) return false;
+                seen.add(normalizedSrc);
+                return true;
+            });
         }
 
         function torahGoalCopy() {
@@ -2681,7 +3070,13 @@
                     unlocked: 'הטיול נפתח — כולם הגיעו ליעד שלהם.',
                     locked: 'הטיול נעול — היעד הקבוצתי עדיין לא הושלם.',
                     label: 'התקדמות ממוצעת של הקבוצה',
-                    studentLabel: 'התקדמות אישית',
+                    averageTitle: '\u05d4\u05ea\u05e7\u05d3\u05de\u05d5\u05ea \u05d4\u05db\u05d9\u05ea\u05d4',
+                    averageMeta: '\u05de\u05de\u05d5\u05e6\u05e2 \u05de\u05e6\u05d8\u05d1\u05e8 \u05dc\u05e7\u05e8\u05d0\u05ea \u05d4\u05d8\u05d9\u05d5\u05dc \u05d4\u05de\u05e9\u05d5\u05ea\u05e3',
+                    rangeTitle: '\u05d8\u05d5\u05d5\u05d7 \u05e6\u05d9\u05d1\u05d5\u05e8\u05d9 \u05e0\u05d5\u05db\u05d7\u05d9',
+                    rangeMeta: '\u05d8\u05d5\u05d5\u05d7 \u05d0\u05e0\u05d5\u05e0\u05d9\u05de\u05d9 \u05dc\u05dc\u05d0 \u05e9\u05de\u05d5\u05ea \u05ea\u05dc\u05de\u05d9\u05d3\u05d9\u05dd',
+                    statusTitle: '\u05de\u05e6\u05d1 \u05d4\u05d8\u05d9\u05d5\u05dc',
+                    statusMetaUnlocked: '\u05d4\u05d8\u05d9\u05d5\u05dc \u05d4\u05de\u05e9\u05d5\u05ea\u05e3 \u05e4\u05ea\u05d5\u05d7.',
+                    statusMetaLocked: '\u05d4\u05d8\u05d9\u05d5\u05dc \u05e0\u05e4\u05ea\u05d7 \u05db\u05e9\u05db\u05dc \u05d4\u05e7\u05d1\u05d5\u05e6\u05d4 \u05de\u05d2\u05d9\u05e2\u05d4 \u05dc-100%.',
                     pillUnlocked: 'פתוח',
                     pillLocked: 'נעול',
                     empty: 'עדיין אין תלמידים מוצגים ליעד התורה.',
@@ -2695,17 +3090,89 @@
                 unlocked: 'Trip unlocked — everyone reached the full trip goal.',
                 locked: 'Trip locked — the group goal is not complete yet.',
                 label: 'average cumulative trip progress across the group',
-                studentLabel: 'of the 30-day trip goal',
+                averageTitle: 'Class trip progress',
+                averageMeta: 'average cumulative progress across the group',
+                rangeTitle: 'Current public range',
+                rangeMeta: 'anonymous low-to-high trip progress, no student names',
+                statusTitle: 'Trip status',
+                statusMetaUnlocked: 'The shared trip is unlocked.',
+                statusMetaLocked: 'The shared trip unlocks when the whole group reaches 100%.',
                 pillUnlocked: 'Unlocked',
                 pillLocked: 'Locked',
-                empty: 'No students are being shown for the Torah goal yet.',
-                loading: "Loading today's cumulative Torah trip progress..."
+                empty: 'No aggregate Torah progress is available yet.',
+                loading: "Loading today's aggregate Torah trip progress..."
             };
+        }
+
+        function torahPublicPercent(value, fallback = 0) {
+            const number = Number(value);
+            if (!Number.isFinite(number)) return fallback;
+            return Math.max(0, Math.min(100, Math.round(number)));
+        }
+
+        function normalizeTorahGoalMetrics(data = {}) {
+            const metrics = data.metrics && typeof data.metrics === 'object' ? data.metrics : {};
+            const legacyPercentages = Array.isArray(data.students)
+                ? data.students
+                    .map((item) => Number(item?.percentage))
+                    .filter((value) => Number.isFinite(value))
+                    .map((value) => torahPublicPercent(value))
+                : [];
+            const fallbackMin = legacyPercentages.length ? Math.min(...legacyPercentages) : null;
+            const fallbackMax = legacyPercentages.length ? Math.max(...legacyPercentages) : null;
+            const minPercentage = metrics.minPercentage ?? fallbackMin ?? torahGoalFallbackMetrics.minPercentage;
+            const maxPercentage = metrics.maxPercentage ?? fallbackMax ?? torahGoalFallbackMetrics.maxPercentage;
+            return {
+                activeStudentCount: metrics.activeStudentCount ?? (legacyPercentages.length || torahGoalFallbackMetrics.activeStudentCount),
+                completedStudentCount: metrics.completedStudentCount ?? legacyPercentages.filter((value) => value >= 100).length,
+                minPercentage: torahPublicPercent(minPercentage, torahGoalFallbackMetrics.minPercentage),
+                maxPercentage: torahPublicPercent(maxPercentage, torahGoalFallbackMetrics.maxPercentage)
+            };
+        }
+
+        function formatTorahPublicRange(metrics) {
+            const min = torahPublicPercent(metrics.minPercentage, torahGoalFallbackMetrics.minPercentage);
+            const max = torahPublicPercent(metrics.maxPercentage, torahGoalFallbackMetrics.maxPercentage);
+            return min === max ? `${min}%` : `${min}%-${max}%`;
+        }
+
+        function torahGoalPublicMetricCards(copy, groupPercent, metrics) {
+            const rangeLabel = formatTorahPublicRange(metrics);
+            const rangeFill = torahPublicPercent(metrics.maxPercentage, groupPercent);
+            const isUnlocked = Boolean(torahGoalState.group?.tripUnlocked);
+            const averageTitle = copy.averageTitle || 'Class trip progress';
+            const rangeTitle = copy.rangeTitle || 'Current public range';
+            const statusTitle = copy.statusTitle || 'Trip status';
+            return [
+                {
+                    title: averageTitle,
+                    value: `${groupPercent}%`,
+                    meta: copy.averageMeta || 'average cumulative progress across the group',
+                    fill: groupPercent,
+                    aria: averageTitle
+                },
+                {
+                    title: rangeTitle,
+                    value: rangeLabel,
+                    meta: copy.rangeMeta || 'anonymous low-to-high trip progress, no student names',
+                    fill: rangeFill,
+                    aria: rangeTitle
+                },
+                {
+                    title: statusTitle,
+                    value: isUnlocked ? copy.pillUnlocked : copy.pillLocked,
+                    meta: isUnlocked
+                        ? copy.statusMetaUnlocked || 'The shared trip is unlocked.'
+                        : copy.statusMetaLocked || 'The shared trip unlocks when the whole group reaches 100%.',
+                    fill: groupPercent,
+                    aria: statusTitle
+                }
+            ];
         }
 
         function renderTorahGoalSummary() {
             const copy = torahGoalCopy();
-            const percent = Math.max(0, Math.min(100, Math.round(Number(torahGoalState.group?.groupPercentage || 0))));
+            const percent = torahPublicPercent(torahGoalState.group?.groupPercentage);
             const titleEl = document.getElementById('groupGoalTitle');
             const leadEl = document.getElementById('groupGoalLead');
             const percentEl = document.getElementById('groupGoalPercent');
@@ -2724,23 +3191,24 @@
             if (labelEl) labelEl.textContent = copy.label;
 
             if (!listEl) return;
-            if (!torahGoalState.students.length) {
+            const metrics = normalizeTorahGoalMetrics({ metrics: torahGoalState.metrics });
+            const publicCards = torahGoalPublicMetricCards(copy, percent, metrics);
+            if (!publicCards.length) {
                 listEl.innerHTML = `<div class="goal-card torah-empty">${torahGoalState.date ? copy.empty : copy.loading}</div>`;
                 return;
             }
 
-            listEl.innerHTML = torahGoalState.students.map((student) => {
-                const studentPercent = Math.max(0, Math.min(100, Number(student.percentage || 0)));
-                const studentName = escapeHtml(student.name || '');
+            listEl.innerHTML = publicCards.map((card) => {
+                const fillPercent = torahPublicPercent(card.fill, percent);
                 return `
                     <article class="torah-student-card">
                         <div class="torah-student-main">
-                            <div class="torah-student-name">${studentName}</div>
-                            <div class="torah-student-percent">${studentPercent}%</div>
-                            <div class="torah-student-meta">${copy.studentLabel}</div>
+                            <div class="torah-student-name">${escapeHtml(card.title)}</div>
+                            <div class="torah-student-percent">${escapeHtml(card.value)}</div>
+                            <div class="torah-student-meta">${escapeHtml(card.meta)}</div>
                         </div>
-                        <div class="progress-track" aria-label="${studentName} Torah goal progress">
-                            <div class="progress-fill" style="--progress: ${studentPercent}%;"></div>
+                        <div class="progress-track" aria-label="${escapeHtml(card.aria)}">
+                            <div class="progress-fill" style="--progress: ${fillPercent}%;"></div>
                         </div>
                     </article>
                 `;
@@ -2756,14 +3224,14 @@
                 const data = await response.json();
                 torahGoalState.date = data.date || null;
                 torahGoalState.group = data.group || torahGoalState.group;
-                torahGoalState.students = Array.isArray(data.students) ? data.students : [];
+                torahGoalState.metrics = normalizeTorahGoalMetrics(data);
             } catch (error) {
                 console.error('[torah-goal]', error);
                 torahGoalState.group = {
-                    groupPercentage: 0,
+                    groupPercentage: 15,
                     tripUnlocked: false
                 };
-                torahGoalState.students = [];
+                torahGoalState.metrics = { ...torahGoalFallbackMetrics };
             }
 
             renderTorahGoalSummary();
@@ -2774,16 +3242,21 @@
             const dots = document.getElementById('mediaDots');
             if (!track || !dots) return;
             const moments = getLearningMoments();
+            if (currentMediaSlide >= moments.length) currentMediaSlide = 0;
 
             track.innerHTML = moments.map((item) => {
+                const src = normalizeLearningMomentSrc(item.src);
+                const title = escapeHtml(item.title || item.alt || 'Learning moment');
+                const timestamp = escapeHtml(item.timestamp || 'Learning moment');
+                const description = escapeHtml(item.description || '');
                 const media = item.type === 'video'
-                    ? `<video src="${item.src}" controls playsinline preload="metadata"></video>`
+                    ? `<video src="${escapeHtml(src)}" controls playsinline preload="metadata"></video>`
                     : item.type === 'youtube'
-                        ? `<iframe src="${item.src}" title="${item.title}" loading="lazy" allowfullscreen></iframe>`
-                        : `<img src="${item.src}" alt="${item.title}">`;
+                        ? `<iframe src="${escapeHtml(src)}" title="${title}" loading="lazy" allowfullscreen></iframe>`
+                        : `<img src="${escapeHtml(src)}" alt="${title}" decoding="async">`;
 
                 return `
-                    <article class="media-slide" aria-label="${item.timestamp}: ${item.title}" data-description="${item.description}" data-timestamp="${item.timestamp}">
+                    <article class="media-slide" aria-label="${timestamp}: ${title}" data-description="${description}" data-timestamp="${timestamp}">
                         <div class="media-visual">${media}</div>
                     </article>
                 `;
@@ -2844,7 +3317,9 @@
                 navBrand: "Bnei Nevi'im Academy",
                 navLocation: "Ramat Beit Shemesh",
                 contact: "Contact Us",
-                signup: "Sign Up",
+                heroContact: "Call Now",
+                navSignup: "Register",
+                signup: "Register for This Year",
                 langButton: "עברית",
                 navHome: "Home",
                 navBlog: "Blog",
@@ -2859,6 +3334,10 @@
                 navBlogTechnology: "Technology",
                 navBlogFuture: "Future Vision",
                 navFaq: "FAQ",
+                navParentLogin: "Parent Login",
+                navStudentLogin: "Student Login",
+                navProviderAccess: "Rabbi / Provider Login",
+                navProviderJoin: "Advertise your program for free",
                 homeBlogEyebrow: "Guides and Topics",
                 homeBlogTitle: "Our Philosophy",
                 homeBlogSubtitle: "Ideas that shape how we teach, mentor, and help boys grow.",
@@ -2870,7 +3349,9 @@
                 heroVerseEn: '"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."',
                 heroVerseSource: "Yeshayahu 11:9",
                 heroHeadline: "Home-Based Integrative Torah Learning for Boys Ages 7–13",
-                heroSubheadline: "A calm, relationship-based Torah learning environment for boys who don't fit the system.",
+                heroSpotsMain: "7 Spots Left",
+                heroSpotsSub: "At Current Tuition Rate",
+                heroSubheadline: "A calm, relationship-based Torah learning environment for boys ready for something more than regular school.",
 
                 missionTitle: "Our Mission",
                 missionText: "To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.",
@@ -2920,7 +3401,7 @@
                 torahGoalLabel: "average cumulative trip progress across the group",
                 torahHowEyebrow: "How it works",
                 torahHowTitle: "One trip, shared accountability",
-                torahHowLead: "Each boy chooses his own daily Torah learning goal. Daily tracking stays admin-only, and the public website shows only each boy's cumulative progress toward the shared 30-day trip goal.",
+                torahHowLead: "Each boy chooses his own daily Torah learning goal. Daily tracking stays admin-only, and the public website shows only aggregate class progress and anonymous range toward the shared 30-day trip goal.",
                 torahHowPointOneLabel: "Personal goal",
                 torahHowPointOne: "Each fully completed day adds one unit toward the shared trip.",
                 torahHowPointTwoLabel: "Focused time",
@@ -2928,11 +3409,30 @@
                 torahHowPointThreeLabel: "Group win",
                 torahHowPointThree: "The trip unlocks only when everyone reaches 100% of the full 30-unit trip goal.",
                 momentsTitle: "Learning Moments",
+                ecosystemEyebrow: "BNA ecosystem",
+                ecosystemTitle: "A Learning Ecosystem, Not Just a Morning Program",
+                ecosystemSubtitle: "Bnei Neviim serves schools, families, and service providers from one connected system: a Jewish AI microschool model, a family accountability app, and a provider network that keeps real people in the center while reducing administrative overhead.",
+                ecosystemMorningGraphic: "Morning learning graphic placeholder",
+                ecosystemMorningTitle: "Schools / AI Microschool",
+                ecosystemMorningText: "BNA is building a one-man Jewish AI microschool model where natural-language school management helps run enrollment, tasks, parent updates, classroom records, and decisions without a heavy office.",
+                ecosystemFamilyGraphic: "Family support graphic placeholder",
+                ecosystemFamilyTitle: "Families / Parent App",
+                ecosystemFamilyText: "Families can use the accountability app to track goals, progress, student login access, provider requests, and next steps when a child needs structure outside standard school.",
+                ecosystemEveningGraphic: "Evening programs graphic placeholder",
+                ecosystemEveningTitle: "Less Overhead, Better Teaching",
+                ecosystemEveningText: "AI reduces overhead by turning natural language into school workflows, so more tuition and donor support can go toward teaching, mentorship, and better rabbi pay.",
+                ecosystemProviderGraphic: "Provider network graphic placeholder",
+                ecosystemProviderTitle: "Service Provider Network",
+                ecosystemProviderText: "Providers can join the directory, start with a free profile, share services and classes, and later upgrade for marketing, funnel support, ads, SEO, or profile polish.",
+                ecosystemParentCta: "Explore schools",
+                ecosystemFamilyCta: "Explore families",
+                ecosystemProviderCtaTwo: "Join the provider list",
+                ecosystemHelperCta: "Ask the helper",
 
                 reviewerName: "Martin Braka",
                 reviewText: '"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."',
 
-                ctaTitle: "Ready to Get Started?",
+                ctaTitle: "Registration Is Open for This Year",
                 philosophyTitle: "Explore the Philosophy",
                 philosophySubtitle: "The homepage is short on purpose. The deeper ideas behind Bnei Neviim are explained in the blog.",
                 philosophySelfTitle: "Self-Governance",
@@ -2962,7 +3462,9 @@
                 navBrand: "אקדמיית בני נביאים",
                 navLocation: "רמת בית שמש",
                 contact: "צור קשר",
-                signup: "הרשמה",
+                heroContact: "\u05d3\u05d1\u05e8\u05d5 \u05e2\u05db\u05e9\u05d9\u05d5",
+                navSignup: "\u05d4\u05e8\u05e9\u05de\u05d4",
+                signup: "\u05d4\u05e8\u05e9\u05de\u05d4 \u05dc\u05e9\u05e0\u05d4 \u05d4\u05e7\u05e8\u05d5\u05d1\u05d4",
                 langButton: "English",
                 navHome: "בית",
                 navBlog: "מאמרים",
@@ -2977,6 +3479,10 @@
                 navBlogTechnology: "טכנולוגיה",
                 navBlogFuture: "חזון עתידי",
                 navFaq: "שאלות",
+                navParentLogin: "כניסת הורים",
+                navStudentLogin: "כניסת תלמיד",
+                navProviderAccess: "כניסת רב / ספק",
+                navProviderJoin: "פרסמו את התוכנית בחינם",
                 homeBlogEyebrow: "\u05de\u05d3\u05e8\u05d9\u05db\u05d9\u05dd \u05d5\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd",
                 homeBlogTitle: "\u05de\u05d0\u05de\u05e8\u05d9\u05dd",
                 homeBlogSubtitle: "\u05e2\u05d9\u05d5\u05df \u05d1\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd \u05e9\u05d4\u05d5\u05e8\u05d9\u05dd \u05e9\u05d5\u05d0\u05dc\u05d9\u05dd \u05e2\u05dc\u05d9\u05d4\u05dd: \u05de\u05e1\u05d2\u05e8\u05ea \u05d7\u05dc\u05d5\u05e4\u05d9\u05ea, \u05dc\u05d9\u05de\u05d5\u05d3 \u05ea\u05d5\u05e8\u05d4, \u05e7\u05e9\u05d1 \u05d5\u05e8\u05d9\u05db\u05d5\u05d6, \u05d7\u05d9\u05e0\u05d5\u05da \u05d1\u05d9\u05ea\u05d9, \u05d4\u05d5\u05e8\u05d5\u05ea, \u05d5\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea.",
@@ -2988,7 +3494,9 @@
                 heroVerseEn: "",
                 heroVerseSource: "ישעיהו י״א:ט׳",
                 heroHeadline: "לימוד תורה אינטגרטיבי באווירה ביתית לבנים בגילאי 7–13",
-                heroSubheadline: "סביבה רגועה ומבוססת קשר ללימוד תורה עבור בנים שלא מוצאים את מקומם במערכת.",
+                heroSpotsMain: "\u05e0\u05e9\u05d0\u05e8\u05d5 7 \u05de\u05e7\u05d5\u05de\u05d5\u05ea",
+                heroSpotsSub: "\u05d1\u05de\u05d7\u05d9\u05e8 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9",
+                heroSubheadline: "סביבה רגועה ומבוססת קשר ללימוד תורה עבור בנים שמוכנים למשהו מעבר לבית ספר רגיל.",
 
                 missionTitle: "השליחות שלנו",
                 missionText: "לגדל מנהיגים עתידיים בעם ישראל, שמבינים את תפקידם בעולם, חיים עם מטרה, מפתחים ניהול עצמי, וחווים את התורה ואת הקשר עם ה׳ כחלק אמיתי ומשמעותי מחיי היום־יום.",
@@ -3030,7 +3538,7 @@
                 reviewerName: "מרטין ברקה",
                 reviewText: '״הרב דרטלר הוא אדם דינמי ובעל מוטיבציה גדולה, עם תשוקה אמיתית לחולל שינוי משמעותי במערכת החינוך. הוא מחנך מוכשר מאוד, כפי שחוויתי באופן אישי דרך העבודה שלו עם הבן שלי, שלא היה מחובר ללמידה, ובעזרתו הפך לילד שמתלהב ומשתתף בלמידה שלו.״',
 
-                ctaTitle: "רוצים לבדוק התאמה?",
+                ctaTitle: "\u05d4\u05d4\u05e8\u05e9\u05de\u05d4 \u05dc\u05e9\u05e0\u05d4 \u05d4\u05e7\u05e8\u05d5\u05d1\u05d4 \u05e4\u05ea\u05d5\u05d7\u05d4",
                 philosophyTitle: "להעמיק בפילוסופיה",
                 philosophySubtitle: "העמוד הראשי קצר בכוונה. הרעיונות העמוקים שמאחורי בני נביאים מוסברים במאמרים.",
                 philosophySelfTitle: "אחריות אישית",
@@ -3080,13 +3588,36 @@
             torahGoalLabel: "התקדמות ממוצעת של הקבוצה",
             torahHowEyebrow: "איך זה עובד",
             torahHowTitle: "טיול אחד, אחריות קבוצתית",
-            torahHowLead: "כל בן בוחר יעד תורה יומי אישי. האתר הציבורי מציג רק את אחוז ההתקדמות ליעד שלו, בלי לחשוף את דקות היעד הפרטיות.",
+            torahHowLead: "\u05db\u05dc \u05d1\u05df \u05d1\u05d5\u05d7\u05e8 \u05d9\u05e2\u05d3 \u05ea\u05d5\u05e8\u05d4 \u05d9\u05d5\u05de\u05d9 \u05d0\u05d9\u05e9\u05d9. \u05d4\u05d0\u05ea\u05e8 \u05d4\u05e6\u05d9\u05d1\u05d5\u05e8\u05d9 \u05de\u05e6\u05d9\u05d2 \u05e8\u05e7 \u05d4\u05ea\u05e7\u05d3\u05de\u05d5\u05ea \u05db\u05d9\u05ea\u05ea\u05d9\u05ea \u05de\u05e6\u05d8\u05d1\u05e8\u05ea \u05d5\u05d8\u05d5\u05d5\u05d7 \u05d0\u05e0\u05d5\u05e0\u05d9\u05de\u05d9.",
             torahHowPointOneLabel: "יעד אישי",
             torahHowPointOne: "כל בן עובד לקראת ההתחייבות היומית שלו.",
             torahHowPointTwoLabel: "זמן מרוכז",
             torahHowPointTwo: "רק לימוד קשוב ומעורב נחשב ליעד.",
             torahHowPointThreeLabel: "ניצחון קבוצתי",
             torahHowPointThree: "הטיול נפתח רק כשכולם מגיעים ל־100% של היעד שלהם."
+        });
+
+        Object.assign(translations.he, {
+            ecosystemEyebrow: "\u05d4\u05d0\u05e7\u05d5\u05e1\u05d9\u05e1\u05d8\u05dd \u05e9\u05dc BNA",
+            ecosystemTitle: "\u05d0\u05e7\u05d5\u05e1\u05d9\u05e1\u05d8\u05dd \u05dc\u05dc\u05d9\u05de\u05d5\u05d3, \u05dc\u05d0 \u05e8\u05e7 \u05ea\u05d5\u05db\u05e0\u05d9\u05ea \u05d1\u05d5\u05e7\u05e8",
+            ecosystemSubtitle: "\u05d1\u05e0\u05d9 \u05e0\u05d1\u05d9\u05d0\u05d9\u05dd \u05d1\u05d5\u05e0\u05d4 \u05de\u05d5\u05d3\u05dc \u05ea\u05d5\u05e8\u05e0\u05d9 \u05d9\u05d3\u05d9\u05d3\u05d5\u05ea\u05d9 \u05dc\u05d4\u05d5\u05de\u05e1\u05e7\u05d5\u05dc: \u05dc\u05d9\u05de\u05d5\u05d3 \u05e7\u05d5\u05d3\u05e9 \u05d1\u05d1\u05d5\u05e7\u05e8, \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea, \u05ea\u05d5\u05db\u05e0\u05d9\u05d5\u05ea \u05e2\u05e8\u05d1 \u05d5\u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea \u05de\u05d4\u05d9\u05de\u05e0\u05d9\u05dd.",
+            ecosystemMorningGraphic: "\u05de\u05e7\u05d5\u05dd \u05dc\u05d2\u05e8\u05e4\u05d9\u05e7\u05ea \u05dc\u05d9\u05de\u05d5\u05d3 \u05d1\u05d5\u05e7\u05e8",
+            ecosystemMorningTitle: "\u05dc\u05d9\u05de\u05d5\u05d3 \u05ea\u05d5\u05e8\u05d4 \u05d1\u05d1\u05d5\u05e7\u05e8",
+            ecosystemMorningText: "\u05dc\u05d9\u05de\u05d5\u05d3 \u05e7\u05d5\u05d3\u05e9 \u05de\u05d1\u05d5\u05e1\u05e1 \u05e7\u05e9\u05e8 \u05d1\u05e7\u05d1\u05d5\u05e6\u05d4 \u05e7\u05d8\u05e0\u05d4, \u05e2\u05dd \u05de\u05d8\u05e8\u05d5\u05ea, \u05ea\u05e0\u05d5\u05e2\u05d4, \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea \u05d5\u05e9\u05d9\u05d7\u05ea \u05ea\u05d5\u05e8\u05d4 \u05de\u05e9\u05de\u05e2\u05d5\u05ea\u05d9\u05ea.",
+            ecosystemFamilyGraphic: "\u05de\u05e7\u05d5\u05dd \u05dc\u05d2\u05e8\u05e4\u05d9\u05e7\u05ea \u05ea\u05de\u05d9\u05db\u05d4 \u05dc\u05de\u05e9\u05e4\u05d7\u05d5\u05ea",
+            ecosystemFamilyTitle: "\u05ea\u05de\u05d9\u05db\u05d4 \u05dc\u05de\u05e9\u05e4\u05d7\u05d4 / \u05d4\u05d5\u05de\u05e1\u05e7\u05d5\u05dc",
+            ecosystemFamilyText: "\u05d4\u05d4\u05d5\u05e8\u05d9\u05dd \u05e0\u05e9\u05d0\u05e8\u05d9\u05dd \u05e9\u05d5\u05ea\u05e4\u05d9\u05dd \u05e4\u05e2\u05d9\u05dc\u05d9\u05dd. \u05d4\u05de\u05e2\u05e8\u05db\u05ea \u05e2\u05d5\u05d6\u05e8\u05ea \u05dc\u05e2\u05e7\u05d5\u05d1 \u05d0\u05d7\u05e8 \u05de\u05d8\u05e8\u05d5\u05ea, \u05d4\u05ea\u05e7\u05d3\u05de\u05d5\u05ea, \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d5\u05e6\u05e2\u05d3\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd.",
+            ecosystemEveningGraphic: "\u05de\u05e7\u05d5\u05dd \u05dc\u05d2\u05e8\u05e4\u05d9\u05e7\u05ea \u05ea\u05d5\u05db\u05e0\u05d9\u05d5\u05ea \u05e2\u05e8\u05d1",
+            ecosystemEveningTitle: "\u05ea\u05d5\u05db\u05e0\u05d9\u05d5\u05ea \u05e2\u05e8\u05d1 \u05d5\u05d7\u05d5\u05d2\u05d9\u05dd",
+            ecosystemEveningText: "\u05ea\u05d5\u05db\u05e0\u05d9\u05d5\u05ea \u05e4\u05e2\u05d9\u05dc\u05d5\u05ea \u05d5\u05e2\u05ea\u05d9\u05d3\u05d9\u05d5\u05ea \u05d9\u05d5\u05db\u05dc\u05d5 \u05dc\u05d4\u05d9\u05e8\u05e9\u05dd \u05d5\u05dc\u05d4\u05ea\u05e0\u05d4\u05dc \u05db\u05d3\u05d9 \u05dc\u05d7\u05d1\u05e8 \u05ea\u05dc\u05de\u05d9\u05d3\u05d9\u05dd \u05dc\u05de\u05e7\u05d5\u05dd \u05d4\u05e0\u05db\u05d5\u05df \u05dc\u05dc\u05d9\u05de\u05d5\u05d3, \u05ea\u05e0\u05d5\u05e2\u05d4, \u05d9\u05e6\u05d9\u05e8\u05ea\u05d9\u05d5\u05ea \u05d0\u05d5 \u05de\u05d9\u05d5\u05de\u05e0\u05d5\u05ea.",
+            ecosystemProviderGraphic: "\u05de\u05e7\u05d5\u05dd \u05dc\u05d2\u05e8\u05e4\u05d9\u05e7\u05ea \u05e8\u05e9\u05ea \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea",
+            ecosystemProviderTitle: "\u05e8\u05e9\u05ea \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea",
+            ecosystemProviderText: "\u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea \u05d9\u05db\u05d5\u05dc\u05d9\u05dd \u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05d0\u05d9\u05e0\u05d3\u05e7\u05e1, \u05dc\u05d4\u05ea\u05d7\u05d9\u05dc \u05e2\u05dd \u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05d7\u05d9\u05e0\u05de\u05d9, \u05dc\u05e9\u05ea\u05e3 \u05e9\u05d9\u05e8\u05d5\u05ea\u05d9\u05dd \u05d5\u05e9\u05d9\u05e2\u05d5\u05e8\u05d9\u05dd, \u05d5\u05d1\u05d4\u05de\u05e9\u05da \u05dc\u05e9\u05d3\u05e8\u05d2 \u05dc\u05e9\u05d9\u05d5\u05d5\u05e7, \u05e4\u05d0\u05e0\u05dc, \u05de\u05d5\u05d3\u05e2\u05d5\u05ea, SEO \u05d0\u05d5 \u05dc\u05d9\u05d8\u05d5\u05e9 \u05e4\u05e8\u05d5\u05e4\u05d9\u05dc.",
+            ecosystemParentCta: "\u05dc\u05d4\u05db\u05d9\u05e8 \u05d0\u05ea \u05d4\u05ea\u05d5\u05db\u05e0\u05d9\u05ea",
+            ecosystemProviderCta: "\u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05e8\u05e9\u05d9\u05de\u05ea \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea",
+            ecosystemFamilyCta: "Explore families",
+            ecosystemProviderCtaTwo: "\u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05e8\u05e9\u05d9\u05de\u05ea \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea",
+            ecosystemHelperCta: "\u05dc\u05e9\u05d0\u05d5\u05dc \u05d0\u05ea \u05d4\u05e2\u05d5\u05d6\u05e8"
         });
 
         let activeHomeBlogCategory = 'All';
@@ -3222,6 +3753,10 @@
                     </article>
                 `;
             }).join('');
+
+            requestAnimationFrame(() => {
+                grid.scrollLeft = 0;
+            });
         }
 
         function selectHomepageBlogCategory(event, category) {
@@ -3431,5 +3966,7 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

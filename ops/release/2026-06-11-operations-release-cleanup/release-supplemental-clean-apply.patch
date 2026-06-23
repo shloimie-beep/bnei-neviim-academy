@@ -1,0 +1,1284 @@
+diff --git a/.env.example b/.env.example
+index aa09b26..db80c83 100644
+--- a/.env.example
++++ b/.env.example
+@@ -10,6 +10,9 @@ TELEGRAM_WEBHOOK_SECRET=
+ TELEGRAM_DEFAULT_REPLY_MODE=openai
+ OPENAI_RESEARCH_MODEL=gpt-4.1-mini
+ 
++# Optional parent/student portal contact button
++RABBI_SHLOIMIE_WHATSAPP_NUMBER=
++
+ # Autonomous Codex agent fleet
+ AGENT_FLEET_POLL_MS=60000
+ AGENT_FLEET_TASK_TIMEOUT_MS=1800000
+@@ -42,6 +45,8 @@ ONE_TIME_OPS_PASSWORD=
+ TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER=
+ TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER=
+ RABBI_ELIE_SCHELLER_CODEX_ENABLED=false
++# Railway worker-only selector. Leave unset on the web service.
++# BNA_RAILWAY_PROCESS=telegram-rabbi
+ 
+ # Google Workspace OAuth / Drive pipeline
+ GOOGLE_CLIENT_ID=
+@@ -51,7 +56,18 @@ GOOGLE_REFRESH_TOKEN=
+ GOOGLE_DRIVE_PIPELINE_ROOT_NAME=BNA V2
+ GOOGLE_DRIVE_PIPELINE_FOLDER_ID=
+ GOOGLE_DRIVE_PIPELINE_CONFIG=
+-GOOGLE_SCOPES=https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/spreadsheets
++GOOGLE_SCOPES=https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/classroom.courses.readonly https://www.googleapis.com/auth/classroom.rosters.readonly https://www.googleapis.com/auth/classroom.profile.emails https://www.googleapis.com/auth/classroom.topics https://www.googleapis.com/auth/classroom.coursework.students https://www.googleapis.com/auth/classroom.coursework.students.readonly https://www.googleapis.com/auth/classroom.courseworkmaterials https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.events.readonly
++# Role-scoped OAuth examples:
++# /api/google/oauth/start?role=admin_teacher&features=classroom_manage,calendar_write
++# /api/google/oauth/start?role=student&student_id=123
++# /api/google/oauth/start?role=parent&parent_email=parent@example.com&features=calendar_write
++
++# Optional server-side YouTube processing for owned/permissioned BNA media only.
++# Keep disabled unless yt-dlp is installed/configured on the server.
++BNA_YTDLP_ENABLED=false
++YTDLP_BINARY=yt-dlp
++YTDLP_OUTPUT_DIR=
++YTDLP_FFMPEG_LOCATION=
+ 
+ # HighLevel / GHL
+ GHL_PIT_TOKEN=
+diff --git a/public/operations-login.html b/public/operations-login.html
+index 7fc8b76..c829ba6 100644
+--- a/public/operations-login.html
++++ b/public/operations-login.html
+@@ -5,7 +5,7 @@
+     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+     <title>Sign In - BNA Operations</title>
+     <meta name="theme-color" content="#1e3a5f">
+-    <link rel="manifest" href="/manifest.json">
++    <link rel="manifest" href="/operations-manifest.json">
+     <link rel="icon" href="/favicon.ico" sizes="any">
+     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+     <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+@@ -114,8 +114,9 @@
+         }
+         .error.show { display: block; }
+     </style>
++    <link rel="stylesheet" href="/css/bna-app-shell.css">
+ </head>
+-<body>
++<body class="bna-shell bna-login-shell">
+     <div class="card">
+         <div class="logo">BNA</div>
+         <h1>Welcome back</h1>
+@@ -137,12 +138,41 @@
+     </div>
+ 
+     <script>
++        function operationsReturnTo() {
++            const fallback = '/operations';
++            const candidate = new URLSearchParams(window.location.search).get('returnTo');
++            if (!candidate) return fallback;
++            try {
++                const url = new URL(candidate, window.location.origin);
++                if (url.origin !== window.location.origin || url.pathname !== '/operations') return fallback;
++                return url.pathname + url.search + url.hash;
++            } catch {
++                return fallback;
++            }
++        }
++
+         if ('serviceWorker' in navigator) {
+             navigator.serviceWorker.getRegistrations()
+                 .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+                 .catch(() => {});
+         }
+ 
++        async function redirectIfAlreadySignedIn() {
++            try {
++                const response = await fetch('/api/bna/auth/me', {
++                    credentials: 'same-origin',
++                    headers: { 'Accept': 'application/json' }
++                });
++                if (response.ok) {
++                    window.location.replace(operationsReturnTo());
++                }
++            } catch {
++                // Stay on the login form when the session check cannot complete.
++            }
++        }
++
++        redirectIfAlreadySignedIn();
++
+         document.getElementById('loginForm').addEventListener('submit', async (e) => {
+             e.preventDefault();
+             const errorEl = document.getElementById('error');
+@@ -166,7 +196,7 @@
+ 
+                 if (data.success) {
+                     localStorage.setItem('bna_ops_session', data.sessionId || '');
+-                    window.location.href = '/operations';
++                    window.location.href = operationsReturnTo();
+                 } else {
+                     errorEl.textContent = data.error || 'Invalid credentials';
+                     errorEl.classList.add('show');
+diff --git a/public/provider.html b/public/provider.html
+new file mode 100644
+index 0000000..f5b777a
+--- /dev/null
++++ b/public/provider.html
+@@ -0,0 +1,767 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>BNA Provider Portal</title>
++    <style>
++        :root {
++            --bna-blue: #111111;
++            --bna-blue-dark: #050505;
++            --bna-gold: #d6a92d;
++            --bna-orange: #f5d37c;
++            --ink: #111111;
++            --muted: #626262;
++            --paper: #f7f7f4;
++            --panel: #ffffff;
++            --line: rgba(17, 17, 17, 0.14);
++            --shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
++        }
++
++        * { box-sizing: border-box; }
++
++        body {
++            margin: 0;
++            min-height: 100vh;
++            color: var(--ink);
++            font-family: "Trebuchet MS", Verdana, sans-serif;
++            background: linear-gradient(180deg, #ffffff 0%, #f7f7f4 100%);
++        }
++
++        button,
++        input,
++        textarea,
++        select {
++            font: inherit;
++            max-width: 100%;
++        }
++
++        .brand-topbar {
++            position: sticky;
++            top: 0;
++            z-index: 80;
++            display: flex;
++            align-items: center;
++            justify-content: space-between;
++            gap: 16px;
++            border-bottom: 1px solid var(--line);
++            background: rgba(255, 255, 255, 0.92);
++            padding: 12px max(14px, calc((100vw - 1120px) / 2));
++            backdrop-filter: blur(16px);
++        }
++
++        .brand-lockup {
++            min-width: 0;
++            display: flex;
++            align-items: center;
++            gap: 12px;
++        }
++
++        .brand-mark {
++            display: grid;
++            place-items: center;
++            width: 38px;
++            height: 38px;
++            border-radius: 8px;
++            color: #fff;
++            background: linear-gradient(135deg, var(--bna-blue), var(--bna-blue-dark));
++            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
++            font-weight: 900;
++        }
++
++        .brand-lockup strong {
++            display: block;
++            color: var(--bna-blue-dark);
++            font-size: 15px;
++            line-height: 1.1;
++        }
++
++        .brand-lockup span {
++            display: block;
++            color: var(--muted);
++            font-size: 12px;
++            line-height: 1.2;
++        }
++
++        .brand-chip {
++            border: 1px solid rgba(17, 17, 17, 0.14);
++            border-radius: 999px;
++            background: #ffffff;
++            color: var(--bna-blue-dark);
++            padding: 7px 10px;
++            font-size: 11px;
++            font-weight: 900;
++            white-space: nowrap;
++        }
++
++        .shell {
++            width: min(1120px, calc(100% - 28px));
++            margin: 0 auto;
++            padding: 26px 0 48px;
++        }
++
++        .hero {
++            display: flex;
++            align-items: flex-start;
++            justify-content: space-between;
++            gap: 16px;
++            margin-bottom: 16px;
++        }
++
++        h1,
++        h2,
++        h3,
++        p {
++            margin-top: 0;
++            letter-spacing: 0;
++        }
++
++        h1 {
++            color: var(--bna-blue-dark);
++            font-size: clamp(34px, 6vw, 54px);
++            line-height: 0.98;
++            margin-bottom: 8px;
++        }
++
++        h2 { font-size: 24px; }
++        h3 { font-size: 18px; }
++
++        .small {
++            color: var(--muted);
++            font-size: 13px;
++            font-weight: 700;
++            line-height: 1.45;
++        }
++
++        .panel {
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: rgba(255, 255, 255, 0.92);
++            box-shadow: var(--shadow);
++            padding: 18px;
++        }
++
++        .login-panel {
++            width: min(430px, 100%);
++            margin: 40px auto;
++        }
++
++        .grid {
++            display: grid;
++            grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
++            gap: 16px;
++            align-items: start;
++        }
++
++        .workspace-nav {
++            display: grid;
++            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
++            gap: 8px;
++            margin-bottom: 16px;
++        }
++
++        .workspace-nav button {
++            min-height: 42px;
++            border: 1px solid rgba(17, 17, 17, 0.14);
++            border-radius: 8px;
++            background: #fff;
++            color: var(--bna-blue-dark);
++            cursor: pointer;
++            font-weight: 900;
++            padding: 10px 12px;
++            text-align: left;
++        }
++
++        .workspace-nav button.active,
++        .workspace-nav button:hover {
++            border-color: rgba(17, 17, 17, 0.24);
++            background: linear-gradient(135deg, rgba(17, 17, 17, 0.06), rgba(214, 169, 45, 0.16));
++        }
++
++        .provider-section-hidden {
++            display: none !important;
++        }
++
++        .overview-grid {
++            display: grid;
++            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
++            gap: 12px;
++        }
++
++        .overview-metric {
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: #fff;
++            padding: 14px;
++        }
++
++        .overview-metric strong {
++            display: block;
++            color: var(--bna-blue-dark);
++            font-size: 26px;
++            line-height: 1;
++        }
++
++        .field-grid {
++            display: grid;
++            grid-template-columns: repeat(2, minmax(0, 1fr));
++            gap: 12px;
++        }
++
++        label {
++            display: grid;
++            gap: 6px;
++            color: #333333;
++            font-size: 12px;
++            font-weight: 900;
++        }
++
++        input,
++        textarea,
++        select {
++            width: 100%;
++            border: 1px solid rgba(17, 17, 17, 0.18);
++            border-radius: 8px;
++            background: #fff;
++            color: var(--ink);
++            padding: 11px 12px;
++        }
++
++        textarea {
++            min-height: 92px;
++            resize: vertical;
++        }
++
++        .button-row {
++            display: flex;
++            flex-wrap: wrap;
++            gap: 8px;
++            margin-top: 12px;
++        }
++
++        .btn {
++            border: 1px solid rgba(17, 17, 17, 0.18);
++            border-radius: 8px;
++            background: #fff;
++            color: var(--bna-blue-dark);
++            cursor: pointer;
++            font-weight: 900;
++            padding: 10px 13px;
++        }
++
++        .btn.primary {
++            border-color: transparent;
++            background: linear-gradient(135deg, var(--bna-blue), var(--bna-blue-dark));
++            color: #fff;
++        }
++
++        .btn:disabled {
++            cursor: wait;
++            opacity: 0.62;
++        }
++
++        .status-pill {
++            display: inline-flex;
++            align-items: center;
++            border: 1px solid rgba(17, 17, 17, 0.14);
++            border-radius: 999px;
++            background: #ffffff;
++            color: var(--bna-blue-dark);
++            font-size: 11px;
++            font-weight: 900;
++            padding: 6px 9px;
++        }
++
++        .service-list {
++            display: grid;
++            gap: 10px;
++        }
++
++        .service-card {
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: #fff;
++            padding: 14px;
++        }
++
++        .service-head {
++            display: flex;
++            align-items: flex-start;
++            justify-content: space-between;
++            gap: 12px;
++            margin-bottom: 8px;
++        }
++
++        .service-meta {
++            display: flex;
++            flex-wrap: wrap;
++            gap: 7px;
++            margin-top: 8px;
++        }
++
++        .notice {
++            border: 1px solid rgba(214, 169, 45, 0.34);
++            border-radius: 8px;
++            background: rgba(255, 250, 240, 0.92);
++            color: #72500e;
++            font-size: 13px;
++            font-weight: 800;
++            line-height: 1.42;
++            padding: 12px;
++        }
++
++        .error {
++            border: 1px solid rgba(155, 61, 51, 0.28);
++            border-radius: 8px;
++            background: #fff5f3;
++            color: #9b3d33;
++            display: none;
++            font-size: 13px;
++            font-weight: 800;
++            margin-bottom: 12px;
++            padding: 11px;
++        }
++
++        .error.show { display: block; }
++
++        .hidden { display: none !important; }
++
++        @media (max-width: 820px) {
++            .brand-chip { display: none; }
++            .hero,
++            .grid {
++                display: grid;
++                grid-template-columns: 1fr;
++            }
++            .field-grid {
++                grid-template-columns: 1fr;
++            }
++        }
++    </style>
++</head>
++<body>
++    <header class="brand-topbar">
++        <div class="brand-lockup">
++            <span class="brand-mark" aria-hidden="true">BNA</span>
++            <div>
++                <strong>Bnei Neviim Academy</strong>
++                <span>Provider portal</span>
++            </div>
++        </div>
++        <span class="brand-chip">Scoped Provider Workspace</span>
++    </header>
++
++    <main class="shell">
++        <section id="loginPanel" class="panel login-panel">
++            <h1>Provider portal</h1>
++            <p class="small">Approved BNA network providers can manage their own profile and services.</p>
++            <div id="loginError" class="error"></div>
++            <form id="loginForm">
++                <label>Username
++                    <input id="username" autocomplete="username" required>
++                </label>
++                <label>Password
++                    <input id="password" type="password" autocomplete="current-password" required>
++                </label>
++                <div class="button-row">
++                    <button id="loginButton" class="btn primary" type="submit">Sign In</button>
++                </div>
++            </form>
++        </section>
++
++        <section id="portalPanel" class="hidden">
++            <div class="hero">
++                <div>
++                    <h1 id="providerTitle">Provider portal</h1>
++                    <p id="providerSubtitle" class="small"></p>
++                </div>
++                <button id="logoutButton" class="btn" type="button">Sign Out</button>
++            </div>
++
++            <nav class="workspace-nav" id="providerNav" aria-label="Provider workspace sections"></nav>
++
++            <section class="panel provider-section" data-provider-section="overview">
++                <h2>Overview</h2>
++                <p class="small">Your provider workspace summary. Public profile and service changes stay pending review until BNA approves them.</p>
++                <div class="overview-grid" id="providerOverview"></div>
++            </section>
++
++            <div class="grid provider-section" data-provider-section="profile">
++                <section class="panel">
++                    <h2>Profile</h2>
++                    <div id="profileNotice" class="notice"></div>
++                    <form id="profileForm">
++                        <label>Provider name
++                            <input name="provider_name">
++                        </label>
++                        <label>Contact name
++                            <input name="contact_name">
++                        </label>
++                        <label>Email
++                            <input name="contact_email" type="email">
++                        </label>
++                        <label>Phone
++                            <input name="contact_phone">
++                        </label>
++                        <label>Public notes
++                            <textarea name="public_notes"></textarea>
++                        </label>
++                        <div class="button-row">
++                            <button class="btn primary" type="submit">Save Profile</button>
++                        </div>
++                    </form>
++                </section>
++            </div>
++
++            <div class="grid provider-section" data-provider-section="services">
++                <section class="panel">
++                    <h2>Services</h2>
++                    <div id="serviceList" class="service-list"></div>
++                    <form id="serviceForm" class="panel" style="box-shadow:none; margin-top:14px;">
++                        <h3>Add service</h3>
++                        <div class="field-grid">
++                            <label>Title
++                                <input name="title" required>
++                            </label>
++                            <label>Type
++                                <input name="service_type" placeholder="learning, tutoring, therapy">
++                            </label>
++                            <label>City
++                                <input name="city">
++                            </label>
++                            <label>Capacity
++                                <input name="capacity" type="number" min="1">
++                            </label>
++                            <label>Price
++                                <input name="price_amount" type="number" min="0" step="0.01">
++                            </label>
++                            <label>Billing period
++                                <input name="billing_period" placeholder="class, month, session">
++                            </label>
++                        </div>
++                        <label>Description
++                            <textarea name="description"></textarea>
++                        </label>
++                        <div class="button-row">
++                            <button class="btn primary" type="submit">Add For Review</button>
++                        </div>
++                    </form>
++                </section>
++            </div>
++
++            <section class="panel provider-section" data-provider-section="website_import">
++                <h2>Website Import</h2>
++                <div class="notice">Website import is not configured yet. BNA needs a reviewed crawler/import policy, source URL fields, and approval workflow before this can run.</div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="commercial">
++                <h2>Commercial Model</h2>
++                <div id="commercialSummary" class="service-list"></div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="entitlements">
++                <h2>Plan / Entitlements</h2>
++                <div class="notice">Entitlements are controlled by BNA. Upgrade-only features stay disabled until your provider plan changes.</div>
++                <div id="entitlementList" class="service-list"></div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="integrations">
++                <h2>External Apps / Integrations</h2>
++                <div id="integrationList" class="service-list"></div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="access">
++                <h2>Access Checklist</h2>
++                <div id="accessChecklist" class="service-list"></div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="communications">
++                <h2>Communications</h2>
++                <div class="notice">Provider communications are not enabled in this portal yet. Messages remain visible to BNA admins through Operations until provider inbox persistence is added.</div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="activity">
++                <h2>Activity</h2>
++                <div id="providerActivity" class="service-list"></div>
++            </section>
++
++            <section class="panel provider-section" data-provider-section="settings">
++                <h2>Settings</h2>
++                <div class="notice">Settings writes are disabled until BNA adds scoped provider settings, audit history, and role checks.</div>
++            </section>
++        </section>
++    </main>
++
++    <script>
++        let portalState = null;
++        let activeProviderSection = 'overview';
++
++        function escapeHtml(value) {
++            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
++                '&': '&amp;',
++                '<': '&lt;',
++                '>': '&gt;',
++                '"': '&quot;',
++                "'": '&#039;'
++            })[char]);
++        }
++
++        async function api(path, options = {}) {
++            const response = await fetch(path, {
++                credentials: 'same-origin',
++                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
++                ...options
++            });
++            const data = await response.json().catch(() => ({}));
++            if (!response.ok) throw new Error(data.error || data.message || 'Request failed');
++            return data;
++        }
++
++        function showLogin(error = '') {
++            document.getElementById('loginPanel').classList.remove('hidden');
++            document.getElementById('portalPanel').classList.add('hidden');
++            const errorEl = document.getElementById('loginError');
++            errorEl.textContent = error;
++            errorEl.classList.toggle('show', Boolean(error));
++        }
++
++        function formObject(form) {
++            return Object.fromEntries(new FormData(form).entries());
++        }
++
++        function portalEntitlementEnabled(key) {
++            const rows = Array.isArray(portalState?.entitlements) ? portalState.entitlements : [];
++            const found = rows.find(item => item.entitlement_key === key);
++            return Boolean(found && found.enabled);
++        }
++
++        function providerSections() {
++            const sections = [
++                { id: 'overview', label: 'Overview' },
++                { id: 'profile', label: 'Profile / Listing' },
++                { id: 'services', label: 'Services' },
++                { id: 'commercial', label: 'Commercial Model' },
++                { id: 'entitlements', label: 'Entitlements' },
++            ];
++            if (portalEntitlementEnabled('landing_page_funnel') || portalEntitlementEnabled('content_video_workflow')) {
++                sections.push({ id: 'website_import', label: 'Website Import' });
++            }
++            if (portalEntitlementEnabled('email_workflows') || portalEntitlementEnabled('whatsapp_workflows') || portalEntitlementEnabled('support_tickets')) {
++                sections.push({ id: 'communications', label: 'Communications' });
++            }
++            if (portalEntitlementEnabled('provider_admin') || portalEntitlementEnabled('custom_partnership_terms')) {
++                sections.push({ id: 'integrations', label: 'External Apps' });
++                sections.push({ id: 'access', label: 'Access Checklist' });
++            }
++            sections.push({ id: 'activity', label: 'Activity' });
++            sections.push({ id: 'settings', label: 'Settings' });
++            return sections;
++        }
++
++        function setProviderSection(section) {
++            activeProviderSection = providerSections().some(item => item.id === section) ? section : 'overview';
++            document.querySelectorAll('[data-provider-section]').forEach(panel => {
++                panel.classList.toggle('provider-section-hidden', panel.dataset.providerSection !== activeProviderSection);
++            });
++            document.querySelectorAll('[data-provider-nav]').forEach(button => {
++                button.classList.toggle('active', button.dataset.providerNav === activeProviderSection);
++            });
++        }
++
++        function renderProviderNav() {
++            document.getElementById('providerNav').innerHTML = providerSections().map(section => `
++                <button type="button" data-provider-nav="${escapeHtml(section.id)}" class="${section.id === activeProviderSection ? 'active' : ''}">
++                    ${escapeHtml(section.label)}
++                </button>
++            `).join('');
++        }
++
++        function renderPortal(data) {
++            portalState = data;
++            const provider = data.provider || {};
++            const services = Array.isArray(data.services) ? data.services : [];
++            const entitlements = Array.isArray(data.entitlements) ? data.entitlements : [];
++            const integrations = Array.isArray(data.integrations) ? data.integrations : [];
++            const accessChecklist = Array.isArray(data.access_checklist) ? data.access_checklist : [];
++            const plan = provider.plan || {};
++            document.getElementById('loginPanel').classList.add('hidden');
++            document.getElementById('portalPanel').classList.remove('hidden');
++            document.getElementById('providerTitle').textContent = provider.provider_name || 'Provider portal';
++            document.getElementById('providerSubtitle').textContent = `${plan.label || provider.entitlement_plan || 'Provider'} / ${provider.status || 'review'} workspace`;
++            document.getElementById('profileNotice').textContent = data.guardrails?.public_changes || 'Edits stay pending review until BNA approves them.';
++            document.getElementById('providerOverview').innerHTML = `
++                <div class="overview-metric"><strong>${services.length}</strong><span class="small">Services</span></div>
++                <div class="overview-metric"><strong>${escapeHtml(provider.status || 'review')}</strong><span class="small">Listing status</span></div>
++                <div class="overview-metric"><strong>${escapeHtml(plan.label || provider.entitlement_plan || 'Plan')}</strong><span class="small">Commercial plan</span></div>
++                <div class="overview-metric"><strong>${escapeHtml(String(provider.integration_status || 'no_access').replace(/_/g, ' '))}</strong><span class="small">Integration status</span></div>
++            `;
++            document.getElementById('commercialSummary').innerHTML = `
++                <article class="service-card">
++                    <div class="service-head">
++                        <div>
++                            <h3>${escapeHtml(plan.label || provider.entitlement_plan || 'Provider plan')}</h3>
++                            <p class="small">${escapeHtml(plan.helper || 'Commercial settings are managed by BNA Operations.')}</p>
++                        </div>
++                        <span class="status-pill">${escapeHtml(String(provider.commercial_model || 'free_listing').replace(/_/g, ' '))}</span>
++                    </div>
++                    <div class="service-meta">
++                        <span class="status-pill">${escapeHtml(String(provider.provider_status || 'draft').replace(/_/g, ' '))}</span>
++                        <span class="status-pill">${escapeHtml(String(provider.source_of_truth || 'unknown_pending_access').replace(/_/g, ' '))}</span>
++                        <span class="status-pill">${escapeHtml(String(provider.integration_status || 'no_access').replace(/_/g, ' '))}</span>
++                        <span class="status-pill">${provider.public_signup_enabled ? 'public signup enabled' : 'public signup disabled'}</span>
++                    </div>
++                </article>
++            `;
++            document.getElementById('entitlementList').innerHTML = entitlements.length
++                ? entitlements.map(item => `
++                    <article class="service-card">
++                        <div class="service-head">
++                            <div>
++                                <h3>${escapeHtml(String(item.entitlement_key || '').replace(/_/g, ' '))}</h3>
++                                <p class="small">${escapeHtml(item.notes || (item.enabled ? 'Included in your current provider plan.' : 'Available as an upgrade.'))}</p>
++                            </div>
++                            <span class="status-pill">${item.enabled ? 'Included' : 'Upgrade'}</span>
++                        </div>
++                    </article>
++                `).join('')
++                : '<p class="small">No entitlement rows are configured yet.</p>';
++            document.getElementById('integrationList').innerHTML = integrations.length
++                ? integrations.map(item => `
++                    <article class="service-card">
++                        <div class="service-head">
++                            <div>
++                                <h3>${escapeHtml(item.label || item.integration_key || 'Integration')}</h3>
++                                <p class="small">${escapeHtml(item.notes || 'Integration audit is pending.')}</p>
++                            </div>
++                            <span class="status-pill">${escapeHtml(String(item.integration_status || 'no_access').replace(/_/g, ' '))}</span>
++                        </div>
++                        <div class="service-meta">
++                            <span class="status-pill">${escapeHtml(item.external_system || 'external app pending')}</span>
++                            <span class="status-pill">${escapeHtml(String(item.source_of_truth || 'unknown_pending_access').replace(/_/g, ' '))}</span>
++                        </div>
++                    </article>
++                `).join('')
++                : '<p class="small">No external app audit rows are configured yet.</p>';
++            document.getElementById('accessChecklist').innerHTML = accessChecklist.length
++                ? accessChecklist.map(item => `
++                    <article class="service-card">
++                        <div class="service-head">
++                            <div>
++                                <h3>${escapeHtml(item.label || item.item_key || 'Access item')}</h3>
++                                <p class="small">${escapeHtml(item.next_action || item.notes || 'BNA will request or confirm this before enabling sync/import automation.')}</p>
++                            </div>
++                            <span class="status-pill">${escapeHtml(String(item.status || 'needed').replace(/_/g, ' '))}</span>
++                        </div>
++                    </article>
++                `).join('')
++                : '<p class="small">No access checklist items are configured yet.</p>';
++            document.getElementById('providerActivity').innerHTML = `
++                <article class="service-card">
++                    <div class="service-head">
++                        <div>
++                            <h3>Workspace opened</h3>
++                            <p class="small">Current session loaded with ${services.length} service${services.length === 1 ? '' : 's'}.</p>
++                        </div>
++                        <span class="status-pill">${escapeHtml(new Date().toLocaleDateString('en-GB'))}</span>
++                    </div>
++                </article>
++                <div class="notice">Detailed activity logs are not configured yet. Operations admins can inspect provider changes from the admin dashboard.</div>
++            `;
++            const profileForm = document.getElementById('profileForm');
++            for (const key of ['provider_name', 'contact_name', 'contact_email', 'contact_phone', 'public_notes']) {
++                if (profileForm.elements[key]) profileForm.elements[key].value = provider[key] || '';
++            }
++            document.getElementById('serviceList').innerHTML = services.length
++                ? services.map((service) => `
++                    <article class="service-card">
++                        <div class="service-head">
++                            <div>
++                                <h3>${escapeHtml(service.title)}</h3>
++                                <p class="small">${escapeHtml(service.description || 'No description yet.')}</p>
++                            </div>
++                            <span class="status-pill">${escapeHtml(service.status || 'review')}</span>
++                        </div>
++                        <div class="service-meta">
++                            <span class="status-pill">${escapeHtml(service.service_type || 'service')}</span>
++                            <span class="status-pill">${escapeHtml(service.city || 'city tbd')}</span>
++                            <span class="status-pill">${service.price_amount ? escapeHtml(`${service.price_amount} ${service.currency || ''}`) : 'price tbd'}</span>
++                            <span class="status-pill">${service.capacity ? escapeHtml(`${service.capacity} seats`) : 'capacity tbd'}</span>
++                        </div>
++                    </article>
++                `).join('')
++                : '<p class="small">No services yet.</p>';
++            renderProviderNav();
++            setProviderSection(activeProviderSection);
++        }
++
++        async function loadSession() {
++            try {
++                renderPortal(await api('/api/provider-portal/session'));
++            } catch {
++                showLogin();
++            }
++        }
++
++        document.getElementById('loginForm').addEventListener('submit', async (event) => {
++            event.preventDefault();
++            const button = document.getElementById('loginButton');
++            button.disabled = true;
++            try {
++                const data = await api('/api/provider-portal/login', {
++                    method: 'POST',
++                    body: JSON.stringify({
++                        username: document.getElementById('username').value,
++                        password: document.getElementById('password').value
++                    })
++                });
++                renderPortal(data);
++            } catch (error) {
++                showLogin(error.message);
++            } finally {
++                button.disabled = false;
++            }
++        });
++
++        document.getElementById('logoutButton').addEventListener('click', async () => {
++            await api('/api/provider-portal/logout', { method: 'POST' }).catch(() => {});
++            showLogin();
++        });
++
++        document.getElementById('providerNav').addEventListener('click', (event) => {
++            const button = event.target.closest('[data-provider-nav]');
++            if (button) setProviderSection(button.dataset.providerNav);
++        });
++
++        document.getElementById('profileForm').addEventListener('submit', async (event) => {
++            event.preventDefault();
++            const button = event.submitter;
++            button.disabled = true;
++            try {
++                renderPortal(await api('/api/provider-portal/profile', {
++                    method: 'PATCH',
++                    body: JSON.stringify(formObject(event.currentTarget))
++                }));
++            } finally {
++                button.disabled = false;
++            }
++        });
++
++        document.getElementById('serviceForm').addEventListener('submit', async (event) => {
++            event.preventDefault();
++            const button = event.submitter;
++            button.disabled = true;
++            try {
++                renderPortal(await api('/api/provider-portal/services', {
++                    method: 'POST',
++                    body: JSON.stringify(formObject(event.currentTarget))
++                }));
++                event.currentTarget.reset();
++            } finally {
++                button.disabled = false;
++            }
++        });
++
++        loadSession();
++    </script>
++</body>
++</html>
+diff --git a/public/providers-join.html b/public/providers-join.html
+new file mode 100644
+index 0000000..177906b
+--- /dev/null
++++ b/public/providers-join.html
+@@ -0,0 +1,387 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++    <meta charset="UTF-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
++    <title>Join the BNA Provider Index</title>
++    <style>
++        :root {
++            --ink: #111111;
++            --muted: #5f5f5f;
++            --paper: #f7f7f4;
++            --panel: #ffffff;
++            --gold: #d6a92d;
++            --line: rgba(17, 17, 17, 0.14);
++            --shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
++        }
++
++        * { box-sizing: border-box; }
++
++        body {
++            margin: 0;
++            color: var(--ink);
++            font-family: "Trebuchet MS", Verdana, sans-serif;
++            background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
++        }
++
++        button,
++        input,
++        textarea,
++        select {
++            font: inherit;
++            max-width: 100%;
++        }
++
++        .topbar {
++            position: sticky;
++            top: 0;
++            z-index: 20;
++            display: flex;
++            align-items: center;
++            justify-content: space-between;
++            gap: 16px;
++            border-bottom: 1px solid var(--line);
++            background: rgba(255, 255, 255, 0.92);
++            padding: 12px max(16px, calc((100vw - 1120px) / 2));
++            backdrop-filter: blur(16px);
++        }
++
++        .brand {
++            display: flex;
++            align-items: center;
++            gap: 12px;
++            min-width: 0;
++        }
++
++        .mark {
++            display: grid;
++            place-items: center;
++            width: 38px;
++            height: 38px;
++            border-radius: 8px;
++            background: #111111;
++            color: #ffffff;
++            font-weight: 900;
++        }
++
++        .brand strong,
++        .brand span {
++            display: block;
++            line-height: 1.15;
++        }
++
++        .brand span,
++        .muted {
++            color: var(--muted);
++        }
++
++        .chip {
++            border: 1px solid var(--line);
++            border-radius: 999px;
++            background: #fff;
++            padding: 7px 10px;
++            font-size: 12px;
++            font-weight: 900;
++            white-space: nowrap;
++        }
++
++        main {
++            width: min(1120px, calc(100% - 28px));
++            margin: 0 auto;
++            padding: 30px 0 54px;
++        }
++
++        .hero {
++            display: grid;
++            grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
++            gap: 20px;
++            align-items: start;
++            margin-bottom: 18px;
++        }
++
++        h1,
++        h2,
++        h3,
++        p {
++            margin-top: 0;
++            letter-spacing: 0;
++        }
++
++        h1 {
++            font-size: clamp(38px, 6vw, 62px);
++            line-height: 0.96;
++            margin-bottom: 14px;
++        }
++
++        .panel {
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: rgba(255, 255, 255, 0.94);
++            box-shadow: var(--shadow);
++            padding: 18px;
++        }
++
++        .plans {
++            display: grid;
++            grid-template-columns: repeat(4, minmax(0, 1fr));
++            gap: 10px;
++            margin: 18px 0;
++        }
++
++        .plan {
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: #fff;
++            padding: 14px;
++        }
++
++        .plan strong {
++            display: block;
++            margin-bottom: 6px;
++        }
++
++        .plan ul {
++            margin: 10px 0 0;
++            padding-left: 18px;
++            color: var(--muted);
++            font-size: 13px;
++            line-height: 1.45;
++        }
++
++        form {
++            display: grid;
++            gap: 12px;
++        }
++
++        .grid {
++            display: grid;
++            grid-template-columns: repeat(2, minmax(0, 1fr));
++            gap: 10px;
++        }
++
++        label {
++            display: grid;
++            gap: 5px;
++            color: #2d2d2d;
++            font-size: 13px;
++            font-weight: 900;
++        }
++
++        input,
++        textarea,
++        select {
++            width: 100%;
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: #fff;
++            color: var(--ink);
++            padding: 10px 11px;
++        }
++
++        textarea {
++            min-height: 92px;
++            resize: vertical;
++        }
++
++        .button-row {
++            display: flex;
++            align-items: center;
++            gap: 10px;
++            flex-wrap: wrap;
++        }
++
++        .btn {
++            border: 1px solid var(--line);
++            border-radius: 8px;
++            background: #fff;
++            color: var(--ink);
++            cursor: pointer;
++            font-weight: 900;
++            padding: 10px 14px;
++        }
++
++        .btn.primary {
++            border-color: #111111;
++            background: #111111;
++            color: #fff;
++        }
++
++        .notice {
++            border: 1px solid rgba(214, 169, 45, 0.42);
++            border-radius: 8px;
++            background: rgba(214, 169, 45, 0.1);
++            color: #3a2a00;
++            padding: 12px;
++            font-size: 13px;
++            line-height: 1.45;
++        }
++
++        .status {
++            display: none;
++            border-radius: 8px;
++            padding: 12px;
++            font-size: 13px;
++            font-weight: 800;
++        }
++
++        .status.show { display: block; }
++        .status.ok { background: #e8f7ee; color: #14532d; }
++        .status.error { background: #fff1f2; color: #9f1239; }
++
++        @media (max-width: 860px) {
++            .hero,
++            .plans,
++            .grid {
++                grid-template-columns: 1fr;
++            }
++
++            .topbar {
++                align-items: flex-start;
++            }
++
++            .chip {
++                white-space: normal;
++                text-align: right;
++            }
++        }
++    </style>
++</head>
++<body>
++    <header class="topbar">
++        <div class="brand">
++            <div class="mark">BNA</div>
++            <div>
++                <strong>Bnei Neviim Academy</strong>
++                <span>Provider Network</span>
++            </div>
++        </div>
++        <span class="chip">Free listings and paid provider workspaces are separate</span>
++    </header>
++
++    <main>
++        <section class="hero">
++            <div>
++                <p class="chip" style="display:inline-block;">Provider Commercial Model</p>
++                <h1>Join the BNA provider index</h1>
++                <p class="muted">Start with a public listing, or ask for managed setup, launch support, or a full school workspace. Nothing is published or automated until BNA reviews it.</p>
++                <div class="plans" aria-label="Provider plan options">
++                    <article class="plan">
++                        <strong>Free Listing</strong>
++                        <p class="muted">Public profile, provider index visibility, contact CTA.</p>
++                        <ul><li>No funnels</li><li>No automations</li><li>No school portal</li></ul>
++                    </article>
++                    <article class="plan">
++                        <strong>Managed Setup</strong>
++                        <p class="muted">Funnels, lead pipeline, messaging, social, payment-link setup, reporting.</p>
++                        <ul><li>Done-for-you setup</li><li>Manual connectors first</li></ul>
++                    </article>
++                    <article class="plan">
++                        <strong>School Workspace</strong>
++                        <p class="muted">Parents, students, goals, assignments, calendar, billing, communications.</p>
++                        <ul><li>Paid workspace</li><li>School operations</li></ul>
++                    </article>
++                    <article class="plan">
++                        <strong>Partner</strong>
++                        <p class="muted">Custom revenue-share terms, launch checklist, reporting, program tiers.</p>
++                        <ul><li>Custom agreement</li><li>Shared approvals</li></ul>
++                    </article>
++                </div>
++            </div>
++            <aside class="panel">
++                <h2>Provider signup</h2>
++                <p class="muted">This creates a draft provider record, an onboarding pipeline item, and an internal BNA review task.</p>
++                <form id="providerJoinForm">
++                    <div class="grid">
++                        <label>Provider name
++                            <input name="provider_name" required>
++                        </label>
++                        <label>Contact name
++                            <input name="contact_name" required>
++                        </label>
++                        <label>Email
++                            <input name="email" type="email" required>
++                        </label>
++                        <label>Phone / WhatsApp
++                            <input name="phone" type="tel">
++                        </label>
++                        <label>Category
++                            <input name="category" placeholder="Torah class, tutoring, therapy">
++                        </label>
++                        <label>Location / online
++                            <input name="location" placeholder="Beit Shemesh, online, both">
++                        </label>
++                        <label>Language
++                            <input name="language" placeholder="English, Hebrew">
++                        </label>
++                        <label>Age range
++                            <input name="age_range" placeholder="8-16">
++                        </label>
++                    </div>
++                    <label>Website
++                        <input name="website" type="url" placeholder="https://">
++                    </label>
++                    <label>Interested in
++                        <select name="interested_in">
++                            <option value="free_listing">Free provider listing</option>
++                            <option value="paid_setup">Paid funnel/setup help</option>
++                            <option value="school_workspace">School / micro-school workspace</option>
++                            <option value="not_sure">Not sure yet</option>
++                        </select>
++                    </label>
++                    <label>Program / class description
++                        <textarea name="program_description"></textarea>
++                    </label>
++                    <label>Notes
++                        <textarea name="notes" placeholder="Anything BNA should know before review"></textarea>
++                    </label>
++                    <div class="notice">Submission does not create a public listing, send messages, publish posts, or charge payments. BNA reviews every provider first.</div>
++                    <div id="providerJoinStatus" class="status"></div>
++                    <div class="button-row">
++                        <button class="btn primary" type="submit">Submit For Review</button>
++                        <a class="btn" href="/">Back to BNA</a>
++                    </div>
++                </form>
++            </aside>
++        </section>
++    </main>
++
++    <script>
++        const form = document.getElementById('providerJoinForm');
++        const statusEl = document.getElementById('providerJoinStatus');
++
++        function formObject(formEl) {
++            return Object.fromEntries(new FormData(formEl).entries());
++        }
++
++        function showStatus(text, kind) {
++            statusEl.textContent = text;
++            statusEl.className = `status show ${kind}`;
++        }
++
++        form.addEventListener('submit', async (event) => {
++            event.preventDefault();
++            const button = form.querySelector('button[type="submit"]');
++            button.disabled = true;
++            button.textContent = 'Submitting...';
++            showStatus('', '');
++            try {
++                const response = await fetch('/api/provider-onboarding', {
++                    method: 'POST',
++                    headers: { 'Content-Type': 'application/json' },
++                    body: JSON.stringify(formObject(form))
++                });
++                const data = await response.json().catch(() => ({}));
++                if (!response.ok) throw new Error(data.error || 'Could not submit provider signup');
++                showStatus(data.message || 'Provider onboarding received. BNA will review it before publishing.', 'ok');
++                form.reset();
++            } catch (error) {
++                showStatus(error.message || 'Could not submit provider signup', 'error');
++            } finally {
++                button.disabled = false;
++                button.textContent = 'Submit For Review';
++            }
++        });
++    </script>
++    <script src="/js/app-select.js"></script>
++</body>
++</html>

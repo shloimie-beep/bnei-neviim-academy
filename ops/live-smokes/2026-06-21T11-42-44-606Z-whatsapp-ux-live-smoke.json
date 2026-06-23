@@ -1,0 +1,95 @@
+{
+  "started_at": "2026-06-21T11:42:44.606Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 700,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "Operations WhatsApp workspace markers are deployed",
+      "ok": true,
+      "duration_ms": 1708,
+      "details": {
+        "markers": 11
+      }
+    },
+    {
+      "name": "workspace-scoped WAPI phonebook report hides raw payloads",
+      "ok": true,
+      "duration_ms": 1031,
+      "details": {
+        "scope": "workspace",
+        "workspace_key": "rabbi_sheller_provider",
+        "groups": 0
+      }
+    },
+    {
+      "name": "WhatsApp message readback stays no-send and hides raw provider payloads",
+      "ok": true,
+      "duration_ms": 492,
+      "details": {
+        "messages": 0,
+        "raw_payload_hidden": true
+      }
+    },
+    {
+      "name": "WAPI diagnostics are read-only",
+      "ok": true,
+      "duration_ms": 359,
+      "details": {
+        "sync_configured": true,
+        "required_sync_env": []
+      }
+    },
+    {
+      "name": "Operations WhatsApp runtime UX renders at desktop and mobile widths",
+      "ok": true,
+      "duration_ms": 45451,
+      "details": {
+        "widths": [
+          {
+            "width": 1024,
+            "active_filter": "page",
+            "has_workspace": true,
+            "mobile_back_navigation_visible": false,
+            "page_overflow": false,
+            "active_panes": [
+              "wapiPhonebookPane"
+            ],
+            "phonebook_has_card_or_empty_state": true,
+            "console_errors": 0
+          },
+          {
+            "width": 390,
+            "active_filter": "page",
+            "has_workspace": true,
+            "mobile_back_navigation_visible": true,
+            "page_overflow": false,
+            "active_panes": [
+              "wapiPhonebookPane"
+            ],
+            "phonebook_has_card_or_empty_state": true,
+            "console_errors": 0
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "operations_markers_checked": 11,
+    "phonebook_scope": "workspace",
+    "raw_payload_hidden": true,
+    "wapi_sync_configured": true,
+    "external_send_performed": false,
+    "runtime_widths_checked": [
+      1024,
+      390
+    ]
+  }
+}

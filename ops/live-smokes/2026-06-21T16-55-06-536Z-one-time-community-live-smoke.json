@@ -1,0 +1,26 @@
+{
+  "started_at": "2026-06-21T16:55:06.536Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "Operations login",
+      "ok": true,
+      "detail": "cookie bna_ops_session"
+    },
+    {
+      "name": "Community moderation readiness API is implemented and no-write",
+      "ok": true,
+      "detail": "0 threads, 0 messages"
+    },
+    {
+      "name": "Operations ships community moderation readiness panel",
+      "ok": true,
+      "detail": "Operations community panel marker and guardrails shipped"
+    }
+  ],
+  "requirement_id": "REQ-20260619-311",
+  "status": "implemented_read_only",
+  "threads_seen": 0,
+  "messages_seen": 0,
+  "pending_moderation": 0
+}

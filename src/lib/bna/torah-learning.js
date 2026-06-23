@@ -43,6 +43,42 @@ function capPercentage(value) {
   return Math.max(0, Math.min(100, Number(value) || 0));
 }
 
+function calculateDailyCompletedUnits(dailyCompletionPercentage = 0) {
+  return capPercentage(dailyCompletionPercentage) / 100;
+}
+
+function firstRawProgressPercent(source, keys = []) {
+  for (const key of keys) {
+    if (source?.[key] === undefined || source?.[key] === null || source?.[key] === '') continue;
+    const numeric = Number(source[key]);
+    if (!Number.isFinite(numeric)) continue;
+    return capPercentage(numeric);
+  }
+  return null;
+}
+
+function dailyCompletionPercentageFromEntry(entry = {}) {
+  const explicitPercent = firstRawProgressPercent(entry, [
+    'daily_completion_percentage',
+    'individual_percentage',
+    'progress_percent',
+  ]);
+  if (explicitPercent !== null) return explicitPercent;
+  if (entry.daily_completed_boolean === true || entry.individual_complete === true) return 100;
+  return 0;
+}
+
+function dailyTripUnitFromEntry(entry = {}) {
+  return calculateDailyCompletedUnits(dailyCompletionPercentageFromEntry(entry));
+}
+
+function calculateCompletedDailyUnitsFromEntries(entries = []) {
+  return (Array.isArray(entries) ? entries : []).reduce(
+    (sum, entry) => sum + dailyTripUnitFromEntry(entry),
+    0
+  );
+}
+
 function normalizeGoalTypeLoose(goalType, fallback = GOAL_TYPES.LISTENING) {
   const fallbackType = GOAL_TYPES[String(fallback || '').trim().toUpperCase()]
     ? String(fallback || '').trim().toUpperCase()
@@ -355,9 +391,13 @@ function calculateGroupTorahProgress(studentPercentages = []) {
 
 module.exports = {
   GOAL_TYPES,
+  calculateCompletedDailyUnitsFromEntries,
+  calculateDailyCompletedUnits,
   calculateGroupTorahProgress,
   calculateStudentTorahProgress,
   calculateStudentTripProgress,
+  dailyCompletionPercentageFromEntry,
+  dailyTripUnitFromEntry,
   normalizeParsedTorahEngagement,
   normalizeGoalType,
   validateGoalMinutes,

@@ -1,0 +1,33 @@
+{
+  "url": "http://localhost:8080/",
+  "fetchTime": "2026-06-11T13:35:12.553Z",
+  "categories": {
+    "performance": 63,
+    "accessibility": 84,
+    "best-practices": 100,
+    "seo": 100,
+    "agentic-browsing": 50
+  },
+  "metrics": {
+    "first-contentful-paint": {
+      "score": 0.12,
+      "displayValue": "4.7 s"
+    },
+    "largest-contentful-paint": {
+      "score": 0,
+      "displayValue": "48.8 s"
+    },
+    "speed-index": {
+      "score": 0.68,
+      "displayValue": "4.7 s"
+    },
+    "total-blocking-time": {
+      "score": 1,
+      "displayValue": "0 ms"
+    },
+    "cumulative-layout-shift": {
+      "score": 1,
+      "displayValue": "0.004"
+    }
+  }
+}

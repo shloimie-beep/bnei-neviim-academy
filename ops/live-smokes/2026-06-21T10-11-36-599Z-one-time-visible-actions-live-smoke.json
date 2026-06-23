@@ -1,0 +1,48 @@
+{
+  "started_at": "2026-06-21T10:11:36.599Z",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_id": "9c31c21f-143e-46f3-b95d-2b458a848d9f",
+  "deployed_commit": "90da952bf3a0c57ce60b4532e193f869a677df47",
+  "steps": [
+    {
+      "name": "health endpoint is live",
+      "ok": true,
+      "duration_ms": 684,
+      "details": {
+        "endpoint": "/api/health"
+      }
+    },
+    {
+      "name": "tasks toolbar exposes real task and decision actions",
+      "ok": true,
+      "duration_ms": 1677,
+      "details": {
+        "endpoint": "/operations?workspace=rabbi_sheller_provider&view=tasks&section=tasks"
+      }
+    },
+    {
+      "name": "one time content exposes class/session/video setup actions",
+      "ok": true,
+      "duration_ms": 1722,
+      "details": {
+        "endpoint": "/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library"
+      }
+    },
+    {
+      "name": "integrations/settings expose setup-path actions without dead placeholders",
+      "ok": true,
+      "duration_ms": 2121,
+      "details": {
+        "endpoints": [
+          "/operations?workspace=rabbi_sheller_provider&view=integrations&section=google",
+          "/operations?workspace=rabbi_sheller_provider&view=settings&section=integrations"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "pages_checked": 4,
+    "required_markers_checked": 16,
+    "forbidden_markers_found": []
+  }
+}

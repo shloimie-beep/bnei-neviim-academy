@@ -1,0 +1,36 @@
+{
+  "started_at": "2026-06-21T17:30:56.432Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "ok": true,
+      "duration_ms": 698,
+      "details": {
+        "status": "ok",
+        "database": "connected"
+      }
+    },
+    {
+      "name": "provider portal exposes classroom draft setup",
+      "ok": true,
+      "duration_ms": 748,
+      "details": {
+        "markers": 9
+      }
+    },
+    {
+      "name": "operations exposes provider settings and Rabbi moderation markers",
+      "ok": true,
+      "duration_ms": 1255,
+      "details": {
+        "markers": 13
+      }
+    }
+  ],
+  "summary": {
+    "provider_markers_checked": 9,
+    "operations_markers_checked": 13,
+    "health_status": "ok/connected"
+  }
+}

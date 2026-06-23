@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "target": "/operations/agents/runs/run_agent_control_smoke",
+  "url": "http://127.0.0.1:50885/operations/agents/runs/run_agent_control_smoke?run=run_agent_control_smoke&workspace=platform&view=agents&section=ready",
+  "runKey": "run_agent_control_smoke",
+  "identity": "Super Admin / Platform Operations fake local fixture",
+  "actionSequence": [
+    "claim",
+    "progress",
+    "artifacts",
+    "submit",
+    "seal",
+    "artifacts"
+  ],
+  "finalStatus": "blocked",
+  "finalOutcome": "needs_operator",
+  "decisionCount": 1,
+  "linkedDecisionId": "DEC-MANUAL-001",
+  "artifactCount": 3,
+  "eventTypes": [
+    "created",
+    "prompt_generated",
+    "claimed",
+    "progress",
+    "evidence_attached",
+    "submitted",
+    "sealed",
+    "evidence_attached"
+  ],
+  "readback": {
+    "hasBlocked": true,
+    "hasEvidence": true,
+    "hasNeedsOperator": true,
+    "hasPortal": true,
+    "hasProgress": true,
+    "hasSecretLike": false,
+    "textSample": "AGENT RUN RUN_AGENT_CONTROL_SMOKE Verify Agent Control manual browser judgment flow Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. Back Copy Agent Prompt Open ChatGPT Agent Run Summary STATUS Blocked TASK #901 Verify Agent Control manual browser judgment flow WORKSPACE BNA AGENT Browser QA MODE mixed EVIDENCE 2 artifacts EVENTS 7 events UPDATED 19 Jun, 15:20 Resume Reopen Fresh Run Agent Prompt Progress Post Progress sealed Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. / In-app browser manual smoke / 19 Jun, 15:26 submitted Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. / In-app browser manual smoke / 19 Jun, 15:25 evidence attached Manual in-app browser smoke evidence / In-app browser manual smoke / 19 Jun, 15:24 progress Manual in-app browser smoke inspected the Super Admin Agent Run portal with fake local data only; no production, secrets, deployment, or external writes used. / In-app browser manual smoke / 19 Jun, 15:23 claimed Manual browser smoke claimed the run. / In-app browser manual smoke / 19 Jun, 15:22 prompt generated Prompt generated without credentials. / Super Admin / 19 Jun, 15:10 created Agent run created for manual browser smoke. / Super Admin / 19 Jun, 15:10 Evidence Type Screenshot Title URL Repo path Redaction Not needed Attach Evidence Agent Control manual smoke prompt report / ops/agent-control/2026-06-19-manual-agent-mode-smoke.md / not_needed / 19 Jun, 15:12 Manual in-app browser smoke evidence screenshot / ops/pl",
+    "url": "http://127.0.0.1:50885/operations/agents/runs/run_agent_control_smoke?run=run_agent_control_smoke&workspace=platform&view=agents&section=ready"
+  },
+  "evidenceFiles": [
+    "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md",
+    "ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-dom-snapshot.txt"
+  ],
+  "screenshot": null,
+  "screenshotNote": "In-app browser screenshot capture timed out twice; DOM/readback report is the durable visual-state evidence for this manual smoke.",
+  "guardrails": {
+    "productionWrites": false,
+    "productionDataMutation": false,
+    "externalWrites": false,
+    "deploy": false,
+    "broadCrawl": false,
+    "watchLoop": false,
+    "agentFleetLoop": false,
+    "secretsInFixture": false
+  },
+  "readbackAfterReportEvidence": {
+    "hasBlocked": true,
+    "hasDecisionCue": true,
+    "hasReportEvidence": true,
+    "hasSecretLike": false,
+    "sample": "AGENT RUN RUN_AGENT_CONTROL_SMOKE Verify Agent Control manual browser judgment flow Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. Back Copy Agent Prompt Open ChatGPT Agent Run Summary STATUS Blocked TASK #901 Verify Agent Control manual browser judgment flow WORKSPACE BNA AGENT Browser QA MODE mixed EVIDENCE 3 artifacts EVENTS 8 events UPDATED 19 Jun, 15:20 Resume Reopen Fresh Run Agent Prompt Progress Post Progress evidence attached Manual browser judgment report / In-app browser manual smoke / 19 Jun, 15:27 sealed Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production closeout. / In-app browser manual smoke / 19 Jun, 15:26 submitted Manual in-app browser judgment completed locally. Agent Control works with fake local data; release/live approval remains required before production c"
+  }
+}

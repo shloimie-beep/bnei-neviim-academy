@@ -1,0 +1,111 @@
+{
+  "smoke": "task-decision-helper-actions-local-preview",
+  "generated_at": "2026-06-14T17:53:20.988Z",
+  "previews": [
+    {
+      "action_id": "add_decision_option",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "preview": {
+        "decision_option_added": false,
+        "task_id": 195,
+        "planned_option": {
+          "label": "Hybrid path",
+          "value": "Hybrid path",
+          "rationale": "Local preview smoke only"
+        },
+        "existing_option_count": 0,
+        "next_options": [
+          {
+            "label": "Hybrid path",
+            "value": "Hybrid path",
+            "rationale": "Local preview smoke only"
+          }
+        ],
+        "decision_required": true,
+        "next_stage": "needs_decision",
+        "no_agent_job_created": true
+      }
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "preview": {
+        "task_scheduled": false,
+        "task_id": 195,
+        "due_date": "2026-06-18",
+        "planned_at": "2026-06-18T14:30:00",
+        "next_action_label": null,
+        "reason": null,
+        "no_agent_job_created": true
+      }
+    },
+    {
+      "action_id": "move_task_workspace",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "preview": {
+        "task_moved": false,
+        "task_id": 195,
+        "target_project_key": "one_time_mishnah_class",
+        "workspace_role": null,
+        "reason": "Local preview smoke only",
+        "no_agent_job_created": true
+      }
+    }
+  ],
+  "classifications": [
+    {
+      "text": "Add decision option Hybrid path to task #195",
+      "route": {
+        "kind": "typed_action",
+        "action_id": "add_decision_option",
+        "confidence": 0.86,
+        "dry_run": true,
+        "inputs": {
+          "task_id": 195,
+          "option_label": "Hybrid path",
+          "reason": "Add decision option Hybrid path to task #195"
+        },
+        "reason": "decision_option_preview"
+      }
+    },
+    {
+      "text": "Schedule task #195 on 2026-06-18 14:30",
+      "route": {
+        "kind": "typed_action",
+        "action_id": "schedule_task_on_date",
+        "confidence": 0.86,
+        "dry_run": true,
+        "inputs": {
+          "task_id": 195,
+          "due_date": "2026-06-18",
+          "planned_at": "2026-06-18T14:30:00",
+          "reason": "Schedule task #195 on 2026-06-18 14:30"
+        },
+        "reason": "task_schedule_preview"
+      }
+    },
+    {
+      "text": "Move task #195 to One Time workspace",
+      "route": {
+        "kind": "typed_action",
+        "action_id": "move_task_workspace",
+        "confidence": 0.86,
+        "dry_run": true,
+        "inputs": {
+          "task_id": 195,
+          "workspace_key": "one_time_mishnah_class",
+          "reason": "Move task #195 to One Time workspace"
+        },
+        "reason": "task_workspace_move_preview"
+      }
+    }
+  ],
+  "no_live_writes": true,
+  "no_agent_jobs": true
+}

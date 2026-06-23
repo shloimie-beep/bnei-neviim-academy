@@ -35,6 +35,7 @@
             --accent-gold: #c9a227;
             --dark-text: #1a202c;
             --white: #ffffff;
+            --hover-shadow: 0 14px 28px rgba(30, 58, 95, 0.18);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -69,15 +70,23 @@
 
         .nav-btn {
             padding: 0.75rem 1.25rem;
-            border-radius: 50px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             background: var(--primary-blue);
             color: white;
+            white-space: nowrap;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
-        .form-section { padding: 3rem 1.25rem 5rem; }
-        .container { max-width: 760px; margin: 0 auto; }
+        .nav-btn:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .form-section { padding: 3rem clamp(1rem, 4vw, 3rem) 5rem; }
+        .container { width: min(1120px, 100%); margin: 0 auto; }
 
         .form-header {
             text-align: center;
@@ -96,12 +105,105 @@
             font-size: 1.15rem;
         }
 
+        .language-tabs {
+            display: inline-flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.35rem;
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .language-tab {
+            min-width: 104px;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 800;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .language-tab.active {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .language-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--hover-shadow);
+        }
+
         .form-card {
             background: var(--white);
-            padding: 2.5rem;
-            border-radius: 18px;
+            padding: clamp(1.5rem, 4vw, 3.25rem);
+            border-radius: 12px;
             box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
             border: 1px solid rgba(30, 58, 95, 0.1);
+        }
+
+        .signup-assistant {
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.35rem;
+            background: #f8fafc;
+            text-align: right;
+        }
+
+        .signup-assistant h2 {
+            font-size: 1.05rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.35rem;
+        }
+
+        .signup-assistant p,
+        .signup-assistant-status,
+        .signup-assistant-output {
+            color: var(--text-dark);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .signup-assistant textarea {
+            width: 100%;
+            min-height: 82px;
+            margin-top: 0.75rem;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+            resize: vertical;
+            direction: rtl;
+        }
+
+        .signup-assistant-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .signup-assistant-actions button {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            background: #fff;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .signup-assistant-actions button.primary {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .signup-assistant-output {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e2e8f0;
         }
 
         .section-divider {
@@ -119,6 +221,15 @@
         .section-divider h3 {
             font-size: 1.45rem;
             color: var(--primary-blue);
+        }
+
+        .parent-section-divider h3,
+        label[for="parent1_name"],
+        label[for="parent2_name"],
+        #parent1_name,
+        #parent2_name {
+            color: #000;
+            -webkit-text-fill-color: #000;
         }
 
         .form-row {
@@ -196,13 +307,64 @@
             font-size: 0.95rem;
         }
 
+        .permission-intro {
+            margin: -0.25rem 0 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .permission-card {
+            border: 1px solid #dbe3ef;
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 1rem;
+        }
+
+        .permission-card label {
+            display: block;
+            color: var(--primary-blue);
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 0.65rem;
+        }
+
+        .permission-card select {
+            width: 100%;
+        }
+
+        .permission-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(30, 58, 95, 0.15);
+            border-radius: 8px;
+            background: #fffdf5;
+            color: #243953;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        .permission-checkbox input {
+            width: auto;
+            margin-top: 0.2rem;
+            flex: 0 0 auto;
+        }
+
         .submit-btn {
             width: 100%;
             padding: 1rem 2rem;
             background: var(--accent-gold);
             color: var(--dark-text);
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 800;
             cursor: pointer;
@@ -235,44 +397,255 @@
             border: 1px solid #f5c6cb;
         }
 
-        .waiver-box {
+        .document-signature-intro {
+            color: #475569;
+            line-height: 1.65;
+            margin: -0.35rem 0 1rem;
+        }
+
+        .document-signature-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .document-card,
+        .agreement-card {
             background: #f8fafc;
             border: 1px solid #dbe3ef;
-            border-radius: 14px;
+            border-radius: 8px;
             padding: 1.25rem;
             margin-top: 1rem;
         }
 
-        .waiver-box h4 {
+        .document-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.9rem;
+            align-items: start;
+            margin-top: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .document-card.is-signed {
+            border-color: rgba(22, 101, 52, 0.35);
+            background: #f0fdf4;
+        }
+
+        .document-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(30, 58, 95, 0.1);
+        }
+
+        .document-card-number {
+            width: 2.2rem;
+            height: 2.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: var(--primary-blue);
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .document-card-main {
+            min-width: 0;
+        }
+
+        .document-card h4,
+        .agreement-card h4 {
             color: var(--primary-blue);
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.08rem;
+            margin-bottom: 0.55rem;
         }
 
-        .waiver-text {
-            max-height: 230px;
-            overflow-y: auto;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 1rem;
+        .document-card p,
+        .agreement-card p {
             color: #475569;
-            font-size: 0.95rem;
-            line-height: 1.65;
+            line-height: 1.6;
         }
 
-        .waiver-check {
-            display: flex;
-            gap: 0.6rem;
-            align-items: flex-start;
+        .agreement-open-btn {
+            width: 100%;
             margin-top: 1rem;
+            padding: 0.9rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 12px 22px rgba(30, 58, 95, 0.18);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .document-open-btn {
+            grid-column: 1 / -1;
+        }
+
+        .agreement-open-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 28px rgba(30, 58, 95, 0.22);
+        }
+
+        .agreement-open-btn:disabled,
+        .agreement-sign-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            box-shadow: none;
+        }
+
+        .signature-status {
+            margin-top: 0.85rem;
+            padding: 0.8rem 0.95rem;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #9a3412;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .signature-status.is-signed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal-overlay.document-modal {
+            padding: 0;
+            align-items: stretch;
+            background: #fff;
+        }
+
+        body.document-modal-open {
+            overflow: hidden;
+        }
+
+        .agreement-dialog {
+            width: 100vw;
+            height: 100dvh;
+            max-height: none;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: none;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .agreement-dialog-header,
+        .agreement-dialog-footer {
+            flex: 0 0 auto;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .agreement-dialog-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .agreement-dialog-header h3 {
+            margin: 0 0 0.25rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+        }
+
+        .agreement-close-btn {
+            border: none;
+            background: #e2e8f0;
+            color: #1e293b;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 800;
+            padding: 0.55rem 0.8rem;
+        }
+
+        .agreement-document {
+            overflow-y: auto;
+            padding: clamp(1.2rem, 3vw, 2.2rem);
+            color: #1e293b;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .agreement-document p,
+        .agreement-document li {
+            margin: 0 0 1rem;
+        }
+
+        .agreement-document h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin: 0 0 1rem;
+        }
+
+        .agreement-document h4 {
+            color: var(--secondary-blue);
+            margin: 1.4rem 0 0.7rem;
+            font-size: 1.2rem;
+        }
+
+        .agreement-document h5 {
+            color: var(--primary-blue);
+            margin: 1rem 0 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .agreement-document ul {
+            padding-inline-start: 1.4rem;
+            margin: 0 0 1rem;
+        }
+
+        .agreement-dialog-footer {
+            border-top: 1px solid #e2e8f0;
+            border-bottom: none;
+            background: #f8fafc;
+        }
+
+        .signature-preview {
+            margin-bottom: 0.9rem;
             color: #334155;
             font-weight: 700;
         }
 
-        .waiver-check input {
-            margin-top: 0.2rem;
-            width: auto;
+        .agreement-sign-btn {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 12px 22px rgba(201, 162, 39, 0.24);
         }
 
         footer {
@@ -282,41 +655,104 @@
             padding: 2rem;
         }
 
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            gap: 0.75rem;
+            justify-items: center;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .footer-socials a {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .footer-socials svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
-            .form-card { padding: 1.5rem; }
+            .document-signature-list { grid-template-columns: 1fr; }
+            .permission-grid { grid-template-columns: 1fr; }
+            .form-card { padding: 1.35rem; border-radius: 18px; }
             .nav-container { align-items: flex-start; }
             .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
+            .modal-overlay.document-modal {
+                padding: 0;
+                align-items: stretch;
+            }
+            .agreement-dialog {
+                width: 100vw;
+                height: 100dvh;
+                max-height: none;
+                border-radius: 0;
+            }
+            .agreement-dialog-header,
+            .agreement-dialog-footer {
+                padding: 1rem;
+            }
+            .agreement-dialog-header h3 {
+                font-size: 1.55rem;
+            }
+            .agreement-document {
+                font-size: 1rem;
+            }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-    <nav>
-        <div class="nav-container">
-            <a href="/">
-                <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
-            </a>
-            <div class="nav-actions">
-                <a href="/signup.html" class="nav-btn">English</a>
-                <a href="/" class="nav-btn">חזרה לדף הבית</a>
-            </div>
-        </div>
-    </nav>
+    <div id="siteNavMount" data-bna-site-nav data-nav-language="he" data-nav-active="signup"></div>
+    <script src="/js/bna-site-nav.js"></script>
 
     <section class="form-section">
         <div class="container">
             <div class="form-header">
-                <h1>טופס הרשמה</h1>
-                <p>הרשמה ל-Bnei Nevi'im Academy</p>
+                <h1>Bnei Nevi'im Academy Registration</h1>
+                <p>2026-2027 / תשפ"ז</p>
+                <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
+                <div class="language-tabs" aria-label="Registration language">
+                    <a class="language-tab" href="/signup.html">English</a>
+                    <a class="language-tab active" href="/signup-he.html">עברית</a>
+                </div>
             </div>
 
             <div class="form-card">
                 <div id="message" class="message"></div>
 
+                <section class="signup-assistant" aria-label="מסייע הרשמה">
+                    <h2>מסייע הרשמה</h2>
+                    <p>אפשר לשאול שאלת התחלה או לכתוב איפה נתקעתם. אם צריך המשך טיפול, המסייע יפתח כרטיס תמיכה ויציג את מספר הכרטיס.</p>
+                    <textarea id="signupAssistantMessage" maxlength="2000" placeholder="לדוגמה: נתקעתי בשלב התשלום, או יש לי שאלה על המסמכים."></textarea>
+                    <div class="signup-assistant-actions">
+                        <button class="primary" type="button" id="sendSignupAssistantButton">שאל את המסייע</button>
+                        <button type="button" id="signupAssistantStuckButton">נתקעתי</button>
+                        <button type="button" id="signupAssistantQuestionButton">שאלת התחלה</button>
+                    </div>
+                    <div class="signup-assistant-status" id="signupAssistantStatus"></div>
+                    <div class="signup-assistant-output" id="signupAssistantOutput" hidden></div>
+                </section>
+
                 <form id="signupForm">
                     <input type="hidden" id="form_language" name="form_language" value="he">
 
-                    <div class="section-divider">
+                    <div class="section-divider parent-section-divider">
                         <h3>פרטי הורה 1</h3>
                     </div>
 
@@ -336,7 +772,7 @@
                         <input type="email" id="parent1_email" name="parent1_email" required>
                     </div>
 
-                    <div class="section-divider">
+                    <div class="section-divider parent-section-divider">
                         <h3>פרטי הורה 2</h3>
                     </div>
 
@@ -391,11 +827,97 @@
                     </div>
 
                     <div class="section-divider">
-                        <h3>אמצעי תשלום</h3>
+                        <h3>מה ההורים מרשים ומה חשוב לדווח</h3>
+                    </div>
+
+                    <p class="permission-intro">
+                        הפרטים כאן נועדו לתיאום ולידיעה בלבד. Bnei Neviim Academy אינה לוקחת אחריות לאכוף איסוף, הורדה, נסיעה, קניות, אוכל, ממתקים, כסף, שחייה או הישארות מאוחרת. ההורים נשארים אחראים להנחות את הילד בבית ולתאם איתו מה מותר. אנחנו רוצים לדעת מה אתם מרשים כדי שנהיה באותו דף ונוכל לדווח לכם אם משהו לא תואם את מה שסיכמתם בבית. התהליך הוא ערכי וחינוכי, לא מערכת אכיפה.
+                    </p>
+
+                    <div class="permission-grid">
+                        <div class="permission-card">
+                            <label for="permission_leave_premises">האם מותר לו לצאת משטח הפעילות בזמן התכנית?</label>
+                            <select id="permission_leave_premises" name="permission_leave_premises">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_walk_unaccompanied">האם מותר לו ללכת או לנסוע הביתה ללא ליווי?</label>
+                            <select id="permission_walk_unaccompanied" name="permission_walk_unaccompanied">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_swimming">האם מותר לו להשתתף בשחייה או פעילות מים?</label>
+                            <select id="permission_swimming" name="permission_swimming">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_buy_food">האם מותר לו לקנות אוכל ביציאות מפוקחות?</label>
+                            <select id="permission_buy_food" name="permission_buy_food">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_junk_food">האם מותר לו לקבל או לקנות ממתקים וחטיפים?</label>
+                            <select id="permission_junk_food" name="permission_junk_food">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_spend_money">האם מותר לו להשתמש בכסף אישי בזמן בני נביאים?</label>
+                            <select id="permission_spend_money" name="permission_spend_money">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_stay_late">האם מותר לו להישאר מאוחר כאשר הזמנים משתנים?</label>
+                            <select id="permission_stay_late" name="permission_stay_late">
+                                <option value="ask_first" selected>ליצור קשר עם הורה קודם</option>
+                                <option value="yes">ההורה מרשה</option>
+                                <option value="no">ההורה לא מרשה</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="permission-checkbox" role="note">
+                        <span>איסוף, הורדה, נסיעה, אוכל, כסף ופעילויות נשארים באחריות ההורים. BNA משתמשת בתשובות למודעות, ליווי ערכי ודיווח להורים; זה אינו הסכם אכיפה נפרד.</span>
+                    </div>
+                    <input type="hidden" id="pickup_responsibility_acknowledged" name="pickup_responsibility_acknowledged" value="true">
+
+                    <div class="form-group">
+                        <label for="pickup_dropoff_notes">הערות איסוף והורדה</label>
+                        <textarea id="pickup_dropoff_notes" name="pickup_dropoff_notes" placeholder="רשות: תכנית איסוף קבועה, מבוגרים מורשים, מסלול הליכה, מגבלות זמן או תחבורה."></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label>בחרו כיצד תרצו לשלם את דמי ההרשמה</label>
+                        <label for="parent_permission_notes">הערות נוספות לגבי אישורים</label>
+                        <textarea id="parent_permission_notes" name="parent_permission_notes" placeholder="רשות: מגבלות אוכל, שחייה, כסף, או כל דבר שהצוות צריך לדעת."></textarea>
+                    </div>
+
+                    <div class="section-divider">
+                        <h3>אמצעי תשלום</h3>
+                    </div>
+
+                    <div class="payment-note" role="note">
+                        ההרשמה לשנה הקרובה פתוחה. טופס זה הוא טופס ההרשמה והתשלום הרשמי והעדכני של BNA; קישורי תשלום קודמים אינם פעילים. החיוב במערכת זו מתחיל ב-1 ביולי. משפחות שנרשמות עכשיו שומרות את המחיר הנוכחי, ולאחר חלון ההרשמה המחיר צפוי לעלות. גם משפחות שכבר שילמו צריכות למלא את הטופס כדי שכל המסמכים החתומים, הרשאות ההורים, פרטי התלמיד ורישומי התשלום יהיו במקום אחד. תשלומים קיימים יותאמו על ידי BNA לפני כל חיוב חי, כדי שלא יהיה חיוב כפול.
+                    </div>
+
+                    <div class="form-group">
+                        <label>בחרו כיצד תרצו לשלם את התשלום הראשון של שכר הלימוד</label>
                         <div class="payment-options">
                             <label class="payment-option" for="payment-credit">
                                 <input type="radio" id="payment-credit" name="payment_method" value="credit" checked>
@@ -405,26 +927,23 @@
                                 <input type="radio" id="payment-cash" name="payment_method" value="cash">
                                 <div class="payment-option-card">מזומן</div>
                             </label>
+                            <label class="payment-option" for="payment-bank-transfer">
+                                <input type="radio" id="payment-bank-transfer" name="payment_method" value="bank_transfer">
+                                <div class="payment-option-card">העברה בנקאית</div>
+                            </label>
                         </div>
-                        <p class="payment-note">אשראי יעביר לעמוד תשלום מאובטח לאחר השליחה. מזומן יירשם אצלנו להמשך מעקב.</p>
+                        <p class="payment-note">אשראי יעביר לעמוד תשלום מאובטח לאחר השליחה. מזומן והעברה בנקאית יירשמו אצלנו להמשך מעקב.</p>
                     </div>
 
                     <div class="section-divider">
-                        <h3>אישור והצהרת הורים</h3>
+                        <h3 id="documentSignatureHeading">מסמכי הרשמה נדרשים</h3>
                     </div>
 
-                    <div class="waiver-box">
-                        <h4>אישור הורים - Bnei Neviim Academy</h4>
-                        <div class="waiver-text">
-                            <p>אני מבין/ה כי Bnei Neviim Academy היא מסגרת לימודית/חינוכית וליווי, וכי בני עשוי להיפגש עם המדריך ועם תלמידים נוספים בבית, במקום פתוח, או במקום אחר שסוכם. אני מבין/ה כי המדריך ישתדל באופן סביר להשגיח על הבחורים ולקיים סביבה בטוחה ומכבדת.</p>
-                            <p>אני מאשר/ת כי האחריות לתת לבני הוראות ברורות לגבי הגעה, חציית כבישים, יציאה או הישארות במקום, השתתפות ביציאות, וכל גבול או הנחיית בטיחות אישית, נשארת בידי ההורה/אפוטרופוס. אם ההורה אינו רוצה שבנו יצא ממקום מסוים, יחצה כביש, יצטרף ליציאה, או ישתתף בפעילות מסוימת, על ההורה להודיע זאת בבירור לילד ולמדריך מראש.</p>
-                            <p>אני מבין/ה כי ההשתתפות היא מרצון וכי הורה רשאי להוציא את בנו מהמסגרת בכל עת. במידה המרבית המותרת על פי דין, אני משחרר/ת את המדריך ואת Bnei Neviim Academy מאחריות לפציעות, הפסדים, נזקים או אירועים העלולים להתרחש בקשר להשתתפות, למעט מקרים שנגרמו בזדון או ברשלנות חמורה. אני מאשר/ת שקראתי והסכמתי לאישור ולהצהרה זו.</p>
-                        </div>
-                        <label class="waiver-check" for="waiver_accepted">
-                            <input type="checkbox" id="waiver_accepted" name="waiver_accepted" required>
-                            <span>קראתי ואני מסכים/ה לאישור ולהצהרת ההורים. סימון תיבה זו מהווה חתימה אלקטרונית שלי.</span>
-                        </label>
-                    </div>
+                    <p class="document-signature-intro" id="documentSignatureIntro">
+                        פתחו כל מסמך, קראו אותו במסך מלא, גללו עד הסוף וחתמו.
+                    </p>
+                    <div class="document-signature-list" id="documentSignatureList"></div>
+                    <input type="hidden" id="waiver_accepted" name="waiver_accepted" value="true">
 
                     <button type="submit" class="submit-btn" id="submitBtn">שליחת הרשמה</button>
                 </form>
@@ -432,15 +951,163 @@
         </div>
     </section>
 
+    <div class="modal-overlay document-modal" id="documentModal" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle">
+        <div class="agreement-dialog">
+            <div class="agreement-dialog-header">
+                <div>
+                    <h3 id="documentModalTitle">Document</h3>
+                    <p id="documentModalSubtitle"></p>
+                </div>
+                <button type="button" class="agreement-close-btn" id="documentModalCloseBtn">Close</button>
+            </div>
+            <div class="agreement-document" id="documentModalBody" tabindex="0"></div>
+            <div class="agreement-dialog-footer">
+                <div class="signature-preview" id="documentModalProgress">יש לגלול עד סוף המסמך כדי לאפשר חתימה.</div>
+                <button type="button" class="agreement-sign-btn" id="documentModalSignBtn" disabled>קראתי ואני מסכים/ה.</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="siteFooterMount" data-bna-site-footer data-nav-language="he"></div>
     <footer>
-        <p>&copy; 2026 Bnei Nevi'im Academy</p>
+        <div class="footer-content">
+            <strong>רמת בית שמש</strong>
+            <div class="footer-socials" aria-label="Social profiles">
+                <a href="https://www.youtube.com/channel/UCKnmIcZqhzNCdAbE6RK-U-g" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg></a>
+                <a href="https://www.linkedin.com/company/108630189/" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.91 1.64-1.86 3.37-1.86 3.61 0 4.28 2.38 4.28 5.47v6.28ZM5.32 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.54V9H7.1v11.45ZM22.23 0H1.76C.79 0 0 .77 0 1.72v20.55C0 23.22.79 24 1.76 24h20.47c.97 0 1.77-.78 1.77-1.73V1.72C24 .77 23.2 0 22.23 0Z"/></svg></a>
+                <a href="https://www.facebook.com/profile.php?id=61590512065756" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.66 4.52-4.66 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.39A12 12 0 0 0 24 12Z"/></svg></a>
+            </div>
+            <span>עמותה רשומה במדינת ניו ג׳רזי</span>
+            <span>&copy; 2025 אקדמיית בני נביאים. כל הזכויות שמורות.</span>
+        </div>
     </footer>
 
+    <script src="/js/app-select.js"></script>
+    <script src="/js/signup-documents.js"></script>
     <script>
-        function buildThankYouUrl(paymentMethod, paymentLink) {
+        const signupDocumentFlow = window.createSignupDocumentFlow({ language: 'he' });
+        signupDocumentFlow.init();
+
+        function buildThankYouUrl(paymentMethod, paymentLink, checkoutAttemptId = '', checkoutAttemptToken = '') {
             const params = new URLSearchParams({ payment: paymentMethod, lang: 'he' });
             if (paymentLink) params.set('paymentLink', paymentLink);
+            if (checkoutAttemptId) params.set('checkoutAttemptId', checkoutAttemptId);
+            if (checkoutAttemptToken) params.set('checkoutAttemptToken', checkoutAttemptToken);
             return `/signup-thank-you.html?${params.toString()}`;
+        }
+
+        function initializePaymentUi() {
+            document.querySelectorAll('.payment-option').forEach((option) => {
+                const input = option.querySelector('input[name="payment_method"]');
+                if (!input) return;
+                option.setAttribute('for', input.id);
+                option.addEventListener('click', () => {
+                    input.checked = true;
+                });
+            });
+        }
+
+        initializePaymentUi();
+
+        function escapeSignupAssistantHtml(value) {
+            return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function signupAssistantContext() {
+            return {
+                surface: 'signup',
+                mode: 'parent',
+                language: 'he',
+                parent_name: document.getElementById('parent1_name')?.value || '',
+                parent_email: document.getElementById('parent1_email')?.value || '',
+                parent_phone: document.getElementById('parent1_phone')?.value || '',
+                student_name: document.getElementById('child_name')?.value || '',
+                payment_method: selectedPaymentMethod(),
+                page_path: `${window.location.pathname}${window.location.search}`
+            };
+        }
+
+        async function sendSignupAssistantMessage(preset = '') {
+            const input = document.getElementById('signupAssistantMessage');
+            const status = document.getElementById('signupAssistantStatus');
+            const output = document.getElementById('signupAssistantOutput');
+            const sendButton = document.getElementById('sendSignupAssistantButton');
+            const message = (preset || input.value || '').trim();
+            if (!message) {
+                status.textContent = 'כתבו קודם שאלה או איפה נתקעתם.';
+                return;
+            }
+            status.textContent = 'שולח...';
+            sendButton.disabled = true;
+            try {
+                const context = signupAssistantContext();
+                const response = await fetch('/api/assistant/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message,
+                        language: 'he',
+                        mode: 'parent',
+                        surface: 'signup',
+                        action: 'create_ticket',
+                        title: message.slice(0, 140),
+                        context,
+                        metadata: context
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || result.error) throw new Error(result.error || 'בקשת המסייע נכשלה');
+                const reply = result?.assistant_message?.body || result?.assistant_message?.content || 'נשמר.';
+                const actionLines = (result.actions || []).map((action) => {
+                    const objectType = action.created_object_type || action.action?.target_type || 'record';
+                    const objectId = action.created_object_id || action.action?.target_id || '';
+                    return `${action.summary || action.action_name || action.action_type}${objectId ? ` (${objectType} #${objectId})` : ''}`;
+                });
+                output.hidden = false;
+                output.innerHTML = `<strong>מסייע</strong><div>${escapeSignupAssistantHtml(reply)}</div>${actionLines.length ? `<ul>${actionLines.map(line => `<li>${escapeSignupAssistantHtml(line)}</li>`).join('')}</ul>` : ''}`;
+                status.textContent = 'המסייע שמר את ההודעה.';
+                input.value = '';
+            } catch (error) {
+                status.textContent = error.message || 'לא הצלחנו להגיע למסייע.';
+                output.hidden = false;
+                output.innerHTML = `<strong>מסייע</strong><div>${escapeSignupAssistantHtml(status.textContent)}</div>`;
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        document.getElementById('sendSignupAssistantButton')?.addEventListener('click', () => sendSignupAssistantMessage());
+        document.getElementById('signupAssistantStuckButton')?.addEventListener('click', () => sendSignupAssistantMessage('נתקעתי בטופס ההרשמה. בבקשה עזרו לי להשלים את ההתחלה.'));
+        document.getElementById('signupAssistantQuestionButton')?.addEventListener('click', () => sendSignupAssistantMessage('יש לי שאלת התחלה על ההרשמה ל-BNA.'));
+
+        function selectedPaymentMethod() {
+            return document.querySelector('input[name="payment_method"]:checked')?.value || 'credit';
+        }
+
+        function permissionValue(id) {
+            return document.getElementById(id)?.value || 'ask_first';
+        }
+
+        function pickupResponsibilityAcknowledged() {
+            const field = document.getElementById('pickup_responsibility_acknowledged');
+            if (!field) return true;
+            if (field.type === 'checkbox') return Boolean(field.checked);
+            return field.value !== 'false';
+        }
+
+        function collectParentPermissions() {
+            return {
+                leave_premises: permissionValue('permission_leave_premises'),
+                walk_unaccompanied: permissionValue('permission_walk_unaccompanied'),
+                swimming: permissionValue('permission_swimming'),
+                buy_food: permissionValue('permission_buy_food'),
+                junk_food: permissionValue('permission_junk_food'),
+                spend_money: permissionValue('permission_spend_money'),
+                stay_late: permissionValue('permission_stay_late'),
+                pickup_responsibility_acknowledged: pickupResponsibilityAcknowledged(),
+                pickup_dropoff_notes: document.getElementById('pickup_dropoff_notes')?.value || '',
+                parent_permission_notes: document.getElementById('parent_permission_notes')?.value || ''
+            };
         }
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
@@ -452,7 +1119,17 @@
             messageDiv.className = 'message';
             messageDiv.textContent = '';
 
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const documentValidation = signupDocumentFlow.validateBeforeSubmit();
+            if (!documentValidation.ok) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = documentValidation.message;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'שליחת הרשמה';
+                return;
+            }
+            const documentPayload = signupDocumentFlow.payload();
+
+            const paymentMethod = selectedPaymentMethod();
             const formData = {
                 parent1_name: document.getElementById('parent1_name').value,
                 parent1_email: document.getElementById('parent1_email').value,
@@ -467,8 +1144,11 @@
                 hobbies: document.getElementById('hobbies').value,
                 payment_method: paymentMethod,
                 form_language: 'he',
-                waiver_accepted: document.getElementById('waiver_accepted').checked,
-                waiver_version: '2026-05-28-v1'
+                parent_permissions: collectParentPermissions(),
+                pickup_responsibility_acknowledged: pickupResponsibilityAcknowledged(),
+                pickup_dropoff_notes: document.getElementById('pickup_dropoff_notes').value,
+                parent_permission_notes: document.getElementById('parent_permission_notes').value,
+                ...documentPayload
             };
 
             try {
@@ -483,9 +1163,18 @@
                 }
 
                 document.getElementById('signupForm').reset();
-                window.location.href = result.paymentMethod === 'cash'
-                    ? buildThankYouUrl('cash')
-                    : buildThankYouUrl('credit', result.paymentLink || '');
+                if (result.paymentMethod === 'cash') {
+                    window.location.href = buildThankYouUrl('cash');
+                } else if (result.paymentMethod === 'bank_transfer') {
+                    window.location.href = buildThankYouUrl('bank_transfer');
+                } else {
+                    window.location.href = buildThankYouUrl(
+                        'credit',
+                        result.paymentLink || '',
+                        result.checkoutAttemptId || '',
+                        result.checkoutAttemptToken || ''
+                    );
+                }
             } catch (error) {
                 console.error(error);
                 messageDiv.className = 'message error';
@@ -500,5 +1189,7 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

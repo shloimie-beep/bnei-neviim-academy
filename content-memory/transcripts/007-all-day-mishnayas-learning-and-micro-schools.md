@@ -9,7 +9,7 @@ drive_stage: "05 WhatsApp Ready"
 drive_file_id: "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed"
 media_url: "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk"
 transcript_chars: 50827
-outputs: "teaching_philosophy_note:draft#17, whatsapp_update:needs_approval#18, facebook_post:approved#19"
+outputs: "facebook_post:approved#19, teaching_philosophy_note:draft#17, whatsapp_update:needs_approval#18"
 ---
 
 # All-Day Mishnayas Learning and Micro Schools
@@ -17,7 +17,7 @@ outputs: "teaching_philosophy_note:draft#17, whatsapp_update:needs_approval#18, 
 - Content job: #7
 - Drive stage: 05 WhatsApp Ready
 - Source file: https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk
-- Outputs: teaching_philosophy_note:draft#17, whatsapp_update:needs_approval#18, facebook_post:approved#19
+- Outputs: facebook_post:approved#19, teaching_philosophy_note:draft#17, whatsapp_update:needs_approval#18
 
 ## Transcript
 

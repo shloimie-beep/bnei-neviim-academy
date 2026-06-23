@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-06-17T07:51:12.343Z",
+  "checks": {
+    "blockedStatusCount": 2,
+    "disabledButtonCount": 4,
+    "enabledCheckoutButtonCount": 0,
+    "hasPrices": true,
+    "heroTitle": "OneTimeOneTime",
+    "horizontalOverflow": false,
+    "previewBanner": "Preview mode only. The BNA homepage is not replaced.",
+    "tierCardCount": 2,
+    "title": "OneTimeOneTime - Rabbi Eli Scheller",
+    "url": "https://bneineviimacademy.org/rabbi",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "consoleErrors": [],
+  "artifacts": [
+    "desktop-rabbi-onetime-live.png"
+  ]
+}

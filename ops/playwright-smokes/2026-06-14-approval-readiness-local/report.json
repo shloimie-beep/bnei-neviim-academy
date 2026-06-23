@@ -1,0 +1,110 @@
+{
+  "started_at": "2026-06-14T20:55:13.249Z",
+  "base_url": "http://127.0.0.1:8096",
+  "steps": [
+    {
+      "name": "local server health",
+      "ok": true,
+      "duration_ms": 2630,
+      "data": {
+        "status": "ok",
+        "database": "connected",
+        "social_post_provider": "buffer"
+      }
+    },
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 243,
+      "data": {
+        "user": "SHLOIMIE",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "desktop Google approval packet renders",
+      "ok": true,
+      "duration_ms": 1855,
+      "data": {
+        "url": "http://127.0.0.1:8096/operations?view=settings&section=google_workspace",
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "metrics": {
+          "width": 1366,
+          "scrollWidth": 1366,
+          "bodyScrollWidth": 1366,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-local/google-approval-desktop.png"
+      }
+    },
+    {
+      "name": "mobile Google approval packet renders",
+      "ok": true,
+      "duration_ms": 2902,
+      "data": {
+        "url": "http://127.0.0.1:8096/operations?view=settings&section=google_workspace",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "metrics": {
+          "width": 390,
+          "scrollWidth": 390,
+          "bodyScrollWidth": 390,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-local/google-approval-mobile.png"
+      }
+    },
+    {
+      "name": "desktop One Time publishing packet renders",
+      "ok": true,
+      "duration_ms": 1532,
+      "data": {
+        "url": "http://127.0.0.1:8096/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "metrics": {
+          "width": 1366,
+          "scrollWidth": 1366,
+          "bodyScrollWidth": 1366,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-local/one-time-publishing-desktop.png"
+      }
+    },
+    {
+      "name": "mobile One Time publishing packet renders",
+      "ok": true,
+      "duration_ms": 3344,
+      "data": {
+        "url": "http://127.0.0.1:8096/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "metrics": {
+          "width": 390,
+          "scrollWidth": 390,
+          "bodyScrollWidth": 390,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-local/one-time-publishing-mobile.png"
+      }
+    },
+    {
+      "name": "no console errors",
+      "ok": true,
+      "duration_ms": 0,
+      "data": {
+        "warnings": 0
+      }
+    }
+  ],
+  "result": "passed"
+}

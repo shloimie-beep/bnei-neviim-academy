@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>OneTimeOneTime - Rabbi Eli Scheller</title>
+  <meta name="description" content="OneTimeOneTime landing and membership preview for Rabbi Eli Scheller in the BNA provider system.">
+  <link rel="icon" href="/images/one-time-logo-black.png">
+  <style>
+    :root {
+      --black: #080808;
+      --ink: #151515;
+      --white: #ffffff;
+      --paper: #fffdf4;
+      --yellow: #ffd400;
+      --yellow-dark: #c99f00;
+      --muted: #5d5d5d;
+      --line: rgba(8, 8, 8, 0.16);
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.18);
+      font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+      letter-spacing: 0;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      align-items: center;
+      background: rgba(8, 8, 8, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+      color: var(--white);
+      display: flex;
+      gap: 16px;
+      justify-content: space-between;
+      min-height: 64px;
+      padding: 10px clamp(16px, 4vw, 54px);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 900;
+    }
+
+    .brand img {
+      background: var(--yellow);
+      border-radius: 6px;
+      display: block;
+      height: 36px;
+      object-fit: contain;
+      padding: 4px;
+      width: 36px;
+    }
+
+    .brand span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .topnav {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .topnav a,
+    .preview-chip {
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      border-radius: 6px;
+      display: inline-flex;
+      font-size: 0.86rem;
+      font-weight: 800;
+      justify-content: center;
+      min-height: 34px;
+      padding: 7px 11px;
+    }
+
+    .preview-chip {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+    }
+
+    .hero {
+      align-items: end;
+      background:
+        linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.7) 45%, rgba(0, 0, 0, 0.22) 100%),
+        url("/images/one-time-existing-site-preview.jpg") center top / cover no-repeat;
+      color: var(--white);
+      display: grid;
+      min-height: min(650px, calc(100svh - 92px));
+      padding: clamp(44px, 7vw, 90px) clamp(18px, 6vw, 78px);
+    }
+
+    .hero-inner {
+      width: min(880px, 100%);
+    }
+
+    .preview-banner {
+      background: rgba(255, 212, 0, 0.12);
+      border: 1px solid rgba(255, 212, 0, 0.7);
+      border-radius: 8px;
+      color: var(--yellow);
+      display: inline-flex;
+      font-size: 13px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      padding: 8px 12px;
+    }
+
+    .eyebrow {
+      color: var(--yellow);
+      display: inline-flex;
+      font-size: 0.82rem;
+      font-weight: 950;
+      letter-spacing: 0;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 8.8vw, 6.6rem);
+      letter-spacing: 0;
+      line-height: 0.94;
+      margin: 0;
+      max-width: 850px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(1.04rem, 2.2vw, 1.34rem);
+      margin: 20px 0 0;
+      max-width: 690px;
+    }
+
+    .hero-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .button,
+    button,
+    .member-link {
+      align-items: center;
+      border: 1px solid var(--black);
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      font: inherit;
+      font-weight: 900;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .button.primary,
+    button.primary,
+    .member-link {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+    }
+
+    .button.secondary,
+    button.secondary {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.46);
+      color: var(--white);
+    }
+
+    button:disabled {
+      background: #ededed;
+      border-color: #dadada;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    main {
+      overflow: hidden;
+    }
+
+    .intro-strip {
+      background: var(--black);
+      color: var(--white);
+      display: grid;
+      gap: 1px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      padding: 0;
+    }
+
+    .strip-cell {
+      background: #151515;
+      min-height: 112px;
+      padding: 22px;
+    }
+
+    .strip-cell strong {
+      color: var(--yellow);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .strip-cell span {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.94rem;
+    }
+
+    .page-band {
+      padding: clamp(38px, 6vw, 72px) clamp(18px, 6vw, 78px);
+    }
+
+    .page-band.white {
+      background: var(--white);
+    }
+
+    .section-inner {
+      margin: 0 auto;
+      max-width: 1160px;
+    }
+
+    .section-head {
+      max-width: 760px;
+    }
+
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: 0;
+      line-height: 1.04;
+      margin: 0 0 10px;
+    }
+
+    .section-head p,
+    .muted {
+      color: var(--muted);
+      font-size: 1.02rem;
+      margin: 0;
+    }
+
+    .layout {
+      align-items: start;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+      margin-top: 26px;
+    }
+
+    .tiers {
+      display: grid;
+      gap: 14px;
+    }
+
+    .tier-card,
+    .checkout-panel,
+    .note-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .tier-card {
+      display: grid;
+      gap: 16px;
+    }
+
+    .tier-card h3 {
+      font-size: 1.35rem;
+      margin: 0 0 6px;
+    }
+
+    .tier-card p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .tier-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .tier-price {
+      color: var(--black);
+      font-size: 2.4rem;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .tier-price span {
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+
+    .setup-status {
+      border-radius: 6px;
+      display: inline-flex;
+      font-size: 0.82rem;
+      font-weight: 850;
+      padding: 7px 9px;
+    }
+
+    .setup-status.ready {
+      background: #ecfdf3;
+      color: #17663a;
+    }
+
+    .setup-status.blocked {
+      background: #fff4cc;
+      color: #6c5000;
+    }
+
+    .tier-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .checkout-panel {
+      position: sticky;
+      top: 84px;
+    }
+
+    label {
+      color: var(--muted);
+      display: grid;
+      font-size: 13px;
+      font-weight: 850;
+      gap: 6px;
+      margin: 0 0 12px;
+    }
+
+    input {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      font: inherit;
+      min-height: 42px;
+      padding: 10px 12px;
+      width: 100%;
+    }
+
+    .notice {
+      background: #fff7d1;
+      border-left: 4px solid var(--yellow-dark);
+      border-radius: 6px;
+      color: var(--ink);
+      margin-top: 14px;
+      padding: 12px;
+    }
+
+    .note-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .note-card strong {
+      display: block;
+      font-size: 1.04rem;
+      margin-bottom: 6px;
+    }
+
+    .note-card p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    footer {
+      background: var(--black);
+      color: rgba(255, 255, 255, 0.74);
+      padding: 24px clamp(18px, 6vw, 78px);
+    }
+
+    @media (max-width: 900px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .topnav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        min-height: min(620px, calc(100svh - 124px));
+      }
+
+      .intro-strip,
+      .layout,
+      .note-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .checkout-panel {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/rabbi" aria-label="OneTimeOneTime home">
+      <img src="/images/one-time-logo-black.png" alt="">
+      <span>OneTimeOneTime</span>
+    </a>
+    <nav class="topnav" aria-label="OneTime landing">
+      <span class="preview-chip">Preview</span>
+      <a href="#plans">Plans</a>
+      <a href="#setup">Setup Status</a>
+      <a href="/rabbi-member">Member Login</a>
+      <a href="/">BNA</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div id="previewBanner" class="preview-banner">Preview mode only. The BNA homepage is not replaced.</div>
+      <span class="eyebrow">Rabbi Eli Scheller</span>
+      <h1 id="heroTitle">OneTimeOneTime</h1>
+      <p id="heroSubtitle">Stories, Mishnayos learning, and moderated group calls for children, now wired as a BNA service-provider landing and membership preview.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#plans">Choose a plan</a>
+        <a class="button secondary" href="/rabbi-member">Member access</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <section class="intro-strip" aria-label="OneTime highlights">
+      <div class="strip-cell">
+        <strong>Stories</strong>
+        <span>Rabbi Scheller's warm storytelling style stays front and center.</span>
+      </div>
+      <div class="strip-cell">
+        <strong>Mishnayos</strong>
+        <span>Library and live-class access are modeled as separate member scopes.</span>
+      </div>
+      <div class="strip-cell">
+        <strong>Safe calls</strong>
+        <span>Group calls and questions stay moderated before public/member display.</span>
+      </div>
+      <div class="strip-cell">
+        <strong>BNA wired</strong>
+        <span>Payments, member access, and follow-up are first-party and gated.</span>
+      </div>
+    </section>
+
+    <section class="page-band white" id="plans">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="eyebrow">Membership options</span>
+          <h2>Two OneTime paths, with payment setup guarded.</h2>
+          <p>The public prices stay at $67 and $149. Checkout opens only when a Stripe price/payment link or Green Invoice payment link is configured.</p>
+        </div>
+        <div class="layout">
+          <div id="tiers" class="tiers"></div>
+          <aside class="checkout-panel" id="setup">
+            <span class="eyebrow">Payment setup</span>
+            <h2>Buyer details</h2>
+            <p class="muted">Enter buyer details before using a configured checkout link. If payment links are missing, the page records the blocker instead of creating a live charge.</p>
+            <form id="checkoutForm">
+              <label>Name <input name="name" autocomplete="name"></label>
+              <label>Email <input name="email" type="email" autocomplete="email" required></label>
+              <label>Phone <input name="phone" autocomplete="tel"></label>
+            </form>
+            <a class="member-link" href="/rabbi-member">Member login</a>
+            <div id="notice" class="notice" hidden></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-band">
+      <div class="section-inner">
+        <div class="section-head">
+          <span class="eyebrow">What is wired</span>
+          <h2>A service-provider page, not a loose external checkout.</h2>
+          <p>OneTime can sit inside BNA as a provider-owned program with member records, access grants, library items, live sessions, and payment-event audit trails.</p>
+        </div>
+        <div class="note-grid">
+          <article class="note-card">
+            <strong>Public landing</strong>
+            <p>This page is the Rabbi Scheller landing preview served at `/rabbi`, `/rabbi-preview`, and `/one-time-mishnayos`.</p>
+          </article>
+          <article class="note-card">
+            <strong>Payment placeholders</strong>
+            <p>Operations can store Stripe or Green Invoice payment links per tier. Without keys or links, checkout remains blocked.</p>
+          </article>
+          <article class="note-card">
+            <strong>Member access</strong>
+            <p>Paid access can be granted to library and live scopes only through the protected Rabbi launch workflow.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    OneTimeOneTime preview in the BNA service-provider system. No live charge, external send, or access grant happens from this page without configured provider credentials.
+  </footer>
+
+  <script src="/js/rabbi-launch.js"></script>
+</body>
+</html>

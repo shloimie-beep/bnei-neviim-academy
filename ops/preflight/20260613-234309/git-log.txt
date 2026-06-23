@@ -1,0 +1,30 @@
+﻿484563b (HEAD -> master) fix signup document flow and telegram routing
+9bae4ab chore: checkpoint verified BNA app cleanup
+05d8288 (origin/master, origin/HEAD) WIP: Codex changes - AI mode toggle, OpenAI/Codex buttons, natural responses, Rabbi Elie setup
+f468546 Fix: Handle large files gracefully in Telegram bridge, fix reply message errors
+3257bc4 Fix: Remove admin auth from Google OAuth start endpoint
+d5723ce Fix: Store sessions in PostgreSQL instead of memory for Railway multi-instance support
+4462fe9 Add Google Drive pipeline, Gmail API, Hebrew signup form, brand kit, GHL ops
+455b255 fix: operations cookie auth, GHL LeadConnector API, Kimi k2.6 alignment, Telegram bridge
+a175e3f Add test login page for debugging
+bc8b90c Revert "Add voice message support for student meeting transcripts"
+7e721d5 Add voice message support for student meeting transcripts
+92ffff1 Add Telegram webhook handler to Express server.js
+0b431de Add missing /api/operations/login endpoint
+c34a431 Fix: operations page redirects to login when not authenticated
+1d2b3d2 Fix auth: redirect to login page when not authenticated
+daa3632 Add migration endpoint to server.js
+a7981ec Add database migration endpoint
+521da75 Make auth case-insensitive - lowercase username/password
+99a3f42 Force redeploy
+67f7212 Security fixes: auth middleware, new bot, BNA schema
+416930c Complete Holy Flow task pipeline with CLI bridge and billing system
+c3651b2 Add Holy Flow task pipeline system with ramble protocol and Telegram bot
+f4eca55 Add private BNA Operations task manager with login and Railway Postgres
+cab2bf3 Add BNA Operations task manager app with PWA support
+f48c5bc Add proper Hebrew language toggle with full translations
+cf6098d Fix hero: CTA overlay on image instead of white strip
+67a4258 Add Green Invoice payment link
+e83531e Add Telegram notifications, payment tracking, and payment redirect
+87e60f4 Add Railway deployment config
+c4406dd Update pending tasks - Sawn research complete

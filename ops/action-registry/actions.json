@@ -1,0 +1,3999 @@
+[
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "notes",
+      "stage",
+      "category",
+      "urgency",
+      "assigned_to",
+      "project",
+      "due_date"
+    ],
+    "validation": {
+      "title": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=tasks"
+    ],
+    "ui_button_labels": [
+      "Create Task",
+      "Add Task",
+      "Save Task"
+    ],
+    "telegram_intent_examples": [
+      "Create a task to call the parent tomorrow",
+      "File this as a task for Shloimie"
+    ],
+    "action_id": "create_task",
+    "label": "Create task",
+    "description": "Create an internal Operations task from typed inputs or natural language.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "dashboard",
+      "internal_dialogue",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tasks.create",
+    "audit_log_event": "task_created",
+    "success_message": "Task created.",
+    "failure_message": "Task could not be created."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "title",
+      "category",
+      "route",
+      "severity",
+      "related_type",
+      "related_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=admin&section=support_tickets",
+      "/parent",
+      "/provider"
+    ],
+    "ui_button_labels": [
+      "Create Ticket",
+      "Report Issue"
+    ],
+    "telegram_intent_examples": [
+      "Open a support ticket about login",
+      "This provider request needs help"
+    ],
+    "action_id": "create_ticket",
+    "label": "Create ticket",
+    "description": "Create a support or technical ticket without creating a code task unless routing rules allow it.",
+    "category": "communications",
+    "page_contexts": [
+      "support_tickets",
+      "parent_helper",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "parent",
+      "student",
+      "provider_admin",
+      "provider_manager",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tickets.create",
+    "audit_log_event": "ticket_created",
+    "success_message": "Ticket created.",
+    "failure_message": "Ticket could not be created."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "question",
+      "options",
+      "recommendation",
+      "context"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=pipelines&section=decisions",
+      "/operations?view=tasks"
+    ],
+    "ui_button_labels": [
+      "Create Decision",
+      "Needs Decision"
+    ],
+    "telegram_intent_examples": [
+      "Should parents see this? Create a decision",
+      "File this as a Shloimie decision"
+    ],
+    "action_id": "create_decision",
+    "label": "Create decision",
+    "description": "Route a product, design, policy, or approval question into Shloimie Decisions.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "decisions",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "decisions.create",
+    "audit_log_event": "decision_created",
+    "success_message": "Decision created.",
+    "failure_message": "Decision could not be created."
+  },
+  {
+    "required_inputs": [
+      "task_id",
+      "stage"
+    ],
+    "optional_inputs": [
+      "verification_notes"
+    ],
+    "validation": {
+      "task_id": "number",
+      "stage": "known_task_stage"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=tasks"
+    ],
+    "ui_button_labels": [
+      "Move Task",
+      "Mark Done",
+      "Archive"
+    ],
+    "telegram_intent_examples": [
+      "Move task 42 to done",
+      "Update task #17 to in progress"
+    ],
+    "action_id": "update_task_stage",
+    "label": "Update task stage",
+    "description": "Move a task to another Operations stage.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "task_detail",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tasks.updateStage",
+    "audit_log_event": "task_stage_updated",
+    "success_message": "Task stage updated.",
+    "failure_message": "Task stage could not be updated."
+  },
+  {
+    "required_inputs": [
+      "task_id",
+      "new_title"
+    ],
+    "optional_inputs": [
+      "current_title",
+      "reason",
+      "source_comment_id"
+    ],
+    "validation": {
+      "task_id": "number",
+      "new_title": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=tasks"
+    ],
+    "ui_button_labels": [
+      "Retitle Task",
+      "Clean Title"
+    ],
+    "telegram_intent_examples": [
+      "Retitle task #195 to Add watchdog soft repair",
+      "Rename task 42 as Verify parent portal login"
+    ],
+    "action_id": "retitle_task_naturally",
+    "label": "Retitle task naturally",
+    "description": "Replace a raw or ramble-looking task title with a concise operator-safe title while preserving provenance.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "task_detail",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tasks.retitleNaturally",
+    "audit_log_event": "task_retitle_requested",
+    "success_message": "Task title updated.",
+    "failure_message": "Task title could not be updated."
+  },
+  {
+    "required_inputs": [
+      "task_id",
+      "option_label"
+    ],
+    "optional_inputs": [
+      "option_value",
+      "rationale",
+      "reason",
+      "current_options",
+      "recommended"
+    ],
+    "validation": {
+      "task_id": "number",
+      "option_label": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=pipelines&section=decisions",
+      "/operations?view=tasks"
+    ],
+    "ui_button_labels": [
+      "Add Option",
+      "Add Decision Option"
+    ],
+    "telegram_intent_examples": [
+      "Add decision option Hybrid path to task #195",
+      "Add option Delay launch to task 42"
+    ],
+    "action_id": "add_decision_option",
+    "label": "Add decision option",
+    "description": "Append a concise option to an existing decision task without creating an agent job or external write.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "task_detail",
+      "decisions",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tasks.addDecisionOption",
+    "audit_log_event": "decision_option_added",
+    "success_message": "Decision option added.",
+    "failure_message": "Decision option could not be added."
+  },
+  {
+    "required_inputs": [
+      "task_id",
+      "due_date"
+    ],
+    "optional_inputs": [
+      "planned_at",
+      "next_action_label",
+      "reason"
+    ],
+    "validation": {
+      "task_id": "number",
+      "due_date": "date"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=tasks",
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Schedule Task",
+      "Set Due Date"
+    ],
+    "telegram_intent_examples": [
+      "Schedule task #195 on 2026-06-18",
+      "Set task 42 due 2026-06-18"
+    ],
+    "action_id": "schedule_task_on_date",
+    "label": "Schedule task on date",
+    "description": "Set a task due date or planned time without starting Codex or changing ownership.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "task_detail",
+      "calendar",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tasks.scheduleOnDate",
+    "audit_log_event": "task_scheduled",
+    "success_message": "Task scheduled.",
+    "failure_message": "Task could not be scheduled."
+  },
+  {
+    "required_inputs": [
+      "task_id",
+      "workspace_key"
+    ],
+    "optional_inputs": [
+      "project_key",
+      "workspace_role",
+      "reason"
+    ],
+    "validation": {
+      "task_id": "number",
+      "workspace_key": "known_workspace_or_project"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=tasks",
+      "/operations?view=settings"
+    ],
+    "ui_button_labels": [
+      "Move Workspace",
+      "Move Project"
+    ],
+    "telegram_intent_examples": [
+      "Move task #195 to One Time workspace",
+      "Move task 42 to BNA workspace"
+    ],
+    "action_id": "move_task_workspace",
+    "label": "Move task workspace",
+    "description": "Move a task between first-party BNA project workspaces while keeping project filters consistent.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "task_detail",
+      "settings",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tasks.moveWorkspace",
+    "audit_log_event": "task_workspace_moved",
+    "success_message": "Task workspace updated.",
+    "failure_message": "Task workspace could not be updated."
+  },
+  {
+    "required_inputs": [
+      "note"
+    ],
+    "optional_inputs": [
+      "related_type",
+      "related_id",
+      "visibility"
+    ],
+    "validation": {
+      "note": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=internal_dialogue"
+    ],
+    "ui_button_labels": [
+      "Add Note",
+      "Save Note"
+    ],
+    "telegram_intent_examples": [
+      "Add a private note that the parent asked about billing"
+    ],
+    "action_id": "add_timeline_note",
+    "label": "Add timeline note",
+    "description": "Add an internal note to an Operations timeline or dialogue thread.",
+    "category": "communications",
+    "page_contexts": [
+      "internal_dialogue",
+      "task_detail",
+      "student_detail",
+      "provider_detail"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "timeline.addNote",
+    "audit_log_event": "timeline_note_added",
+    "success_message": "Timeline note added.",
+    "failure_message": "Timeline note could not be added."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "source_url",
+      "source_type",
+      "media_url",
+      "drive_file_id",
+      "drive_folder_id",
+      "drive_stage",
+      "thumbnail_url",
+      "thumbnail_brief",
+      "transcript_text",
+      "transcript_status",
+      "worksheet_notes",
+      "social_notes",
+      "newsletter_notes",
+      "summary",
+      "notes",
+      "source_content_job_id",
+      "release_status",
+      "rabbi_review_status",
+      "privacy_review_status"
+    ],
+    "validation": {
+      "title": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content",
+      "/one-time-preview#one-time-onboarding"
+    ],
+    "ui_button_labels": [
+      "Create One Time Library Item",
+      "Video Library Item"
+    ],
+    "telegram_intent_examples": [
+      "Create One Time video library item for this Mishnah recording",
+      "Make a Rabbi Scheller video library card"
+    ],
+    "action_id": "create_one_time_video_library_item",
+    "label": "Create One Time video library item",
+    "description": "Create a scoped One Time content job plus internal review draft states for a video-library item without publishing or sending.",
+    "category": "content",
+    "page_contexts": [
+      "content",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.createOneTimeVideoLibraryItem",
+    "audit_log_event": "one_time_video_library_item_requested",
+    "success_message": "One Time video library item created for review.",
+    "failure_message": "One Time video library item could not be created."
+  },
+  {
+    "required_inputs": [
+      "content_job_id"
+    ],
+    "optional_inputs": [
+      "title",
+      "project_key",
+      "workspace_key",
+      "media_url",
+      "source_url",
+      "output_statuses",
+      "release_status",
+      "rabbi_review_status",
+      "privacy_review_status",
+      "destination",
+      "audience",
+      "visibility_rules",
+      "notification_plan",
+      "rollback_plan",
+      "approval_phrase",
+      "blockers_from_operations"
+    ],
+    "validation": {
+      "content_job_id": "number"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content&section=one_time_library"
+    ],
+    "ui_button_labels": [
+      "Package Preview",
+      "Publish Package Preview"
+    ],
+    "telegram_intent_examples": [
+      "Preview member-library publish package for One Time content job #57",
+      "Check publishing blockers for Rabbi library item #42"
+    ],
+    "action_id": "preview_one_time_member_library_publish_package",
+    "label": "Preview One Time member-library publish package",
+    "description": "Preview the exact One Time member-library publishing package, blockers, audience, and rollback checklist without publishing, sending, changing visibility, or writing connectors.",
+    "category": "content",
+    "page_contexts": [
+      "content",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.previewOneTimeMemberLibraryPublishPackage",
+    "audit_log_event": "one_time_member_library_publish_package_previewed",
+    "success_message": "One Time member-library publish package previewed.",
+    "failure_message": "One Time member-library publish package could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "topic",
+      "mishnah_ref",
+      "audience",
+      "summary",
+      "outline",
+      "source_hints",
+      "source_url",
+      "source_content_job_id",
+      "class_session_id"
+    ],
+    "validation": {
+      "title": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content",
+      "/operations?view=tasks&project_key=one_time_mishnah_class"
+    ],
+    "ui_button_labels": [
+      "Create Shiur Idea",
+      "Rabbi Shiur Idea"
+    ],
+    "telegram_intent_examples": [
+      "Create Rabbi shiur idea about Mishnah Aleph",
+      "Add One Time shiur idea for perek beis"
+    ],
+    "action_id": "create_rabbi_shiur_idea",
+    "label": "Create Rabbi shiur idea",
+    "description": "Create a scoped One Time/Rabbi shiur idea review task without publishing, sending, or creating an agent job.",
+    "category": "content",
+    "page_contexts": [
+      "content",
+      "provider_workspace",
+      "tasks",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.createRabbiShiurIdea",
+    "audit_log_event": "rabbi_shiur_idea_requested",
+    "success_message": "Rabbi shiur idea created for review.",
+    "failure_message": "Rabbi shiur idea could not be created."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "topic",
+      "mishnah_ref",
+      "sourceable_topics",
+      "student_questions",
+      "source_hints",
+      "transcript_excerpt",
+      "source_url",
+      "source_content_job_id",
+      "class_session_id"
+    ],
+    "validation": {
+      "title": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content&section=research",
+      "/operations?view=tasks&project_key=one_time_mishnah_class"
+    ],
+    "ui_button_labels": [
+      "Create Source Sheet Task",
+      "Rabbi Source Sheet"
+    ],
+    "telegram_intent_examples": [
+      "Create Rabbi source sheet task for Mishnah Aleph questions",
+      "Prepare One Time source-sheet task for this class"
+    ],
+    "action_id": "create_rabbi_source_sheet_task",
+    "label": "Create Rabbi source-sheet task",
+    "description": "Create a scoped One Time/Rabbi source-sheet prep task for review without publishing, sending, or starting Codex automatically.",
+    "category": "content",
+    "page_contexts": [
+      "content",
+      "provider_workspace",
+      "tasks",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.createRabbiSourceSheetTask",
+    "audit_log_event": "rabbi_source_sheet_task_requested",
+    "success_message": "Rabbi source-sheet task created for review.",
+    "failure_message": "Rabbi source-sheet task could not be created."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "referrer_name",
+      "referred_name",
+      "referred_phone",
+      "referred_email",
+      "student_name",
+      "source_detail",
+      "referral_code",
+      "referral_link",
+      "reward_policy",
+      "ask_copy",
+      "next_follow_up_date",
+      "notes"
+    ],
+    "validation": {
+      "title": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=contacts",
+      "/operations?view=communications",
+      "/operations?view=tasks&project_key=one_time_mishnah_class"
+    ],
+    "ui_button_labels": [
+      "Create Referral Entry",
+      "Referral Ledger"
+    ],
+    "telegram_intent_examples": [
+      "Create referral ledger entry for the Cohen family from Rabbi Scheller",
+      "Log One Time referral from Sarah to David"
+    ],
+    "action_id": "create_referral_ledger_entry",
+    "label": "Create referral ledger entry",
+    "description": "Create a scoped One Time referral lead, internal ledger note, and review task without sending, minting links, or creating rewards.",
+    "category": "communications",
+    "page_contexts": [
+      "contacts",
+      "communications",
+      "provider_workspace",
+      "tasks",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "crm.createReferralLedgerEntry",
+    "audit_log_event": "referral_ledger_entry_requested",
+    "success_message": "Referral ledger entry created for review.",
+    "failure_message": "Referral ledger entry could not be created."
+  },
+  {
+    "required_inputs": [
+      "question_text"
+    ],
+    "optional_inputs": [
+      "title",
+      "topic",
+      "mishnah_ref",
+      "submitter_label",
+      "member_id",
+      "student_id",
+      "class_session_id",
+      "privacy_notes",
+      "context"
+    ],
+    "validation": {
+      "question_text": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content",
+      "/operations?view=tasks&project_key=one_time_mishnah_class"
+    ],
+    "ui_button_labels": [
+      "Submit Moderated Question",
+      "Moderate Question"
+    ],
+    "telegram_intent_examples": [
+      "Submit student question for moderation: Why does the Mishnah begin here?",
+      "File this One Time question for Rabbi moderation"
+    ],
+    "action_id": "submit_student_question_for_moderation",
+    "label": "Submit student question for moderation",
+    "description": "Create a private One Time/Rabbi question review task without creating a public forum post, sending a response, or exposing identity.",
+    "category": "content",
+    "page_contexts": [
+      "content",
+      "provider_workspace",
+      "tasks",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.submitStudentQuestionForModeration",
+    "audit_log_event": "student_question_moderation_requested",
+    "success_message": "Question submitted for private moderation.",
+    "failure_message": "Question could not be submitted for moderation."
+  },
+  {
+    "required_inputs": [
+      "task_id",
+      "review_status"
+    ],
+    "optional_inputs": [
+      "reviewer",
+      "review_notes",
+      "next_action_label"
+    ],
+    "validation": {
+      "task_id": "number",
+      "review_status": "non_empty_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content",
+      "/operations?view=tasks&project_key=one_time_mishnah_class"
+    ],
+    "ui_button_labels": [
+      "Review Moderated Question",
+      "Question Review"
+    ],
+    "telegram_intent_examples": [
+      "Review moderated question task #195 as needs source sheet",
+      "Mark moderated question #42 approved for Rabbi"
+    ],
+    "action_id": "review_moderated_question",
+    "label": "Review moderated question",
+    "description": "Record the private review status for a moderated question task without publishing, externally notifying, or sending a response.",
+    "category": "content",
+    "page_contexts": [
+      "content",
+      "provider_workspace",
+      "tasks",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.reviewModeratedQuestion",
+    "audit_log_event": "moderated_question_review_requested",
+    "success_message": "Moderated question review recorded.",
+    "failure_message": "Moderated question review could not be recorded."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "project",
+      "status"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Latest Newsletter",
+      "Open Draft"
+    ],
+    "telegram_intent_examples": [
+      "Find the latest newsletter draft",
+      "Open the newsletter"
+    ],
+    "action_id": "find_latest_newsletter_draft",
+    "label": "Find latest newsletter draft",
+    "description": "Find the newest saved weekly newsletter draft.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "communications",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.findLatestNewsletterDraft",
+    "audit_log_event": "newsletter_draft_found",
+    "success_message": "Newsletter draft found.",
+    "failure_message": "No newsletter draft was found."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "output_id",
+      "draft_body",
+      "instruction",
+      "save_revision"
+    ],
+    "validation": {
+      "output_id": "optional_number",
+      "draft_body": "optional_string"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Refine Newsletter",
+      "Save Revision"
+    ],
+    "telegram_intent_examples": [
+      "Refine the newsletter",
+      "Polish the latest weekly update"
+    ],
+    "action_id": "refine_newsletter_draft",
+    "label": "Refine newsletter draft",
+    "description": "Refine a saved newsletter draft and save a revision when a draft exists.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "communications",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.refineNewsletterDraft",
+    "audit_log_event": "newsletter_draft_refined",
+    "success_message": "Newsletter draft refined.",
+    "failure_message": "Newsletter draft could not be refined."
+  },
+  {
+    "required_inputs": [
+      "body"
+    ],
+    "optional_inputs": [
+      "source_output_id",
+      "title",
+      "job_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Save Revision"
+    ],
+    "telegram_intent_examples": [
+      "Save that newsletter revision"
+    ],
+    "action_id": "save_newsletter_revision",
+    "label": "Save newsletter revision",
+    "description": "Save a revised newsletter body as a new content output revision.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.saveNewsletterRevision",
+    "audit_log_event": "newsletter_revision_saved",
+    "success_message": "Newsletter revision saved.",
+    "failure_message": "Newsletter revision could not be saved."
+  },
+  {
+    "required_inputs": [
+      "output_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Approve Newsletter"
+    ],
+    "telegram_intent_examples": [
+      "Approve newsletter 12"
+    ],
+    "action_id": "approve_newsletter",
+    "label": "Approve newsletter",
+    "description": "Mark a newsletter draft approved after human review.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "communications"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.approveNewsletter",
+    "audit_log_event": "newsletter_approved",
+    "success_message": "Newsletter approved.",
+    "failure_message": "Newsletter could not be approved."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "title",
+      "source_text",
+      "audience",
+      "workspace_key",
+      "provider_id",
+      "community_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Weekly Update"
+    ],
+    "telegram_intent_examples": [
+      "Draft this as the weekly update",
+      "Make a parent-safe newsletter from this"
+    ],
+    "action_id": "draft_weekly_update",
+    "label": "Draft weekly update",
+    "description": "Draft a parent-safe weekly update/newsletter for review without sending it.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "communications",
+      "parent_portal",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "weekly.draftUpdate",
+    "audit_log_event": "weekly_update_drafted",
+    "success_message": "Weekly update drafted.",
+    "failure_message": "Weekly update could not be drafted."
+  },
+  {
+    "required_inputs": [
+      "update_id"
+    ],
+    "optional_inputs": [
+      "workspace_key",
+      "provider_id",
+      "community_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications",
+      "/parent"
+    ],
+    "ui_button_labels": [
+      "Select Hero Update"
+    ],
+    "telegram_intent_examples": [
+      "Use this as the parent dashboard weekly update"
+    ],
+    "action_id": "select_weekly_update_hero",
+    "label": "Select weekly update hero",
+    "description": "Select an approved weekly update for the parent dashboard hero.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "parent_portal",
+      "communications",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "weekly.selectHero",
+    "audit_log_event": "weekly_update_hero_selected",
+    "success_message": "Weekly update hero selected.",
+    "failure_message": "Weekly update hero could not be selected."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "output_id",
+      "newsletter_body",
+      "audience",
+      "identity"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Email",
+      "Email This"
+    ],
+    "telegram_intent_examples": [
+      "Draft an email from the newsletter",
+      "Turn the newsletter into an email"
+    ],
+    "action_id": "draft_email_from_newsletter",
+    "label": "Draft email from newsletter",
+    "description": "Create an email draft using an approved or draft newsletter body.",
+    "category": "email",
+    "page_contexts": [
+      "content",
+      "communications",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.draftFromNewsletter",
+    "audit_log_event": "email_draft_created",
+    "success_message": "Email draft created.",
+    "failure_message": "Email draft could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "subject",
+      "body",
+      "audience",
+      "identity",
+      "source_text"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Email",
+      "Create Email Draft"
+    ],
+    "telegram_intent_examples": [
+      "Draft an email to parents about tomorrow",
+      "Write an email from Rabbi Sheller"
+    ],
+    "action_id": "draft_email",
+    "label": "Draft email",
+    "description": "Create a safe email draft without sending it.",
+    "category": "email",
+    "page_contexts": [
+      "communications",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.draft",
+    "audit_log_event": "email_draft_created",
+    "success_message": "Email draft created.",
+    "failure_message": "Email draft could not be created."
+  },
+  {
+    "required_inputs": [
+      "body"
+    ],
+    "optional_inputs": [
+      "instruction",
+      "subject"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Refine Email"
+    ],
+    "telegram_intent_examples": [
+      "Tighten this email",
+      "Make this email warmer"
+    ],
+    "action_id": "refine_email",
+    "label": "Refine email",
+    "description": "Refine an email draft without sending it.",
+    "category": "email",
+    "page_contexts": [
+      "communications",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.refine",
+    "audit_log_event": "email_refined",
+    "success_message": "Email refined.",
+    "failure_message": "Email could not be refined."
+  },
+  {
+    "required_inputs": [
+      "draft_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Approve Email"
+    ],
+    "telegram_intent_examples": [
+      "Approve email draft 5"
+    ],
+    "action_id": "approve_email",
+    "label": "Approve email",
+    "description": "Approve an email draft for scheduling or sending.",
+    "category": "email",
+    "page_contexts": [
+      "communications"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.approve",
+    "audit_log_event": "email_approved",
+    "success_message": "Email approved.",
+    "failure_message": "Email could not be approved."
+  },
+  {
+    "required_inputs": [
+      "subject",
+      "body",
+      "scheduled_for"
+    ],
+    "optional_inputs": [
+      "audience",
+      "identity"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Schedule Email"
+    ],
+    "telegram_intent_examples": [
+      "Schedule this email for Monday"
+    ],
+    "action_id": "schedule_email",
+    "label": "Schedule email",
+    "description": "Schedule an email only after approval and connector readiness.",
+    "category": "email",
+    "page_contexts": [
+      "communications"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.schedule",
+    "audit_log_event": "email_schedule_requested",
+    "success_message": "Email scheduled.",
+    "failure_message": "Email could not be scheduled."
+  },
+  {
+    "required_inputs": [
+      "to",
+      "subject",
+      "body"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=settings&section=email"
+    ],
+    "ui_button_labels": [
+      "Send Test Email"
+    ],
+    "telegram_intent_examples": [
+      "Send a test email to me"
+    ],
+    "action_id": "send_test_email",
+    "label": "Send test email",
+    "description": "Send a test email only when approved and email connector is configured.",
+    "category": "email",
+    "page_contexts": [
+      "communications",
+      "settings"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.sendTest",
+    "audit_log_event": "test_email_send_requested",
+    "success_message": "Test email sent.",
+    "failure_message": "Test email was not sent."
+  },
+  {
+    "required_inputs": [
+      "schedule_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [],
+    "ui_button_labels": [
+      "Pause Email"
+    ],
+    "telegram_intent_examples": [
+      "Pause scheduled email 8"
+    ],
+    "action_id": "pause_scheduled_email",
+    "label": "Pause scheduled email",
+    "description": "Pause a scheduled email send.",
+    "category": "email",
+    "page_contexts": [
+      "communications"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.pauseScheduled",
+    "audit_log_event": "scheduled_email_paused",
+    "success_message": "Scheduled email paused.",
+    "failure_message": "Scheduled email could not be paused."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "limit",
+      "status"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "View Email Log"
+    ],
+    "telegram_intent_examples": [
+      "Show recent email log"
+    ],
+    "action_id": "view_email_log",
+    "label": "View email log",
+    "description": "Read recent email log entries.",
+    "category": "email",
+    "page_contexts": [
+      "communications",
+      "settings"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "email.viewLog",
+    "audit_log_event": "email_log_viewed",
+    "success_message": "Email log loaded.",
+    "failure_message": "Email log could not be loaded."
+  },
+  {
+    "required_inputs": [
+      "title",
+      "start_at"
+    ],
+    "optional_inputs": [
+      "end_at",
+      "description",
+      "visibility",
+      "source",
+      "related_type",
+      "related_id",
+      "meeting_url"
+    ],
+    "validation": {
+      "title": "non_empty_string",
+      "start_at": "datetime"
+    },
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "New Event",
+      "Create Event"
+    ],
+    "telegram_intent_examples": [
+      "Create a calendar event for parent meeting on 2026-06-18 16:00"
+    ],
+    "action_id": "create_calendar_event",
+    "label": "Create calendar event",
+    "description": "Create an internal BNA calendar event without requiring Google Calendar.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar",
+      "student_portal",
+      "parent_portal",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.createEvent",
+    "audit_log_event": "calendar_event_created",
+    "success_message": "Calendar event created.",
+    "failure_message": "Calendar event could not be created."
+  },
+  {
+    "required_inputs": [
+      "event_id"
+    ],
+    "optional_inputs": [
+      "title",
+      "start_at",
+      "end_at",
+      "description",
+      "visibility",
+      "status"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Edit Event"
+    ],
+    "telegram_intent_examples": [
+      "Move calendar event 12 to Thursday"
+    ],
+    "action_id": "update_calendar_event",
+    "label": "Update calendar event",
+    "description": "Update an internal calendar event.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.updateEvent",
+    "audit_log_event": "calendar_event_updated",
+    "success_message": "Calendar event updated.",
+    "failure_message": "Calendar event could not be updated."
+  },
+  {
+    "required_inputs": [
+      "event_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Archive Event",
+      "Delete Event"
+    ],
+    "telegram_intent_examples": [
+      "Delete calendar event 12"
+    ],
+    "action_id": "delete_calendar_event",
+    "label": "Archive calendar event",
+    "description": "Archive an internal calendar event. Destructive external deletes require approval.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.archiveEvent",
+    "audit_log_event": "calendar_event_archived",
+    "success_message": "Calendar event archived.",
+    "failure_message": "Calendar event could not be archived."
+  },
+  {
+    "required_inputs": [
+      "title",
+      "start_at"
+    ],
+    "optional_inputs": [
+      "student_id",
+      "assignment_id",
+      "description"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/student",
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Add Student Event"
+    ],
+    "telegram_intent_examples": [
+      "Create a student-visible schedule item for Meir tomorrow"
+    ],
+    "action_id": "create_student_schedule_item",
+    "label": "Create student schedule item",
+    "description": "Create a student-visible schedule item in the BNA calendar.",
+    "category": "student",
+    "page_contexts": [
+      "student_detail",
+      "student_portal",
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "calendar.createStudentScheduleItem",
+    "audit_log_event": "student_schedule_item_created",
+    "success_message": "Student schedule item created.",
+    "failure_message": "Student schedule item could not be created."
+  },
+  {
+    "required_inputs": [
+      "title",
+      "start_at"
+    ],
+    "optional_inputs": [
+      "student_id",
+      "description"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Add Parent Event"
+    ],
+    "telegram_intent_examples": [
+      "Create a parent-visible event for the trip deadline"
+    ],
+    "action_id": "create_parent_visible_event",
+    "label": "Create parent-visible event",
+    "description": "Create a parent-visible child calendar item.",
+    "category": "parent",
+    "page_contexts": [
+      "parent_portal",
+      "student_detail",
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "calendar.createParentVisibleEvent",
+    "audit_log_event": "parent_visible_event_created",
+    "success_message": "Parent-visible event created.",
+    "failure_message": "Parent-visible event could not be created."
+  },
+  {
+    "required_inputs": [
+      "title",
+      "start_at"
+    ],
+    "optional_inputs": [
+      "description",
+      "meeting_url"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/provider-participant",
+      "/operations?workspace=rabbi_sheller_provider&view=calendar"
+    ],
+    "ui_button_labels": [
+      "New Class Session"
+    ],
+    "telegram_intent_examples": [
+      "Create Rabbi Sheller class session on Sunday at 7"
+    ],
+    "action_id": "create_provider_class_session",
+    "label": "Create provider class session",
+    "description": "Create a provider program session without exposing BNA school accountability.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "provider_participant",
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.createProviderClassSession",
+    "audit_log_event": "provider_class_session_created",
+    "success_message": "Provider class session created.",
+    "failure_message": "Provider class session could not be created."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "raw_prompt",
+      "provider_id",
+      "provider_name",
+      "workspace_key",
+      "class_count",
+      "community_dialogue_style",
+      "student_access",
+      "display_rules",
+      "message_permissions",
+      "student_to_teacher_replies",
+      "student_to_student_chat_enabled",
+      "teacher_moderation_required",
+      "public_display_enabled"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/provider",
+      "/operations?view=settings&section=provider_onboarding",
+      "/operations?view=community",
+      "/one-time-classroom"
+    ],
+    "ui_button_labels": [
+      "Create Classroom Draft",
+      "Start Classroom Setup"
+    ],
+    "telegram_intent_examples": [
+      "Start a provider classroom with 8 classes and private Rabbi Q&A",
+      "Create a learning community draft for this provider"
+    ],
+    "action_id": "create_provider_classroom_draft",
+    "label": "Create provider classroom draft",
+    "description": "Create a first-party provider classroom/community setup draft from natural language.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "community",
+      "calendar",
+      "settings",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "provider.createClassroomDraft",
+    "audit_log_event": "provider_classroom_draft_created",
+    "success_message": "Provider classroom setup draft created.",
+    "failure_message": "Provider classroom setup draft could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=tasks&section=schedule",
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Internal calendar"
+    ],
+    "telegram_intent_examples": [
+      "Open the internal calendar"
+    ],
+    "action_id": "open_internal_calendar",
+    "label": "Open internal calendar",
+    "description": "Navigate from task schedule surfaces to the internal Operations calendar without external sync.",
+    "category": "calendar",
+    "page_contexts": [
+      "tasks",
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "ui.openOperationsView",
+    "audit_log_event": "operations_calendar_navigation_opened",
+    "success_message": "Internal calendar opened.",
+    "failure_message": "Internal calendar could not be opened."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [],
+    "ui_button_labels": [
+      "Sync Google Calendar"
+    ],
+    "telegram_intent_examples": [
+      "Sync Google Calendar"
+    ],
+    "action_id": "sync_google_calendar",
+    "label": "Sync Google Calendar",
+    "description": "Run Google Calendar sync only after explicit approval and connector readiness.",
+    "category": "calendar",
+    "page_contexts": [
+      "settings",
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna"
+    ],
+    "execution_handler": "calendar.syncGoogleCalendar",
+    "audit_log_event": "google_calendar_sync_requested",
+    "success_message": "Google Calendar sync requested.",
+    "failure_message": "Google Calendar sync could not run."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "program",
+      "start_date",
+      "start_at",
+      "weeks",
+      "class_time",
+      "timezone",
+      "workspace_key",
+      "notes"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=settings&section=google_workspace",
+      "/operations?view=calendar"
+    ],
+    "ui_button_labels": [
+      "Preview 8-Week Launch Calendar",
+      "8-Week Plan"
+    ],
+    "telegram_intent_examples": [
+      "Create the 8-week launch calendar",
+      "Preview the Rabbi Scheller launch calendar starting 2026-06-21"
+    ],
+    "action_id": "calendar_batch_launch_plan_preview",
+    "label": "Preview launch calendar plan",
+    "description": "Preview an 8-week One Time/Rabbi launch calendar batch without creating internal events or writing to Google Calendar.",
+    "category": "calendar",
+    "page_contexts": [
+      "settings",
+      "calendar",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.batchLaunchPlanPreview",
+    "audit_log_event": "calendar_batch_launch_plan_previewed",
+    "success_message": "Launch calendar preview created.",
+    "failure_message": "Launch calendar preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [],
+    "ui_button_labels": [
+      "Sync Google Classroom"
+    ],
+    "telegram_intent_examples": [
+      "Sync Google Classroom"
+    ],
+    "action_id": "sync_google_classroom",
+    "label": "Sync Google Classroom",
+    "description": "Run Google Classroom sync only after explicit approval and connector readiness.",
+    "category": "calendar",
+    "page_contexts": [
+      "settings",
+      "assignments"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna"
+    ],
+    "execution_handler": "calendar.syncGoogleClassroom",
+    "audit_log_event": "google_classroom_sync_requested",
+    "success_message": "Google Classroom sync requested.",
+    "failure_message": "Google Classroom sync could not run."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "course_id",
+      "course_name",
+      "topic_id",
+      "topic_name",
+      "material_title",
+      "material_url",
+      "description",
+      "source_type",
+      "workspace_key",
+      "notes"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=settings&section=google_workspace",
+      "/operations?view=assignments",
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Preview Topic Material",
+      "Topic/material"
+    ],
+    "telegram_intent_examples": [
+      "Put this material under the right topic",
+      "Preview a Classroom material under Week 1"
+    ],
+    "action_id": "classroom_topic_material_preview",
+    "label": "Preview Classroom topic material",
+    "description": "Preview placing a BNA or One Time material under a Google Classroom topic without reading or writing Classroom.",
+    "category": "calendar",
+    "page_contexts": [
+      "settings",
+      "assignments",
+      "content",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "classroom.topicMaterialPreview",
+    "audit_log_event": "classroom_topic_material_previewed",
+    "success_message": "Classroom topic material preview created.",
+    "failure_message": "Classroom topic material preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "query",
+      "folder_id",
+      "folder_name",
+      "source_stage",
+      "mime_type",
+      "limit"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=settings&section=google_workspace",
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Preview Drive Search",
+      "Find Drive File"
+    ],
+    "telegram_intent_examples": [
+      "Find the latest Rabbi Scheller Mishnah video",
+      "List files in the BNA raw media intake"
+    ],
+    "action_id": "google_drive_find_file_preview",
+    "label": "Preview Drive file search",
+    "description": "Preview a scoped Google Drive file search/import plan without reading or writing Drive data.",
+    "category": "content",
+    "page_contexts": [
+      "settings",
+      "content",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "googleDrive.findFilePreview",
+    "audit_log_event": "google_drive_file_search_previewed",
+    "success_message": "Google Drive file search preview created.",
+    "failure_message": "Google Drive file search preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "title",
+      "body",
+      "folder_id",
+      "folder_name",
+      "related_type",
+      "related_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=settings&section=google_workspace",
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Preview Doc Create",
+      "Create Google Doc Preview"
+    ],
+    "telegram_intent_examples": [
+      "Create a Google Doc summary for this class"
+    ],
+    "action_id": "google_drive_create_doc_preview",
+    "label": "Preview Drive Doc creation",
+    "description": "Preview creating a Google Doc from BNA content without writing to Drive.",
+    "category": "content",
+    "page_contexts": [
+      "settings",
+      "content",
+      "calendar",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "googleDrive.createDocPreview",
+    "audit_log_event": "google_drive_doc_create_previewed",
+    "success_message": "Google Drive Doc creation preview created.",
+    "failure_message": "Google Drive Doc creation preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "folder_name",
+      "parent_folder_id",
+      "provider_id",
+      "workspace_key"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=settings&section=google_workspace",
+      "/operations?view=service_providers"
+    ],
+    "ui_button_labels": [
+      "Preview Folder Create",
+      "Create Provider Folder Preview"
+    ],
+    "telegram_intent_examples": [
+      "Create a folder for this provider"
+    ],
+    "action_id": "google_drive_create_folder_preview",
+    "label": "Preview Drive folder creation",
+    "description": "Preview creating a provider or workspace folder in Google Drive without writing to Drive.",
+    "category": "content",
+    "page_contexts": [
+      "settings",
+      "content",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "googleDrive.createFolderPreview",
+    "audit_log_event": "google_drive_folder_create_previewed",
+    "success_message": "Google Drive folder creation preview created.",
+    "failure_message": "Google Drive folder creation preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "file_id",
+      "file_name",
+      "target_folder_id",
+      "target_folder_name",
+      "source_stage",
+      "related_type",
+      "related_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=settings&section=google_workspace",
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Preview Drive Move",
+      "Put File In Folder Preview"
+    ],
+    "telegram_intent_examples": [
+      "Put this transcript into the One Time folder"
+    ],
+    "action_id": "google_drive_move_file_preview",
+    "label": "Preview Drive file move",
+    "description": "Preview moving or importing a Google Drive file into a known BNA folder without writing to Drive.",
+    "category": "content",
+    "page_contexts": [
+      "settings",
+      "content",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "googleDrive.moveFilePreview",
+    "audit_log_event": "google_drive_file_move_previewed",
+    "success_message": "Google Drive file move preview created.",
+    "failure_message": "Google Drive file move preview could not be created."
+  },
+  {
+    "required_inputs": [
+      "event_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=calendar",
+      "/parent",
+      "/student",
+      "/provider-participant"
+    ],
+    "ui_button_labels": [
+      "Open Event"
+    ],
+    "telegram_intent_examples": [
+      "Open calendar event 12"
+    ],
+    "action_id": "open_calendar_event",
+    "label": "Open calendar event",
+    "description": "Return a direct route to a calendar event detail.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system",
+      "parent",
+      "student",
+      "provider_admin",
+      "participant"
+    ],
+    "allowed_workspaces": [
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.openEvent",
+    "audit_log_event": "calendar_event_opened",
+    "success_message": "Calendar event route opened.",
+    "failure_message": "Calendar event route could not be opened."
+  },
+  {
+    "required_inputs": [
+      "event_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [],
+    "ui_button_labels": [
+      "Parent Visible"
+    ],
+    "telegram_intent_examples": [
+      "Mark event 12 parent visible"
+    ],
+    "action_id": "mark_event_parent_visible",
+    "label": "Mark event parent-visible",
+    "description": "Make an event visible to parents after admin review.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "calendar.markParentVisible",
+    "audit_log_event": "calendar_event_marked_parent_visible",
+    "success_message": "Event marked parent-visible.",
+    "failure_message": "Event visibility could not be changed."
+  },
+  {
+    "required_inputs": [
+      "event_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [],
+    "ui_button_labels": [
+      "Student Visible"
+    ],
+    "telegram_intent_examples": [
+      "Mark event 12 student visible"
+    ],
+    "action_id": "mark_event_student_visible",
+    "label": "Mark event student-visible",
+    "description": "Make an event visible to the assigned student after admin review.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "calendar.markStudentVisible",
+    "audit_log_event": "calendar_event_marked_student_visible",
+    "success_message": "Event marked student-visible.",
+    "failure_message": "Event visibility could not be changed."
+  },
+  {
+    "required_inputs": [
+      "event_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [],
+    "ui_button_labels": [
+      "Admin Only"
+    ],
+    "telegram_intent_examples": [
+      "Mark event 12 admin only"
+    ],
+    "action_id": "mark_event_admin_only",
+    "label": "Mark event admin-only",
+    "description": "Restrict an event to internal/admin visibility.",
+    "category": "calendar",
+    "page_contexts": [
+      "calendar"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "calendar.markAdminOnly",
+    "audit_log_event": "calendar_event_marked_admin_only",
+    "success_message": "Event marked admin-only.",
+    "failure_message": "Event visibility could not be changed."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "newsletter_body",
+      "output_id",
+      "audience"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft WhatsApp"
+    ],
+    "telegram_intent_examples": [
+      "Make a WhatsApp update from the newsletter"
+    ],
+    "action_id": "generate_whatsapp_from_newsletter",
+    "label": "Generate WhatsApp from newsletter",
+    "description": "Generate a WhatsApp draft from a newsletter without sending it.",
+    "category": "whatsapp",
+    "page_contexts": [
+      "content",
+      "communications",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "whatsapp.draftFromNewsletter",
+    "audit_log_event": "whatsapp_draft_created",
+    "success_message": "WhatsApp draft created.",
+    "failure_message": "WhatsApp draft could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "newsletter_body",
+      "output_id",
+      "channels"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Make Social Posts"
+    ],
+    "telegram_intent_examples": [
+      "Make social posts from the newsletter"
+    ],
+    "action_id": "generate_social_posts_from_newsletter",
+    "label": "Generate social posts from newsletter",
+    "description": "Generate social copy drafts without publishing.",
+    "category": "social",
+    "page_contexts": [
+      "content",
+      "communications"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "social.draftFromNewsletter",
+    "audit_log_event": "social_drafts_created",
+    "success_message": "Social drafts created.",
+    "failure_message": "Social drafts could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "post_text",
+      "source_text",
+      "body",
+      "channels",
+      "platforms",
+      "post_count",
+      "schedule_start",
+      "scheduled_for",
+      "cadence",
+      "source_url",
+      "media_url",
+      "hosted_media_url",
+      "workspace_key",
+      "approval_phrase",
+      "blockers"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=content",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Preview Social Schedule",
+      "Buffer Draft Preview"
+    ],
+    "telegram_intent_examples": [
+      "Schedule this Facebook post for tomorrow",
+      "Make 3 posts from this video",
+      "Preview one social post per day this week"
+    ],
+    "action_id": "preview_social_schedule_package",
+    "label": "Preview social schedule package",
+    "description": "Preview Buffer/social draft channels, schedule slots, blockers, and approval requirements without writing to Buffer or publishing.",
+    "category": "social",
+    "page_contexts": [
+      "content",
+      "communications",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "social.previewSchedulePackage",
+    "audit_log_event": "social_schedule_package_previewed",
+    "success_message": "Social schedule package previewed.",
+    "failure_message": "Social schedule package could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "content_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content"
+    ],
+    "ui_button_labels": [
+      "Open in UI"
+    ],
+    "telegram_intent_examples": [
+      "Open content item 15"
+    ],
+    "action_id": "open_content_item_url",
+    "label": "Open content item",
+    "description": "Return a URL to a content item.",
+    "category": "content",
+    "page_contexts": [
+      "content"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "content.openItemUrl",
+    "audit_log_event": "content_item_opened",
+    "success_message": "Content item route opened.",
+    "failure_message": "Content item route could not be opened."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "student_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/student"
+    ],
+    "ui_button_labels": [
+      "Today Plan",
+      "Ask BNA Helper"
+    ],
+    "telegram_intent_examples": [
+      "What do I need to do today?"
+    ],
+    "action_id": "show_today_plan",
+    "label": "Show today plan",
+    "description": "Show a student-safe today plan.",
+    "category": "student",
+    "page_contexts": [
+      "student_portal",
+      "student_helper"
+    ],
+    "allowed_roles": [
+      "student",
+      "bna_admin",
+      "admin",
+      "super_admin",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "student.showTodayPlan",
+    "audit_log_event": "student_today_plan_shown",
+    "success_message": "Today plan loaded.",
+    "failure_message": "Today plan could not be loaded."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "student_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/student",
+      "/parent"
+    ],
+    "ui_button_labels": [
+      "Assignments"
+    ],
+    "telegram_intent_examples": [
+      "Show assignments"
+    ],
+    "action_id": "show_assignments",
+    "label": "Show assignments",
+    "description": "Show student-visible assignments only.",
+    "category": "student",
+    "page_contexts": [
+      "student_portal",
+      "parent_portal"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system",
+      "parent",
+      "student"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "student.showAssignments",
+    "audit_log_event": "student_assignments_shown",
+    "success_message": "Assignments loaded.",
+    "failure_message": "Assignments could not be loaded."
+  },
+  {
+    "required_inputs": [
+      "student_id",
+      "assignment_id"
+    ],
+    "optional_inputs": [
+      "prompt_patch",
+      "language",
+      "level",
+      "interests",
+      "dry_run_reason"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=calendar&section=worksheets",
+      "/student"
+    ],
+    "ui_button_labels": [
+      "Generate Worksheet",
+      "Regenerate Worksheet"
+    ],
+    "telegram_intent_examples": [
+      "Generate a worksheet for this student",
+      "Regenerate with this prompt patch"
+    ],
+    "action_id": "generate_student_worksheet",
+    "label": "Generate student worksheet",
+    "description": "Generate or preview a student-safe worksheet using filtered assignment context.",
+    "category": "student",
+    "page_contexts": [
+      "student_detail",
+      "assignments",
+      "student_helper",
+      "parent_helper",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "staff",
+      "parent",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "student.generateWorksheet",
+    "audit_log_event": "student_worksheet_generated",
+    "success_message": "Student worksheet generated.",
+    "failure_message": "Student worksheet could not be generated."
+  },
+  {
+    "required_inputs": [
+      "assignment_id"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/student"
+    ],
+    "ui_button_labels": [
+      "Explain"
+    ],
+    "telegram_intent_examples": [
+      "Explain assignment 7"
+    ],
+    "action_id": "explain_assignment",
+    "label": "Explain assignment",
+    "description": "Explain a student-visible assignment without admin-only notes.",
+    "category": "student",
+    "page_contexts": [
+      "student_portal",
+      "student_helper"
+    ],
+    "allowed_roles": [
+      "student",
+      "bna_admin",
+      "admin",
+      "super_admin",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "student.explainAssignment",
+    "audit_log_event": "assignment_explained",
+    "success_message": "Assignment explanation loaded.",
+    "failure_message": "Assignment explanation could not be loaded."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/student",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Ask for help",
+      "Ask BNA Helper",
+      "Parent Help"
+    ],
+    "telegram_intent_examples": [
+      "Ask for help with my login"
+    ],
+    "action_id": "create_help_request",
+    "label": "Create help request",
+    "description": "Create a parent/student-safe help request for staff.",
+    "category": "communications",
+    "page_contexts": [
+      "student_helper",
+      "parent_helper",
+      "messages_help"
+    ],
+    "allowed_roles": [
+      "parent",
+      "student",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "support.createHelpRequest",
+    "audit_log_event": "help_request_created",
+    "success_message": "Help request created.",
+    "failure_message": "Help request could not be created."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "route",
+      "viewport",
+      "selected_area",
+      "classification",
+      "student_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/student",
+      "/operations?view=admin&section=support_tickets"
+    ],
+    "ui_button_labels": [
+      "Report problem",
+      "Send feedback",
+      "Report a bug",
+      "Report a suggestion"
+    ],
+    "telegram_intent_examples": [
+      "Report a broken parent portal button",
+      "This screen is unclear for parents"
+    ],
+    "action_id": "create_report_problem_ticket",
+    "label": "Create report-problem ticket",
+    "description": "Create a parent/student-safe review ticket for bugs, suggestions, unclear UI, broken buttons, or account help without creating a Codex code task.",
+    "category": "communications",
+    "page_contexts": [
+      "parent_portal",
+      "student_portal",
+      "parent_helper",
+      "messages_help",
+      "support_tickets"
+    ],
+    "allowed_roles": [
+      "parent",
+      "student",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "support.createReportProblemTicket",
+    "audit_log_event": "report_problem_ticket_created",
+    "success_message": "Problem report saved for review.",
+    "failure_message": "Problem report could not be saved."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "student_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent"
+    ],
+    "ui_button_labels": [
+      "Calendar",
+      "Show Calendar"
+    ],
+    "telegram_intent_examples": [
+      "Show my child calendar"
+    ],
+    "action_id": "show_child_calendar",
+    "label": "Show child calendar",
+    "description": "Show parent-visible child calendar events only.",
+    "category": "parent",
+    "page_contexts": [
+      "parent_portal",
+      "parent_helper"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "parent.showChildCalendar",
+    "audit_log_event": "parent_child_calendar_shown",
+    "success_message": "Child calendar loaded.",
+    "failure_message": "Child calendar could not be loaded."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent"
+    ],
+    "ui_button_labels": [
+      "Draft Message"
+    ],
+    "telegram_intent_examples": [
+      "Draft a message to admin about pickup"
+    ],
+    "action_id": "draft_message_to_admin",
+    "label": "Draft message to admin",
+    "description": "Draft a parent-visible message to staff without exposing private internals.",
+    "category": "parent",
+    "page_contexts": [
+      "parent_helper",
+      "messages_help"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "parent.draftMessageToAdmin",
+    "audit_log_event": "parent_admin_message_drafted",
+    "success_message": "Message draft created.",
+    "failure_message": "Message draft could not be created."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "student_id",
+      "tone",
+      "source_context"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Parent Response"
+    ],
+    "telegram_intent_examples": [
+      "Draft a parent-safe response to this question"
+    ],
+    "action_id": "draft_parent_response",
+    "label": "Draft parent response",
+    "description": "Draft a parent-safe response without exposing private admin notes.",
+    "category": "parent",
+    "page_contexts": [
+      "parent_helper",
+      "communications",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "parent.draftResponse",
+    "audit_log_event": "parent_response_drafted",
+    "success_message": "Parent response drafted.",
+    "failure_message": "Parent response could not be drafted."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "student_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent"
+    ],
+    "ui_button_labels": [
+      "Visible Notes"
+    ],
+    "telegram_intent_examples": [
+      "Show parent-visible notes"
+    ],
+    "action_id": "view_parent_visible_notes",
+    "label": "View parent-visible notes",
+    "description": "Read only notes explicitly marked parent-visible.",
+    "category": "parent",
+    "page_contexts": [
+      "parent_portal",
+      "parent_helper"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "parent.viewVisibleNotes",
+    "audit_log_event": "parent_visible_notes_viewed",
+    "success_message": "Parent-visible notes loaded.",
+    "failure_message": "Parent-visible notes could not be loaded."
+  },
+  {
+    "required_inputs": [
+      "body"
+    ],
+    "optional_inputs": [
+      "visibility"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/provider-participant"
+    ],
+    "ui_button_labels": [
+      "Post Question",
+      "Save Post"
+    ],
+    "telegram_intent_examples": [
+      "Post this question for Rabbi Sheller"
+    ],
+    "action_id": "create_provider_question_post",
+    "label": "Create provider question/post",
+    "description": "Create a structured provider participant question or post.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_participant",
+      "provider_workspace"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "provider_staff",
+      "participant",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "provider.createQuestionPost",
+    "audit_log_event": "provider_question_post_created",
+    "success_message": "Provider question/post created.",
+    "failure_message": "Provider question/post could not be created."
+  },
+  {
+    "required_inputs": [
+      "community_id",
+      "message"
+    ],
+    "optional_inputs": [
+      "thread_id",
+      "visibility",
+      "audience"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications",
+      "/parent",
+      "/provider"
+    ],
+    "ui_button_labels": [
+      "Post Community Message"
+    ],
+    "telegram_intent_examples": [
+      "Post this update to the learning community"
+    ],
+    "action_id": "post_community_message",
+    "label": "Post community message",
+    "description": "Create a scoped learning-community message after permission checks.",
+    "category": "communications",
+    "page_contexts": [
+      "community",
+      "communications",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "staff",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "community.postMessage",
+    "audit_log_event": "community_message_posted",
+    "success_message": "Community message posted.",
+    "failure_message": "Community message could not be posted."
+  },
+  {
+    "required_inputs": [
+      "provider_id",
+      "message"
+    ],
+    "optional_inputs": [
+      "student_id",
+      "service_id",
+      "community_id",
+      "preferred_contact_method",
+      "request_type"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/operations?view=service_providers"
+    ],
+    "ui_button_labels": [
+      "Request Provider Contact"
+    ],
+    "telegram_intent_examples": [
+      "Ask this provider to contact me",
+      "Request information from the tutor"
+    ],
+    "action_id": "request_provider_contact",
+    "label": "Request provider contact",
+    "description": "Store a first-party parent/provider request without sending live external messages in tests.",
+    "category": "provider",
+    "page_contexts": [
+      "parent_portal",
+      "provider_index",
+      "parent_helper",
+      "bot"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "provider.requestContact",
+    "audit_log_event": "provider_contact_requested",
+    "success_message": "Provider contact request saved.",
+    "failure_message": "Provider contact request could not be saved."
+  },
+  {
+    "required_inputs": [
+      "provider_id"
+    ],
+    "optional_inputs": [
+      "display_name",
+      "summary",
+      "status"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=service_providers"
+    ],
+    "ui_button_labels": [
+      "Save Provider",
+      "Publish Provider"
+    ],
+    "telegram_intent_examples": [
+      "Update Rabbi Sheller provider profile"
+    ],
+    "action_id": "update_provider_profile",
+    "label": "Update provider profile",
+    "description": "Update provider program/profile draft data.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "provider_index"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "provider.updateProfile",
+    "audit_log_event": "provider_profile_update_requested",
+    "success_message": "Provider profile update saved.",
+    "failure_message": "Provider profile could not be updated."
+  },
+  {
+    "required_inputs": [
+      "provider_id"
+    ],
+    "optional_inputs": [
+      "provider_profile_id",
+      "google_business_profile_url",
+      "google_maps_url",
+      "google_place_id",
+      "place_id",
+      "notes"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=service_providers",
+      "/operations?view=settings&section=google_workspace"
+    ],
+    "ui_button_labels": [
+      "Capture Google Business Link",
+      "Save Google Profile Link",
+      "Store Place ID"
+    ],
+    "telegram_intent_examples": [
+      "Attach this provider Google Business link",
+      "Save this Google Maps link on the Rabbi Scheller provider profile",
+      "Store this Place ID for the provider listing"
+    ],
+    "action_id": "capture_provider_google_business_link",
+    "label": "Capture provider Google Business link",
+    "description": "Capture a provider Google Business Profile or Maps link as manual provider metadata without using the live GBP API.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "provider_index",
+      "settings",
+      "google_workspace",
+      "bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "provider.captureGoogleBusinessLink",
+    "audit_log_event": "provider_google_business_link_captured",
+    "success_message": "Provider Google Business link captured for review.",
+    "failure_message": "Provider Google Business link could not be captured."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "provider_id",
+      "provider_name",
+      "query",
+      "google_business_profile_url",
+      "google_maps_url",
+      "google_place_id",
+      "place_id",
+      "workspace_key",
+      "notes"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=service_providers",
+      "/operations?view=settings&section=google_workspace"
+    ],
+    "ui_button_labels": [
+      "Preview Place ID Lookup",
+      "Place ID"
+    ],
+    "telegram_intent_examples": [
+      "Find the Place ID from this Google Maps link",
+      "Look up the Google Business Place ID for Rabbi Scheller"
+    ],
+    "action_id": "google_business_place_id_lookup",
+    "label": "Preview Google Business Place ID lookup",
+    "description": "Preview resolving or extracting a Google Maps Place ID without calling Maps or Google Business Profile APIs.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "provider_index",
+      "settings",
+      "google_workspace",
+      "bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "googleBusiness.placeIdLookupPreview",
+    "audit_log_event": "google_business_place_id_lookup_previewed",
+    "success_message": "Google Business Place ID lookup preview created.",
+    "failure_message": "Google Business Place ID lookup preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "provider_id",
+      "provider_name",
+      "account_id",
+      "location_id",
+      "location_name",
+      "workspace_key",
+      "notes"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=service_providers",
+      "/operations?view=settings&section=google_workspace"
+    ],
+    "ui_button_labels": [
+      "Preview GBP Locations",
+      "Locations"
+    ],
+    "telegram_intent_examples": [
+      "List accessible Google Business locations for this provider",
+      "Preview GBP locations for Rabbi Scheller"
+    ],
+    "action_id": "google_business_list_locations_preview",
+    "label": "Preview Google Business locations",
+    "description": "Preview listing accessible Google Business Profile locations without using the live GBP API.",
+    "category": "provider",
+    "page_contexts": [
+      "provider_workspace",
+      "provider_index",
+      "settings",
+      "google_workspace",
+      "bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "googleBusiness.listLocationsPreview",
+    "audit_log_event": "google_business_locations_previewed",
+    "success_message": "Google Business locations preview created.",
+    "failure_message": "Google Business locations preview could not be created."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "lead_id",
+      "signup_id",
+      "student_id",
+      "phone",
+      "parent_phone",
+      "whatsapp_phone",
+      "email",
+      "parent_email",
+      "contact_name",
+      "parent_name",
+      "limit",
+      "workspace_key"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=contacts",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Show History",
+      "Communication History",
+      "WhatsApp History"
+    ],
+    "telegram_intent_examples": [
+      "Show WhatsApp history for this parent",
+      "Show contact communication history for +972501111111",
+      "Find messages from fixture.parent@example.com"
+    ],
+    "action_id": "show_contact_communication_history",
+    "label": "Show contact communication history",
+    "description": "Preview matched local contact communications by ID, phone, email, or WAPI source context without syncing or sending.",
+    "category": "communications",
+    "page_contexts": [
+      "contacts",
+      "communications",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "communications.showContactHistory",
+    "audit_log_event": "contact_communication_history_previewed",
+    "success_message": "Contact communication history preview returned.",
+    "failure_message": "Contact communication history could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "stage"
+    ],
+    "optional_inputs": [
+      "lead_id",
+      "lead_name",
+      "pipeline"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=pipelines",
+      "/operations?view=contacts"
+    ],
+    "ui_button_labels": [
+      "Move Lead",
+      "Payment Pending"
+    ],
+    "telegram_intent_examples": [
+      "Move this lead to Payment Pending"
+    ],
+    "action_id": "move_lead_stage",
+    "label": "Move lead stage",
+    "description": "Move a lead or pipeline card to a typed stage such as Payment Pending.",
+    "category": "communications",
+    "page_contexts": [
+      "contacts",
+      "pipelines",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "crm.moveLeadStage",
+    "audit_log_event": "lead_stage_update_requested",
+    "success_message": "Lead stage update prepared.",
+    "failure_message": "Lead stage could not be updated."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "chat_id",
+      "related_task_id",
+      "send_after_approval"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Queue Telegram Report"
+    ],
+    "telegram_intent_examples": [
+      "Report this completion back to Telegram"
+    ],
+    "action_id": "queue_telegram_report",
+    "label": "Queue Telegram report",
+    "description": "Queue or preview a concise Telegram completion/status report for an approved operator chat.",
+    "category": "communications",
+    "page_contexts": [
+      "telegram",
+      "admin",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "telegram.queueReport",
+    "audit_log_event": "telegram_report_queued",
+    "success_message": "Telegram report queued.",
+    "failure_message": "Telegram report could not be queued."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "message",
+      "route",
+      "severity",
+      "evidence",
+      "ticket_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=tasks",
+      "/operations?view=admin&section=support_tickets"
+    ],
+    "ui_button_labels": [
+      "Route To Codex"
+    ],
+    "telegram_intent_examples": [
+      "This page is broken; route it to Codex"
+    ],
+    "action_id": "route_bug_to_codex",
+    "label": "Route bug to Codex",
+    "description": "Route a verified technical/system issue into the Codex implementation queue for super-admin/system use.",
+    "category": "system",
+    "page_contexts": [
+      "support_tickets",
+      "admin",
+      "bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "technical_agent",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "codex.routeBug",
+    "audit_log_event": "bug_routed_to_codex",
+    "success_message": "Bug routed to Codex.",
+    "failure_message": "Bug could not be routed to Codex."
+  }
+]

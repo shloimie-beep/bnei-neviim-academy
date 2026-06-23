@@ -46,14 +46,14 @@
       "Limudei Kodesh program Beit Shemesh",
       "Jewish learning program for boys",
       "alternative Jewish education Beit Shemesh",
-      "boys who don't fit the system",
+      "boys ready for something more than regular school",
       "relationship-based Torah learning",
       "morning Torah learning program",
       "small Torah learning program",
       "homeschool support Beit Shemesh",
       "ADHD-friendly learning environment",
       "boys who learn differently",
-      "school not working for my son",
+      "more than regular school for my son",
     ],
     he: [
       "בית ספר אלטרנטיבי בבית שמש",
@@ -62,7 +62,7 @@
       "תוכנית לימודי קודש בבית שמש",
       "לימוד תורה מתוך קשר",
       "חינוך ביתי בבית שמש",
-      "ילד שלא מתאים למסגרת",
+      "בן שמוכן למשהו מעבר לבית ספר רגיל",
       "מסגרת לילדים עם קשב וריכוז",
       "חינוך יהודי אלטרנטיבי",
       "אחריות אישית בחינוך",
@@ -78,12 +78,12 @@
         "Alternative School for Boys in Beit Shemesh: What Parents Are Really Looking For",
       metaTitle: "Alternative School for Boys in Beit Shemesh | Bnei Neviim Academy",
       metaDescription:
-        "Looking for an alternative school or yeshiva alternative in Beit Shemesh? Bnei Neviim offers a calm, relationship-based Torah learning environment for boys who don't fit the standard system.",
+        "Looking for an alternative school or yeshiva alternative in Beit Shemesh? Bnei Neviim offers a calm, relationship-based Torah learning environment for boys ready for something more than regular school.",
       keywords: [
         "alternative school Beit Shemesh",
         "yeshiva alternative Beit Shemesh",
         "school alternative Beit Shemesh",
-        "boys who don't fit the system",
+        "boys ready for something more than regular school",
         "Torah learning program Beit Shemesh",
       ],
       image: "/images/blog/machasiya-eitan-chaim-planting.jpg",
@@ -93,12 +93,12 @@
         "When parents search for an alternative school in Beit Shemesh, they are usually not looking for something fancy. They are looking for a place where their son can breathe.",
         "He may technically be enrolled in school or yeshiva, but not really be present. He is sitting in the room, but his eyes are gone. He is bright, but unmotivated. He may be sensitive, acting tough, refusing to go, getting into trouble, or slowly disappearing inside himself.",
         "That does not always mean the boy is broken. Very often, it means the environment is not reaching him.",
-        "Bnei Neviim Academy is an alternative Torah learning environment in Beit Shemesh for boys who do not fit the standard system. The current program runs in the morning from 10:00 AM to 1:00 PM and focuses on Limudei Kodesh, personal responsibility, movement, mentorship, and real connection to Torah.",
+        "Bnei Neviim Academy is an alternative Torah learning environment in Beit Shemesh for boys who are ready for something more than regular school. The current program runs in the morning from 10:00 AM to 1:00 PM and focuses on Limudei Kodesh, personal responsibility, movement, mentorship, and real connection to Torah.",
         "It is not a standard school model. It is smaller, calmer, more personal, and more direct. A boy here is not treated like a problem to manage. He is treated like a person who needs to be spoken to honestly and respectfully.",
         "The learning may include Chumash, Tanach, Kitzur Shulchan Aruch, Mussar, Chassidus, Torah-based character development, and meaningful discussion. The goal is not just to cover pages. The goal is for Torah to become something the boy can use to understand himself, make decisions, and serve Hashem with more clarity.",
         "There is also movement built into the morning. Boys are not machines. Some boys need to run, play frisbee, walk, or move their bodies before they can come back and listen. That is not a break from chinuch. It is part of chinuch.",
         "Bnei Neviim is not a government-recognized school, accredited school, clinical program, or formal special education provider. It is an alternative Torah learning program and school-style environment for boys who need a different kind of structure.",
-        "If your son is not thriving in the system, the question is not only how to force him back in. Sometimes the better question is what environment would help him become responsible, connected, and alive again.",
+        "If your son is ready for something more than regular school, the question is what environment would help him become responsible, connected, and alive.",
       ],
       cta: "Contact Bnei Neviim to discuss whether this alternative Torah learning environment is the right fit for your son.",
     },
@@ -122,7 +122,7 @@
         "Some boys need movement, relationship, and a smaller room before they can access the part of themselves that wants to learn.",
       body: [
         "A lot of parents searching for an ADHD school in Beit Shemesh are not necessarily looking for a diagnosis. They are looking for a place where their son is not treated like a problem every time his body needs to move.",
-        "Some boys cannot sit for hours in a standard classroom and stay emotionally present. Some boys can listen if they are respected, but shut down when they are pressured. Some boys need movement before they can learn. Some boys are bright, but the standard system keeps showing them only where they fail.",
+        "Some boys are ready for a smaller setting with more movement, relationship, and responsibility than a standard classroom can usually offer. They can listen deeply when they feel respected, and they often grow when Torah is connected to real life.",
         "Bnei Neviim is not a clinical ADHD program. It is not a special education school. It does not diagnose or treat ADHD.",
         "It is a smaller, calmer, relationship-based Torah learning environment that may be a better fit for some boys with attention challenges.",
         "The current program runs from 10:00 AM to 1:00 PM in Beit Shemesh. It focuses on Limudei Kodesh, private mentorship, personal goals, and a movement break. For many boys, movement is part of how they learn to regulate themselves.",
@@ -130,7 +130,7 @@
         "In the Bnei Neviim Torah learning system, only engaged time counts. If a boy is talking, distracted, or not really present, that time does not count toward his goal. The response is not shame. The response is awareness and a better next choice.",
         "For a parent searching for an ADD school, ADHD school, special program, or school alternative, Bnei Neviim may be worth exploring because some boys need a smaller, more human, more movement-friendly Torah environment before they can learn well.",
       ],
-      cta: "If your son has attention challenges and is not thriving in school, contact Bnei Neviim to discuss whether this environment is appropriate.",
+      cta: "If your son has attention challenges and is ready for a smaller, more relationship-based Torah environment, contact Bnei Neviim to discuss whether this environment is appropriate.",
     },
     {
       lang: "en",
@@ -247,12 +247,12 @@
       lang: "en",
       slug: "school-not-working-for-my-son",
       category: "Alternative School",
-      title: "When School Is Not Working for Your Son",
-      metaTitle: "When School Is Not Working for Your Son | Beit Shemesh Alternative",
+      title: "When Your Son Is Ready for More Than Regular School",
+      metaTitle: "More Than Regular School for Your Son | Beit Shemesh Alternative",
       metaDescription:
-        "If your son is not thriving in school or yeshiva, he may need a calmer Torah environment with relationship, movement, and responsibility.",
+        "If your son is ready for more than regular school or yeshiva, he may need a calmer Torah environment with relationship, movement, and responsibility.",
       keywords: [
-        "school not working for my son",
+        "more than regular school for my son",
         "my son hates school",
         "school refusal Jewish boys",
         "burned out from yeshiva",
@@ -262,14 +262,14 @@
       excerpt:
         "Sometimes the problem is not laziness. Sometimes the environment has stopped reaching the boy.",
       body: [
-        "When school is not working for your son, it can be very hard to know what is really happening. Is he lazy? Defiant? Anxious? Burned out? Bored? Hurt? Overwhelmed?",
+        "When your son is ready for more than regular school, it can be hard to know what he really needs next: more responsibility, more movement, more honest Torah conversation, a stronger Rebbe relationship, or a smaller setting.",
         "Parents often feel pulled between two fears. If they push harder, they may crush him. If they stop pushing, they worry that he will collapse into nothing.",
         "Bnei Neviim begins from a different place. Before deciding what the boy should do, we try to understand what kind of environment would help him become responsible again.",
         "Some boys need a smaller setting. Some need movement. Some need a Rebbe they can trust. Some need Torah discussion that connects to real life. Some need to rebuild confidence after years of feeling like they fail at school.",
         "An alternative Torah learning environment does not mean a boy has no expectations. It means the expectations are clear, personal, and human. The boy is coached to choose goals, engage honestly, and own his part.",
-        "If the standard system is not working, the goal is not to shame the boy back into it. The goal is to help him become the kind of person who can learn, choose, and grow with integrity.",
+        "When a boy is ready for something more personal than regular school, the goal is to help him become the kind of person who can learn, choose, and grow with integrity.",
       ],
-      cta: "If school or yeshiva is not working for your son, contact Bnei Neviim for a thoughtful fit conversation.",
+      cta: "If your son is ready for more than regular school or yeshiva, contact Bnei Neviim for a thoughtful fit conversation.",
     },
     {
       lang: "en",
@@ -577,7 +577,7 @@
       title: "מסגרת אלטרנטיבית לבנים בבית שמש: מה ההורים באמת מחפשים",
       metaTitle: "מסגרת אלטרנטיבית לבנים בבית שמש | בני נביאים",
       metaDescription:
-        "מחפשים בית ספר אלטרנטיבי, מסגרת חלופית או אלטרנטיבה לישיבה בבית שמש? בני נביאים מציעה סביבת לימוד תורה רגועה ומבוססת קשר לבנים שלא מתאימים למסגרת הרגילה.",
+        "מחפשים בית ספר אלטרנטיבי, מסגרת חלופית או אלטרנטיבה לישיבה בבית שמש? בני נביאים מציעה סביבת לימוד תורה רגועה ומבוססת קשר לבנים שמוכנים למשהו מעבר לבית ספר רגיל.",
       keywords: [
         "מסגרת אלטרנטיבית לבנים בבית שמש",
         "אלטרנטיבה לישיבה בבית שמש",
@@ -590,7 +590,7 @@
         "כאשר הורים מחפשים מסגרת אלטרנטיבית בבית שמש, הם בדרך כלל לא מחפשים משהו נוצץ. הם מחפשים מקום שבו הבן שלהם יכול לנשום.",
         "לפעמים הילד רשום לבית ספר או לישיבה, אבל בפועל הוא כבר לא שם. הוא יושב בחדר, אבל העיניים כבויות. הוא חכם, אבל לא מחובר. הוא רגיש, אבל מתנהג בקשיחות.",
         "זה לא תמיד אומר שהילד מקולקל. פעמים רבות זה אומר שהסביבה לא מצליחה להגיע אליו.",
-        "בני נביאים היא סביבת לימוד תורה אלטרנטיבית בבית שמש לבנים שלא מוצאים את מקומם במסגרת הרגילה. התוכנית הנוכחית פועלת בבוקר, בין 10:00 ל-13:00, ומתמקדת בלימודי קודש, אחריות אישית, תנועה, חונכות וקשר אמיתי לתורה.",
+        "בני נביאים היא סביבת לימוד תורה אלטרנטיבית בבית שמש לבנים שמוכנים למשהו מעבר לבית ספר רגיל. התוכנית הנוכחית פועלת בבוקר, בין 10:00 ל-13:00, ומתמקדת בלימודי קודש, אחריות אישית, תנועה, חונכות וקשר אמיתי לתורה.",
         "זו אינה מסגרת קלינית, טיפולית, מוכרת על ידי המדינה או חינוך מיוחד פורמלי. זו סביבת לימוד תורה קטנה, רגועה ומבוססת קשר.",
       ],
       cta: "צרו קשר עם בני נביאים כדי לבדוק אם הסביבה הזאת מתאימה לבן שלכם.",
@@ -602,7 +602,7 @@
       title: "מסגרת מותאמת לילדים עם קשב וריכוז בבית שמש",
       metaTitle: "מסגרת לילדים עם ADHD וקשב וריכוז בבית שמש | בני נביאים",
       metaDescription:
-        "סביבת לימוד תורה קטנה ורגועה בבית שמש לבנים עם קשיי קשב, צורך בתנועה ופחות התאמה למסגרת הרגילה.",
+        "סביבת לימוד תורה קטנה ורגועה בבית שמש לבנים עם קשיי קשב, צורך בתנועה, ורצון למשהו מעבר לבית ספר רגיל.",
       keywords: [
         "מסגרת לילדים עם קשב וריכוז",
         "ADHD בבית שמש",
@@ -617,7 +617,7 @@
         "בתוכנית יש לימודי קודש, מטרות אישיות, חונכות והפסקת תנועה. עבור ילדים רבים, התנועה אינה הפרעה ללמידה אלא חלק מהוויסות שמאפשר להם לחזור ללמידה.",
         "המטרה אינה למחוק את האישיות של הילד ואינה לתת לו לעשות מה שהוא רוצה. המטרה היא לעזור לו להכיר את עצמו, לבחור יעד אמיתי ולקחת אחריות.",
       ],
-      cta: "אם הבן שלכם מתקשה במסגרת הרגילה וצריך סביבה קטנה ומבוססת קשר, דברו איתנו.",
+      cta: "אם הבן שלכם מוכן למשהו מעבר לבית ספר רגיל וצריך סביבה קטנה ומבוססת קשר, דברו איתנו.",
     },
     {
       lang: "he",
@@ -730,7 +730,7 @@
       {
         question: "Is this an alternative school?",
         answer:
-          "Yes, in the practical sense that many parents come to Bnei Neviim because the standard school or yeshiva system is not working for their son. It is an alternative Torah learning program with structure, mentorship, movement, and personal responsibility. It should not be described as a formally accredited alternative school unless that legal status changes.",
+          "Yes, in the practical sense that many parents come to Bnei Neviim because their son is ready for something more than regular school or yeshiva. It is an alternative Torah learning program with structure, mentorship, movement, and personal responsibility. It should not be described as a formally accredited alternative school unless that legal status changes.",
       },
       {
         question: "Is this a yeshiva alternative?",
@@ -764,7 +764,7 @@
       {
         question: "What kind of boy is this for?",
         answer:
-          "It may be a fit for a boy who is not thriving in the standard system, needs more movement, learns better through discussion, is burned out from school, needs a stronger connection with a Rebbe, or needs help building personal responsibility.",
+          "It may be a fit for a boy who is ready for something more than regular school, needs more movement, learns better through discussion, needs a stronger connection with a Rebbe, or needs help building personal responsibility.",
       },
       {
         question: "Do boys have to look inside a sefer?",
@@ -811,7 +811,7 @@
       {
         question: "האם זו מסגרת אלטרנטיבית?",
         answer:
-          "כן, במובן המעשי. הורים רבים מגיעים לבני נביאים מפני שהמסגרת הרגילה או הישיבה הרגילה אינן עובדות עבור הבן שלהם. זו תוכנית לימוד תורה אלטרנטיבית עם מבנה, חונכות, תנועה ואחריות אישית.",
+          "כן, במובן המעשי. הורים רבים מגיעים לבני נביאים מפני שהבן שלהם מוכן למשהו מעבר לבית ספר רגיל או ישיבה רגילה. זו תוכנית לימוד תורה אלטרנטיבית עם מבנה, חונכות, תנועה ואחריות אישית.",
       },
       {
         question: "האם זו אלטרנטיבה לישיבה?",
@@ -845,7 +845,7 @@
       {
         question: "לאיזה ילד זה מתאים?",
         answer:
-          "זה עשוי להתאים לילד שלא פורח במסגרת הרגילה, צריך יותר תנועה, לומד טוב יותר דרך שיחה, שחוק מבית ספר, צריך קשר חזק יותר עם רב, או צריך עזרה בבניית אחריות אישית.",
+          "זה עשוי להתאים לבן שמוכן למשהו מעבר לבית ספר רגיל, צריך יותר תנועה, לומד טוב יותר דרך שיחה, צריך קשר חזק יותר עם רב, או צריך עזרה בבניית אחריות אישית.",
       },
       {
         question: "האם הילדים חייבים להסתכל בתוך ספר?",

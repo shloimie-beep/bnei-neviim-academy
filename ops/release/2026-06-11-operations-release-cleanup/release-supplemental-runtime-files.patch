@@ -1,0 +1,1239 @@
+diff --git a/src/lib/bna/student-match.js b/src/lib/bna/student-match.js
+new file mode 100644
+index 0000000..2182a7a
+--- /dev/null
++++ b/src/lib/bna/student-match.js
+@@ -0,0 +1,91 @@
++function normalizeNameForMatch(value) {
++  return String(value || '')
++    .toLowerCase()
++    .replace(/[^a-z0-9\u0590-\u05ff]+/g, ' ')
++    .replace(/\s+/g, ' ')
++    .trim();
++}
++
++function nameTokens(value) {
++  return normalizeNameForMatch(value)
++    .split(/\s+/)
++    .filter(Boolean);
++}
++
++function studentAliasesForServer(student) {
++  const normalized = normalizeNameForMatch(student?.name);
++  const parts = normalized.split(/\s+/).filter((part) => part.length >= 3);
++  const aliases = new Set([normalized, ...parts]);
++  const haystack = `${student?.name || ''} ${student?.notes || ''}`.toLowerCase();
++
++  if (/golambo|golamb/i.test(haystack)) {
++    ['eitan', 'eitan chaim', 'eitan chaim golambo', 'golambo', 'shalom golambo']
++      .forEach((alias) => aliases.add(normalizeNameForMatch(alias)));
++  }
++  if (/kosovsky|kosofsky|amitai|amitay/i.test(haystack)) {
++    ['amitay', 'amitai', 'amiti', 'amitai kosovsky', 'amitay kosovsky', 'kosovsky', 'kosofsky']
++      .forEach((alias) => aliases.add(normalizeNameForMatch(alias)));
++  }
++
++  return [...aliases].filter((alias) => alias.length >= 3);
++}
++
++function scoreStudentParsedNameMatch(parsedName, student) {
++  const normalized = normalizeNameForMatch(parsedName);
++  if (!normalized) return 0;
++
++  const normalizedTokens = nameTokens(normalized);
++  const tokenSet = new Set(normalizedTokens);
++  const studentName = normalizeNameForMatch(student?.name);
++  const studentNameTokens = nameTokens(studentName);
++  let bestScore = 0;
++
++  for (const alias of studentAliasesForServer(student)) {
++    const aliasTokens = nameTokens(alias);
++    const aliasIsFullName = alias === studentName && aliasTokens.length >= 2;
++    let score = 0;
++
++    if (normalized === alias) {
++      score = aliasTokens.length >= 2 ? 120 : 70;
++    } else if (aliasIsFullName && normalized.includes(alias)) {
++      score = 115;
++    } else if (aliasIsFullName && studentNameTokens.every((token) => tokenSet.has(token))) {
++      score = 110;
++    } else if (aliasTokens.length >= 2 && normalized.includes(alias)) {
++      score = 95;
++    } else if (aliasTokens.length >= 2 && alias.includes(normalized) && normalizedTokens.length >= 2) {
++      score = 80;
++    } else if (aliasTokens.length === 1 && normalizedTokens.length === 1 && normalized === alias) {
++      score = 70;
++    } else if (aliasTokens.length === 1 && normalizedTokens.length === 1 && (normalized.includes(alias) || alias.includes(normalized))) {
++      score = 55;
++    } else if (aliasTokens.length === 1 && normalizedTokens.length > 1 && tokenSet.has(alias)) {
++      score = 10;
++    }
++
++    bestScore = Math.max(bestScore, score);
++  }
++
++  return bestScore;
++}
++
++function findStudentForParsedName(name, students = []) {
++  const ranked = (Array.isArray(students) ? students : [])
++    .map((student) => ({
++      student,
++      score: scoreStudentParsedNameMatch(name, student),
++    }))
++    .filter((item) => item.score > 0)
++    .sort((a, b) => b.score - a.score || Number(a.student?.id || 0) - Number(b.student?.id || 0));
++
++  if (!ranked.length) return null;
++  if (ranked[1] && ranked[1].score === ranked[0].score && ranked[0].score < 100) return null;
++  return ranked[0].student;
++}
++
++module.exports = {
++  findStudentForParsedName,
++  normalizeNameForMatch,
++  scoreStudentParsedNameMatch,
++  studentAliasesForServer,
++};
+diff --git a/src/lib/bna/telegram-accountability-parser.js b/src/lib/bna/telegram-accountability-parser.js
+new file mode 100644
+index 0000000..0694581
+--- /dev/null
++++ b/src/lib/bna/telegram-accountability-parser.js
+@@ -0,0 +1,307 @@
++const {
++  metadataWithGoalBoard,
++  normalizeGoalBoardSection,
++} = require('./goal-board');
++
++function cleanString(value, fallback = '') {
++  const text = String(value ?? '').replace(/\s+/g, ' ').trim();
++  return text || fallback;
++}
++
++function firstCompactSentence(value, fallback = '') {
++  const text = cleanString(value);
++  if (!text) return fallback;
++  const sentence = text.split(/(?<=[.!?])\s+/)[0] || text;
++  return sentence.slice(0, 180).trim() || fallback;
++}
++
++function clampProgressPercent(value) {
++  if (value === undefined || value === null || value === '') return null;
++  const number = Number(value);
++  if (!Number.isFinite(number)) return null;
++  return Math.max(0, Math.min(100, Math.round(number)));
++}
++
++function normalizeClockTime(hourText, minuteText = '00', meridiemText = '', { assumePm = false } = {}) {
++  let hour = Number(hourText);
++  const minute = Number(minuteText || '00');
++  if (!Number.isFinite(hour) || !Number.isFinite(minute) || hour < 0 || hour > 24 || minute < 0 || minute > 59) {
++    return '';
++  }
++  const meridiem = String(meridiemText || '').toLowerCase();
++  if (meridiem === 'pm' && hour < 12) hour += 12;
++  if (meridiem === 'am' && hour === 12) hour = 0;
++  if (!meridiem && assumePm && hour > 0 && hour <= 12) hour += 12;
++  if (hour === 24) hour = 0;
++  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
++}
++
++function extractBedtimeTime(text) {
++  const value = String(text || '');
++  const explicit = value.match(/\b(?:bedtime|bed\s+by|in\s+bed\s+by|asleep\s+by|sleep\s+by)\D{0,30}(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
++  if (explicit) return normalizeClockTime(explicit[1], explicit[2], explicit[3], { assumePm: true });
++  if (/\b(bed|bedtime|sleep|asleep)\b/i.test(value)) {
++    const nearby = value.match(/\b(\d{1,2})(?::(\d{2}))?\s*(pm)\b/i);
++    if (nearby) return normalizeClockTime(nearby[1], nearby[2], nearby[3], { assumePm: true });
++  }
++  return '';
++}
++
++function extractWakeTime(text) {
++  const value = String(text || '');
++  const explicit = value.match(/\b(?:wake|wake\s+up|out\s+of\s+bed|up\s+by)\D{0,30}(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\b/i);
++  return explicit ? normalizeClockTime(explicit[1], explicit[2], explicit[3]) : '';
++}
++
++function clauseAfter(text, labelPattern, stopPattern = '') {
++  const value = String(text || '').replace(/\s+/g, ' ').trim();
++  const stop = stopPattern || 'checklist|items?|consequence|recovery|incentive|reward|permission|parent visible|student hidden|student visible|pending review|needs review';
++  const match = value.match(new RegExp(`\\b(?:${labelPattern})(?:\\s*(?:is|are|:|-))?\\s+([\\s\\S]{4,220})`, 'i'));
++  if (!match) return '';
++  const stopped = match[1].split(new RegExp(`\\b(?:${stop})\\b`, 'i'))[0] || match[1];
++  return cleanString(stopped.split(/[.\n]/)[0], '').replace(/\s*[;:,]$/, '').trim();
++}
++
++function inferTelegramGoalBoardSection(text, fallback = 'learning') {
++  const value = String(text || '').toLowerCase();
++  const explicit = value.match(/\b(?:section|goal section)\s*(?:is|:|-)\s*([a-z_ -]{4,40})/i);
++  if (explicit) return normalizeGoalBoardSection(explicit[1], fallback);
++  if (/\b(bed|bedtime|sleep|wake|floor|clean|cleanup|chores?|room|home|family|responsibilit(?:y|ies)|routine)\b/.test(value)) return 'personal_home';
++  if (/\b(permission|permissions|allow|allowed|go out|outside|friend|device|tablet|phone|computer|screen|screens)\b/.test(value)) return 'permissions';
++  if (/\b(incentive|incentives|reward|rewards|prize|bonus|percent target|percentage target|trip)\b/.test(value)) return 'incentives';
++  if (/\b(parent meeting|rabbi meeting|private meeting|meeting|check[-\s]?in)\b/.test(value)) return 'meetings';
++  if (/\b(learn|learning|torah|mishna|mishnah|mishnayos|gemara|reading|minutes?|assignment|worksheet)\b/.test(value)) return 'learning';
++  return normalizeGoalBoardSection(fallback || 'learning', 'learning');
++}
++
++function explicitSubsection(text) {
++  const match = String(text || '').match(/\b(?:subsection|child section|child-specific section)\s*(?:is|:|-)\s*([^.;\n]{3,90})/i);
++  return match ? cleanString(match[1]).slice(0, 90) : '';
++}
++
++function inferTelegramGoalBoardSubsection(text, section) {
++  const explicit = explicitSubsection(text);
++  if (explicit) return explicit;
++  const value = String(text || '').toLowerCase();
++  if (section === 'personal_home' && /\b(chores?|floor|clean|bed|bedtime|sleep)\b/.test(value)) return 'Chores and bedtime';
++  if (section === 'permissions') return 'Permissions';
++  if (section === 'incentives') return 'Incentives';
++  if (section === 'meetings') return /\bparent\b/.test(value) ? 'Parent meeting' : 'Meeting follow-up';
++  if (section === 'learning') return 'Learning';
++  return '';
++}
++
++function splitChecklistText(text) {
++  return String(text || '')
++    .split(/\s*(?:;|\n|\band then\b|\bthen\b)\s*/i)
++    .map((item) => cleanString(item).replace(/^(?:and|to)\s+/i, '').replace(/\s*[.!?]+$/g, '').trim())
++    .filter((item) => item.length >= 3)
++    .slice(0, 8);
++}
++
++function telegramGoalChecklistFromText(text) {
++  const value = String(text || '');
++  const lower = value.toLowerCase();
++  const explicit = value.match(/\b(?:checklist|items?)\s*(?:is|are|:|-)\s*([\s\S]{4,360})/i);
++  if (explicit) {
++    const stopped = explicit[1].split(/\b(?:consequence|recovery|incentive|reward|parent visible|student hidden|pending review|needs review)\b/i)[0];
++    const items = splitChecklistText(stopped);
++    if (items.length) return items;
++  }
++  const checklist = [];
++  if (/\bfloor\b|\bclean|cleanup|chores?/.test(lower)) checklist.push('Finish the agreed floor or chore cleanup.');
++  if (/\bbed\b|\bbedtime\b|\bsleep\b/.test(lower)) checklist.push('Be in bed at the agreed bedtime.');
++  if (/\bpermission|allowed|go out|outside|device|tablet|phone|screen/.test(lower)) checklist.push('Follow the agreed permission rule.');
++  if (/\blearn|torah|mishna|mishnah|reading|minutes?|assignment|worksheet/.test(lower)) checklist.push('Complete the agreed learning block.');
++  if (/\bmeeting|check[-\s]?in/.test(lower)) checklist.push('Review the meeting follow-up with Rabbi/admin.');
++  if (!checklist.length) checklist.push(firstCompactSentence(value, 'Complete the agreed goal.'));
++  return checklist.slice(0, 8);
++}
++
++function telegramGoalConsequenceFromText(text) {
++  const value = String(text || '');
++  const explicit = clauseAfter(value, 'chosen consequence|consequence|natural consequence|rule');
++  if (explicit) return explicit;
++  if (/\b(no|can't|cannot|not)\s+go\s+out\b|\bno\s+going\s+out\b/i.test(value)) {
++    return 'No going out the next day if the agreed responsibility is not completed.';
++  }
++  if (/\b(no|lose|loses|without)\s+(?:device|tablet|phone|screen|computer)\b/i.test(value)) {
++    return 'Device or screen access stays restricted until the recovery path is reviewed.';
++  }
++  return '';
++}
++
++function telegramGoalRecoveryPathFromText(text, consequence = '') {
++  const explicit = clauseAfter(text, 'recovery path|recovery|repair path|repair');
++  return explicit || consequence || '';
++}
++
++function telegramGoalIncentiveFromText(text) {
++  const value = String(text || '');
++  if (!/\b(incentive|reward|prize|bonus|percent target|percentage target)\b/i.test(value)) return {};
++  const explicit = clauseAfter(value, 'incentive|reward|prize|bonus');
++  const percentMatch = value.match(/\b(100|[1-9]?\d)\s*(?:%|\bpercent\b)/i);
++  return {
++    text: explicit || firstCompactSentence(value, 'Goal Board incentive'),
++    chosen_by: /\bstudent[-\s]?chosen|chosen by (?:the )?student|boy chose\b/i.test(value) ? 'student' : 'telegram',
++    percent_target: percentMatch ? Number(percentMatch[1]) : null,
++  };
++}
++
++function parentAccountabilitySource(text) {
++  const value = String(text || '').toLowerCase();
++  if (/\b(parent meeting|meeting recording|parent recording|uploaded by parent|parent upload)\b/.test(value)) return 'parent_meeting';
++  if (/\b(parent chat|parent update|from (?:the )?(?:parent|mom|mother|father|dad)|mom says|mother says|father says|dad says)\b/.test(value)) return 'parent_update';
++  if (/\b(private meeting|rabbi meeting|one on one|1:1)\b/.test(value)) return 'private_meeting';
++  return 'admin';
++}
++
++function hasGoalBoardFieldIntent(text) {
++  const value = String(text || '').toLowerCase();
++  return /\b(goal board|student goal|goal|bedtime|chores?|floor|permission|permissions|consequence|recovery path|incentive|reward|parent[-\s]?visible|student[-\s]?hidden|pending review|checklist|agreement)\b/.test(value);
++}
++
++function hasParentAccountabilityRoutingIntent(text) {
++  const value = String(text || '').toLowerCase();
++  const sourceMarker = /\b(parent meeting|parent recording|meeting recording|parent chat|parent portal|parent accountability|uploaded by parent|from (?:the )?(?:parent|mom|mother|father|dad)|mom says|mother says|father says|dad says)\b/.test(value);
++  const accountabilityMarker = /\b(accountability|student|child|son|daughter|goal|goals|bedtime|chores?|floor|clean|permission|permissions|consequence|incentive|reward|parent[-\s]?visible|student[-\s]?hidden|pending review|rabbi review|meeting summary)\b/.test(value);
++  return sourceMarker && accountabilityMarker;
++}
++
++function buildTelegramGoalBoardPayload(text, { eventType = '', progressPercent = null } = {}) {
++  const source = parentAccountabilitySource(text);
++  const section = inferTelegramGoalBoardSection(text, eventType === 'private_meeting' ? 'meetings' : 'learning');
++  const subsection = inferTelegramGoalBoardSubsection(text, section);
++  const consequence = telegramGoalConsequenceFromText(text);
++  const recoveryPath = telegramGoalRecoveryPathFromText(text, consequence);
++  const incentive = telegramGoalIncentiveFromText(text);
++  const parentCreated = ['parent_meeting', 'parent_update'].includes(source) || hasParentAccountabilityRoutingIntent(text);
++  const explicitPendingReview = /\b(pending review|needs review|rabbi review|admin review|review before (?:student )?visible)\b/i.test(text);
++  const studentHidden = parentCreated || /\b(student[-\s]?hidden|hide from (?:the )?student|not visible to (?:the )?student|student should not see)\b/i.test(text);
++  const studentVisible = !studentHidden && !/\b(do not show|don't show|dont show)\b/i.test(text);
++  const parentHidden = /\b(parent[-\s]?hidden|hide from (?:the )?parent|not visible to (?:the )?parent)\b/i.test(text);
++  const approvalRequired = parentCreated || explicitPendingReview || studentHidden || Boolean(consequence || recoveryPath || incentive.text);
++
++  return {
++    source,
++    category: section,
++    section,
++    subsection,
++    urgency: /\btoday|tonight|urgent\b/i.test(text) ? 'today' : 'this_week',
++    status: approvalRequired ? 'waiting' : 'active',
++    parent_visible: !parentHidden,
++    student_visible: parentCreated ? false : studentVisible,
++    approval_required: approvalRequired,
++    approval_status: approvalRequired ? 'pending_review' : 'approved',
++    student_summary: firstCompactSentence(text, 'Goal Board update'),
++    private_note: parentCreated
++      ? 'Parent-created Telegram update is waiting for Rabbi/admin review before student visibility.'
++      : '',
++    checklist: telegramGoalChecklistFromText(text),
++    agreement_type: section === 'personal_home' ? 'home_responsibility' : '',
++    bedtime_time: extractBedtimeTime(text),
++    wake_time: extractWakeTime(text),
++    student_commitment: firstCompactSentence(text, ''),
++    chosen_consequence: consequence,
++    recovery_path: recoveryPath,
++    consequence_status: consequence || recoveryPath ? 'pending_review' : 'none',
++    review_reason: approvalRequired
++      ? 'Telegram-created consequence/permission/incentive needs Rabbi/admin approval before student visibility.'
++      : '',
++    incentive,
++    incentive_text: incentive.text || '',
++    incentive_chosen_by: incentive.chosen_by || '',
++    incentive_percent_target: incentive.percent_target,
++    progress_percent: progressPercent,
++  };
++}
++
++function detectTelegramAccountabilityType(text) {
++  const normalized = String(text || '').toLowerCase();
++  if (/\b(question|asked|asks|שאלה|\?)\b/.test(normalized)) return 'question';
++  if (/\b(goal board|student goal|goal|goals|work on|practice|commit|kabbalah|accountability|bedtime|chores?|floor|permission|permissions|consequence|recovery path|incentive|reward)\b/.test(normalized)) return 'student_goal';
++  if (/\b(parent meeting|private|meeting|met with|1:1|one on one|check in|meeting summary)\b/.test(normalized)) return 'private_meeting';
++  if (/\b(decided|decision|we agreed|agreed to|next time)\b/.test(normalized)) return 'decision';
++  if (/\b(class|shiur|lesson|learned|taught|topic|recording)\b/.test(normalized)) return 'learning_note';
++  return null;
++}
++
++function isLikelyTelegramStudentAccountabilityUnit(text, eventType, student) {
++  if (student) return true;
++  if (hasParentAccountabilityRoutingIntent(text)) return true;
++
++  const normalized = String(text || '').toLowerCase();
++  const systemRamble = /\b(api|app|dashboard|telegram|bot|bridge|drive|folder|whisper|openai|kimi|kimmy|codex|video|facebook|whatsapp|youtube|blog|newsletter|pipeline|repo|database|railway|ghl)\b/.test(normalized);
++  if (systemRamble) return false;
++
++  if (eventType === 'learning_note' || eventType === 'question') {
++    return /\b(class question|student asked|boy asked|asked by|question from)\b/.test(normalized);
++  }
++
++  return /\b(private meeting|parent meeting|met with|one on one|1:1|check in|check-in|student goal|goal board|goal for|attendance|next meeting|next check|bedtime|chores?|floor|permission|permissions|consequence|recovery path|incentive|reward|parent[-\s]?visible|student[-\s]?hidden|pending review)\b/.test(normalized);
++}
++
++function extractTelegramAccountabilityDetails(text, { eventType = detectTelegramAccountabilityType(text) } = {}) {
++  const normalized = String(text || '').toLowerCase();
++  const details = {
++    metadata: {
++      parser: 'telegram-accountability-v1',
++    },
++  };
++
++  const ratioMatch = normalized.match(/(\d+(?:\.\d+)?)\s*(?:\/|out of|of|instead of)\s*(\d+(?:\.\d+)?)/);
++  if (ratioMatch) {
++    const actual = Number(ratioMatch[1]);
++    const target = Number(ratioMatch[2]);
++    if (target > 0) {
++      details.goal_actual_value = actual;
++      details.goal_target_value = target;
++      details.progress_percent = clampProgressPercent((actual / target) * 100);
++    }
++  }
++
++  const percentMatch = normalized.match(/(\d{1,3})\s*%/);
++  if (percentMatch) details.progress_percent = clampProgressPercent(percentMatch[1]);
++
++  const unitMatch = normalized.match(/(\d+(?:\.\d+)?)\s*(minutes?|mins?|pages?|daf|blatt|mishnayos?|questions?|times?)\b/);
++  if (unitMatch && details.goal_actual_value === undefined) {
++    details.goal_actual_value = Number(unitMatch[1]);
++    details.goal_unit = unitMatch[2];
++  } else if (unitMatch) {
++    details.goal_unit = unitMatch[2];
++  }
++
++  if (/\b(missed|absent|did not show|no show)\b/.test(normalized)) details.attendance_status = 'missed';
++  else if (/\b(late|came late)\b/.test(normalized)) details.attendance_status = 'late';
++  else if (/\b(showed up|attended|came|was there|present)\b/.test(normalized)) details.attendance_status = 'attended';
++
++  if (/\b(very focused|focused|engaged|talkative|opened up|participated)\b/.test(normalized)) details.engagement_level = 'high';
++  else if (/\b(quiet|hard for him|struggled|distracted|not focused|shut down)\b/.test(normalized)) details.engagement_level = 'low';
++  else if (/\b(okay|fine|somewhat|medium)\b/.test(normalized)) details.engagement_level = 'medium';
++
++  if (/\b(follow up|check next|next week|next meeting|remind me|needs reminder|ask him)\b/.test(normalized)) {
++    details.follow_up_required = true;
++  }
++
++  const topicMatch = String(text).match(/\b(?:topic|about|regarding)\s+([^.;,\n]{4,60})/i);
++  if (topicMatch) details.topic = topicMatch[1].trim();
++
++  if (eventType === 'student_goal' || hasGoalBoardFieldIntent(text)) {
++    const goalBoard = buildTelegramGoalBoardPayload(text, {
++      eventType,
++      progressPercent: details.progress_percent ?? null,
++    });
++    details.metadata = metadataWithGoalBoard(details.metadata, goalBoard);
++    if (!details.topic) details.topic = goalBoard.category;
++  }
++
++  return details;
++}
++
++module.exports = {
++  buildTelegramGoalBoardPayload,
++  detectTelegramAccountabilityType,
++  extractTelegramAccountabilityDetails,
++  hasParentAccountabilityRoutingIntent,
++  isLikelyTelegramStudentAccountabilityUnit,
++};
+diff --git a/src/lib/bna/telegram-agent-intent.js b/src/lib/bna/telegram-agent-intent.js
+new file mode 100644
+index 0000000..f78e267
+--- /dev/null
++++ b/src/lib/bna/telegram-agent-intent.js
+@@ -0,0 +1,310 @@
++function compactText(value) {
++  return String(value || '').replace(/\s+/g, ' ').trim();
++}
++
++const {
++  hasContactLeadPipelineBuildIntent,
++  hasInterestedParentLeadCaptureIntent,
++} = require('./telegram-contact-lead-capture');
++
++function normalizeText(value) {
++  return compactText(value).toLowerCase();
++}
++
++function includesAny(normalized, patterns) {
++  return patterns.some((pattern) => pattern.test(normalized));
++}
++
++const CONTENT_OBJECTS = [
++  ['newsletter', /\b(newsletter|weekly update|parent update|end[-\s]?of[-\s]?week update)\b/],
++  ['whatsapp', /\b(whatsapp|what'?s\s*app|wa update)\b/],
++  ['facebook', /\b(facebook|fb)\b/],
++  ['blog', /\b(blog|article|website post|website draft)\b/],
++  ['caption', /\b(caption|copy|post copy|copy block)\b/],
++  ['transcript', /\b(transcripts?|recordings?|audios?|videos?|content jobs?)\b/],
++];
++
++function mentionedObjects(text) {
++  const normalized = normalizeText(text);
++  return CONTENT_OBJECTS
++    .filter(([, pattern]) => pattern.test(normalized))
++    .map(([name]) => name);
++}
++
++function hasExplicitContentCreate(normalized) {
++  return includesAny(normalized, [
++    /\b(make|create|generate|draft|write|compose|prepare)\b.{0,80}\b(newsletter|weekly update|parent update|whatsapp|facebook|fb|blog|article|caption|post copy|copy block)\b/,
++    /\b(newsletter|weekly update|parent update|whatsapp|facebook|fb|blog|article|caption|post copy|copy block)\b.{0,60}\b(draft|copy|post|version)\b/,
++    /\bmake this into\b.{0,80}\b(newsletter|weekly update|parent update|whatsapp|facebook|fb|blog|article|caption|post)\b/,
++  ]);
++}
++
++function hasDirectContentCreateRequest(normalized) {
++  return includesAny(normalized, [
++    /^(please\s+)?(make|create|generate|draft|write|compose|prepare)\b.{0,80}\b(newsletter|weekly update|parent update|whatsapp|facebook|fb|blog|article|caption|post copy|copy block)\b/,
++    /\b(please|can you|could you|would you|i need you to|i want you to)\b.{0,80}\b(make|create|generate|draft|write|compose|prepare)\b.{0,80}\b(newsletter|weekly update|parent update|whatsapp|facebook|fb|blog|article|caption|post copy|copy block)\b/,
++    /\bmake this into\b.{0,80}\b(newsletter|weekly update|parent update|whatsapp|facebook|fb|blog|article|caption|post)\b/,
++  ]);
++}
++
++function hasExplicitContentEdit(normalized) {
++  return includesAny(normalized, [
++    /\b(edit|revise|rewrite|change|fix|shorten|tighten|clean up|adjust|polish|redo|regenerate)\b.{0,80}\b(output|draft|newsletter|weekly update|whatsapp|facebook|fb|blog|caption|post)\b/,
++    /\b(content\s*)?(output|draft)\s*#?\s*\d+\b/,
++    /\b(no|instead|change it|make it|fix it)\b.{0,80}\b(first section|next section|bullet|date on top|caption|copy block|newsletter|whatsapp|facebook|blog)\b/,
++  ]);
++}
++
++function hasContentDiscussionMarkers(normalized) {
++  return includesAny(normalized, [
++    /\b(talking about|talk about|discuss|discussion|workflow|system|tool|tools|agent|bot|bridge|routing|parser|parsing|parsing mechanism|content section|backend|technical|prompt|prompts|natural language|recognize|understand|confused|confusing|mistake|wrong|bug|issue|audit|why did|why would|when i say|when i'm talking about something else)\b/,
++    /\b(different way|different framework|setup|architecture|instead of|keeps? getting confused)\b/,
++  ]);
++}
++
++function hasPromptPlanningIntent(normalized) {
++  return includesAny(normalized, [
++    /\b(prompt|brief)\b.{0,60}\b(codex|chatgpt|chat gpt|planning mode|refine|refining|draft)\b/,
++    /\b(codex|chatgpt|chat gpt)\b.{0,60}\b(prompt|brief|planning mode|refine|refining)\b/,
++  ]);
++}
++
++function hasCodexWorkIntent(normalized) {
++  const target = /\b(codex|repo|code|files?|server|database|schema|migration|railway|deploy|bridge|telegram bot|parser|parsing|routing|dashboard|playwright|browser|test|smoke)\b/.test(normalized);
++  const action = /\b(build|fix|implement|wire|change|update|remove|add|test|verify|smoke|deploy|inspect|audit|run|check|queue|requeue)\b/.test(normalized);
++  return target && action;
++}
++
++function hasBrowserTestIntent(normalized) {
++  return includesAny(normalized, [
++    /\b(test|verify|smoke|check)\b.{0,80}\b(playwright|browser|chrome|page|ui|signup|website|app|rabbi bot|bot)\b/,
++    /\b(anytime i tell you to test|testing.*playwright|use playwright)\b/,
++  ]);
++}
++
++function hasGhlIntent(normalized) {
++  return /\b(ghl|go high level|highlevel|leadconnector|crm|pipeline|contact|opportunity)\b/.test(normalized);
++}
++
++function hasBufferIntent(normalized) {
++  return /\b(buffer|social scheduler|social channels?|social drafts?)\b/.test(normalized);
++}
++
++function hasExternalSendOrPublish(normalized) {
++  return includesAny(normalized, [
++    /\b(publish now|post now|post it|publish it|make it live|go live|publicly publish)\b/,
++    /\b(send|email|text|sms|message)\b.{0,80}\b(parents?|families|people|contacts?|leads?|students?|everyone|whatsapp|email|sms|telegram)\b/,
++    /\b(send this|send it|email this|text this)\b/,
++  ]);
++}
++
++function hasDirectExternalSendOrPublish(normalized) {
++  return includesAny(normalized, [
++    /\b(publish now|post now|post it|publish it|make it live|go live|publicly publish)\b/,
++    /^(please\s+)?(send|email|text|sms|message|publish|post)\b.{0,100}\b(parents?|families|people|contacts?|leads?|students?|everyone|whatsapp|email|sms|telegram|facebook|fb|youtube)\b/,
++    /\b(please|can you|could you|would you|i need you to|i want you to)\b.{0,60}\b(send|email|text|sms|message|publish|post)\b.{0,100}\b(parents?|families|people|contacts?|leads?|students?|everyone|whatsapp|email|sms|telegram|facebook|fb|youtube)\b/,
++    /\b(send this|send it|email this|text this)\b/,
++  ]);
++}
++
++function hasDraftOrInternalPublish(normalized) {
++  return includesAny(normalized, [
++    /\b(publish draft|post draft|create facebook draft|create buffer draft|create ghl draft|send to buffer|send to ghl|push to buffer|push to ghl|buffer draft|ghl draft)\b/,
++  ]);
++}
++
++function hasTaskCaptureMarkers(normalized) {
++  return includesAny(normalized, [
++    /\b(another task|separate task|task for me|task for myself|put (?:that|this|it).{0,50}\btask|put it on my tasks?|create (?:a )?task|file (?:a )?task|mark .* task)\b/,
++    /\b(task|tasks)\b.{0,80}\b(need|needs|build|fix|wire|change|update|delete|remove|add|configure|set up|setup|map out|finish)\b/,
++  ]);
++}
++
++function hasInternalWorkIntent(normalized) {
++  const internalObject = /\b(accountability|student login|parent login|student portal|parent portal|portal|login|password|reset password|admin only|psychoanalysis|internal|external|filter|dropdown|drop-down|users?|student|students|parents?|parent chat|chat window|telegram bot|accountability system|tablets?|codex test|test parent|dns|www|certificate|google workspace|workspace|sender display|office p|prompt|prompts|content prompt|content section|daily content|codex|backend|technical|raw clip|thumbnail|first frame|black fade|fade|video edit|comments?|buttons?|queue|requeue|research section|source sheets?|sourcesheets?|sefaria|safari|work cards?|worksheets?|recordings?|class topics?)\b/.test(normalized);
++  const workVerb = /\b(need|needs|we need|i need|you need|have to|has to|make|build|add|delete|remove|change|configure|set up|setup|fix|wire|map|filter|upload|parse|update|manage|put|task|tasks|finish|check|queue|requeue|deal with|dealt with|expand|develop)\b/.test(normalized);
++  return hasCodexWorkIntent(normalized) || hasTaskCaptureMarkers(normalized) || (internalObject && workVerb);
++}
++
++function isConfirmationText(text) {
++  return /^(confirm|confirmed|approve|approved|yes[, ]+send|yes[, ]+publish)\b/i.test(compactText(text));
++}
++
++function stripConfirmationPrefix(text) {
++  return compactText(text).replace(/^(confirm|confirmed|approve|approved)\s*[:,-]?\s*/i, '');
++}
++
++function buildAction(kind, subsystem, risk, requiresApproval, reason) {
++  return { kind, subsystem, risk, requiresApproval, reason };
++}
++
++function planTelegramIntent({ text = '', replyText = '', isCommand = false, scoped = false } = {}) {
++  const raw = compactText(text);
++  const normalized = normalizeText(raw);
++  const combined = normalizeText(`${raw}\n${replyText || ''}`);
++  const objects = mentionedObjects(`${raw}\n${replyText || ''}`);
++  const proposedActions = [];
++  const blockedHandlers = [];
++  const allowedHandlers = [];
++
++  if (!raw) {
++    return {
++      version: 'telegram-agent-intent-v1',
++      primaryIntent: 'empty',
++      confidence: 1,
++      mentionedObjects: [],
++      proposedActions: [],
++      blockedHandlers: [],
++      allowedHandlers: [],
++      replyStrategy: 'ignore',
++      requiresApproval: false,
++    };
++  }
++
++  if (isCommand) {
++    return {
++      version: 'telegram-agent-intent-v1',
++      primaryIntent: 'command',
++      confidence: 1,
++      mentionedObjects: objects,
++      proposedActions: [buildAction('run_command_handler', 'telegram', 'normal', false, 'Explicit slash command or mode button')],
++      blockedHandlers,
++      allowedHandlers: ['commands'],
++      replyStrategy: 'execute_command',
++      requiresApproval: false,
++    };
++  }
++
++  let primaryIntent = 'conversation';
++  let confidence = 0.72;
++  let replyStrategy = 'answer_naturally';
++
++  const externalSendOrPublish = hasExternalSendOrPublish(normalized);
++  const directExternalSendOrPublish = hasDirectExternalSendOrPublish(normalized);
++  const internalWorkIntent = hasInternalWorkIntent(normalized);
++  const contactLeadCaptureIntent = hasInterestedParentLeadCaptureIntent(raw);
++  const contactPipelineBuildIntent = hasContactLeadPipelineBuildIntent(raw);
++
++  if (contactLeadCaptureIntent && contactPipelineBuildIntent) {
++    primaryIntent = 'codex_work';
++    confidence = 0.9;
++    replyStrategy = 'route_to_codex';
++    proposedActions.push(buildAction('capture_contact_leads_and_update_contacts_pipeline', 'contacts', 'local_write', false, 'Interested-parent lead update with a Contacts pipeline build request'));
++    blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyTranscriptTopic', 'weeklyReport', 'latestDriveIngest', 'latestVideoEdit', 'publish');
++  } else if (contactLeadCaptureIntent) {
++    primaryIntent = 'contact_capture';
++    confidence = 0.9;
++    replyStrategy = 'answer_naturally';
++    proposedActions.push(buildAction('capture_contact_leads', 'contacts', 'local_write', false, 'Interested-parent lead update with phone/contact details'));
++    blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyTranscriptTopic', 'weeklyReport', 'latestDriveIngest', 'latestVideoEdit', 'publish');
++  } else if (externalSendOrPublish && (!internalWorkIntent || directExternalSendOrPublish)) {
++    primaryIntent = 'publish_send';
++    confidence = 0.93;
++    replyStrategy = isConfirmationText(raw) ? 'execute_confirmed_external_action' : 'ask_for_approval';
++    proposedActions.push(buildAction('publish_or_send', 'external', 'external_send', !isConfirmationText(raw), 'Message asks to publish or send to other people'));
++    allowedHandlers.push(isConfirmationText(raw) ? 'publish' : 'approval_request');
++  } else if (externalSendOrPublish && internalWorkIntent) {
++    primaryIntent = 'codex_work';
++    confidence = 0.88;
++    replyStrategy = 'route_to_codex';
++    proposedActions.push(buildAction('queue_codex_work', 'codex', 'local_write', false, 'Internal implementation/task ramble mentions send or publish words incidentally'));
++    blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyTranscriptTopic', 'weeklyReport', 'latestDriveIngest', 'latestVideoEdit', 'publish');
++  } else if (hasPromptPlanningIntent(normalized)) {
++    primaryIntent = 'planning';
++    confidence = 0.9;
++    replyStrategy = 'draft_or_refine_prompt_in_chat';
++    proposedActions.push(buildAction('draft_prompt', 'conversation', 'local', false, 'Operator is refining a prompt or brief'));
++    blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyReport', 'latestDriveIngest', 'publish');
++  } else if (objects.length && hasContentDiscussionMarkers(normalized) && !hasDirectContentCreateRequest(normalized) && (!hasExplicitContentEdit(combined) || internalWorkIntent)) {
++    primaryIntent = internalWorkIntent ? 'codex_work' : 'conversation';
++    confidence = 0.9;
++    replyStrategy = primaryIntent === 'codex_work' ? 'route_to_codex_or_discuss_fix' : 'answer_naturally';
++    proposedActions.push(buildAction('discuss_content_system', 'conversation', 'read_only', false, 'Content words are being discussed, not requested as output'));
++    blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyTranscriptTopic', 'weeklyReport', 'latestDriveIngest', 'publish');
++  } else if (hasExplicitContentEdit(combined)) {
++    primaryIntent = 'content_edit';
++    confidence = 0.86;
++    replyStrategy = 'edit_saved_content_or_reply';
++    proposedActions.push(buildAction('edit_content_draft', 'content', 'local_write', false, 'Explicit saved draft/content edit intent'));
++    allowedHandlers.push('contentApproval', 'contentDraftEdit');
++  } else if (hasExplicitContentCreate(combined)) {
++    primaryIntent = 'content_generate';
++    confidence = 0.84;
++    replyStrategy = 'generate_or_queue_content';
++    proposedActions.push(buildAction('generate_content_draft', 'content', 'local_write', false, 'Explicit content draft generation request'));
++    allowedHandlers.push('weeklyReport', 'latestDriveIngest', 'contentDraftEdit');
++  } else if (hasBrowserTestIntent(normalized)) {
++    primaryIntent = 'browser_test';
++    confidence = 0.86;
++    replyStrategy = 'route_to_codex_with_playwright';
++    proposedActions.push(buildAction('run_browser_test', 'codex', 'local_tool', false, 'Operator asked to test something browser-verifiable'));
++  } else if (hasCodexWorkIntent(normalized)) {
++    primaryIntent = 'codex_work';
++    confidence = 0.82;
++    replyStrategy = 'route_to_codex';
++    proposedActions.push(buildAction('queue_codex_work', 'codex', 'local_write', false, 'Implementation or verification request'));
++    if (internalWorkIntent || hasTaskCaptureMarkers(normalized)) {
++      blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyTranscriptTopic', 'weeklyReport', 'latestDriveIngest', 'latestVideoEdit', 'publish');
++    }
++  } else if (internalWorkIntent) {
++    primaryIntent = 'codex_work';
++    confidence = 0.82;
++    replyStrategy = 'route_to_codex';
++    proposedActions.push(buildAction('queue_codex_work', 'codex', 'local_write', false, 'Internal implementation or task-queue request'));
++    blockedHandlers.push('contentApproval', 'contentDraftEdit', 'weeklyTranscriptTopic', 'weeklyReport', 'latestDriveIngest', 'latestVideoEdit', 'publish');
++  } else if (hasBufferIntent(normalized)) {
++    primaryIntent = hasDraftOrInternalPublish(normalized) ? 'buffer_action' : 'buffer_discussion';
++    confidence = 0.78;
++    replyStrategy = primaryIntent === 'buffer_action' ? 'use_buffer_tool_if_clear' : 'answer_naturally';
++    proposedActions.push(buildAction(primaryIntent === 'buffer_action' ? 'buffer_draft_or_lookup' : 'discuss_buffer', 'buffer', primaryIntent === 'buffer_action' ? 'external_write' : 'read_only', false, 'Buffer was referenced'));
++  } else if (hasGhlIntent(normalized)) {
++    primaryIntent = hasDraftOrInternalPublish(normalized) ? 'ghl_action' : 'ghl_discussion';
++    confidence = 0.78;
++    replyStrategy = primaryIntent === 'ghl_action' ? 'use_ghl_tool_if_clear' : 'answer_naturally';
++    proposedActions.push(buildAction(primaryIntent === 'ghl_action' ? 'ghl_draft_or_lookup' : 'discuss_ghl', 'ghl', primaryIntent === 'ghl_action' ? 'external_write' : 'read_only', false, 'GHL was referenced'));
++  }
++
++  return {
++    version: 'telegram-agent-intent-v1',
++    primaryIntent,
++    confidence,
++    mentionedObjects: objects,
++    proposedActions,
++    blockedHandlers,
++    allowedHandlers,
++    replyStrategy,
++    requiresApproval: proposedActions.some((action) => action.requiresApproval),
++    scoped: Boolean(scoped),
++  };
++}
++
++function isHandlerBlocked(intentPlan, handlerName) {
++  return Array.isArray(intentPlan?.blockedHandlers) && intentPlan.blockedHandlers.includes(handlerName);
++}
++
++function shouldAskForExternalApproval(intentPlan) {
++  return intentPlan?.primaryIntent === 'publish_send' && intentPlan?.requiresApproval;
++}
++
++function summarizeIntentPlan(intentPlan = {}) {
++  return {
++    version: intentPlan.version || 'telegram-agent-intent-v1',
++    primaryIntent: intentPlan.primaryIntent || 'unknown',
++    confidence: intentPlan.confidence || 0,
++    mentionedObjects: intentPlan.mentionedObjects || [],
++    proposedActions: intentPlan.proposedActions || [],
++    blockedHandlers: intentPlan.blockedHandlers || [],
++    allowedHandlers: intentPlan.allowedHandlers || [],
++    replyStrategy: intentPlan.replyStrategy || '',
++    requiresApproval: Boolean(intentPlan.requiresApproval),
++  };
++}
++
++module.exports = {
++  isConfirmationText,
++  isHandlerBlocked,
++  planTelegramIntent,
++  shouldAskForExternalApproval,
++  stripConfirmationPrefix,
++  summarizeIntentPlan,
++};
+diff --git a/src/lib/bna/telegram-contact-lead-capture.js b/src/lib/bna/telegram-contact-lead-capture.js
+new file mode 100644
+index 0000000..2cffd0b
+--- /dev/null
++++ b/src/lib/bna/telegram-contact-lead-capture.js
+@@ -0,0 +1,273 @@
++function compactText(value) {
++  return String(value || '').replace(/\s+/g, ' ').trim();
++}
++
++function normalizeText(value) {
++  return compactText(value).toLowerCase();
++}
++
++const PHONE_PATTERN = /(?:\+?972[\s-]?)?0?5\d(?:[\s-]?\d){7}/g;
++
++function normalizePhone(value) {
++  const digits = String(value || '').replace(/\D/g, '');
++  if (!digits) return '';
++  if (digits.startsWith('972') && digits.length === 12) return `0${digits.slice(3)}`;
++  if (digits.startsWith('972') && digits.length === 11) return `0${digits.slice(3)}`;
++  if (digits.length === 9 && digits.startsWith('5')) return `0${digits}`;
++  return digits;
++}
++
++function uniqueValues(values) {
++  const seen = new Set();
++  return values
++    .map((value) => String(value || '').trim())
++    .filter(Boolean)
++    .filter((value) => {
++      const key = value.toLowerCase();
++      if (seen.has(key)) return false;
++      seen.add(key);
++      return true;
++    });
++}
++
++function extractPhoneNumbers(text) {
++  const matches = String(text || '').match(PHONE_PATTERN) || [];
++  return uniqueValues(matches.map(normalizePhone));
++}
++
++function hasInterestedParentLeadCaptureIntent(text) {
++  const normalized = normalizeText(text);
++  if (!normalized) return false;
++  const hasPhone = extractPhoneNumbers(text).length > 0;
++  const leadLanguage = /\b(interested|lead|leads|warm inbound|called me|called back|call back|facebook ads?|parent|parents?|contact history|pipeline view|pipeline type|whatsapp history|whatsapp group|funnel)\b/.test(normalized);
++  const namedNoPhoneLead = /\b(lady\s+alina|alina)\b/.test(normalized) && /\b(interested|call me back|will call)\b/.test(normalized);
++  return (hasPhone && leadLanguage) || namedNoPhoneLead;
++}
++
++function hasContactLeadPipelineBuildIntent(text) {
++  const normalized = normalizeText(text);
++  if (!normalized) return false;
++  const pipelineObject = /\b(lead section|interested parents?|parents? (?:that are )?interested|warm leads?|pipeline(?: type)? view|pipeline created from contacts?|contacts? pipeline|crm|ghl pipeline|contact history|previous contact|whatsapp history|whatsapp button|online logins?|parent portal logins?|tagged accordingly)\b/.test(normalized);
++  const parentContactSection = /\b(parent section|parents section|contacts section)\b/.test(normalized)
++    && /\b(whatsapp|previous contact|contact history|login|logins?|parent portal|manage)\b/.test(normalized);
++  const buildVerb = /\b(build|build out|need|needs|we need|wanted|want|update|hooked up|track|open it up|see|manage|created?)\b/.test(normalized);
++  return (pipelineObject || parentContactSection) && buildVerb;
++}
++
++function splitLeadSegments(text) {
++  let prepared = compactText(text);
++  const cues = [
++    'OK the next one',
++    'Okay the next one',
++    'The next one',
++    'then we have',
++    "Then there's",
++    'Then there is',
++    'Other lady',
++    'this woman',
++    "There's a Lady",
++    'There is a Lady',
++    'A Lady',
++    'Lady Alina',
++  ];
++  for (const cue of cues) {
++    const escaped = cue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
++    prepared = prepared.replace(new RegExp(`\\s+(${escaped})\\b`, 'gi'), '\n$1');
++  }
++  return prepared
++    .split(/\n+/)
++    .map((segment) => segment.trim())
++    .filter(Boolean);
++}
++
++function nameFromSegment(segment) {
++  const text = compactText(segment);
++  const namedRules = [
++    [/ilana\s+kahan|elana\s+kahan/i, 'Ilana Kahan'],
++    [/\bsari\b.*\bkaplan\b|\bkaplan\b.*\bsari\b/i, 'Sari Kaplan'],
++    [/\buriah\b/i, 'Uriah'],
++    [/\bshlomo\s+cann?er\b|\bshlomo\s+kaner\b/i, 'Shlomo Canner'],
++    [/\bshifra\b/i, 'Shifra'],
++    [/\bmiriam\s+zlotnick\b/i, 'Miriam Zlotnick'],
++    [/\bbracha\s+castell\b/i, 'Bracha Castell'],
++    [/\bpsychodrama\b|\blagat\b|\btouch the heart\b/i, 'Psychodrama Lagaat BaLev'],
++    [/\balina\b/i, 'Alina'],
++  ];
++  const named = namedRules.find(([pattern]) => pattern.test(text));
++  if (named) return named[1];
++
++  const explicit = text.match(/\b(?:his|her|the guy'?s|the woman'?s|woman'?s|man'?s)?\s*name\s+is\s+([A-Z][A-Za-z'-]+(?:\s+[A-Z][A-Za-z'-]+){0,2})/);
++  if (explicit) return cleanNameCandidate(explicit[1]);
++
++  const phoneMatch = text.match(PHONE_PATTERN);
++  if (phoneMatch) {
++    const after = text.slice(text.indexOf(phoneMatch[0]) + phoneMatch[0].length).trim();
++    const afterName = leadingNameFromText(after);
++    if (afterName) return afterName;
++
++    const before = text.slice(0, text.indexOf(phoneMatch[0])).trim();
++    const beforeName = trailingNameFromText(before);
++    if (beforeName) return beforeName;
++  }
++
++  return '';
++}
++
++function cleanNameCandidate(value) {
++  const stopWords = new Set(['she', 'he', 'i', 'the', 'next', 'ok', 'okay', 'sorry', 'sa', 'so', 'this', 'that', 'her', 'his', 'number']);
++  const tokens = String(value || '')
++    .split(/\s+/)
++    .map((token) => token.replace(/[^A-Za-z'-]/g, ''))
++    .filter(Boolean);
++  const nameTokens = [];
++  for (const token of tokens) {
++    if (stopWords.has(token.toLowerCase())) break;
++    if (!/^[A-Z][A-Za-z'-]*$/.test(token)) break;
++    nameTokens.push(token);
++    if (nameTokens.length >= 3) break;
++  }
++  return nameTokens.join(' ').trim();
++}
++
++function leadingNameFromText(value) {
++  const ignoredPrefix = String(value || '')
++    .replace(/^I\s+did(?:n't| not)\s+get\s+(?:his|her)?\s*name\s*/i, '')
++    .replace(/^(?:the\s+)?(?:guys?|woman|lady|man)'?s?\s+name\s+is\s+/i, '')
++    .trim();
++  const match = ignoredPrefix.match(/^([A-Z][A-Za-z'-]+(?:\s+[A-Z][A-Za-z'-]+){0,3})\b/);
++  return match ? cleanNameCandidate(match[1]) : '';
++}
++
++function trailingNameFromText(value) {
++  const match = String(value || '').match(/([A-Z][A-Za-z'-]+(?:\s+[A-Z][A-Za-z'-]+){0,2})\s+(?:her|his|their)?\s*(?:number|phone)?\s*$/);
++  return match ? cleanNameCandidate(match[1]) : '';
++}
++
++function leadStatusFromSegment(segment) {
++  const normalized = normalizeText(segment);
++  if (/\b(no answer|never got back|call back|called back|follow up|more to discuss|speak with (?:her )?husband|will call me back)\b/.test(normalized)) {
++    return 'follow_up';
++  }
++  if (/\b(very interested|interested)\b/.test(normalized)) return 'interested';
++  return 'interested';
++}
++
++function interestLevelFromSegment(segment) {
++  const normalized = normalizeText(segment);
++  if (/\bvery interested|hot\b/.test(normalized)) return 'hot';
++  if (/\bhesitant|no answer|don't remember|dont remember|not now\b/.test(normalized)) return 'unknown';
++  if (/\binterested|spoke for a while|warm inbound|facebook ad\b/.test(normalized)) return 'warm';
++  return 'unknown';
++}
++
++function tagsFromSegment(segment, globalText) {
++  const normalized = normalizeText(`${segment} ${globalText || ''}`);
++  const tags = ['school-interest', 'telegram-capture'];
++  if (/\bfacebook ads?\b/.test(normalized)) tags.push('facebook-ad-response');
++  if (/\bwarm inbound\b/.test(normalized)) tags.push('warm-inbound');
++  if (/\bwhatsapp group\b/.test(normalized)) tags.push('whatsapp-group-funnel');
++  if (/\bno answer|called back|call back|never got back\b/.test(normalized)) tags.push('needs-callback');
++  if (/\bhusband\b/.test(normalized)) tags.push('husband-contact');
++  if (/\bhesitant\b/.test(normalized)) tags.push('hesitant');
++  if (/\bhome\s*school|homeschool\b/.test(normalized)) tags.push('homeschooling');
++  if (/\bzoom\b/.test(normalized)) tags.push('zoom');
++  if (/\bhebrew\b/.test(normalized)) tags.push('hebrew');
++  if (/\byoknam\b/.test(normalized)) tags.push('yoknam');
++  if (/\bnetzach\b/.test(normalized)) tags.push('netzach');
++  if (/\bgesher\b/.test(normalized)) tags.push('gesher');
++  if (/\brabbi scheller\b/.test(normalized)) tags.push('rabbi-scheller-referral');
++  if (/\bvery interested\b/.test(normalized)) tags.push('very-interested');
++  return uniqueValues(tags);
++}
++
++function studentDetailsFromSegment(segment) {
++  const normalized = normalizeText(segment);
++  const ageMatch = normalized.match(/\b(?:kid|child|son|daughter|boy)?\s*(?:is|i believe)?\s*(\d{1,2})\s+years?\s+old\b/);
++  const gradeMatch = normalized.match(/\b(?:in\s+)?((?:\d+)(?:st|nd|rd|th)\s+grade)\b/);
++  return {
++    student_age: ageMatch ? Number(ageMatch[1]) : null,
++    student_grade: gradeMatch ? gradeMatch[1] : null,
++  };
++}
++
++function leadPayloadFromSegment(segment, globalText = '', context = {}) {
++  const phones = extractPhoneNumbers(segment);
++  const name = nameFromSegment(segment);
++  if (!name || (!phones.length && !/\balina\b/i.test(segment))) return null;
++
++  let parentPhone = phones[0] || null;
++  let otherPhones = phones.slice(1);
++  if (/kaplan/i.test(segment) && phones.length >= 2) {
++    parentPhone = phones[1];
++    otherPhones = [phones[0], ...phones.slice(2)];
++  }
++
++  const studentDetails = studentDetailsFromSegment(segment);
++  const sourceDetail = /facebook ads?/i.test(globalText)
++    ? 'Telegram lead update from warm inbound/Facebook ad context'
++    : 'Telegram lead update from operator phone-call notes';
++  const note = compactText(segment);
++
++  return {
++    parent_name: name,
++    parent_phone: parentPhone,
++    other_phones: otherPhones,
++    student_age: studentDetails.student_age,
++    student_grade: studentDetails.student_grade,
++    lead_type: 'school_interest',
++    status: leadStatusFromSegment(segment),
++    interest_level: interestLevelFromSegment(segment),
++    source: 'telegram',
++    source_detail: sourceDetail,
++    owner: 'Shloimie',
++    tags: tagsFromSegment(segment, globalText),
++    notes: note,
++    communication: {
++      summary: contactNoteSummary(name, segment),
++      body: note,
++      follow_up_required: leadStatusFromSegment(segment) === 'follow_up' || /follow up|call back|no answer|husband/i.test(segment),
++    },
++    metadata: {
++      parser: 'telegram-contact-lead-capture-v1',
++      chat_id: context.chatId ? String(context.chatId) : null,
++      message_id: context.messageId ? String(context.messageId) : null,
++    },
++  };
++}
++
++function contactNoteSummary(name, segment) {
++  const normalized = normalizeText(segment);
++  if (/\bnever got back\b/.test(normalized)) return `${name}: needs first callback`;
++  if (/\bno answer\b/.test(normalized)) return `${name}: no answer, call back`;
++  if (/\bvery interested\b/.test(normalized)) return `${name}: very interested`;
++  if (/\bhesitant\b/.test(normalized)) return `${name}: hesitant, needs husband discussion`;
++  if (/\bhome\s*school|homeschool\b/.test(normalized)) return `${name}: asked about homeschooling`;
++  if (/\bzoom\b/.test(normalized)) return `${name}: asked about Zoom classes`;
++  return `${name}: interested parent lead`;
++}
++
++function extractInterestedParentLeads(text, context = {}) {
++  if (!hasInterestedParentLeadCaptureIntent(text)) return [];
++  const segments = splitLeadSegments(text);
++  const leads = [];
++  for (const segment of segments) {
++    const payload = leadPayloadFromSegment(segment, text, context);
++    if (payload) leads.push(payload);
++  }
++  const seen = new Set();
++  return leads.filter((lead) => {
++    const key = `${normalizePhone(lead.parent_phone) || normalizeText(lead.parent_name)}:${normalizeText(lead.parent_name)}`;
++    if (seen.has(key)) return false;
++    seen.add(key);
++    return true;
++  });
++}
++
++module.exports = {
++  extractInterestedParentLeads,
++  extractPhoneNumbers,
++  hasContactLeadPipelineBuildIntent,
++  hasInterestedParentLeadCaptureIntent,
++  normalizePhone,
++  splitLeadSegments,
++};
+diff --git a/src/lib/bna/telegram-content-intent.js b/src/lib/bna/telegram-content-intent.js
+index da59233..e12f113 100644
+--- a/src/lib/bna/telegram-content-intent.js
++++ b/src/lib/bna/telegram-content-intent.js
+@@ -11,6 +11,11 @@ function parseContentOutputTypeFromText(text, fallbackText = '') {
+   const normalized = normalizedText(text, fallbackText);
+   if (/\b(facebook|fb)\b/.test(normalized)) return 'facebook_post';
+   if (/\b(whatsapp|what'?s\s*app|wa update|parent update)\b/.test(normalized)) return 'whatsapp_update';
++  if (/\b(google business|gbp|google post|business profile)\b/.test(normalized)) return 'google_business_post';
++  if (/\b(daily report|internal report|ops report|operations report)\b/.test(normalized)) return 'daily_report';
++  if (/\b(parent email|email to parents?|parent-facing email)\b/.test(normalized)) return 'parent_email';
++  if (/\b(teaching philosophy|philosophy note|teaching note)\b/.test(normalized)) return 'teaching_philosophy_note';
++  if (/\b(short clip|clip packaging|reel caption|short-form|short form)\b/.test(normalized)) return 'short_clip';
+   if (/\b(newsletter|weekly update|week update|end[-\s]?of[-\s]?week)\b/.test(normalized)) return 'weekly_newsletter';
+   if (/\b(email|e-mail)\s+(draft|copy|newsletter|weekly update)\b/.test(normalized)) return 'weekly_newsletter';
+   if (/\b(draft|copy)\s+(email|e-mail)\b/.test(normalized)) return 'weekly_newsletter';
+@@ -21,7 +26,7 @@ function parseContentOutputTypeFromText(text, fallbackText = '') {
+ }
+ 
+ function hasAppSurfaceWorkIntent(text) {
+-  return /\b(sign\s*up|signup|registration|form|page|toolbar|button|buttons|payment|cash|credit|bank transfer|confirmation email|email goes|email sends|send(?:s|ing)? an email|document|documents|waiver|parent handbook|student handbook|tuition agreement|modal|new page|hebrew and english|english and hebrew)\b/i
++  return /\b(sign\s*up|signup|registration|form|page|toolbar|static toolbar|side\s*menu|side\s*bar|sidebar|sandwich|hamburger|drop[-\s]?down|dropdown|section|sections|filter|filters|button|buttons|student login|parent login|teacher login|attendance|meeting recordings?|questions?|payment|cash|credit|bank transfer|confirmation email|email goes|email sends|send(?:s|ing)? an email|document|documents|waiver|parent handbook|student handbook|tuition agreement|modal|new page|hebrew and english|english and hebrew)\b/i
+     .test(String(text || ''));
+ }
+ 
+@@ -31,6 +36,18 @@ function hasExplicitDraftEvidence(text, replyText = '') {
+     .test(combined);
+ }
+ 
++function hasContentCommitToSchedulingIntent(text, replyText = '') {
++  const combined = normalizedText(text, replyText);
++  return /\b(commit|commit it|committed|finalize|finalise|create facebook draft|create buffer draft|create ghl draft|send to buffer|send to ghl|push to buffer|push to ghl|push it to buffer|push it to ghl|ready to schedule|schedule it|schedule this|scheduler|buffer draft|ghl draft)\b/
++    .test(combined);
++}
++
++function hasPublicPublishNowIntent(text, replyText = '') {
++  const combined = normalizedText(text, replyText);
++  return /\b(publish now|post now|publish publicly|make public|send to facebook now|post to facebook now|go public)\b/
++    .test(combined);
++}
++
+ function shouldBlockContentDraftEditIntent({
+   text = '',
+   replyText = '',
+@@ -45,8 +62,10 @@ function shouldBlockContentDraftEditIntent({
+ }
+ 
+ module.exports = {
++  hasContentCommitToSchedulingIntent,
+   hasAppSurfaceWorkIntent,
+   hasExplicitDraftEvidence,
++  hasPublicPublishNowIntent,
+   parseContentOutputTypeFromText,
+   shouldBlockContentDraftEditIntent,
+ };
+diff --git a/src/lib/bna/telegram-planning-intent.js b/src/lib/bna/telegram-planning-intent.js
+new file mode 100644
+index 0000000..c7b1ad6
+--- /dev/null
++++ b/src/lib/bna/telegram-planning-intent.js
+@@ -0,0 +1,173 @@
++function normalizePlanningText(value) {
++  return String(value || '')
++    .toLowerCase()
++    .replace(/[^\x20-\x7E]+/g, ' ')
++    .replace(/\s+/g, ' ')
++    .trim();
++}
++
++function compactPlanningText(value, maxLength = 1600) {
++  const text = String(value || '')
++    .replace(/\r/g, '')
++    .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, ' ')
++    .replace(/\s+\n/g, '\n')
++    .replace(/\n{3,}/g, '\n\n')
++    .trim();
++  if (text.length <= maxLength) return text;
++  return `${text.slice(0, maxLength - 14).trim()}... [truncated]`;
++}
++
++function hasPromptPlanningIntent(text) {
++  const normalized = normalizePlanningText(text);
++  if (!normalized) return false;
++
++  const mentionsPrompt = /\b(prompt|prompts|brief|planning mode|planning-mode|plan mode|refine my idea|refining my idea)\b/.test(normalized);
++  if (!mentionsPrompt) return false;
++
++  const mentionsTarget = /\b(codex|kodak|codak|chatgpt|chat gpt|gpt|ai|you)\b/.test(normalized);
++  const promptVerb =
++    /\b(make|create|write|draft|build|prepare|design|refine|revise|work on|help me|turn this into|come up with)\b.{0,90}\b(prompt|brief)\b/.test(normalized) ||
++    /\b(prompt|brief)\b.{0,90}\b(for|to give|that i'?m giving|i am giving)\b.{0,60}\b(codex|chatgpt|chat gpt|gpt|ai|you)\b/.test(normalized);
++  const explicitPlanningMode =
++    /\b(codex|chatgpt|chat gpt|gpt)\b.{0,100}\b(planning mode|planning-mode|plan mode|refine|refinement)\b/.test(normalized) ||
++    /\b(planning mode|planning-mode|plan mode)\b.{0,100}\b(codex|chatgpt|chat gpt|gpt|prompt|brief)\b/.test(normalized);
++
++  return Boolean((mentionsTarget && promptVerb) || explicitPlanningMode);
++}
++
++function promptPlanningKind(text) {
++  const normalized = normalizePlanningText(text);
++  if (/\b(chatgpt|chat gpt|gpt)\b/.test(normalized) && !/\bcodex\b/.test(normalized)) {
++    return 'chatgpt';
++  }
++  return 'codex';
++}
++
++function hasExplicitPromptImplementationStart(text) {
++  const normalized = normalizePlanningText(text);
++  if (!normalized) return false;
++  return (
++    /\b(go ahead|start|execute|use|apply|run|test|build|implement|send)\b.{0,50}\b(this|it|the prompt|that prompt|draft|brief)\b/.test(normalized) ||
++    /\b(this|it|the prompt|that prompt|draft|brief)\b.{0,50}\b(is ready|looks good|approved|go ahead|start|execute|apply|run|test|build|implement)\b/.test(normalized) ||
++    /\b(send|pass|give)\b.{0,40}\b(to|into)\b.{0,20}\bcodex\b/.test(normalized) ||
++    /\b(use this prompt|apply this prompt|run this prompt|build from this|implement from this|test from this)\b/.test(normalized)
++  );
++}
++
++function isPromptPlanningCancel(text) {
++  const normalized = normalizePlanningText(text);
++  return /\b(cancel|nevermind|never mind|stop planning|drop this prompt|forget this prompt)\b/.test(normalized);
++}
++
++function isPromptPlanningRefinement(text) {
++  const normalized = normalizePlanningText(text);
++  if (!normalized || hasExplicitPromptImplementationStart(normalized) || isPromptPlanningCancel(normalized)) return false;
++  return (
++    /\b(make it|change it|revise|rewrite|refine|tighten|add|include|remove|take out|instead|more|less|shorter|longer|clearer|stronger|softer|mention|focus on|don't|do not|use this wording|word it)\b/.test(normalized) ||
++    (/^(also|and|but|no|yes|right|ok|okay)\b/.test(normalized) && normalized.length <= 500)
++  );
++}
++
++function bulletizeRevisions(revisions = []) {
++  return revisions
++    .map((item) => compactPlanningText(item.text || item, 420))
++    .filter(Boolean)
++    .map((item) => `- ${item}`);
++}
++
++function buildVisiblePlanningPrompt(input = {}) {
++  const kind = input.kind || 'codex';
++  const originalText = input.originalText || input.original_text || '';
++  const revisions = input.revisions || input.revision_inputs || [];
++  const target = kind === 'chatgpt' ? 'ChatGPT' : 'Codex';
++  const raw = compactPlanningText(originalText, 1800);
++  const revisionLines = bulletizeRevisions(revisions);
++
++  const base = kind === 'chatgpt'
++    ? [
++        'You are ChatGPT helping Shloimie refine an idea before any execution.',
++        'Turn the operator input into a clear working prompt or brief.',
++        'Preserve the intent and important wording, but make the output structured and usable.',
++      ]
++    : [
++        'You are Codex working in planning/refinement mode for the BNA repository.',
++        'Read AGENTS.md, MEMORY.md, TASKS.md, SYSTEM-STATE.md, and relevant local files before recommending implementation.',
++        'Do not edit files, run commands, deploy, or mark tasks done yet.',
++      ];
++
++  return [
++    ...base,
++    '',
++    'Goal:',
++    `Create a refined ${target} prompt/brief from the operator input below, then stop for operator review.`,
++    '',
++    'Original operator input, preserved as provenance:',
++    '"""',
++    raw || '[no source text provided]',
++    '"""',
++    revisionLines.length ? '' : null,
++    revisionLines.length ? 'Operator refinements to incorporate:' : null,
++    ...revisionLines,
++    '',
++    'Return format:',
++    '1. Refined prompt/brief',
++    '2. Assumptions and open decisions',
++    '3. Recommended next step',
++    '',
++    'Boundary:',
++    'Stay in planning mode. Wait for the operator to say build, apply, run, test, or implement before execution.',
++  ].filter((line) => line !== null).join('\n');
++}
++
++function buildPlanningTelegramReply(session = {}) {
++  const target = session.kind === 'chatgpt' ? 'ChatGPT' : 'Codex';
++  return [
++    `Planning mode: ${target} prompt draft`,
++    '',
++    'I will keep this as a visible draft and refine it here before implementation.',
++    '',
++    '--- Prompt draft ---',
++    session.current_prompt || buildVisiblePlanningPrompt(session),
++    '--- End prompt draft ---',
++    '',
++    'Reply with changes to refine it, or say "build this", "apply this", "run this", or "test this" when it is ready.',
++  ].join('\n');
++}
++
++function buildCodexWorkFromPlanningSession(session = {}, latestText = '') {
++  const revisionLines = bulletizeRevisions(session.revision_inputs || []);
++  return [
++    'Planning-mode prompt approved for execution.',
++    '',
++    'Use the visible prompt draft below as the work request. Preserve the original operator input as provenance in any task notes, comments, or implementation brief you create.',
++    '',
++    'Latest operator command:',
++    compactPlanningText(latestText, 700) || '[none]',
++    '',
++    'Original operator input:',
++    '"""',
++    compactPlanningText(session.original_text, 1800) || '[none]',
++    '"""',
++    revisionLines.length ? '' : null,
++    revisionLines.length ? 'Refinement history:' : null,
++    ...revisionLines,
++    '',
++    'Approved prompt draft:',
++    '"""',
++    session.current_prompt || buildVisiblePlanningPrompt(session),
++    '"""',
++  ].filter((line) => line !== null).join('\n');
++}
++
++module.exports = {
++  buildCodexWorkFromPlanningSession,
++  buildPlanningTelegramReply,
++  buildVisiblePlanningPrompt,
++  compactPlanningText,
++  hasExplicitPromptImplementationStart,
++  hasPromptPlanningIntent,
++  isPromptPlanningCancel,
++  isPromptPlanningRefinement,
++  normalizePlanningText,
++  promptPlanningKind,
++};

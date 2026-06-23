@@ -1,0 +1,63 @@
+{
+  "status": "fail",
+  "message": "empty WhatsApp dataset did not show or preserve an empty state at 390",
+  "steps": [
+    {
+      "name": "public health endpoint",
+      "status": "pass",
+      "details": {
+        "endpoint": "/api/health"
+      }
+    },
+    {
+      "name": "operations login session",
+      "status": "pass",
+      "details": {
+        "user_role": "super_admin",
+        "scope_type": "unknown"
+      }
+    },
+    {
+      "name": "scoped WAPI phonebook report",
+      "status": "pass",
+      "details": {
+        "groups": 0,
+        "scope": "workspace"
+      }
+    },
+    {
+      "name": "sanitized WhatsApp messages readback",
+      "status": "pass",
+      "details": {
+        "count": 0
+      }
+    },
+    {
+      "name": "operations WhatsApp HTML markers",
+      "status": "pass",
+      "details": {
+        "endpoint": "/operations?workspace=rabbi_sheller_provider&view=communications&section=whatsapp"
+      }
+    }
+  ],
+  "dom_results": [
+    {
+      "width": 1024,
+      "currentModule": "communications",
+      "activeFilter": "",
+      "hasWorkspace": false,
+      "hasMobileBackNav": false,
+      "mobileBackNavVisible": false,
+      "hasSendReadiness": false,
+      "sendDisabled": false,
+      "hasConfirmationGate": false,
+      "mentionsEmptyState": false,
+      "mentionsRawHidden": false,
+      "mentionsNoSend": false,
+      "forbiddenCrmTerms": [],
+      "pageOverflow": false,
+      "paneGrid": "",
+      "activePanes": []
+    }
+  ]
+}
