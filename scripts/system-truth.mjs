@@ -236,6 +236,52 @@ function currentRunState() {
   return { latest, runDir, requirementsDoc, runDoc };
 }
 
+function githubIssueDryRunEvidence(issueNumber) {
+  const sourceTruthDir = path.join(repoRoot, 'ops', 'source-truth');
+  const empty = {
+    issue_number: issueNumber,
+    present: false,
+    json_path: '',
+    markdown_path: '',
+    mode: 'missing',
+    external_write_performed: false,
+    secret_values_printed: false,
+    trusted_source: false,
+    source_id: '',
+    stable_key: '',
+    privacy_classification: '',
+    parser_schema_valid: false,
+    apply_blocker: ''
+  };
+
+  if (!fs.existsSync(sourceTruthDir)) {
+    return empty;
+  }
+
+  const prefix = `github-issue-${issueNumber}-dry-run`;
+  const entries = fs.readdirSync(sourceTruthDir).filter((name) => name.includes(prefix)).sort();
+  const jsonName = entries.filter((name) => name.endsWith('.json')).at(-1) || '';
+  const markdownName = entries.filter((name) => name.endsWith('.md')).at(-1) || '';
+  const doc = jsonName ? readJsonSafe(path.join(sourceTruthDir, jsonName)) || {} : {};
+  const present = Boolean(jsonName || markdownName);
+
+  return {
+    issue_number: issueNumber,
+    present,
+    json_path: jsonName ? rel(path.join(sourceTruthDir, jsonName)) : '',
+    markdown_path: markdownName ? rel(path.join(sourceTruthDir, markdownName)) : '',
+    mode: doc.mode || (present ? 'dry_run_artifact' : 'missing'),
+    external_write_performed: Boolean(doc.external_write_performed),
+    secret_values_printed: Boolean(doc.secret_values_printed),
+    trusted_source: Boolean(doc.trusted_source),
+    source_id: doc.source_envelope?.source_id || '',
+    stable_key: doc.source_envelope?.stable_key || '',
+    privacy_classification: doc.source_envelope?.privacy_classification || '',
+    parser_schema_valid: Boolean(doc.parser_counts?.schema_valid),
+    apply_blocker: doc.apply_blocker || ''
+  };
+}
+
 async function sourceReport() {
   const { latest, runDir, requirementsDoc } = currentRunState();
   const { validateExecutionRun } = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'bna-execution-run.mjs')).href);
@@ -253,6 +299,10 @@ async function sourceReport() {
       !statement.existing_requirement_id &&
       !['excluded', 'unrelated', 'non_requirement', 'context_only', 'duplicate', 'archived'].includes(classification);
   });
+  const issue7Evidence = githubIssueDryRunEvidence(7);
+  const issue8Evidence = githubIssueDryRunEvidence(8);
+  const rawIssue7Present = rawInputs.some((name) => name.includes('github-issue-7'));
+  const rawIssue8Present = rawInputs.some((name) => name.includes('github-issue-8'));
   return {
     generated_at: nowIso(),
     latest,
@@ -270,8 +320,12 @@ async function sourceReport() {
     raw_input_files: rawInputs.length,
     task_pending_files: pending.length,
     issue_sources_present: {
-      issue_7: rawInputs.some((name) => name.includes('github-issue-7')),
-      issue_8: rawInputs.some((name) => name.includes('github-issue-8'))
+      issue_7: rawIssue7Present || issue7Evidence.present,
+      issue_8: rawIssue8Present || issue8Evidence.present
+    },
+    github_issue_dry_runs: {
+      issue_7: issue7Evidence,
+      issue_8: issue8Evidence
     }
   };
 }
@@ -813,6 +867,7 @@ function renderReturnPacketMarkdown(report, options = {}) {
   const gateCommands = Array.isArray(externalGates.next_command_plan) ? externalGates.next_command_plan : [];
   const resumeCommands = Array.isArray(report.resume_commands) ? report.resume_commands : [];
   const privateFiles = Array.isArray(report.private_files_not_pushed) ? report.private_files_not_pushed : [];
+  const issueSources = report.source_coverage?.issue_sources_present || {};
   const lines = [
     'CHATGPT RETURN PACKET',
     `Generated: ${report.generated_at}`,
@@ -827,6 +882,7 @@ function renderReturnPacketMarkdown(report, options = {}) {
     `- active run: ${report.system_truth.active_run || 'unknown'}`,
     `- branch sync: ahead ${report.system_truth.ahead ?? 'unknown'}, behind ${report.system_truth.behind ?? 'unknown'}, local-only commits ${report.system_truth.local_only_commits ?? 'unknown'}`,
     `- source coverage: errors ${report.source_coverage?.validation?.errors?.length ?? 'unknown'}, unmapped ${report.source_coverage?.source_statements?.unmapped_executable ?? 'unknown'}`,
+    `- issue source evidence: issue #7 ${issueSources.issue_7 ? 'present' : 'missing'}, issue #8 ${issueSources.issue_8 ? 'present' : 'missing'}`,
     `- local-only work: dirty files ${report.system_truth.dirty_total ?? 0}`,
     '- unpushed work: current branch upstream status recorded in git; no local-only commit claim made by packet',
     '- merged-not-deployed: deployment readback not verified in current local state',

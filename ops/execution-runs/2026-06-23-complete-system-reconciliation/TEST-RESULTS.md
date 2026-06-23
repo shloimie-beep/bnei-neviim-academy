@@ -3,6 +3,32 @@
 ## Passed
 
 - `node --check scripts/system-truth.mjs`:
+  PASS after source-truth issue-evidence hardening.
+- `node --test tests/system-truth-scripts.test.js`:
+  PASS, 5/5; source coverage reports Issue #7/#8 dry-run evidence present
+  with no external writes or secret printing.
+- `npm run source:truth -- --json`:
+  PASS; Issue #7 and Issue #8 evidence present via dry-run artifacts.
+- `npm run bna:return-packet -- --json`:
+  PASS; packet includes issue source evidence present for Issue #7 and Issue
+  #8.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence`:
+  PASS, stale evidence detection none.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4148 tracked paths checked, 0 tracked secret-risk files found.
+- Redacted return packet and source-truth issue evidence checks:
+  PASS; return packet reports Issue #7/#8 present, source truth marks both
+  dry-runs no-write and no-secret-printing, and the verdict remains
+  `PARTIAL - APPROVAL-GATED WORK REMAINS`.
+- `git diff --check`:
+  PASS with line-ending warnings only.
+- `npm test`:
+  PASS, 1101/1101 after source-truth issue-evidence hardening.
+- `node --check scripts/system-truth.mjs`:
   PASS after return-packet commit-basis clarity hardening.
 - `node --test tests/system-truth-scripts.test.js`:
   PASS, 5/5; return packet reports current branch head separately from the

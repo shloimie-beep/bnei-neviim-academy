@@ -46,6 +46,20 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.ok(report.system_truth.branch);
   assert.equal(typeof report.system_truth.local_only_commits, 'number');
   assert.equal(typeof report.system_truth.unpulled_remote_commits, 'number');
+  assert.equal(report.source_coverage.issue_sources_present.issue_7, true);
+  assert.equal(report.source_coverage.issue_sources_present.issue_8, true);
+  for (const issueKey of ['issue_7', 'issue_8']) {
+    const dryRun = report.source_coverage.github_issue_dry_runs[issueKey];
+    assert.equal(dryRun.present, true);
+    assert.equal(dryRun.mode, 'dry_run');
+    assert.equal(dryRun.external_write_performed, false);
+    assert.equal(dryRun.secret_values_printed, false);
+    assert.equal(dryRun.trusted_source, true);
+    assert.equal(dryRun.privacy_classification, 'redacted_repo_safe');
+    assert.equal(dryRun.parser_schema_valid, true);
+    assert.match(dryRun.json_path, /ops\/source-truth\/.+github-issue-\d-dry-run\.json$/);
+    assert.match(dryRun.markdown_path, /ops\/source-truth\/.+github-issue-\d-dry-run\.md$/);
+  }
   assert.deepEqual(report.resume_commands.slice(-3), [
     'npm run bna:run:resume',
     'npm run bna:run:blockers',
@@ -84,6 +98,7 @@ test('return packet report keeps private and redacted packet paths explicit', as
   const renderedPacket = mod.renderReturnPacketReport(report, { redacted: true });
   assert.match(renderedPacket, /- branch head: [0-9a-f]{40}/);
   assert.match(renderedPacket, /- validated Agent Work head: [0-9a-f]{40}/);
+  assert.match(renderedPacket, /- issue source evidence: issue #7 present, issue #8 present/);
   assert.match(renderedPacket, /AGENT WORK[\s\S]*branch [0-9a-f]{12} \/ validated [0-9a-f]{12}/);
   if (report.agent_work.some((item) => item.package === 'REQ-20260623-210')) {
     assert.equal(report.next_automatic_action.package, 'none');

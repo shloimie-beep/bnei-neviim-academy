@@ -36,6 +36,8 @@ Open requirements:
   exact resume commands, and private `.runtime` packet files as gitignored/not
   pushed. It now distinguishes the current branch head from the validated Agent
   Work commit basis in system truth and Agent Work rows.
+  Source truth and the return packet now recognize GitHub Issue #7/#8 dry-run
+  intake evidence as present while keeping persistence/acknowledgement gated.
   Remaining production database apply, deploy, and live verification work
   remain open and must not be advertised as an unblocked executable batch until
   the required external gates are configured and explicitly approved.

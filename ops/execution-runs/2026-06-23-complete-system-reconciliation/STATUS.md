@@ -1,5 +1,42 @@
 # Status
 
+## 2026-06-23T17:47:32+03:00
+
+Status: running, with the twenty-fifth source-truth issue-evidence slice
+complete.
+
+Updated source truth so GitHub Issue #7 and Issue #8 dry-run intake evidence
+is recognized from `ops/source-truth/*github-issue-*-dry-run.*` artifacts.
+The return packet now reports the issue source evidence as present instead of
+falsely implying those issue sources are absent. The dry-run evidence remains
+explicitly no-write and secret-safe; database persistence and GitHub
+acknowledgement remain approval-gated.
+
+Verified in this slice:
+
+- `node --check scripts/system-truth.mjs` passed.
+- `node --test tests/system-truth-scripts.test.js` passed, 5/5.
+- `npm run source:truth -- --json` regenerated source truth with Issue #7
+  and Issue #8 dry-run evidence present.
+- `npm run bna:return-packet -- --json` regenerated the private ignored
+  packet and tracked redacted packet with issue source evidence present.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`, and
+  `npm run bna:run:stale-evidence` passed; source coverage remained at 0
+  unmapped executable statements.
+- `node scripts/audit-secrets.mjs` passed with 4148 tracked paths checked and
+  0 tracked secret-risk files.
+- Full `npm test` passed, 1101/1101.
+- `git diff --check` passed with line-ending warnings only.
+- No production mutation, deploy, live verification, external read, send,
+  upload, charge, or backfill was performed.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates and
+  configured DB/Railway/Drive targets.
+- `REQ-20260623-210`: in progress but approval-gated; approved production
+  database apply, deploy, and live verification are not complete yet.
+
 ## 2026-06-23T17:37:36+03:00
 
 Status: running, with the twenty-fourth return-packet commit-basis clarity

@@ -36,6 +36,13 @@ Latest return-packet slice:
 - Agent Work rows include `current_branch_head`, `validated_commit`, and
   `commit_basis` in the JSON packet.
 
+Latest source-truth slice:
+
+- Source truth recognizes GitHub Issue #7 and Issue #8 dry-run intake evidence
+  from `ops/source-truth/*github-issue-*-dry-run.*`.
+- The issue dry-run evidence is marked no-write and secret-safe; production
+  persistence remains gated.
+
 ## Implementation Evidence
 
 - `server.js`
