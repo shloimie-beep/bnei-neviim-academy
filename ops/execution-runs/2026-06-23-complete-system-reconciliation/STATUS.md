@@ -1,5 +1,30 @@
 # Status
 
+## 2026-06-23T14:21:23+03:00
+
+Status: running, with the third canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with first-class GitHub and ChatGPT source adapter
+coverage. GitHub issue/PR and ChatGPT export inputs now normalize as explicit
+source providers/kinds instead of falling back to generic local/manual/other
+paths, and the GitHub dry-run intake uses the same source vocabulary.
+
+Verified in this slice:
+
+- GitHub issues and PRs normalize to `github` with `github_issue`/`github_pr`
+  source kinds.
+- ChatGPT exports normalize to `chatgpt` with `chatgpt_export` source kind.
+- GitHub/ChatGPT/Codex packet providers default to Operations ramble context
+  unless an explicit context overrides them.
+- Focused source/GitHub/parser tests passed, 31/31.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; remaining canonical persistence, Operations
+  UI, watchdog parity, synthetic E2E, deploy, and live verification are not
+  complete yet.
+
 ## 2026-06-23T14:15:13+03:00
 
 Status: running, with the second canonical implementation slice complete.

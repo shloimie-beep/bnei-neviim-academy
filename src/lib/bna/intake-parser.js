@@ -336,7 +336,7 @@ function hasGoogleClassroomRequest(text = '') {
 }
 
 function isRambleSource(sourceType = '') {
-  return /\b(ramble|telegram|recording|transcript|operator|manual|voice|drive)\b/i.test(String(sourceType || ''));
+  return /\b(ramble|telegram|recording|transcript|operator|manual|voice|drive|github|chatgpt|chat_gpt|codex)\b/i.test(String(sourceType || ''));
 }
 
 function isCorrectionLikeInput(text = '') {

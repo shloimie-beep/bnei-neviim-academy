@@ -13,6 +13,8 @@ const SOURCE_PROVIDERS = new Set([
   'telegram',
   'website_bot',
   'codex_chat',
+  'chatgpt',
+  'github',
   'operations_ui',
   'drive',
   'google_docs',
@@ -32,6 +34,9 @@ const SOURCE_KINDS = new Set([
   'video',
   'transcript',
   'telegram_text',
+  'github_issue',
+  'github_pr',
+  'chatgpt_export',
   'unknown',
 ]);
 
@@ -122,6 +127,8 @@ function normalizeSourceProvider(value = '') {
   if (key.includes('whatsapp') || key.includes('whapi')) return 'whatsapp';
   if (key.includes('wapi')) return 'wapi';
   if (key.includes('email') || key.includes('gmail')) return 'email';
+  if (key.includes('github') || key === 'gh' || key.startsWith('gh_')) return 'github';
+  if (key.includes('chatgpt') || key.includes('chat_gpt') || key.includes('openai_chat')) return 'chatgpt';
   if (key.includes('codex')) return 'codex_chat';
   if (key.includes('operation')) return 'operations_ui';
   if (key.includes('website')) return 'website_bot';
@@ -129,17 +136,26 @@ function normalizeSourceProvider(value = '') {
   return key ? 'other' : 'manual';
 }
 
-function inferSourceKind({ mime_type: mimeType, filename, source_kind: sourceKind, source_type: sourceType } = {}) {
-  const explicit = normalizeKey(sourceKind || sourceType || '', '');
+function inferSourceKind({ mime_type: mimeType, filename, source_kind: sourceKind, source_type: sourceType, source_provider: sourceProvider } = {}) {
+  const explicit = normalizeKey(sourceKind || '', '');
   if (SOURCE_KINDS.has(explicit)) return explicit;
+  const explicitType = normalizeKey(sourceType || '', '');
+  if (SOURCE_KINDS.has(explicitType)) return explicitType;
+  const provider = normalizeSourceProvider(sourceProvider || sourceType || '');
   const value = `${mimeType || ''} ${filename || ''}`.toLowerCase();
+  const providerText = `${provider} ${explicitType} ${value}`;
+  if (provider === 'github') {
+    if (/\b(pull|pull_request|pr)\b/.test(providerText)) return 'github_pr';
+    return 'github_issue';
+  }
+  if (provider === 'chatgpt') return 'chatgpt_export';
   if (/\bgoogle.*document|application\/vnd\.google-apps\.document/.test(value)) return 'google_doc';
   if (/\b(audio|m4a|mp3|wav|ogg)\b/.test(value)) return 'audio';
   if (/\b(video|mp4|mov|webm|mkv)\b/.test(value)) return 'video';
   if (/\b(transcript|vtt|srt)\b/.test(value)) return 'transcript';
   if (/\b(markdown|md)\b/.test(value)) return 'markdown';
   if (/\b(text|txt)\b/.test(value)) return 'text';
-  if (normalizeSourceProvider(sourceType) === 'telegram') return 'telegram_text';
+  if (provider === 'telegram') return 'telegram_text';
   return 'unknown';
 }
 
@@ -227,6 +243,9 @@ function inferContextType(input = {}) {
   const title = sourceTitleFromInput(input);
   const text = sourceTextForClassification(input);
   const sourceKind = inferSourceKind(input);
+  const sourceProvider = normalizeSourceProvider(
+    input.source_provider || input.sourceProvider || input.provider || input.source_channel || input.sourceChannel || input.source_type || input.sourceType
+  );
   const titleLower = title.toLowerCase();
   const combined = `${title} ${text}`.toLowerCase();
   const titleHasOneTime = hasOneTimeCue(title);
@@ -238,6 +257,9 @@ function inferContextType(input = {}) {
       confidence: 0.96,
       basis: 'explicit_context_type',
     };
+  }
+  if (['github', 'chatgpt', 'codex_chat'].includes(sourceProvider)) {
+    return { context_type: 'operations_ramble', confidence: 0.9, basis: 'source_provider_operations_packet' };
   }
   if (/\b(dratler|family app|family meeting|household meeting)\b/i.test(title)
     && /\b(family|meeting|household|accountability|dratler)\b/i.test(title)) {
@@ -399,6 +421,7 @@ function classifySourceEnvelope(input = {}) {
     filename: input.filename || input.name,
     source_kind: input.source_kind || input.sourceKind,
     source_type: input.source_type || input.sourceType || sourceProvider,
+    source_provider: sourceProvider,
   });
   const title = sourceTitleFromInput(input);
   const filename = input.filename || input.name || input.file_name || input.fileName || null;
@@ -458,6 +481,7 @@ function createIntakeSourceRecord(input = {}) {
     filename: input.filename || input.name,
     source_kind: input.source_kind || input.sourceKind,
     source_type: input.source_type || input.sourceType || sourceProvider,
+    source_provider: sourceProvider,
   });
   const rawText = String(input.raw_text || input.rawText || input.text || '');
   const transcriptText = String(input.transcript_text || input.transcriptText || '');

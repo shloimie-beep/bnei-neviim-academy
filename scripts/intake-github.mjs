@@ -111,7 +111,8 @@ export function buildGitHubIntakePreview({ repo = DEFAULT_REPO, issue, comments 
     : `${repo}#${issue.number}`;
   const fingerprint = sha256([externalId, redactedBody].join('\n--bna-github-intake--\n'));
   const source = createIntakeSourceRecord({
-    source_provider: 'local_file',
+    source_provider: 'github',
+    source_kind: 'github_issue',
     source_type: 'github_issue',
     source_id: externalId,
     source_link: issueUrl(repo, issue.number, commentId),
@@ -152,6 +153,9 @@ export function buildGitHubIntakePreview({ repo = DEFAULT_REPO, issue, comments 
     url: issueUrl(repo, issue.number, commentId),
     trusted_source: TRUSTED_AUTHORS.has(issue.user?.login || ''),
     source_envelope: {
+      source_provider: source.source_provider,
+      source_channel: source.source_channel,
+      source_kind: source.source_kind,
       source_id: source.source_id,
       stable_key: source.stable_key,
       idempotency_key: source.idempotency_key,

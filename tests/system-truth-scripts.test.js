@@ -39,6 +39,9 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   const first = mod.buildGitHubIntakePreview({ issue, comments: [], repo: 'shloimie-beep/bnei-neviim-academy' });
   const second = mod.buildGitHubIntakePreview({ issue, comments: [], repo: 'shloimie-beep/bnei-neviim-academy' });
   assert.equal(first.source_envelope.idempotency_key, second.source_envelope.idempotency_key);
+  assert.equal(first.source_envelope.source_provider, 'github');
+  assert.equal(first.source_envelope.source_channel, 'github');
+  assert.equal(first.source_envelope.source_kind, 'github_issue');
   assert.equal(first.trusted_source, true);
   assert.doesNotMatch(JSON.stringify(first), /not_a_real_secret_fixture/);
   assert.match(first.source_envelope.excerpt, /\[redacted/);

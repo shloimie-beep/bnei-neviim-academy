@@ -82,6 +82,12 @@ function normalizeSourceChannel(value = '') {
   if (key.includes('whatsapp') || key.includes('whapi')) return 'whatsapp';
   if (key.includes('wapi')) return 'wapi';
   if (key.includes('email') || key.includes('gmail')) return 'email';
+  if (key.includes('github') || key === 'gh' || key.startsWith('gh_')) {
+    if (key.includes('pull') || key.includes('pr')) return 'github_pr';
+    if (key.includes('issue')) return 'github_issue';
+    return 'github';
+  }
+  if (key.includes('chatgpt') || key.includes('chat_gpt') || key.includes('openai_chat')) return 'chatgpt';
   if (key.includes('manual') || !key) return 'manual';
   return 'other';
 }

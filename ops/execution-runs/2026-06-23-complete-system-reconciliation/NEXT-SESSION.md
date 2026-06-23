@@ -11,9 +11,9 @@ Worktree:
 Open requirements:
 
 - `REQ-20260623-209`: blocked on approved external readback/backfill gates.
-- `REQ-20260623-210`: in progress; stable display ID and prompt lifecycle
-  bridge slices are verified, with remaining canonical persistence/adapters/UI/
-  watchdog/E2E work open.
+- `REQ-20260623-210`: in progress; stable display ID, prompt lifecycle bridge,
+  and GitHub/ChatGPT source adapter slices are verified, with remaining
+  canonical persistence/UI/watchdog/E2E work open.
 
 Next exact commands for continuation:
 
@@ -33,11 +33,14 @@ Completed implementation slice:
   collisions, and Jerusalem date rendering.
 - Prompt lifecycle bridge for `pass`/`passed`/`sealed_pass` package closeout
   through canonical parent `completed` status.
+- GitHub issue/PR and ChatGPT export source provider/kind normalization,
+  including GitHub dry-run intake alignment.
 
 Follow-on implementation scope:
 
-- Durable source envelopes and adapter ingestion for ChatGPT, Telegram, Codex,
-  Operations, Drive, recordings, and approved uploads.
+- Durable source envelopes and adapter ingestion persistence for Telegram,
+  Codex, Operations, Drive, recordings, approved uploads, and the now-normalized
+  GitHub/ChatGPT source providers.
 - Canonical tasks/decisions/content/community/integration persistence.
 - Lifecycle state machine, auto-resume watchdogs, Operations UI source/audit
   tabs, synthetic E2E, deploy, and live read-only verification.

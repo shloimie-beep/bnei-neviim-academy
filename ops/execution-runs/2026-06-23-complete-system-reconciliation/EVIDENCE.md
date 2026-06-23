@@ -33,14 +33,18 @@
 
 - `src/platform/ingestion/canonical-ids.js`
 - `src/platform/ingestion/intake-source.js`
+- `src/lib/bna/intake-schema.js`
 - `src/lib/bna/ramble-protocol.js`
 - `src/lib/bna/intake-parser.js`
 - `src/lib/bna/goal-memory.js`
 - `src/platform/ingestion/prompt-queue.js`
+- `scripts/intake-github.mjs`
 - `docs/product/ramble-queue-contract.md`
 - `tests/ingestion/canonical-ids.test.js`
 - `tests/intake-parser.test.js`
 - `tests/ingestion/w3-parser-queue.test.js`
+- `tests/ingestion/w3-intake-source.test.js`
+- `tests/system-truth-scripts.test.js`
 
 Stable display ID slice verified:
 
@@ -54,6 +58,12 @@ Prompt lifecycle slice verified:
   parent `completed`.
 - Child `passed` outcomes count as terminal in ramble status.
 - All-terminal child outcomes prompt parent closeout with evidence.
+
+Source adapter slice verified:
+
+- GitHub issue/PR inputs normalize as `github` provider records.
+- ChatGPT exports normalize as `chatgpt` provider records.
+- GitHub intake dry-runs no longer identify issue packets as `local_file`.
 
 ## Privacy Boundary
 

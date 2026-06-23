@@ -46,6 +46,40 @@ test('W3 intake source kind detection covers docs, audio, video, transcript, and
   assert.equal(inferSourceKind({ filename: 'recording.mp4' }), 'video');
   assert.equal(inferSourceKind({ filename: 'lesson.vtt' }), 'transcript');
   assert.equal(inferSourceKind({ source_type: 'telegram' }), 'telegram_text');
+  assert.equal(inferSourceKind({ source_provider: 'github', source_type: 'github_issue' }), 'github_issue');
+  assert.equal(inferSourceKind({ source_provider: 'github', source_type: 'pull_request' }), 'github_pr');
+  assert.equal(inferSourceKind({ source_provider: 'ChatGPT' }), 'chatgpt_export');
+});
+
+test('GitHub and ChatGPT intake sources are first-class source providers', () => {
+  const github = createIntakeSourceRecord({
+    source_provider: 'GitHub',
+    source_type: 'github_issue',
+    source_id: 'shloimie-beep/bnei-neviim-academy#8',
+    source_link: 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/8',
+    raw_text: 'Issue #8: Codex should reconcile the canonical intake queue.',
+    actor: 'shloimie-beep',
+    created_at: '2026-06-23T11:00:00.000Z',
+  });
+  const chatgpt = createIntakeSourceRecord({
+    source_provider: 'ChatGPT export',
+    source_id: 'chatgpt-packet-20260623',
+    raw_text: 'ChatGPT correction packet: set this as a goal and work through every requirement.',
+    actor: 'Shloimie',
+    created_at: '2026-06-23T11:00:00.000Z',
+  });
+
+  assert.equal(github.source_provider, 'github');
+  assert.equal(github.source_kind, 'github_issue');
+  assert.equal(github.source_envelope.source_channel, 'github');
+  assert.equal(github.source_envelope.default_context_type, 'operations_ramble');
+  assert.equal(validateIntakeSourceRecord(github).ok, true);
+
+  assert.equal(chatgpt.source_provider, 'chatgpt');
+  assert.equal(chatgpt.source_kind, 'chatgpt_export');
+  assert.equal(chatgpt.source_envelope.source_channel, 'chatgpt');
+  assert.equal(chatgpt.source_envelope.default_context_type, 'operations_ramble');
+  assert.equal(validateIntakeSourceRecord(chatgpt).ok, true);
 });
 
 test('source envelope applies title defaults and records mixed local overrides', () => {

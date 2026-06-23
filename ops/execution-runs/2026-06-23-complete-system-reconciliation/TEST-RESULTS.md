@@ -9,8 +9,12 @@
 - `node --check src/platform/ingestion/prompt-queue.js`: PASS.
 - `node --test tests/ingestion/w3-parser-queue.test.js tests/ingestion/w3-intake-source.test.js`:
   PASS, 11/11.
+- `node --check src/platform/ingestion/intake-source.js scripts/intake-github.mjs src/lib/bna/ramble-protocol.js src/lib/bna/intake-parser.js`:
+  PASS.
+- `node --test tests/ingestion/w3-intake-source.test.js tests/ingestion/w3-parser-queue.test.js tests/system-truth-scripts.test.js tests/intake-parser.test.js`:
+  PASS, 31/31.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1072/1072.
+- `npm test`: PASS, 1073/1073.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

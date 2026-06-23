@@ -14,7 +14,10 @@ sentence while keeping every outcome inspectable.
 ## Intake Source
 
 Use `src/platform/ingestion/intake-source.js` to create a provider-neutral
-source record before parsing. The record preserves:
+source record before parsing. Supported provider families include Telegram,
+Drive/Google Docs, GitHub issues/PRs, ChatGPT exports, Codex chat packets,
+Operations UI, website bot, email, WhatsApp/WAPI, local file, and manual
+intake. The record preserves:
 
 - source provider/channel/kind
 - source ID/link/filename/MIME type
