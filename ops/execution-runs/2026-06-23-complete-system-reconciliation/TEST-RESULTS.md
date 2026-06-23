@@ -2,6 +2,24 @@
 
 ## Passed
 
+- `node --check scripts/canonical-intake-postgres.mjs scripts/watchdog-raw-intake-drift.mjs`:
+  PASS.
+- `node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
+  PASS, 6/6.
+- `node --test tests/canonical-intake-postgres-cli.test.js tests/ingestion/w3-intake-persistence.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
+  PASS, 13/13.
+- `npm --silent run bna:intake:postgres -- --text="Task: Codex should prepare a guarded production Postgres apply plan." --json | node -e "..."`
+  PASS; emitted a redacted dry-run Postgres operator plan summary.
+- `npm run watchdog:raw`:
+  PASS, `ok: true`, severity `medium`, findings 2; Postgres operator CLI contract guarded.
+- `npm run bna:run:validate`:
+  PASS.
+- `npm run bna:run:source-coverage`:
+  PASS, 0 unmapped executable statements.
+- `npm test`:
+  PASS, 1087/1087.
+- `node scripts/audit-secrets.mjs`:
+  PASS, 4142 tracked paths checked, 0 tracked secret-risk files found.
 - `node --check scripts/ramble-intake-contract.mjs scripts/watchdog-raw-intake-drift.mjs src/platform/ingestion/intake-postgres-persistence.js server.js`:
   PASS.
 - `node --test tests/ingestion/w3-intake-persistence.test.js tests/intake-parser.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js`:
@@ -75,7 +93,7 @@
 - `node --test tests/service-provider-studio-browser-smoke.test.js`:
   PASS, 1/1.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1085/1085.
+- `npm test`: PASS, 1087/1087.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

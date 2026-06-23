@@ -1,0 +1,63 @@
+const assert = require('node:assert/strict');
+const { spawnSync } = require('node:child_process');
+const path = require('node:path');
+const test = require('node:test');
+
+const repoRoot = path.resolve(__dirname, '..');
+const script = path.join(repoRoot, 'scripts', 'canonical-intake-postgres.mjs');
+
+function runCli(args, env = {}) {
+  return spawnSync(process.execPath, [script, ...args], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      DATABASE_URL: '',
+      BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED: '',
+      BNA_CANONICAL_INTAKE_POSTGRES_READBACK_APPROVED: '',
+      ...env,
+    },
+  });
+}
+
+test('canonical intake postgres CLI dry-runs without SQL text or database access', () => {
+  const result = runCli([
+    '--json',
+    '--text=Task: Codex should prepare a canonical Postgres apply plan.',
+    '--source-provider=github',
+    '--source-kind=github_issue',
+    '--source-id=shloimie-beep/bnei-neviim-academy#8',
+  ]);
+
+  assert.equal(result.status, 0, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.ok, true);
+  assert.equal(report.mode, 'dry_run');
+  assert.equal(report.database_mutation_performed, false);
+  assert.equal(report.plan.storage_kind, 'postgres');
+  assert.equal(report.plan.applied, false);
+  assert.equal(report.plan.external_write_performed, false);
+  assert.ok(report.plan.statement_names.includes('upsert_raw_intake'));
+  assert.ok(report.plan.parse_item_statement_count >= 1);
+  assert.ok(report.plan.parsed_entity_statement_count >= 1);
+  assert.match(report.plan.raw_intake_stable_id, /^intake_source_/);
+  assert.doesNotMatch(result.stdout, /INSERT INTO|VALUES \(|DATABASE_URL=|postgres:\/\//i);
+});
+
+test('canonical intake postgres CLI blocks apply without approval gates', () => {
+  const result = runCli([
+    '--json',
+    '--apply',
+    '--text=Task: Codex should not apply this packet without approval.',
+  ]);
+
+  assert.equal(result.status, 2, result.stderr);
+  const report = JSON.parse(result.stdout);
+  assert.equal(report.ok, false);
+  assert.equal(report.mode, 'apply');
+  assert.equal(report.database_mutation_performed, false);
+  assert.ok(report.blockers.some((blocker) => /APPLY_CANONICAL_INTAKE_POSTGRES/.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved/.test(blocker)));
+  assert.ok(report.blockers.some((blocker) => /DATABASE_URL is not configured/.test(blocker)));
+  assert.equal(report.plan.applied, false);
+});

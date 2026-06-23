@@ -1,5 +1,33 @@
 # Status
 
+## 2026-06-23T15:44:41+03:00
+
+Status: running, with the thirteenth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a guarded canonical Postgres operator CLI for
+the approved production apply/readback gate. The command dry-runs by default,
+prints only redacted plan/readback summaries, and requires explicit confirmation
+phrases plus approval environment flags before any live readback or database
+apply can connect.
+
+Verified in this slice:
+
+- `scripts/canonical-intake-postgres.mjs` wraps the canonical Postgres
+  plan/apply/readback adapter without printing database URLs, SQL text, or SQL
+  values.
+- `package.json` exposes `npm run bna:intake:postgres`.
+- The raw-intake watchdog now guards the operator CLI contract in addition to
+  the Postgres adapter contract.
+- Focused CLI/persistence/watchdog/system coverage passed, 13/13.
+- `npm run watchdog:raw` passed with `ok: true`; the two existing medium raw
+  provenance findings remain non-failing.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production database apply, deploy,
+  and live verification are not complete yet.
+
 ## 2026-06-23T15:32:28+03:00
 
 Status: running, with the twelfth canonical implementation slice complete.

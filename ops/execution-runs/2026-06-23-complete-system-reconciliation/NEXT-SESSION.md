@@ -19,8 +19,10 @@ Open requirements:
   planning is covered, and the raw-intake watchdog guards the auto-resume
   contract. Operations source/audit readback tabs now expose linked raw-intake
   detail locally. The local Postgres persistence/readback adapter and no-write
-  `--postgres-plan` preview are implemented. Remaining approved production
-  database apply, deploy, and live verification work remain open.
+  `--postgres-plan` preview are implemented. A guarded dry-run-first Postgres
+  operator CLI is now available for approved readback/apply gates. Remaining
+  approved production database apply, deploy, and live verification work remain
+  open.
 
 Next exact commands for continuation:
 
@@ -61,11 +63,14 @@ Completed implementation slice:
 - Additive canonical Postgres persistence/readback adapter for raw intake,
   stable parse runs, parent prompts, parse items, and parsed entities, guarded
   by injected-client apply and a no-write `--postgres-plan` preview.
+- Guarded canonical Postgres operator CLI exposed as
+  `npm run bna:intake:postgres`, with redacted dry-run output and explicit
+  readback/apply confirmation gates.
 
 Follow-on implementation scope:
 
-- Approved production database apply/readback using the canonical Postgres
-  adapter after explicit gate approval.
+- Approved production database apply/readback using the guarded canonical
+  Postgres operator CLI after explicit gate approval.
 - Deploy of the app-visible/schema changes after explicit deployment approval.
 - Live read-only verification after deploy and approved credentials/service
   selection.

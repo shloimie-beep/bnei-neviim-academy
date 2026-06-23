@@ -45,6 +45,7 @@
 - `src/platform/ingestion/prompt-queue.js`
 - `scripts/intake-github.mjs`
 - `scripts/ramble-intake-contract.mjs`
+- `scripts/canonical-intake-postgres.mjs`
 - `scripts/watchdog-raw-intake-drift.mjs`
 - `scripts/platform-synthetic-e2e.mjs`
 - `docs/product/ramble-queue-contract.md`
@@ -55,6 +56,7 @@
 - `tests/ingestion/w3-intake-source.test.js`
 - `tests/ingestion/w3-intake-service.test.js`
 - `tests/ingestion/w3-intake-persistence.test.js`
+- `tests/canonical-intake-postgres-cli.test.js`
 - `tests/watchdog-raw-intake-drift.test.js`
 - `tests/one-time-synthetic-pilot.test.js`
 - `tests/service-provider-studio-browser-smoke.test.js`
@@ -178,10 +180,26 @@ Canonical Postgres persistence/readback slice verified:
   `npm run watchdog:raw` passed with the existing non-failing medium raw
   provenance findings.
 
+Canonical Postgres operator CLI slice verified:
+
+- `scripts/canonical-intake-postgres.mjs` wraps the canonical Postgres adapter
+  in a dry-run-first operator command for plan, readback, and approved apply
+  paths.
+- Dry-run output includes only statement names, counts, and canonical locators;
+  it does not print database URLs, SQL text, or SQL values.
+- Live readback requires `READ_CANONICAL_INTAKE_POSTGRES` plus
+  `BNA_CANONICAL_INTAKE_POSTGRES_READBACK_APPROVED=approved`; apply requires
+  `APPLY_CANONICAL_INTAKE_POSTGRES` plus
+  `BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED=approved`.
+- Focused CLI/persistence/watchdog/system tests passed, 13/13, and
+  `npm run watchdog:raw` passed with the operator CLI contract guarded.
+
 ## Privacy Boundary
 
 - The full Goal Mode prompt is not committed; only a local pointer/hash is.
 - Secret readiness reports include variable state and source labels only.
 - Drive IDs/URLs are kept out of the redacted repo packet.
+- The Postgres operator CLI dry-run evidence excludes database URLs, SQL text,
+  and SQL values.
 - No production database mutation, external send, Vimeo upload, charge, deploy,
   history rewrite, or worktree deletion was performed.

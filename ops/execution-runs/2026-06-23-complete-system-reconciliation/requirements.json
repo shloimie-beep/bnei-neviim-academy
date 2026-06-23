@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
-  "updated_at": "2026-06-23T15:32:28+03:00",
+  "updated_at": "2026-06-23T15:44:41+03:00",
   "sources": [
     {
       "source_id": "RAW-20260623-002",
@@ -565,11 +565,11 @@
         "REQ-20260623-204"
       ],
       "status": "in_progress",
-      "implementation_status": "canonical_postgres_persistence_slice_complete",
+      "implementation_status": "canonical_postgres_operator_cli_slice_complete",
       "can_continue_without_operator": true,
       "blocker": "",
       "blocker_owner": "",
-      "next_action": "Continue approved production database apply, deploy, and live verification after this local Postgres persistence/readback implementation slice.",
+      "next_action": "Continue approved production database apply/readback through the guarded Postgres operator CLI, then deploy and live verification after explicit gates.",
       "acceptance_criteria": [
         "Stable display IDs do not collide across same-day sources or shared item prefixes",
         "Passed verification packages close through canonical parent prompt statuses",
@@ -583,6 +583,7 @@
         "Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally",
         "Raw-intake watchdog guards the prompt auto-resume lifecycle contract",
         "Production Postgres apply/readback adapter is implemented with injected-client gating",
+        "Production Postgres operator CLI is dry-run first and requires explicit readback/apply gates",
         "Canonical persistence model is implemented",
         "Decision auto-resume is tested",
         "Operations compact views are verified",
@@ -605,6 +606,7 @@
         "src/platform/ingestion/prompt-queue.js",
         "scripts/intake-github.mjs",
         "scripts/ramble-intake-contract.mjs",
+        "scripts/canonical-intake-postgres.mjs",
         "scripts/watchdog-raw-intake-drift.mjs",
         "scripts/platform-synthetic-e2e.mjs",
         "docs/product/ramble-queue-contract.md",
@@ -615,6 +617,7 @@
         "tests/ingestion/w3-intake-source.test.js",
         "tests/ingestion/w3-intake-service.test.js",
         "tests/ingestion/w3-intake-persistence.test.js",
+        "tests/canonical-intake-postgres-cli.test.js",
         "tests/watchdog-raw-intake-drift.test.js",
         "tests/one-time-synthetic-pilot.test.js",
         "tests/service-provider-studio-browser-smoke.test.js",
@@ -658,10 +661,15 @@
         "node --test tests/ingestion/w3-intake-persistence.test.js tests/intake-parser.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js: PASS, 27/27",
         "node scripts/ramble-intake-contract.mjs --text=\"Task: Codex should preview canonical Postgres persistence.\" --postgres-plan | node -e \"...\": PASS",
         "npm run watchdog:raw: PASS, ok true, severity medium, findings 2; Postgres persistence contract guarded",
+        "node --check scripts/canonical-intake-postgres.mjs scripts/watchdog-raw-intake-drift.mjs: PASS",
+        "node --test tests/canonical-intake-postgres-cli.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js: PASS, 6/6",
+        "node --test tests/canonical-intake-postgres-cli.test.js tests/ingestion/w3-intake-persistence.test.js tests/watchdog-raw-intake-drift.test.js tests/system-truth-scripts.test.js: PASS, 13/13",
+        "npm --silent run bna:intake:postgres -- --text=\"Task: Codex should prepare a guarded production Postgres apply plan.\" --json | node -e \"...\": PASS",
+        "npm run watchdog:raw: PASS, ok true, severity medium, findings 2; Postgres operator CLI contract guarded",
         "npm run bna:run:validate: PASS",
         "npm run bna:run:source-coverage: PASS",
-        "npm test: PASS, 1085/1085",
-        "node scripts/audit-secrets.mjs: PASS",
+        "npm test: PASS, 1087/1087",
+        "node scripts/audit-secrets.mjs: PASS, 4142 tracked paths checked and 0 tracked secret-risk files found",
         "git diff --check: PASS with line-ending warnings only"
       ],
       "implementation_files": [
@@ -679,6 +687,7 @@
         "src/platform/ingestion/prompt-queue.js",
         "scripts/intake-github.mjs",
         "scripts/ramble-intake-contract.mjs",
+        "scripts/canonical-intake-postgres.mjs",
         "scripts/watchdog-raw-intake-drift.mjs",
         "scripts/platform-synthetic-e2e.mjs",
         "docs/product/ramble-queue-contract.md",
@@ -689,14 +698,15 @@
         "tests/ingestion/w3-intake-source.test.js",
         "tests/ingestion/w3-intake-service.test.js",
         "tests/ingestion/w3-intake-persistence.test.js",
+        "tests/canonical-intake-postgres-cli.test.js",
         "tests/watchdog-raw-intake-drift.test.js",
         "tests/one-time-synthetic-pilot.test.js",
         "tests/service-provider-studio-browser-smoke.test.js",
         "tests/system-truth-scripts.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-23T15:32:28+03:00",
-      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Operations source/audit tabs expose raw-intake detail readback; Production Postgres apply/readback adapter is implemented with injected-client gating; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
+      "updated_at": "2026-06-23T15:44:41+03:00",
+      "expected_result": "Stable display IDs do not collide across same-day sources or shared item prefixes; Passed verification packages close through canonical parent prompt statuses; GitHub and ChatGPT packets use first-class source providers; Adapters use one intake service; Canonical persistence packet is generated for raw intake, parse run, parse items, and parent prompt; Local canonical persistence apply/readback is idempotently verified without external writes; Canonical intake watchdog detects service/readback adapter drift; Synthetic E2E exercises canonical intake service/readback locally; Local canonical parsed entity projection covers task, decision, calendar, content, community, integration, note, and unresolved rows; Prompt auto-resume planning handles resolved decisions, terminal child outcomes, and stale heartbeats locally; Raw-intake watchdog guards the prompt auto-resume lifecycle contract; Operations source/audit tabs expose raw-intake detail readback; Production Postgres apply/readback adapter is implemented with injected-client gating; Production Postgres operator CLI is dry-run first and requires explicit readback/apply gates; Canonical persistence model is implemented; Decision auto-resume is tested; Operations compact views are verified; Synthetic E2E passes"
     },
     {
       "id": "REQ-20260623-211",

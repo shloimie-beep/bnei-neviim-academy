@@ -16,6 +16,7 @@ test('system truth commands are exposed through package scripts', () => {
   assert.equal(pkg.scripts['drive:intake:truth'], 'node scripts/system-truth.mjs drive-intake');
   assert.equal(pkg.scripts['ui:source-coverage'], 'node scripts/system-truth.mjs ui');
   assert.equal(pkg.scripts['intake:github'], 'node scripts/intake-github.mjs');
+  assert.equal(pkg.scripts['bna:intake:postgres'], 'node scripts/canonical-intake-postgres.mjs');
 });
 
 test('system truth script reports readiness by variable state only', () => {
@@ -33,6 +34,10 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   assert.match(read('scripts/ramble-intake-contract.mjs'), /buildCanonicalIntakePostgresPlan/);
   assert.match(read('scripts/ramble-intake-contract.mjs'), /--memory-readback/);
   assert.match(read('scripts/ramble-intake-contract.mjs'), /--postgres-plan/);
+  assert.match(read('scripts/canonical-intake-postgres.mjs'), /APPLY_CANONICAL_INTAKE_POSTGRES/);
+  assert.match(read('scripts/canonical-intake-postgres.mjs'), /READ_CANONICAL_INTAKE_POSTGRES/);
+  assert.match(read('scripts/canonical-intake-postgres.mjs'), /BNA_CANONICAL_INTAKE_POSTGRES_APPLY_APPROVED/);
+  assert.match(read('scripts/canonical-intake-postgres.mjs'), /database_mutation_performed/);
   const mod = await import(pathToFileURL(path.join(repoRoot, 'scripts', 'intake-github.mjs')).href);
   const issue = {
     number: 7,

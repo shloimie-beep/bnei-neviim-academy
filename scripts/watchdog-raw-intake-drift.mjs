@@ -128,6 +128,20 @@ export function buildRawIntakeDriftAudit() {
     recommended_fix: 'Keep approved production persistence on the canonical Postgres apply/readback adapter with injected-client gating.',
   });
   requireCanonicalContract({
+    file: 'scripts/canonical-intake-postgres.mjs',
+    label: 'Canonical intake Postgres operator CLI',
+    patterns: [
+      ['postgres plan adapter import', /\bbuildCanonicalIntakePostgresPlan\b/],
+      ['postgres apply adapter import', /\bapplyCanonicalIntakePacketToPostgres\b/],
+      ['postgres readback adapter import', /\breadCanonicalIntakePersistenceFromPostgres\b/],
+      ['apply confirmation phrase', /APPLY_CANONICAL_INTAKE_POSTGRES/],
+      ['readback approval env', /BNA_CANONICAL_INTAKE_POSTGRES_READBACK_APPROVED/],
+      ['mutation report flag', /\bdatabase_mutation_performed\b/],
+      ['redacted output promise', /never prints the\s+database URL, SQL text, or SQL values/i],
+    ],
+    recommended_fix: 'Keep production database apply/readback behind the guarded canonical Postgres operator CLI.',
+  });
+  requireCanonicalContract({
     file: 'src/platform/ingestion/prompt-queue.js',
     label: 'Parent prompt auto-resume lifecycle',
     patterns: [
