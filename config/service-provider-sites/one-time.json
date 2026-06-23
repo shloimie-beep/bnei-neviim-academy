@@ -25,6 +25,7 @@
     "logo": "/images/one-time/brand/onetimelogo.webp",
     "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
     "vimeo_promo_embed": "https://player.vimeo.com/video/1158542993?h=daa31d3417",
+    "social_og": "/images/one-time/social/one-time-og-20260622.jpg",
     "press_logos": [
       {
         "label": "TorahAnytime",
@@ -59,34 +60,33 @@
     ]
   },
   "copy": {
-    "eyebrow": "Worldwide Live Mishnah Learning",
-    "headline": "Finish Masechtas. Love Learning Torah.",
-    "subhead": "Join a worldwide live Mishnah shiur with Rabbi Elie Scheller - live classes, a growing video library, and practical worksheets that help kids keep learning.",
-    "primary_cta": "Join the Live Shiur",
-    "secondary_cta": "Explore the Video Library",
+    "campaign_bar": "30 DAYS TO JOIN - START WITH 30 DAYS FREE",
+    "eyebrow": "Worldwide Live Mishnayos",
+    "headline": "Learn Mishnayos Live with Rabbi Elie Scheller",
+    "subhead": "Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - wherever you live.",
+    "primary_cta": "START 30 DAYS FREE",
+    "secondary_cta": "WATCH RABBI SCHELLER",
     "member_cta": "Member Login",
-    "no_send_note": "Review build only. No checkout, access grant, email send, WhatsApp send, Zoom creation, Vimeo upload, DNS change, or external CRM write is enabled from this page."
+    "offer": "$67 USD per month after a 30-day free trial",
+    "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
+    "no_send_note": "Signup interest does not charge a card, grant access, send bulk email, or write to an external CRM."
   },
   "nav": [
     {
-      "label": "Live Shiur",
-      "href": "#live-shiur"
+      "label": "Watch",
+      "href": "#watch-rabbi"
     },
     {
-      "label": "Library",
-      "href": "#library"
+      "label": "Program",
+      "href": "#what-you-get"
     },
     {
-      "label": "How It Works",
-      "href": "#how-it-works"
+      "label": "Worldwide",
+      "href": "#worldwide"
     },
     {
-      "label": "Portals",
-      "href": "#portals"
-    },
-    {
-      "label": "FAQ",
-      "href": "#faq"
+      "label": "Start Free",
+      "href": "#signup"
     },
     {
       "label": "Member Login",

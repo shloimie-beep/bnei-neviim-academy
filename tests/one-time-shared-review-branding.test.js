@@ -24,6 +24,7 @@ test('shared One Time review data stays scoped, branded, and preview-only', () =
 
   assert.equal(review.provider_portal.video.vimeo_video_id, '1178363755');
   assert.match(review.provider_portal.video.media_url, /1178363755/);
+  assert.match(review.provider_portal.video.embed_url, /player\.vimeo\.com\/video\/1178363755/);
   assert.match(review.provider_portal.video.description, /legacy OneTimeOneTime/);
 
   assert.equal(review.email_templates.length, 21);
@@ -76,19 +77,23 @@ test('shared One Time review pages include review branding assets', () => {
   }
 
   const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(oneTimeHtml, /Finish Masechtas\. Love Learning Torah\./);
+  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Elie Scheller/);
   assert.match(oneTimeHtml, /\/images\/one-time\/brand\/onetime-hero-vertical\.webp/);
   assert.match(oneTimeHtml, /\/images\/one-time\/press\/torahanytime-logo\.png/);
-  assert.match(oneTimeHtml, /\/images\/one-time\/teaching\/promo-stage-still-01\.webp/);
-  assert.match(oneTimeHtml, /raw MP4 remains out of Git/);
-  assert.doesNotMatch(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993/);
+  assert.match(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
+  assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
+  assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /\/css\/one-time-shared-review\.css/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /OneTimeOneTime Provider Review/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /OneTimeOneTime Parent Review/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /No bot \/ no BNA goals/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /OneTimeOneTime Student Review/);
-  assert.match(fs.readFileSync('public/one-time-classroom.html', 'utf8'), /TEST-only member-library data/);
+  const classroomHtml = fs.readFileSync('public/one-time-classroom.html', 'utf8');
+  assert.match(classroomHtml, /TEST-only member-library data/);
+  assert.match(classroomHtml, /classEmbedUrl/);
+  assert.match(classroomHtml, /<iframe/);
+  assert.match(classroomHtml, /Fallback Vimeo Link/);
   assert.match(fs.readFileSync('public/one-time-email-review.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
 });
 
@@ -103,9 +108,13 @@ test('committed One Time review assets and manifest exist', () => {
     'public/images/one-time/teaching/promo-stage-still-01.webp',
     'public/images/one-time/teaching/promo-stage-still-02.webp',
     'public/images/one-time/teaching/promo-stage-still-03.webp',
+    'public/images/one-time/social/one-time-og-20260622.jpg',
     'ops/one-time-mishnah/brand-site-review/ASSET-INVENTORY.md',
     'ops/one-time-mishnah/brand-site-review/asset-manifest.json',
     'ops/one-time-mishnah/brand-site-review/HERO-VIDEO-TRACE.md',
+    'ops/one-time-mishnah/asset-intake/2026-06-22/SUMMARY.md',
+    'ops/one-time-mishnah/asset-intake/2026-06-22/SELECTION-MAP.md',
+    'ops/one-time-mishnah/asset-intake/2026-06-22/RIGHTS-BLOCKERS.md',
   ];
 
   for (const assetPath of requiredAssets) {
@@ -126,13 +135,17 @@ test('One Time brand kit and service-provider site config are present', () => {
   assert.equal(brand.palette.black, '#080910');
   assert.equal(brand.palette.yellow, '#ede518');
   assert.equal(brand.assets.logo, '/images/one-time/brand/onetimelogo.webp');
+  assert.equal(brand.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');
   assert.equal(brand.review_only, true);
 
   const site = JSON.parse(fs.readFileSync('config/service-provider-sites/one-time.json', 'utf8'));
   assert.equal(site.key, 'one_time');
   assert.equal(site.status, 'shared_review');
   assert.equal(site.external_write_performed, false);
-  assert.equal(site.copy.headline, 'Finish Masechtas. Love Learning Torah.');
+  assert.equal(site.copy.headline, 'Learn Mishnayos Live with Rabbi Elie Scheller');
+  assert.equal(site.copy.primary_cta, 'START 30 DAYS FREE');
+  assert.equal(site.copy.secondary_cta, 'WATCH RABBI SCHELLER');
+  assert.equal(site.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');
   assert.ok(site.blocked_live_actions.includes('live_email_send'));
 
   [
@@ -144,4 +157,42 @@ test('One Time brand kit and service-provider site config are present', () => {
     'docs/product/service-provider-landing-pages.md',
     'docs/product/service-provider-site-onboarding.md',
   ].forEach((filePath) => assert.equal(fs.existsSync(filePath), true, `${filePath} should exist`));
+});
+
+test('campaign API and view-as Rabbi preview are declared as read-only guarded surfaces', () => {
+  const server = fs.readFileSync('server.js', 'utf8');
+  const providerHtml = fs.readFileSync('public/provider.html', 'utf8');
+  const css = fs.readFileSync('public/css/one-time-shared-review.css', 'utf8');
+  const routeRegistry = JSON.parse(fs.readFileSync('ops/route-registry.json', 'utf8'));
+  const actionRegistry = JSON.parse(fs.readFileSync('ops/action-registry.json', 'utf8'));
+
+  assert.match(server, /app\.get\('\/api\/one-time\/campaign'/);
+  assert.match(server, /ONE_TIME_CAMPAIGN_DEADLINE_AT/);
+  assert.match(server, /DEC-20260622-ONE-TIME-CAMPAIGN-DEADLINE/);
+  assert.match(server, /app\.post\('\/api\/bna\/one-time\/view-as-rabbi\/start', requireAdmin/);
+  assert.match(server, /app\.get\('\/api\/bna\/one-time\/view-as-rabbi\/session', requireAdmin/);
+  assert.match(server, /app\.post\('\/api\/bna\/one-time\/view-as-rabbi\/end', requireAdmin/);
+  assert.match(server, /function requireOneTimeViewAsSuperAdmin/);
+  assert.match(server, /Only platform_super_admin can use View as Rabbi/);
+  assert.match(server, /verifyOneTimeViewAsToken/);
+  assert.match(server, /try \{\s*payload = base64UrlDecode\(encoded\);[\s\S]*catch \(error\) \{\s*return null;/);
+  assert.match(server, /payload\.typ !== 'one_time_view_as_rabbi'/);
+  assert.match(server, /payload\.read_only !== true/);
+  assert.match(server, /read_only: true/);
+
+  assert.match(providerHtml, /view_as_rabbi/);
+  assert.match(providerHtml, /VIEWING AS RABBI - READ ONLY/);
+  assert.match(providerHtml, /oneTimeExitViewAs/);
+  assert.match(providerHtml, /\/api\/bna\/one-time\/view-as-rabbi\/end/);
+  assert.match(css, /one-time-view-as-banner/);
+  assert.match(css, /one-time-view-as-readonly/);
+
+  const routes = new Set(routeRegistry.routes.map((route) => route.route));
+  assert.ok(routes.has('/api/bna/one-time/view-as-rabbi/start'));
+  assert.ok(routes.has('/api/bna/one-time/view-as-rabbi/session'));
+  assert.ok(routes.has('/api/bna/one-time/view-as-rabbi/end'));
+
+  const actions = new Set(actionRegistry.actions.map((action) => action.action_id));
+  assert.ok(actions.has('ACTION-ONETIME-VIEW-AS-RABBI-START'));
+  assert.ok(actions.has('ACTION-ONETIME-VIEW-AS-RABBI-EXIT'));
 });

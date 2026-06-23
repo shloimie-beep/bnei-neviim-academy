@@ -91,7 +91,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     enrolled_count: 1,
   };
   const zoom = {
-    state: 'ready_protected_reference',
+    state: 'Protected join class ready for review',
     label: 'Zoom readiness sample',
     join_label: 'Protected Join Class action',
     join_url_state: 'not_created_for_review',
@@ -142,7 +142,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   const worksheet = {
     id: 'TEST-OT-WORKSHEET-001',
     title: 'TEST Pesachim Perek 10 Worksheet',
-    url: '/documents/parent-handbook',
+    url: '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS#worksheets',
     status: 'published_for_review',
   };
   const announcement = {
@@ -152,8 +152,8 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     visibility: 'parent_and_student',
   };
   const payment = {
-    offer: '$67/month membership',
-    trial: '30-day trial',
+    offer: '$67 USD/month after trial',
+    trial: '30 days free',
     status: 'test_trial_active',
     access_state: 'active_for_review',
     stripe_state: 'test/readiness only',
@@ -373,6 +373,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       ...video,
       member_library_item: {
         media_url: video.media_url,
+        embed_url: video.embed_url,
         thumbnail_url: video.thumbnail_url,
       },
       summary: video.description,

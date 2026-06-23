@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-21T18:56:00+03:00",
+  "updated_at": "2026-06-22T20:00:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -339,6 +339,54 @@
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/privacy.html",
+      "surface": "one_time_public_privacy_policy",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_anonymous_one_time_privacy_policy_without_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_privacy_policy_without_private_member_data",
+      "privacy_risk": "normal",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time/terms.html",
+      "surface": "one_time_public_terms_policy",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_anonymous_one_time_terms_without_private_member_data",
+      "expected_logged_in_behavior": "load_anonymous_one_time_terms_without_private_member_data",
+      "privacy_risk": "normal",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/api/one-time/campaign",
+      "surface": "one_time_public_campaign_timer_api",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "return_server_time_offer_key_and_configured_campaign_deadline_or_operator_decision",
+      "expected_logged_in_behavior": "return_server_time_offer_key_and_configured_campaign_deadline_or_operator_decision",
+      "privacy_risk": "normal",
+      "security_expectation": "Public read-only timer config only; no interest lead, checkout, email send, access grant, private member data, or external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-003",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
       ]
     },
     {
@@ -835,6 +883,60 @@
         "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/view-as-rabbi/start",
+      "surface": "operations_api_one_time_view_as_rabbi_start",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_short_lived_signed_read_only_view_as_rabbi_url_for_one_time_only",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires platform-super-admin/all-scope identity, signs a short-lived read-only token, scopes target to TEST-ONETIME-PROVIDER-RABBI, and performs no external write.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/view-as-rabbi/session",
+      "surface": "operations_api_one_time_view_as_rabbi_session",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "verify_signed_view_as_token_and_return_read_only_provider_portal_preview",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires platform-super-admin/all-scope identity plus valid signed token; returns scoped read-only provider portal view and no write-capable secrets or join URLs.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/one-time/view-as-rabbi/end",
+      "surface": "operations_api_one_time_view_as_rabbi_end",
+      "access": "private",
+      "required_role": "platform_super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "verify_signed_view_as_token_and_return_read_only_session_end_audit_event",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires platform-super-admin/all-scope identity plus valid signed token; only ends the local preview session and performs no provider/member data mutation.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
         "GOAL-CORE-015"
       ]
     }
