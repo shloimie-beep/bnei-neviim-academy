@@ -36,8 +36,16 @@
   PASS, 8/8.
 - `npm run platform:synthetic-e2e`:
   PASS; updated `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`.
+- `node --check src/platform/ingestion/intake-service.js src/platform/ingestion/intake-persistence.js`:
+  PASS.
+- `node --test tests/ingestion/w3-intake-persistence.test.js tests/ingestion/w3-intake-service.test.js tests/ingestion/w3-parser-queue.test.js`:
+  PASS, 14/14.
+- `node --check scripts/platform-synthetic-e2e.mjs`:
+  PASS.
+- `npm run platform:synthetic-e2e`:
+  PASS; updated parsed entity readback counts in `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`.
 - `npm ci`: PASS.
-- `npm test`: PASS, 1080/1080.
+- `npm test`: PASS, 1081/1081.
 - `node --check scripts/system-truth.mjs`: PASS.
 - `node --check scripts/intake-github.mjs`: PASS.
 - `node --check scripts/agent-fleet-supervisor.mjs`: PASS.

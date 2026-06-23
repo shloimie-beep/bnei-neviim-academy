@@ -108,6 +108,18 @@ Canonical synthetic E2E slice verified:
 - Static synthetic pilot coverage guards the runner against drifting back to a
   hand-built source/parse/prompt path.
 
+Canonical parsed entity projection slice verified:
+
+- Local memory persistence now projects parse items into stable
+  `parsed_entities` rows linked to raw intake, parse run, parse item, and parent
+  prompt IDs.
+- Entity rows retain group/type, status, lane, workspace/project, owner,
+  expected result, next action, source excerpt, and metadata where available.
+- Focused coverage verifies decisions, tasks, calendar, content, community,
+  integration, notes, and unresolved review rows with idempotent readback.
+- The synthetic artifact records parsed entity totals and group counts without
+  external writes.
+
 ## Privacy Boundary
 
 - The full Goal Mode prompt is not committed; only a local pointer/hash is.

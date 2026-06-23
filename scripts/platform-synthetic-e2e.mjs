@@ -286,6 +286,9 @@ if (duplicateParsed.tasks.length || duplicateParsed.decisions.length || duplicat
 if (!persistenceApply.readback.found || persistenceApply.readback.parse_items.length < parentPrompt.child_outcomes.length) {
   throw new Error('Synthetic E2E canonical intake persistence readback failed.');
 }
+if (persistenceApply.readback.parsed_entities.length !== persistenceApply.readback.parse_items.length) {
+  throw new Error('Synthetic E2E canonical entity readback did not match parse items.');
+}
 if (!leakCheck.ok || blockedLeakCheck.ok || bnaVisibility.length) {
   throw new Error('Synthetic E2E workspace isolation check failed.');
 }
@@ -328,8 +331,11 @@ const artifact = {
     raw_intake_stable_id: persistenceApply.raw_intake_stable_id,
     parse_run_id: persistenceApply.parse_run_id,
     parse_item_count: persistenceApply.parse_item_ids.length,
+    parsed_entity_count: persistenceApply.parsed_entity_ids.length,
     readback_found: persistenceApply.readback.found,
     readback_parse_item_count: persistenceApply.readback.parse_items.length,
+    readback_parsed_entity_count: persistenceApply.readback.parsed_entities.length,
+    readback_entity_counts_by_group: persistenceApply.readback.entity_counts_by_group,
     external_write_performed: persistenceApply.external_write_performed,
   },
   idempotent_rerun: {

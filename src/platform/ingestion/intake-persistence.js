@@ -11,7 +11,7 @@ function mapFromSeed(seedValue = []) {
   if (seedValue instanceof Map) return new Map(seedValue);
   if (Array.isArray(seedValue)) {
     return new Map(seedValue.map((row) => [
-      row.stable_id || row.parse_run_id || row.parse_item_id || row.prompt_id,
+      row.stable_id || row.parse_run_id || row.parse_item_id || row.entity_id || row.prompt_id,
       clone(row),
     ]).filter(([key]) => key));
   }
@@ -25,6 +25,7 @@ function createMemoryIntakePersistenceStore(seed = {}) {
     raw_intake: mapFromSeed(seed.raw_intake),
     parse_runs: mapFromSeed(seed.parse_runs),
     parse_items: mapFromSeed(seed.parse_items),
+    parsed_entities: mapFromSeed(seed.parsed_entities),
     parent_prompts: mapFromSeed(seed.parent_prompts),
     audit_events: Array.isArray(seed.audit_events) ? clone(seed.audit_events) : [],
   };
@@ -36,6 +37,7 @@ function assertMemoryStore(store = {}) {
       throw new Error(`canonical intake memory store is missing ${key}`);
     }
   }
+  if (!(store.parsed_entities instanceof Map)) store.parsed_entities = new Map();
   if (!Array.isArray(store.audit_events)) store.audit_events = [];
   return store;
 }
@@ -72,6 +74,48 @@ function parseItemStableId(parseRunId, item = {}) {
     item.item_key || item.idempotency_key || item.item_id || '',
     item.item_type || '',
   ].join('|')).slice(0, 16)}`;
+}
+
+function parsedEntityStableId(parseRunId, item = {}) {
+  return `entity_${stableHash([
+    parseRunId,
+    item.parse_item_id || '',
+    item.item_key || item.idempotency_key || item.item_id || '',
+    item.item_type || '',
+  ].join('|')).slice(0, 16)}`;
+}
+
+function canonicalEntityRowFromParseItem(item = {}, index = 0) {
+  return {
+    entity_id: item.entity_id || parsedEntityStableId(item.parse_run_id, item),
+    parse_item_id: item.parse_item_id,
+    parse_run_id: item.parse_run_id,
+    raw_intake_stable_id: item.raw_intake_stable_id,
+    parent_prompt_id: item.parent_prompt_id,
+    item_id: item.item_id || null,
+    entity_key: item.item_key || item.idempotency_key || item.parse_item_id,
+    entity_group: item.group || item.item_type || 'unknown',
+    entity_type: item.item_type || 'unknown',
+    title: item.title || item.item_type || 'Parsed intake item',
+    status: item.status || 'parsed',
+    target_lane: item.target_lane || null,
+    workspace_key: item.workspace_key || null,
+    project_key: item.project_key || null,
+    confidence: item.confidence || null,
+    owner: item.owner || null,
+    expected_result: item.expected_result || null,
+    next_action: item.next_action || null,
+    reason: item.reason || null,
+    idempotency_key: item.idempotency_key || null,
+    source_stable_key: item.source_stable_key || null,
+    source_id: item.source_id || null,
+    source_excerpt: item.source_excerpt || null,
+    metadata: item.metadata && typeof item.metadata === 'object' ? clone(item.metadata) : {},
+    sort_index: Number(item.sort_index ?? index),
+    persisted_contract_version: CANONICAL_INTAKE_PERSISTENCE_VERSION,
+    external_write_performed: false,
+    updated_at: item.updated_at || null,
+  };
 }
 
 function canonicalRowsFromPacket(packet = {}, options = {}) {
@@ -112,7 +156,14 @@ function canonicalRowsFromPacket(packet = {}, options = {}) {
     external_write_performed: false,
     updated_at: appliedAt,
   }));
-  return { raw_intake: rawIntake, parse_run: parseRun, parse_items: parseItems, parent_prompt: parentPrompt };
+  const parsedEntities = parseItems.map((item, index) => canonicalEntityRowFromParseItem(item, index));
+  return {
+    raw_intake: rawIntake,
+    parse_run: parseRun,
+    parse_items: parseItems,
+    parsed_entities: parsedEntities,
+    parent_prompt: parentPrompt,
+  };
 }
 
 function readCanonicalIntakePersistence(store = {}, locator = {}) {
@@ -142,22 +193,37 @@ function readCanonicalIntakePersistence(store = {}, locator = {}) {
       (parentPrompt?.prompt_id && row.parent_prompt_id === parentPrompt.prompt_id)
     )
     .sort((a, b) => Number(a.sort_index || 0) - Number(b.sort_index || 0));
+  const parsedEntities = Array.from(store.parsed_entities.values())
+    .filter((row) =>
+      (effectiveParseRunId && row.parse_run_id === effectiveParseRunId) ||
+      (effectiveRawId && row.raw_intake_stable_id === effectiveRawId) ||
+      (parentPrompt?.prompt_id && row.parent_prompt_id === parentPrompt.prompt_id)
+    )
+    .sort((a, b) => Number(a.sort_index || 0) - Number(b.sort_index || 0));
+  const entityCountsByGroup = parsedEntities.reduce((acc, row) => {
+    const group = row.entity_group || row.entity_type || 'unknown';
+    acc[group] = (acc[group] || 0) + 1;
+    return acc;
+  }, {});
 
   return {
     contract_version: CANONICAL_INTAKE_PERSISTENCE_VERSION,
     storage_kind: store.storage_kind || 'memory',
     external_write_performed: false,
-    found: Boolean(rawIntake || parseRun || parentPrompt || parseItems.length),
+    found: Boolean(rawIntake || parseRun || parentPrompt || parseItems.length || parsedEntities.length),
     raw_intake: clone(rawIntake),
     parse_run: clone(parseRun),
     parse_items: clone(parseItems),
+    parsed_entities: clone(parsedEntities),
     parent_prompt: clone(parentPrompt),
     counts: {
       raw_intake: rawIntake ? 1 : 0,
       parse_runs: parseRun ? 1 : 0,
       parse_items: parseItems.length,
+      parsed_entities: parsedEntities.length,
       parent_prompts: parentPrompt ? 1 : 0,
     },
+    entity_counts_by_group: entityCountsByGroup,
   };
 }
 
@@ -168,6 +234,7 @@ function applyCanonicalIntakePacketToMemory(packet = {}, options = {}) {
     raw_intake: store.raw_intake.size,
     parse_runs: store.parse_runs.size,
     parse_items: store.parse_items.size,
+    parsed_entities: store.parsed_entities.size,
     parent_prompts: store.parent_prompts.size,
   };
   store.raw_intake.set(rows.raw_intake.stable_id, rows.raw_intake);
@@ -175,6 +242,9 @@ function applyCanonicalIntakePacketToMemory(packet = {}, options = {}) {
   store.parent_prompts.set(rows.parent_prompt.prompt_id, rows.parent_prompt);
   for (const item of rows.parse_items) {
     store.parse_items.set(item.parse_item_id, item);
+  }
+  for (const entity of rows.parsed_entities) {
+    store.parsed_entities.set(entity.entity_id, entity);
   }
   const readback = readCanonicalIntakePersistence(store, {
     raw_intake_stable_id: rows.raw_intake.stable_id,
@@ -185,6 +255,7 @@ function applyCanonicalIntakePacketToMemory(packet = {}, options = {}) {
     raw_intake: store.raw_intake.size,
     parse_runs: store.parse_runs.size,
     parse_items: store.parse_items.size,
+    parsed_entities: store.parsed_entities.size,
     parent_prompts: store.parent_prompts.size,
   };
   const result = {
@@ -196,6 +267,7 @@ function applyCanonicalIntakePacketToMemory(packet = {}, options = {}) {
     parse_run_id: rows.parse_run.parse_run_id,
     parent_prompt_id: rows.parent_prompt.prompt_id,
     parse_item_ids: rows.parse_items.map((item) => item.parse_item_id),
+    parsed_entity_ids: rows.parsed_entities.map((item) => item.entity_id),
     before_counts: beforeCounts,
     after_counts: afterCounts,
     readback,
@@ -206,6 +278,7 @@ function applyCanonicalIntakePacketToMemory(packet = {}, options = {}) {
     parse_run_id: result.parse_run_id,
     parent_prompt_id: result.parent_prompt_id,
     parse_item_count: result.parse_item_ids.length,
+    parsed_entity_count: result.parsed_entity_ids.length,
     external_write_performed: false,
   });
   return result;

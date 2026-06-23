@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-06-23T11:48:54.727Z",
+  "checked_at": "2026-06-23T11:56:37.600Z",
   "run_id": "PARALLEL-20260619-001",
   "mode": "local_in_memory_fixtures_no_external_writes",
   "external_write_performed": false,
@@ -125,8 +125,18 @@
     "raw_intake_stable_id": "intake_source_27801e59f10cf632",
     "parse_run_id": "parse_run_d6662be3dd4cae3c",
     "parse_item_count": 9,
+    "parsed_entity_count": 9,
     "readback_found": true,
     "readback_parse_item_count": 9,
+    "readback_parsed_entity_count": 9,
+    "readback_entity_counts_by_group": {
+      "decisions": 2,
+      "tasks": 1,
+      "calendar_events": 2,
+      "content_items": 1,
+      "community_items": 1,
+      "notes": 2
+    },
     "external_write_performed": false
   },
   "idempotent_rerun": {

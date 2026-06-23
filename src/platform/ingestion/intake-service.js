@@ -49,14 +49,19 @@ function buildParseItemRecord({ entry, sourceRecord = {}, parentPrompt = {} } = 
     title: compactWhitespace(item.title || item.summary || item.reason || itemType),
     status: item.status || entry.default_status,
     target_lane: item.target_lane || null,
+    owner: item.owner || item.assigned_to || null,
     workspace_key: item.workspace_key || null,
     project_key: item.project_key || null,
     confidence: item.confidence || null,
+    expected_result: item.expected_result || item.what || item.summary || null,
+    next_action: item.next_action || null,
+    reason: item.reason || null,
     idempotency_key: item.idempotency_key || item.deduplication_key || null,
     source_stable_key: sourceRecord.stable_key || null,
     source_id: sourceRecord.source_id || null,
     parent_prompt_id: parentPrompt.prompt_id || null,
     source_excerpt: provenance.source_excerpt || item.source_excerpt || null,
+    metadata: item.metadata && typeof item.metadata === 'object' ? item.metadata : {},
   };
 }
 

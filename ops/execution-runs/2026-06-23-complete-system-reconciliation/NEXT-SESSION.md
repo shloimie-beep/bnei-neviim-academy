@@ -14,9 +14,10 @@ Open requirements:
 - `REQ-20260623-210`: in progress; stable display ID, prompt lifecycle bridge,
   GitHub/ChatGPT source adapter, and canonical intake service/persistence
   packet plus local persistence readback and watchdog contract slices are
-  verified. Local synthetic E2E now covers canonical intake/readback, with
-  remaining approved production persistence apply, UI/broader watchdog, deploy,
-  and live verification work open.
+  verified. Local synthetic E2E now covers canonical intake/readback, and local
+  memory persistence projects parsed entity rows. Remaining approved production
+  persistence apply, UI/broader watchdog, deploy, and live verification work
+  remain open.
 
 Next exact commands for continuation:
 
@@ -46,6 +47,8 @@ Completed implementation slice:
   adapter/script drift.
 - Local platform synthetic E2E wired through canonical intake service/readback
   with an updated no-external-write artifact.
+- Local parsed entity projection for decisions, tasks, calendar, content,
+  community, integration, notes, and unresolved review rows.
 
 Follow-on implementation scope:
 
@@ -53,7 +56,7 @@ Follow-on implementation scope:
   adapter ingestion records across Telegram, Codex, Operations, Drive,
   recordings, approved uploads, and the now-normalized GitHub/ChatGPT source
   providers.
-- Canonical tasks/decisions/content/community/integration persistence.
+- Approved production persistence apply/readback for canonical parsed entities.
 - Lifecycle state machine, auto-resume watchdogs, Operations UI source/audit
   tabs, deploy, and live read-only verification.
 

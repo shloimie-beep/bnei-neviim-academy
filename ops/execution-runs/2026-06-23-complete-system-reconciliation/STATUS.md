@@ -1,5 +1,30 @@
 # Status
 
+## 2026-06-23T14:56:54+03:00
+
+Status: running, with the eighth canonical implementation slice complete.
+
+Extended `REQ-20260623-210` with a local canonical parsed-entity projection for
+memory persistence. The local adapter now materializes stable linked entity rows
+for parsed decisions, tasks, calendar, content, community, integration, notes,
+and unresolved review items, with readback counts by group and no external
+writes.
+
+Verified in this slice:
+
+- `src/platform/ingestion/intake-service.js` carries richer parsed-item fields.
+- `src/platform/ingestion/intake-persistence.js` applies and reads back
+  `parsed_entities` idempotently.
+- The synthetic artifact records parsed entity counts and readback group counts.
+- Focused parser/service/readback tests passed, 14/14.
+
+Still open:
+
+- `REQ-20260623-209`: blocked on approved external readback/backfill gates.
+- `REQ-20260623-210`: in progress; approved production persistence apply,
+  Operations UI, broader watchdog parity, deploy, and live verification are
+  not complete yet.
+
 ## 2026-06-23T14:49:24+03:00
 
 Status: running, with the seventh canonical implementation slice complete.
