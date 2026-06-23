@@ -128,6 +128,16 @@ function inferInputs(actionId, message = '', provided = {}) {
       consent_count: /\bopted[-\s]?in|consent\b/i.test(text) ? (extractAudienceCount(text) || '') : '',
       message_count: extractMessageCount(text) || 6,
     });
+  } else if (actionId === 'draft_automation') {
+    Object.assign(inferred, {
+      message: text,
+      title,
+      sample_event: {
+        payment_status: /\bpayment.{0,24}(success|succeeds?|paid|complete)\b/i.test(text) ? 'succeeded' : /\bpayment.{0,24}(pending|incomplete|not finish|fail)\b/i.test(text) ? 'pending' : '',
+        email_delivery_status: /\bbounce|bounced|email fails?\b/i.test(text) ? 'bounced' : '',
+        attendance_percent: /\battendance.{0,40}(below|drops?|under)\b/i.test(text) ? 65 : undefined,
+      },
+    });
   } else {
     Object.assign(inferred, {
       title,
@@ -182,6 +192,8 @@ function scoreAction(action, message = '', requestedActionId = '') {
   if (/\b(segment|audience|suppression|suppress|unsubscribed|bounced|opted[-\s]?in)\b/.test(text) && id === 'preview_campaign_segment') score += 65;
   if (/\b(email campaign|campaign|bulk email|send email|audience preview)\b/.test(text) && id === 'draft_email_campaign') score += 70;
   if (/\b(drip|sequence|nurture|follow[-\s]?up series|six[-\s]?email|6[-\s]?email)\b/.test(text) && id === 'draft_drip_sequence') score += 85;
+  if (/\b(automation|automate|trigger|when .+ then|if .+ then|turn it on|workflow)\b/.test(text) && id === 'draft_automation') score += 82;
+  if (/\b(parent signs up|payment succeeds|payment fails|payment pending|email bounces|attendance drops|class reminder)\b/.test(text) && id === 'draft_automation') score += 45;
   return score;
 }
 

@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-06-23T20:03:38.945Z.
+Generated at 2026-06-23T20:17:28.189Z.
 
 Requirement: REQ-20260623-013
 
@@ -12,14 +12,14 @@ Requirement: REQ-20260623-013
 - zero_missing_handlers: pass (0)
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
-- telegram_request_parity_present: pass (75)
-- website_assistant_request_parity_present: pass (133)
+- telegram_request_parity_present: pass (79)
+- website_assistant_request_parity_present: pass (137)
 - agent_work_handoff_parity_present: pass (75)
 
 ## Summary
 
 - Root registry actions: 58
-- Detailed typed actions: 75
+- Detailed typed actions: 79
 - Visible UI hooks: 22
 - Visible UI hooks classified: 22
 - Missing contracts: 0
@@ -32,10 +32,10 @@ Requirement: REQ-20260623-013
 | Source | Count |
 | --- | ---: |
 | ui_button | 22 |
-| telegram_request | 75 |
-| website_assistant_request | 133 |
-| operations_helper_request | 126 |
-| automation_action | 69 |
+| telegram_request | 79 |
+| website_assistant_request | 137 |
+| operations_helper_request | 130 |
+| automation_action | 73 |
 | agent_work_handoff | 75 |
 
 ## Visible Control Classifications
@@ -67,11 +67,11 @@ Requirement: REQ-20260623-013
 | announcement | covered_by_canonical_registry | approve_newsletter<br>draft_email_from_newsletter<br>draft_weekly_update<br>find_latest_newsletter_draft<br>generate_social_posts_from_newsletter<br>generate_whatsapp_from_newsletter |
 | chart | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
 | dashboard_layout | covered_by_canonical_registry | open_internal_calendar<br>show_child_calendar |
-| email_campaign | covered_by_canonical_registry | ACTION-PARENT-ACCESS-LINK-EMAIL<br>ACTION-PARENT-PASSWORD-SETUP-SEND<br>approve_email<br>draft_email<br>draft_email_from_newsletter<br>pause_scheduled_email |
-| drip_sequence | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
-| template_version | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>approve_email<br>approve_newsletter<br>create_provider_classroom_draft<br>draft_email |
-| automation | covered_by_canonical_registry | ACTION-HELPER-CREATE-AUTOMATION |
-| segment | covered_by_canonical_registry | create_referral_ledger_entry<br>move_lead_stage<br>request_provider_contact<br>show_contact_communication_history |
+| email_campaign | covered_by_canonical_registry | ACTION-PARENT-ACCESS-LINK-EMAIL<br>ACTION-PARENT-PASSWORD-SETUP-SEND<br>approve_email<br>draft_email<br>draft_email_campaign<br>draft_email_from_newsletter |
+| drip_sequence | covered_by_canonical_registry | draft_drip_sequence |
+| template_version | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-LIBRARY-APPROVE<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>approve_email<br>approve_newsletter<br>create_provider_classroom_draft<br>draft_automation |
+| automation | covered_by_canonical_registry | ACTION-HELPER-CREATE-AUTOMATION<br>draft_automation |
+| segment | covered_by_canonical_registry | create_referral_ledger_entry<br>move_lead_stage<br>preview_campaign_segment<br>request_provider_contact<br>show_contact_communication_history |
 | reminder | covered_by_canonical_registry | create_calendar_event<br>create_student_schedule_item<br>delete_calendar_event<br>open_calendar_event<br>pause_scheduled_email<br>preview_social_schedule_package |
 | ticket | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_report_problem_ticket<br>create_ticket<br>route_bug_to_codex |
 | support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_help_request<br>create_report_problem_ticket<br>create_ticket<br>request_provider_contact<br>route_bug_to_codex |

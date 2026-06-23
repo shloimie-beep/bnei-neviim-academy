@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-23T20:03:38.945Z",
+  "generated_at": "2026-06-23T20:17:28.189Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,10 +16,10 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "ebf2c5d9702b20297d771be17a1dbec1ad6dd8f93d852857b32683ab73964e73",
+  "content_hash": "c58be9b044f7c42ba2cd94477aaebb7c1e36c59f383ed920ef64ad8456089e96",
   "source_hashes": {
     "ops/action-registry.json": "571b5ad6604f4456c8d98e9c0c38b09ec88950f6f71aa8625cece8bdfb6d4d74",
-    "ops/action-registry/actions.json": "ffdec83c4b9e49679736f4befdb794fcb6ab1b9e86fb4279cf05407ec8634db0",
+    "ops/action-registry/actions.json": "6aff3842d57cd4b5083b20e1c57c28140a555954a4f113f23ec89a6419891c0e",
     "public/operations.html": "4c331a81fc53f56066653e85026ad919df8736ca923b4a8c075f97d022b2f42a",
     "public/parent.html": "f165af4e0d52fb9d634db205603ead0a36096dc931e02d00459e691c4bdf60dc",
     "public/student.html": "698a6cacb1d76cfd7fdade8b7c199be575dcbf2e0af9c740c49f0908e8c609b6",
@@ -28,15 +28,15 @@
   },
   "summary": {
     "root_actions": 58,
-    "detailed_actions": 75,
-    "total_registry_rows": 133,
+    "detailed_actions": 79,
+    "total_registry_rows": 137,
     "visible_controls": 22,
     "visible_controls_classified": 22,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 6,
-    "risky_actions": 68,
+    "risky_actions": 72,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 2,
@@ -48,7 +48,7 @@
     "registry_by_classification": {
       "secure_deep_link_only": 9,
       "executable": 10,
-      "preview_then_approve": 61,
+      "preview_then_approve": 65,
       "read_only": 45,
       "blocked_connector": 6,
       "not_applicable": 2
@@ -59,16 +59,16 @@
       "count": 22
     },
     "telegram_request": {
-      "count": 75
+      "count": 79
     },
     "website_assistant_request": {
-      "count": 133
+      "count": 137
     },
     "operations_helper_request": {
-      "count": 126
+      "count": 130
     },
     "automation_action": {
-      "count": 69
+      "count": 73
     },
     "agent_work_handoff": {
       "count": 75
@@ -104,12 +104,12 @@
       {
         "name": "telegram_request_parity_present",
         "passed": true,
-        "value": 75
+        "value": 79
       },
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 133
+        "value": 137
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -6293,6 +6293,227 @@
         "/operations?view=tasks",
         "/operations?view=admin&section=support_tickets"
       ]
+    },
+    {
+      "action_id": "preview_campaign_segment",
+      "label": "Preview campaign segment",
+      "registry_layer": "detailed",
+      "category": "communications",
+      "surface": "communications",
+      "route": "/operations?view=communications",
+      "permission": "super_admin/admin/operator/provider_admin/provider_manager/system",
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "platform",
+        "bna",
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "communications.previewCampaignSegment",
+      "status": "approval_required",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [
+        "Show the opted-in lead segment first",
+        "Preview the audience and suppress unsubscribed contacts"
+      ],
+      "website_examples": [
+        "Preview Segment",
+        "Audience Preview"
+      ],
+      "result_renderer": "Campaign segment previewed.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "campaign_segment_previewed",
+      "page_contexts": [
+        "communications",
+        "automations",
+        "operations_helper",
+        "telegram",
+        "bot"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/operations?view=automations"
+      ]
+    },
+    {
+      "action_id": "draft_email_campaign",
+      "label": "Draft email campaign",
+      "registry_layer": "detailed",
+      "category": "communications",
+      "surface": "communications",
+      "route": "/operations?view=communications",
+      "permission": "super_admin/admin/operator/provider_admin/provider_manager/system",
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "platform",
+        "bna",
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "communications.draftEmailCampaign",
+      "status": "approval_required",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [
+        "Draft an email campaign for opted-in parents",
+        "Create a campaign and show me the final preview before send"
+      ],
+      "website_examples": [
+        "Draft Campaign",
+        "Email Campaign"
+      ],
+      "result_renderer": "Email campaign draft previewed.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "email_campaign_draft_previewed",
+      "page_contexts": [
+        "communications",
+        "automations",
+        "operations_helper",
+        "telegram",
+        "bot"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/operations?view=automations"
+      ]
+    },
+    {
+      "action_id": "draft_drip_sequence",
+      "label": "Draft drip sequence",
+      "registry_layer": "detailed",
+      "category": "communications",
+      "surface": "communications",
+      "route": "/operations?view=communications",
+      "permission": "super_admin/admin/operator/provider_admin/provider_manager/system",
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "platform",
+        "bna",
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "communications.draftDripSequence",
+      "status": "approval_required",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [
+        "Create a six email drip sequence for 1000 opted-in leads",
+        "Draft a nurture sequence and exclude unsubscribed contacts"
+      ],
+      "website_examples": [
+        "Draft Sequence",
+        "Drip Sequence"
+      ],
+      "result_renderer": "Drip sequence draft previewed.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "drip_sequence_draft_previewed",
+      "page_contexts": [
+        "communications",
+        "automations",
+        "operations_helper",
+        "telegram",
+        "bot"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/operations?view=automations"
+      ]
+    },
+    {
+      "action_id": "draft_automation",
+      "label": "Draft automation",
+      "registry_layer": "detailed",
+      "category": "communications",
+      "surface": "automations",
+      "route": "/operations?view=automations",
+      "permission": "super_admin/admin/operator/provider_admin/provider_manager/system",
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ],
+      "allowed_workspaces": [
+        "platform",
+        "bna",
+        "rabbi_sheller_provider"
+      ],
+      "execution_handler": "communications.draftAutomation",
+      "status": "approval_required",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": true,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [
+        "When a parent signs up, send the welcome email and if payment fails create a follow-up task",
+        "Create an automation and show me the steps before turning it on"
+      ],
+      "website_examples": [
+        "Draft Automation",
+        "Automation Builder",
+        "Preview Automation"
+      ],
+      "result_renderer": "Automation draft previewed.",
+      "rollback_or_correction_path": "preview_edit_cancel_or_operator_review",
+      "audit_event": "automation_draft_previewed",
+      "page_contexts": [
+        "automations",
+        "communications",
+        "operations_helper",
+        "telegram",
+        "bot"
+      ],
+      "related_routes": [
+        "/operations?view=automations",
+        "/operations?view=communications"
+      ]
     }
   ],
   "category_coverage": [
@@ -6480,6 +6701,7 @@
         "ACTION-PARENT-PASSWORD-SETUP-SEND",
         "approve_email",
         "draft_email",
+        "draft_email_campaign",
         "draft_email_from_newsletter",
         "pause_scheduled_email",
         "refine_email",
@@ -6491,10 +6713,12 @@
     },
     {
       "category": "drip_sequence",
-      "state": "not_applicable_current_surface",
+      "state": "covered_by_canonical_registry",
       "visible_currently": false,
-      "action_ids": [],
-      "reason": "No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution."
+      "action_ids": [
+        "draft_drip_sequence"
+      ],
+      "reason": ""
     },
     {
       "category": "template_version",
@@ -6506,7 +6730,10 @@
         "approve_email",
         "approve_newsletter",
         "create_provider_classroom_draft",
+        "draft_automation",
+        "draft_drip_sequence",
         "draft_email",
+        "draft_email_campaign",
         "draft_email_from_newsletter",
         "draft_message_to_admin",
         "draft_parent_response",
@@ -6526,7 +6753,8 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
-        "ACTION-HELPER-CREATE-AUTOMATION"
+        "ACTION-HELPER-CREATE-AUTOMATION",
+        "draft_automation"
       ],
       "reason": ""
     },
@@ -6537,6 +6765,7 @@
       "action_ids": [
         "create_referral_ledger_entry",
         "move_lead_stage",
+        "preview_campaign_segment",
         "request_provider_contact",
         "show_contact_communication_history"
       ],

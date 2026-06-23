@@ -4,6 +4,9 @@ const {
   createDripSequenceDraft,
   previewCampaignSegment,
 } = require('../../../platform/assistant/campaign-control');
+const {
+  createAutomationDraft,
+} = require('../../../platform/assistant/automation-builder');
 
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
@@ -345,6 +348,19 @@ function draftDripSequencePreview(inputs = {}, context = {}) {
     schedule: inputs.schedule || {},
     intervals: inputs.intervals || [],
     rate_limit: inputs.rate_limit || inputs.rateLimit || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
+}
+
+function draftAutomationPreview(inputs = {}, context = {}) {
+  return createAutomationDraft({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    conversation_key: inputs.conversation_key || inputs.conversationKey || '',
+    message: inputs.message || inputs.goal || inputs.title || 'Automation draft',
+    definition: inputs.definition || null,
+    sample_event: inputs.sample_event || inputs.sampleEvent || {},
     workspace_key: inputs.workspace_key,
     project_key: inputs.project_key,
   });
@@ -3494,6 +3510,8 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return draftEmailCampaignPreview(inputs, context);
     case 'communications.draftDripSequence':
       return draftDripSequencePreview(inputs, context);
+    case 'communications.draftAutomation':
+      return draftAutomationPreview(inputs, context);
     case 'decisions.create':
       return createDecision(inputs, context);
     case 'timeline.addNote':
