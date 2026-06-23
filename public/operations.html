@@ -9799,7 +9799,7 @@
                                 <div class="workspace-option-group" data-workspace-group aria-label="${escapeHtml(group.label)} workspaces">
                                     <div class="workspace-group-label">${escapeHtml(group.label)}</div>
                                     ${group.items.map(option => `
-                                        <button type="button" class="workspace-option ${active === option.id ? 'active' : ''}" data-workspace-option data-workspace-kind="${escapeHtml(option.displayCategory)}" data-workspace-label="${escapeHtml(`${option.label} ${option.displayCategoryLabel || option.typeLabel} ${option.description || ''}`)}" ${active === option.id ? 'aria-current="true"' : ''} ${option.enabled ? `onclick="switchWorkspace('${option.id}')"` : `onclick="showNotConfigured('This login cannot switch into ${escapeHtml(option.label)}')" aria-disabled="true"`}>
+                                        <button type="button" class="workspace-option ${active === option.id ? 'active' : ''}" ${option.id === 'rabbi_sheller_provider' ? 'data-action-id="ACTION-ONETIME-WORKSPACE-VIEW"' : ''} data-workspace-option data-workspace-kind="${escapeHtml(option.displayCategory)}" data-workspace-label="${escapeHtml(`${option.label} ${option.displayCategoryLabel || option.typeLabel} ${option.description || ''}`)}" ${active === option.id ? 'aria-current="true"' : ''} ${option.enabled ? `onclick="switchWorkspace('${option.id}')"` : `onclick="showNotConfigured('This login cannot switch into ${escapeHtml(option.label)}')" aria-disabled="true"`}>
                                             <span class="workspace-option-main">
                                                 <strong>${escapeHtml(option.label)}</strong>
                                                 <small>${escapeHtml(option.scope_label || option.description || option.workspace_key || option.id)}</small>
@@ -9936,7 +9936,7 @@
                             <span>${escapeHtml(roleLabel)} / ${escapeHtml(label)} / ${escapeHtml(sectionLabel)}</span>
                         </div>
                     </div>
-                    <button type="button" class="page-status-pill" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask</button>
+                    <button type="button" class="page-status-pill" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask</button>
                     <span class="page-status-pill">${escapeHtml(new Date().toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }))}</span>
                 </header>
             `;
@@ -9972,7 +9972,7 @@
                     </div>
                     <div class="ops-brand-actions" aria-label="Current workspace status">
                         <span class="ops-brand-chip" title="${escapeHtml(roleLabel)}">${escapeHtml(opsWorkspaceLabel())}${isScoped ? ' · ' + escapeHtml(roleLabel) : ''}</span>
-                        <button type="button" class="ops-brand-chip" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask / Search</button>
+                        <button type="button" class="ops-brand-chip" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask / Search</button>
                         <span class="ops-brand-chip">${escapeHtml(new Date().toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' }))}</span>
                         ${primary}
                     </div>
@@ -11941,7 +11941,7 @@
                             <p>Compact automation metadata across packages, services, owners, setup blockers, logs, and related tasks.</p>
                         </div>
                         <div class="task-actions">
-                            <button class="task-action primary" type="button" onclick="openBnaHelperWithPrompt('Create an automation plan for this workspace. Include name, purpose, trigger, action, workspace, enabled or disabled state, last-run evidence, setup blockers, and approval gates before any external write.')">Create automation with helper</button>
+                            <button class="task-action primary" type="button" data-action-id="ACTION-HELPER-CREATE-AUTOMATION" onclick="openBnaHelperWithPrompt('Create an automation plan for this workspace. Include name, purpose, trigger, action, workspace, enabled or disabled state, last-run evidence, setup blockers, and approval gates before any external write.')">Create automation with helper</button>
                         </div>
                     </div>
                     ${automationNotice ? `<div class="success-banner">${escapeHtml(automationNotice)}</div>` : ''}
@@ -26022,7 +26022,7 @@
                         <label>Source sheet draft<textarea name="source_sheet_draft" rows="3"></textarea></label>
                         <div class="task-actions">
                             <button class="task-action primary" type="submit">Add Class</button>
-                            <button class="task-action" type="button" onclick="runOneTimeLibrarySmoke(event)">Run Smoke</button>
+                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-SMOKE" onclick="runOneTimeLibrarySmoke(event)">Run Smoke</button>
                             <input id="oneTimeSmokeApprovalFlag" placeholder="${ONE_TIME_MEMBER_LIBRARY_APPROVAL_FLAG}" style="min-width: 320px;">
                         </div>
                     </form>
@@ -26071,7 +26071,7 @@
                         <label>Source sheet draft<textarea name="source_sheet_draft" rows="4">${escapeHtml(item.source_sheet_draft || '')}</textarea></label>
                         <div class="task-actions">
                             <button class="task-action primary" type="submit">Save / Attach Vimeo Video</button>
-                            <button class="task-action" type="button" onclick="previewOneTimeClassPackage(event, ${id})">Preview Upload</button>
+                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-CLASS-PACKAGE-PREVIEW" onclick="previewOneTimeClassPackage(event, ${id})">Preview Upload</button>
                         </div>
                     </form>
                     <form id="oneTimeAssetForm-${id}" class="settings-grid" onsubmit="addOneTimeClassAsset(event, ${id})">
@@ -26098,10 +26098,10 @@
                         <label>Approval phrase<input name="approval_flag" placeholder="${ONE_TIME_MEMBER_LIBRARY_APPROVAL_FLAG}"></label>
                         <label>Rollback note<input name="reason" placeholder="Reason"></label>
                         <div class="task-actions">
-                            <button class="task-action" type="button" onclick="previewOneTimeClassMember(event, ${id})">Member Preview</button>
-                            <button class="task-action" type="button" onclick="approveOneTimeClassLibrary(event, ${id})">Approve</button>
-                            <button class="task-action primary" type="submit">Publish</button>
-                            ${latestItem ? `<button class="task-action danger" type="button" onclick="rollbackOneTimeLibraryItem(event, ${Number(latestItem.id)})">Unpublish / Restore Latest</button>` : ''}
+                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-PREVIEW" onclick="previewOneTimeClassMember(event, ${id})">Member Preview</button>
+                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-APPROVE" onclick="approveOneTimeClassLibrary(event, ${id})">Approve</button>
+                            <button class="task-action primary" type="submit" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-PUBLISH">Publish</button>
+                            ${latestItem ? `<button class="task-action danger" type="button" data-action-id="ACTION-ONETIME-MEMBER-LIBRARY-ROLLBACK" onclick="rollbackOneTimeLibraryItem(event, ${Number(latestItem.id)})">Unpublish / Restore Latest</button>` : ''}
                             <a class="task-action" href="/member-library" target="_blank" rel="noopener">Open Library</a>
                         </div>
                     </form>
@@ -27225,7 +27225,7 @@
                             <p>${latestCandidate ? `Latest candidate: job #${Number(latestCandidate.id)}, uploaded ${escapeHtml(formatDateTime(contentUploadedAt(latestCandidate)))}` : 'Drop meeting audio into Drive Raw Intake, then structure it here when the transcript is ready.'}</p>
                         </div>
                         <div class="task-actions" style="margin-top:0;">
-                            <button class="task-action" data-preview-one-time-drive-brief onclick="previewLatestOneTimeDriveBrief(event)" ${oneTimeDriveBriefPreviewBusy ? 'disabled' : ''}>${oneTimeDriveBriefPreviewBusy ? 'Previewing...' : 'Preview Drive Brief'}</button>
+                            <button class="task-action" data-action-id="ACTION-ONETIME-DRIVE-BRIEF-PREVIEW" data-preview-one-time-drive-brief onclick="previewLatestOneTimeDriveBrief(event)" ${oneTimeDriveBriefPreviewBusy ? 'disabled' : ''}>${oneTimeDriveBriefPreviewBusy ? 'Previewing...' : 'Preview Drive Brief'}</button>
                             ${latestCandidate ? `<button class="task-action primary" onclick="structureOneTimeMeeting(event, ${Number(latestCandidate.id)})">Structure Latest</button>` : ''}
                         </div>
                     </div>
@@ -33536,8 +33536,8 @@
                         <label class="settings-wide">Notes<textarea id="liveNotes${Number(session.id)}" rows="2">${escapeHtml(session.notes || '')}</textarea></label>
                         <div class="task-actions settings-wide">
                             <button class="task-action primary" type="submit">Save session</button>
-                            <button class="task-action" type="button" onclick="sendLiveZoomLinks(${Number(session.id)}, true)">Dry-run send</button>
-                            <button class="task-action danger" type="button" onclick="sendLiveZoomLinks(${Number(session.id)}, false)">Send links</button>
+                            <button class="task-action" type="button" data-action-id="ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN" onclick="sendLiveZoomLinks(${Number(session.id)}, true)">Dry-run send</button>
+                            <button class="task-action danger" type="button" data-action-id="ACTION-ONETIME-LIVE-ZOOM-LINK-SEND" onclick="sendLiveZoomLinks(${Number(session.id)}, false)">Send links</button>
                         </div>
                     </form>
                     <div class="task-actions">
@@ -36228,13 +36228,13 @@
                 return '<button class="task-action" disabled>No parent contact</button>';
             }
             return [
-                `<button class="task-action" onclick="generateParentAccessCode(event, '${escapeHtml(contactType)}', ${id})">Generate Access Code</button>`,
-                email ? `<button class="task-action primary" onclick="sendParentAccessLink(event, '${escapeHtml(contactType)}', ${id}, 'open')">Open Parent Portal</button>` : '<button class="task-action" disabled>Use Access Code Login</button>',
-                email ? `<button class="task-action" onclick="sendParentAccessLink(event, '${escapeHtml(contactType)}', ${id}, 'email')">Email Login Link</button>` : '<button class="task-action" disabled>No login email</button>',
-                email ? `<button class="task-action" onclick="sendParentPasswordSetup(event, '${escapeHtml(contactType)}', ${id}, true)">Preview Password Setup</button>` : '<button class="task-action" disabled>No setup email</button>',
-                email ? `<button class="task-action" onclick="sendParentPasswordSetup(event, '${escapeHtml(contactType)}', ${id}, false)">Email Password Setup</button>` : '',
+                `<button class="task-action" data-action-id="ACTION-PARENT-ACCESS-CODE-GENERATE" onclick="generateParentAccessCode(event, '${escapeHtml(contactType)}', ${id})">Generate Access Code</button>`,
+                email ? `<button class="task-action primary" data-action-id="ACTION-PARENT-ACCESS-LINK-OPEN" onclick="sendParentAccessLink(event, '${escapeHtml(contactType)}', ${id}, 'open')">Open Parent Portal</button>` : '<button class="task-action" disabled>Use Access Code Login</button>',
+                email ? `<button class="task-action" data-action-id="ACTION-PARENT-ACCESS-LINK-EMAIL" onclick="sendParentAccessLink(event, '${escapeHtml(contactType)}', ${id}, 'email')">Email Login Link</button>` : '<button class="task-action" disabled>No login email</button>',
+                email ? `<button class="task-action" data-action-id="ACTION-PARENT-PASSWORD-SETUP-PREVIEW" onclick="sendParentPasswordSetup(event, '${escapeHtml(contactType)}', ${id}, true)">Preview Password Setup</button>` : '<button class="task-action" disabled>No setup email</button>',
+                email ? `<button class="task-action" data-action-id="ACTION-PARENT-PASSWORD-SETUP-SEND" onclick="sendParentPasswordSetup(event, '${escapeHtml(contactType)}', ${id}, false)">Email Password Setup</button>` : '',
                 phone
-                    ? `<button class="task-action" onclick="sendParentAccessLink(event, '${escapeHtml(contactType)}', ${id}, 'whatsapp')">WhatsApp Login Link</button>`
+                    ? `<button class="task-action" data-action-id="ACTION-PARENT-ACCESS-LINK-WHATSAPP" onclick="sendParentAccessLink(event, '${escapeHtml(contactType)}', ${id}, 'whatsapp')">WhatsApp Login Link</button>`
                     : '<button class="task-action" disabled>No login WhatsApp</button>',
             ].join('');
         }

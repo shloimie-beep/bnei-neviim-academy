@@ -35,3 +35,36 @@ test('root action registry includes helper raw intake and watchdog actions', () 
   assert.ok(ids.has('ACTION-HELPER-CAPTURE-RAW-INTAKE'));
   assert.ok(ids.has('ACTION-HELPER-RUN-WATCHDOG-AUDIT'));
 });
+
+test('One Time action coverage report is current and gates risky controls', async () => {
+  const { buildOneTimeActionCoverage } = await import('../scripts/generate-one-time-action-coverage.mjs');
+  const built = buildOneTimeActionCoverage({ write: false });
+  const artifact = JSON.parse(fs.readFileSync('ops/action-registry/one-time-action-coverage.json', 'utf8'));
+
+  assert.equal(built.ok, true);
+  assert.equal(artifact.ok, true);
+  assert.equal(artifact.requirement_id, 'REQ-20260621-502');
+  assert.equal(artifact.content_hash, built.content_hash);
+  assert.equal(artifact.registry_summary.controls, built.registry_summary.controls);
+  assert.equal(artifact.registry_summary.needs_repair, 0);
+  assert.ok(artifact.registry_summary.controls >= 19);
+  assert.ok(artifact.registry_summary.external_write_controls >= 7);
+
+  const externalWriteRows = artifact.registry_controls.filter((row) => row.external_write);
+  assert.ok(externalWriteRows.length >= 7);
+  for (const row of externalWriteRows) {
+    assert.equal(row.coverage_result, 'covered', `${row.control_id} should be covered`);
+    assert.equal(row.approval_safe, true, `${row.control_id} must be approval-gated`);
+    assert.equal(row.approval_required, true, `${row.control_id} must require approval or explicit confirmation`);
+    assert.ok(['approval_gated', 'preview_then_approve'].includes(row.classification), `${row.control_id} classification must not be direct`);
+    assert.ok((row.gate_tokens || []).length, `${row.control_id} needs documented gate tokens`);
+    assert.deepEqual(row.missing_gate_tokens, []);
+  }
+});
+
+test('One Time visible data-action hooks are registered', async () => {
+  const { buildActionAudit } = await import('../scripts/watchdog-action-audit.mjs');
+  const audit = buildActionAudit();
+  assert.equal(audit.ok, true);
+  assert.equal(audit.findings.length, 0);
+});
