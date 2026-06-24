@@ -47,7 +47,7 @@ Captured at start of this pass:
 | REQ-20260624-014 | Compare production, PR #14, and local state for public navigation and homepage UI. | Section 3 | Public website | Done for public anonymous scope | Implemented locally | Public production vs PR #14 local screenshots and computed DOM facts are stored in the visual audit report. Private production readback remains blocked by Decision. |
 | REQ-20260624-015 | Fix and verify public homepage header-to-hero gap at 390x844, 768x1024, and 1440x900. | Section 4, Required homepage repairs | PR #14 release acceptance | Done locally | Implemented and verified | PR #14 local passes `abs(header.bottom - hero.top) <= 1` at all three viewports; production remains stale until merge/deploy. |
 | REQ-20260624-016 | Fix and verify selected horizontal tab/category contrast and semantics. | Section 4, Selected horizontal tab | PR #14 release acceptance | Done locally | Implemented and verified | Homepage active filter chips now pass computed contrast and expose `aria-pressed=true` in the PR #14 local audit. |
-| REQ-20260624-017 | Complete additional visual defect list for production-facing and major portal pages. | Section 4, Additional visual inspection | Partially done | Homepage visual defect list complete | Public homepage defects are fixed and documented; wider authenticated visual audit remains covered by role-flow screenshots and follow-up review, not production credentials. |
+| REQ-20260624-017 | Complete additional visual defect list for production-facing and major portal pages. | Section 4, Additional visual inspection | Done for credential-free local scope | Implemented and verified | Public homepage defects are fixed and documented; local role-flow screenshots cover major portal journeys. Deeper production/authenticated visual review remains blocked by safe demo-session or read-only production approval. |
 | REQ-20260624-018 | Build/repair safe local authenticated navigation harness beyond synthetic route registry proof. | Section 5 | Auth/navigation | Done locally | Implemented and verified | Role-flow smoke now asserts expected assistant surfaces, forbidden cross-role fixture text, deep-link load, refresh, back navigation, logged-out/wrong-role recovery, API failure state, and browser hygiene. |
 | REQ-20260624-019 | Implement and verify clear super-admin path into Rabbi Scheller provider workspace. | Section 6 | Operations/provider workspace | Done locally | Implemented and verified | Role-flow smoke clicks the Operations workspace switcher into `rabbi_sheller_provider` on desktop and mobile and records the proof in `ROLE-FLOW-QA.md`. |
 | REQ-20260624-020 | Audit real website/portal bot runtime end to end, not only contracts/widgets. | Section 7 | Bot/runtime | Done for credential-free audit | Implemented and verified | Added `npm run owner-review:assistant-runtime`, static shared-assistant endpoint checks, local no-DB context smoke, explicit DB-backed history blocker proof, and reports at `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` plus `ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json`. True persisted chat/message E2E remains blocked without a local/test DB or approved production readback. |
@@ -121,10 +121,10 @@ Captured at start of this pass:
 
 ## Final Audit
 
-Open. The public visual release-acceptance, authenticated navigation,
-credential-free website-assistant runtime, and credential-free external
-readiness batches are locally verified, but this goal is not complete:
+All credential-free unblocked requirements in this register now have terminal
+local statuses and pushed evidence. The overall release is still not complete:
 persisted assistant runtime without a local/test DB, Telegram/live bot proof,
-real class-intake production readback, Stripe sandbox/live proof, Vimeo
-API/upload proof, production readback, merge/deploy, and live-smoke items
-remain open or blocked by the Decisions above.
+deeper production/authenticated visual review, real class-intake production
+readback, Stripe sandbox/live proof, Vimeo API/upload proof, production
+readback, merge/deploy, and live-smoke items remain blocked by the Decisions
+above.
