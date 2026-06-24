@@ -11,7 +11,7 @@ Raw storage:
 |---|---|
 | Raw ID | RAW-20260624-006 |
 | Source | Codex chat attachment |
-| Parse status | registered |
+| Parse status | implemented |
 | Active goal | BNA OWNER SETUP CENTER - EXACT LINKS, STEPS, STATUS, AND VALIDATION |
 | Branch | `codex/closeout-operator-walkthrough-20260624` |
 | Base requested | `CONTROL.json` integration base |
@@ -29,7 +29,7 @@ Raw storage:
 | REQ-20260624-031 | Provide Google Drive, Stripe, Vimeo, GitHub Actions, and bot/model walkthrough details called out in the packet. | Codex | deep_walkthroughs | P0 | REQ-20260624-030 | The requested target selection, auth paths, scope, diagnostics, sandbox/live, no-real-charge, token/scope, upload/playback, workflow-scope, provider/model, no-fake-response, usage/quota, and future provider-bot details are documented. | Done |
 | REQ-20260624-032 | Provide Operations/server wiring as `SHARED-PATCH.diff` without editing shared files in this lane. | Codex | shared_patch | P0 | REQ-20260624-028 | Diff includes a protected readiness endpoint and Operations navigation/link wiring while leaving `server.js` and `public/operations.html` unchanged in this branch. | Done |
 | REQ-20260624-033 | Add deterministic tests for schema, status reasons/actions, links, secrets, logged-out behavior, responsive UI, keyboard accessibility, and doc links. | Codex | tests | P0 | REQ-20260624-028, REQ-20260624-030 | Focused `node --test` files pass and cover the requested setup-center expectations. | Done |
-| REQ-20260624-034 | Run verification, record evidence, commit, and push the branch. | Codex | verification_push | P0 | REQ-20260624-033 | Focused tests, `git diff --check`, secret audit, git status, commit, and push evidence are recorded in lane evidence. | In progress - local verification passed; commit/push pending |
+| REQ-20260624-034 | Run verification, record evidence, commit, and push the branch. | Codex | verification_push | P0 | REQ-20260624-033 | Focused tests, `git diff --cached --check`, secret audit, git status, commit, and push evidence are recorded in lane evidence. | Done |
 
 ## Decisions And Blockers
 
@@ -42,13 +42,13 @@ Raw storage:
 
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit |
 |---|---|---|---|---|---|
-| REQ-20260624-028 | Setup catalog and static setup center | Static shell with endpoint fetch fallback added. | `node --test tests/integration-setup-catalog.test.js tests/integration-setup-ui.test.js tests/operator-walkthrough-links.test.js` passed at 2026-06-24T16:09:45+03:00. | Pending | Pending |
-| REQ-20260624-029 | Catalog cards | Integration definitions and safe status vocabulary added. | Catalog test passed; 16 integration IDs verified. | Pending | Pending |
-| REQ-20260624-030 | Walkthrough docs | Docs and handoff artifacts created under `docs/operator-walkthroughs`. | Link/index sync test passed. | Pending | Pending |
-| REQ-20260624-031 | Deep walkthroughs | Google Drive, Stripe, Vimeo, GitHub Actions, bot/model details documented. | Walkthrough files inspected by link/index test; no broken local links. | Pending | Pending |
-| REQ-20260624-032 | `SHARED-PATCH.diff` | Patch provided only; shared files untouched. | `git status --short` shows no edits to `server.js` or `public/operations.html`. | Pending | Pending |
-| REQ-20260624-033 | Tests | Focused Node tests added. | Focused suite passed, `git diff --cached --check` passed, `npm run secrets:audit` passed. | Pending | Pending |
-| REQ-20260624-034 | Evidence and push | Run checks, commit, push. | Local verification passed; commit and push still pending. | Pending | Pending |
+| REQ-20260624-028 | Setup catalog and static setup center | Static shell with endpoint fetch fallback added. | `node --test tests/integration-setup-catalog.test.js tests/integration-setup-ui.test.js tests/operator-walkthrough-links.test.js` passed at 2026-06-24T16:09:45+03:00. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
+| REQ-20260624-029 | Catalog cards | Integration definitions and safe status vocabulary added. | Catalog test passed; 16 integration IDs verified. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
+| REQ-20260624-030 | Walkthrough docs | Docs and handoff artifacts created under `docs/operator-walkthroughs`. | Link/index sync test passed. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
+| REQ-20260624-031 | Deep walkthroughs | Google Drive, Stripe, Vimeo, GitHub Actions, bot/model details documented. | Walkthrough files inspected by link/index test; no broken local links. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
+| REQ-20260624-032 | `SHARED-PATCH.diff` | Patch provided only; shared files untouched. | `git status --short` showed no edits to `server.js` or `public/operations.html` before commit. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
+| REQ-20260624-033 | Tests | Focused Node tests added. | Focused suite passed, `git diff --cached --check` passed, `npm run secrets:audit` passed. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
+| REQ-20260624-034 | Evidence and push | Checks, commit, and push completed. | `git push -u origin codex/closeout-operator-walkthrough-20260624` succeeded at 2026-06-24T16:12:35+03:00. | `305998fd` | `origin/codex/closeout-operator-walkthrough-20260624` |
 
 ## Final Audit
 
@@ -60,4 +60,4 @@ Raw storage:
 | Focused tests | Passed | `node --test tests/integration-setup-catalog.test.js tests/integration-setup-ui.test.js tests/operator-walkthrough-links.test.js` |
 | Whitespace | Passed | `git diff --cached --check` |
 | Secret audit | Passed | `npm run secrets:audit`; 4316 tracked paths checked, 0 tracked secret-risk files found |
-| Commit and push | Pending | REQ-20260624-034 remains open until remote push succeeds |
+| Commit and push | Done | `git push -u origin codex/closeout-operator-walkthrough-20260624` succeeded; first implementation commit `305998fd` is on origin |

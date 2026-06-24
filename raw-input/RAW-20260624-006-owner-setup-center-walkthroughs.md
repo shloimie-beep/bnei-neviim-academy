@@ -2,7 +2,7 @@
 
 Source channel: codex_chat
 Captured at: 2026-06-24
-Parse status: registered
+Parse status: implemented
 Requirement register: tasks-pending/2026-06-24-owner-setup-center-walkthroughs.md
 Branch: codex/closeout-operator-walkthrough-20260624
 Base used: origin/codex/integration-navigation-owner-review-20260624 at f9625e8c15e0a63a272582e839bf42b100cd6714
@@ -32,3 +32,6 @@ portal HTML, or central run/ledger/memory files.
 - Existing 2026-06-24 requirements already use `REQ-20260624-001` through
   `REQ-20260624-027`, so this lane starts at `REQ-20260624-028`.
 - No secret values were requested, opened, copied, or stored.
+- The first implementation commit `305998fd` was pushed to
+  `origin/codex/closeout-operator-walkthrough-20260624` at
+  2026-06-24T16:12:35+03:00.
