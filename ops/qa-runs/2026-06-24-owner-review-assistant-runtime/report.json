@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-24T14:38:24.744Z",
-  "release_candidate_sha": "06fd00703a1be4558f1a37e211e6b500fb525532",
+  "generated_at": "2026-06-24T15:25:40.974Z",
+  "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
   "guardrails": {
     "external_credentials": false,
     "production_state_readback": false,
@@ -60,7 +60,7 @@
   },
   "no_db": {
     "mode": "ONE_TIME_REVIEW_ONLY_NO_DB",
-    "base_url": "http://127.0.0.1:60802",
+    "base_url": "http://127.0.0.1:58376",
     "context": {
       "status": 200,
       "ok": true,
@@ -91,7 +91,7 @@
     "server_log_tail": {
       "stdout": [
         "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-        "BNA Server running on 127.0.0.1:60802"
+        "BNA Server running on 127.0.0.1:58376"
       ],
       "stderr": [
         "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",

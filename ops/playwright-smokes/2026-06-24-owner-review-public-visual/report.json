@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-24T05:42:29.390Z",
-  "release_candidate_sha": "7da18227804498d8868201f8f94a266da048ba50",
+  "generated_at": "2026-06-24T15:27:23.803Z",
+  "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
   "production_url": "https://bneineviimacademy.org/",
   "guardrails": {
     "external_credentials": false,
@@ -11,10 +11,10 @@
   },
   "rows": [
     {
-      "target": "pr14-local",
+      "target": "release-local",
       "viewport": "mobile-390",
-      "url": "http://127.0.0.1:52056/",
-      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/pr14-local-mobile-390.png",
+      "url": "http://127.0.0.1:63285/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-mobile-390.png",
       "headerHeroGapPx": 0,
       "headerHeroGapOk": true,
       "heroMarginTop": "0px",
@@ -47,6 +47,21 @@
           "width": 118.4375,
           "height": 37.5,
           "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(201, 162, 39)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 61.890625,
+          "height": 38,
+          "contrastRatio": 6.75,
           "contrastOk": true,
           "semanticOk": true
         }
@@ -103,10 +118,10 @@
       "consoleErrors": []
     },
     {
-      "target": "pr14-local",
+      "target": "release-local",
       "viewport": "tablet-768",
-      "url": "http://127.0.0.1:52056/",
-      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/pr14-local-tablet-768.png",
+      "url": "http://127.0.0.1:63285/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-tablet-768.png",
       "headerHeroGapPx": 0,
       "headerHeroGapOk": true,
       "heroMarginTop": "0px",
@@ -139,6 +154,21 @@
           "width": 124.21875,
           "height": 40.40625,
           "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(201, 162, 39)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 61.890625,
+          "height": 38,
+          "contrastRatio": 6.75,
           "contrastOk": true,
           "semanticOk": true
         }
@@ -195,10 +225,10 @@
       "consoleErrors": []
     },
     {
-      "target": "pr14-local",
+      "target": "release-local",
       "viewport": "desktop-1440",
-      "url": "http://127.0.0.1:52056/",
-      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/pr14-local-desktop-1440.png",
+      "url": "http://127.0.0.1:63285/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-desktop-1440.png",
       "headerHeroGapPx": 0,
       "headerHeroGapOk": true,
       "heroMarginTop": "0px",
@@ -246,6 +276,21 @@
           "width": 124.21875,
           "height": 40.40625,
           "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(201, 162, 39)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 61.890625,
+          "height": 38,
+          "contrastRatio": 6.75,
           "contrastOk": true,
           "semanticOk": true
         }
@@ -458,6 +503,6 @@
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
     "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-    "BNA Server running on 127.0.0.1:52056"
+    "BNA Server running on 127.0.0.1:63285"
   ]
 }

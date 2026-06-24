@@ -67,3 +67,33 @@ Summary: `REQ-20260624-024` is complete as a readiness review. Active
 candidate migrations were inventoried, legacy `migrate-railway.sql` was
 excluded, backup/dry-run/rollback/readback gates were documented, and no
 production database mutation or schema apply was performed.
+
+Local release-gate evidence:
+
+- Release-code SHA:
+  `03454ea4a9152946d21452141ed427277705fab1`
+- Owner review:
+  - `docs/owner-review/ROUTE-INVENTORY.json`
+  - `docs/owner-review/ROLE-FLOW-QA.md`
+  - `docs/owner-review/PUBLIC-VISUAL-AUDIT.md`
+  - `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md`
+  - `docs/owner-review/EXTERNAL-READINESS-AUDIT.md`
+  - `ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.md`
+  - `ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md`
+  - `ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md`
+  - `ops/qa-runs/2026-06-24-owner-review-external-readiness/report.md`
+- Watchdogs:
+  - `ops/watchdog-audits/2026-06-24T15-27-watchdog-link-audit.md`
+  - `ops/watchdog-audits/2026-06-24T15-27-watchdog-action-audit.md`
+  - `ops/watchdog-audits/2026-06-24T15-27-watchdog-security-routes.md`
+  - `ops/watchdog-audits/2026-06-24T15-27-raw-intake-drift.md`
+  - `ops/watchdog-audits/2026-06-24T15-27-content-routing.md`
+  - `ops/watchdog-audits/2026-06-24T15-27-communications-alerts.md`
+- Stripe safe smoke:
+  - `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T15-27-52-118Z-stripe-sandbox-smoke.md`
+  - `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T15-27-52-118Z-stripe-sandbox-smoke.json`
+
+Summary: `REQ-20260624-025` passed the local deterministic release gate on the
+pushed release-code SHA. No PR merge, deploy, live smoke, production database
+mutation, class backfill, Stripe charge, Vimeo upload/publication, send, DNS
+change, credential change, or secret exposure was performed.

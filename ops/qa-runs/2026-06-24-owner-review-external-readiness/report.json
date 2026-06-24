@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-24T06:19:46.731Z",
-  "release_candidate_sha": "8a6d13cfa1d405d9c17e8d94b966e754466f54d6",
+  "generated_at": "2026-06-24T15:25:38.949Z",
+  "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
   "guardrails": {
     "external_credentials": false,
     "production_state_readback": false,
@@ -131,9 +131,9 @@
             "evidence": "/api/bna/integrations/stripe/checkout-preview"
           },
           {
-            "id": "stripe_checkout_create_is_blocked_in_closeout",
+            "id": "stripe_checkout_create_is_approval_gated",
             "ok": true,
-            "evidence": "checkout create blocker"
+            "evidence": "approval-gated checkout create route with preview-only failure audit"
           },
           {
             "id": "safe_smoke_blocks_live_key",
@@ -243,9 +243,9 @@
         "ok": true,
         "checks": [
           {
-            "id": "readiness_reports_manual_mode",
+            "id": "readiness_reports_manual_ready",
             "ok": true,
-            "evidence": "manual_upload_required"
+            "evidence": "manual_ready"
           },
           {
             "id": "recording_pipeline_is_preview_only",
@@ -260,17 +260,17 @@
           {
             "id": "manual_vimeo_url_attach_parses_embed",
             "ok": true,
-            "evidence": "manual_vimeo_url_attached"
+            "evidence": "manual_ready"
           },
           {
             "id": "upload_intent_is_manual_without_token",
             "ok": true,
-            "evidence": "manual_upload_required"
+            "evidence": "manual_ready"
           }
         ]
       },
       "samples": {
-        "readiness_status": "manual_upload_required",
+        "readiness_status": "manual_ready",
         "readiness_blockers": [
           "Vimeo access token is not configured server-side.",
           "Confirm the current Vimeo plan/account supports API uploads and intended embed controls.",
@@ -283,8 +283,8 @@
           "provider_publish_enabled": false,
           "notification_send_enabled": false
         },
-        "attach_status": "manual_vimeo_url_attached",
-        "upload_intent_status": "manual_upload_required"
+        "attach_status": "manual_ready",
+        "upload_intent_status": "manual_ready"
       },
       "blockers": [
         "Vimeo primary account owner, user token, app credentials, plan/quota, folder, privacy default, allowed embed domains, and callback URL need approved readback before API upload.",

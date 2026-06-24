@@ -1,6 +1,6 @@
 # Navigation Graph
 
-Generated at 2026-06-24T05:46:40.851Z.
+Generated at 2026-06-24T15:25:42.021Z.
 
 Edges are discovered from literal anchors, JavaScript navigation, form actions, redirects, manifests, service-worker cache entries, and fetch/API calls.
 
@@ -20,11 +20,12 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | / | /signup.html | literal-a-href | public/index.html |
 | / | /signup.html | literal-a-href | public/index.html |
 | / | /student/login | literal-a-href | public/index.html |
-| /api/integrations/google/oauth/callback | /api/google/oauth/callback${qs  | server-redirect | server.js:40342 |
+| /api/integrations/google/oauth/callback | /api/google/oauth/callback${qs  | server-redirect | server.js:40591 |
 | /assistant-setup.html | / | literal-a-href | public/assistant-setup.html |
 | /assistant-setup.html | /api/assistant/message | fetch | public/assistant-setup.html |
 | /documents/parent-handbook.html | / | literal-a-href | public/documents/parent-handbook.html |
 | /documents/parent-handbook.html | /signup.html | literal-a-href | public/documents/parent-handbook.html |
+| /integration-setup.html | /operations | literal-a-href | public/integration-setup.html |
 | /member-library.html | / | literal-a-href | public/member-library.html |
 | /member-library.html | /api/member-library | fetch | public/member-library.html |
 | /member-library.html | /member-library | literal-a-href | public/member-library.html |
@@ -39,13 +40,21 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /member.html | /one-time-classroom | literal-a-href | public/member.html |
 | /member.html | /rabbi-member | literal-a-href | public/member.html |
 | /member.html | /rabbi-member | literal-a-href | public/member.html |
+| /one-time | / | literal-a-href | public/one-time/index.html |
 | /one-time | /api/one-time/campaign | fetch | public/one-time/index.html |
 | /one-time | /api/one-time/interest | fetch | public/one-time/index.html |
+| /one-time | /blog | literal-a-href | public/one-time/index.html |
+| /one-time | /faq | literal-a-href | public/one-time/index.html |
+| /one-time | /one-time | literal-a-href | public/one-time/index.html |
 | /one-time | /one-time | literal-a-href | public/one-time/index.html |
 | /one-time | /one-time/privacy.html | literal-a-href | public/one-time/index.html |
 | /one-time | /one-time/terms.html | literal-a-href | public/one-time/index.html |
+| /one-time | /parents | literal-a-href | public/one-time/index.html |
 | /one-time | /rabbi-member | literal-a-href | public/one-time/index.html |
 | /one-time | /rabbi-member | literal-a-href | public/one-time/index.html |
+| /one-time | /school | literal-a-href | public/one-time/index.html |
+| /one-time | /service-providers | literal-a-href | public/one-time/index.html |
+| /one-time | /signup.html | literal-a-href | public/one-time/index.html |
 | /one-time-classroom.html | / | literal-a-href | public/one-time-classroom.html |
 | /one-time-classroom.html | /api/one-time-classroom/threads/:id/responses | fetch | public/one-time-classroom.html |
 | /one-time-classroom.html | /member-library | literal-a-href | public/one-time-classroom.html |
@@ -63,14 +72,15 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /one-time-preview.html | /api/one-time/mishnah/onboarding | fetch | public/one-time-preview.html |
 | /one-time/privacy.html | /one-time | literal-a-href | public/one-time/privacy.html |
 | /one-time/terms.html | /one-time | literal-a-href | public/one-time/terms.html |
-| /operations-access | /operations-login.html | server-redirect | server.js:59914 |
-| /operations-access | /operations-login.html | server-redirect | server.js:59914 |
-| /operations-access | /operations-login.html | server-redirect | server.js:59914 |
+| /operations-access | /operations-login.html | server-redirect | server.js:60419 |
+| /operations-access | /operations-login.html | server-redirect | server.js:60419 |
+| /operations-access | /operations-login.html | server-redirect | server.js:60419 |
 | /operations-login.html | /api/bna/auth/me | fetch | public/operations-login.html |
 | /operations-login.html | /api/operations/login | fetch | public/operations-login.html |
 | /operations.html | /api/bna | fetch | public/operations.html |
 | /operations.html | /api/google/connections/:connectionId/disconnect | fetch | public/operations.html |
 | /operations.html | /api/google/oauth/start | literal-a-href | public/operations.html |
+| /operations.html | /integration-setup.html | literal-a-href | public/operations.html |
 | /operations.html | /member | literal-a-href | public/operations.html |
 | /operations.html | /member-library | literal-a-href | public/operations.html |
 | /operations.html | /one-time-classroom | literal-a-href | public/operations.html |
@@ -109,12 +119,18 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /provider.html | / | literal-a-href | public/provider.html |
 | /provider.html | /api/bna/one-time/view-as-rabbi/end | fetch | public/provider.html |
 | /provider.html | /one-time | literal-a-href | public/provider.html |
+| /provider.html | /one-time | literal-a-href | public/provider.html |
 | /provider.html | /one-time-classroom.html | literal-a-href | public/provider.html |
+| /provider.html | /one-time-classroom.html | literal-a-href | public/provider.html |
+| /provider.html | /one-time-email-review.html | literal-a-href | public/provider.html |
+| /provider.html | /one-time-email-review.html | literal-a-href | public/provider.html |
+| /provider.html | /parent.html | literal-a-href | public/provider.html |
 | /provider.html | /parent.html | literal-a-href | public/provider.html |
 | /provider.html | /provider | literal-a-href | public/provider.html |
 | /provider.html | /provider | literal-a-href | public/provider.html |
 | /provider.html | /providers/join | literal-a-href | public/provider.html |
 | /provider.html | /service-providers | literal-a-href | public/provider.html |
+| /provider.html | /student.html | literal-a-href | public/provider.html |
 | /provider.html | /student.html | literal-a-href | public/provider.html |
 | /providers-join.html | /api/provider-signup | fetch | public/providers-join.html |
 | /rabbi-member.html | / | literal-a-href | public/rabbi-member.html |
@@ -215,8 +231,11 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | public/js/bna-site-nav.js | /index.html | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /one-time | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /parent/login | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /parent/login | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /parents | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /provider | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /provider | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /providers/join | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /providers/join | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /providers/join | literal-a-href | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /register | js-generated-route-string | public/js/bna-site-nav.js |
@@ -230,6 +249,8 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | public/js/bna-site-nav.js | /signup.html | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /signup.html | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /student/login | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /student/login | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/integration-setup.js | /api/bna/integration-setup/readiness | fetch | public/js/integration-setup.js |
 | public/js/one-time-single-tenant.js | /api/one-time/instance-config | fetch | public/js/one-time-single-tenant.js |
 | public/manifest.json | / | manifest:id | / |
 | public/manifest.json | / | manifest:scope | / |

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
-  "updated_at": "2026-06-24T18:09:00+03:00",
+  "updated_at": "2026-06-24T18:28:00+03:00",
   "git_refs": {
     "expected_branch": "codex/clean-slate-integration-20260624",
     "branch": "codex/clean-slate-integration-20260624",
@@ -338,24 +338,87 @@
         "REQ-20260624-023",
         "REQ-20260624-024"
       ],
-      "status": "in_progress",
-      "implementation_status": "local_release_gate_started",
+      "status": "done",
+      "implementation_status": "local_release_gate_passed_on_pushed_sha_03454ea4",
       "can_continue_without_operator": true,
-      "next_action": "Run deterministic local release gates against the exact release candidate SHA and record pass/fail/blockers.",
+      "next_action": "Continue to REQ-20260624-026 final PR merge policy; do not deploy or live-smoke until the merge requirement is closed.",
       "acceptance_criteria": [
         "Release SHA is recorded.",
         "Required gates pass or exact blockers are recorded."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "03454ea4a9152946d21452141ed427277705fab1",
+        "ops/execution-runs/2026-06-24-final-release-integration/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/EVIDENCE.md",
+        "docs/owner-review/ROUTE-INVENTORY.json",
+        "docs/owner-review/ROLE-FLOW-QA.md",
+        "docs/owner-review/PUBLIC-VISUAL-AUDIT.md",
+        "docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md",
+        "docs/owner-review/EXTERNAL-READINESS-AUDIT.md",
+        "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.md",
+        "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+        "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
+        "ops/qa-runs/2026-06-24-owner-review-external-readiness/report.md",
+        "ops/watchdog-audits/2026-06-24T15-27-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-24T15-27-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-24T15-27-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-24T15-27-raw-intake-drift.md",
+        "ops/watchdog-audits/2026-06-24T15-27-content-routing.md",
+        "ops/watchdog-audits/2026-06-24T15-27-communications-alerts.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T15-27-52-118Z-stripe-sandbox-smoke.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T15-27-52-118Z-stripe-sandbox-smoke.json"
+      ],
+      "verification": [
+        "PASS git status --short --branch clean before release-gate dry run",
+        "PASS git rev-parse HEAD and origin/codex/clean-slate-integration-20260624 both 03454ea4a9152946d21452141ed427277705fab1",
+        "PASS npm run bna:release-gate -- --json mode=dry_run ok=true head_pushed=true dirty_total=0 blockers=0 production_mutation_performed=false deploy_performed=false live_verification_performed=false",
+        "PASS npm test on pushed release-code SHA 03454ea4a9152946d21452141ed427277705fab1 (1301/1301)",
+        "PASS node --check server.js; node --check public/js/integration-setup.js; node --check scripts/smoke-owner-review-external-readiness.mjs; node --check scripts/smoke-owner-review-public-visual.mjs",
+        "PASS npm run owner-review:routes route inventory 692 routes, 35 HTML pages, 0 orphan-review rows",
+        "PASS npm run owner-review:role-flows report ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.md",
+        "PASS npm run owner-review:visual release-local passed; production deltas recorded separately",
+        "PASS npm run owner-review:assistant-runtime report ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
+        "PASS npm run owner-review:external-readiness no external writes, class/Stripe/Vimeo credential-free readiness passed with external blockers recorded",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage",
+        "PASS npm run bna:run:stale-evidence none",
+        "PASS npm run watchdog:links finding_count=0",
+        "PASS npm run watchdog:actions finding_count=0",
+        "PASS npm run watchdog:security finding_count=0",
+        "PASS npm run watchdog:content finding_count=0",
+        "PASS npm run watchdog:communications finding_count=0",
+        "PASS npm run watchdog:raw ok=true with two medium historical raw fallback findings for RAW-20260618-002 and RAW-20260617-020",
+        "PASS npm run secrets:audit tracked_paths=4586 findings=0",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run stripe:sandbox-smoke status=live_key_blocked external_write_performed=false no_real_customer_data=true no_real_funds=true",
+        "PASS node scripts/vimeo-private-smoke.mjs --json status=preview_only external_write_performed=false public_publish_performed=false smoke_ran=false"
+      ],
       "implementation_files": [
-        "package.json",
-        "scripts/",
-        "tests/",
-        "ops/watchdog-audits/"
+        "public/integration-setup.html",
+        "scripts/smoke-owner-review-external-readiness.mjs",
+        "scripts/smoke-owner-review-public-visual.mjs",
+        "tests/app-select-dropdown.test.js",
+        "tests/integration-setup-ui.test.js",
+        "tests/bna-production-closeout-gate.test.js",
+        "tests/system-truth-scripts.test.js",
+        "tests/operations-pwa-login.test.js",
+        "tests/ui-01-public-operations-shell.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "docs/owner-review/",
+        "ops/watchdog-audits/",
+        "ops/qa-runs/",
+        "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/",
+        "ops/playwright-smokes/2026-06-24-owner-review-public-visual/"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T18:09:00+03:00"
+      "updated_at": "2026-06-24T18:28:00+03:00",
+      "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
+      "commit_push": {
+        "branch": "codex/clean-slate-integration-20260624",
+        "commit": "03454ea4a9152946d21452141ed427277705fab1",
+        "pushed_to": "origin/codex/clean-slate-integration-20260624"
+      }
     },
     {
       "id": "REQ-20260624-026",
@@ -375,10 +438,10 @@
       "depends_on": [
         "REQ-20260624-025"
       ],
-      "status": "not_started",
-      "implementation_status": "waiting_for_release_gate",
+      "status": "in_progress",
+      "implementation_status": "final_pr_merge_policy_started_after_local_release_gate",
       "can_continue_without_operator": true,
-      "next_action": "Update or create the final release PR after gates pass; merge only if release policy permits.",
+      "next_action": "Inspect PR #16 mergeability/release policy, record rollback plan, then merge only if policy permits and no external blocker appears.",
       "acceptance_criteria": [
         "PR URL, PR head, merge SHA, master SHA, and merge method are recorded."
       ],
@@ -388,7 +451,7 @@
         "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T18:28:00+03:00"
     },
     {
       "id": "REQ-20260624-027",

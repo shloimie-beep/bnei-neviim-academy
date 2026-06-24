@@ -13,11 +13,14 @@ Current status: running.
   final app-visible proof remains deferred to the deploy/live-smoke requirement.
 - `REQ-20260624-024`: Done. Migration/database readiness is documented with no
   production apply.
-- `REQ-20260624-025`: In progress. Next action is the deterministic local
-  release gate against exact release candidate SHA.
+- `REQ-20260624-025`: Done. Deterministic local release gates passed on pushed
+  release-code SHA `03454ea4a9152946d21452141ed427277705fab1`.
+- `REQ-20260624-026`: In progress. Next action is final PR #16 mergeability,
+  release policy, and rollback-plan review before any merge.
 - `REQ-20260624-028`: Blocked for class backfill apply under current evidence;
   this does not block code integration.
 
 Guardrails remain active: no deploy, production DB mutation, class backfill,
-external write, send, charge, DNS change, credential rotation, or secret
-exposure unless the later release gates explicitly authorize an exact action.
+external write, send, charge, upload, publish, DNS change, credential rotation,
+or secret exposure unless the later release gates explicitly authorize an exact
+action.

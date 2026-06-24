@@ -1,6 +1,6 @@
 # Assistant Runtime Audit
-Generated: 2026-06-24T14:38:24.744Z
-Release candidate SHA: 06fd00703a1be4558f1a37e211e6b500fb525532
+Generated: 2026-06-24T15:25:40.974Z
+Release candidate SHA: 03454ea4a9152946d21452141ed427277705fab1
 Guardrail: this audit used a local no-DB Express server and static source inspection by default. It did not use external credentials, read production state, mutate a production database, deploy, send email or Telegram messages, publish, upload, charge, alter DNS, or request secret values.
 ## Summary
 - Static shared-assistant contract: PASS

@@ -87,3 +87,41 @@ Migration readiness checks:
   requirements
 - PASS no production database read, write, schema apply, or backfill was
   performed
+
+Local release-gate checks for `REQ-20260624-025`:
+
+- PASS pushed release-code SHA:
+  `03454ea4a9152946d21452141ed427277705fab1`
+- PASS `npm run bna:release-gate -- --json`: `ok=true`,
+  `mode=dry_run`, `head_pushed=true`, `dirty_total=0`, no blockers, no
+  production mutation, no deploy, and no live verification.
+- PASS `npm test` on the pushed release-code SHA (1301/1301).
+- PASS `node --check server.js`, `node --check public/js/integration-setup.js`,
+  `node --check scripts/smoke-owner-review-external-readiness.mjs`, and
+  `node --check scripts/smoke-owner-review-public-visual.mjs`.
+- PASS `npm run owner-review:routes`: 692 routes, 35 HTML pages,
+  0 orphan-review rows.
+- PASS `npm run owner-review:role-flows`.
+- PASS `npm run owner-review:visual`: `release-local` passed; current
+  production deltas are recorded separately for later deploy/live-smoke proof.
+- PASS `npm run owner-review:assistant-runtime`.
+- PASS `npm run owner-review:external-readiness`: credential-free class,
+  Stripe, and Vimeo readiness passed; real production/external actions remain
+  gated.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:source-coverage`.
+- PASS `npm run bna:run:stale-evidence`: none.
+- PASS `npm run watchdog:links`, `npm run watchdog:actions`,
+  `npm run watchdog:security`, `npm run watchdog:content`, and
+  `npm run watchdog:communications` with `finding_count=0`.
+- PASS `npm run watchdog:raw` with `ok=true`; it still reports two medium
+  historical raw fallback findings for `RAW-20260618-002` and
+  `RAW-20260617-020`.
+- PASS `npm run secrets:audit`: 4586 tracked paths, 0 findings.
+- PASS `git diff --check` with Windows line-ending warnings only.
+- PASS `npm run stripe:sandbox-smoke`: `live_key_blocked`,
+  `external_write_performed=false`, `no_real_customer_data=true`, and
+  `no_real_funds=true`.
+- PASS `node scripts/vimeo-private-smoke.mjs --json`: `preview_only`,
+  `external_write_performed=false`, `public_publish_performed=false`, and
+  `smoke_ran=false`.

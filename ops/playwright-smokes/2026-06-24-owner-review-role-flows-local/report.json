@@ -1,7 +1,7 @@
 {
-  "started_at": "2026-06-24T05:58:27.071Z",
-  "base_url": "http://127.0.0.1:52699",
-  "release_candidate_sha": "cd0d0fcf6fd5cb248c45476c54fa55d7cf7dd2ca",
+  "started_at": "2026-06-24T15:25:39.104Z",
+  "base_url": "http://127.0.0.1:58379",
+  "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
   "guardrails": {
     "external_credentials": false,
     "production_state_readback": false,
@@ -17,7 +17,7 @@
       "viewport": "desktop",
       "url": "/",
       "status": "passed",
-      "duration_ms": 2735,
+      "duration_ms": 2783,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-public-visitor.png",
       "assistant": {
         "opened": true,
@@ -105,7 +105,7 @@
       "viewport": "desktop",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1292,
+      "duration_ms": 1291,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-one-child.png",
       "assistant": {
         "opened": true,
@@ -158,7 +158,7 @@
       "viewport": "desktop",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1304,
+      "duration_ms": 1320,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-multiple-children.png",
       "assistant": {
         "opened": true,
@@ -211,7 +211,7 @@
       "viewport": "desktop",
       "url": "/student?code=QA-STUDENT",
       "status": "passed",
-      "duration_ms": 1270,
+      "duration_ms": 1245,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-student.png",
       "assistant": {
         "opened": true,
@@ -264,7 +264,7 @@
       "viewport": "desktop",
       "url": "/provider",
       "status": "passed",
-      "duration_ms": 1234,
+      "duration_ms": 1176,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-admin.png",
       "assistant": {
         "opened": true,
@@ -317,7 +317,7 @@
       "viewport": "desktop",
       "url": "/provider-participant",
       "status": "passed",
-      "duration_ms": 1169,
+      "duration_ms": 1142,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-participant.png",
       "assistant": {
         "opened": true,
@@ -380,7 +380,7 @@
       "viewport": "desktop",
       "url": "/rabbi-member",
       "status": "passed",
-      "duration_ms": 1239,
+      "duration_ms": 1213,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-one-time-member.png",
       "assistant": {
         "opened": true,
@@ -443,7 +443,7 @@
       "viewport": "desktop",
       "url": "/operations",
       "status": "passed",
-      "duration_ms": 2565,
+      "duration_ms": 2536,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-super-admin.png",
       "assistant": {
         "opened": true,
@@ -453,8 +453,8 @@
       "workspace_switch": {
         "tested": true,
         "target_workspace": "rabbi_sheller_provider",
-        "url_before": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=platform",
-        "url_after": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+        "url_before": "http://127.0.0.1:58379/operations?view=dashboard&section=overview&workspace=platform",
+        "url_after": "http://127.0.0.1:58379/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
         "active_workspace": "rabbi_sheller_provider",
         "ok": true
       },
@@ -477,7 +477,7 @@
       "viewport": "mobile",
       "url": "/",
       "status": "passed",
-      "duration_ms": 2225,
+      "duration_ms": 2278,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-public-visitor.png",
       "assistant": {
         "opened": true,
@@ -565,7 +565,7 @@
       "viewport": "mobile",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1242,
+      "duration_ms": 1269,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-one-child.png",
       "assistant": {
         "opened": true,
@@ -618,7 +618,7 @@
       "viewport": "mobile",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1288,
+      "duration_ms": 1283,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-multiple-children.png",
       "assistant": {
         "opened": true,
@@ -671,7 +671,7 @@
       "viewport": "mobile",
       "url": "/student?code=QA-STUDENT",
       "status": "passed",
-      "duration_ms": 1217,
+      "duration_ms": 1214,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-student.png",
       "assistant": {
         "opened": true,
@@ -724,7 +724,7 @@
       "viewport": "mobile",
       "url": "/provider",
       "status": "passed",
-      "duration_ms": 1177,
+      "duration_ms": 1186,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-admin.png",
       "assistant": {
         "opened": true,
@@ -777,7 +777,7 @@
       "viewport": "mobile",
       "url": "/provider-participant",
       "status": "passed",
-      "duration_ms": 1152,
+      "duration_ms": 1173,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-participant.png",
       "assistant": {
         "opened": true,
@@ -840,7 +840,7 @@
       "viewport": "mobile",
       "url": "/rabbi-member",
       "status": "passed",
-      "duration_ms": 1191,
+      "duration_ms": 1219,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-one-time-member.png",
       "assistant": {
         "opened": true,
@@ -903,7 +903,7 @@
       "viewport": "mobile",
       "url": "/operations",
       "status": "passed",
-      "duration_ms": 2516,
+      "duration_ms": 2491,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-super-admin.png",
       "assistant": {
         "opened": true,
@@ -913,8 +913,8 @@
       "workspace_switch": {
         "tested": true,
         "target_workspace": "rabbi_sheller_provider",
-        "url_before": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=platform",
-        "url_after": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+        "url_before": "http://127.0.0.1:58379/operations?view=dashboard&section=overview&workspace=platform",
+        "url_after": "http://127.0.0.1:58379/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
         "active_workspace": "rabbi_sheller_provider",
         "ok": true
       },
@@ -1028,6 +1028,6 @@
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
     "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-    "BNA Server running on 127.0.0.1:52699"
+    "BNA Server running on 127.0.0.1:58379"
   ]
 }
