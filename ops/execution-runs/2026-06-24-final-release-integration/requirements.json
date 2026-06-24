@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
-  "updated_at": "2026-06-24T18:01:00+03:00",
+  "updated_at": "2026-06-24T18:09:00+03:00",
   "git_refs": {
     "expected_branch": "codex/clean-slate-integration-20260624",
     "branch": "codex/clean-slate-integration-20260624",
@@ -289,22 +289,34 @@
       "depends_on": [
         "REQ-20260624-021"
       ],
-      "status": "in_progress",
-      "implementation_status": "migration_database_readiness_review_started",
+      "status": "done",
+      "implementation_status": "migration_readiness_review_complete_no_production_apply",
       "can_continue_without_operator": true,
-      "next_action": "Review migrations/schema readiness with backup, dry-run, rollback, transaction, tenant isolation, and deployed-code compatibility notes; do not apply production database changes without exact release-gate authorization.",
+      "next_action": "Continue to REQ-20260624-025 local release gate against exact release SHA. Do not apply production DB changes unless a later gate authorizes the exact target, backup, dry run, rollback, and readback.",
       "acceptance_criteria": [
         "Migration and rollback strategy is recorded.",
         "Only required safe migrations are applied, if any."
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "migrations/",
-        "railway-migration-*.sql"
+      "evidence": [
+        "ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md"
       ],
-      "deployment_required": true,
-      "updated_at": "2026-06-24T18:01:00+03:00"
+      "verification": [
+        "PASS active SQL candidate inventory: migrations/20260624-provider-api-usage-persistence.sql, migrations/parallel-20260624-stripe-billing-lifecycle.sql, railway-migration-2026-06-21-one-time-transcript-privacy.sql, railway-migration-2026-06-21-one-time-trial-referral-config.sql, railway-migration-2026-06-23-service-provider-studio.sql, migrations/parallel-20260619-core-001-platform-core.sql",
+        "PASS destructive marker review: provider API usage and Stripe lifecycle candidates have no destructive markers; legacy migrate-railway.sql contains DROP TABLE markers and is explicitly excluded",
+        "PASS readiness report records backup, target inventory, dry-run, apply, rollback, post-apply readback, tenant isolation, privacy, and no-secret requirements",
+        "PASS no production database read/write/schema apply/backfill/deploy/live smoke was performed"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md",
+        "migrations/20260624-provider-api-usage-persistence.sql",
+        "migrations/parallel-20260624-stripe-billing-lifecycle.sql",
+        "railway-migration-2026-06-21-one-time-transcript-privacy.sql",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "railway-migration-2026-06-23-service-provider-studio.sql",
+        "migrations/parallel-20260619-core-001-platform-core.sql"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T18:09:00+03:00"
     },
     {
       "id": "REQ-20260624-025",
@@ -326,10 +338,10 @@
         "REQ-20260624-023",
         "REQ-20260624-024"
       ],
-      "status": "not_started",
-      "implementation_status": "waiting_for_integrated_release_candidate",
+      "status": "in_progress",
+      "implementation_status": "local_release_gate_started",
       "can_continue_without_operator": true,
-      "next_action": "Run deterministic local release gates after final integration.",
+      "next_action": "Run deterministic local release gates against the exact release candidate SHA and record pass/fail/blockers.",
       "acceptance_criteria": [
         "Release SHA is recorded.",
         "Required gates pass or exact blockers are recorded."
@@ -343,7 +355,7 @@
         "ops/watchdog-audits/"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T18:09:00+03:00"
     },
     {
       "id": "REQ-20260624-026",

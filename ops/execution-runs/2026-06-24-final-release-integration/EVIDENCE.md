@@ -58,3 +58,12 @@ Route/UI/server authorization evidence:
 Summary: `REQ-20260624-023` is locally implemented and verified for the
 release candidate. Deployment/live-smoke proof remains required later under
 `REQ-20260624-027` before final app-visible closeout.
+
+Migration readiness evidence:
+
+- `ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md`
+
+Summary: `REQ-20260624-024` is complete as a readiness review. Active
+candidate migrations were inventoried, legacy `migrate-railway.sql` was
+excluded, backup/dry-run/rollback/readback gates were documented, and no
+production database mutation or schema apply was performed.

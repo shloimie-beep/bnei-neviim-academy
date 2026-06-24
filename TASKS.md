@@ -16,7 +16,8 @@ not authorize active GHL runtime paths.
   class backfill only if Prompt 04's exact safe recommendation and all recovery
   gates pass. Current status: all seven lane branches are merged and pushed
   through `7e7cae25`; shared route/UI/server authorization wiring is locally
-  verified and migration/database readiness is the active next batch. All seven expected lane branches have terminal pushed RESULT
+  verified, migration/database readiness is documented with no production
+  apply, and the local release gate is the active next batch. All seven expected lane branches have terminal pushed RESULT
   evidence: public UI `c9ba17da`, portal/auth/nav `e2aa72e5`, class/Drive
   `b4958dc0`, assistant/ramble/usage `adf4e6d8`, Stripe sandbox `6c161c50`,
   Vimeo media `f6975ab8`, and operator walkthrough `768a2ae0`. Class backfill

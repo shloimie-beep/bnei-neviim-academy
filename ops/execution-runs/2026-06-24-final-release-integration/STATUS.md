@@ -11,8 +11,10 @@ Current status: running.
 - `REQ-20260624-023`: Done locally for the release candidate. Shared
   routes/UI/server authorization wiring is implemented and locally verified;
   final app-visible proof remains deferred to the deploy/live-smoke requirement.
-- `REQ-20260624-024`: In progress. Next action is migration/database readiness
-  review without production DB mutation.
+- `REQ-20260624-024`: Done. Migration/database readiness is documented with no
+  production apply.
+- `REQ-20260624-025`: In progress. Next action is the deterministic local
+  release gate against exact release candidate SHA.
 - `REQ-20260624-028`: Blocked for class backfill apply under current evidence;
   this does not block code integration.
 

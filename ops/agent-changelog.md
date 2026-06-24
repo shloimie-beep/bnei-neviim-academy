@@ -25966,3 +25966,17 @@ private smoke preview-only with no public publish. No deploy, live smoke,
 production DB mutation, class backfill, Stripe charge, Vimeo upload/publication,
 real send, DNS change, credential change, or secret exposure was performed.
 `REQ-20260624-024` is now the active migration/database readiness batch.
+
+## 2026-06-24T18:09:00+03:00 - Final Release Migration Readiness Documented
+
+Completed `REQ-20260624-024` as a readiness review with no production database
+apply. Active migration candidates were inventoried, `migrate-railway.sql` was
+explicitly excluded because it contains legacy `DROP TABLE` markers, and the
+backup, target inventory, dry-run, apply, rollback, post-apply readback, tenant
+isolation, privacy, and no-secret gates are documented in
+`ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md`.
+
+No production database read, write, schema apply, class backfill, deploy, live
+smoke, send, charge, upload, publish, DNS change, credential change, or secret
+exposure was performed. `REQ-20260624-025` is now the active local release-gate
+batch.

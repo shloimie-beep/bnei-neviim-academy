@@ -69,3 +69,21 @@ Route/UI/server authorization wiring checks:
 - PASS `node scripts/vimeo-private-smoke.mjs --json` exited safely with
   status `preview_only`, `external_write_performed=false`, and
   `public_publish_performed=false`
+
+Migration readiness checks:
+
+- PASS active SQL candidate inventory reviewed:
+  `migrations/20260624-provider-api-usage-persistence.sql`,
+  `migrations/parallel-20260624-stripe-billing-lifecycle.sql`,
+  `railway-migration-2026-06-21-one-time-transcript-privacy.sql`,
+  `railway-migration-2026-06-21-one-time-trial-referral-config.sql`,
+  `railway-migration-2026-06-23-service-provider-studio.sql`, and
+  `migrations/parallel-20260619-core-001-platform-core.sql`
+- PASS destructive marker review: provider API usage and Stripe lifecycle
+  candidates have no destructive markers; legacy `migrate-railway.sql`
+  contains `DROP TABLE` markers and is explicitly excluded
+- PASS readiness report records backup, target inventory, dry-run, apply,
+  rollback, post-apply readback, tenant isolation, privacy, and no-secret
+  requirements
+- PASS no production database read, write, schema apply, or backfill was
+  performed
