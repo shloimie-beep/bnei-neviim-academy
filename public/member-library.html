@@ -60,6 +60,28 @@
       text-align: right;
     }
 
+    .member-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .member-nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--accent);
+      background: #fff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
     main {
       padding: 24px 0 44px;
     }
@@ -370,6 +392,10 @@
         text-align: left;
       }
 
+      .member-nav {
+        justify-content: flex-start;
+      }
+
       .access-panel {
         grid-template-columns: 1fr;
       }
@@ -389,7 +415,17 @@
   <header>
     <div class="topbar">
       <h1>One Time Member Library</h1>
-      <div class="member-meta" id="memberMeta">Access code required</div>
+      <div>
+        <nav class="member-nav" aria-label="One Time member navigation">
+          <a href="/one-time">One Time home</a>
+          <a href="/rabbi-member">Member home</a>
+          <a href="/member-library" aria-current="page">Library</a>
+          <a href="/one-time-classroom">Classroom</a>
+          <a href="/rabbi-member#support">Questions/support</a>
+          <a href="/">Return to public site</a>
+        </nav>
+        <div class="member-meta" id="memberMeta">Access code required</div>
+      </div>
     </div>
   </header>
 

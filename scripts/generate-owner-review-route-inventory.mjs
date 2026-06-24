@@ -19,6 +19,36 @@ const CUSTOMER_FACING_AUDIENCES = new Set([
   'member',
   'one time',
 ]);
+const KNOWN_ALIAS_ROUTES = new Set([
+  '/become-service-provider',
+  '/provider-signup',
+  '/provider-signup.html',
+  '/register',
+  '/one-time-member-library',
+  '/member-portal',
+  '/rabbi/member',
+  '/provider/member',
+  '/parent-login',
+  '/family',
+  '/household',
+  '/community',
+  '/providers',
+  '/parent-app',
+  '/one-time-mishnayos',
+  '/rabbi-preview',
+]);
+
+function isLocalizedRoute(route) {
+  return route === '/he' || route.startsWith('/he/');
+}
+
+function isAliasRoute(route) {
+  return route.endsWith('.html') || KNOWN_ALIAS_ROUTES.has(route);
+}
+
+function isIntentionalSharedImplementationRoute(route) {
+  return route.endsWith('/login') || route.includes('/:');
+}
 
 function readText(filePath, fallback = '') {
   try {
@@ -261,10 +291,18 @@ function collectServerRoutes(root, registryRoutes) {
       .filter(Boolean);
     if (!routeTargets.length) continue;
     const line = lineForIndex(text, match.index);
-    const nextRouteOffset = text.slice(match.index + 1).search(/\r?\napp\.(get|post|put|patch|delete|all|use)\s*\(/);
-    const snippetEnd = nextRouteOffset === -1 ? match.index + 1200 : match.index + 1 + nextRouteOffset;
+    const afterRoute = text.slice(match.index + 1);
+    const nextBoundaries = [
+      afterRoute.search(/\r?\napp\.(get|post|put|patch|delete|all|use)\s*\(/),
+      afterRoute.search(/\r?\nfunction\s+[A-Za-z0-9_$]+\s*\(/),
+    ].filter((offset) => offset >= 0);
+    const nearestBoundary = nextBoundaries.length ? Math.min(...nextBoundaries) : -1;
+    const snippetEnd = nearestBoundary === -1 ? match.index + 1200 : match.index + 1 + nearestBoundary;
     const snippet = text.slice(match.index, snippetEnd);
-    const implementation = sendFileImplementations(snippet);
+    let implementation = sendFileImplementations(snippet);
+    if (!implementation.length && /sendProviderJoinPage/.test(snippet)) {
+      implementation = ['public/providers-join.html'];
+    }
     const redirectTargets = [];
     const redirectPattern = /res\.redirect\((?:\d+,\s*)?[`'"]([^`'"]+)[`'"]/g;
     let redirectMatch;
@@ -622,9 +660,43 @@ export function buildOwnerReviewRouteInventory({
     };
   });
 
+  const rowsByImplementation = new Map();
+  for (const row of rows) {
+    for (const impl of row.Implementation.split('|').map((value) => value.trim()).filter(Boolean)) {
+      if (!impl.endsWith('.html')) continue;
+      if (!rowsByImplementation.has(impl)) rowsByImplementation.set(impl, []);
+      rowsByImplementation.get(impl).push(row);
+    }
+  }
+  for (const row of rows) {
+    if (row.Status !== 'orphan-review' && !isAliasRoute(row['Canonical URL'])) continue;
+    const implementationRows = row.Implementation
+      .split('|')
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .flatMap((impl) => rowsByImplementation.get(impl) || [])
+      .filter((candidate) => candidate !== row);
+    const primary = implementationRows.find((candidate) => (
+      candidate.Status === 'keep' &&
+      !candidate['Canonical URL'].endsWith('.html') &&
+      !candidate['Canonical URL'].includes('?')
+    )) || implementationRows.find((candidate) => (
+      candidate['Canonical URL'] !== row['Canonical URL'] &&
+      !candidate['Canonical URL'].endsWith('.html') &&
+      !candidate['Canonical URL'].includes('?')
+    ));
+    if (!primary) continue;
+    row.Status = 'alias';
+    row['Review state'] = 'ready';
+    if (!row['Inbound links']) row['Entry point'] = `Alias/alternate route for ${primary['Canonical URL']}`;
+  }
+
   const implementationGroups = new Map();
   for (const row of rows) {
     if (!row.Implementation || row.Implementation.includes('server.js')) continue;
+    if (['alias', 'internal-only', 'redirect'].includes(row.Status)) continue;
+    if (isLocalizedRoute(row['Canonical URL'])) continue;
+    if (isIntentionalSharedImplementationRoute(row['Canonical URL'])) continue;
     for (const impl of row.Implementation.split('|').map((value) => value.trim()).filter(Boolean)) {
       if (!impl.endsWith('.html')) continue;
       if (!implementationGroups.has(impl)) implementationGroups.set(impl, []);

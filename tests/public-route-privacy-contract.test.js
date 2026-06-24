@@ -84,7 +84,7 @@ test('parent login public entry avoids silent private-dashboard redirect', () =>
 test('portal topbars expose only safe public navigation destinations', () => {
   assert.match(parentHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/parents"[\s\S]*href="\/student\/login"/);
   assert.match(studentHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/parents"[\s\S]*href="\/parent\/login"/);
-  assert.match(providerHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/service-providers"[\s\S]*href="\/become-service-provider\?onboard=provider"/);
+  assert.match(providerHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/service-providers"[\s\S]*href="\/providers\/join\?onboard=provider"/);
   assert.doesNotMatch(parentHtml, /href="\/operations"/);
   assert.doesNotMatch(studentHtml, /href="\/operations"/);
   assert.doesNotMatch(providerHtml, /href="\/operations"/);
@@ -106,6 +106,7 @@ test('repeatable public route privacy smoke covers the Phase 1 unauthenticated r
     '/provider',
     '/provider/login',
     '/service-providers',
+    '/providers/join',
     '/become-service-provider',
     '/member',
     '/member-portal',

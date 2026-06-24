@@ -79,7 +79,7 @@ test('mobile homepage has compact role-aware nav and smaller hero spots badge', 
   assert.match(home, /data-i18n="navParentLogin"[^>]*\/parent\/login/);
   assert.match(home, /data-i18n="navStudentLogin"[^>]*\/student\/login/);
   assert.match(home, /data-i18n="navProviderAccess"[^>]*\/provider/);
-  assert.match(home, /data-i18n="navProviderJoin"[^>]*\/become-service-provider/);
+  assert.match(home, /data-i18n="navProviderJoin"[^>]*\/providers\/join/);
   assert.match(home, /href="\/signup\.html" class="nav-btn nav-btn-signup" data-i18n="navSignup"/);
   assert.match(home, /navProviderAccess: "Rabbi \/ Provider Login"/);
   assert.match(home, /background-position: 48% 50%/);

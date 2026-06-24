@@ -71,7 +71,7 @@ test('UI-01 homepage positions schools, families, providers, and AI overhead cle
   }
   assert.match(home, /href="\/school" data-i18n="ecosystemParentCta">Explore schools/);
   assert.match(home, /href="\/parents" data-i18n="ecosystemFamilyCta">Explore families/);
-  assert.match(home, /href="\/become-service-provider\?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list/);
+  assert.match(home, /href="\/providers\/join\?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list/);
   assert.match(home, /class="ecosystem-media"[\s\S]*?\/images\/learning-moments\/forest-learning-01-web\.jpg/);
 });
 

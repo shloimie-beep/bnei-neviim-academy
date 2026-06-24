@@ -18,6 +18,7 @@ const PAGE_ROUTES = [
   '/provider',
   '/provider/login',
   '/service-providers',
+  '/providers/join',
   '/become-service-provider',
   '/member',
   '/member-portal',

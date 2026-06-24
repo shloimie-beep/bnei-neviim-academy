@@ -1,19 +1,19 @@
 # Navigation Graph
 
-Generated at 2026-06-24T03:38:45.222Z.
+Generated at 2026-06-24T03:54:28.813Z.
 
 Edges are discovered from literal anchors, JavaScript navigation, form actions, redirects, manifests, service-worker cache entries, and fetch/API calls.
 
 | From | To | Kind | Source |
 | --- | --- | --- | --- |
 | / | /api/torah-learning/public-summary | fetch | public/index.html |
-| / | /become-service-provider | literal-a-href | public/index.html |
-| / | /become-service-provider | literal-a-href | public/index.html |
 | / | /data/learning-moments.json | fetch | public/index.html |
 | / | /he | literal-a-href | public/index.html |
 | / | /parent/login | literal-a-href | public/index.html |
 | / | /parents | literal-a-href | public/index.html |
 | / | /provider | literal-a-href | public/index.html |
+| / | /providers/join | literal-a-href | public/index.html |
+| / | /providers/join | literal-a-href | public/index.html |
 | / | /school | literal-a-href | public/index.html |
 | / | /signup.html | literal-a-href | public/index.html |
 | / | /signup.html | literal-a-href | public/index.html |
@@ -23,8 +23,14 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /assistant-setup.html | /api/assistant/message | fetch | public/assistant-setup.html |
 | /documents/parent-handbook.html | / | literal-a-href | public/documents/parent-handbook.html |
 | /documents/parent-handbook.html | /signup.html | literal-a-href | public/documents/parent-handbook.html |
+| /member-library.html | / | literal-a-href | public/member-library.html |
 | /member-library.html | /api/member-library | fetch | public/member-library.html |
+| /member-library.html | /member-library | literal-a-href | public/member-library.html |
+| /member-library.html | /one-time | literal-a-href | public/member-library.html |
 | /member-library.html | /one-time-classroom | literal-a-href | public/member-library.html |
+| /member-library.html | /one-time-classroom | literal-a-href | public/member-library.html |
+| /member-library.html | /rabbi-member | literal-a-href | public/member-library.html |
+| /member-library.html | /rabbi-member | literal-a-href | public/member-library.html |
 | /one-time | /api/one-time/campaign | fetch | public/one-time/index.html |
 | /one-time | /api/one-time/interest | fetch | public/one-time/index.html |
 | /one-time | /one-time | literal-a-href | public/one-time/index.html |
@@ -32,9 +38,13 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /one-time | /one-time/member-login | literal-a-href | public/one-time/index.html |
 | /one-time | /one-time/privacy.html | literal-a-href | public/one-time/index.html |
 | /one-time | /one-time/terms.html | literal-a-href | public/one-time/index.html |
+| /one-time-classroom.html | / | literal-a-href | public/one-time-classroom.html |
 | /one-time-classroom.html | /api/one-time-classroom/threads/:id/responses | fetch | public/one-time-classroom.html |
+| /one-time-classroom.html | /member-library | literal-a-href | public/one-time-classroom.html |
 | /one-time-classroom.html | /one-time | literal-a-href | public/one-time-classroom.html |
-| /one-time-classroom.html | /provider.html | literal-a-href | public/one-time-classroom.html |
+| /one-time-classroom.html | /one-time-classroom | literal-a-href | public/one-time-classroom.html |
+| /one-time-classroom.html | /rabbi-member | literal-a-href | public/one-time-classroom.html |
+| /one-time-classroom.html | /rabbi-member | literal-a-href | public/one-time-classroom.html |
 | /one-time-email-review.html | /api/one-time-review/email-templates | fetch | public/one-time-email-review.html |
 | /one-time-email-review.html | /one-time | literal-a-href | public/one-time-email-review.html |
 | /one-time-email-review.html | /one-time-classroom.html | literal-a-href | public/one-time-email-review.html |
@@ -75,21 +85,35 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /parent.html | /parents | literal-a-href | public/parent.html |
 | /parent.html | /student.html | literal-a-href | public/parent.html |
 | /parent.html | /student/login | literal-a-href | public/parent.html |
+| /parents.html | /documents/parent-handbook | literal-a-href | public/parents.html |
 | /parents.html | /parent/login | literal-a-href | public/parents.html |
 | /parents.html | /parent/login | literal-a-href | public/parents.html |
+| /provider-participant.html | / | literal-a-href | public/provider-participant.html |
+| /provider-participant.html | /member-library | literal-a-href | public/provider-participant.html |
+| /provider-participant.html | /one-time | literal-a-href | public/provider-participant.html |
+| /provider-participant.html | /provider | literal-a-href | public/provider-participant.html |
+| /provider-participant.html | /rabbi-member | literal-a-href | public/provider-participant.html |
 | /provider-profile.html | /providers/category/:categorySlug | literal-a-href | public/provider-profile.html |
 | /provider-profile.html | /service-providers | literal-a-href | public/provider-profile.html |
 | /provider.html | / | literal-a-href | public/provider.html |
 | /provider.html | /api/bna/one-time/view-as-rabbi/end | fetch | public/provider.html |
-| /provider.html | /become-service-provider | literal-a-href | public/provider.html |
 | /provider.html | /one-time | literal-a-href | public/provider.html |
 | /provider.html | /one-time-classroom.html | literal-a-href | public/provider.html |
 | /provider.html | /parent.html | literal-a-href | public/provider.html |
 | /provider.html | /provider | literal-a-href | public/provider.html |
+| /provider.html | /providers/join | literal-a-href | public/provider.html |
 | /provider.html | /service-providers | literal-a-href | public/provider.html |
 | /provider.html | /student.html | literal-a-href | public/provider.html |
 | /providers-join.html | /api/provider-signup | fetch | public/providers-join.html |
+| /rabbi-member.html | / | literal-a-href | public/rabbi-member.html |
+| /rabbi-member.html | /member-library | literal-a-href | public/rabbi-member.html |
+| /rabbi-member.html | /one-time | literal-a-href | public/rabbi-member.html |
+| /rabbi-member.html | /one-time-classroom | literal-a-href | public/rabbi-member.html |
+| /rabbi-member.html | /rabbi-member | literal-a-href | public/rabbi-member.html |
 | /rabbi.html | / | literal-a-href | public/rabbi.html |
+| /rabbi.html | /member-library | literal-a-href | public/rabbi.html |
+| /rabbi.html | /one-time-classroom | literal-a-href | public/rabbi.html |
+| /rabbi.html | /provider-participant | literal-a-href | public/rabbi.html |
 | /rabbi.html | /rabbi | literal-a-href | public/rabbi.html |
 | /rabbi.html | /rabbi-member | literal-a-href | public/rabbi.html |
 | /rabbi.html | /rabbi-member | literal-a-href | public/rabbi.html |
@@ -99,9 +123,9 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /service-providers.html | /api/providers | fetch | public/service-providers.html |
 | /service-providers.html | /parent/login | literal-a-href | public/service-providers.html |
 | /service-providers.html | /parent/login | literal-a-href | public/service-providers.html |
-| /service-providers.html | /provider-signup | literal-a-href | public/service-providers.html |
 | /service-providers.html | /providers/:slug | literal-a-href | public/service-providers.html |
 | /service-providers.html | /providers/category/:categorySlug | literal-a-href | public/service-providers.html |
+| /service-providers.html | /providers/join | literal-a-href | public/service-providers.html |
 | /signup-he.html | /api/assistant/message | fetch | public/signup-he.html |
 | /signup-he.html | /api/submit | fetch | public/signup-he.html |
 | /signup-he.html | /signup-he.html | literal-a-href | public/signup-he.html |
@@ -138,8 +162,6 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | public/js/bna-pages.js | /he/blog | js-generated-route-string | public/js/bna-pages.js |
 | public/js/bna-pages.js | /he/blog/:slug | js-generated-route-string | public/js/bna-pages.js |
 | public/js/bna-pages.js | /he/faq | js-generated-route-string | public/js/bna-pages.js |
-| public/js/bna-site-nav.js | /become-service-provider | js-generated-route-string | public/js/bna-site-nav.js |
-| public/js/bna-site-nav.js | /become-service-provider | literal-a-href | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /blog | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /blog | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /blog | js-generated-route-string | public/js/bna-site-nav.js |
@@ -177,9 +199,12 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | public/js/bna-site-nav.js | /he/service-providers | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /index.html | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /index.html | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /one-time | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /parent/login | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /parents | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /provider | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /providers/join | js-generated-route-string | public/js/bna-site-nav.js |
+| public/js/bna-site-nav.js | /providers/join | literal-a-href | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /register | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /school | js-generated-route-string | public/js/bna-site-nav.js |
 | public/js/bna-site-nav.js | /school | js-generated-route-string | public/js/bna-site-nav.js |

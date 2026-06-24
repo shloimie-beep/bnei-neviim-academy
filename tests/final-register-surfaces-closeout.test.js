@@ -26,11 +26,11 @@ test('uploaded recordings and freeform rambles share canonical raw-first intake'
 
 test('public service-provider flow points to provider index, join flow, portal, classroom, and plans', () => {
   assert.match(siteNav, /serviceProvidersUrl/);
-  assert.match(siteNav, /\/become-service-provider\?onboard=provider/);
+  assert.match(siteNav, /\/providers\/join\?onboard=provider/);
   assert.match(home, /Service Provider Network/);
-  assert.match(home, /href="\/become-service-provider\?onboard=provider"/);
+  assert.match(home, /href="\/providers\/join\?onboard=provider"/);
   assert.match(provider, /href="\/service-providers"/);
-  assert.match(provider, /href="\/become-service-provider\?onboard=provider"/);
+  assert.match(provider, /href="\/providers\/join\?onboard=provider"/);
   assert.match(provider, /data-provider-section="class_setup"/);
   assert.match(provider, /data-provider-natural-language-classroom/);
   assert.match(provider, /billing_period/);

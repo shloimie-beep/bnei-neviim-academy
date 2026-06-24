@@ -88,6 +88,26 @@
             white-space: nowrap;
         }
 
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .top-actions a {
+            min-height: 34px;
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            background: #fff;
+            color: var(--brand);
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 900;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
         .shell {
             width: min(1040px, calc(100% - 28px));
             margin: 0 auto;
@@ -270,7 +290,14 @@
                 <span>Participant portal</span>
             </div>
         </div>
-        <span class="chip">Participant, not BNA school</span>
+        <div class="top-actions" aria-label="Participant navigation">
+            <a href="/one-time">One Time home</a>
+            <a href="/provider">Provider login</a>
+            <a href="/rabbi-member">Member home</a>
+            <a href="/member-library">Library</a>
+            <a href="/">Return to public site</a>
+            <span class="chip">Participant, not BNA school</span>
+        </div>
     </header>
 
     <main class="shell">
