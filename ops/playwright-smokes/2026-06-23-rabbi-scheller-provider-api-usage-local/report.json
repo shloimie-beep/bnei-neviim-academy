@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-06-24T12:07:31.456Z",
+  "generated_at": "2026-06-24T12:11:16.408Z",
   "target": "/provider?api_usage_preview=1&section=api_usage",
   "fixture": "workspace-scoped Rabbi Elie Scheller provider session; no database or production writes",
   "results": [

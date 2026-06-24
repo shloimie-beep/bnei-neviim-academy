@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Learn Mishnayos Live with Rabbi Elie Scheller</title>
-  <meta name="description" content="Live shiurim, daily accountability, practical worksheets, and direct interaction with Rabbi Elie Scheller from anywhere in the world.">
+  <title>Learn Mishnayos Live with Rabbi Eli Scheller</title>
+  <meta name="description" content="Live shiurim, daily accountability, practical worksheets, and direct interaction with Rabbi Eli Scheller from anywhere in the world.">
   <meta name="robots" content="noindex, nofollow">
-  <meta property="og:title" content="Learn Mishnayos Live with Rabbi Elie Scheller">
+  <meta property="og:title" content="Learn Mishnayos Live with Rabbi Eli Scheller">
   <meta property="og:description" content="Start with 30 days free, then $67 USD per month after trial when live checkout is approved.">
   <meta property="og:image" content="/images/one-time/social/one-time-og-20260622.jpg">
   <meta property="og:type" content="website">
@@ -293,6 +293,34 @@
       gap: 26px;
       align-items: center;
     }
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+    .media-card {
+      overflow: hidden;
+      border: 1px solid var(--ot-line);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+    }
+    .media-card img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
+    .media-card div { padding: 14px; }
+    .step-number {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #101010;
+      background: var(--ot-yellow);
+      font-weight: 860;
+    }
     .portrait-frame {
       overflow: hidden;
       border: 1px solid var(--ot-line);
@@ -377,6 +405,7 @@
           var(--ot-black);
       }
       .grid.three, .grid.two { grid-template-columns: 1fr; }
+      .media-grid { grid-template-columns: 1fr; }
       .logo-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .portrait-frame img { height: 420px; }
     }
@@ -412,7 +441,8 @@
       <nav class="nav" aria-label="One Time navigation">
         <a href="#watch-rabbi">Watch</a>
         <a href="#what-you-get">Program</a>
-        <a href="#worldwide">Worldwide</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#faq">FAQ</a>
         <a href="#signup">Start Free</a>
         <a href="/rabbi-member">Member Login</a>
       </nav>
@@ -424,8 +454,8 @@
       <div class="wrap hero-inner">
         <div>
           <p class="eyebrow">Worldwide Live Mishnayos</p>
-          <h1>Learn Mishnayos Live with Rabbi Elie Scheller</h1>
-          <p class="hero-copy">Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - wherever you live.</p>
+          <h1>Learn Mishnayos Live with Rabbi Eli Scheller</h1>
+          <p class="hero-copy">Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - so boys can finish Mishnayos, love learning Torah, and keep going wherever they live.</p>
           <div class="button-row">
             <a class="button primary" href="#signup">START 30 DAYS FREE</a>
             <a class="button ghost" href="#watch-rabbi">WATCH RABBI SCHELLER</a>
@@ -435,12 +465,12 @@
           <div class="video-frame">
             <iframe
               src="https://player.vimeo.com/video/1158542993?h=daa31d3417"
-              title="Rabbi Elie Scheller One Time promo"
+              title="Rabbi Eli Scheller One Time promo"
               loading="eager"
               allow="fullscreen; picture-in-picture"
               allowfullscreen></iframe>
           </div>
-          <div class="video-note">Promo video ID 1158542993. The longer Pesachim lesson is reserved for the member classroom.</div>
+          <div class="video-note">Watch a short welcome from Rabbi Scheller, then start the trial when you are ready.</div>
         </div>
       </div>
     </section>
@@ -469,12 +499,45 @@
       </div>
     </section>
 
+    <section class="section" id="program-preview">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">Inside The Program</p>
+          <h2>Live learning, review, and follow-through in one simple rhythm.</h2>
+          <p>The teaching experience stays focused on Rabbi Scheller, the live class, and the follow-up that helps students keep learning between shiurim.</p>
+        </div>
+        <div class="media-grid">
+          <article class="media-card">
+            <img src="/images/one-time/teaching/promo-stage-still-01.webp" alt="Rabbi Scheller teaching from the One Time stage" loading="lazy">
+            <div>
+              <h3>Live Class</h3>
+              <p>Join the shiur live and learn with the structure of a real class.</p>
+            </div>
+          </article>
+          <article class="media-card">
+            <img src="/images/one-time/teaching/promo-stage-still-02.webp" alt="Rabbi Scheller during a teaching moment" loading="lazy">
+            <div>
+              <h3>Clear Review</h3>
+              <p>Rewatch the lesson and review the Mishnayos with practical worksheets.</p>
+            </div>
+          </article>
+          <article class="media-card">
+            <img src="/images/one-time/teaching/promo-stage-still-03.webp" alt="One Time teaching setup with Rabbi Scheller" loading="lazy">
+            <div>
+              <h3>Steady Progress</h3>
+              <p>Keep the momentum going between shiurim with a visible learning path.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section" id="worldwide">
       <div class="wrap proof-strip">
         <div>
           <p class="eyebrow">Across The Jewish World</p>
           <h2>A shiur built for families in many communities.</h2>
-          <p>New location and crowd assets are organized in the private asset library for rights review. Until consent is clear, the public page uses only approved existing One Time visuals.</p>
+          <p>One live class gives families in different communities a steady way to learn, review, and stay connected to Rabbi Scheller. Media references are shown as public references only and do not imply sponsorship.</p>
         </div>
         <div class="logo-row" aria-label="Media and platform references">
           <div class="logo-tile"><img src="/images/one-time/press/torahanytime-logo.png" alt="TorahAnytime"></div>
@@ -485,16 +548,43 @@
       </div>
     </section>
 
+    <section class="section alt" id="how-it-works">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">How It Works</p>
+          <h2>Three steps that keep the learning moving.</h2>
+          <p>A simple weekly rhythm helps the class feel clear for students and easy for parents to follow.</p>
+        </div>
+        <div class="grid three">
+          <article class="tile">
+            <div class="step-number" aria-hidden="true">1</div>
+            <h3>Join the live shiur</h3>
+            <p>Students come into the live class and learn Mishnayos with Rabbi Scheller.</p>
+          </article>
+          <article class="tile">
+            <div class="step-number" aria-hidden="true">2</div>
+            <h3>Review the lesson</h3>
+            <p>The video library and worksheets make it easier to review after class.</p>
+          </article>
+          <article class="tile">
+            <div class="step-number" aria-hidden="true">3</div>
+            <h3>Keep building</h3>
+            <p>Accountability and family-visible progress help students keep going.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section class="section alt">
       <div class="wrap feature-band">
         <div>
-          <p class="eyebrow">Rabbi Elie Scheller</p>
+          <p class="eyebrow">Rabbi Eli Scheller</p>
           <h2>Warm, clear teaching that keeps boys connected to Mishnayos.</h2>
-          <p>The One Time experience is centered on the Rabbi, the live class, and the follow-through families need after each shiur.</p>
-          <p><strong>$67 USD per month after a 30-day free trial</strong>, subject to final live Stripe configuration and launch approval.</p>
+          <p>Clear Mishnayos learning, steady accountability, practical resources, and a live connection to the Rabbi.</p>
+          <p><strong>$67 USD per month after a 30-day free trial.</strong></p>
         </div>
         <div class="portrait-frame">
-          <img src="/images/one-time/brand/onetime-hero-vertical.webp" alt="Rabbi Elie Scheller">
+          <img src="/images/one-time/brand/onetime-hero-vertical.webp" alt="Rabbi Eli Scheller">
         </div>
       </div>
     </section>
@@ -504,12 +594,12 @@
         <div class="section-head">
           <p class="eyebrow">Member Classroom</p>
           <h2>Watch the lesson inside the site.</h2>
-          <p>The member classroom embeds the Pesachim Perek 10 sample lesson with video ID 1178363755. It does not send students to a raw external page as the primary path.</p>
+          <p>Members can rewatch the shiur, open worksheets, and keep class resources together in the One Time classroom.</p>
         </div>
         <div class="grid three">
           <article class="tile">
             <h3>Class Video</h3>
-            <p>Embedded Vimeo lesson playback, with fallback link only for recovery.</p>
+            <p>The lesson plays in the classroom so students can review without losing the flow.</p>
           </article>
           <article class="tile">
             <h3>Worksheets</h3>
@@ -517,7 +607,34 @@
           </article>
           <article class="tile">
             <h3>Questions</h3>
-            <p>Private questions and Rabbi-reviewed replies stay scoped to One Time.</p>
+            <p>Students and parents have a clear place to ask class-related questions.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section alt" id="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <p class="eyebrow">FAQ</p>
+          <h2>Quick answers before you start.</h2>
+        </div>
+        <div class="grid two">
+          <article class="tile">
+            <h3>Who is this for?</h3>
+            <p>Families who want a live Mishnayos class, steady review, and a warm connection to Rabbi Scheller.</p>
+          </article>
+          <article class="tile">
+            <h3>What happens after I sign up?</h3>
+            <p>The One Time team follows up with the next steps for the trial, class access, and schedule details.</p>
+          </article>
+          <article class="tile">
+            <h3>Can my child review missed classes?</h3>
+            <p>Yes. The member classroom is built around replay videos, worksheets, and review resources.</p>
+          </article>
+          <article class="tile">
+            <h3>What is the monthly price?</h3>
+            <p>The intended membership is $67 USD per month after the 30-day free trial.</p>
           </article>
         </div>
       </div>
@@ -528,7 +645,7 @@
         <div>
           <p class="eyebrow">Start Free</p>
           <h2>Start with 30 days free.</h2>
-          <p>After the trial, the intended membership is $67 USD per month. The campaign deadline is server-backed and will not reset on refresh.</p>
+          <p>Leave your details and the One Time team will help you start the free trial and get the right class information.</p>
         </div>
         <form id="interestForm" class="panel form-grid">
           <div class="field-pair">
@@ -562,7 +679,7 @@
           </label>
           <label class="checkbox-label">
             <input name="consent" type="checkbox" value="yes" required>
-            <span>I agree to be contacted about One Time Mishnayos and understand that live checkout, charges, and emails require approved launch configuration.</span>
+            <span>I agree to be contacted about One Time Mishnayos and the 30-day free trial.</span>
           </label>
           <button class="button primary" type="submit">START 30 DAYS FREE</button>
           <p class="form-status" id="interestStatus" aria-live="polite"></p>
@@ -613,7 +730,7 @@
         const campaign = data.campaign || {};
         campaignHeadline.textContent = campaign.headline || '30 DAYS TO JOIN - START WITH 30 DAYS FREE';
         if (!campaign.deadline_configured) {
-          campaignCountdown.textContent = 'Campaign deadline pending launch approval';
+          campaignCountdown.textContent = 'Enrollment deadline will be posted before launch';
           return;
         }
         campaignDeadlineMs = Date.parse(campaign.deadline_at);
@@ -651,7 +768,7 @@
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error || 'Could not save your request');
-        status.textContent = data.message || 'Your request was saved. No charge or external send was performed.';
+        status.textContent = data.message || 'Your request was saved. We will follow up with next steps.';
         form.reset();
       } catch (error) {
         status.textContent = error.message || 'Could not save your request.';

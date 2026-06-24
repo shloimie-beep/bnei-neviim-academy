@@ -10185,7 +10185,7 @@ function oneTimeViewAsSessionView(payload, req) {
   const review = oneTimeSharedReviewDataForRequest(req);
   return {
     mode: 'view_as_rabbi',
-    banner: 'You are viewing One Time as Rabbi Elie Scheller',
+    banner: 'You are viewing One Time as Rabbi Eli Scheller',
     read_only: true,
     writes_disabled: true,
     external_sends_disabled: true,
@@ -10273,7 +10273,7 @@ app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
     target: {
       id: 'TEST-ONETIME-PROVIDER-RABBI',
       role: 'workspace_owner',
-      display_name: 'Rabbi Elie Scheller',
+      display_name: 'Rabbi Eli Scheller',
     },
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',

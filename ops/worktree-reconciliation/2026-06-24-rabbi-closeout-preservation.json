@@ -1,0 +1,162 @@
+{
+  "generated_date": "2026-06-24",
+  "source_worktree": "C:/Users/User/Documents/Codex/2026-06-23/service-provider-studio-integration",
+  "source_branch": "codex/service-provider-studio-integration-20260623",
+  "source_head_before_preservation": "a9528b2d9467174d76d4c25bfb028f9308f24b4f",
+  "preservation_branch": "codex/preserve-rabbi-closeout-20260624",
+  "raw_source": "RAW-20260623-002",
+  "control_source": "RAW-20260624-002",
+  "requirement_id": "REQ-20260624-013",
+  "external_writes": false,
+  "production_deploy_attempted": false,
+  "summary": "Unique local Rabbi Scheller / One Time closeout work preserved for later clean integration.",
+  "files_to_preserve": [
+    {
+      "path": "config/service-provider-sites/one-time.json",
+      "status": "preserve",
+      "reason": "Normalizes Rabbi Scheller/One Time provider copy and login-facing metadata."
+    },
+    {
+      "path": "ops/agent-changelog.md",
+      "status": "preserve",
+      "reason": "Records local QA and closeout evidence for the Rabbi workspace/badge work."
+    },
+    {
+      "path": "ops/agent-task-ledger.jsonl",
+      "status": "preserve",
+      "reason": "Adds machine-readable task trail records 1304 and 1305."
+    },
+    {
+      "path": "public/css/one-time-shared-review.css",
+      "status": "preserve",
+      "reason": "Adds provider workspace/sidebar/review styling needed by the local closeout."
+    },
+    {
+      "path": "public/one-time-classroom.html",
+      "status": "preserve",
+      "reason": "Updates classroom review copy/scope for Rabbi Scheller."
+    },
+    {
+      "path": "public/one-time-email-review.html",
+      "status": "preserve",
+      "reason": "Updates email review copy/scope for Rabbi Scheller."
+    },
+    {
+      "path": "public/one-time/index.html",
+      "status": "preserve",
+      "reason": "Updates public funnel copy and review-safe messaging."
+    },
+    {
+      "path": "public/parent.html",
+      "status": "preserve",
+      "reason": "Updates parent review copy and One Time scope boundaries."
+    },
+    {
+      "path": "public/provider.html",
+      "status": "preserve",
+      "reason": "Adds provider workspace modules and read-only Rabbi view copy."
+    },
+    {
+      "path": "public/student.html",
+      "status": "preserve",
+      "reason": "Adds One Time student boundary copy, badges/rewards scope, and No bot / no BNA goals guardrail."
+    },
+    {
+      "path": "server.js",
+      "status": "preserve",
+      "reason": "Wires shared review data response fields used by the updated review surfaces."
+    },
+    {
+      "path": "src/platform/instances/one-time-shared-review-data.js",
+      "status": "preserve",
+      "reason": "Adds workspace users, login access, CRM, content, automations, settings, student boundary, and badge system data."
+    },
+    {
+      "path": "tasks-pending/2026-06-22-one-time-assets-funnel-vimeo-email-stripe-view-as-rabbi.md",
+      "status": "preserve",
+      "reason": "Carries final evidence/continuation state for the local closeout."
+    },
+    {
+      "path": "tests/one-time-focused-landing.test.js",
+      "status": "preserve",
+      "reason": "Updates landing test expectations for current One Time copy."
+    },
+    {
+      "path": "tests/one-time-product-system.test.js",
+      "status": "preserve",
+      "reason": "Updates product contract expectations for current Rabbi/One Time model."
+    },
+    {
+      "path": "tests/one-time-shared-review-branding.test.js",
+      "status": "preserve",
+      "reason": "Adds coverage for workspace/badge/student-boundary review data."
+    },
+    {
+      "path": "raw-input/RAW-20260623-002-one-time-rabbi-workspace-student-scope-badges.md",
+      "status": "preserve",
+      "reason": "Raw provenance for the local closeout bundle."
+    },
+    {
+      "path": "ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.md",
+      "status": "preserve",
+      "reason": "Human-readable preservation audit."
+    },
+    {
+      "path": "ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.json",
+      "status": "preserve",
+      "reason": "Machine-readable preservation audit."
+    }
+  ],
+  "duplicate_review": [
+    {
+      "source": "PR #14",
+      "head": "f9625e8c15e0a63a272582e839bf42b100cd6714",
+      "finding": "Includes PR #12/#13 history and owner-review/navigation integration work.",
+      "decision": "Not a duplicate of this local closeout; merge later in clean integration branch."
+    },
+    {
+      "source": "PR #15",
+      "head": "1ab57eac802ef172a5e96651dabc203d3420cbd9",
+      "finding": "Covers Rabbi Scheller auth/navigation and deployment evidence; Railway metadata only proves deploy of 8f8b0b45.",
+      "decision": "Not a duplicate of this local closeout; merge later and keep PR #15 deploy evidence distinct from local UI/data/test work."
+    }
+  ],
+  "validation_before_preservation": [
+    {
+      "command": "node --test tests/one-time-focused-landing.test.js tests/one-time-shared-review-branding.test.js tests/one-time-product-system.test.js tests/parent-student-polish-contract.test.js tests/portal-toolbar-overview-ux.test.js",
+      "result": "passed",
+      "tests": "20/20"
+    },
+    {
+      "command": "node --test tests/one-time-review-only-server.test.js tests/one-time-external-user-portal.test.js",
+      "result": "passed",
+      "tests": "37/37"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "npm run secrets:audit",
+      "result": "passed"
+    },
+    {
+      "command": "JSON parse for config/service-provider-sites/one-time.json",
+      "result": "passed"
+    },
+    {
+      "command": "JSONL parse for ops/agent-task-ledger.jsonl",
+      "result": "passed",
+      "records": 1305
+    }
+  ],
+  "required_before_commit": [
+    "switch to codex/preserve-rabbi-closeout-20260624",
+    "stage only listed preservation files",
+    "git diff --cached --check",
+    "staged JSON and JSONL validation",
+    "staged path leak scan",
+    "npm run secrets:audit",
+    "commit and push preservation branch"
+  ]
+}
