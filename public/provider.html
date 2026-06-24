@@ -451,6 +451,31 @@
                 <div class="overview-grid" id="providerOverview"></div>
             </section>
 
+            <section class="panel provider-section" data-provider-section="users">
+                <h2>Workspace Users</h2>
+                <div id="oneTimeUsers" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="crm">
+                <h2>CRM</h2>
+                <div id="oneTimeCrm" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="content">
+                <h2>Content</h2>
+                <div id="oneTimeContent" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="automations">
+                <h2>Automations</h2>
+                <div id="oneTimeAutomations" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="badges">
+                <h2>Badges and Rewards</h2>
+                <div id="oneTimeBadges" class="service-list"></div>
+            </section>
+
             <div class="grid provider-section" data-provider-section="profile">
                 <section class="panel">
                     <h2>Profile</h2>
@@ -779,7 +804,7 @@
             }
             banner.innerHTML = `
                 <strong>VIEWING AS RABBI - READ ONLY</strong>
-                <span>${escapeHtml(session?.banner || 'You are viewing One Time as Rabbi Elie Scheller')}</span>
+                <span>${escapeHtml(session?.banner || 'You are viewing One Time as Rabbi Eli Scheller')}</span>
                 <button type="button" id="oneTimeExitViewAs">Exit view</button>
             `;
             document.getElementById('oneTimeExitViewAs')?.addEventListener('click', async () => {
@@ -902,13 +927,19 @@
         function providerSections() {
             if (oneTimeReviewMode) {
                 return [
-                    { id: 'overview', label: 'Overview' },
-                    { id: 'communications', label: 'Communications' },
-                    { id: 'class_setup', label: 'Live Class' },
-                    { id: 'class_media', label: 'Course/Library' },
-                    { id: 'commercial', label: 'Payments/Trial' },
-                    { id: 'integrations', label: 'Integrations' },
-                    { id: 'activity', label: 'Support/Activity' },
+                    { id: 'overview', label: 'Dashboard', group: 'Workspace' },
+                    { id: 'users', label: 'Users', group: 'Workspace' },
+                    { id: 'crm', label: 'CRM', group: 'Growth' },
+                    { id: 'content', label: 'Content', group: 'Growth' },
+                    { id: 'automations', label: 'Automations', group: 'Operations' },
+                    { id: 'badges', label: 'Badges', group: 'Operations' },
+                    { id: 'communications', label: 'Communications', group: 'Operations' },
+                    { id: 'class_setup', label: 'Live Class', group: 'Program' },
+                    { id: 'class_media', label: 'Library', group: 'Program' },
+                    { id: 'commercial', label: 'Payments', group: 'Business' },
+                    { id: 'integrations', label: 'Integrations', group: 'Business' },
+                    { id: 'access', label: 'Settings', group: 'Configuration' },
+                    { id: 'activity', label: 'Support', group: 'Configuration' },
                 ];
             }
             const sections = [
@@ -996,6 +1027,7 @@
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.remove('hidden');
+            document.getElementById('portalPanel').classList.remove('one-time-provider-workspace', 'one-time-sidebar-open');
             document.getElementById('providerTitle').textContent = provider.provider_name || 'Provider portal';
             document.getElementById('providerSubtitle').textContent = `${plan.label || friendlyStatus(provider.entitlement_plan, 'Provider')} / ${friendlyStatus(provider.status || 'review')} workspace`;
             document.getElementById('profileNotice').textContent = data.guardrails?.public_changes || 'Edits stay pending review until BNA approves them.';
@@ -1209,14 +1241,103 @@
             `;
         }
 
+        function miniCard(title, body, status = '', link = '', linkLabel = 'Open') {
+            return `
+                <article class="one-time-mini-card">
+                    <div>
+                        <strong>${escapeHtml(title)}</strong>
+                        <p class="small">${escapeHtml(body)}</p>
+                    </div>
+                    <div class="service-meta">
+                        ${status ? `<span class="status-pill">${escapeHtml(status)}</span>` : ''}
+                        ${link ? `<a href="${escapeHtml(link)}" target="_blank" rel="noopener">${escapeHtml(linkLabel)}</a>` : ''}
+                    </div>
+                </article>
+            `;
+        }
+
+        function miniCardGrid(items = []) {
+            return `<div class="one-time-card-grid">${items.map(item => miniCard(item.title, item.body, item.status, item.link, item.linkLabel)).join('')}</div>`;
+        }
+
+        function renderOneTimeProviderNav(data = {}, viewAsSession = null) {
+            const nav = document.getElementById('providerNav');
+            const sections = providerSections();
+            const links = data.links || {};
+            const login = data.login_access || {};
+            const workspace = data.settings_center?.workspace || {};
+            const groups = [];
+            sections.forEach((section) => {
+                let group = groups.find(item => item.label === section.group);
+                if (!group) {
+                    group = { label: section.group || 'Workspace', sections: [] };
+                    groups.push(group);
+                }
+                group.sections.push(section);
+            });
+            nav.innerHTML = `
+                <div class="one-time-sidebar-card">
+                    <strong>${escapeHtml(workspace.label || 'OneTimeOneTime Mishnah')}</strong>
+                    <span>${escapeHtml(workspace.workspace_key || data.workspace_key || 'rabbi_sheller_provider')}</span>
+                    <span>${escapeHtml(workspace.project_key || data.project_key || 'one_time_mishnah_class')}</span>
+                    <span class="status-pill">${viewAsSession ? 'Read-only Rabbi view' : 'Scoped provider workspace'}</span>
+                </div>
+                <div class="one-time-sidebar-card">
+                    <strong>${escapeHtml(login.owner_display_name || data.provider?.display_name || data.provider?.name || 'Rabbi Eli Scheller')}</strong>
+                    <span>Login: ${escapeHtml(login.owner_login_username || data.provider?.login_username || 'ELISHELLER')}</span>
+                    <span>${escapeHtml(login.password_state || 'WhatsApp handoff pending')}</span>
+                </div>
+                <div class="one-time-sidebar-actions">
+                    <a class="one-time-sidebar-action" href="${escapeHtml(links.one_time_home || '/one-time')}">Landing <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(links.parent || '/parent.html?review=one-time')}">Parent View <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(links.student || '/student.html?review=one-time')}">Student View <span>Open</span></a>
+                    <a class="one-time-sidebar-action" href="${escapeHtml(links.classroom || '/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS')}">Classroom <span>Open</span></a>
+                </div>
+                ${groups.map(group => `
+                    <div class="one-time-sidebar-group">
+                        <span class="one-time-sidebar-group-label">${escapeHtml(group.label)}</span>
+                        ${group.sections.map(section => `
+                            <button type="button" data-provider-nav="${escapeHtml(section.id)}" class="${section.id === activeProviderSection ? 'active' : ''}">
+                                <span>${escapeHtml(section.label)}</span>
+                            </button>
+                        `).join('')}
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function ensureOneTimeProviderShell(viewAsSession = null) {
+            const portal = document.getElementById('portalPanel');
+            portal.classList.add('one-time-provider-workspace');
+            const hero = portal.querySelector('.hero');
+            const logout = document.getElementById('logoutButton');
+            if (logout) logout.textContent = viewAsSession ? 'Exit Rabbi View' : 'Close Preview';
+            if (hero && !hero.querySelector('[data-one-time-provider-menu]')) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'btn one-time-provider-menu-trigger';
+                button.dataset.oneTimeProviderMenu = 'true';
+                button.innerHTML = '<span class="one-time-provider-menu-icon" aria-hidden="true"></span><span>Workspace Menu</span>';
+                hero.appendChild(button);
+            }
+            if (!portal.querySelector('.one-time-sidebar-backdrop')) {
+                const backdrop = document.createElement('button');
+                backdrop.type = 'button';
+                backdrop.className = 'one-time-sidebar-backdrop';
+                backdrop.dataset.oneTimeProviderMenuClose = 'true';
+                backdrop.setAttribute('aria-label', 'Close workspace menu');
+                portal.prepend(backdrop);
+            }
+        }
+
         function applyOneTimeReviewBrand(viewAsSession = null) {
             document.body.classList.add('one-time-review-active');
             if (viewAsSession) {
                 document.body.classList.add('one-time-view-as-readonly');
-                document.title = 'Viewing One Time as Rabbi Elie Scheller';
+                document.title = 'Viewing One Time as Rabbi Eli Scheller';
                 ensureViewAsBanner(viewAsSession);
             } else {
-                document.title = 'OneTimeOneTime Provider Review';
+                document.title = 'OneTimeOneTime Rabbi Workspace Review';
             }
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
@@ -1229,16 +1350,24 @@
             const title = document.querySelector('.brand-lockup > div > strong');
             const subtitle = document.querySelector('.brand-lockup > div > span');
             if (title) title.textContent = 'OneTimeOneTime';
-            if (subtitle) subtitle.textContent = viewAsSession ? 'Rabbi Scheller workspace owner view' : 'Rabbi/provider review workspace';
+            if (subtitle) subtitle.textContent = viewAsSession ? 'Rabbi Eli Scheller workspace owner view' : 'Eli Scheller program workspace';
             const actions = document.querySelector('.portal-topbar-actions');
             if (actions) {
                 actions.innerHTML = viewAsSession
-                    ? `<span class="brand-chip">VIEWING AS RABBI - READ ONLY</span>`
+                    ? `
+                        <a class="portal-topbar-link" href="/one-time">One Time</a>
+                        <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
+                        <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time-email-review.html">Email Review</a>
+                        <span class="brand-chip">VIEWING AS RABBI - READ ONLY</span>
+                    `
                     : `
                         <a class="portal-topbar-link" href="/one-time">One Time</a>
                         <a class="portal-topbar-link secondary-link" href="/parent.html?review=one-time">Parent</a>
                         <a class="portal-topbar-link secondary-link" href="/student.html?review=one-time">Student</a>
                         <a class="portal-topbar-link secondary-link" href="/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS">Classroom</a>
+                        <a class="portal-topbar-link secondary-link" href="/one-time-email-review.html">Email Review</a>
                         <span class="brand-chip">TEST review mode</span>
                     `;
             }
@@ -1246,69 +1375,121 @@
 
         function renderOneTimeProviderReview(data, viewAsSession = null) {
             applyOneTimeReviewBrand(viewAsSession);
+            ensureOneTimeProviderShell(viewAsSession);
             portalState = data;
             const parent = data.parent || {};
             const student = data.student || {};
             const classSession = data.class_session || {};
             const attendance = data.attendance || {};
+            const links = data.links || {};
+            const login = data.login_access || {};
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.remove('hidden');
-            document.getElementById('providerTitle').textContent = viewAsSession ? 'One Time as Rabbi Elie Scheller' : 'One Time provider review';
+            document.getElementById('providerTitle').textContent = viewAsSession ? 'One Time as Rabbi Eli Scheller' : 'Eli Scheller Workspace';
             document.getElementById('providerSubtitle').textContent = viewAsSession
                 ? 'Workspace owner experience, read-only, same One Time scope'
-                : 'Rabbi/admin TEST review workspace';
-            const navItems = viewAsSession ? [
-                ['overview', 'Overview'],
-                ['class_setup', 'Classes'],
-                ['class_media', 'Video Library'],
-                ['communications', 'Community / Questions'],
-                ['commercial', 'Payments / Access'],
-                ['integrations', 'Integrations'],
-                ['activity', 'Support'],
-            ] : [
-                ['overview', 'Overview'],
-                ['communications', 'Communications'],
-                ['class_setup', 'Live Class'],
-                ['class_media', 'Course/Library'],
-                ['commercial', 'Payments/Trial'],
-                ['integrations', 'Integrations'],
-                ['activity', 'Support/Activity'],
-            ];
-            document.getElementById('providerNav').innerHTML = navItems.map(([id, label], index) => `
-                <button type="button" data-provider-nav="${escapeHtml(id)}" class="${index === 0 ? 'active' : ''}">
-                    ${escapeHtml(label)}
-                </button>
-            `).join('');
+                : 'Scoped OneTimeOneTime CRM, content, automations, users, settings, payments, and portals. No cross-account super-admin access.';
+            activeProviderSection = 'overview';
+            renderOneTimeProviderNav(data, viewAsSession);
             document.querySelectorAll('[data-provider-section]').forEach(panel => panel.classList.add('provider-section-hidden'));
             const overviewPanel = document.querySelector('[data-provider-section="overview"]');
+            const usersPanel = document.querySelector('[data-provider-section="users"]');
+            const crmPanel = document.querySelector('[data-provider-section="crm"]');
+            const contentPanel = document.querySelector('[data-provider-section="content"]');
+            const automationPanel = document.querySelector('[data-provider-section="automations"]');
+            const badgesPanel = document.querySelector('[data-provider-section="badges"]');
             const commsPanel = document.querySelector('[data-provider-section="communications"]');
             const classPanel = document.querySelector('[data-provider-section="class_setup"]');
             const mediaPanel = document.querySelector('[data-provider-section="class_media"]');
             const commercialPanel = document.querySelector('[data-provider-section="commercial"]');
             const integrationPanel = document.querySelector('[data-provider-section="integrations"]');
+            const accessPanel = document.querySelector('[data-provider-section="access"]');
             const activityPanel = document.querySelector('[data-provider-section="activity"]');
             if (overviewPanel) overviewPanel.classList.remove('provider-section-hidden');
             document.getElementById('providerOverview').innerHTML = `
-                <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded TEST review'}</span></div>
-                <div class="overview-metric"><strong>1</strong><span class="small">TEST parent</span></div>
-                <div class="overview-metric"><strong>1</strong><span class="small">TEST student</span></div>
+                <div class="overview-metric"><strong>One Time</strong><span class="small">${viewAsSession ? 'Rabbi workspace' : 'Branded review workspace'}</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(login.owner_login_username || data.provider?.login_username || 'ELISHELLER')}</strong><span class="small">Owner login username</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(String((data.workspace_users || []).length || 4))}</strong><span class="small">Workspace users</span></div>
+                <div class="overview-metric"><strong>${escapeHtml(String(data.crm_workspace?.current_records?.support_items || 2))}</strong><span class="small">CRM/support items</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(`${attendance.exact_minutes || 0}/${attendance.scheduled_minutes || 0}`)}</strong><span class="small">Attendance minutes</span></div>
                 <div class="overview-metric"><strong>${escapeHtml(String(data.email_templates?.length || 0))}</strong><span class="small">Email previews</span></div>
             `;
             const overviewList = document.createElement('div');
             overviewList.className = 'service-list';
             overviewList.innerHTML = (viewAsSession ? [
-                reviewCard('Workspace owner', data.provider?.name || 'Rabbi Elie Scheller', 'workspace_owner'),
-                reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Elie Scheller', 'writes disabled'),
-                reviewCard('Allowed modules', (viewAsSession.allowed_modules || []).join(', '), 'Rabbi scope'),
+                reviewCard('Workspace owner', data.provider?.display_name || data.provider?.name || 'Rabbi Eli Scheller', 'workspace_owner'),
+                reviewCard('Read-only view-as session', viewAsSession.banner || 'Viewing as Rabbi Eli Scheller', 'writes disabled'),
+                reviewCard('Allowed modules', (viewAsSession.allowed_modules || data.admin_review?.modules || []).join(', '), 'Rabbi scope'),
             ] : [
-                reviewCard('Rabbi/provider owner', data.provider?.name || 'Rabbi Elie Scheller', data.provider?.role || 'workspace_owner'),
+                reviewCard('Rabbi/provider owner', data.provider?.display_name || data.provider?.name || 'Rabbi Eli Scheller', data.provider?.role || 'workspace_owner'),
+                reviewCard('Login identity', `Username ${login.owner_login_username || data.provider?.login_username || 'ELISHELLER'} is mapped. Password handoff is WhatsApp-only and was not sent from this review.`, login.password_state || 'handoff pending'),
                 reviewCard('Shloimie admin/manager', data.admin?.name || 'Shloimie', data.admin?.role || 'workspace_admin'),
                 reviewCard('TEST parent', `${parent.name || ''} sees only ${student.display_name || student.name || 'one linked TEST student'}`, parent.role || 'parent'),
                 reviewCard('TEST student', `${student.display_name || student.name || ''} has no bot or BNA accountability goals in review mode`, student.role || 'student'),
             ]).join('');
             overviewPanel?.appendChild(overviewList);
+            if (usersPanel) {
+                usersPanel.classList.remove('provider-section-hidden');
+                document.getElementById('oneTimeUsers').innerHTML = [
+                    miniCardGrid((data.workspace_users || []).map(user => ({
+                        title: user.name,
+                        body: `${user.role || ''}. ${user.access_level || ''}. Modules: ${(user.modules || []).join(', ')}`,
+                        status: user.status || user.login_username || '',
+                    }))),
+                    miniCardGrid((login.surfaces || []).map(surface => ({
+                        title: surface.label,
+                        body: surface.scope,
+                        status: 'login surface',
+                        link: surface.url,
+                        linkLabel: 'Open',
+                    }))),
+                ].join('');
+            }
+            if (crmPanel) {
+                crmPanel.classList.remove('provider-section-hidden');
+                document.getElementById('oneTimeCrm').innerHTML = [
+                    miniCardGrid((data.crm_workspace?.pipelines || []).map(item => ({
+                        title: item.title,
+                        body: item.body,
+                        status: item.status,
+                    }))),
+                    reviewCard('CRM record types', (data.crm_workspace?.contact_types || []).join(', '), 'workspace scoped'),
+                    reviewCard('Portal navigation', `Rabbi can open Parent View, Student View, Classroom, Email Review, and Landing from the left toolbar, then return to this provider workspace.`, 'mapped'),
+                ].join('');
+            }
+            if (contentPanel) {
+                contentPanel.classList.remove('provider-section-hidden');
+                document.getElementById('oneTimeContent').innerHTML = miniCardGrid((data.content_workspace?.sections || []).map(item => ({
+                    title: item.title,
+                    body: item.body,
+                    status: item.status,
+                })));
+            }
+            if (automationPanel) {
+                automationPanel.classList.remove('provider-section-hidden');
+                document.getElementById('oneTimeAutomations').innerHTML = [
+                    miniCardGrid((data.automation_center?.groups || []).map(group => ({
+                        title: group.title,
+                        body: (group.items || []).join(' / '),
+                        status: group.status,
+                    }))),
+                    reviewCard('Badge automations', (data.badge_system?.automations || []).join(' / '), 'One Time badges only'),
+                    reviewCard('Automation guardrails', (data.automation_center?.guardrails || []).join(' '), 'no external writes'),
+                ].join('');
+            }
+            if (badgesPanel) {
+                badgesPanel.classList.remove('provider-section-hidden');
+                document.getElementById('oneTimeBadges').innerHTML = [
+                    miniCardGrid((data.badge_system?.badges || []).map(badge => ({
+                        title: badge.title,
+                        body: badge.body,
+                        status: badge.status,
+                    }))),
+                    reviewCard('Awarding surface', data.badge_system?.award_surface || 'Rabbi workspace / Badges and Rewards', 'Rabbi controlled'),
+                    reviewCard('Student visibility', `${data.badge_system?.student_visible_scope || 'One Time student portal only'}. ${data.badge_system?.guardrail || ''}`, 'not BNA school goals'),
+                ].join('');
+            }
             if (classPanel) {
                 classPanel.classList.remove('provider-section-hidden');
                 classPanel.innerHTML = `
@@ -1323,7 +1504,7 @@
             if (mediaPanel) {
                 mediaPanel.classList.remove('provider-section-hidden');
                 mediaPanel.innerHTML = `
-                    <h2>Course, Library, Worksheets</h2>
+                    <h2>Content Library, Videos, Worksheets</h2>
                     <div class="service-list">
                         ${reviewCard(data.course?.title || 'Course', `${data.module?.title || ''} / ${data.lesson?.title || ''}`, `${data.course?.progress_percent || 0}% progress`)}
                         ${reviewCard(data.video?.title || 'Manual Vimeo reference', data.video?.description || '', data.video?.media_provider || 'manual reference')}
@@ -1337,6 +1518,7 @@
                     reviewCard('Announcement', data.announcement?.body || '', data.announcement?.visibility || 'review'),
                     reviewCard('Private question', data.private_question?.body || '', data.private_question?.status || 'review'),
                     reviewCard('Support ticket', data.support_ticket?.latest_activity || '', data.support_ticket?.status || 'open'),
+                    reviewCard('WhatsApp credential handoff', data.login_access?.handoff_note || 'Prepare approved WhatsApp credential handoff after recipient/body approval. No WhatsApp was sent from this review.', data.login_access?.whatsapp_send_state || 'not sent'),
                     reviewCard('Email previews', `${data.email_templates?.length || 0} templates are available at ${data.links?.email_preview || '/one-time-email-review.html'}`, 'preview only'),
                 ].join('');
             }
@@ -1349,8 +1531,22 @@
                 document.getElementById('integrationList').innerHTML = [
                     reviewCard('Stripe', 'Test checkout/readiness can be verified. Live billing still needs account, tax/refund, and launch approval.', 'Needs live policy'),
                     reviewCard('Resend', 'Templates render in preview. Sender/domain and approved test recipient are required before any send.', 'Needs sender decision'),
+                    reviewCard('WhatsApp', 'Credential handoff and member notifications are mapped as approval-gated templates only. No WhatsApp send ran.', 'Needs recipient/body approval'),
                     reviewCard('Zoom', 'Protected Join Class is modeled. Real meeting creation remains approval-gated.', 'Needs meeting approval'),
                     reviewCard('Vimeo', 'Lesson embed is ready in the classroom. Automated upload waits for user authorization.', 'Lesson embed ready'),
+                    reviewCard('Google Drive / assets', 'Approved committed One Time assets are used. Downloaded crowd/student imagery remains blocked until rights/consent approval.', 'Rights gated'),
+                ].join('');
+            }
+            if (accessPanel) {
+                accessPanel.classList.remove('provider-section-hidden');
+                document.getElementById('accessChecklist').innerHTML = [
+                    miniCardGrid((data.settings_center?.settings || []).map(item => ({
+                        title: item.title,
+                        body: item.body,
+                        status: item.status,
+                    }))),
+                    reviewCard('Student portal boundary', `One Time includes: ${(data.student_portal_boundary?.one_time_student_portal || []).join(', ')}. Excludes: ${(data.student_portal_boundary?.excluded_school_portal_features || []).join(', ')}.`, 'No bot / no BNA goals'),
+                    reviewCard('Scope boundary', 'Eli Scheller can operate inside rabbi_sheller_provider / one_time_mishnah_class, view parent/student/classroom previews, and manage his workspace. He does not receive super-admin access to other accounts.', 'scoped only'),
                 ].join('');
             }
             if (activityPanel) {
@@ -1358,7 +1554,9 @@
                 document.getElementById('providerActivity').innerHTML = [
                     reviewCard('Milestone', data.milestone?.title || '', data.milestone?.status || 'review'),
                     reviewCard('Achievement', data.achievement?.title || '', data.achievement?.status || 'review'),
+                    reviewCard('Badge award', data.badge_system?.badges?.[1]?.title || 'Thoughtful Question', data.badge_system?.badges?.[1]?.status || 'rabbi_awardable'),
                     reviewCard('Reward', data.reward?.title || '', data.reward?.status || 'review'),
+                    reviewCard('Open support', data.support_ticket?.title || '', data.support_ticket?.status || 'open'),
                 ].join('');
             }
             setProviderSection('overview');
@@ -1589,6 +1787,19 @@
         });
 
         document.getElementById('portalPanel').addEventListener('click', async (event) => {
+            const portalPanel = document.getElementById('portalPanel');
+            if (event.target.closest('[data-one-time-provider-menu]')) {
+                portalPanel.classList.toggle('one-time-sidebar-open');
+                return;
+            }
+            if (event.target.closest('[data-one-time-provider-menu-close]')) {
+                portalPanel.classList.remove('one-time-sidebar-open');
+                return;
+            }
+            if (event.target.closest('[data-provider-nav]') && portalPanel.classList.contains('one-time-sidebar-open')) {
+                portalPanel.classList.remove('one-time-sidebar-open');
+            }
+
             const hideButton = event.target.closest('[data-hide-comment]');
             if (hideButton) {
                 const profileId = portalState?.profile?.id;

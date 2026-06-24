@@ -25554,3 +25554,90 @@ before Content. No live vendor generation, external send, public publish,
 charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
 external CRM/GHL write, raw private source readback, or secret exposure was
 performed.
+
+## 2026-06-23T16:58:00+03:00 - One Time Homepage Funnel Copy Refined
+
+Confirmed the existing One Time funnel instructions under
+`raw-input/RAW-20260622-003-one-time-assets-funnel-vimeo-email-stripe-view-as-rabbi.md`
+and refined `/one-time` so the homepage reads as a basic signup funnel rather
+than an implementation report. The page now leads with the Mishnayos mission,
+public Vimeo hero, 30-day-free CTA, program preview using approved teaching
+stills, proof/logo strip, three-step flow, Rabbi portrait section, classroom
+preview, FAQ, and final interest form.
+
+Removed public-facing private asset-library, video-ID, launch-approval,
+server-backed timer, raw external page/CAPTCHA, and no-charge/no-send debug
+phrasing. The rights blockers remain in
+`ops/one-time-mishnah/asset-intake/2026-06-22/RIGHTS-BLOCKERS.md`, not on the
+homepage. Focused One Time tests passed 15/15, `git diff --check` passed with
+Windows line-ending warnings only, and local Playwright static smoke confirmed
+no body overflow plus loaded teaching images at mobile and desktop widths.
+
+## 2026-06-23T17:10:00+03:00 - One Time Review Front-End Brand Pass
+
+Applied the OneTimeOneTime brand kit across the shared review front-end
+surfaces: provider/Rabbi workspace, read-only View as Rabbi mode, parent
+portal, student portal, classroom, and email review. The shared
+`public/css/one-time-shared-review.css` now maps the exact One Time palette
+onto review-mode portal variables and styles top bars, cards, sidebars,
+buttons, inputs, progress bars, pills, the classroom shell, and the Rabbi
+read-only banner without changing normal BNA portal mode.
+
+Polished review-mode copy for the provider/Rabbi, parent, student, classroom,
+and email-review screens while preserving TEST-only scoping, no-send/no-write
+guardrails, and the student `No bot / no BNA goals` marker. Added shared CSS
+contract assertions. Verification passed: focused One Time suite 15/15,
+portal/brand-shell review suite 49/49, and local Playwright smoke against the
+`ONE_TIME_REVIEW_ONLY_NO_DB=1` server at mobile and desktop widths across
+landing, provider, parent, student, classroom, and email review routes.
+
+## 2026-06-23T17:34:00+03:00 - One Time Rabbi Workspace Scope and Badges
+
+Captured the new operator ramble as
+`raw-input/RAW-20260623-002-one-time-rabbi-workspace-student-scope-badges.md`
+and implemented the local review slice. Rabbi Eli Scheller's provider review
+now behaves like a scoped One Time workspace: desktop sidebar, mobile hamburger
+drawer, workspace identity, `ELISHELLER` owner login display, users, CRM,
+content, automations, badge awarding, communications, live class, library,
+payments, integrations, settings, support, and links into the parent, student,
+classroom, email review, and landing surfaces.
+
+Added explicit One Time-vs-school student portal boundaries in review data,
+provider Settings, and the student review page: One Time includes Mishnayos
+class/library, worksheets, private Rabbi questions, badges, achievements, and
+rewards; BNA school accountability goals, checkoffs, consequences, device
+controls, bot/accountability goals, and unrelated household/student records are
+excluded. Added One Time badge awarding and badge automation cards with a
+guardrail that badges do not write to school accountability ledgers.
+
+Verification passed: focused One Time/portal suite 20/20, review-only server
+and external portal suite 37/37, and local Playwright smoke at desktop/mobile
+against `http://127.0.0.1:19731` covering the new provider sidebar/hamburger,
+Users/CRM/Content/Automations/Badges/Settings sections, `Thoughtful Question`
+badge, `ELISHELLER`, and student `No bot / no BNA goals` boundary.
+
+## 2026-06-24T05:51:00+03:00 - One Time Rabbi Workspace QA Closeout
+
+Closed out the local QA/handoff pass for Rabbi Eli Scheller's One Time
+workspace. No functional UI changes were added in this pass; this was a
+verification and coordination closeout so other agents can see the Rabbi
+workspace, badges, and One Time student boundary are already implemented
+locally and should not be duplicated.
+
+Verification passed again: focused One Time/portal suite 20/20, review-only
+server and external portal suite 37/37, `node --check server.js`,
+`git diff --check` with Windows line-ending warnings only, and local Playwright
+smoke against `http://127.0.0.1:19731` at `1440x900` and `390x844`. The smoke
+confirmed provider desktop nav, provider mobile hamburger drawer, Badges and
+Rewards with `Thoughtful Question`, `ELISHELLER`, student One Time-only
+boundary text, `No bot / no BNA goals`, BNA school-accountability exclusion,
+Mishnayos content, and no horizontal overflow. The in-app browser was restored
+to `student.html?review=one-time#reviewClass` and read back the One Time-only
+boundary with no horizontal overflow.
+
+Guardrails remain unchanged: no WhatsApp/email/SMS send, no password emitted,
+no charge or checkout session, no access grant, no Zoom/Vimeo/external CRM
+write, no deployment, no super-admin cross-account access for Rabbi Eli, and
+no BNA school accountability goal rendering or writing inside One Time review
+mode. Live deployment and actual WhatsApp credential handoff remain blocked
+until explicit operator approval of the exact recipient and full message body.

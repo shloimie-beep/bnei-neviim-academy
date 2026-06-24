@@ -64,8 +64,13 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   };
   const rabbi = {
     id: 'TEST-ONETIME-PROVIDER-RABBI',
-    name: 'Rabbi Elie Scheller',
+    name: 'Eli Scheller',
+    display_name: 'Rabbi Eli Scheller',
+    login_username: 'ELISHELLER',
     role: 'workspace_owner',
+    access_level: 'owner',
+    login_state: 'whatsapp_handoff_pending',
+    password_handoff: 'Password should be handed off by approved WhatsApp flow only. No WhatsApp was sent from this review.',
     workspace_key: WORKSPACE_KEY,
     project_key: PROJECT_KEY,
   };
@@ -188,6 +193,187 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     title: 'Worksheet link question',
     status: 'open_for_review',
     latest_activity: 'TEST parent asked where the worksheet is located.',
+  };
+  const workspaceUsers = [
+    {
+      id: rabbi.id,
+      name: rabbi.display_name,
+      role: 'Workspace owner',
+      login_username: rabbi.login_username,
+      access_level: 'Owner of One Time workspace only',
+      modules: ['Dashboard', 'CRM', 'Content', 'Automations', 'Payments', 'Settings'],
+      status: 'Login username mapped; password WhatsApp handoff pending',
+    },
+    {
+      id: admin.id,
+      name: admin.name,
+      role: 'Workspace admin / build support',
+      login_username: 'platform scoped admin',
+      access_level: 'Can support this workspace from super-admin tools',
+      modules: ['Build', 'QA', 'Support', 'Settings review'],
+      status: 'Platform support, not shown as Rabbi login',
+    },
+    {
+      id: parent.id,
+      name: parent.name,
+      role: 'Parent',
+      login_username: parent.email,
+      access_level: 'Parent portal, one linked TEST student',
+      modules: ['Parent dashboard', 'Payments', 'Support'],
+      status: 'TEST-only preview identity',
+    },
+    {
+      id: student.id,
+      name: student.display_name,
+      role: 'Student',
+      login_username: student.access_code,
+      access_level: 'Student/classroom portal only',
+      modules: ['Live class', 'Library', 'Worksheets', 'Progress'],
+      status: 'TEST-only preview identity; no bot / no BNA goals',
+    },
+  ];
+
+  const loginAccess = {
+    owner_display_name: rabbi.display_name,
+    owner_login_username: rabbi.login_username,
+    password_state: 'whatsapp_handoff_pending',
+    no_password_included: true,
+    whatsapp_send_state: 'not_sent_from_review',
+    handoff_note: 'Prepare an approved WhatsApp message with the credential handoff after the exact recipient and body are confirmed.',
+    surfaces: [
+      { label: 'Provider workspace login', url: reviewLinks.provider, scope: 'Rabbi Eli Scheller scoped provider workspace' },
+      { label: 'Scoped Operations login', url: reviewLinks.admin_login, scope: 'One Time Operations workspace after admin approval' },
+      { label: 'Parent view', url: reviewLinks.parent, scope: 'View the TEST parent experience' },
+      { label: 'Student view', url: reviewLinks.student, scope: 'View the TEST student experience' },
+      { label: 'Classroom/member library', url: reviewLinks.classroom, scope: 'View member classroom and video library' },
+    ],
+  };
+
+  const crmWorkspace = {
+    pipelines: [
+      { title: 'New lead / homepage signup', body: 'Capture name, email, region, source, tier interest, and notes from the landing funnel.', status: 'mapped' },
+      { title: 'Trial member onboarding', body: 'Track 30-day trial start, parent/student setup, first class, and payment readiness.', status: 'mapped' },
+      { title: 'Parent/student accounts', body: 'Keep parents, students, access state, attendance, support, and member-library visibility together.', status: 'mapped' },
+      { title: 'Support and private questions', body: 'Route worksheet issues, private Mishnah questions, and Rabbi replies without public chat.', status: 'mapped' },
+    ],
+    contact_types: ['Lead', 'Parent', 'Student', 'Member', 'Support requester', 'Referral'],
+    current_records: {
+      leads: 1,
+      parents: 1,
+      students: 1,
+      support_items: 2,
+    },
+  };
+
+  const contentWorkspace = {
+    sections: [
+      { title: 'Public landing page', body: 'Mission funnel, Vimeo hero, proof strip, FAQ, and 30-day-free signup CTA.', status: 'implemented review' },
+      { title: 'Live class setup', body: `${classSession.title}: ${classSession.masechta} ${classSession.perek} ${classSession.mishnah_range}.`, status: classSession.status },
+      { title: 'Video library', body: `${video.title} is embedded in the member classroom from the manual Vimeo reference.`, status: video.package_status },
+      { title: 'Worksheets/source sheets', body: worksheet.title, status: worksheet.status },
+      { title: 'Questions and replies', body: 'Student replies stay private until Rabbi/admin chooses what becomes visible.', status: privateQuestion.status },
+      { title: 'Approved assets', body: 'Uses committed One Time logo, portrait, teaching stills, social image, and approved review marks only.', status: 'rights-safe review set' },
+    ],
+  };
+
+  const automationCenter = {
+    groups: [
+      {
+        title: 'Enrollment funnel',
+        items: ['Signup intake', 'region/tier tagging', 'trial confirmation preview', 'parent/student account setup'],
+        status: 'mapped / no external writes',
+      },
+      {
+        title: 'Class operations',
+        items: ['Class reminder preview', 'Zoom readiness gate', 'attendance summary', 'recording posted preview'],
+        status: 'mapped / meeting creation gated',
+      },
+      {
+        title: 'Content publishing',
+        items: ['Vimeo/manual reference', 'member library card', 'worksheet/resource notice', 'question moderation'],
+        status: 'mapped / upload gated',
+      },
+      {
+        title: 'Payments and access',
+        items: ['30-day trial', 'pre-renewal reminder', 'receipt preview', 'payment issue preview', 'access state'],
+        status: 'mapped / no charge',
+      },
+      {
+        title: 'Retention and support',
+        items: ['Parent progress update', 'support ticket created/reply preview', 'referral/testimonial consent gate'],
+        status: 'mapped / no-send preview',
+      },
+      {
+        title: 'Credential handoff',
+        items: ['Owner username ELISHELLER', 'WhatsApp password handoff draft', 'recipient/body approval required'],
+        status: 'blocked until approved send',
+      },
+    ],
+    guardrails: [
+      'No WhatsApp, email, SMS, or portal message is sent from review mode.',
+      'No checkout, charge, access grant, Zoom creation, Vimeo upload, or external CRM write is performed.',
+      'Automations stay scoped to rabbi_sheller_provider / one_time_mishnah_class.',
+    ],
+  };
+
+  const settingsCenter = {
+    workspace: {
+      label: 'OneTimeOneTime Mishnah',
+      workspace_key: WORKSPACE_KEY,
+      project_key: PROJECT_KEY,
+      owner_login_username: rabbi.login_username,
+      owner_display_name: rabbi.display_name,
+      super_admin_cross_account_access: false,
+    },
+    settings: [
+      { title: 'Brand colors', body: 'Black, charcoal/navy, teal/cyan, lemon-yellow, cream, and white.', status: 'applied to review UI' },
+      { title: 'Workspace users', body: 'Owner, platform support admin, TEST parent, and TEST student are visible in this review.', status: 'mapped' },
+      { title: 'Navigation model', body: 'Sidebar/hamburger workspace navigation with parent, student, classroom, and email-preview links.', status: 'implemented review' },
+      { title: 'Login surfaces', body: 'Provider login and scoped Operations login are mapped; password handoff waits for approved WhatsApp.', status: 'mapped / handoff pending' },
+      { title: 'Notification policy', body: 'Email and WhatsApp remain preview-only until sender, recipient, body, and launch policy are approved.', status: 'blocked for live send' },
+      { title: 'Payment policy', body: 'Stripe/checkout remain readiness-only until live account, prices, tax/refund policy, and approval are complete.', status: 'blocked for live charge' },
+    ],
+  };
+
+  const studentPortalBoundary = {
+    one_time_student_portal: [
+      'Live Mishnayos class',
+      'Member video library',
+      'Worksheets/source sheets',
+      'Attendance/progress for this program',
+      'Private Rabbi questions',
+      'Badges, achievements, and rewards for One Time only',
+    ],
+    excluded_school_portal_features: [
+      'BNA school accountability goals',
+      'School goal checkoffs',
+      'Parent-assigned consequences',
+      'Device/accountability controls',
+      'BNA school bot/assistant goals',
+      'Other students or school household records',
+    ],
+    display_rule: 'One Time review mode must say No bot / no BNA goals and must not render school accountability widgets.',
+  };
+
+  const badgeSystem = {
+    title: 'One Time Badge System',
+    award_surface: 'Rabbi workspace / Badges and Rewards',
+    student_visible_scope: 'One Time student portal only',
+    badges: [
+      { title: 'First Class', body: 'Awarded when the student attends the first One Time class.', status: 'earned_for_review' },
+      { title: 'Thoughtful Question', body: 'Rabbi can award after a private question is reviewed.', status: 'rabbi_awardable' },
+      { title: 'Worksheet Complete', body: 'Can be awarded after source sheet or worksheet completion.', status: 'automation_ready_preview' },
+      { title: 'Mishnah Review Streak', body: 'Can be awarded from attendance/review streak automation.', status: 'automation_ready_preview' },
+      { title: 'Clear Explanation', body: 'Rabbi can award for a strong answer or explanation.', status: 'rabbi_awardable' },
+    ],
+    automations: [
+      'Award First Class after first attended class',
+      'Suggest Thoughtful Question badge after Rabbi reviews a private question',
+      'Suggest Worksheet Complete after a worksheet submission is approved',
+      'Suggest Mishnah Review Streak from attendance/review cadence',
+      'Notify parent/student with no-send preview until email/WhatsApp approval',
+    ],
+    guardrail: 'Badges do not write to BNA school accountability goals or school reward ledgers.',
   };
 
   const emailTemplates = [
@@ -448,6 +634,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   const studentPortal = {
     review_mode: true,
     student,
+    portal_scope: studentPortalBoundary,
     class_session: classSession,
     zoom,
     attendance,
@@ -460,6 +647,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     payment,
     milestone,
     achievement,
+    badge_system: badgeSystem,
     reward,
     private_question: privateQuestion,
     support_ticket: supportTicket,
@@ -471,12 +659,18 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
   const adminReview = {
     rabbi,
     admin,
+    workspace_users: workspaceUsers,
+    login_access: loginAccess,
     workspace_key: WORKSPACE_KEY,
     project_key: PROJECT_KEY,
     modules: [
+      'Workspace dashboard',
+      'Users and roles',
       'Parents',
       'Students',
       'Contacts/CRM',
+      'Content',
+      'Automations',
       'Communications',
       'Live Class',
       'Attendance',
@@ -485,6 +679,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       'Payments/Trial/Access',
       'Milestones/Achievements/Rewards',
       'Integrations/Readiness',
+      'Settings',
       'Support/Private Questions',
     ],
     counts: {
@@ -523,6 +718,14 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       review_mode: true,
       provider: rabbi,
       admin,
+      workspace_users: workspaceUsers,
+      login_access: loginAccess,
+      crm_workspace: crmWorkspace,
+      content_workspace: contentWorkspace,
+      automation_center: automationCenter,
+      settings_center: settingsCenter,
+      student_portal_boundary: studentPortalBoundary,
+      badge_system: badgeSystem,
       parent,
       student,
       class_session: classSession,

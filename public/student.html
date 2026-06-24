@@ -3675,7 +3675,7 @@
             els.portalMenuToggle.classList.remove('hidden');
             els.studentHelperDock.classList.add('hidden');
             els.pageTitle.textContent = student.display_name || student.name || 'TEST One Time student';
-            els.pageIntro.textContent = 'One Time student review mode with TEST-only Mishnah class data.';
+            els.pageIntro.textContent = 'Student dashboard for live Mishnayos, video review, worksheets, badges, and progress. This review uses TEST-only class data and excludes BNA school accountability goals.';
             els.portalSidebarName.textContent = student.display_name || student.name || 'TEST student';
             els.portalSidebarMeeting.textContent = classSession.title || 'One Time Mishnah class';
             els.portalSideStats.innerHTML = `
@@ -3705,7 +3705,7 @@
                         <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                         <p class="eyebrow">One Time student review</p>
                         <h2>${escapeHtml(student.display_name || student.name || 'TEST student')}</h2>
-                        <p class="small">This view contains only this TEST student's One Time class, course, and progress records.</p>
+                        <p class="small">This view focuses the student on live class, review video, worksheet, badges, attendance, and reward progress using only this TEST student's One Time records.</p>
                         <div class="metric-grid">
                             ${reviewMetric('Course progress', `${data.course?.progress_percent || 0}%`)}
                             ${reviewMetric('Attendance', `${attendance.percentage || 0}%`)}
@@ -3713,6 +3713,17 @@
                             ${reviewMetric('Reward', data.reward?.status)}
                         </div>
                     </div>
+                </section>
+                <section class="panel" id="reviewScope">
+                    <div class="section-title">
+                        <div>
+                            <span class="eyebrow">Portal boundary</span>
+                            <h2>One Time only</h2>
+                            <p class="small">This student portal shows Mishnayos class records, classroom/library progress, worksheets, private Rabbi questions, badges, achievements, and rewards for One Time.</p>
+                        </div>
+                        <span class="status-pill">No bot / no BNA goals</span>
+                    </div>
+                    <div class="notice">BNA school accountability goals, checkoffs, consequences, device controls, and other household/student records stay out of the One Time Rabbi Scheller workspace.</div>
                 </section>
                 <section class="panel" id="reviewClass">
                     <div class="section-title">

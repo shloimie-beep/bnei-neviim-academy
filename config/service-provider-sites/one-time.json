@@ -18,7 +18,7 @@
   "review_only": true,
   "identity": {
     "name": "OneTimeOneTime Mishnah",
-    "owner_label": "Rabbi Elie Scheller",
+    "owner_label": "Rabbi Eli Scheller",
     "category": "Worldwide Live Mishnah Learning"
   },
   "assets": {
@@ -54,7 +54,7 @@
         "src": "/images/one-time/teaching/promo-stage-still-02.webp"
       },
       {
-        "label": "Stage review setting",
+        "label": "Mishnayos review setting",
         "src": "/images/one-time/teaching/promo-stage-still-03.webp"
       }
     ]
@@ -62,14 +62,14 @@
   "copy": {
     "campaign_bar": "30 DAYS TO JOIN - START WITH 30 DAYS FREE",
     "eyebrow": "Worldwide Live Mishnayos",
-    "headline": "Learn Mishnayos Live with Rabbi Elie Scheller",
-    "subhead": "Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - wherever you live.",
+    "headline": "Learn Mishnayos Live with Rabbi Eli Scheller",
+    "subhead": "Live shiurim, daily accountability, practical worksheets, and direct interaction with the Rabbi - so boys can finish Mishnayos, love learning Torah, and keep going wherever they live.",
     "primary_cta": "START 30 DAYS FREE",
     "secondary_cta": "WATCH RABBI SCHELLER",
     "member_cta": "Member Login",
     "offer": "$67 USD per month after a 30-day free trial",
     "campaign_contract": "ONE_TIME_CAMPAIGN_START_AT, ONE_TIME_CAMPAIGN_DEADLINE_AT, ONE_TIME_CAMPAIGN_TIME_ZONE, and ONE_TIME_CAMPAIGN_OFFER_KEY control the non-resetting countdown.",
-    "no_send_note": "Signup interest does not charge a card, grant access, send bulk email, or write to an external CRM."
+    "no_send_note": "Signup interest starts a follow-up conversation before membership is completed."
   },
   "nav": [
     {
@@ -81,8 +81,12 @@
       "href": "#what-you-get"
     },
     {
-      "label": "Worldwide",
-      "href": "#worldwide"
+      "label": "How It Works",
+      "href": "#how-it-works"
+    },
+    {
+      "label": "FAQ",
+      "href": "#faq"
     },
     {
       "label": "Start Free",
