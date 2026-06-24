@@ -1,6 +1,6 @@
 # Status
 
-Current status: running.
+Current status: terminal with one blocked requirement.
 
 - `REQ-20260624-019`: Done. All expected lane handoffs are terminal and pushed.
 - `REQ-20260624-020`: Done. `origin/master` has no commits missing from the
@@ -25,10 +25,18 @@ Current status: running.
 - `REQ-20260624-029`: Done. Stripe/payment and Vimeo/shared-review readiness
   passed post-deploy with no charge, grant, upload, publication, send, DNS,
   credential, or external connector write.
-- `REQ-20260624-030`: In progress. Canonical records are being updated and
-  pushed.
+- `REQ-20260624-030`: Done. Canonical records were updated and pushed to
+  `origin/master` in checkpoint `d4253fd683e60e403f256cb2a2c30acf821f32e4`.
+- `REQ-20260624-031`: Done. Six clean owned lane worktrees and their merged
+  branch refs were pruned safely; the shared Vimeo checkout was retained
+  because its local branch has local-only unmerged history.
 
 Guardrails remain active: no production DB mutation, class backfill, external
 write, send, charge, upload, publish, DNS change, credential rotation, or
 secret exposure unless a later release gate explicitly authorizes an exact
 action.
+
+No unblocked requirement remains in this final-release run. `REQ-20260624-028`
+is terminally blocked unless new class-lane evidence produces an exact
+`safe_to_apply=true` recommendation with approved candidate jobs and a
+row-level write plan.

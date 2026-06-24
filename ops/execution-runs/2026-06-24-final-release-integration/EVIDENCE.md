@@ -139,3 +139,16 @@ Post-deploy Stripe/Vimeo readiness evidence:
 Summary: `REQ-20260624-029` is done. Live readiness checks performed no Stripe
 charge/refund/subscription, access grant, Vimeo upload/publication, send, DNS
 change, credential copy/rotation, or external connector write.
+
+Canonical record and cleanup evidence:
+
+- Canonical record checkpoint pushed to `origin/master`:
+  `d4253fd683e60e403f256cb2a2c30acf821f32e4`
+- Cleanup report:
+  `ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md`
+
+Summary: `REQ-20260624-030` and `REQ-20260624-031` are done. The final-release
+records, changelog, ledger, run files, deployment proof, live-smoke proof, and
+cleanup evidence were updated. Six clean owned lane worktrees and their merged
+branch refs were pruned safely. The shared Vimeo checkout was retained because
+its local branch head was not an ancestor of `origin/master`.

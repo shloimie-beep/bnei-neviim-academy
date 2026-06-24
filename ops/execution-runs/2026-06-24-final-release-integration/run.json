@@ -2,8 +2,8 @@
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
   "created_at": "2026-06-24T17:16:04+03:00",
-  "updated_at": "2026-06-24T18:58:00+03:00",
-  "active": true,
+  "updated_at": "2026-06-24T19:05:00+03:00",
+  "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "raw_id": "RAW-20260624-005",
@@ -33,9 +33,9 @@
     "deployed_sha": "c14507ab121daa221689ba285c203605bf2d64bf"
   },
   "current_batch": {
-    "batch_id": "L",
-    "requirement_id": "REQ-20260624-030",
-    "title": "Update canonical records, owner-review links, rollback reference, and final release state",
-    "status": "in_progress"
+    "batch_id": "M",
+    "requirement_id": "REQ-20260624-031",
+    "title": "Clean worktrees safely after merge, deploy, and live verification",
+    "status": "done"
   }
 }

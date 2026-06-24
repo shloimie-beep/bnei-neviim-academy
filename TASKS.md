@@ -6,7 +6,7 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260624-005` / `REQ-20260624-019` through
+- [x] `RAW-20260624-005` / `REQ-20260624-019` through
   `REQ-20260624-031`: Final release integration, deployment,
   live verification, and guarded class recovery. Scope: verify the
   clean-slate control manifest and Prompt 02-08 lane handoffs, integrate all
@@ -19,10 +19,12 @@ not authorize active GHL runtime paths.
   SHA in deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786`; Railway doctor and
   live smokes passed; Stripe/payment and Vimeo/shared-review readiness passed
   without charge, grant, upload, publication, send, DNS, credential, or
-  external connector writes. Canonical records are being updated. Class
-  backfill remains blocked under current evidence because Prompt 04 reports
-  `safe_to_apply=false`, zero approved candidate jobs, and no row-level write
-  plan. Register:
+  external connector writes. Canonical records were pushed in checkpoint
+  `d4253fd683e60e403f256cb2a2c30acf821f32e4`; safe merged lane worktrees and
+  refs were pruned with the shared Vimeo checkout retained as a safety
+  exception. Class backfill remains terminally blocked under current evidence
+  because Prompt 04 reports `safe_to_apply=false`, zero approved candidate
+  jobs, and no row-level write plan. Register:
   `tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md`.
 - [x] Finish `RAW-20260624-003` / `TASK-20260624-001`: clean-slate control
   tower reconciliation for PR #14, PR #15, and the preserved local Rabbi

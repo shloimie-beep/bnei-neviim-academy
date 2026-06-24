@@ -146,3 +146,22 @@ Final merge, deploy, and live verification:
 - PASS generated final-release negative route smoke.
 - PASS `node --check scripts/smoke-class-upload-trace-live.mjs`.
 - PASS `node --check scripts/smoke-one-time-shared-review-live.mjs`.
+
+Canonical record and cleanup checks:
+
+- PASS `npm run bna:run:validate` after deployment evidence normalization.
+- PASS `npm run bna:run:status`.
+- PASS `npm run bna:run:next`.
+- PASS `npm run bna:run:source-coverage`.
+- PASS `npm run bna:run:stale-evidence`.
+- PASS `npm run secrets:audit`: 4599 tracked paths, 0 findings.
+- PASS JSON parse for final-release `requirements.json` and `run.json`.
+- PASS `git diff --check` with Windows line-ending warnings only.
+- PASS canonical record checkpoint pushed to `origin/master` as
+  `d4253fd683e60e403f256cb2a2c30acf821f32e4`.
+- PASS owned lane worktree cleanup: six clean, remote-backed, merged worktrees
+  were removed without force.
+- PASS local/remote branch cleanup: the six matching lane refs and the final PR
+  integration ref were deleted only after ancestor checks.
+- PASS shared Vimeo checkout retained because its local branch head was not an
+  ancestor of `origin/master`.

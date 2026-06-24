@@ -13,5 +13,5 @@
 | I | REQ-20260624-027 | Done | Railway deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786` succeeded and live smokes passed. |
 | J | REQ-20260624-028 | Blocked | Do not apply class backfill from current unsafe recommendation. |
 | K | REQ-20260624-029 | Done | Stripe/payment and Vimeo/shared-review readiness passed without charge, grant, upload, or publication. |
-| L | REQ-20260624-030 | In progress | Update canonical records after release proof/blockers. |
-| M | REQ-20260624-031 | Not started | Clean safe worktrees after closeout. |
+| L | REQ-20260624-030 | Done | Canonical records were pushed in checkpoint `d4253fd683e60e403f256cb2a2c30acf821f32e4`. |
+| M | REQ-20260624-031 | Done | Safe merged lane worktrees/refs were pruned; shared Vimeo checkout retained. |

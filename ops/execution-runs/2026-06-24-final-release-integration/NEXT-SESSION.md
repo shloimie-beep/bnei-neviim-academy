@@ -1,12 +1,12 @@
 # Next Session
 
-Resume with `REQ-20260624-030`.
+No unblocked final-release requirement remains.
 
 1. Work from
    `C:\Users\User\Documents\Codex\2026-06-24\clean-slate-integration`.
 2. Confirm branch `master`.
-3. Continue canonical records closeout (`REQ-20260624-030`) and then safe
-   worktree cleanup (`REQ-20260624-031`).
+3. Use this run as terminal release evidence unless new class-lane evidence
+   appears.
 4. Do not apply production migrations, run class backfill, send, charge,
    upload, publish, change DNS, rotate/copy credentials, or expose secrets
    unless a later release gate authorizes the exact action.
@@ -26,3 +26,13 @@ PR #16 merged at `c14507ab121daa221689ba285c203605bf2d64bf`; Railway
 deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786` deployed the same SHA and
 live smokes passed. Summary:
 `ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md`.
+
+`REQ-20260624-030` and `REQ-20260624-031` are complete. Canonical records were
+pushed in checkpoint `d4253fd683e60e403f256cb2a2c30acf821f32e4`; safe merged
+lane worktrees/refs were pruned and cleanup evidence is recorded in
+`ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md`.
+
+Only `REQ-20260624-028` remains terminally blocked: do not run
+`APPLY_GUARDED_CLASS_BACKFILL` unless a future dry run produces
+`safe_to_apply=true`, exact approved candidate jobs, and a row-level write
+plan.

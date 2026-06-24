@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
-  "updated_at": "2026-06-24T18:58:00+03:00",
+  "updated_at": "2026-06-24T19:05:00+03:00",
   "git_refs": {
     "expected_branch": "master",
     "branch": "master",
@@ -646,21 +646,26 @@
         "REQ-20260624-026",
         "REQ-20260624-027"
       ],
-      "status": "in_progress",
-      "implementation_status": "canonical_records_update_started_after_merge_deploy_live_smoke",
+      "status": "done",
+      "implementation_status": "canonical_records_committed_and_pushed_after_merge_deploy_live_smoke",
       "can_continue_without_operator": true,
-      "next_action": "Commit and push canonical run, task, changelog, ledger, and release evidence updates; then continue to safe cleanup.",
+      "next_action": "Canonical records were committed and pushed in checkpoint d4253fd683e60e403f256cb2a2c30acf821f32e4; continue to cleanup evidence and final validation.",
       "acceptance_criteria": [
         "All terminal statuses and proof paths are visible to Shloimie."
       ],
       "evidence": [
         "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md",
         "TASKS.md",
         "ops/agent-changelog.md",
-        "ops/agent-task-ledger.jsonl"
+        "ops/agent-task-ledger.jsonl",
+        "d4253fd683e60e403f256cb2a2c30acf821f32e4"
       ],
       "verification": [
-        "Merge, deploy, live-smoke, and Stripe/Vimeo readiness proof collected; canonical records are being updated in this batch."
+        "PASS canonical evidence checkpoint committed and pushed to origin/master as d4253fd683e60e403f256cb2a2c30acf821f32e4",
+        "PASS npm run bna:run:validate after deployment evidence fields were normalized",
+        "PASS npm run bna:run:status, npm run bna:run:next, npm run bna:run:source-coverage, and npm run bna:run:stale-evidence",
+        "PASS npm run secrets:audit"
       ],
       "implementation_files": [
         "TASKS.md",
@@ -670,7 +675,7 @@
         "ops/execution-runs/2026-06-24-final-release-integration/"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T18:58:00+03:00"
+      "updated_at": "2026-06-24T19:05:00+03:00"
     },
     {
       "id": "REQ-20260624-031",
@@ -684,27 +689,35 @@
       "workspace_key": "bna_platform",
       "project_key": "final_release",
       "owner": "Codex",
-      "category": "cleanup",
+      "category": "run_control",
       "priority": "P1",
       "batch_id": "M",
       "depends_on": [
         "REQ-20260624-030"
       ],
-      "status": "not_started",
-      "implementation_status": "waiting_for_final_records",
+      "status": "done",
+      "implementation_status": "safe_cleanup_completed_with_shared_vimeo_checkout_retained",
       "can_continue_without_operator": true,
-      "next_action": "After the release is closed or blocked, inspect worktrees and prune only safe integrated branches.",
+      "next_action": "No further cleanup action is required for safe merged lane worktrees. Do not touch the shared Vimeo checkout unless a separate operator-approved cleanup handles its local-only branch history.",
       "acceptance_criteria": [
         "No unique untracked work is deleted.",
         "Cleanup report is written."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md"
+      ],
+      "verification": [
+        "PASS six owned lane worktrees were clean, remote-backed, ancestors of origin/master, and removed without force",
+        "PASS six matching local lane branches plus the local integration branch were deleted after ancestor checks",
+        "PASS six matching remote lane refs plus origin/codex/clean-slate-integration-20260624 were deleted after ancestor checks",
+        "PASS shared C:\\Users\\User\\BNA v2.0 Vimeo checkout was retained because its local branch head was not an ancestor of origin/master",
+        "PASS no unrelated historical, detached deploy, safety, recovery, service-provider, One Time, or audit worktrees were pruned"
+      ],
       "implementation_files": [
-        "ops/worktree-reconciliation/"
+        "ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T19:05:00+03:00"
     }
   ]
 }

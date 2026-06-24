@@ -26027,3 +26027,43 @@ No PR merge, deployment, live smoke, production database mutation, class
 backfill, Stripe charge, Vimeo upload/publication, real send, DNS change,
 credential change, or secret exposure was performed. `REQ-20260624-026` is now
 active for PR #16 mergeability, release policy, and rollback-plan review.
+
+## 2026-06-24T18:58:00+03:00 - Final Release Merge, Deploy, and Live Verification Done
+
+Completed `REQ-20260624-026`, `REQ-20260624-027`, and `REQ-20260624-029`.
+PR #16 was marked ready and merged to `master` at
+`c14507ab121daa221689ba285c203605bf2d64bf`. Railway auto-deployed the same SHA
+to production deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786` on the
+`skillful-motivation` project/service.
+
+Live verification passed: Railway service status, Railway doctor, standard app
+smoke, public privacy smoke, student-auth failure smoke, operator setup,
+provider classroom settings, class upload trace, payment/access/class-link
+guardrails, One Time shared review across mobile/tablet/desktop, negative
+routes, and syntax checks for the patched live-smoke scripts. Summary evidence
+is recorded in
+`ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md`.
+
+No production database migration, class backfill, Stripe charge/refund/
+subscription, access grant, Vimeo upload/public publication, email/WhatsApp/
+Telegram/social send, DNS change, credential copy/rotation, secret exposure,
+external CRM/GHL runtime, or external connector write was performed. Class
+backfill remains blocked under `REQ-20260624-028`.
+
+## 2026-06-24T19:05:00+03:00 - Final Release Canonical Closeout and Cleanup Done
+
+Completed `REQ-20260624-030` and `REQ-20260624-031`. Canonical release records,
+`TASKS.md`, this changelog, the ledger, run files, deployment proof, live-smoke
+proof, and true remaining blockers were updated and pushed in checkpoint
+`d4253fd683e60e403f256cb2a2c30acf821f32e4`.
+
+Cleanup pruned six clean owned lane worktrees and their safe merged local/remote
+refs, plus the merged final integration PR branch. The shared Vimeo checkout
+`C:\Users\User\BNA v2.0` was not touched because its same-named local branch
+head was not an ancestor of `origin/master`. Cleanup proof is recorded in
+`ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md`.
+
+The final-release run now has terminal statuses: `REQ-20260624-019` through
+`REQ-20260624-027`, `REQ-20260624-029`, `REQ-20260624-030`, and
+`REQ-20260624-031` are Done; `REQ-20260624-028` is Blocked by unsafe class
+backfill evidence.
