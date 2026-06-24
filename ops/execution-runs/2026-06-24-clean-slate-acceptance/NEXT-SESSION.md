@@ -7,15 +7,12 @@ Current run:
 `ops/execution-runs/2026-06-24-clean-slate-acceptance`
 
 Current branch:
-`codex/clean-slate-acceptance-20260624`
+`master`
 
 ## Next Safe Steps
 
-1. Finish `REQ-20260624-039`: final validation, commit, push, PR, merge, and
-   post-merge verification.
-2. Do not run a manual Railway deploy unless application/runtime code or live
-   Operations behavior changed.
-3. Preserve `REQ-20260624-028` as blocked safety work. The next separate
+1. No unblocked clean-slate acceptance batch remains.
+2. Preserve `REQ-20260624-028` as blocked safety work. The next separate
    executable owner-approved run should start from GitHub issue #18 with
    read-only reconciliation only.
 

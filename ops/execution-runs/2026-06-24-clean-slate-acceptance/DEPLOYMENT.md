@@ -6,11 +6,11 @@ or live Operations behavior changes.
 ## Verified Current Live Deployment
 
 - Railway project/service: `skillful-motivation`
-- Deployment ID: `c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7`
+- Deployment ID: `f8362b06-06b5-41f2-b4eb-102f67a91b85`
 - Deployed SHA:
-  `116fea3339a922b045857f7ece8cc9a64e7cda64`
+  `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772`
 - Deployment status: SUCCESS
-- Commit message: `Close final release run cleanup`
+- Commit message: `Merge pull request #19 from shloimie-beep/codex/clean-slate-acceptance-20260624`
 - Live health readback:
   `https://bneineviimacademy.org/api/health` returned HTTP 200 with
   `status=ok`, database connected, and Buffer social provider.
@@ -23,6 +23,7 @@ or live Operations behavior changes.
 ## Deployment Decision
 
 The acceptance changes are documentation, run metadata, evidence, and local
-operator scripts. They do not require a manual Railway deployment. If the PR
-merge triggers an automatic Railway deployment, verify it separately; do not
-run a meaningless manual deploy just to move a docs-only commit.
+operator scripts. No manual Railway deployment command was run. The PR #19
+merge triggered Railway automatically; deployment
+`f8362b06-06b5-41f2-b4eb-102f67a91b85` reached SUCCESS and live doctor/smoke
+checks passed.

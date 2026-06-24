@@ -9,5 +9,5 @@
 | E | REQ-20260624-036 | Done | synthetic ramble acceptance report | Preserve synthetic evidence |
 | F | REQ-20260624-037 | Done | owner walkthrough | Owner review |
 | G | REQ-20260624-038 | Done | worktree manifest | Preserve unique/unknown work |
-| H | REQ-20260624-039 | In progress | final handoff | Commit, PR, merge |
+| H | REQ-20260624-039 | Done | final handoff, PR #19, deployment `f8362b06-06b5-41f2-b4eb-102f67a91b85` | No clean-slate executable work remains |
 | BLOCKER | REQ-20260624-028 | Blocked | issue #18 and final-release evidence | Separate read-only reconciliation only |

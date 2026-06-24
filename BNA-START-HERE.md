@@ -12,8 +12,8 @@ Verified baseline:
 - PR #16 is merged to `master` at
   `c14507ab121daa221689ba285c203605bf2d64bf`.
 - Current deployed Railway SHA is
-  `116fea3339a922b045857f7ece8cc9a64e7cda64` in deployment
-  `c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7`.
+  `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` in deployment
+  `f8362b06-06b5-41f2-b4eb-102f67a91b85`.
 - Live health and public/privacy smokes passed in the clean-slate acceptance
   evidence.
 - `REQ-20260624-028` remains active blocked safety work for read-only class

@@ -2,7 +2,7 @@
   "run_id": "2026-06-24-clean-slate-acceptance",
   "title": "BNA Clean Slate - Reconcile Queues and Prove the Next Ramble",
   "created_at": "2026-06-24T20:40:37+03:00",
-  "updated_at": "2026-06-24T20:41:31+03:00",
+  "updated_at": "2026-06-24T21:05:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -20,14 +20,17 @@
     "release_pr_number": 16,
     "release_pr_state": "MERGED",
     "release_pr_merge_commit": "c14507ab121daa221689ba285c203605bf2d64bf",
-    "current_railway_deployment_id": "c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7",
-    "current_deployed_sha": "116fea3339a922b045857f7ece8cc9a64e7cda64",
+    "acceptance_pr_number": 19,
+    "acceptance_pr_state": "MERGED",
+    "acceptance_pr_merge_commit": "7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772",
+    "current_railway_deployment_id": "f8362b06-06b5-41f2-b4eb-102f67a91b85",
+    "current_deployed_sha": "7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772",
     "class_backfill_issue": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18"
   },
   "current_batch": {
-    "batch_id": "H",
-    "requirement_id": "REQ-20260624-039",
-    "title": "GitHub-visible clean-slate handoff and PR closeout",
-    "status": "in_progress"
+    "batch_id": "BLOCKER",
+    "requirement_id": "REQ-20260624-028",
+    "title": "Read-only class intake reconciliation and safe backfill evidence",
+    "status": "blocked"
   }
 }

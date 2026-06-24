@@ -26083,3 +26083,17 @@ Final validation, PR creation/merge, and post-merge state reporting remain
 under `REQ-20260624-039`. No class backfill, production migration, send,
 charge, upload, DNS write, credential copy/rotation, or manual docs-only
 Railway deployment was performed.
+
+## 2026-06-24T21:05:00+03:00 - Clean Slate Acceptance PR Merged And Live Verified
+
+Completed `REQ-20260624-039`. PR #19 merged to `master` at
+`7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772`. Railway automatically deployed
+that SHA in deployment `f8362b06-06b5-41f2-b4eb-102f67a91b85`; no manual
+Railway deploy command was run. Post-merge verification passed `npm run
+railway:doctor`, `npm run app:smoke`, `npm run app:smoke:public-privacy`, and
+direct `/api/health` readback.
+
+The clean-slate acceptance run now has 8 Done requirements and one blocked
+safety requirement, `REQ-20260624-028`. Next unblocked executable batch is
+none. The next real work is a separate read-only class-intake reconciliation
+from GitHub issue #18.

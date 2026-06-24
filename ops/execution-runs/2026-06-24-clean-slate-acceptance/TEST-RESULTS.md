@@ -31,10 +31,16 @@ Updated: 2026-06-24T20:41:31+03:00
 | `node <BOM-tolerant JSON/JSONL parser>` | local branch before acceptance commit | 2026-06-24T20:58+03:00 | PASS; 418 JSON files and 3 JSONL files parsed |
 | `npm run secrets:audit` | local branch before acceptance commit | 2026-06-24T20:58+03:00 | PASS; 4600 tracked paths, 0 tracked secret-risk files |
 | `git diff --check` | local branch before acceptance commit | 2026-06-24T20:58+03:00 | PASS; CRLF warnings only |
+| `gh pr merge 19 --merge --delete-branch=false` | `1cd38d10f0aabde2ea6b40dcb0aae257c681ea43` | 2026-06-24T18:02:23Z | PASS; merged to master at `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` |
+| Railway auto-deployment readback | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` | 2026-06-24T21:04+03:00 | PASS; deployment `f8362b06-06b5-41f2-b4eb-102f67a91b85` SUCCESS |
+| `npm run railway:doctor` | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` | 2026-06-24T21:04+03:00 | PASS |
+| `npm run app:smoke` | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` | 2026-06-24T18:04:22Z report | PASS |
+| `npm run app:smoke:public-privacy` | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` | 2026-06-24T18:04:30Z report | PASS |
+| `node -e fetch('/api/health')` | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` | 2026-06-24T21:04+03:00 | PASS; HTTP 200, status ok, database connected, Buffer provider |
 
 ## Final Validation To Record
 
-After the final status update, rerun:
+After this status update, rerun:
 
 - `npm run bna:run:status`
 - `npm run bna:run:validate`

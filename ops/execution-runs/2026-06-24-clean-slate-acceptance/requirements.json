@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-clean-slate-acceptance",
   "title": "BNA Clean Slate - Reconcile Queues and Prove the Next Ramble",
-  "updated_at": "2026-06-24T20:41:31+03:00",
+  "updated_at": "2026-06-24T21:05:00+03:00",
   "git_refs": {
     "base_branch": "master",
     "working_branch": "codex/clean-slate-acceptance-20260624",
@@ -10,8 +10,11 @@
     "release_pr_number": 16,
     "release_pr_state": "MERGED",
     "release_pr_merge_commit": "c14507ab121daa221689ba285c203605bf2d64bf",
-    "current_railway_deployment_id": "c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7",
-    "current_deployed_sha": "116fea3339a922b045857f7ece8cc9a64e7cda64",
+    "acceptance_pr_number": 19,
+    "acceptance_pr_state": "MERGED",
+    "acceptance_pr_merge_commit": "7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772",
+    "current_railway_deployment_id": "f8362b06-06b5-41f2-b4eb-102f67a91b85",
+    "current_deployed_sha": "7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772",
     "class_backfill_issue": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18"
   },
   "sources": [
@@ -334,10 +337,10 @@
       "priority": "P0",
       "batch_id": "H",
       "depends_on": ["REQ-20260624-033", "REQ-20260624-034", "REQ-20260624-035", "REQ-20260624-036", "REQ-20260624-037", "REQ-20260624-038"],
-      "status": "in_progress",
-      "implementation_status": "handoff_artifacts_written_pr_merge_pending",
+      "status": "done",
+      "implementation_status": "handoff_pr_merged_auto_deployed_live_verified",
       "can_continue_without_operator": true,
-      "next_action": "Run final validation, commit, push, open PR, merge, and verify master/deploy state.",
+      "next_action": "No unblocked clean-slate acceptance work remains; next real work is separate read-only REQ-20260624-028 reconciliation from issue #18.",
       "acceptance_criteria": ["Final handoff is GitHub-visible and no manual docs-only deploy is run."],
       "evidence": [
         "ops/acceptance/2026-06-24-clean-slate/final-handoff.md",
@@ -346,7 +349,14 @@
         "ops/agent-changelog.md",
         "ops/agent-task-ledger.jsonl"
       ],
-      "verification": ["PENDING final PR/merge closeout."],
+      "verification": [
+        "PASS PR #19 merged to master at 7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772.",
+        "PASS Railway auto-deployment f8362b06-06b5-41f2-b4eb-102f67a91b85 reached SUCCESS at 7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772.",
+        "PASS npm run railway:doctor after PR #19 merge.",
+        "PASS npm run app:smoke after PR #19 merge.",
+        "PASS npm run app:smoke:public-privacy after PR #19 merge.",
+        "PASS /api/health returned HTTP 200 status ok database connected Buffer provider."
+      ],
       "implementation_files": [
         "ops/acceptance/2026-06-24-clean-slate/final-handoff.md",
         "BNA-START-HERE.md",
@@ -355,7 +365,13 @@
         "ops/agent-task-ledger.jsonl"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T20:41:31+03:00"
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/19",
+      "implementation_commit": "1cd38d10f0aabde2ea6b40dcb0aae257c681ea43",
+      "pushed_commit": "1cd38d10f0aabde2ea6b40dcb0aae257c681ea43",
+      "deployed_commit": "7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772",
+      "deployment_id": "f8362b06-06b5-41f2-b4eb-102f67a91b85",
+      "live_smoke": "PASS npm run railway:doctor; PASS npm run app:smoke; PASS npm run app:smoke:public-privacy after PR #19 merge",
+      "updated_at": "2026-06-24T21:05:00+03:00"
     },
     {
       "id": "REQ-20260624-028",

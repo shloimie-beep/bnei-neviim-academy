@@ -6,11 +6,12 @@ Generated: 2026-06-24T20:41:31+03:00
 
 | Field | Value |
 |---|---|
-| Master SHA at acceptance start | `116fea3339a922b045857f7ece8cc9a64e7cda64` |
-| Deployed SHA | `116fea3339a922b045857f7ece8cc9a64e7cda64` |
-| Railway deployment | `c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7` |
-| Live SHA/readback | `/api/health` has no SHA field; Railway deployed SHA is `116fea3339a922b045857f7ece8cc9a64e7cda64`; live health returned `status=ok`, database connected, Buffer provider |
+| Master SHA | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` |
+| Deployed SHA | `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` |
+| Railway deployment | `f8362b06-06b5-41f2-b4eb-102f67a91b85` |
+| Live SHA/readback | `/api/health` has no SHA field; Railway deployed SHA is `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772`; live health returned `status=ok`, database connected, Buffer provider |
 | PR #16 truth | MERGED, merge commit `c14507ab121daa221689ba285c203605bf2d64bf`; closeout commits `d4253fd6` and `116fea33` are on master |
+| PR #19 truth | MERGED, merge commit `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` |
 | Active run/handoff | `ops/execution-runs/2026-06-24-clean-slate-acceptance` |
 
 ## Queue Truth
@@ -21,7 +22,7 @@ Generated: 2026-06-24T20:41:31+03:00
 | Active Decision count | 19 live Decisions lane records from fresh read-only production census |
 | Blocked count | 48 blocked records from queue audit; `REQ-20260624-028` remains blocked safety work |
 | Done count | 308 live Done / Activity records from fresh read-only production census |
-| Next executable batch | Pending until final validation; expected final value is none, with `REQ-20260624-028` shown under blockers |
+| Next executable batch | none; `REQ-20260624-028` remains shown under blockers |
 | REQ-20260624-028 | Active blocked/read-only reconciliation; linked to https://github.com/shloimie-beep/bnei-neviim-academy/issues/18; no backfill apply approved |
 
 ## Acceptance Proof
@@ -83,8 +84,6 @@ triggers an automatic deployment, verify that separately.
 
 ## Exact Next Action
 
-Finish `REQ-20260624-039`: run final validation, commit, push, open PR, merge,
-verify master/deploy state, then report the required final response fields.
-
-After that, the next real work item is `REQ-20260624-028` as a separate
-read-only reconciliation from GitHub issue #18.
+No unblocked clean-slate acceptance batch remains. The next real work item is
+`REQ-20260624-028` as a separate read-only reconciliation from GitHub issue
+#18.

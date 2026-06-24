@@ -15,8 +15,10 @@ not authorize active GHL runtime paths.
   live task reconciler reports 0 active machine tasks; production census
   reports 19 Decisions, 48 blocked records from queue audit, and 308
   Done/Activity records; synthetic ramble acceptance passed without production
-  queue pollution. Remaining in this acceptance run: final validation,
-  commit/PR/merge, and post-merge state report. `REQ-20260624-028` remains
+  queue pollution. PR #19 merged to master at
+  `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772`; Railway auto-deployed the same
+  SHA in deployment `f8362b06-06b5-41f2-b4eb-102f67a91b85`; post-merge doctor
+  and live smokes passed. `REQ-20260624-028` remains
   active blocked read-only class-intake reconciliation linked to GitHub issue
   #18; no class backfill apply is approved. Handoff:
   `ops/acceptance/2026-06-24-clean-slate/final-handoff.md`.
