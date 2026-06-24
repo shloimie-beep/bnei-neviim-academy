@@ -1,14 +1,20 @@
-Owned prefixes:
-server.js
-src/lib/bna/intake-parser.js
-src/lib/bna/
-scripts/*drive*.mjs
-scripts/*class*.mjs
-scripts/*intake*.mjs
-tests/*drive*.test.js
-tests/*class*.test.js
-tests/*intake*.test.js
-ops/qa-runs/
-ops/playwright-smokes/
-
-Coordinate server.js conflicts with portal-auth-nav and assistant-ramble-usage.
+ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md
+ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md
+ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json
+ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json
+ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md
+ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff
+ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.json
+ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.md
+ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md
+raw-input/RAW-20260624-003-class-drive-intake-goal.md
+scripts/class-drive-intake-reconcile.cjs
+src/lib/bna/class-drive-intake-reconcile.js
+tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md
+tests/class-drive-intake-reconcile.test.js
+tests/class-drive-intake-shared-patch.test.js
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/RESULT.json
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/HANDOFF.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/TESTS.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/FILES.txt
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/BLOCKERS.md
