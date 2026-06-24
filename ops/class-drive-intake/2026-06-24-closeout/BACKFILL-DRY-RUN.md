@@ -1,6 +1,6 @@
 # Guarded Class Backfill Dry Run
 
-Generated: 2026-06-24T13:32:15.193Z
+Generated: 2026-06-24T13:44:04.977Z
 Mode: dry_run_no_writes
 No production mutation: true
 Safe to apply: false

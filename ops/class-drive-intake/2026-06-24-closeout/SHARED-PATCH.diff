@@ -2,46 +2,120 @@ diff --git a/server.js b/server.js
 --- a/server.js
 +++ b/server.js
 @@
- async function parseMixedRecordingSource({
-   job = {},
-   instruction = '',
-   previousParse = {},
-   dryRun = false,
+ function mixedRecordingCountsFromApply(applied = null, intake = {}) {
+   const parsed = intake?.parsed || {};
+   const sectionItems = [
+     ...(parsed.goals || []),
+     ...(parsed.diet_nutrition_notes || []),
 @@
- } = {}) {
-   const rawInput = [
-     instruction ? `Operator instruction:\n${instruction}` : '',
-     job.title ? `Recording title: ${job.title}` : '',
-     job.caption ? `Caption: ${job.caption}` : '',
-@@
-   const intake = await createCanonicalIntakeParseRun({
-     rawInput,
-     source_type: sourceType,
-     source_channel: job.source_type || sourceType,
-     source_id: sourceId,
-@@
-     created_by: 'recording_parser',
-     dry_run: Boolean(dryRun),
-   });
-   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
-+  const students = await getStudentsForMixedRecording(projectKey || inferProjectKeyFromTranscript(rawInput));
-+  const progressOnlyClassParse = await generateMixedRecordingParse({ job, students });
-+  const progressOnlyParsed = {
+     review: applied?.counts?.review ?? (intake?.review_items || parsed.review_items || []).length,
+   };
+ }
++
++function progressOnlyMixedRecordingParsePayload(parsed = {}) {
++  const report = parsed.report && typeof parsed.report === 'object' && !Array.isArray(parsed.report)
++    ? parsed.report
++    : {};
++  return {
 +    tasks: [],
 +    accountability_events: [],
 +    class_notes: [],
-+    group_goal_entries: Array.isArray(progressOnlyClassParse.group_goal_entries)
-+      ? progressOnlyClassParse.group_goal_entries
++    group_goal_entries: Array.isArray(parsed.group_goal_entries)
++      ? parsed.group_goal_entries.slice(0, 60)
 +      : [],
-+    daily_torah_updates: Array.isArray(progressOnlyClassParse.daily_torah_updates)
-+      ? progressOnlyClassParse.daily_torah_updates
++    daily_torah_updates: Array.isArray(parsed.daily_torah_updates)
++      ? parsed.daily_torah_updates.slice(0, 60)
 +      : [],
 +    report: {
-+      ...(progressOnlyClassParse.report || {}),
++      ...report,
 +      parser: 'mixed-recording-progress-only',
-+      note: 'Tasks, class notes, and direct accountability rows are intentionally suppressed here to avoid duplicating canonical intake output.',
++      note: 'Tasks, class notes, and direct accountability rows are suppressed here to avoid duplicating canonical intake output. Progress rows still create timer accountability events through persistMixedRecordingParse.',
 +    },
 +  };
++}
++
++async function contentJobHasProgressOnlyWrites(contentJobId, db = pool) {
++  if (!contentJobId) return false;
++  const groupRows = await db.query(
++    `SELECT id
++     FROM bna_group_goal_entries
++     WHERE source_content_job_id = $1
++     LIMIT 1`,
++    [contentJobId]
++  );
++  if (groupRows.rows[0]) return true;
++
++  const timerEvents = await db.query(
++    `SELECT id
++     FROM bna_accountability_events
++     WHERE source = 'recording'
++       AND source_message_id = $1
++       AND metadata::text ILIKE '%mixed-recording-v1%'
++       AND metadata::text ILIKE '%timer_mapping%'
++     LIMIT 1`,
++    [String(contentJobId)]
++  );
++  return Boolean(timerEvents.rows[0]);
++}
++
++async function persistProgressOnlyMixedRecordingParse({
++  job = {},
++  previousParse = {},
++  projectKey = '',
++  students = [],
++  progressOnlyParsed = null,
++} = {}) {
++  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(job?.transcript_text || '') || DEFAULT_PROJECT_KEY;
++  const effectiveStudents = students.length
++    ? students
++    : await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
++  const parsedPayload = progressOnlyParsed
++    || progressOnlyMixedRecordingParsePayload(await generateMixedRecordingParse({ job, students: effectiveStudents }));
++  const markedApplied = Boolean(previousParse?.mixed_recording_parse?.progress_only?.applied_at);
++  const existingWrites = job.id ? await contentJobHasProgressOnlyWrites(job.id) : false;
++  if (markedApplied || existingWrites) {
++    return {
++      skipped_existing: true,
++      parsed: parsedPayload,
++      counts: {
++        group_goal_entries: 0,
++        daily_torah_updates: 0,
++        torah_learning_entries: 0,
++        accountability_events: 0,
++      },
++      created: {
++        group_goal_entries: [],
++        daily_torah_updates: [],
++        torah_learning_entries: [],
++        accountability_events: [],
++      },
++    };
++  }
++
++  return persistMixedRecordingParse({
++    job,
++    parsed: parsedPayload,
++    students: effectiveStudents,
++    previousParse,
++    dryRun: false,
++    archiveSourceAfterParse: false,
++    contentBacked: false,
++    projectKey: effectiveProjectKey,
++  });
++}
+async function parseMixedRecordingSource({
+   job = {},
+   instruction = '',
+   previousParse = {},
+@@
+     dry_run: Boolean(dryRun),
+   });
+   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
++  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(rawInput) || DEFAULT_PROJECT_KEY;
++  const students = await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
++  const progressOnlyParsed = progressOnlyMixedRecordingParsePayload(
++    await generateMixedRecordingParse({ job, students })
++  );
    if (dryRun) {
 +    const progressOnlyDryRun = await persistMixedRecordingParse({
 +      job,
@@ -49,9 +123,9 @@ diff --git a/server.js b/server.js
 +      students,
 +      previousParse,
 +      dryRun: true,
-+      archiveSourceAfterParse,
-+      contentBacked,
-+      projectKey,
++      archiveSourceAfterParse: false,
++      contentBacked: false,
++      projectKey: effectiveProjectKey,
 +    });
      return {
        success: true,
@@ -65,36 +139,40 @@ diff --git a/server.js b/server.js
        counts: mixedRecordingCountsFromApply(null, intake),
        report: parsed.report,
 @@
-   if (contentBacked && job.id) {
-     await pool.query(
-       `UPDATE bna_content_jobs
-        SET parse_json = $1::jsonb,
-            status = CASE WHEN $2 THEN 'archived' ELSE status END,
+     };
+   }
+-  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: projectKey || DEFAULT_PROJECT_KEY });
++  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: effectiveProjectKey });
+   const counts = mixedRecordingCountsFromApply(applied, intake);
+   const nextParse = {
+     ...(previousParse || {}),
+     intake_parse_run_id: intake.parse_run.id,
 @@
        [JSON.stringify(nextParse), Boolean(archiveSourceAfterParse), job.id]
      );
    }
-+  const progressOnlyResult = await persistMixedRecordingParse({
++  const progressOnlyResult = await persistProgressOnlyMixedRecordingParse({
 +    job,
-+    parsed: progressOnlyParsed,
++    previousParse: nextParse,
++    projectKey: effectiveProjectKey,
 +    students,
-+    previousParse: {
-+      ...nextParse,
-+      canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
-+    },
-+    dryRun: false,
-+    archiveSourceAfterParse,
-+    contentBacked,
-+    projectKey,
++    progressOnlyParsed,
 +  });
-+  nextParse.mixed_recording_parse = {
-+    ...nextParse.mixed_recording_parse,
-+    progress_only: {
-+      parser: 'mixed-recording-progress-only',
-+      parsed_at: new Date().toISOString(),
-+      counts: progressOnlyResult.counts,
-+      group_goal_entries: progressOnlyParsed.group_goal_entries.length,
-+      daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
++  const combinedParse = {
++    ...nextParse,
++    canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
++    mixed_recording_parse: {
++      ...nextParse.mixed_recording_parse,
++      progress_only: {
++        parser: 'mixed-recording-progress-only',
++        parsed_at: new Date().toISOString(),
++        applied_at: progressOnlyResult.skipped_existing ? null : new Date().toISOString(),
++        skipped_existing: Boolean(progressOnlyResult.skipped_existing),
++        counts: progressOnlyResult.counts || {},
++        group_goal_entries: progressOnlyParsed.group_goal_entries.length,
++        daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
++        report: progressOnlyParsed.report,
++      },
 +    },
 +  };
 +  if (contentBacked && job.id) {
@@ -103,18 +181,20 @@ diff --git a/server.js b/server.js
 +       SET parse_json = $1::jsonb,
 +           updated_at = NOW()
 +       WHERE id = $2`,
-+      [JSON.stringify(nextParse), job.id]
++      [JSON.stringify(combinedParse), job.id]
 +    );
 +  }
    return {
      success: true,
      dry_run: false,
      raw_intake: intake.raw_intake,
-     parse_run: intake.parse_run,
 @@
+     counts,
      report: parsed.report,
      created: applied.created,
+-    parse_json: nextParse,
 +    progress_only_created: progressOnlyResult.created,
-     parse_json: nextParse,
++    progress_only_counts: progressOnlyResult.counts,
++    parse_json: combinedParse,
    };
  }

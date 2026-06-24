@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T13:32:15.194Z",
+  "generated_at": "2026-06-24T13:44:04.980Z",
   "source_id": "RAW-20260624-003",
   "source_path": "raw-input/RAW-20260624-003-class-drive-intake-goal.md",
   "no_production_mutation": true,
@@ -110,6 +110,7 @@
       "classification": "requirement",
       "evidence_paths": [
         "tests/class-drive-intake-reconcile.test.js",
+        "tests/class-drive-intake-shared-patch.test.js",
         "ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md"
       ],
       "evidence_present": true
@@ -132,7 +133,8 @@
       "requirement_id": "REQ-20260624-107",
       "classification": "requirement",
       "evidence_paths": [
-        "ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff"
+        "ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff",
+        "tests/class-drive-intake-shared-patch.test.js"
       ],
       "evidence_present": true
     },

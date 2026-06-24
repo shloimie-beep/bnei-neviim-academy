@@ -1,6 +1,6 @@
 # Class/Drive Intake Source Coverage
 
-Generated: 2026-06-24T13:32:15.194Z
+Generated: 2026-06-24T13:44:04.980Z
 Source: RAW-20260624-003
 No production mutation: true
 

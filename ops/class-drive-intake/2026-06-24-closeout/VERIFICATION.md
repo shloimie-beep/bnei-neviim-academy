@@ -9,10 +9,11 @@ No production mutation was performed.
 - `node --check src\lib\bna\class-drive-intake-reconcile.js`
 - `node --check scripts\class-drive-intake-reconcile.cjs`
 - `node --test tests\class-drive-intake-reconcile.test.js`
-- `node --test tests\class-drive-intake-reconcile.test.js tests\student-match.test.js tests\torah-learning.test.js tests\telegram-media-routing.test.js tests\intake-parser-class-recording.test.js tests\intake-parser-student-questions.test.js tests\parent-progress-privacy.test.js tests\parent-student-portal-contract.test.js` passed 82/82
+- `node --test tests\class-drive-intake-shared-patch.test.js`
+- `node --test tests\class-drive-intake-reconcile.test.js tests\class-drive-intake-shared-patch.test.js tests\student-match.test.js tests\torah-learning.test.js tests\telegram-media-routing.test.js tests\intake-parser-class-recording.test.js tests\intake-parser-student-questions.test.js tests\parent-progress-privacy.test.js tests\parent-student-portal-contract.test.js` passed 86/86
 - JSON parse check passed for `PIPELINE-CENSUS.json` and `BACKFILL-RECOMMENDATION.json`
 - Lane source coverage passed: `SOURCE-COVERAGE.json` maps 12/12 source statements, with 0 unmapped executable statements and 0 missing evidence paths
-- `npm run secrets:audit` passed: 4421 tracked paths checked, 0 tracked secret-risk files found
+- `npm run secrets:audit` passed: 4422 tracked paths checked, 0 tracked secret-risk files found
 - `git diff --check` passed
 
 ## Blocked / Not Applicable In This Lane
