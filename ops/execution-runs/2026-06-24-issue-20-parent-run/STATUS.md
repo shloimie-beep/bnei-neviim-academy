@@ -78,3 +78,24 @@
   private page capture, send, charge, DNS change, credential change, class
   backfill, Drive write, public publishing, or secret exposure was performed.
 - Current batch moved to `REQ-20260624-044`.
+
+2026-06-25T00:05:00+03:00:
+
+- `REQ-20260624-044` durable agent result drop-off and GitHub bridge is locally
+  verified and blocked from terminal Done only by deploy/live proof.
+- Added the durable agent result packet normalizer, typed
+  `record_agent_result` action, admin result API route, Operations activity
+  evidence/GitHub link rendering, and an approval-gated GitHub same-thread
+  status preview/post path.
+- Focused syntax, action, agent-control, Operations activity, GitHub intake
+  preview, action watchdog, static marker, and JSON checks passed.
+- The full `tests/system-truth-scripts.test.js` file still has an unrelated
+  environment-sensitive return-packet assertion, so the focused GitHub
+  intake/status preview test is the Batch D verifier.
+- No GitHub status comment, deploy, production mutation, external write, send,
+  charge, DNS change, credential change, class backfill, Drive write, browser
+  private capture, public publishing, or secret exposure was performed.
+- Post-closeout validation passed: run validate, source coverage, stale
+  evidence, JSON/JSONL parse, secret audit, diff check, and next-batch
+  selection.
+- Current batch moved to `REQ-20260624-045`.

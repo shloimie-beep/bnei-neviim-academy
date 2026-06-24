@@ -394,10 +394,10 @@
       "depends_on": [
         "REQ-20260624-040"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_after_baseline",
+      "status": "blocked",
+      "implementation_status": "blocked_local_verified_deploy_live_pending",
       "can_continue_without_operator": true,
-      "next_action": "Verify or implement the typed result API/action and GitHub issue/comment idempotent intake path.",
+      "next_action": "Continue to REQ-20260624-045 while final deploy/live proof remains gated by REQ-20260624-048.",
       "acceptance_criteria": [
         "Result payload includes source/raw ID, task/requirement ID, run ID, branch/worktree, commit/PR, tests, deploy/live state, evidence, blockers, summary, machine payload, and timestamp.",
         "Writes are idempotent and scoped, and do not overwrite owner text or another workspace.",
@@ -406,21 +406,59 @@
         "Final status posts back to the same GitHub issue/comment thread with canonical IDs and evidence."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-RESULT-BRIDGE.md",
+        "src/lib/bna/agent-result-packet.js",
+        "src/lib/actions/actions/operations.js",
+        "src/lib/actions/registry.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/intake-github.mjs",
+        "tests/action-registry-telegram-ui-bot.test.js",
+        "tests/system-truth-scripts.test.js",
+        "ops/action-registry.json",
+        "ops/watchdog-audits/2026-06-24T21-01-watchdog-action-audit.md",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending API/action, UI, and GitHub bridge proof."
+        "PASS node --check scripts\\intake-github.mjs",
+        "PASS node --check src\\lib\\bna\\agent-result-packet.js",
+        "PASS node --check src\\lib\\actions\\actions\\operations.js",
+        "PASS node --check src\\lib\\actions\\registry.js",
+        "PASS node --check tests\\action-registry-telegram-ui-bot.test.js",
+        "PASS node --check tests\\system-truth-scripts.test.js",
+        "PASS node --test tests\\action-registry-telegram-ui-bot.test.js 35/35",
+        "PASS node --test tests\\agent-control-api-readback.test.js 2/2",
+        "PASS node --test tests\\operations-activity-queue-health-ui.test.js 3/3",
+        "PASS node --test --test-name-pattern \"GitHub intake preview\" tests\\system-truth-scripts.test.js 1/1",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS static marker check for server route, typed action, and Operations UI link functions",
+        "PASS ops/action-registry.json parse",
+        "NOTE full node --test tests\\system-truth-scripts.test.js has an unrelated environment-sensitive return-packet assertion and was not used as the Batch D gate",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4720 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-045"
       ],
       "implementation_files": [
+        "src/lib/bna/agent-result-packet.js",
+        "src/lib/actions/actions/operations.js",
+        "src/lib/actions/registry.js",
         "server.js",
-        "public/",
-        "scripts/",
-        "tests/"
+        "public/operations.html",
+        "scripts/intake-github.mjs",
+        "tests/action-registry-telegram-ui-bot.test.js",
+        "tests/system-truth-scripts.test.js",
+        "ops/action-registry.json"
       ],
       "deployment_required": true,
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-25T00:08:00+03:00",
+      "blocker": "Server-visible/API/UI agent result bridge changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke the agent result API/UI/GitHub bridge."
     },
     {
       "id": "REQ-20260624-045",
@@ -659,6 +697,19 @@
       "status": "blocked",
       "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
       "blocker": "Server-visible helper behavior needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_result_bridge|GITHUB-ISSUE-20|REQ-20260624-044|agent_result_bridge",
+      "title": "Issue #20 durable agent result drop-off and GitHub bridge",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-044",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "Server-visible/API/UI result bridge behavior needs deploy/live smoke before Done.",
       "blocker_owner": "Codex / Railway account owner",
       "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
     }

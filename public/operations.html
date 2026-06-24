@@ -13672,6 +13672,49 @@
             }).filter(Boolean);
         }
 
+        function taskActivityLinks(item = {}) {
+            const metadata = parseJsonField(item.metadata) || {};
+            const packet = metadata.result_packet || {};
+            const github = packet.github || {};
+            const candidates = [
+                ...(Array.isArray(metadata.evidence_links) ? metadata.evidence_links : []),
+                ...(Array.isArray(metadata.github_links) ? metadata.github_links : []),
+                ...(Array.isArray(packet.evidence) ? packet.evidence : []),
+                github.issue_url ? { label: 'GitHub issue', url: github.issue_url, kind: 'github issue' } : null,
+                github.comment_url ? { label: 'GitHub comment', url: github.comment_url, kind: 'github comment' } : null,
+                github.pull_request?.url ? { label: 'Pull request', url: github.pull_request.url, kind: 'pull request' } : null,
+                github.commit_url ? { label: 'Commit', url: github.commit_url, kind: 'commit' } : null,
+            ].filter(Boolean);
+            const seen = new Set();
+            return candidates.map((link) => {
+                const itemLink = typeof link === 'string' ? { repo_path: link } : (link || {});
+                const repoPath = String(itemLink.repo_path || itemLink.repoPath || itemLink.path || '').trim();
+                const url = String(itemLink.url || '').trim() || artifactPathUrl(repoPath);
+                const key = repoPath || url;
+                if (!key || seen.has(key)) return null;
+                seen.add(key);
+                return {
+                    label: String(itemLink.label || itemLink.kind || 'Result link').replace(/_/g, ' '),
+                    url,
+                    status: String(itemLink.status || 'unchecked').toLowerCase(),
+                };
+            }).filter(Boolean);
+        }
+
+        function renderTaskActivityLinks(item = {}) {
+            const links = taskActivityLinks(item);
+            if (!links.length) return '';
+            return `
+                <div class="task-proof-links">
+                    ${links.map((link) => {
+                        const label = `${link.label}${link.status && !['valid', 'verified', 'unchecked'].includes(link.status) ? ` - ${link.status}` : ''}`;
+                        return `<a class="task-proof-link" href="${escapeHtml(link.url)}" target="_blank" rel="noreferrer" onclick="event.stopPropagation()">${escapeHtml(label)}</a>`;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+
         function taskProofBadgeLabel(task = {}) {
             const status = taskWorkflowStatus(task);
             const proofStatus = taskProofStatus(task);
@@ -13969,6 +14012,7 @@
                                             <div>
                                                 <strong>${escapeHtml(String(item.activity_type || 'activity').replace(/_/g, ' '))}</strong>
                                                 <p>${escapeHtml([item.summary, item.actor, formatDateTime(item.created_at)].filter(Boolean).join(' / '))}</p>
+                                                ${renderTaskActivityLinks(item)}
                                             </div>
                                         </div>
                                     `).join('')}

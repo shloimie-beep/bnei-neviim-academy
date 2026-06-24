@@ -12,10 +12,10 @@ not authorize active GHL runtime paths.
   `codex/issue-20-parent-run-20260624`. Scope: visual-quality gate,
   persistent agent browser, bot/helper accuracy, durable result drop-off,
   background agent fleet execution, queue hygiene, owner walkthrough, and final
-  integration/deploy/live closeout. Current batch: `REQ-20260624-044`
-  durable agent result drop-off and GitHub bridge. `REQ-20260624-041` and
-  `REQ-20260624-043` are locally verified and blocked from Done only by final
-  deploy/live proof.
+  integration/deploy/live closeout. Current batch: `REQ-20260624-045`
+  agent fleet hardening, permission tiers, startup, and parallel lanes.
+  `REQ-20260624-041`, `REQ-20260624-043`, and `REQ-20260624-044` are locally
+  verified and blocked from Done only by final deploy/live proof.
   `REQ-20260624-042` is done locally with the persistent browser harness
   initialized outside the repo. Baseline truth readback and the parent
   coordination manifest are recorded.

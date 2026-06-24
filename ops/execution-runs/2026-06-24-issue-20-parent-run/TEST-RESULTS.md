@@ -71,9 +71,37 @@
   JSON/JSONL parse, `npm run secrets:audit` with 4713 tracked paths and 0
   tracked secret-risk files, `git diff --check`, and `npm run bna:run:next`
   selected `REQ-20260624-044`.
+- `node --check scripts\intake-github.mjs` passed.
+- `node --check src\lib\bna\agent-result-packet.js` passed.
+- `node --check src\lib\actions\actions\operations.js` passed.
+- `node --check src\lib\actions\registry.js` passed.
+- `node --check tests\action-registry-telegram-ui-bot.test.js` passed.
+- `node --check tests\system-truth-scripts.test.js` passed.
+- `node --test tests\action-registry-telegram-ui-bot.test.js` passed 35/35.
+- `node --test tests\agent-control-api-readback.test.js` passed 2/2.
+- `node --test tests\operations-activity-queue-health-ui.test.js` passed 3/3.
+- `node --test --test-name-pattern "GitHub intake preview" tests\system-truth-scripts.test.js` passed 1/1.
+- `npm run watchdog:actions` passed with 0 findings and wrote
+  `ops/watchdog-audits/2026-06-24T21-01-watchdog-action-audit.md`.
+- Static marker check confirmed the result API route, typed action, and
+  Operations activity link functions are present.
+- `ops/action-registry.json` parsed successfully.
+- Post-agent-result execution-run validation passed:
+  `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
+  `npm run bna:run:stale-evidence`, JSON/JSONL parse,
+  `npm run secrets:audit` with 4720 tracked paths and 0 tracked
+  secret-risk files, `git diff --check`, and `npm run bna:run:next`
+  selected `REQ-20260624-045`.
+
+## Known Non-Blocking Test Note
+
+- Full `node --test tests\system-truth-scripts.test.js` is not used as the
+  Batch D gate because an unrelated environment-sensitive return-packet
+  assertion currently reflects the dirty active worktree. The focused GitHub
+  intake/status preview test passed.
 
 ## Pending
 
 - Focused tests for remaining implementation lanes, starting with
-  `REQ-20260624-044`.
+  `REQ-20260624-045`.
 - Full repository tests and watchdogs before final closeout.

@@ -93,9 +93,34 @@ Helper destination readback summary:
   URL handling.
 - Server-visible Done remains blocked pending deploy/live proof.
 
+## Agent Result Bridge Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-RESULT-BRIDGE.md`
+- `src/lib/bna/agent-result-packet.js`
+- `src/lib/actions/actions/operations.js`
+- `src/lib/actions/registry.js`
+- `server.js`
+- `public/operations.html`
+- `scripts/intake-github.mjs`
+- `tests/action-registry-telegram-ui-bot.test.js`
+- `tests/system-truth-scripts.test.js`
+- `ops/action-registry.json`
+- `ops/watchdog-audits/2026-06-24T21-01-watchdog-action-audit.md`
+
+Agent result bridge readback summary:
+
+- Result packets are normalized with stable idempotency keys and redacted
+  evidence/GitHub metadata.
+- The typed action/API route records scoped job events, task activity, internal
+  task comments, and proof links without external writes or owner-text
+  overwrite.
+- Operations activity rows render saved evidence and GitHub links.
+- GitHub status comments are same-thread, marker-based, redacted, and blocked
+  by explicit post approval gates; no GitHub status comment was posted.
+- Server-visible/API/UI Done remains blocked pending deploy/live proof.
+
 ## Pending Evidence
 
-- Result drop-off/GitHub bridge proof.
 - Fleet/startup/parallel lane proof.
 - Queue hygiene proof.
 - Owner walkthrough proof.

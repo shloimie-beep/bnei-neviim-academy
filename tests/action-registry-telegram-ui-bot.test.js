@@ -39,6 +39,7 @@ test('core Telegram/UI operations are present in the registry', () => {
     'draft_email',
     'create_task',
     'update_task_stage',
+    'record_agent_result',
     'retitle_task_naturally',
     'add_decision_option',
     'schedule_task_on_date',
@@ -82,6 +83,103 @@ test('core Telegram/UI operations are present in the registry', () => {
   ]) {
     assert.ok(getAction(actionId), `${actionId} should exist`);
   }
+});
+
+test('record_agent_result normalizes a durable result packet in dry run', async () => {
+  const result = await runAction({
+    action_id: 'record_agent_result',
+    dry_run: true,
+    source: 'agent_result_api',
+    role: 'technical_agent',
+    workspace_id: 'bna',
+    inputs: {
+      source_raw_id: 'RAW-20260624-009',
+      task_id: 42,
+      requirement_id: 'REQ-20260624-044',
+      agent_run_id: '2026-06-24-issue-20-parent-run',
+      branch: 'codex/issue-20-parent-run-20260624',
+      commit: 'abc123',
+      summary: 'Local result saved and verified.',
+      tests: ['PASS node --test tests/example.test.js'],
+      deployment: { required: true, status: 'blocked_live_pending' },
+      evidence: ['ops/execution-runs/2026-06-24-issue-20-parent-run/STATUS.md'],
+      github: { issue_url: 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/20' },
+    },
+  });
+
+  assert.equal(result.success, true);
+  assert.equal(result.executed, false);
+  assert.equal(result.preview.result_packet.contract_version, 'bna-agent-result-packet-v1');
+  assert.equal(result.preview.result_packet.source_raw_id, 'RAW-20260624-009');
+  assert.equal(result.preview.result_packet.requirement_id, 'REQ-20260624-044');
+  assert.match(result.preview.idempotency_key, /^agent-result:/);
+  assert.equal(result.preview.evidence_links[0].repo_path, 'ops/execution-runs/2026-06-24-issue-20-parent-run/STATUS.md');
+  assert.equal(result.preview.github_links[0].url, 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/20');
+  assert.equal(result.preview.external_write_performed, false);
+});
+
+test('record_agent_result appends task activity, comment, and job event without external writes', async () => {
+  const queries = [];
+  const db = {
+    async query(sql, params = []) {
+      queries.push({ sql: String(sql), params });
+      if (/INSERT INTO bna_bot_action_logs/.test(sql)) {
+        return { rows: [{ id: queries.length, status: 'executed' }] };
+      }
+      if (/FROM bna_agent_jobs j\s+WHERE j\.id = \$1/i.test(sql)) {
+        return { rows: [{ id: 77, task_id: 42, ticket_id: null, status: 'running' }] };
+      }
+      if (/FROM bna_agent_job_events/i.test(sql) && /metadata->>'idempotency_key'/.test(sql)) {
+        return { rows: [] };
+      }
+      if (/FROM bna_task_activity/i.test(sql) && /metadata->>'idempotency_key'/.test(sql)) {
+        return { rows: [] };
+      }
+      if (/UPDATE bna_agent_jobs/.test(sql)) {
+        return { rows: [{ id: 77, task_id: 42, status: params[0], result_summary: params[1] }] };
+      }
+      if (/INSERT INTO bna_agent_job_events/.test(sql)) {
+        return { rows: [{ id: 901, job_id: params[0], task_id: params[2], event_type: 'agent_result_saved' }] };
+      }
+      if (/UPDATE bna_tasks/.test(sql)) {
+        return { rows: [{ id: params[3], agent_status: params[0], agent_job_id: params[1] }] };
+      }
+      if (/INSERT INTO bna_task_activity/.test(sql)) {
+        return { rows: [{ id: 902, task_id: params[0], activity_type: 'agent_result_saved' }] };
+      }
+      if (/INSERT INTO bna_task_comments/.test(sql)) {
+        return { rows: [{ id: 903, task_id: params[0], body: params[2] }] };
+      }
+      return { rows: [] };
+    },
+  };
+
+  const result = await runAction({
+    action_id: 'record_agent_result',
+    source: 'agent_result_api',
+    role: 'technical_agent',
+    workspace_id: 'bna',
+    inputs: {
+      agent_job_id: 77,
+      task_id: 42,
+      requirement_id: 'REQ-20260624-044',
+      summary: 'Saved durable result.',
+      evidence: ['ops/agent-task-ledger.jsonl'],
+      github: { comment_url: 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/20#issuecomment-1' },
+      idempotency_key: 'agent-result:test-fixture',
+    },
+  }, { db, source: 'agent_result_api' });
+
+  assert.equal(result.success, true);
+  assert.equal(result.executed, true);
+  assert.equal(result.result.result_saved, true);
+  assert.equal(result.result.local_write_performed, true);
+  assert.equal(result.result.external_write_performed, false);
+  assert.ok(queries.some((query) => /UPDATE bna_agent_jobs/.test(query.sql)));
+  assert.ok(queries.some((query) => /INSERT INTO bna_agent_job_events/.test(query.sql)));
+  assert.ok(queries.some((query) => /INSERT INTO bna_task_activity/.test(query.sql)));
+  assert.ok(queries.some((query) => /INSERT INTO bna_task_comments/.test(query.sql)));
+  assert.equal(queries.some((query) => /gh api|SEND_|buffer|leadconnector|ghl/i.test(query.sql)), false);
 });
 
 test('parent/student problem reports create review tickets without Codex tasks', async () => {

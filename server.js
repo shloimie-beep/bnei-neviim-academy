@@ -20282,7 +20282,10 @@ async function addTaskSystemComment(taskId, body, { author = 'system', source = 
 }
 
 const TASK_ARTIFACT_ALLOWED_PREFIXES = [
+  'ops/execution-runs/',
   'ops/agent-fleet-runs/',
+  'ops/watchdog-audits/',
+  'ops/helper-destination-qa/',
   'ops/system-audits/',
   'ops/agent-changelog.md',
   'ops/agent-task-ledger.jsonl',
@@ -62065,6 +62068,36 @@ app.post('/api/bna/agent-jobs/:id/heartbeat', requireAdmin, async (req, res) => 
     res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
+
+app.post('/api/bna/agent-jobs/:id/result', requireAdmin, async (req, res) => {
+  try {
+    const job = await fetchObservableAgentJob(req.params.id);
+    if (!job) return res.status(404).json({ error: 'Agent job not found' });
+    assertProjectAccess(req, { project_key: job.project_key });
+    const body = req.body || {};
+    const workspaceKey = assertWorkspaceAccess(req, body.workspace_key || body.workspace || defaultWorkspaceKeyForRequest(req));
+    const result = await runAction({
+      action_id: 'record_agent_result',
+      inputs: {
+        ...body,
+        agent_job_id: req.params.id,
+        task_id: body.task_id || body.taskId || job.task_id || null,
+      },
+      source: body.source || 'agent_result_api',
+      dry_run: Boolean(body.dry_run || body.dryRun),
+      approved: true,
+      actor: {
+        user_id: req.opsUser || body.user_id || 'admin',
+        role: body.actor_role || body.role || req.opsIdentity?.role || 'technical_agent',
+        workspace_id: workspaceKey,
+      },
+    }, actionRunnerContext(req, body.source || 'agent_result_api'));
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 
 app.post('/api/bna/agent-jobs/:id/complete', requireAdmin, async (req, res) => {
   try {

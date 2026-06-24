@@ -216,4 +216,52 @@ test('GitHub intake preview is idempotent and redacts secret-like text', async (
   assert.equal(first.trusted_source, true);
   assert.doesNotMatch(JSON.stringify(first), /not_a_real_secret_fixture/);
   assert.match(first.source_envelope.excerpt, /\[redacted/);
+  const statusPreview = mod.buildGitHubStatusPreview({
+    issue,
+    comments: [],
+    repo: 'shloimie-beep/bnei-neviim-academy',
+    status: {
+      status: 'blocked_live_pending',
+      summary: 'Completed local closeout. api_key=not_a_real_secret_fixture',
+      raw_id: 'RAW-20260624-009',
+      requirement_id: 'REQ-20260624-044',
+      run_id: '2026-06-24-issue-20-parent-run',
+      branch: 'codex/issue-20-parent-run-20260624',
+      commit: 'abcdef1',
+      pull_request: 'https://github.com/shloimie-beep/bnei-neviim-academy/pull/22',
+      evidence: ['ops/execution-runs/2026-06-24-issue-20-parent-run/STATUS.md']
+    }
+  });
+  const statusPreviewAgain = mod.buildGitHubStatusPreview({
+    issue,
+    comments: [],
+    repo: 'shloimie-beep/bnei-neviim-academy',
+    status: {
+      status: 'blocked_live_pending',
+      summary: 'Completed local closeout. api_key=not_a_real_secret_fixture',
+      raw_id: 'RAW-20260624-009',
+      requirement_id: 'REQ-20260624-044',
+      run_id: '2026-06-24-issue-20-parent-run',
+      commit: 'abcdef1'
+    }
+  });
+  assert.equal(statusPreview.idempotency_key, statusPreviewAgain.idempotency_key);
+  assert.match(statusPreview.body, /REQ-20260624-044/);
+  assert.match(statusPreview.body, /ops\/execution-runs\/2026-06-24-issue-20-parent-run\/STATUS\.md/);
+  assert.doesNotMatch(statusPreview.body, /not_a_real_secret_fixture/);
+  assert.equal(statusPreview.external_write_performed, false);
+  const replayPreview = mod.buildGitHubStatusPreview({
+    issue,
+    comments: [{ id: 99, body: statusPreview.body, html_url: 'https://github.com/example/repo/issues/7#issuecomment-99' }],
+    repo: 'shloimie-beep/bnei-neviim-academy',
+    status: {
+      status: 'blocked_live_pending',
+      raw_id: 'RAW-20260624-009',
+      requirement_id: 'REQ-20260624-044',
+      run_id: '2026-06-24-issue-20-parent-run',
+      commit: 'abcdef1'
+    }
+  });
+  assert.equal(replayPreview.existing_comment_id, 99);
+  assert.equal(replayPreview.would_create_comment, false);
 });

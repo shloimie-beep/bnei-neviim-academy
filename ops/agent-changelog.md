@@ -26228,3 +26228,34 @@ server-visible helper behavior and requires deploy/live proof under
 profile screenshot, private page capture, send, charge, DNS change, credential
 change, class backfill, Drive write, public publishing, or secret exposure was
 performed. Next Issue #20 batch is `REQ-20260624-044`.
+
+## 2026-06-25T00:05:00+03:00 - Issue #20 Agent Result Bridge Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-044`. Added
+the durable agent result packet normalizer, typed `record_agent_result` action,
+admin result API route, Operations activity evidence/GitHub link rendering, and
+approval-gated same-thread GitHub status preview/post support.
+
+The result action normalizes raw/source IDs, task/job/requirement IDs, run and
+Git state, tests, deployment state, evidence, blockers, summary, machine
+payload, GitHub metadata, timestamp, and a stable idempotency key. Execution
+records scoped job events, task activity, internal comments, and proof links
+without external writes or owner-text overwrite. GitHub status posting remains
+blocked behind explicit environment and approval-phrase gates; no status
+comment was posted.
+
+Verification passed: syntax checks for changed modules and tests, action
+registry result tests 35/35, agent-control API readback 2/2, Operations
+activity queue UI 3/3, focused GitHub intake/status preview 1/1,
+`npm run watchdog:actions` with 0 findings, static marker checks, and
+`ops/action-registry.json` parse. Post-closeout validation also passed for
+execution-run validate/source coverage/stale evidence, JSON/JSONL parsing,
+secret audit with 4720 tracked paths and 0 findings, diff check, and
+next-batch selection for `REQ-20260624-045`.
+
+`REQ-20260624-044` remains blocked from Done only because this is
+server-visible/API/UI behavior and requires deploy/live proof under
+`REQ-20260624-048`. No GitHub status comment, deploy, production mutation,
+external write, send, charge, DNS change, credential change, class backfill,
+Drive write, browser private capture, public publishing, or secret exposure was
+performed. Next Issue #20 batch is `REQ-20260624-045`.

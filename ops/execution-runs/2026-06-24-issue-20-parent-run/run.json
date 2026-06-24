@@ -2,7 +2,7 @@
   "run_id": "2026-06-24-issue-20-parent-run",
   "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
   "created_at": "2026-06-24T22:43:00+03:00",
-  "updated_at": "2026-06-24T23:50:00+03:00",
+  "updated_at": "2026-06-25T00:05:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -27,9 +27,9 @@
     "predecessor_issue_number": 18
   },
   "current_batch": {
-    "batch_id": "D",
-    "requirement_id": "REQ-20260624-044",
-    "title": "Durable agent result drop-off and GitHub bridge",
+    "batch_id": "E",
+    "requirement_id": "REQ-20260624-045",
+    "title": "Agent fleet hardening, permission tiers, startup, and parallel lanes",
     "status": "not_started"
   }
 }

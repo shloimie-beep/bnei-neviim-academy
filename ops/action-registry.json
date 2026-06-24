@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-24T23:45:00+03:00",
+  "updated_at": "2026-06-24T23:58:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -127,6 +127,25 @@
       ]
     },
     {
+      "action_id": "ACTION-AGENT-RESULT-RECORD",
+      "label": "Record agent result",
+      "surface": "operations_api",
+      "route": "/api/bna/agent-jobs/:id/result",
+      "selector_hint": "typed action record_agent_result",
+      "expected_behavior": "Appends an idempotent agent result packet to the scoped task/job activity and internal dialogue with evidence and GitHub links, without external writes or owner-text overwrite.",
+      "permission": "super_admin/technical_agent/system",
+      "status": "active",
+      "handler": "record_agent_result",
+      "test": {
+        "type": "api_and_action",
+        "expected_result": "Action normalizes the result packet, rejects duplicate idempotency keys, records task activity/comment/job event metadata, and performs no GitHub write."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "action_id": "ACTION-PROVIDER-CLASSROOM-DRAFT",
       "label": "Start a classroom draft",
       "surface": "provider_portal",
@@ -157,7 +176,11 @@
         "type": "static_and_browser",
         "expected_result": "API Usage nav appears only behind the preview flag/entitlement, shows the honest empty state, supports direct section deep-link/refresh/back behavior, and passes local responsive smoke at 390x844, 768x1024, and 1440x900 without horizontal overflow."
       },
-      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PROVIDER-SECTION-NAVIGATION",
@@ -172,7 +195,11 @@
         "type": "static_and_browser",
         "expected_result": "Provider navigation buttons are registered, active state is correct, direct links and browser back work, and no super-admin sections are rendered for the provider portal."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014"
+      ]
     },
     {
       "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
@@ -187,7 +214,12 @@
         "type": "static_and_browser",
         "expected_result": "Operations, provider, student, and parent password login pages render chooser links with this registered action id, use only server-provided redirect_to values, and pass the local responsive chooser smoke at 390x844, 768x1024, and 1440x900."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
@@ -959,7 +991,11 @@
         "type": "static_and_live_smoke",
         "expected_result": "Operations workspace taxonomy smoke confirms One Time view is scoped and Super Admin can intentionally switch back."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
@@ -974,7 +1010,12 @@
         "type": "unit_and_static",
         "expected_result": "tests/one-time-member-library.test.js verifies the exact approval phrase and smoke/rollback path."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-CLASS-PACKAGE-PREVIEW",
@@ -989,7 +1030,11 @@
         "type": "unit_and_static",
         "expected_result": "Preview endpoint returns package data and no external write flags."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-PREVIEW",
@@ -1004,7 +1049,11 @@
         "type": "unit_and_static",
         "expected_result": "Member preview endpoint performs no publish or notification writes."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
@@ -1019,7 +1068,12 @@
         "type": "unit_and_static",
         "expected_result": "Server approve-library route requires APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and appends audit evidence."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-PUBLISH",
@@ -1034,7 +1088,12 @@
         "type": "unit_and_static",
         "expected_result": "tests/one-time-member-library.test.js verifies approval phrase, member-library readback, and rollback path."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-ROLLBACK",
@@ -1049,7 +1108,12 @@
         "type": "unit_and_static",
         "expected_result": "Rollback endpoint records archived state and live smoke confirms item no longer appears in member-library readback."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
@@ -1064,7 +1128,11 @@
         "type": "unit_and_static",
         "expected_result": "POST /api/bna/live-sessions/:id/send-zoom-link defaults to dryRun=true and reports no sends."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
@@ -1079,7 +1147,12 @@
         "type": "unit_and_static",
         "expected_result": "UI requires confirm before dryRun=false; server scopes recipients to the live-session project."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-ACCESS-CODE-GENERATE",
@@ -1094,7 +1167,11 @@
         "type": "unit_and_static",
         "expected_result": "Operations UI confirms rotation and server endpoint is admin-only."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-ACCESS-LINK-OPEN",
@@ -1109,7 +1186,11 @@
         "type": "unit_and_static",
         "expected_result": "UI calls parent-access/link with send_email=false and send_whatsapp=false for open mode."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-ACCESS-LINK-EMAIL",
@@ -1124,7 +1205,12 @@
         "type": "unit_and_static",
         "expected_result": "Single-family email link action stays on explicit per-parent button and is not a bulk campaign."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
@@ -1139,7 +1225,12 @@
         "type": "unit_and_static",
         "expected_result": "Server rejects WhatsApp sends unless confirm is SEND_WHATSAPP."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-PASSWORD-SETUP-PREVIEW",
@@ -1154,7 +1245,11 @@
         "type": "unit_and_static",
         "expected_result": "Password setup endpoint returns dry_run=true, no_send=true, and external_write_performed=false."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
     },
     {
       "action_id": "ACTION-PARENT-PASSWORD-SETUP-SEND",
@@ -1169,7 +1264,12 @@
         "type": "unit_and_static",
         "expected_result": "Server rejects non-dry-run password setup unless confirm is SEND_PARENT_PASSWORD_SETUP."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-INTEGRATION-SETUP-OPEN",
@@ -1184,7 +1284,11 @@
         "type": "unit_and_static",
         "expected_result": "Operations owner setup panel links to /integration-setup.html and the route registry marks it credential-safe."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     },
     {
       "action_id": "ACTION-INTEGRATION-SETUP-VALIDATE",
@@ -1199,7 +1303,11 @@
         "type": "unit_and_static",
         "expected_result": "Button calls GET /api/bna/integration-setup/readiness through the Operations API client and performs no external write."
       },
-      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

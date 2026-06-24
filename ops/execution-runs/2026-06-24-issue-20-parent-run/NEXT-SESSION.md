@@ -11,7 +11,8 @@ Current branch:
 
 Open requirement:
 
-- `REQ-20260624-044` - Durable agent result drop-off and GitHub bridge.
+- `REQ-20260624-045` - Agent fleet hardening, permission tiers, startup, and
+  parallel lanes.
 
 Next safe step:
 
@@ -20,15 +21,15 @@ npm run bna:run:next
 ```
 
 Then recheck Git/GitHub/Railway/live baseline only if the branch or live
-target has changed. Otherwise begin Batch C using the parent coordination
+target has changed. Otherwise begin Batch E using the parent coordination
 rules in `COORDINATION.md` and `LANE-MANIFEST.json`.
 
-Batch B is locally complete. Batch C is locally verified and blocked from Done
-only by deploy/live proof under `REQ-20260624-048`. If
-`npm run bna:run:next` selects `REQ-20260624-044`, begin the durable typed
-agent result drop-off and GitHub issue/comment bridge. Preserve idempotency,
-scope, and owner text; do not overwrite another workspace or post to GitHub
-without the approved same-thread status path.
+Batches A, C, and D are locally verified and blocked from Done only by
+deploy/live proof under `REQ-20260624-048`. Batch B is Done. If
+`npm run bna:run:next` selects `REQ-20260624-045`, audit and harden the
+existing agent fleet rather than creating a second fleet. Preserve permission
+tiers, idempotency, active-run ownership, lane heartbeat evidence, and the
+Tier 3 approval boundary.
 
 Do not run Tier 3 actions without explicit approval:
 

@@ -39,7 +39,18 @@ export function parseGitHubReference(argv = []) {
     url: '',
     dryRun: false,
     json: false,
-    noWrite: false
+    noWrite: false,
+    postStatus: false,
+    approvalPhrase: '',
+    status: '',
+    statusSummary: '',
+    rawId: '',
+    requirement: '',
+    runId: '',
+    branch: '',
+    commit: '',
+    pr: '',
+    evidence: []
   };
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
@@ -50,6 +61,17 @@ export function parseGitHubReference(argv = []) {
     else if (arg === '--dry-run') args.dryRun = true;
     else if (arg === '--json') args.json = true;
     else if (arg === '--no-write') args.noWrite = true;
+    else if (arg === '--post-status') args.postStatus = true;
+    else if (arg === '--approval-phrase') args.approvalPhrase = argv[++index] || '';
+    else if (arg === '--status') args.status = argv[++index] || '';
+    else if (arg === '--status-summary') args.statusSummary = argv[++index] || '';
+    else if (arg === '--raw-id') args.rawId = argv[++index] || '';
+    else if (arg === '--requirement') args.requirement = argv[++index] || '';
+    else if (arg === '--run-id') args.runId = argv[++index] || '';
+    else if (arg === '--branch') args.branch = argv[++index] || '';
+    else if (arg === '--commit') args.commit = argv[++index] || '';
+    else if (arg === '--pr') args.pr = argv[++index] || '';
+    else if (arg === '--evidence') args.evidence.push(argv[++index] || '');
   }
 
   if (args.url) {
@@ -88,11 +110,94 @@ function issueUrl(repo, issueNumber, commentId = '') {
   return commentId ? `${base}#issuecomment-${commentId}` : base;
 }
 
+function statusArgsPresent(args = {}) {
+  return Boolean(args.status || args.statusSummary || args.rawId || args.requirement || args.runId || args.branch || args.commit || args.pr || args.evidence?.length || args.postStatus);
+}
+
+function buildStatusPayloadFromArgs(args = {}) {
+  return {
+    status: args.status || 'completed',
+    summary: args.statusSummary || 'BNA agent status recorded.',
+    raw_id: args.rawId || null,
+    requirement_id: args.requirement || null,
+    run_id: args.runId || null,
+    branch: args.branch || null,
+    commit: args.commit || null,
+    pull_request: args.pr || null,
+    evidence: (args.evidence || []).filter(Boolean)
+  };
+}
+
+export function buildGitHubStatusPreview({ repo = DEFAULT_REPO, issue, commentId = '', comments = [], status = {} } = {}) {
+  if (!issue?.number) throw new Error('issue payload with number is required');
+  const statusPayload = {
+    status: status.status || 'completed',
+    summary: redactPublicText(status.summary || 'BNA agent status recorded.'),
+    raw_id: status.raw_id || status.rawId || null,
+    requirement_id: status.requirement_id || status.requirementId || null,
+    run_id: status.run_id || status.runId || null,
+    branch: status.branch || null,
+    commit: status.commit || null,
+    pull_request: status.pull_request || status.pullRequest || status.pr || null,
+    evidence: (status.evidence || []).map((item) => redactPublicText(item)).filter(Boolean)
+  };
+  const idempotencyKey = `bna-github-status:${sha256([
+    repo,
+    issue.number,
+    commentId || 'issue',
+    statusPayload.raw_id || '',
+    statusPayload.requirement_id || '',
+    statusPayload.run_id || '',
+    statusPayload.commit || '',
+    statusPayload.status || ''
+  ].join('\n')).slice(0, 32)}`;
+  const marker = `<!-- ${idempotencyKey} -->`;
+  const body = [
+    marker,
+    '## BNA agent status',
+    '',
+    `Status: ${statusPayload.status}`,
+    `Summary: ${statusPayload.summary}`,
+    '',
+    'Canonical IDs:',
+    `- raw: ${statusPayload.raw_id || 'n/a'}`,
+    `- requirement: ${statusPayload.requirement_id || 'n/a'}`,
+    `- run: ${statusPayload.run_id || 'n/a'}`,
+    '',
+    'Git state:',
+    `- branch: ${statusPayload.branch || 'n/a'}`,
+    `- commit: ${statusPayload.commit || 'n/a'}`,
+    `- PR: ${statusPayload.pull_request || 'n/a'}`,
+    '',
+    'Evidence:',
+    ...(statusPayload.evidence.length ? statusPayload.evidence.map((item) => `- ${item}`) : ['- n/a']),
+    '',
+    commentId ? `Source comment: ${issueUrl(repo, issue.number, commentId)}` : `Source issue: ${issueUrl(repo, issue.number)}`
+  ].join('\n');
+  const existing = (comments || []).find((comment) => String(comment.body || '').includes(marker)) || null;
+  return {
+    generated_at: nowIso(),
+    idempotency_key: idempotencyKey,
+    target_url: issueUrl(repo, issue.number, commentId),
+    issue_number: issue.number,
+    comment_id: commentId || null,
+    body,
+    existing_comment_id: existing?.id || null,
+    existing_comment_url: existing?.html_url || null,
+    would_create_comment: !existing,
+    would_update_comment: Boolean(existing && String(existing.body || '') !== body),
+    external_write_performed: false,
+    approval_required: 'BNA_GITHUB_STATUS_POST_APPROVED=true and --approval-phrase POST_BNA_GITHUB_STATUS are required before posting.'
+  };
+}
 export function buildGitHubIntakePreview({ repo = DEFAULT_REPO, issue, comments = [], commentId = '' } = {}) {
   if (!issue?.number) throw new Error('issue payload with number is required');
   const selectedComments = commentId
     ? comments.filter((comment) => String(comment.id) === String(commentId))
     : comments;
+  const trustedActors = commentId && selectedComments.length
+    ? selectedComments.map((comment) => comment.user?.login || '')
+    : [issue.user?.login || ''];
   const body = [
     `# ${issue.title || `Issue #${issue.number}`}`,
     '',
@@ -157,7 +262,7 @@ export function buildGitHubIntakePreview({ repo = DEFAULT_REPO, issue, comments 
     issue_number: issue.number,
     comment_id: commentId || null,
     url: issueUrl(repo, issue.number, commentId),
-    trusted_source: TRUSTED_AUTHORS.has(issue.user?.login || ''),
+    trusted_source: trustedActors.every((actor) => TRUSTED_AUTHORS.has(actor)),
     source_envelope: {
       source_provider: source.source_provider,
       source_channel: source.source_channel,
@@ -230,8 +335,54 @@ function renderMarkdown(report) {
     ...Object.entries(report.parser_counts || {}).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join('; ') : value}`),
     '',
     `Apply blocker: ${report.apply_blocker}`,
+    ...(report.github_status ? [
+      '',
+      '## GitHub Status Packet',
+      '',
+      `- idempotency_key: ${report.github_status.idempotency_key}`,
+      `- target_url: ${report.github_status.target_url}`,
+      `- existing_comment_id: ${report.github_status.existing_comment_id || 'none'}`,
+      `- would_create_comment: ${report.github_status.would_create_comment}`,
+      `- would_update_comment: ${report.github_status.would_update_comment}`,
+      `- external_write_performed: ${report.github_status.external_write_performed}`,
+    ] : []),
     ''
   ].join('\n');
+}
+
+function ghApiWrite(method, pathname, fields = {}) {
+  const args = ['api', '-X', method, pathname];
+  for (const [key, value] of Object.entries(fields)) {
+    args.push('-f', `${key}=${value}`);
+  }
+  const result = spawnSync('gh', args, {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    maxBuffer: 1024 * 1024 * 8
+  });
+  if (result.status !== 0 || result.error) {
+    throw new Error(`gh api write failed for ${pathname}: ${String(result.stderr || result.error?.message || '').trim()}`);
+  }
+  return JSON.parse(result.stdout || '{}');
+}
+
+function postGitHubStatus({ repo = DEFAULT_REPO, issueNumber, preview, approvalPhrase = '' } = {}) {
+  if (process.env.BNA_GITHUB_STATUS_POST_APPROVED !== 'true' || approvalPhrase !== 'POST_BNA_GITHUB_STATUS') {
+    throw new Error('GitHub status posting requires BNA_GITHUB_STATUS_POST_APPROVED=true and --approval-phrase POST_BNA_GITHUB_STATUS.');
+  }
+  if (preview.existing_comment_id && !preview.would_update_comment) {
+    return { ...preview, external_write_performed: false, posted: false, idempotent_replay: true };
+  }
+  const posted = preview.existing_comment_id
+    ? ghApiWrite('PATCH', `repos/${repo}/issues/comments/${preview.existing_comment_id}`, { body: preview.body })
+    : ghApiWrite('POST', `repos/${repo}/issues/${issueNumber}/comments`, { body: preview.body });
+  return {
+    ...preview,
+    external_write_performed: true,
+    posted: true,
+    posted_comment_id: posted.id || preview.existing_comment_id || null,
+    posted_comment_url: posted.html_url || preview.existing_comment_url || null
+  };
 }
 
 function writeReport(report) {
@@ -252,12 +403,24 @@ function writeReport(report) {
 async function main(argv = process.argv.slice(2)) {
   const args = parseGitHubReference(argv);
   if (!args.issue) throw new Error('Use --issue <number> or --url <github issue url>.');
-  if (!args.dryRun) {
+  if (!args.dryRun && !args.postStatus) {
     throw new Error('Only --dry-run is currently supported; DB-backed apply remains gated.');
   }
   const issue = ghApi(`repos/${args.repo}/issues/${args.issue}`);
   const comments = ghApi(`repos/${args.repo}/issues/${args.issue}/comments`);
   const report = buildGitHubIntakePreview({ repo: args.repo, issue, comments, commentId: args.comment });
+  if (statusArgsPresent(args)) {
+    const statusPreview = buildGitHubStatusPreview({
+      repo: args.repo,
+      issue,
+      comments,
+      commentId: args.comment,
+      status: buildStatusPayloadFromArgs(args)
+    });
+    report.github_status = args.postStatus
+      ? postGitHubStatus({ repo: args.repo, issueNumber: issue.number, preview: statusPreview, approvalPhrase: args.approvalPhrase })
+      : statusPreview;
+  }
   const paths = args.noWrite ? null : writeReport(report);
   if (args.json) console.log(JSON.stringify({ ...report, report_paths: paths }, null, 2));
   else {
