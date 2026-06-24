@@ -3,19 +3,102 @@
 | Field | Value |
 |---|---|
 | Branch | `codex/closeout-portal-auth-nav-20260624` |
-| Base | `codex/clean-slate-integration-20260624` after control PR publication |
-| Owner | Codex lane worker |
-| Scope | Operations login, portal chooser, provider/parent/student navigation, scoped auth, tenant isolation, Rabbi owner/admin semantics. |
-| Forbidden central files | See `../../CONTROL.md`; do not edit central run, task, memory, ledger, changelog, or control files. |
+| Base SHA | `161f8623c50d7ef226066d101bfa58c28aff2346` |
+| Control source | `codex/clean-slate-integration-20260624` `CONTROL.json` |
+| Status | Done locally; safe to merge |
+| Deployment | Not performed |
+| External writes | None |
 
 ## Objective
 
-Close auth/navigation from the reconciled base while preserving the owner answers: Rabbi Eli Scheller is provider owner/admin, Shloimie is setup/support workspace admin, and Shloimie remains separate BNA super-admin.
+Close unified login, safe portal navigation, and Rabbi Scheller workspace
+navigation from the clean app base while preserving these ownership semantics:
 
-## Approved Effects
+- Rabbi Eli Scheller is the provider owner/admin for
+  `rabbi_sheller_provider`.
+- Shloimie is setup/support workspace admin for
+  `rabbi_sheller_provider`, not silently made provider owner.
+- Shloimie's BNA super-admin identity stays separate from any provider
+  workspace membership.
+- Provider context never exposes BNA super-admin modules merely because the
+  same person also has a platform role.
 
-Local implementation, contract tests, local fixture/browser smokes, and read-only configured inspection are approved. No production auth mutation, account grant, password send, deployment, or credential change is approved for this lane.
+## Result
 
-## Required Closeout
+The app base already carried the unified portal-login and Rabbi workspace work
+from the reconciled PR #15 path. This lane verified it end to end with
+contract tests, route-map generation, three-viewport local browser smokes,
+watchdogs, secret audit, and diff check.
 
-Update this lane's result, tests, files, and blockers files. If an authenticated live claim needs credentials, mark it blocked rather than inventing proof.
+The only app-facing repair made in this lane was adding
+`/one-time-email-review.html` to `ops/route-registry.json` so the provider
+review topbar link is auditable and the link watchdog has 0 findings.
+
+Generated artifacts were refreshed:
+
+- One Time action coverage: ok, 40 controls.
+- Universal action parity: ok, 26 visible controls and 141 registry rows.
+- Rabbi Scheller route map: 740 Express routes.
+- Portal chooser, provider navigation, provider API Usage, and Operations
+  Rabbi workspace local smoke reports.
+
+## Exact Internal Links
+
+- Provider directory:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=directory`
+- Rabbi dashboard:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=dashboard`
+- Students / members:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=students`
+- Classes / schedule:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=schedule`
+- Questions:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=contacts&section=questions`
+- Integrations:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=integrations&section=readiness`
+- API usage:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=api_usage&section=provider`
+- Settings:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=settings&section=provider_portal`
+- Support:
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=internal_dialogue&section=support`
+- Provider portal:
+  `/provider`
+- Provider API Usage preview:
+  `/provider?api_usage_preview=1&section=api_usage`
+- Start view-as Rabbi API:
+  `/api/bna/one-time/view-as-rabbi/start`
+- Exit view-as Rabbi:
+  provider banner posts to `/api/bna/one-time/view-as-rabbi/end`, then returns
+  to
+  `/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview`.
+
+## Evidence
+
+See `TESTS.md` for full command output summary.
+
+Key evidence:
+
+- Contract suite: 33/33 pass.
+- Expanded portal/Rabbi/action suite: 77/77 pass.
+- Route/review regression suite: 12/12 pass.
+- Local browser smokes:
+  - `ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/report.md`
+  - `ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/report.md`
+  - `ops/playwright-smokes/2026-06-23-rabbi-scheller-operations-navigation-local/report.md`
+  - `ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/report.md`
+- Watchdogs:
+  - `ops/watchdog-audits/2026-06-24T12-50-watchdog-link-audit.md`
+  - `ops/watchdog-audits/2026-06-24T12-50-watchdog-action-audit.md`
+  - `ops/watchdog-audits/2026-06-24T12-51-watchdog-security-routes.md`
+
+## Notes For Final Integrator
+
+- This lane does not edit `AGENTS.md`, `MEMORY.md`, `TASKS.md`,
+  `ops/execution-runs/latest.json`, `ops/agent-task-ledger.jsonl`, or
+  `ops/agent-changelog.md`.
+- The execution-run CLI fails on this lane branch because the branch is based
+  on the app base SHA before the final control-run pointer commit. Run those
+  commands from the control branch or integrated release branch.
+- No live authenticated graph walk was performed. Use approved demo identities
+  after final integration and release approval.

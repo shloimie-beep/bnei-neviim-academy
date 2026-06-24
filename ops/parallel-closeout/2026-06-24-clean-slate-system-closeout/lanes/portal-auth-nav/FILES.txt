@@ -1,15 +1,22 @@
-Owned prefixes:
-server.js
-public/operations-login.html
-public/operations.html
-public/provider.html
-public/parent.html
-public/student.html
-src/lib/bna/provider-api-usage.js
-scripts/build-rabbi-scheller-route-map.mjs
-scripts/smoke-rabbi-scheller-*.mjs
-scripts/smoke-portal-agnostic-login-chooser-local.mjs
-tests/*rabbi-scheller*.test.js
-tests/*portal*.test.js
-
-Coordinate conflicts with public-ui and assistant-ramble-usage before editing shared shells.
+ops/route-registry.json
+ops/action-registry/one-time-action-coverage.json
+ops/action-registry/one-time-action-coverage.md
+ops/action-registry/universal-action-parity.json
+ops/action-registry/universal-action-parity.md
+ops/audits/2026-06-23-rabbi-scheller-route-map.json
+ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/report.json
+ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/student-desktop-1440.png
+ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/student-mobile-390.png
+ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/student-tablet-768.png
+ops/playwright-smokes/2026-06-23-rabbi-scheller-operations-navigation-local/report.json
+ops/playwright-smokes/2026-06-23-rabbi-scheller-operations-navigation-local/report.md
+ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/report.json
+ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/report.json
+ops/watchdog-audits/2026-06-24T12-50-watchdog-link-audit.md
+ops/watchdog-audits/2026-06-24T12-50-watchdog-action-audit.md
+ops/watchdog-audits/2026-06-24T12-51-watchdog-security-routes.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/HANDOFF.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/RESULT.json
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/TESTS.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/FILES.txt
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/BLOCKERS.md

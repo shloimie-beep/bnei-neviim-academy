@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "generated_at": "2026-06-24T12:12:31.266Z",
+  "generated_at": "2026-06-24T14:36:23.028Z",
   "target": "operations, provider, student, and parent password login chooser rendering",
   "fixture": "mocked chooser_required responses; no database, credentials, external accounts, sends, billing, or production writes",
   "results": [

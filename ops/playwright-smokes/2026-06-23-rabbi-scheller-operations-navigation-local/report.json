@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-24T12:12:19.559Z",
+  "generated_at": "2026-06-24T14:36:08.569Z",
   "local_only": true,
   "mocked_api": true,
   "production_data_mutation_performed": false,
   "external_write_performed": false,
-  "base_url": "http://127.0.0.1:57014",
+  "base_url": "http://127.0.0.1:57767",
   "viewports": [
     {
       "name": "mobile-390",

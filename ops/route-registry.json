@@ -637,6 +637,24 @@
       ]
     },
     {
+      "route": "/one-time-email-review.html",
+      "surface": "one_time_email_review",
+      "access": "public_entry",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_review_only_email_templates_without_private_member_data",
+      "expected_logged_in_behavior": "load_review_only_email_templates_without_private_member_data",
+      "privacy_risk": "high",
+      "security_expectation": "Review-only One Time email template surface; no send, account grant, checkout, member-library publication, or external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/google/oauth/start",
       "surface": "google_oauth_start",
       "access": "private",
