@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-23T10:05:23+03:00",
+  "updated_at": "2026-06-24T03:22:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -127,6 +127,22 @@
       ]
     },
     {
+      "route": "/parent.html",
+      "surface": "parent_portal_static_alias",
+      "access": "private",
+      "required_role": "parent",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/parent",
+      "expected_logged_out_behavior": "redirect_to_login_or_show_anonymous_shell_without_private_data",
+      "expected_logged_in_behavior": "own_parent_dashboard_only",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
       "route": "/student",
       "surface": "student_portal",
       "access": "private",
@@ -137,6 +153,22 @@
       "expected_logged_in_behavior": "own_student_dashboard_only",
       "privacy_risk": "high",
       "related_goal_ids": [
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/student.html",
+      "surface": "student_portal_static_alias",
+      "access": "private",
+      "required_role": "student",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/student",
+      "expected_logged_out_behavior": "show_student_login_shell_without_private_data",
+      "expected_logged_in_behavior": "own_student_dashboard_only",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
         "GOAL-CORE-006"
       ]
     },
@@ -497,6 +529,23 @@
       "required_role": "provider_or_member",
       "workspace_scope_required": true,
       "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_login_or_show_classroom_entry_without_private_data",
+      "expected_logged_in_behavior": "load_scoped_one_time_classroom_only",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time-classroom.html",
+      "surface": "one_time_classroom_static_alias",
+      "access": "private",
+      "required_role": "provider_or_member",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/one-time-classroom",
       "expected_logged_out_behavior": "redirect_to_login_or_show_classroom_entry_without_private_data",
       "expected_logged_in_behavior": "load_scoped_one_time_classroom_only",
       "privacy_risk": "high",
