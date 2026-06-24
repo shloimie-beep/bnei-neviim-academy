@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
   "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
-  "updated_at": "2026-06-24T22:55:00+03:00",
+  "updated_at": "2026-06-24T23:30:00+03:00",
   "git_refs": {
     "base_branch": "codex/issue-18-class-intake-readonly-20260624",
     "working_branch": "codex/issue-20-parent-run-20260624",
@@ -263,10 +263,10 @@
       "depends_on": [
         "REQ-20260624-040"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_after_baseline",
+      "status": "done",
+      "implementation_status": "secure_local_profile_harness_initialized_verified",
       "can_continue_without_operator": true,
-      "next_action": "Build the local profile manager under the non-repo profile root with secure ACL and secret-audit coverage.",
+      "next_action": "Continue to REQ-20260624-043 helper/bot canonical destination resolver and role QA.",
       "acceptance_criteria": [
         "Named profiles exist for the required roles and external accounts where bootstrap is approved.",
         "Profiles live outside the repo, have current-user-only ACLs, and are excluded from Git and evidence.",
@@ -275,20 +275,37 @@
         "Docs distinguish local Playwright profiles, ChatGPT Agent browser cookies, and connector access."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-BROWSER.md",
+        "docs/agent-browser-harness.md",
+        "scripts/agent-browser-profile.mjs",
+        "tests/agent-browser-profile-harness.test.js",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending harness implementation and profile smoke checks."
+        "PASS node --check scripts\\agent-browser-profile.mjs",
+        "PASS node --test tests\\agent-browser-profile-harness.test.js 3/3",
+        "PASS npm run agent:browser:list -- --json",
+        "PASS npm run agent:browser:health -- --json before initialization with root_exists=false",
+        "PASS temporary external-root one_time_review smoke against https://bneineviimacademy.org/provider.html?review=one-time with no screenshot/private data and no horizontal overflow",
+        "PASS npm run agent:browser:init -- --json initialized six named profiles under C:\\Users\\User\\AppData\\Local\\BNA\\agent-browser-profiles",
+        "PASS npm run agent:browser:health -- --json after initialization with metadata present, current-user ACL present, and inheritance disabled",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage",
+        "PASS npm run bna:run:stale-evidence",
+        "PASS npm run secrets:audit with 4709 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-043"
       ],
       "implementation_files": [
-        "scripts/",
-        "tests/",
-        ".gitignore"
+        "scripts/agent-browser-profile.mjs",
+        "tests/agent-browser-profile-harness.test.js",
+        "docs/agent-browser-harness.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-BROWSER.md",
+        "package.json"
       ],
       "deployment_required": false,
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-24T23:30:00+03:00"
     },
     {
       "id": "REQ-20260624-043",
@@ -600,6 +617,16 @@
       "blocker": "App-visible changes need deploy/live smoke before Done.",
       "blocker_owner": "Codex / Railway account owner",
       "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_browser|GITHUB-ISSUE-20|REQ-20260624-042|persistent_browser_harness",
+      "title": "Issue #20 persistent authenticated agent-browser harness",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-042",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
     }
   ],
   "decisions": []

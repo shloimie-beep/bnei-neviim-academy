@@ -11,7 +11,7 @@ Current branch:
 
 Open requirement:
 
-- `REQ-20260624-042` - Persistent authenticated agent-browser harness.
+- `REQ-20260624-043` - Bot/helper link correctness and agent-mode QA.
 
 Next safe step:
 
@@ -19,10 +19,16 @@ Next safe step:
 npm run bna:run:next
 ```
 
-Then recheck Git/GitHub/Railway/live baseline and write the parent coordination
-manifest only if the branch has changed. Otherwise begin the Batch B
-agent-browser harness using the parent coordination rules in `COORDINATION.md`
-and `LANE-MANIFEST.json`.
+Then recheck Git/GitHub/Railway/live baseline only if the branch or live
+target has changed. Otherwise begin Batch C using the parent coordination
+rules in `COORDINATION.md` and `LANE-MANIFEST.json`.
+
+Batch B is now locally complete. If `npm run bna:run:next` selects
+`REQ-20260624-043`, begin the canonical helper/bot destination resolver,
+intent matrix, and role-scoped browser QA. Use the local agent browser harness
+from `docs/agent-browser-harness.md` for role smokes where a persistent
+profile is useful, but do not store screenshots or private authenticated page
+content from those profiles in the repo.
 
 Do not run Tier 3 actions without explicit approval:
 

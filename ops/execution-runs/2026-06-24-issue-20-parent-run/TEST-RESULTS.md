@@ -38,8 +38,27 @@
   `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
   `npm run bna:run:stale-evidence`, JSON/JSONL parse, `git diff --check`, and
   `npm run bna:run:next` selected `REQ-20260624-042`.
+- `node --check scripts\agent-browser-profile.mjs` passed.
+- `node --test tests\agent-browser-profile-harness.test.js` passed 3/3.
+- `npm run agent:browser:list -- --json` passed.
+- `npm run agent:browser:health -- --json` passed before initialization with
+  `root_exists=false`.
+- Temporary external-root smoke for `one_time_review` against
+  `https://bneineviimacademy.org/provider.html?review=one-time` passed with no
+  screenshot written, no private data captured, body text detected, and no
+  horizontal overflow.
+- `npm run agent:browser:init -- --json` initialized all six named profiles
+  under `C:\Users\User\AppData\Local\BNA\agent-browser-profiles`.
+- Final `npm run agent:browser:health -- --json` passed with profile metadata,
+  current-user ACL, and inheritance-disabled readback.
+- Post-agent-browser execution-run validation passed:
+  `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
+  `npm run bna:run:stale-evidence`, JSON/JSONL parse, `npm run secrets:audit`
+  with 4709 tracked paths and 0 tracked secret-risk files, `git diff --check`,
+  and `npm run bna:run:next` selected `REQ-20260624-043`.
 
 ## Pending
 
-- Focused tests for remaining implementation lanes.
+- Focused tests for remaining implementation lanes, starting with
+  `REQ-20260624-043`.
 - Full repository tests and watchdogs before final closeout.

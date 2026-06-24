@@ -43,3 +43,21 @@
   focused visual/UI tests, static UI watchdog, and static visual watchdog also
   passed.
 - Current batch moved to `REQ-20260624-042`.
+
+2026-06-24T23:30:00+03:00:
+
+- `REQ-20260624-042` persistent authenticated agent-browser harness is done.
+- Added `scripts/agent-browser-profile.mjs`, npm browser-profile lifecycle
+  commands, focused tests, operator documentation, and run evidence.
+- Initialized six named profile directories under the non-repo default root
+  `C:\Users\User\AppData\Local\BNA\agent-browser-profiles`.
+- Verification passed for script syntax, focused harness tests, list/health
+  readbacks, temporary external-root One Time smoke, default-root
+  initialization, and final ACL/metadata health readback.
+- Post-closeout validation passed for run validate/source coverage/stale
+  evidence, JSON/JSONL parsing, secret audit, diff check, and next-batch
+  selection.
+- No credentials, cookies, screenshots, private authenticated page content,
+  connector tokens, production mutation, deploy, send, charge, DNS change,
+  class backfill, Drive write, or credential change was performed.
+- Current batch moved to `REQ-20260624-043`.

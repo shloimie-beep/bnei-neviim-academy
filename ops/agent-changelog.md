@@ -26171,3 +26171,32 @@ app-visible and require deploy/live proof. The deploy/live gate remains under
 deploy, production mutation, external write, send, charge, DNS change,
 credential change, class backfill, Drive write, or secret exposure was
 performed.
+
+## 2026-06-24T23:30:00+03:00 - Issue #20 Agent Browser Harness Done
+
+Completed `REQ-20260624-042` for the Issue #20 parent run. Added a secure
+local Codex/Playwright profile harness with named profiles, non-repo root
+enforcement, lifecycle commands, Windows ACL hardening/readback,
+credential-free smoke support, focused tests, and operator documentation that
+distinguishes local browser profiles from ChatGPT Agent cookies and connectors.
+
+The six named profile directories were initialized outside the repo under
+`C:\Users\User\AppData\Local\BNA\agent-browser-profiles`. No credentials,
+cookies, screenshots, private authenticated page content, connector tokens, or
+account exports were copied into tracked files.
+
+Verification passed: `node --check scripts\agent-browser-profile.mjs`,
+`node --test tests\agent-browser-profile-harness.test.js` 3/3,
+`npm run agent:browser:list -- --json`, `npm run agent:browser:health -- --json`
+before and after initialization, a temporary external-root `one_time_review`
+smoke against the live review URL with no screenshot/private data, and default
+profile initialization with ACL/metadata readback.
+
+Post-closeout validation also passed for execution-run validate/source
+coverage/stale-evidence, JSON/JSONL parsing, secret audit with 4709 tracked
+paths and 0 findings, diff check, and next-batch selection for
+`REQ-20260624-043`.
+
+No deploy, production mutation, external write, send, charge, DNS change,
+credential change, class backfill, Drive write, public publishing, or secret
+exposure was performed. Next Issue #20 batch is `REQ-20260624-043`.

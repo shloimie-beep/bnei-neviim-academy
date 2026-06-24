@@ -48,9 +48,31 @@ Visual readback summary:
   landing consent checkbox sizing.
 - App-visible Done remains blocked pending deploy/live proof.
 
+## Agent Browser Harness Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-BROWSER.md`
+- `docs/agent-browser-harness.md`
+- `scripts/agent-browser-profile.mjs`
+- `tests/agent-browser-profile-harness.test.js`
+- `package.json`
+
+Agent browser readback summary:
+
+- Default profile root:
+  `C:\Users\User\AppData\Local\BNA\agent-browser-profiles`
+- Named profiles initialized: `operations_owner`, `parent_portal`,
+  `student_portal`, `provider_portal`, `one_time_review`, and
+  `github_status`.
+- The profile root is outside the repo and the harness refuses repo-local
+  profile roots.
+- Final health readback found metadata for all six profiles, current-user ACL
+  present, and inheritance disabled.
+- Credential-free temporary-root smoke passed for `one_time_review` against
+  `https://bneineviimacademy.org/provider.html?review=one-time` with no
+  screenshot, no private data capture, and no horizontal overflow.
+
 ## Pending Evidence
 
-- Browser harness smoke evidence.
 - Bot/helper matrix and agent-mode QA.
 - Result drop-off/GitHub bridge proof.
 - Fleet/startup/parallel lane proof.

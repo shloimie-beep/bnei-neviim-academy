@@ -2,7 +2,7 @@
   "run_id": "2026-06-24-issue-20-parent-run",
   "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
   "created_at": "2026-06-24T22:43:00+03:00",
-  "updated_at": "2026-06-24T23:20:00+03:00",
+  "updated_at": "2026-06-24T23:30:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -27,9 +27,9 @@
     "predecessor_issue_number": 18
   },
   "current_batch": {
-    "batch_id": "B",
-    "requirement_id": "REQ-20260624-042",
-    "title": "Persistent authenticated agent-browser harness",
+    "batch_id": "C",
+    "requirement_id": "REQ-20260624-043",
+    "title": "Bot/helper link correctness and agent-mode QA",
     "status": "not_started"
   }
 }
