@@ -1,13 +1,14 @@
-Owned prefixes:
-server.js
+MEDIA-PIPELINE-MATRIX.md
+VIMEO-OBJECTS-REDACTED.json
+VIMEO-PRIVATE-TEST.md
+VIMEO-READINESS.md
+scripts/vimeo-private-smoke.mjs
 src/lib/integrations/video-hosting.js
-src/lib/bna/*recording*
-src/lib/bna/*media*
-public/operations.html
-tests/*vimeo*.test.js
-tests/*video*.test.js
-tests/*recording*.test.js
-docs/integrations/VIMEO.md
-ops/qa-runs/
-
-Coordinate Operations UI edits with stripe-sandbox and class-drive-intake.
+src/lib/integrations/vimeo.js
+tests/provider-integrations-secret-storage.test.js
+tests/vimeo-media-integration-readiness.test.js
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/RESULT.json
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/HANDOFF.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/TESTS.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/FILES.txt
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/BLOCKERS.md
