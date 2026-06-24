@@ -1,0 +1,690 @@
+Canonical URL,Implementation,Audience,Authentication,Entry point,Back path,Inbound links,Outbound links,Status,Dependencies,Review state,Registry surface,Discovered as
+/,public/index.html,public,none,/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href),/one-time | /parents | /provider | /school,/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | /signup-thank-you.html (literal-a-href) | /signup.html (window.location) | /student.html (literal-a-href) | public/manifest.json (manifest:id) | public/manifest.json (manifest:scope) | public/manifest.json (manifest:start_url),/api/torah-learning/public-summary (fetch) | /data/learning-moments.json (fetch) | /he (literal-a-href) | /he/providers (literal-a-href) | /one-time (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href) | /provider (literal-a-href) | /providers/join (literal-a-href) | /school (literal-a-href) | /signup.html (literal-a-href) | /student/login (literal-a-href),keep,local,ready,public_site,html-page | literal-a-href | manifest:id | manifest:scope | manifest:start_url | route-registry | window.location
+/api/assistant/action,server.js:69604,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/assistant/message,server.js:68399,internal,protected,/assistant-setup.html (fetch) | /signup-he.html (fetch) | /signup.html (fetch),none detected,/assistant-setup.html (fetch) | /signup-he.html (fetch) | /signup.html (fetch),,internal-only,local,ready,,fetch | server-post
+/api/assistant/threads,server.js:69504 | server.js:69529,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/assistant/threads/:id/messages,server.js:69545 | server.js:69563,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna,server.js:391,internal,protected,/operations.html (fetch),none detected,/operations.html (fetch),,internal-only,local,ready,,fetch | server-use
+/api/bna/accountability,server.js:49240 | server.js:53200,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/accountability/:id,server.js:53314 | server.js:53417,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-delete | server-patch
+/api/bna/accountability/:id/sefaria-sources,server.js:53372,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/accountability/enrich-question-sources,server.js:53384,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/actions,server.js:76362,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/actions/audit-log,server.js:76373,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/actions/run,server.js:76410,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/admin/external-access,server.js:60257,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-fleet/status,server.js:61841 | server.js:61964,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/agent-jobs,server.js:61475,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/agent-jobs/:id,server.js:61484,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/agent-jobs/:id/block,server.js:61583,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-jobs/:id/claim,server.js:61500,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-jobs/:id/complete,server.js:61564,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-jobs/:id/heartbeat,server.js:61538,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-profiles,server.js:60688,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/agent-runs,server.js:60709,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/agent-runs/:runKey,server.js:60762,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/agent-runs/:runKey/artifacts,server.js:60884,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/block,server.js:61160,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/cancel,server.js:61277,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/claim,server.js:60779,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/progress,server.js:60827,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/reopen,server.js:61338,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/resume,server.js:61228,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/seal,server.js:61004,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-runs/:runKey/submit,server.js:60931,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/agent-status,server.js:68416,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/assignment-prompts,server.js:47763,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/assignment-prompts/:key,server.js:47777,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/assignment-students/:id,server.js:48158,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/assignments,server.js:47812 | server.js:47937,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/assignments/:id,server.js:48082,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/assignments/:id/actions,server.js:48209,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/assignments/youtube-metadata,server.js:47794,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/assistant/actions/:action,server.js:68663,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/assistant/actions/:id,server.js:68429,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/assistant/agent-status,server.js:68403,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/assistant/chat,server.js:68465,internal,protected,public/js/bna-bot-widget.js (fetch),none detected,public/js/bna-bot-widget.js (fetch),,internal-only,local,ready,,fetch | server-post
+/api/bna/assistant/context,server.js:68564,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/assistant/control-center,server.js:41383,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/assistant/control-plane/readiness,server.js:41311,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_assistant_control_plane_readiness,route-registry | server-get
+/api/bna/assistant/message,server.js:68395,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/assistant/threads,server.js:68512 | server.js:68585,internal,protected,public/js/bna-bot-widget.js (fetch),none detected,public/js/bna-bot-widget.js (fetch),,internal-only,local,ready,,fetch | server-get | server-post
+/api/bna/assistant/threads/:id,server.js:68542,internal,protected,public/js/bna-bot-widget.js (fetch),none detected,public/js/bna-bot-widget.js (fetch),,internal-only,local,ready,,fetch | server-get
+/api/bna/assistant/threads/:id/files,server.js:77729,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/assistant/threads/:id/messages,server.js:68601 | server.js:68619,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/auth/login,server.js:50231,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/auth/logout,server.js:50268,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/auth/me,server.js:50330 | server.js:60300,internal,protected,/operations-login.html (fetch),none detected,/operations-login.html (fetch),,internal-only,local,ready,,fetch | server-get
+/api/bna/auth/request-login-link,server.js:50195,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/auth/setup-password,server.js:50217,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/automations,server.js:62044,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/automations/:id,server.js:62068 | server.js:62112,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/bot-actions/execute,server.js:76470,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/bot-actions/preview,server.js:76432,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/bot-captures,server.js:78277,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/bot/capture,server.js:78276,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/buffer/diagnostics,server.js:56746,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/calendar-events,server.js:75977 | server.js:76011,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/calendar-events/:id,server.js:76052,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/checkout/attempts,server.js:42449 | server.js:42482,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get | server-post
+/api/bna/checkout/attempts/:id,server.js:42499,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-patch
+/api/bna/checkout/sweep-abandoned,server.js:42561,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/class-sessions,server.js:54920,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/classes,server.js:77525 | server.js:77553,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/classes/:id,server.js:77595,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/classes/:id/attendance,server.js:77622 | server.js:77645,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/classes/import,server.js:77661,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/codex-queue/stale-sweep,server.js:61635,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/codex-queue/status,server.js:61626 | server.js:61634,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/communications,server.js:40546 | server.js:40619,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/communications/:id,server.js:40565,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/communications/dns-tasks,server.js:42237 | server.js:42260,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/communications/dns-tasks/:id,server.js:42307,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/communications/email/drafts,server.js:42042 | server.js:42115,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/communications/email/send,server.js:42234,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/communications/social/drafts,server.js:41834 | server.js:41930,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/communications/social/schedule/confirm,server.js:42039,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/communications/social/schedule/preview,server.js:41981,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/communities,server.js:77474 | server.js:77498,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/connector-settings,server.js:75904,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/connector-settings/:id,server.js:75926,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/contact-communications,server.js:45872 | server.js:46026,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/contact-communications/:id/link,server.js:46753,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/contact-communications/match-note,server.js:46123,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/contact-communications/screening-preview,server.js:45990,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/contact-communications/send-whatsapp,server.js:59607,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/contact-imports/preview,server.js:59420,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/contacts/:id/communications,server.js:40579,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/contacts/archive-codex-test-parent,server.js:46744,parent,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/content-bundles,server.js:55126 | server.js:55205,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/content-bundles/:id,server.js:55173,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/content-bundles/:id/generate,server.js:55239,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/content-jobs,server.js:54878 | server.js:55347,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/content-jobs/:id,server.js:55460,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/content-jobs/:id/actions,server.js:56801,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/content-jobs/:id/outputs,server.js:56575,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/content-jobs/:id/parse-mixed-recording,server.js:56460,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/content-jobs/bulk-generate,server.js:55513,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/content-outputs/:id,server.js:56595,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/content-outputs/:id/actions,server.js:56647,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/content-prompts,server.js:55060,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/content-prompts/:platform,server.js:55080,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/content-prompts/:platform/examples,server.js:55108,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/course-questions,server.js:63161 | server.js:63202,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/course-questions/:id/responses,server.js:63250,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/courses,server.js:62920 | server.js:62965,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/courses/:id/lessons,server.js:63014,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/create_task_from_text,server.js:78258,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/device-access-rules,server.js:48826 | server.js:48858,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/device-access-rules/:id,server.js:48889,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/device-access/reviews/:goalId/actions,server.js:48926,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/devices,server.js:48656,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/devices/:id,server.js:48759,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/devices/:id/actions,server.js:48790,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/email-log,server.js:40494,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/email/send,server.js:40429,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/email/signup-link,server.js:40453,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/files/intake,server.js:77696,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/gamification-events,server.js:63287 | server.js:63590,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/gamification-events/backfill,server.js:63602,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/gamification/badge-readiness,server.js:63315,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_gamification_badge_readiness,route-registry | server-get
+/api/bna/goal-board/:id,server.js:49101,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/google/readiness,server.js:42339,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/green-invoice/webhooks,server.js:53105,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/green-invoice/webhooks/:id/reprocess,server.js:53125,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/group-goal-entries/:id,server.js:55094,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-delete
+/api/bna/group-goals,server.js:53429 | server.js:53474,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/group-goals/:id/entries,server.js:53491,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/helper/action-log,server.js:69490,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/helper/audit,server.js:69476,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/helper/chat,server.js:69280,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/helper/confirm,server.js:69282,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/helper/context,server.js:69119,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/helper/execute,server.js:69429,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_helper_api,route-registry | server-post
+/api/bna/helper/knowledge,server.js:69190 | server.js:69201,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/helper/message,server.js:69279,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/helper/plan,server.js:69362,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_helper_api,route-registry | server-post
+/api/bna/helper/profile,server.js:69157 | server.js:69168,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/helper/profile/questionnaire,server.js:69179,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/helper/runs/:id,server.js:69337,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/helper/tools,server.js:69133,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/identity/backfill,server.js:46437,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/identity/duplicates,server.js:46508,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/identity/merge-reviews,server.js:46449,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/bna/identity/merge-reviews/:id,server.js:46478,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-patch
+/api/bna/identity/reviews/:id/approve-merge,server.js:46642,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/identity/reviews/:id/block,server.js:46686,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/identity/reviews/:id/reject,server.js:46666,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/identity/scan,server.js:46545,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/intake/parse,server.js:56183,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_intake_api,route-registry | server-post
+/api/bna/intake/parse-runs,server.js:56242,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/intake/parse-runs/:id,server.js:56276,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/intake/parse-runs/:id/apply,server.js:56286,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/intake/review,server.js:56295,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/bna/intake/review/:id/resolve,server.js:56308,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/intake/sections,server.js:56453 | server.js:56454,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/intake/sections/:id,server.js:56455,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/integrations/buffer/channels,server.js:41617,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/buffer/drafts,server.js:41931,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/buffer/health,server.js:41604,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/buffer/schedules,server.js:41982,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/buffer/schedules/confirm,server.js:42040,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/buffer/status,server.js:41599,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/google/connections/:connectionId/disconnect,server.js:40319,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/google/status,server.js:40205,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/resend/domains,server.js:41684,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/resend/domains/:domain/status,server.js:41722,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/resend/domains/:domain/verify,server.js:41735,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/resend/email-preview,server.js:42116,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/resend/events,server.js:41697,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/resend/health,server.js:41632,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/resend/send,server.js:42235,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/resend/status,server.js:41654,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/status,server.js:41302,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/integrations/stripe/checkout-create,server.js:41445,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/stripe/checkout-preview,server.js:41441,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/stripe/status,server.js:41437,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/telegram/status,server.js:41428,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/video-hosting/status,server.js:41512,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/integrations/vimeo/status,server.js:41520,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/integrations/zoom/attendance-correction-preview,server.js:41488,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_zoom_attendance_correction_preview,route-registry | server-post
+/api/bna/integrations/zoom/meeting-preview,server.js:41476,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_zoom_meeting_preview,route-registry | server-post
+/api/bna/integrations/zoom/meetings,server.js:41492,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/integrations/zoom/session-automation-preview,server.js:41480,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_zoom_session_automation_preview,route-registry | server-post
+/api/bna/integrations/zoom/status,server.js:41465,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_zoom_status,route-registry | server-get
+/api/bna/integrations/zoom/webhook-attendance-preview,server.js:41484,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_zoom_webhook_attendance_preview,route-registry | server-post
+/api/bna/internal-dialogue,server.js:76252,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/internal-dialogue/messages,server.js:76299,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/learning-communities,server.js:62793 | server.js:62828,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/learning-communities/:id/members,server.js:62869,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/live-sessions,server.js:75236 | server.js:75269,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/live-sessions/:id,server.js:75342,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/live-sessions/:id/check-in,server.js:75394,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/live-sessions/:id/communications,server.js:75481,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/live-sessions/:id/send-zoom-link,server.js:75430,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/live-sessions/tonight,server.js:75318,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/me,server.js:62176,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/members,server.js:75111 | server.js:75144,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/members/:id,server.js:75183,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/members/:id/access-code,server.js:75215,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/migrate-db,server.js:79555,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/notification-preferences,server.js:76600 | server.js:76631,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/notifications,server.js:76519,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/notifications/:id,server.js:76576,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/one-time/agent-mode-acceptance,server.js:72800,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,one_time_agent_mode_acceptance,route-registry | server-get
+/api/bna/one-time/app-access-readiness,server.js:69773,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/appointment-intents,server.js:73048 | server.js:73071,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/one-time/assets/:assetId,server.js:70034,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/one-time/calendar,server.js:72943,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/calendar-events,server.js:72958,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/classes,server.js:69785 | server.js:69859,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/one-time/classes/:id,server.js:69915 | server.js:69932,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/one-time/classes/:id/approve-library,server.js:70156,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/classes/:id/assets,server.js:69999,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/classes/:id/member-preview,server.js:70121,member,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/one-time/classes/:id/package-preview,server.js:70085,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/one-time/classes/:id/publish-library,server.js:70197,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/classroom,server.js:70695,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/classroom/assignment-preview,server.js:70710,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/one-time/classroom/assignments,server.js:70722,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/classroom/messages/:id/review,server.js:70829,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/one-time/classroom/threads,server.js:70753,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/community-moderation-readiness,server.js:72851,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_community_moderation_readiness,route-registry | server-get
+/api/bna/one-time/crm-import-preview,server.js:72776,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/bna/one-time/drive-social-ingestion,server.js:69761,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/one-time/integrations/readiness,server.js:41397,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_integrations_readiness,route-registry | server-get
+/api/bna/one-time/library-items/:id/rollback,server.js:70319,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/library-smoke,server.js:70392,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/one-time/payment-access-class-links,server.js:72757,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_one_time_payment_access_class_links,route-registry | server-get
+/api/bna/one-time/product-leads,server.js:72909,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/product-system,server.js:72731,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/question-moderation,server.js:75725,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/roadmap,server.js:77768,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/one-time/source-prep-jobs,server.js:73146 | server.js:73163,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/one-time/study-assistant-readiness,server.js:72872,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_study_assistant_readiness,route-registry | server-get
+/api/bna/one-time/test-identities-preview,server.js:72785,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,one_time_test_identities_preview,route-registry | server-get
+/api/bna/one-time/transcript-privacy,server.js:72815,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_transcript_privacy_readiness,route-registry | server-get
+/api/bna/one-time/trial-referral-config,server.js:72739,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_trial_referral_config,route-registry | server-get
+/api/bna/one-time/view-as-rabbi/end,server.js:10068,admin,protected,/provider.html (fetch),none detected,/provider.html (fetch),,internal-only,local,ready,operations_api_one_time_view_as_rabbi_end,fetch | route-registry | server-post
+/api/bna/one-time/view-as-rabbi/session,server.js:10050,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_view_as_rabbi_session,route-registry | server-get
+/api/bna/one-time/view-as-rabbi/start,server.js:10016,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_view_as_rabbi_start,route-registry | server-post
+/api/bna/operator-setup/bootstrap-package,server.js:59977,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/operator-setup/download/:token,server.js:60041,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/operator-setup/status,server.js:59969,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/ops-access-links,server.js:59929,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/ops/queue-audits/latest,server.js:61748,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/bna/ops/queue-health,server.js:61733,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/ops/queue/requeue,server.js:61769,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/ops/report,server.js,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/parent-access/link,server.js:46292,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/parent-access/password-reset,server.js:46362,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/parent-accounts/access-code,server.js:46705,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/parent-announcements,server.js:64166 | server.js:64185,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/parent-announcements/recipients,server.js:64156,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/parent-leads,server.js:43423 | server.js:43531,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/parent-leads/:id,server.js:43661,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/parent-progress-reports/:id/approve,server.js:63928,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/parent-progress-reports/generate,server.js:63835,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/parent-student-links,server.js:63762 | server.js:63789,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/payment-intake,server.js:53548 | server.js:53803,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get | server-post
+/api/bna/payment-intake/:id,server.js:53853 | server.js:53905,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-delete | server-patch
+/api/bna/payment-intake/reconcile-paid,server.js:53580,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/payment-reminders/due,server.js:57260,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/payment-reminders/run,server.js:57287,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/payments,server.js:57226 | server.js:57308,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get | server-post
+/api/bna/pending-briefs,server.js:77810,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/people,server.js:62275 | server.js:62378,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/pipeline-cards,server.js:76122 | server.js:76155,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/pipeline-cards/:id,server.js:76194,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/portal-access/next-year-readiness,server.js:47715 | server.js:47723,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/product-leads,server.js:72909 | server.js:72926,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/project-meetings,server.js:54952 | server.js:55016,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/project-meetings/one-time-drive-brief/preview,server.js:54990,admin,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,operations_api_one_time_drive_brief_preview,route-registry | server-post
+/api/bna/projects,server.js:62023,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/provider-categories,server.js:44206 | server.js:44214,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/provider-categories/:id,server.js:44248,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/provider-leads,server.js:44279,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/provider-leads/:id,server.js:44296,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/provider-messages,server.js:45324,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/provider-onboarding-intakes,server.js:45308,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/providers,server.js:44024,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/providers/:id,server.js:44040 | server.js:44050,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/providers/:id/approve,server.js:44134,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/providers/:id/feature,server.js:44187,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/providers/:id/hide,server.js:44166,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/rabbi/access-grants,server.js:73690,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/rabbi/access-grants/:id/revoke,server.js:73750,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/rabbi/access-grants/manual,server.js:73709,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/rabbi/checkouts,server.js:73435,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/rabbi/checkouts/:id,server.js:73544,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-patch
+/api/bna/rabbi/checkouts/:id/mark-abandoned,server.js:73568,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/rabbi/checkouts/manual,server.js:73454,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/rabbi/communications,server.js:73955,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/rabbi/communications/send,server.js:73972,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/rabbi/config,server.js:73232 | server.js:73270,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/rabbi/library-items,server.js:73780 | server.js:73793,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/rabbi/library-items/:id,server.js:73827,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/rabbi/live-sessions,server.js:73868 | server.js:73881,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/rabbi/live-sessions/:id,server.js:73917,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/rabbi/members,server.js:73594 | server.js:73621,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/rabbi/members/:id,server.js:73655,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/rabbi/provider-settings,server.js:73386,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/rabbi/provider-settings/:provider,server.js:73395,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/rabbi/site,server.js:73992 | server.js:74005,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/rabbi/site/approve-public-replacement,server.js:74048,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/rabbi/tiers,server.js:73279 | server.js:73288,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/rabbi/tiers/:id,server.js:73347,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/recording-intake/parse-mixed-recording,server.js:56513,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/resend/status,server.js:40682,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/resend/webhook,server.js:40665 | server.js:9793,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post | server-use
+/api/bna/review-requests,server.js:42360 | server.js:42386,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get | server-post
+/api/bna/sections,server.js:56456 | server.js:56457,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/sections/:id,server.js:56458,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/service-providers,server.js:43715 | server.js:43725,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/service-providers/:id,server.js:43878,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/service-providers/:id/setup-email,server.js:44000,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/session/workspace,server.js:62261,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/shoutouts,server.js:63643 | server.js:63671,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/shoutouts/:id/approve,server.js:63711,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/signups,server.js:43301,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/signups/:id,server.js:43349,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/signups/:id/communications,server.js:40589,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/signups/:id/send-confirmation,server.js:42420,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/student-badges/:id/reverse,server.js:63508,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_manual_badge_reversal,route-registry | server-post
+/api/bna/student-badges/rabbi-award,server.js:63359,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,operations_api_one_time_rabbi_badge_award,route-registry | server-post
+/api/bna/student-bot-settings,server.js:47509,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/students,server.js:46934 | server.js:47056,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/students/:id,server.js:47233 | server.js:53155,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-delete | server-patch
+/api/bna/students/:id/access-code,server.js:47492,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/students/:id/bot-settings/:channel,server.js:47583,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-put
+/api/bna/students/:id/bot-settings/:channel/preview,server.js:47682,student,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/bna/students/:id/communications,server.js:40599,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/students/:id/devices,server.js:48709,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/students/:id/goal-board,server.js:49007 | server.js:49036,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/students/:id/household-link,server.js:47340,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/students/:id/identity,server.js:46570,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/students/:id/merge,server.js:49197,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/studio/dashboard,server.js:54118,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_dashboard,route-registry | server-get
+/api/bna/studio/jobs/:id/cancel,server.js:54733,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_job_cancel,route-registry | server-post
+/api/bna/studio/jobs/:id/retry,server.js:54707,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_job_retry,route-registry | server-post
+/api/bna/studio/projects,server.js:54189 | server.js:54210,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_projects,route-registry | server-get | server-post
+/api/bna/studio/projects/:id,server.js:54243 | server.js:54252,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_project_detail,route-registry | server-get | server-patch
+/api/bna/studio/projects/:id/corrections/apply,server.js:54523,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_correction_apply,route-registry | server-post
+/api/bna/studio/projects/:id/corrections/preview,server.js:54507,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_correction_preview,route-registry | server-post
+/api/bna/studio/projects/:id/handoff,server.js:54791,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_handoff,route-registry | server-post
+/api/bna/studio/projects/:id/outline,server.js:54333,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_outline,route-registry | server-post
+/api/bna/studio/projects/:id/prompt-compile,server.js:54448,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_prompt_compile,route-registry | server-post
+/api/bna/studio/projects/:id/render,server.js:54644,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_render,route-registry | server-post
+/api/bna/studio/projects/:id/source,server.js:54286,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_source,route-registry | server-post
+/api/bna/studio/projects/:id/storyboard,server.js:54376,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_storyboard,route-registry | server-post
+/api/bna/studio/scenes/:id,server.js:54567,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_scene_update,route-registry | server-patch
+/api/bna/studio/scenes/:id/regenerate,server.js:54612,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_scene_regenerate,route-registry | server-post
+/api/bna/studio/usage,server.js:54759,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_service_provider_studio_usage,route-registry | server-get
+/api/bna/support-tickets,server.js:77048 | server.js:77094,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/support-tickets/:id,server.js:77177 | server.js:77197,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/support-tickets/:id/comments,server.js:77253 | server.js:77269,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/task-artifact,server.js,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/tasks,server.js:77830 | server.js:78136,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/tasks/:id,server.js:78297 | server.js:78568 | server.js:79763,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-delete | server-get | server-patch
+/api/bna/tasks/:id/actions/archive-duplicate,server.js:79359,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/choose-decision,server.js:79493,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/convert-to-task,server.js:79334,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/mark-done,server.js:79144,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/mark-pending,server.js:79298,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/mark-received,server.js:79262,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/needs-more-info,server.js:79455,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/reassign,server.js:79430,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/request-missing-input,server.js:79223,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/actions/spawn-agent-job,server.js:79121,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:id/comments,server.js:78384 | server.js:78420,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/tasks/:id/communications,server.js:40609,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/tasks/:id/decision-action,server.js:79119,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:taskId/agent-runs,server.js:60752,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/:taskId/verification-plan,server.js:60719,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/tasks/create-from-text,server.js:78257,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/telegram,server.js:79926,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/tickets,server.js:61428 | server.js:77294 | server.js:77330,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/tickets/:id,server.js:61454 | server.js:77396 | server.js:77407,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-patch
+/api/bna/tickets/:id/comments,server.js:77439 | server.js:77452,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/torah-learning,server.js:52914,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/torah-learning/entries,server.js:52932,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/torah-learning/reconcile-trip-progress,server.js:52947,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/video-library/:id/publication-preview,server.js:41563,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_one_time_vimeo_publication_preview,route-registry | server-post
+/api/bna/video-library/:id/retention-preview,server.js:41571,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_one_time_recording_retention_preview,route-registry | server-post
+/api/bna/video-library/:id/upload,server.js:41579,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/video-library/:id/upload-preview,server.js:41552,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/video-library/:id/worksheet-preview,server.js:41536,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/bna/video-library/drafts,server.js:41528,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/video-library/recording-pipeline-preview,server.js:41532,admin,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,operations_api_one_time_recording_pipeline_preview,route-registry | server-post
+/api/bna/wapi/diagnostics,server.js:58951,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/wapi/phonebook-corrections,server.js:59251,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/wapi/phonebook-report,server.js:58976,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/wapi/sync,server.js:59405,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/wapi/sync-runs,server.js:58935,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/wapi/webhooks,server.js:58917,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/weekly-updates,server.js:63949 | server.js:64290,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/weekly-updates/:id,server.js:64350,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/whatsapp/:id/convert-to-contact,server.js:59557,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/whatsapp/:id/create-ticket,server.js:59580,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/whatsapp/import,server.js:59538,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/whatsapp/intake,server.js:59505,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/whatsapp/messages,server.js:59460,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/bna/whatsapp/sync,server.js:59429,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/bna/worksheets,server.js:63048 | server.js:63097,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/worksheets/:id/questions,server.js:63132,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/bna/workspace-directory,server.js:62185,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/workspace-platform,server.js:62744,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/workspace-settings/:workspaceKey,server.js:75816,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/workspace-settings/:workspaceKey/branding,server.js:75864,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/workspace-users,server.js:62426 | server.js:62558,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/bna/workspace-users/:id,server.js:62647,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/bna/workspace-users/role-audit,server.js:62498,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/workspaces,server.js:62194,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/bna/workspaces/:key,server.js:62228,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/community/learning-communities,server.js:64408,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/community/threads,server.js:64432 | server.js:64479,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/community/threads/:id/messages,server.js:64548,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/cron/payment-reminders,server.js:57358,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/google/calendar/events,server.js:40390,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/google/classroom/courses,server.js:40361,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/google/connections/:connectionId/disconnect,server.js:40318,internal,protected,/operations.html (fetch),none detected,/operations.html (fetch),,internal-only,live credential,intentionally blocked,,fetch | server-post
+/api/google/connections/status,server.js:40111,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/google/drive/setup,server.js:40091,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/google/oauth/callback,server.js:39960,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/google/oauth/callback${qs,,internal,protected,registry-only,none detected,,,internal-only,live credential,intentionally blocked,,
+/api/google/oauth/start,server.js:39909,admin,protected,/operations.html (literal-a-href),none detected,/operations.html (literal-a-href),,internal-only,live credential,intentionally blocked,google_oauth_start,literal-a-href | route-registry | server-get
+/api/health,server.js:39896,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/household/filter-setup,server.js:51081,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/household/filter-setup/help-ticket,server.js:51176,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/household/filter-setup/start,server.js:51090,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/household/filter-setup/submit-code,server.js:51118,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/household/filter-setup/verify,server.js:51147,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/households/:id,server.js:50952,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/households/:id/members,server.js:50987 | server.js:50997,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/households/:id/members/:memberId,server.js:51032,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/households/current,server.js:50939,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/integrations/google/business-profile/status,server.js:40347,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/integrations/google/oauth/callback,server.js:40342,internal,protected,direct/server/static,none detected,,/api/google/oauth/callback${qs  (server-redirect),redirect,live credential,intentionally blocked,,server-get
+/api/integrations/google/oauth/start,server.js:40321,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/integrations/google/status,server.js:40204,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/member-library,server.js:70978,member,protected,/member-library.html (fetch),none detected,/member-library.html (fetch),,internal-only,local,ready,,fetch | server-get
+/api/member-portal,server.js:391 | server.js:75498,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-use
+/api/member-portal/library,server.js:75571,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/member-portal/live-sessions,server.js:75507,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/member-portal/live-sessions/:id/check-in,server.js:75534,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/one-time-classroom,server.js:70992,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/one-time-classroom/bot,server.js:71123,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/one-time-classroom/threads/:id/responses,server.js:71016,member,protected,/one-time-classroom.html (fetch),none detected,/one-time-classroom.html (fetch),,internal-only,local,ready,,fetch | server-post
+/api/one-time-review,server.js:10007,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/one-time-review/classroom,server.js:10129,one time,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/one-time-review/email-templates,server.js:10140,one time,protected,/one-time-email-review.html (fetch),none detected,/one-time-email-review.html (fetch),,internal-only,mocked integration,ready,,fetch | server-get
+/api/one-time-review/parent,server.js:10096,parent,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/one-time-review/provider,server.js:10118,provider,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/one-time-review/student,server.js:10107,student,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-get
+/api/one-time/calendar,server.js:73033,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/one-time/campaign,server.js:9860,one time,none,/one-time (fetch),none detected,/one-time (fetch),,internal-only,local,ready,one_time_public_campaign_timer_api,fetch | route-registry | server-get
+/api/one-time/instance-config,server.js:9793 | server.js:9801 | server.js:9802 | server.js:9810,one time,protected,public/js/one-time-single-tenant.js (fetch),none detected,public/js/one-time-single-tenant.js (fetch),,internal-only,local,ready,,fetch | server-get | server-use
+/api/one-time/interest,server.js:72926,one time,protected,/one-time (fetch),none detected,/one-time (fetch),,internal-only,local,ready,,fetch | server-post
+/api/one-time/mishnah/onboarding,server.js:52216,one time,protected,/one-time-preview.html (fetch),none detected,/one-time-preview.html (fetch),,internal-only,local,ready,,fetch | server-post
+/api/operations/login,server.js:79734,admin,protected,/operations-login.html (fetch) | /test-login.html (fetch),none detected,/operations-login.html (fetch) | /test-login.html (fetch),,internal-only,local,ready,,fetch | server-post
+/api/operations/logout,server.js:79775,admin,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent,server.js:391,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-use
+/api/parent-accountability/onboarding,server.js:51618,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal,server.js:391 | server.js:50424,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-use
+/api/parent-portal/help,server.js:51383,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/login,server.js:50090,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/logout,server.js:52907,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/notifications/:id/respond,server.js:52781,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/password/request,server.js:50144,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/password/reset,server.js:50159,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/provider-messages,server.js:52387,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/questions/:id/respond,server.js:52828,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/request-link,server.js:50173,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/session,server.js:50370,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent-portal/students/:studentId/access-code,server.js:52550,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/students/:studentId/accountability-pipeline,server.js:52600 | server.js:52620,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-put
+/api/parent-portal/students/:studentId/activity,server.js:50560,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent-portal/students/:studentId/chat,server.js:52736,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/students/:studentId/login-account,server.js:52496,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/students/:studentId/meeting-recordings,server.js:52635,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent-portal/students/:studentId/progress,server.js:50551,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent-portal/students/:studentId/questions,server.js:50588,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent-portal/students/:studentId/shoutouts,server.js:50601,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent-portal/students/:studentId/worksheets,server.js:50575,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent-portal/students/:studentId/ws11-progress,server.js:50439,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/accountability,server.js:50746,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/accountability/items,server.js:50788,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent/accountability/items/:id,server.js:50818,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/parent/assistant,server.js:50896,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent/auth/login,server.js:50275,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent/auth/logout,server.js:50308,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent/checkins,server.js:51303,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent/children,server.js:50705 | server.js:51230,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/children/:personId/overview,server.js:50714,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/goals,server.js:51242 | server.js:51258,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/parent/household,server.js:50692,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/me,server.js:50315,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/overview,server.js:51219,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/provider-index,server.js:50846,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/provider-questions,server.js:50862,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/parent/setup,server.js:51342,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/parent/setup/filter,server.js:51351,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/payment-complete,server.js:43266,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/pending-payments,server.js:43254,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/portal-bot/actions,server.js:64636,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/portal-bot/actions/preview,server.js:64659,internal,protected,direct/server/static,none detected,,,internal-only,mocked integration,ready,,server-post
+/api/provider-categories,server.js:44334,provider,protected,/service-providers.html (fetch),none detected,/service-providers.html (fetch),,internal-only,local,ready,,fetch | server-get
+/api/provider-onboarding,server.js:44984,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-onboarding/intake,server.js:45251,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-plans,server.js:44315,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/provider-portal,server.js:391,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-use
+/api/provider-portal/classroom-drafts,server.js:45770,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/login,server.js:45376,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/logout,server.js:45411,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/messages/:id/reply,server.js:45428,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/one-time/class-media,server.js:45836,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/one-time/class-media/:jobId,server.js:45853,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/provider-portal/profile,server.js:45489,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/provider-portal/services,server.js:45538,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/services/:id,server.js:45583,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/provider-portal/services/:id/sessions,server.js:45637,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/session,server.js:45418,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/provider-portal/setup-password,server.js:45359,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/provider-portal/setup-token,server.js:45340,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/provider-signup,server.js:44406,provider,protected,/providers-join.html (fetch),none detected,/providers-join.html (fetch),,internal-only,local,ready,,fetch | server-post
+/api/providers,server.js:44345,provider,protected,/service-providers.html (fetch),none detected,/service-providers.html (fetch),,internal-only,local,ready,,fetch | server-get
+/api/providers/:id,server.js:44460,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/providers/:id/comments,server.js:44561,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/providers/:id/comments/:commentId,server.js:44591,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/providers/:id/google-business/connect,server.js:44813,provider,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/providers/:id/google-business/locations,server.js:44863,provider,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/providers/:id/google-business/reviews,server.js:44844,provider,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get
+/api/providers/:id/google/connect,server.js:44781,provider,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/providers/:id/media,server.js:44516,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/providers/:id/questions,server.js:44627,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/providers/:id/upgrade-intent,server.js:44712,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/providers/:id/upgrade-interest,server.js:44716,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/providers/:slug,server.js:44360,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/providers/signup,server.js:44430,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/rabbi/checkout,server.js:74095,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/rabbi/member,server.js:391,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-use
+/api/rabbi/member/library,server.js:74264,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/rabbi/member/live-sessions,server.js:74311,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/rabbi/member/login,server.js:74237,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/rabbi/member/questions,server.js:74512 | server.js:74539,member,protected,direct/server/static,none detected,,,internal-only,local,ready,one_time_member_private_questions,route-registry | server-get | server-post
+/api/rabbi/member/request-login,server.js:74188,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/rabbi/member/session,server.js:74255,member,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/rabbi/member/support-tickets,server.js:74334 | server.js:74375,member,protected,direct/server/static,none detected,,,internal-only,local,ready,one_time_member_support,route-registry | server-get | server-post
+/api/rabbi/member/support-tickets/:id,server.js:74479,member,protected,direct/server/static,none detected,,,internal-only,local,ready,one_time_member_support_detail,route-registry | server-get
+/api/rabbi/tiers,server.js:74080,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/service-providers,server.js:44319,provider,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/signups,server.js:43242,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/student-portal,server.js:391 | server.js:49380,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-use
+/api/student-portal/assistant/message,server.js:49779,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/course-questions,server.js:49872,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/student-portal/course-questions/:id/answer,server.js:49884,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/goals,server.js:49392,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/goals/:id/checkoff,server.js:49436,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/goals/:id/day-checkoff,server.js:49580,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/login,server.js:49285,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/logout,server.js:49363,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/message-parent,server.js:49672,parent,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/message-rabbi,server.js:49731,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/questions,server.js:49806,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/student-portal/session,server.js:49370,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get
+/api/student-portal/worksheets/:id/submit,server.js:49982,student,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/submit,server.js:42775,internal,protected,/signup-he.html (fetch) | /signup.html (fetch),none detected,/signup-he.html (fetch) | /signup.html (fetch),,internal-only,local,ready,,fetch | server-post
+/api/tickets,server.js:69638 | server.js:69667,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-get | server-post
+/api/tickets/:id,server.js:69704,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-patch
+/api/torah-learning/public-summary,server.js:49276,internal,protected,/ (fetch),none detected,/ (fetch),,internal-only,local,ready,,fetch | server-get
+/api/webhooks/green-invoice,server.js:59666,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/webhooks/green-invoice-disabled-audited-duplicate,server.js:59703,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/webhooks/green-invoice-disabled-legacy-fallback,server.js:59831,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/webhooks/green-invoice-disabled-normalized-legacy,server.js:59733,internal,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/webhooks/green-invoice/rabbi,server.js:74585,one time,protected,direct/server/static,none detected,,,internal-only,local,ready,,server-post
+/api/webhooks/stripe/rabbi,server.js:9783,one time,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-post
+/api/webhooks/wapi,server.js:58823 | server.js:58831,internal,protected,direct/server/static,none detected,,,internal-only,live credential,intentionally blocked,,server-get | server-post
+/assistant-setup.html,public/assistant-setup.html,public,none,direct/server/static,/,,/ (literal-a-href) | /api/assistant/message (fetch),internal-only,local,incomplete,,html-page
+/become-service-provider,public/providers-join.html,provider,none,Alias/alternate route for /provider-signup,none detected,,,alias,local,ready,public_provider_join,route-registry | server-get
+/blog,public/blog.html,public,none,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/blog-post.html,public/blog-post.html,public,none,Alias/alternate route for /blog/:slug,none detected,,,alias,local,ready,,html-page
+/blog.html,public/blog.html,public,none,Alias/alternate route for /blog,none detected,,,alias,local,ready,,html-page
+/blog/:slug,public/blog-post.html,public,none,public/js/bna-pages.js (js-generated-route-string),none detected,public/js/bna-pages.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/community,public/service-providers.html,public,none,Alias/alternate route for /he/service-providers,none detected,,,alias,local,ready,,server-get
+/data/learning-moments.json,public/data/learning-moments.json,public,none,/ (fetch),none detected,/ (fetch),,keep,local,incomplete,,fetch | public-static-file
+/data/website-blog-posts.json,public/data/website-blog-posts.json,public,none,public/js/bna-content.js (fetch) | public/js/bna-content.js (js-generated-route-string),none detected,public/js/bna-content.js (fetch) | public/js/bna-content.js (js-generated-route-string),,keep,local,incomplete,,fetch | js-generated-route-string | public-static-file
+/documents/parent-handbook,public/documents/parent-handbook.html,parent,none,/parents.html (literal-a-href),none detected,/parents.html (literal-a-href),,keep,local,incomplete,,literal-a-href | server-get
+/documents/parent-handbook.html,public/documents/parent-handbook.html,parent,none,Alias/alternate route for /documents/parent-handbook,/,,/ (literal-a-href) | /signup.html (literal-a-href),alias,local,ready,,html-page
+/documents/registration-document,public/documents/registration-document.html,public,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/documents/registration-document.html,public/documents/registration-document.html,public,none,Alias/alternate route for /documents/registration-document,none detected,,,alias,local,ready,,html-page
+/families,public/parents.html,public,none,Alias/alternate route for /he/parents,none detected,,,alias,local,ready,,server-get
+/family,public/parent.html,parent,none,Alias/alternate route for /parent,none detected,,,alias,local,ready,,server-get
+/faq,public/faq.html,public,none,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/faq.html,public/faq.html,public,none,Alias/alternate route for /faq,none detected,,,alias,local,ready,,html-page
+/he,public/index.html,public,none,/ (literal-a-href) | public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),none detected,/ (literal-a-href) | public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,ready,public_site_hebrew_alias,js-generated-route-string | literal-a-href | route-registry | server-get
+/he/blog,public/blog.html,public,none,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/he/blog/:slug,public/blog-post.html,public,none,public/js/bna-pages.js (js-generated-route-string),none detected,public/js/bna-pages.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/he/community,public/service-providers.html,public,none,Alias/alternate route for /he/service-providers,none detected,,,alias,local,ready,,server-get
+/he/families,public/parents.html,public,none,Alias/alternate route for /he/parents,none detected,,,alias,local,ready,,server-get
+/he/faq,public/faq.html,public,none,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-pages.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/he/parent-app,public/parents.html,parent,none,Alias/alternate route for /he/parents,none detected,,,alias,local,ready,,server-get
+/he/parents,public/parents.html,parent,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/he/providers,public/service-providers.html,provider,none,/ (literal-a-href),none detected,/ (literal-a-href),,alias,local,ready,public_provider_index_hebrew_alias,literal-a-href | route-registry | server-get
+/he/school,public/school.html,public,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/he/service-providers,public/service-providers.html,provider,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/he/signup,public/signup-he.html,public,none,Alias/alternate route for /signup-he,none detected,,,alias,local,ready,,server-get
+/household,public/parent.html,parent,none,Alias/alternate route for /parent,none detected,,,alias,local,ready,,server-get
+/index.html,public/index.html,public,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,alias,local,ready,,js-generated-route-string | public-static-file
+/manifest.json,public/manifest.json,public,none,public/sw.js (service-worker),none detected,public/sw.js (service-worker),,keep,local,incomplete,,public-static-file | service-worker
+/member,server.js:79877,member,entry page,/operations.html (literal-a-href) | public/sw.js (service-worker),none detected,/operations.html (literal-a-href) | public/sw.js (service-worker),,alias,local,ready,member_portal_alias,literal-a-href | route-registry | server-get | service-worker
+/member-library,public/member-library.html,member,protected,/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker),none detected,/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker),,keep,local,ready,one_time_member_library,literal-a-href | route-registry | server-get | service-worker
+/member-library.html,public/member-library.html,member,none,Alias/alternate route for /member-library,/ | /member-library | /one-time | /one-time-classroom | /rabbi-member,,/ (literal-a-href) | /api/member-library (fetch) | /member-library (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,,html-page
+/member-portal,server.js:79877,member,entry page,direct/server/static,none detected,,,alias,local,ready,member_portal_legacy_alias,route-registry | server-get
+/member.html,public/member.html,member,entry page,direct/server/static,/ | /member-library | /one-time-classroom | /rabbi-member,,/ (literal-a-href) | /member-library (literal-a-href) | /one-time-classroom (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,member_portal_static_legacy_alias,html-page | route-registry
+/one-time,public/one-time/index.html,one time,none,/ (literal-a-href) | /member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href),/one-time | /rabbi-member,/ (literal-a-href) | /member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),/api/one-time/campaign (fetch) | /api/one-time/interest (fetch) | /one-time (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /rabbi-member (literal-a-href),keep,local,ready,one_time_public_focused_offer,html-page | js-generated-route-string | literal-a-href | route-registry | server-get
+/one-time-classroom,public/one-time-classroom.html,provider,protected,/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker),none detected,/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker),,keep,local,ready,one_time_classroom,literal-a-href | route-registry | server-get | service-worker
+/one-time-classroom.html,public/one-time-classroom.html,provider,protected,/one-time-email-review.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href),/ | /member-library | /one-time | /one-time-classroom | /rabbi-member,/one-time-email-review.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href),/ (literal-a-href) | /api/one-time-classroom/threads/:id/responses (fetch) | /member-library (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,one_time_classroom_static_alias,html-page | literal-a-href | route-registry | server-get
+/one-time-email-review.html,public/one-time-email-review.html,one time,none,direct/server/static,/one-time,,/api/one-time-review/email-templates (fetch) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href),internal-only,mocked integration,incomplete,,html-page
+/one-time-member-library,public/member-library.html,member,none,Alias/alternate route for /member-library,none detected,,,alias,local,ready,,server-get
+/one-time-mishnayos,public/rabbi.html,one time,none,Alias/alternate route for /rabbi,none detected,,,alias,local,ready,,server-get
+/one-time-preview,public/one-time-preview.html,one time,none,direct/server/static,none detected,,,internal-only,mocked integration,incomplete,,server-get
+/one-time-preview.html,public/one-time-preview.html,one time,none,Alias/alternate route for /one-time-preview,none detected,,/api/one-time/mishnah/onboarding (fetch),alias,mocked integration,ready,,html-page
+/one-time/interest,public/one-time/index.html,one time,none,Alias/alternate route for /one-time,none detected,,,alias,local,ready,,server-get
+/one-time/israel,public/one-time/index.html,one time,none,Alias/alternate route for /one-time,none detected,,,alias,local,ready,,server-get
+/one-time/member-login,server.js:79877,member,entry page,direct/server/static,none detected,,,alias,local,ready,one_time_member_login_alias,route-registry | server-get
+/one-time/mishnayos,public/one-time/index.html,one time,none,direct/server/static,none detected,,,alias,local,ready,one_time_public_focused_offer_alias,route-registry | server-get
+/one-time/privacy.html,public/one-time/privacy.html,one time,none,/one-time (literal-a-href),/one-time,/one-time (literal-a-href),/one-time (literal-a-href),keep,local,ready,one_time_public_privacy_policy,html-page | literal-a-href | route-registry
+/one-time/terms.html,public/one-time/terms.html,one time,none,/one-time (literal-a-href),/one-time,/one-time (literal-a-href),/one-time (literal-a-href),keep,local,ready,one_time_public_terms_policy,html-page | literal-a-href | route-registry
+/one-time/uk,public/one-time/index.html,one time,none,Alias/alternate route for /one-time,none detected,,,alias,local,ready,,server-get
+/one-time/us,public/one-time/index.html,one time,none,Alias/alternate route for /one-time,none detected,,,alias,local,ready,,server-get
+/operations,public/operations.html | server.js:391,admin,protected,/operations.html (location.replace) | /test-login.html (window.location) | public/operations-manifest.json (manifest:id) | public/operations-manifest.json (manifest:scope) | public/operations-manifest.json (manifest:start_url) | public/sw.js (service-worker),none detected,/operations.html (location.replace) | /test-login.html (window.location) | public/operations-manifest.json (manifest:id) | public/operations-manifest.json (manifest:scope) | public/operations-manifest.json (manifest:start_url) | public/sw.js (service-worker),,keep,local,ready,operations,location.replace | manifest:id | manifest:scope | manifest:start_url | route-registry | server-get | server-use | service-worker | window.location
+/operations-access,server.js:391 | server.js:59914,admin,none,direct/server/static,none detected,,/operations-login.html (server-redirect),redirect,local,incomplete,,server-get | server-use
+/operations-login.html,public/operations-login.html,admin,entry page,/operations-access (server-redirect) | /operations.html (literal-a-href) | /operations.html (window.location) | public/sw.js (service-worker),none detected,/operations-access (server-redirect) | /operations.html (literal-a-href) | /operations.html (window.location) | public/sw.js (service-worker),/api/bna/auth/me (fetch) | /api/operations/login (fetch),internal-only,local,ready,operations_login,html-page | literal-a-href | route-registry | server-redirect | service-worker | window.location
+/operations.html,public/operations.html,admin,none,Alias/alternate route for /operations,/member | /member-library | /one-time-classroom | /operations | /provider | /rabbi | /rabbi-member,,/api/bna (fetch) | /api/google/connections/:connectionId/disconnect (fetch) | /api/google/oauth/start (literal-a-href) | /member (literal-a-href) | /member-library (literal-a-href) | /one-time-classroom (literal-a-href) | /operations (location.replace) | /operations-login.html (literal-a-href) | /operations-login.html (window.location) | /provider (literal-a-href) | /provider-signup (literal-a-href) | /providers/:slug (literal-a-href) | /rabbi (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,,html-page
+/operations/agents/runs/:runKey,public/operations.html,admin,none,direct/server/static,none detected,,,keep,local,incomplete,,server-get
+/operations?view=studio,public/operations.html | server.js:391,admin,protected,direct/server/static,none detected,,,keep,mocked integration,ready,operations_service_provider_studio,route-registry
+/parent,public/parent.html,parent,protected,/parent-login.html (literal-a-href) | /parent-login.html (window.location) | /parent.html (literal-a-href) | public/parent-manifest.json (manifest:id) | public/parent-manifest.json (manifest:scope) | public/parent-manifest.json (manifest:start_url) | public/sw.js (service-worker),none detected,/parent-login.html (literal-a-href) | /parent-login.html (window.location) | /parent.html (literal-a-href) | public/parent-manifest.json (manifest:id) | public/parent-manifest.json (manifest:scope) | public/parent-manifest.json (manifest:start_url) | public/sw.js (service-worker),,keep,local,ready,parent_portal,literal-a-href | manifest:id | manifest:scope | manifest:start_url | route-registry | server-get | service-worker | window.location
+/parent-app,public/parents.html,parent,none,Alias/alternate route for /he/parents,none detected,,,alias,local,ready,,server-get
+/parent-login,public/parent-login.html | public/parent.html,parent,none,Alias/alternate route for /parent/login,none detected,,,alias,local,ready,,server-get
+/parent-login.html,public/parent-login.html,parent,none,Alias/alternate route for /parent/login,/ | /parent | /parents,,/ (literal-a-href) | /parent (literal-a-href) | /parent (window.location) | /parent/login (literal-a-href) | /parents (literal-a-href) | /student/login (literal-a-href),alias,local,ready,,html-page
+/parent.html,public/parent.html,parent,protected,/one-time-email-review.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href),/ | /one-time | /parent | /parents,/one-time-email-review.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href),/ (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent (literal-a-href) | /parents (literal-a-href) | /student.html (literal-a-href) | /student/login (literal-a-href),alias,local,ready,parent_portal_static_alias,html-page | literal-a-href | route-registry
+/parent/login,public/parent-login.html | public/parent.html,parent,entry page,/ (literal-a-href) | /parent-login.html (literal-a-href) | /parents.html (literal-a-href) | /service-providers.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),none detected,/ (literal-a-href) | /parent-login.html (literal-a-href) | /parents.html (literal-a-href) | /service-providers.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,ready,parent_portal_login,js-generated-route-string | literal-a-href | route-registry | server-get
+/parents,public/parents.html,parent,none,/ (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),none detected,/ (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,ready,public_parent_information,js-generated-route-string | literal-a-href | route-registry | server-get
+/parents.html,public/parents.html,parent,none,Alias/alternate route for /he/parents,none detected,,/documents/parent-handbook (literal-a-href) | /parent/login (literal-a-href),alias,local,ready,,html-page | server-get
+/platform-ui,public/platform-ui/index.html,public,none,direct/server/static,none detected,,,internal-only,local,incomplete,,html-page
+/preview/one-time-mishnah,public/one-time-preview.html,one time,none,direct/server/static,none detected,,,internal-only,mocked integration,incomplete,,server-get
+/provider,public/provider.html,provider,entry page,/ (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),none detected,/ (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),,keep,local,ready,provider_portal,js-generated-route-string | literal-a-href | route-registry | server-get | service-worker
+/provider-dashboard,public/provider.html,provider,none,Alias/alternate route for /provider,none detected,,,alias,local,ready,,server-get
+/provider-participant,public/provider-participant.html,provider participant,none,/rabbi.html (literal-a-href),none detected,/rabbi.html (literal-a-href),,keep,local,incomplete,,literal-a-href | server-get
+/provider-participant.html,public/provider-participant.html,provider participant,none,Alias/alternate route for /provider-participant,/ | /member-library | /one-time | /provider | /rabbi-member,,/ (literal-a-href) | /member-library (literal-a-href) | /one-time (literal-a-href) | /provider (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,,html-page
+/provider-profile.html,public/provider-profile.html,provider,none,Alias/alternate route for /providers/:slug,/service-providers,,/providers/category/:categorySlug (literal-a-href) | /service-providers (literal-a-href),alias,local,ready,,html-page
+/provider-signup,public/providers-join.html,provider,none,/operations.html (literal-a-href),none detected,/operations.html (literal-a-href),,alias,local,ready,public_provider_join_alias,literal-a-href | route-registry | server-get
+/provider-signup.html,public/providers-join.html,provider,none,Alias/alternate route for /providers/join,none detected,,,alias,local,ready,,server-get
+/provider.html,public/provider.html,provider,none,/one-time-email-review.html (literal-a-href),/ | /one-time | /provider | /service-providers,/one-time-email-review.html (literal-a-href),/ (literal-a-href) | /api/bna/one-time/view-as-rabbi/end (fetch) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent.html (literal-a-href) | /provider (literal-a-href) | /providers/join (literal-a-href) | /service-providers (literal-a-href) | /student.html (literal-a-href),alias,local,ready,,html-page | literal-a-href
+/provider/login,public/provider.html,provider,none,Alias/alternate route for /provider,none detected,,,alias,local,ready,,server-get
+/provider/member,public/provider-participant.html,provider participant,none,Alias/alternate route for /provider-participant,none detected,,,alias,local,ready,,server-get
+/providers,public/service-providers.html,provider,none,Alias/alternate route for /he/service-providers,none detected,,,alias,local,ready,public_provider_index_alias,route-registry | server-get
+/providers-join.html,public/providers-join.html,provider,none,Alias/alternate route for /providers/join,none detected,,/api/provider-signup (fetch),alias,local,ready,,html-page
+/providers/:slug,public/provider-profile.html,provider,none,/operations.html (literal-a-href) | /service-providers.html (literal-a-href),none detected,/operations.html (literal-a-href) | /service-providers.html (literal-a-href),,keep,local,ready,public_provider_profile,literal-a-href | route-registry | server-get
+/providers/category/:categorySlug,public/service-providers.html,provider,none,/provider-profile.html (literal-a-href) | /service-providers.html (literal-a-href),none detected,/provider-profile.html (literal-a-href) | /service-providers.html (literal-a-href),,keep,local,incomplete,,literal-a-href | server-get
+/providers/join,public/providers-join.html,provider,none,/ (literal-a-href) | /provider.html (literal-a-href) | /service-providers.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string) | public/js/bna-site-nav.js (literal-a-href),none detected,/ (literal-a-href) | /provider.html (literal-a-href) | /service-providers.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string) | public/js/bna-site-nav.js (literal-a-href),,keep,local,ready,public_provider_profile,js-generated-route-string | literal-a-href | server-get
+/rabbi,public/rabbi.html,one time,none,/operations.html (literal-a-href) | /rabbi.html (literal-a-href),none detected,/operations.html (literal-a-href) | /rabbi.html (literal-a-href),,keep,local,ready,one_time_public_landing,literal-a-href | route-registry | server-get
+/rabbi-member,public/rabbi-member.html,member,entry page,/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href),none detected,/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker),,keep,local,ready,one_time_member_entry,literal-a-href | route-registry | server-get | service-worker
+/rabbi-member.html,public/rabbi-member.html,member,none,Alias/alternate route for /rabbi-member,/ | /member-library | /one-time | /one-time-classroom | /rabbi-member,,/ (literal-a-href) | /member-library (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,,html-page
+/rabbi-preview,public/rabbi.html,one time,none,Alias/alternate route for /rabbi,none detected,,,alias,mocked integration,ready,,server-get
+/rabbi.html,public/rabbi.html,one time,none,Alias/alternate route for /rabbi,/ | /member-library | /one-time-classroom | /rabbi | /rabbi-member,,/ (literal-a-href) | /member-library (literal-a-href) | /one-time-classroom (literal-a-href) | /provider-participant (literal-a-href) | /rabbi (literal-a-href) | /rabbi-member (literal-a-href),alias,local,ready,,html-page
+/rabbi/member,public/rabbi-member.html,member,none,Alias/alternate route for /rabbi-member,none detected,,,alias,local,ready,,server-get
+/register,public/signup.html,public,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,alias,local,ready,,js-generated-route-string | server-get
+/school,public/school.html,public,none,/ (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),none detected,/ (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,ready,public_school_page,js-generated-route-string | literal-a-href | route-registry | server-get
+/school.html,public/school.html,public,none,Alias/alternate route for /he/school,none detected,,/signup.html (literal-a-href),alias,local,ready,,html-page | server-get
+/service-providers,public/service-providers.html,provider,none,/provider-profile.html (literal-a-href) | /provider.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),none detected,/provider-profile.html (literal-a-href) | /provider.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,ready,public_provider_index,js-generated-route-string | literal-a-href | route-registry | server-get
+/service-providers.html,public/service-providers.html,provider,none,Alias/alternate route for /he/service-providers,none detected,,/api/provider-categories (fetch) | /api/providers (fetch) | /parent/login (literal-a-href) | /providers/:slug (literal-a-href) | /providers/category/:categorySlug (literal-a-href) | /providers/join (literal-a-href),alias,local,ready,,html-page
+/signup,public/signup.html,public,none,public/js/bna-site-nav.js (js-generated-route-string),none detected,public/js/bna-site-nav.js (js-generated-route-string),,keep,local,incomplete,,js-generated-route-string | server-get
+/signup-he,public/signup-he.html,public,none,Alias/alternate route for /he/signup,none detected,,,alias,local,ready,,server-get
+/signup-he.html,public/signup-he.html,public,none,/signup-he.html (literal-a-href) | /signup.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),none detected,/signup-he.html (literal-a-href) | /signup.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),/api/assistant/message (fetch) | /api/submit (fetch) | /signup-he.html (literal-a-href) | /signup.html (literal-a-href),alias,local,ready,,html-page | js-generated-route-string | literal-a-href | service-worker
+/signup-thank-you.html,public/signup-thank-you.html,public,none,public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),/,public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),/ (literal-a-href),keep,local,incomplete,,html-page | js-generated-route-string | service-worker
+/signup.html,public/signup.html,public,none,/ (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /school.html (literal-a-href) | /signup-he.html (literal-a-href) | /signup.html (literal-a-href) | public/js/bna-content.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),/,/ (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /school.html (literal-a-href) | /signup-he.html (literal-a-href) | /signup.html (literal-a-href) | public/js/bna-content.js (js-generated-route-string) | public/js/bna-site-nav.js (js-generated-route-string) | public/sw.js (service-worker),/ (window.location) | /api/assistant/message (fetch) | /api/submit (fetch) | /signup-he.html (literal-a-href) | /signup.html (literal-a-href),alias,local,ready,public_signup,html-page | js-generated-route-string | literal-a-href | route-registry | service-worker
+/student,public/student.html,student,protected,/student.html (literal-a-href) | public/sw.js (service-worker),none detected,/student.html (literal-a-href) | public/sw.js (service-worker),,keep,local,ready,student_portal,literal-a-href | route-registry | server-get | service-worker
+/student.html,public/student.html,student,protected,/one-time-email-review.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href),/ | /one-time | /parents | /student,/one-time-email-review.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href),/ (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent.html (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href) | /student (literal-a-href),alias,local,ready,student_portal_static_alias,html-page | literal-a-href | route-registry
+/student/login,public/student.html,student,entry page,/ (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),none detected,/ (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string),,keep,local,ready,student_portal_login,js-generated-route-string | literal-a-href | route-registry | server-get
+/test-login.html,public/test-login.html,public,none,direct/server/static,/operations,,/api/operations/login (fetch) | /operations (window.location),internal-only,mocked integration,incomplete,,html-page

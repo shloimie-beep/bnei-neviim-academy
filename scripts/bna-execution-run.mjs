@@ -1098,6 +1098,35 @@ function nextUnblockedRequirement(requirements) {
   });
 }
 
+function approvalGatedRequirements(requirements) {
+  return requirements.filter((requirement) => {
+    if (!requirement || !isWorkRemainingStatus(requirement.status)) {
+      return false;
+    }
+    if (BLOCKER_STATUSES.has(requirement.status)) {
+      return false;
+    }
+    return requirement.can_continue_without_operator === false;
+  });
+}
+
+function printApprovalGatedRequirements(requirements) {
+  const gated = approvalGatedRequirements(requirements);
+  if (!gated.length) {
+    return;
+  }
+
+  console.log('\nApproval-gated open requirements:');
+  for (const requirement of gated) {
+    console.log(`- ${requirement.id} ${requirement.status}: ${requirement.title}`);
+    console.log(`  owner: ${requirement.blocker_owner || requirement.owner || '(missing)'}`);
+    console.log(`  blocker: ${requirement.blocker || requirement.next_action || '(missing)'}`);
+    console.log(
+      `  next_action: ${requirement.blocker_next_action || requirement.next_action || '(missing)'}`
+    );
+  }
+}
+
 function printNext(result) {
   const ok = printValidation(result);
   if (!ok) {
@@ -1107,6 +1136,7 @@ function printNext(result) {
   const next = nextUnblockedRequirement(result.requirements);
   if (!next) {
     console.log('\nNext unblocked executable batch: none');
+    printApprovalGatedRequirements(result.requirements);
     return true;
   }
 
@@ -1127,7 +1157,7 @@ function printExternalBlockers(result) {
 
   const blockers = result.requirements.filter((requirement) => BLOCKER_STATUSES.has(requirement.status));
   console.log('\nRemaining external blockers:');
-  if (!blockers.length) {
+  if (!blockers.length && !approvalGatedRequirements(result.requirements).length) {
     console.log('- none');
     return true;
   }
@@ -1138,6 +1168,7 @@ function printExternalBlockers(result) {
     console.log(`  blocker: ${requirement.blocker || '(missing)'}`);
     console.log(`  next_action: ${requirement.blocker_next_action || requirement.next_action || '(missing)'}`);
   }
+  printApprovalGatedRequirements(result.requirements);
   return true;
 }
 
@@ -1296,6 +1327,7 @@ function printResume(result) {
     console.log(`- next_action: ${next.next_action || '(none)'}`);
   } else {
     console.log('\nNext unblocked executable batch: none');
+    printApprovalGatedRequirements(result.requirements);
   }
 
   if (openRequirements.length) {

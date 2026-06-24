@@ -31,7 +31,8 @@
       home: 'Home',
       school: 'School',
       parents: 'Families',
-      serviceProviders: 'Service Providers',
+      serviceProviders: 'Provider Directory',
+      oneTime: 'One Time',
       audience: 'Explore',
       portals: 'Portal Login',
       blog: 'Blog',
@@ -53,6 +54,7 @@
       school: 'בית הספר',
       parents: 'משפחות',
       serviceProviders: 'ספקי שירות',
+      oneTime: 'One Time',
       audience: 'למי זה מתאים',
       portals: 'כניסה לפורטלים',
       blog: 'מאמרים',
@@ -115,6 +117,10 @@
     return lang === 'he' ? '/he/service-providers' : '/service-providers';
   }
 
+  function oneTimeUrl() {
+    return '/one-time';
+  }
+
   function signupUrl(lang) {
     return lang === 'he' ? '/signup-he.html' : '/signup.html';
   }
@@ -136,6 +142,7 @@
     if (/^\/(?:he\/)?school\/?$/.test(path)) return schoolUrl(next);
     if (/^\/(?:he\/)?(?:parents|families|parent-app)\/?$/.test(path)) return parentsUrl(next);
     if (/^\/(?:he\/)?(?:service-providers|providers|community)\/?$/.test(path)) return serviceProvidersUrl(next);
+    if (/^\/(?:one-time|rabbi|rabbi-member|member|member-library|one-time-classroom)/.test(path)) return oneTimeUrl();
 
     if (path.endsWith('/documents/registration-document')) {
       params.set('lang', next);
@@ -214,6 +221,7 @@
     if (path.endsWith('/school')) return 'school';
     if (/\/(?:parents|families|parent-app)$/.test(path)) return 'parents';
     if (/\/(?:service-providers|providers|community)$/.test(path)) return 'service-providers';
+    if (/\/(?:one-time|rabbi|rabbi-member|member|member-library|one-time-classroom)/.test(path)) return 'one-time';
     if (path.includes('/blog')) return 'blog';
     if (path.includes('/faq')) return 'faq';
     if (path.includes('/signup') || path.includes('/register')) return 'signup';
@@ -264,7 +272,10 @@
           <div class="bna-site-nav-actions" id="mainNavActions">
             <div class="bna-site-nav-menu" aria-label="Primary links">
               ${renderNavLink(active, { id: 'home', href: homeUrl(lang), label: copy.home })}
-              ${renderAudienceDropdown(active, copy, lang)}
+              ${renderNavLink(active, { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school })}
+              ${renderNavLink(active, { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents })}
+              ${renderNavLink(active, { id: 'service-providers', href: serviceProvidersUrl(lang), label: copy.serviceProviders || COPY.en.serviceProviders })}
+              ${renderNavLink(active, { id: 'one-time', href: oneTimeUrl(lang), label: copy.oneTime || COPY.en.oneTime })}
               <details class="bna-site-nav-dropdown bna-site-nav-dropdown-desktop">
                 <summary>${escapeHtml(copy.blog)}</summary>
                 <div class="bna-site-nav-dropdown-panel">
@@ -278,7 +289,7 @@
             <div class="bna-site-nav-buttons">
               <button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>
               <a class="bna-site-nav-button bna-site-nav-contact" href="https://wa.me/972534932631" target="_blank" rel="noopener noreferrer">${escapeHtml(copy.contact)}</a>
-              <a class="bna-site-nav-button bna-site-nav-provider" href="/become-service-provider?onboard=provider">${escapeHtml(copy.providerJoin)}</a>
+              <a class="bna-site-nav-button bna-site-nav-provider" href="/providers/join?onboard=provider">${escapeHtml(copy.providerJoin)}</a>
               <a class="bna-site-nav-button bna-site-nav-signup" id="backLink" href="${escapeHtml(signupHref)}">${escapeHtml(signupLabel)}</a>
             </div>
           </div>

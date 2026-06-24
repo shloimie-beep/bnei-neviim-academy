@@ -18,10 +18,27 @@ const PAGE_ROUTES = [
   '/provider',
   '/provider/login',
   '/service-providers',
+  '/providers/join',
   '/become-service-provider',
-  '/member',
-  '/member-portal',
   '/rabbi-member',
+];
+
+const PUBLIC_REDIRECT_ROUTES = [
+  {
+    path: '/member',
+    expectedStatuses: [302],
+    expectedLocationPattern: /\/rabbi-member/,
+  },
+  {
+    path: '/member-portal',
+    expectedStatuses: [302],
+    expectedLocationPattern: /\/rabbi-member/,
+  },
+  {
+    path: '/one-time/member-login',
+    expectedStatuses: [302],
+    expectedLocationPattern: /\/rabbi-member/,
+  },
 ];
 
 const PROTECTED_ROUTES = [
@@ -165,6 +182,20 @@ async function main() {
       pass(`public route ${route} returns anonymous shell`, String(response.status));
     }
 
+    for (const route of PUBLIC_REDIRECT_ROUTES) {
+      const { response, text, location } = await fetchRoute(options.baseUrl, route);
+      assert(
+        route.expectedStatuses.includes(response.status),
+        `${route.path} expected ${route.expectedStatuses.join('/')} got ${response.status}`
+      );
+      assert(
+        route.expectedLocationPattern.test(location),
+        `${route.path} redirected to unexpected location ${location}`
+      );
+      assertNoForbiddenContent(route.path, text);
+      pass(`public alias ${route.path} redirects to canonical member home`, `${response.status} -> ${location}`);
+    }
+
     for (const route of PROTECTED_ROUTES) {
       const { response, text, location } = await fetchRoute(options.baseUrl, route);
       assert(
@@ -204,6 +235,7 @@ async function main() {
         '',
         '## Routes',
         ...PAGE_ROUTES.map((route) => `- ${route}`),
+        ...PUBLIC_REDIRECT_ROUTES.map((route) => `- ${route.path}`),
         ...PROTECTED_ROUTES.map((route) => `- ${route.path}`),
         '',
         '## Checks',

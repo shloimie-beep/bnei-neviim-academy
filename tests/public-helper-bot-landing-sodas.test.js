@@ -57,7 +57,7 @@ test('learning ecosystem landing section includes audience model, real images, a
   assert.match(homepage, /Less Overhead, Better Teaching/);
   assert.match(homepage, /Service Provider Network/);
   assert.match(homepage, /class="ecosystem-media"[\s\S]*?forest-learning-01-web\.jpg/);
-  assert.match(homepage, /href="\/become-service-provider\?onboard=provider"/);
+  assert.match(homepage, /href="\/providers\/join\?onboard=provider"/);
   assert.match(homepage, /data-helper-open/);
   assert.match(homepage, /ecosystemProviderCtaTwo/);
   assert.match(homepage, /ecosystemHelperCta/);
@@ -74,6 +74,7 @@ test('helper layout keeps mobile and safe-area constraints explicit', () => {
 
 test('public helper lead and provider capture use existing visible routes', () => {
   assert.match(server, /app\.post\('\/api\/bna\/assistant\/chat'/);
+  assert.match(server, /app\.get\('\/providers\/join', sendProviderJoinPage\)/);
   assert.match(server, /app\.get\('\/become-service-provider', sendProviderJoinPage\)/);
   assert.match(server, /bna_provider_leads/);
   assert.match(server, /bna_contact_communications/);

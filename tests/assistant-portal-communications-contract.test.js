@@ -117,5 +117,6 @@ test('portal pages keep the assistant and avoid horizontal overflow on mobile', 
     assert.match(html, /max-width:\s*100%/);
     assert.match(html, /overflow-x:\s*hidden/);
     assert.match(html, /\/js\/bna-bot-widget\.js/);
+    assert.match(html, /data-bna-assistant-open/);
   }
 });

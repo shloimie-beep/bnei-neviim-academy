@@ -140,7 +140,7 @@ test('public website exposes conversational parent and provider onboarding', () 
   assert.match(server, /app\.post\('\/api\/parent-accountability\/onboarding'/);
   assert.match(indexHtml, /\/parent\/login/);
   assert.doesNotMatch(indexHtml, /\/parent\/login\?onboard=accountability/);
-  assert.match(indexHtml, /\/become-service-provider\?onboard=provider/);
+  assert.match(indexHtml, /\/providers\/join\?onboard=provider/);
   assert.match(parentHtml, /data-parent-accountability-onboarding/);
   assert.match(parentHtml, /function isParentAccountabilityOnboarding/);
   assert.match(parentHtml, /else if \(isParentAccountabilityOnboarding\(\)\) showLogin\(\)/);

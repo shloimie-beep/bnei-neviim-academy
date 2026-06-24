@@ -1,0 +1,1033 @@
+{
+  "started_at": "2026-06-24T05:58:27.071Z",
+  "base_url": "http://127.0.0.1:52699",
+  "release_candidate_sha": "cd0d0fcf6fd5cb248c45476c54fa55d7cf7dd2ca",
+  "guardrails": {
+    "external_credentials": false,
+    "production_state_readback": false,
+    "production_database_mutation": false,
+    "deploy": false,
+    "external_send_publish_upload_charge_dns": false
+  },
+  "role_runs": [
+    {
+      "role_id": "public-visitor",
+      "title": "Anonymous public visitor",
+      "audience": "Public",
+      "viewport": "desktop",
+      "url": "/",
+      "status": "passed",
+      "duration_ms": 2735,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-public-visitor.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "public"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/",
+        "actual_path": "/",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/school",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/service-providers",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/one-time",
+          "status": 301,
+          "ok": true
+        },
+        {
+          "href": "/blog",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Alternative%20School",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Torah%20Learning",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Jewish%20Unschooling",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=ADHD%20%2F%20Learning%20Differences",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Homeschooling",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "parent-one-child",
+      "title": "Parent with one linked child",
+      "audience": "Parent",
+      "viewport": "desktop",
+      "url": "/parent",
+      "status": "passed",
+      "duration_ms": 1292,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-one-child.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "parent_portal"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/parent",
+        "actual_path": "/parent",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parent",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/student/login",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "parent-multiple-children",
+      "title": "Parent with multiple children",
+      "audience": "Parent",
+      "viewport": "desktop",
+      "url": "/parent",
+      "status": "passed",
+      "duration_ms": 1304,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-multiple-children.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "parent_portal"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/parent",
+        "actual_path": "/parent",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parent",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/student/login",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "student",
+      "title": "Student",
+      "audience": "Student",
+      "viewport": "desktop",
+      "url": "/student?code=QA-STUDENT",
+      "status": "passed",
+      "duration_ms": 1270,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-student.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "student_portal"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/student",
+        "actual_path": "/student",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/student",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parent/login",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "provider-admin",
+      "title": "Provider administrator",
+      "audience": "Provider admin",
+      "viewport": "desktop",
+      "url": "/provider",
+      "status": "passed",
+      "duration_ms": 1234,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-admin.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "provider_workspace"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/provider",
+        "actual_path": "/provider",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/service-providers",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/provider",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/providers/join?onboard=provider",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "provider-participant",
+      "title": "Provider participant/member",
+      "audience": "Provider participant",
+      "viewport": "desktop",
+      "url": "/provider-participant",
+      "status": "passed",
+      "duration_ms": 1169,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-participant.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "one_time_member"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/provider-participant",
+        "actual_path": "/provider-participant",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/one-time",
+          "status": 301,
+          "ok": true
+        },
+        {
+          "href": "/provider",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/member-library",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member?logout=1",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "one-time-member",
+      "title": "One Time member",
+      "audience": "One Time member",
+      "viewport": "desktop",
+      "url": "/rabbi-member",
+      "status": "passed",
+      "duration_ms": 1239,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-one-time-member.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "one_time_member"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/rabbi-member",
+        "actual_path": "/rabbi-member",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/one-time",
+          "status": 301,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/member-library",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/one-time-classroom",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member?logout=1",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "super-admin",
+      "title": "Platform super-admin",
+      "audience": "Super admin",
+      "viewport": "desktop",
+      "url": "/operations",
+      "status": "passed",
+      "duration_ms": 2565,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-super-admin.png",
+      "assistant": {
+        "opened": true,
+        "kind": "operations-helper",
+        "surface": "operations"
+      },
+      "workspace_switch": {
+        "tested": true,
+        "target_workspace": "rabbi_sheller_provider",
+        "url_before": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=platform",
+        "url_after": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+        "active_workspace": "rabbi_sheller_provider",
+        "ok": true
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": false
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "public-visitor",
+      "title": "Anonymous public visitor",
+      "audience": "Public",
+      "viewport": "mobile",
+      "url": "/",
+      "status": "passed",
+      "duration_ms": 2225,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-public-visitor.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "public"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/",
+        "actual_path": "/",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/school",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/service-providers",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/one-time",
+          "status": 301,
+          "ok": true
+        },
+        {
+          "href": "/blog",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Alternative%20School",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Torah%20Learning",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Jewish%20Unschooling",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=ADHD%20%2F%20Learning%20Differences",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/blog?category=Homeschooling",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "parent-one-child",
+      "title": "Parent with one linked child",
+      "audience": "Parent",
+      "viewport": "mobile",
+      "url": "/parent",
+      "status": "passed",
+      "duration_ms": 1242,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-one-child.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "parent_portal"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/parent",
+        "actual_path": "/parent",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parent",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/student/login",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "parent-multiple-children",
+      "title": "Parent with multiple children",
+      "audience": "Parent",
+      "viewport": "mobile",
+      "url": "/parent",
+      "status": "passed",
+      "duration_ms": 1288,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-multiple-children.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "parent_portal"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/parent",
+        "actual_path": "/parent",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parent",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/student/login",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "student",
+      "title": "Student",
+      "audience": "Student",
+      "viewport": "mobile",
+      "url": "/student?code=QA-STUDENT",
+      "status": "passed",
+      "duration_ms": 1217,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-student.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "student_portal"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/student",
+        "actual_path": "/student",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parents",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/student",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/parent/login",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "provider-admin",
+      "title": "Provider administrator",
+      "audience": "Provider admin",
+      "viewport": "mobile",
+      "url": "/provider",
+      "status": "passed",
+      "duration_ms": 1177,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-admin.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "provider_workspace"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/provider",
+        "actual_path": "/provider",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/service-providers",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/provider",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/providers/join?onboard=provider",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "provider-participant",
+      "title": "Provider participant/member",
+      "audience": "Provider participant",
+      "viewport": "mobile",
+      "url": "/provider-participant",
+      "status": "passed",
+      "duration_ms": 1152,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-participant.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "one_time_member"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/provider-participant",
+        "actual_path": "/provider-participant",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/one-time",
+          "status": 301,
+          "ok": true
+        },
+        {
+          "href": "/provider",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/member-library",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member?logout=1",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "one-time-member",
+      "title": "One Time member",
+      "audience": "One Time member",
+      "viewport": "mobile",
+      "url": "/rabbi-member",
+      "status": "passed",
+      "duration_ms": 1191,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-one-time-member.png",
+      "assistant": {
+        "opened": true,
+        "kind": "website-assistant",
+        "surface": "one_time_member"
+      },
+      "workspace_switch": {
+        "tested": false
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": true,
+        "expected_path": "/rabbi-member",
+        "actual_path": "/rabbi-member",
+        "ok": true
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [
+        {
+          "href": "/one-time",
+          "status": 301,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/member-library",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/one-time-classroom",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/rabbi-member?logout=1",
+          "status": 200,
+          "ok": true
+        },
+        {
+          "href": "/",
+          "status": 200,
+          "ok": true
+        }
+      ],
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "role_id": "super-admin",
+      "title": "Platform super-admin",
+      "audience": "Super admin",
+      "viewport": "mobile",
+      "url": "/operations",
+      "status": "passed",
+      "duration_ms": 2516,
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-super-admin.png",
+      "assistant": {
+        "opened": true,
+        "kind": "operations-helper",
+        "surface": "operations"
+      },
+      "workspace_switch": {
+        "tested": true,
+        "target_workspace": "rabbi_sheller_provider",
+        "url_before": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=platform",
+        "url_after": "http://127.0.0.1:52699/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+        "active_workspace": "rabbi_sheller_provider",
+        "ok": true
+      },
+      "direct_deep_link_loaded": true,
+      "refresh_ok": true,
+      "back_navigation": {
+        "tested": false
+      },
+      "horizontal_overflow_px": 0,
+      "broken_visible_images": [],
+      "small_mobile_targets": [],
+      "internal_link_statuses": [],
+      "console_errors": [],
+      "failed_requests": []
+    }
+  ],
+  "access_runs": [
+    {
+      "role_id": "wrong-role-logged-out",
+      "title": "Wrong-role and logged-out access",
+      "audience": "Logged-out or wrong role",
+      "viewport": "desktop",
+      "status": "passed",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-wrong-role-logged-out.png",
+      "checks": [
+        {
+          "url": "/operations",
+          "final_url": "/operations-login.html?returnTo=%2Foperations",
+          "has_login_or_recovery": true
+        },
+        {
+          "url": "/parent/login",
+          "final_url": "/parent/login",
+          "has_login_or_recovery": true
+        },
+        {
+          "url": "/student/login",
+          "final_url": "/student/login",
+          "has_login_or_recovery": true
+        },
+        {
+          "url": "/provider/login",
+          "final_url": "/provider/login",
+          "has_login_or_recovery": true
+        }
+      ]
+    },
+    {
+      "role_id": "wrong-role-logged-out",
+      "title": "Wrong-role and logged-out access",
+      "audience": "Logged-out or wrong role",
+      "viewport": "mobile",
+      "status": "passed",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-wrong-role-logged-out.png",
+      "checks": [
+        {
+          "url": "/operations",
+          "final_url": "/operations-login.html?returnTo=%2Foperations",
+          "has_login_or_recovery": true
+        },
+        {
+          "url": "/parent/login",
+          "final_url": "/parent/login",
+          "has_login_or_recovery": true
+        },
+        {
+          "url": "/student/login",
+          "final_url": "/student/login",
+          "has_login_or_recovery": true
+        },
+        {
+          "url": "/provider/login",
+          "final_url": "/provider/login",
+          "has_login_or_recovery": true
+        }
+      ]
+    }
+  ],
+  "failure_runs": [
+    {
+      "role_id": "api-failure-state",
+      "title": "Synthetic API failure state",
+      "audience": "All authenticated surfaces",
+      "viewport": "desktop",
+      "status": "passed",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-api-failure-state.png",
+      "observed_text_excerpt": "{\"ok\":false,\"error\":\"Synthetic API failure for owner-review QA.\"}"
+    },
+    {
+      "role_id": "api-failure-state",
+      "title": "Synthetic API failure state",
+      "audience": "All authenticated surfaces",
+      "viewport": "mobile",
+      "status": "passed",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-api-failure-state.png",
+      "observed_text_excerpt": "{\"ok\":false,\"error\":\"Synthetic API failure for owner-review QA.\"}"
+    }
+  ],
+  "summary": {
+    "failed": [],
+    "consoleErrors": [],
+    "failedRequests": [],
+    "brokenImages": [],
+    "linkFailures": [],
+    "overflow": [],
+    "smallTargets": [],
+    "ok": true,
+    "workspaceSwitchFailures": []
+  },
+  "server_log_tail": [
+    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
+    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
+    "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
+    "BNA Server running on 127.0.0.1:52699"
+  ]
+}

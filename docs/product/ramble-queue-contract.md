@@ -14,7 +14,10 @@ sentence while keeping every outcome inspectable.
 ## Intake Source
 
 Use `src/platform/ingestion/intake-source.js` to create a provider-neutral
-source record before parsing. The record preserves:
+source record before parsing. Supported provider families include Telegram,
+Drive/Google Docs, GitHub issues/PRs, ChatGPT exports, Codex chat packets,
+Operations UI, website bot, email, WhatsApp/WAPI, local file, and manual
+intake. The record preserves:
 
 - source provider/channel/kind
 - source ID/link/filename/MIME type
@@ -27,8 +30,14 @@ source record before parsing. The record preserves:
 - processing attempts
 - final routing
 
-The module is local/dry-run safe and does not mutate Drive or external
-accounts.
+Adapters should enter through
+`src/platform/ingestion/intake-service.js`, which builds one canonical packet:
+source record, platform parse, parent prompt, and persistence-ready
+`bna_raw_intake` / parse-run / parse-item records. The service is local/dry-run
+safe and does not mutate Drive, GitHub, databases, or external accounts.
+`src/platform/ingestion/intake-persistence.js` provides the matching local
+apply/readback adapter for no-external-write verification before any production
+database path is approved.
 
 ## Folder Plan
 
@@ -64,6 +73,11 @@ failed
 archived
 ```
 
+Incoming verification package statuses `pass`, `passed`, and `sealed_pass`
+normalize to parent `completed` for transitions. Child outcomes with `passed`,
+`completed`, `blocked`, `failed`, or `archived` count as terminal in the
+ramble status rollup.
+
 Visible queue fields:
 
 - prompt number/title
@@ -84,6 +98,15 @@ View-model functions:
 - `buildQueueViewModel()` for `/queue`
 - `buildPromptDetailViewModel()` for `/prompt <id>`
 - `buildRambleStatusViewModel()` for `/ramble_status`
+- `buildPromptAutoResumePlan()` for local no-write lifecycle planning
+- `applyPromptAutoResumePlan()` for explicit local/test transition application
+
+Auto-resume planning is local and dry-run safe. It records
+`external_write_performed: false` and covers three cases before any production
+watchdog path is approved: resume a `needs_decision` prompt after a resolved
+operator decision, close a verifying prompt when all child outcomes are
+terminal, and route stale in-progress/verifying heartbeats back to
+`needs_decision` instead of silently continuing.
 
 ## Parser Contract
 

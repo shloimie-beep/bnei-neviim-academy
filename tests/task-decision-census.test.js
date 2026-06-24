@@ -159,7 +159,7 @@ test('task decision census exposes required default views, card contract, and au
     'Blocked',
     'Due Soon',
     'Calendar',
-    'Completed / Activity',
+    'Done / Activity',
     'Archived'
   ]);
   assert.deepEqual(DECISION_DEFAULT_VIEWS.map((view) => view.label), [

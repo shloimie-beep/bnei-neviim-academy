@@ -9,6 +9,7 @@ const {
   redactError,
   redactSecrets,
   redactSecretText,
+  usableSecretValue,
 } = require('../src/lib/integrations/secret-loader');
 
 function tempRoot() {
@@ -100,6 +101,24 @@ test('.secrets fallback works and placeholder values are rejected safely', () =>
     assert.equal(loaded.value, 'secret-fallback-token');
     assert.equal(loaded.source_type, '.secrets');
   });
+});
+
+test('common placeholder values are not usable secrets', () => {
+  for (const placeholder of [
+    'None',
+    'null',
+    'undefined',
+    'not configured',
+    'TODO',
+    'TBD',
+    'n/a',
+    '${RESEND_API_KEY}',
+    '<resend-api-key>',
+  ]) {
+    assert.equal(usableSecretValue(placeholder), '', `${placeholder} should be rejected`);
+  }
+
+  assert.equal(usableSecretValue('"live-secret-token"'), 'live-secret-token');
 });
 
 test('redactSecretText removes bearer tokens and loaded secret values', () => {

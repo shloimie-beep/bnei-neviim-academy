@@ -24509,6 +24509,30 @@ send, DNS/Railway propagation, WAPI outbound use, Buffer publish/schedule,
 billing, Zoom, Vimeo, GHL, external connector, or external-account write was
 performed.
 
+## 2026-06-24T08:02:00+03:00 - Integration Navigation Owner-Review Candidate Verified
+
+Created the credential-free owner-review release-candidate packet for the
+combined integration branch and draft PR #14. The branch now has automatic route
+inventory, canonical sitemap, navigation graph, orphan/duplicate review,
+applied/not-applied matrix, One Time and role-flow diagrams, role-flow QA,
+UX-backlog reconciliation, known gaps, and an owner-review script.
+
+Local verification passed without external credentials, production readback,
+deployment, live sends, publish/upload/charge, DNS changes, or secret exposure:
+`npm run owner-review:role-flows`, `npm run owner-review:routes`,
+`npm run watchdog:links`, `npm run watchdog:actions`,
+`npm run watchdog:security`, the focused owner-review/navigation suite 70/70,
+full `npm test` 1213/1213, and `npm run secrets:audit` over 4219 tracked paths.
+The remaining blockers are intentionally limited to merge/deploy/live
+production verification, live credential integrations, and full historical
+click-map rerun scope beyond the credential-free local harness.
+
+Attempted to add `.github/workflows/owner-review.yml` for an independent
+credential-free CI gate, but GitHub rejected the workflow commit because the
+current OAuth app lacks `workflow` scope. The blocker is recorded in the
+owner-review packet; the pushed branch keeps the local credential-free gates as
+release-candidate evidence until workflow permission is granted.
+
 ## 2026-06-19T13:45:00+03:00 - One Time Master Recovery Batch 6 Product Readiness
 
 Completed the local implementation slice for `REQ-20260619-306` and set the
@@ -25554,3 +25578,91 @@ before Content. No live vendor generation, external send, public publish,
 charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
 external CRM/GHL write, raw private source readback, or secret exposure was
 performed.
+
+## 2026-06-24T09:08:00+03:00 - PR #14 Public Visual Reality Audit Batch Verified
+
+Registered `RAW-20260624-002` from the full-system reality audit addendum and
+created the requirement register
+`tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-implementation-pass.md`.
+The credential-free PR #14 public visual batch fixes the homepage
+header-to-hero gap, adds semantic `aria-pressed` state for homepage filter
+chips, strengthens active/focus filter styles, and adds
+`npm run owner-review:visual` with computed desktop/tablet/mobile assertions.
+
+Verification passed locally: `npm run owner-review:visual`,
+`node --test tests\owner-review-role-flow-contract.test.js`,
+`npm run owner-review:role-flows`, `npm run owner-review:routes`,
+`npm run watchdog:links`, `npm run watchdog:actions`,
+`npm run watchdog:security`, full `npm test` 1214/1214, and
+`npm run secrets:audit` with 4254 tracked paths and 0 findings.
+
+No external credentials, private production readback, production database
+mutation, backfill, deploy, email or Telegram send, publish, upload, charge,
+DNS mutation, OAuth, or secret exposure was performed. Production remains stale
+until PR #14 is merged/deployed and live-smoked.
+
+## 2026-06-24T09:00:00+03:00 - PR #14 Auth Navigation Harness Strengthened
+
+Extended the credential-free owner-review role-flow smoke so it now asserts
+expected assistant surfaces, rejects forbidden cross-role fixture leakage, and
+clicks the Operations workspace switcher into the One Time Mishnah Class
+provider workspace (`rabbi_sheller_provider`) on desktop and mobile.
+
+Verification passed locally: `npm run owner-review:role-flows`,
+`node --test tests\owner-review-role-flow-contract.test.js` 6/6, full
+`npm test` 1214/1214, and `npm run secrets:audit` with 4271 tracked paths and 0
+findings. The generated `docs/owner-review/ROLE-FLOW-QA.md` report now shows
+the workspace switch proof for both super-admin viewports.
+
+## 2026-06-24T09:10:00+03:00 - PR #14 Website Assistant Runtime Audit Added
+
+Added `npm run owner-review:assistant-runtime` and the report
+`docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md`. The audit verifies the shared
+website assistant source contract, confirms the public anonymous context
+endpoint in the local no-DB server, and records the explicit expected blocker
+for database-backed assistant history in no-DB mode.
+
+Verification passed locally: `node --check
+scripts\smoke-owner-review-assistant-runtime.mjs`, `npm run
+owner-review:assistant-runtime`, `node --test
+tests\owner-review-role-flow-contract.test.js` 7/7, full `npm test`
+1215/1215, `npm run secrets:audit` with 4271 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+Persisted assistant chat/message E2E remains blocked until a local/test
+database is provided or production readback is approved.
+
+## 2026-06-24T09:20:00+03:00 - PR #14 External Readiness Audit Added
+
+Added `npm run owner-review:external-readiness` and the report
+`docs/owner-review/EXTERNAL-READINESS-AUDIT.md`. The audit verifies local
+no-write readiness for class/Drive intake, Stripe no-charge preview behavior,
+and Vimeo/manual video-hosting previews using the existing first-party
+contracts rather than creating a second integration path.
+
+Verification passed locally: `node --check
+scripts\smoke-owner-review-external-readiness.mjs`, `npm run
+owner-review:external-readiness`, `node --test
+tests\owner-review-role-flow-contract.test.js` 8/8, full `npm test`
+1216/1216, `npm run secrets:audit` with 4275 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+Real class/Drive readback, transcription, Stripe sandbox/live API proof, and
+Vimeo API/upload/playback proof remain approval/credential gated.
+
+## 2026-06-24T09:25:00+03:00 - PR #14 Full-System Reality Final Report Added
+
+Added `docs/owner-review/FULL-SYSTEM-REALITY-FINAL-REPORT.md` with the exact
+24 sections requested by `RAW-20260624-002`, using explicit status vocabulary
+and ending with overall state `PUSHED`. The report names PR #14 head
+`10a2386ea6271de59829115dd16fc9b3c5f49883`, base `a9528b2d...`, clean draft
+merge state, no attached checks, and all remaining external/operator blockers.
+
+Verification passed locally: `node --test
+tests\owner-review-role-flow-contract.test.js` 9/9, full `npm test`
+1217/1217, `npm run secrets:audit` with 4279 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.

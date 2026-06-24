@@ -84,7 +84,7 @@
           actions: [
             {
               type: 'link',
-              href: '/become-service-provider?onboard=provider',
+              href: '/providers/join?onboard=provider',
               label: 'Join provider list',
             },
             { type: 'scroll', target: '#learning-ecosystem', label: 'Learn provider model' },
@@ -261,7 +261,7 @@
           actions: [
             {
               type: 'link',
-              href: '/become-service-provider?onboard=provider',
+              href: '/providers/join?onboard=provider',
               label: '\u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05e8\u05e9\u05d9\u05de\u05d4',
             },
             {

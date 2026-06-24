@@ -102,7 +102,7 @@ async function main() {
       'better rabbi pay',
       'href="/school"',
       'href="/parents"',
-      'href="/become-service-provider?onboard=provider"',
+      'href="/providers/join?onboard=provider"',
     ], 'homepage positioning');
     pass('homepage has audience and AI microschool positioning');
 

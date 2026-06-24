@@ -14,6 +14,10 @@ const serviceProviders = fs.readFileSync('public/service-providers.html', 'utf8'
 const providersJoin = fs.readFileSync('public/providers-join.html', 'utf8');
 const providerProfile = fs.readFileSync('public/provider-profile.html', 'utf8');
 const oneTimePreview = fs.readFileSync('public/one-time-preview.html', 'utf8');
+const rabbiMember = fs.readFileSync('public/rabbi-member.html', 'utf8');
+const memberLibrary = fs.readFileSync('public/member-library.html', 'utf8');
+const oneTimeClassroom = fs.readFileSync('public/one-time-classroom.html', 'utf8');
+const providerParticipant = fs.readFileSync('public/provider-participant.html', 'utf8');
 const blog = fs.readFileSync('public/blog.html', 'utf8');
 const faq = fs.readFileSync('public/faq.html', 'utf8');
 const blogPost = fs.readFileSync('public/blog-post.html', 'utf8');
@@ -49,6 +53,8 @@ test('assistant widget is one chat UI with input, spinner, and server-side calls
   assert.match(widget, /api\/bna\/assistant\/chat/);
   assert.match(widget, /api\/bna\/assistant\/threads/);
   assert.match(widget, /bna-universal-assistant-active/);
+  assert.match(widget, /window\.BNAAssistant/);
+  assert.match(widget, /data-bna-assistant-open/);
   assert.match(widget, /mode: 'safe'/);
   assert.match(widget, /const studentAccessCode = \(\) => isStudent \? \(new URLSearchParams\(window\.location\.search\)\.get\('code'\) \|\| ''\) : ''/);
   assert.match(widget, /if \(!isStudent\) localStorage\.removeItem\('bnaStudentAccessCode'\)/);
@@ -233,6 +239,22 @@ test('assistant mounts on Operations and signup surfaces without mixing admin an
   assert.doesNotMatch(operations, /\/js\/bna-bot-widget\.js/);
   assert.match(signup, /\/js\/bna-bot-widget\.js/);
   assert.match(signupHe, /\/js\/bna-bot-widget\.js/);
+});
+
+test('shared assistant is discoverable and scoped on portal and One Time member surfaces', () => {
+  assert.match(widget, /const isOneTimeMember = /);
+  assert.match(widget, /one_time_member/);
+  assert.match(widget, /One Time member help/);
+  assert.match(widget, /This scope does not show BNA school goals/);
+  assert.match(server, /one_time_member/);
+  assert.match(server, /provider_participant/);
+
+  for (const html of [rabbiMember, memberLibrary, oneTimeClassroom, providerParticipant]) {
+    assert.match(html, /data-bna-assistant-open/);
+    assert.match(html, /\/js\/bna-helper-knowledge\.js/);
+    assert.match(html, /\/js\/bna-bot-widget\.js/);
+    assert.doesNotMatch(html, /\/operations/);
+  }
 });
 
 test('public assistant mounts with the public knowledge bundle across website, registration, and provider surfaces', () => {

@@ -146,6 +146,12 @@ const {
   buildOneTimeIntegrationReadinessPayload,
 } = require('./src/platform/integrations/readiness');
 const {
+  ASSISTANT_DATA_MODEL_TABLES,
+} = require('./src/platform/assistant/control-plane');
+const {
+  buildAssistantControlCenterSnapshot,
+} = require('./src/platform/assistant/control-center');
+const {
   buildOneTimeRuntimeFlags,
 } = require('./src/platform/instances/one-time-separate-deployment');
 const {
@@ -8427,6 +8433,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/helper/knowledge' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/helper/action-log' && method === 'GET') return true;
   if (/^\/api\/bna\/helper\/runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/assistant/control-plane/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/intake/parse' && method === 'POST') return true;
   if (routePath === '/api/bna/intake/parse-runs' && method === 'GET') return true;
   if (/^\/api\/bna\/intake\/parse-runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
@@ -11977,6 +11984,342 @@ CREATE TABLE IF NOT EXISTS bna_assistant_onboarding_intakes (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS assistant_channels (
+  id SERIAL PRIMARY KEY,
+  channel_key TEXT NOT NULL UNIQUE,
+  display_name TEXT NOT NULL,
+  adapter_kind TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'disabled', 'archived')),
+  workspace_key TEXT,
+  project_key TEXT,
+  channel_metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_identities (
+  id SERIAL PRIMARY KEY,
+  identity_key TEXT NOT NULL UNIQUE,
+  person_id INTEGER,
+  user_account_id INTEGER,
+  telegram_user_id TEXT,
+  email TEXT,
+  role_key TEXT NOT NULL DEFAULT 'viewer',
+  workspace_key TEXT,
+  project_key TEXT,
+  relationship_scope JSONB DEFAULT '{}'::jsonb,
+  consent_state JSONB DEFAULT '{}'::jsonb,
+  revoked_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_conversations (
+  id SERIAL PRIMARY KEY,
+  conversation_key TEXT NOT NULL UNIQUE,
+  channel_id INTEGER REFERENCES assistant_channels(id) ON DELETE SET NULL,
+  identity_id INTEGER REFERENCES assistant_identities(id) ON DELETE SET NULL,
+  parent_conversation_key TEXT,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'waiting', 'planned', 'approval_pending', 'running', 'completed', 'blocked', 'archived')),
+  workspace_key TEXT,
+  project_key TEXT,
+  role_key TEXT,
+  active_object_type TEXT,
+  active_object_id TEXT,
+  selected_child_id TEXT,
+  selected_provider_id TEXT,
+  selected_course_id TEXT,
+  selected_campaign_id TEXT,
+  current_draft_id TEXT,
+  current_draft_version_id TEXT,
+  pending_preview_id TEXT,
+  pending_approval_id TEXT,
+  last_channel_key TEXT,
+  state JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_message_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_messages (
+  id SERIAL PRIMARY KEY,
+  message_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT NOT NULL,
+  channel_key TEXT NOT NULL,
+  identity_key TEXT,
+  sender_type TEXT NOT NULL DEFAULT 'user' CHECK (sender_type IN ('user', 'assistant', 'system', 'tool', 'agent')),
+  body_redacted TEXT,
+  source_envelope_id TEXT,
+  channel_message_id TEXT,
+  reply_to_message_key TEXT,
+  attachments JSONB DEFAULT '[]'::jsonb,
+  privacy_classification TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_context_objects (
+  id SERIAL PRIMARY KEY,
+  context_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  object_type TEXT NOT NULL,
+  object_id TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  role_scope TEXT,
+  relationship_scope JSONB DEFAULT '{}'::jsonb,
+  source_envelope_id TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_action_plans (
+  id SERIAL PRIMARY KEY,
+  plan_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  message_key TEXT,
+  actor_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  mode TEXT NOT NULL DEFAULT 'plan' CHECK (mode IN ('answer', 'read', 'act', 'plan', 'agent_work')),
+  action_id TEXT,
+  action_category TEXT,
+  inputs JSONB DEFAULT '{}'::jsonb,
+  missing_inputs JSONB DEFAULT '[]'::jsonb,
+  dry_run BOOLEAN DEFAULT TRUE,
+  preview_required BOOLEAN DEFAULT FALSE,
+  approval_required BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'needs_input', 'preview_ready', 'approval_pending', 'approved', 'running', 'completed', 'blocked', 'failed', 'cancelled', 'archived')),
+  planner_version TEXT,
+  idempotency_key TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_action_runs (
+  id SERIAL PRIMARY KEY,
+  run_key TEXT NOT NULL UNIQUE,
+  plan_key TEXT,
+  action_id TEXT,
+  actor_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  dry_run BOOLEAN DEFAULT TRUE,
+  approval_id TEXT,
+  idempotency_key TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'running', 'succeeded', 'failed', 'blocked', 'cancelled', 'archived')),
+  result JSONB DEFAULT '{}'::jsonb,
+  error_message TEXT,
+  audit_event_id TEXT,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_previews (
+  id SERIAL PRIMARY KEY,
+  preview_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  plan_key TEXT,
+  draft_version_key TEXT,
+  preview_type TEXT NOT NULL,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  real_data BOOLEAN DEFAULT FALSE,
+  sample_data BOOLEAN DEFAULT TRUE,
+  payload JSONB DEFAULT '{}'::jsonb,
+  blockers JSONB DEFAULT '[]'::jsonb,
+  external_action BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'ready', 'approved', 'applied', 'expired', 'archived')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_approvals (
+  id SERIAL PRIMARY KEY,
+  approval_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  plan_key TEXT,
+  run_key TEXT,
+  preview_key TEXT,
+  requested_by_identity_key TEXT,
+  approver_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  risk_level TEXT NOT NULL DEFAULT 'low',
+  approval_policy TEXT NOT NULL DEFAULT 'none',
+  nonce_hash TEXT,
+  expires_at TIMESTAMP,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'expired', 'cancelled', 'used', 'archived')),
+  decision_summary TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  decided_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_drafts (
+  id SERIAL PRIMARY KEY,
+  draft_key TEXT NOT NULL UNIQUE,
+  object_type TEXT NOT NULL,
+  object_id TEXT,
+  conversation_key TEXT,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  active_version_key TEXT,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  use_state TEXT NOT NULL DEFAULT 'not_scheduled',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_draft_versions (
+  id SERIAL PRIMARY KEY,
+  version_key TEXT NOT NULL UNIQUE,
+  draft_key TEXT NOT NULL,
+  parent_version_key TEXT,
+  editor_identity_key TEXT,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  prompt_instruction TEXT,
+  content JSONB DEFAULT '{}'::jsonb,
+  change_summary TEXT,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  active_state TEXT NOT NULL DEFAULT 'inactive',
+  scheduled_use_state TEXT NOT NULL DEFAULT 'not_scheduled',
+  rollback_to_version_key TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_templates (
+  id SERIAL PRIMARY KEY,
+  template_key TEXT NOT NULL UNIQUE,
+  template_type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  content JSONB DEFAULT '{}'::jsonb,
+  version_key TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_saved_views (
+  id SERIAL PRIMARY KEY,
+  view_key TEXT NOT NULL UNIQUE,
+  owner_identity_key TEXT,
+  view_type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  role_scope TEXT,
+  object_scope JSONB DEFAULT '{}'::jsonb,
+  config JSONB DEFAULT '{}'::jsonb,
+  active_version_key TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_reminders (
+  id SERIAL PRIMARY KEY,
+  reminder_key TEXT NOT NULL UNIQUE,
+  actor_identity_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  timezone TEXT,
+  recurrence_rule TEXT,
+  trigger JSONB DEFAULT '{}'::jsonb,
+  delivery_channels JSONB DEFAULT '[]'::jsonb,
+  quiet_hours JSONB DEFAULT '{}'::jsonb,
+  consent_state JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'paused', 'sent', 'completed', 'cancelled', 'failed', 'archived')),
+  next_run_at TIMESTAMP,
+  last_run_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_notifications (
+  id SERIAL PRIMARY KEY,
+  notification_key TEXT NOT NULL UNIQUE,
+  reminder_key TEXT,
+  conversation_key TEXT,
+  recipient_identity_key TEXT,
+  channel_key TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'sent', 'delivered', 'failed', 'cancelled', 'archived')),
+  dedupe_key TEXT,
+  sent_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_onboarding_sessions (
+  id SERIAL PRIMARY KEY,
+  onboarding_key TEXT NOT NULL UNIQUE,
+  provider_profile_id INTEGER,
+  identity_key TEXT,
+  conversation_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  stage TEXT NOT NULL DEFAULT 'start',
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'waiting', 'submitted', 'approved', 'blocked', 'archived')),
+  collected_fields JSONB DEFAULT '{}'::jsonb,
+  asset_refs JSONB DEFAULT '[]'::jsonb,
+  studio_draft_refs JSONB DEFAULT '{}'::jsonb,
+  integration_blockers JSONB DEFAULT '[]'::jsonb,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_delivery_outbox (
+  id SERIAL PRIMARY KEY,
+  delivery_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  channel_key TEXT NOT NULL,
+  recipient_identity_key TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  idempotency_key TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'sending', 'sent', 'failed', 'dead_lettered', 'cancelled')),
+  attempts INTEGER NOT NULL DEFAULT 0,
+  next_attempt_at TIMESTAMP,
+  last_error TEXT,
+  sent_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_dead_letters (
+  id SERIAL PRIMARY KEY,
+  dead_letter_key TEXT NOT NULL UNIQUE,
+  source_table TEXT NOT NULL,
+  source_key TEXT,
+  channel_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  reason TEXT NOT NULL,
+  payload_redacted JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'reviewing', 'replayed', 'resolved', 'archived')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  resolved_at TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_actor ON bna_assistant_threads(actor_type, actor_id, actor_email);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_status ON bna_assistant_threads(status, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_messages_thread ON bna_assistant_messages(thread_id, created_at ASC);
@@ -11985,6 +12328,24 @@ CREATE INDEX IF NOT EXISTS idx_bna_assistant_onboarding_intakes_actor
   ON bna_assistant_onboarding_intakes(actor_type, actor_id, actor_email, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_onboarding_intakes_review
   ON bna_assistant_onboarding_intakes(review_status, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_assistant_identities_scope ON assistant_identities(workspace_key, project_key, role_key);
+CREATE INDEX IF NOT EXISTS idx_assistant_conversations_scope ON assistant_conversations(workspace_key, project_key, status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_messages_conversation ON assistant_messages(conversation_key, created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_assistant_context_objects_scope ON assistant_context_objects(workspace_key, project_key, object_type, object_id);
+CREATE INDEX IF NOT EXISTS idx_assistant_action_plans_status ON assistant_action_plans(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_action_runs_status ON assistant_action_runs(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_previews_status ON assistant_previews(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_approvals_status ON assistant_approvals(status, workspace_key, project_key, expires_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_drafts_object ON assistant_drafts(object_type, object_id, workspace_key, project_key);
+CREATE INDEX IF NOT EXISTS idx_assistant_draft_versions_draft ON assistant_draft_versions(draft_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_templates_scope ON assistant_templates(template_type, workspace_key, project_key, status);
+CREATE INDEX IF NOT EXISTS idx_assistant_saved_views_owner ON assistant_saved_views(owner_identity_key, view_type, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_reminders_status ON assistant_reminders(status, next_run_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_notifications_status ON assistant_notifications(status, channel_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_onboarding_sessions_status ON assistant_onboarding_sessions(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_delivery_outbox_status ON assistant_delivery_outbox(status, next_attempt_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_dead_letters_status ON assistant_dead_letters(status, created_at DESC);
 `;
 
 const createBnaHelperSQL = `
@@ -16497,7 +16858,7 @@ CREATE INDEX IF NOT EXISTS idx_bna_person_relationships_related ON bna_person_re
 CREATE TABLE IF NOT EXISTS bna_raw_intake (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   stable_id TEXT UNIQUE NOT NULL,
-  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other')),
+  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other')),
   source_message_id TEXT,
   source_user TEXT,
   raw_text TEXT,
@@ -16518,6 +16879,9 @@ CREATE TABLE IF NOT EXISTS bna_raw_intake (
   parsed_at TIMESTAMPTZ,
   archived_at TIMESTAMPTZ
 );
+ALTER TABLE bna_raw_intake DROP CONSTRAINT IF EXISTS bna_raw_intake_source_channel_check;
+ALTER TABLE bna_raw_intake ADD CONSTRAINT bna_raw_intake_source_channel_check
+  CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other'));
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_stable_id ON bna_raw_intake(stable_id);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_source_channel ON bna_raw_intake(source_channel);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_parse_status ON bna_raw_intake(parse_status);
@@ -16575,6 +16939,72 @@ CREATE TABLE IF NOT EXISTS bna_intake_parse_items (
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_run ON bna_intake_parse_items(parse_run_id, status);
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_type ON bna_intake_parse_items(item_type, status);
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_target ON bna_intake_parse_items(target_table, target_id);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_intake_parse_runs (
+  parse_run_id TEXT PRIMARY KEY,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parent_prompt_id TEXT,
+  legacy_parse_run_id INTEGER REFERENCES bna_intake_parse_runs(id) ON DELETE SET NULL,
+  parser_version TEXT,
+  status TEXT NOT NULL DEFAULT 'parsed',
+  parse_run_json JSONB NOT NULL DEFAULT '{}',
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_intake_parse_runs_raw ON bna_canonical_intake_parse_runs(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_intake_parse_runs_prompt ON bna_canonical_intake_parse_runs(parent_prompt_id);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_parent_prompts (
+  prompt_id TEXT PRIMARY KEY,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parse_run_id TEXT REFERENCES bna_canonical_intake_parse_runs(parse_run_id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'queued',
+  child_outcome_count INTEGER NOT NULL DEFAULT 0,
+  prompt_json JSONB NOT NULL DEFAULT '{}',
+  metadata JSONB NOT NULL DEFAULT '{}',
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_raw ON bna_canonical_parent_prompts(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_run ON bna_canonical_parent_prompts(parse_run_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_status ON bna_canonical_parent_prompts(status, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_parsed_entities (
+  entity_id TEXT PRIMARY KEY,
+  parse_item_id TEXT,
+  parse_run_id TEXT REFERENCES bna_canonical_intake_parse_runs(parse_run_id) ON DELETE CASCADE,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parent_prompt_id TEXT REFERENCES bna_canonical_parent_prompts(prompt_id) ON DELETE SET NULL,
+  item_id TEXT,
+  entity_key TEXT,
+  entity_group TEXT NOT NULL DEFAULT 'unknown',
+  entity_type TEXT NOT NULL DEFAULT 'unknown',
+  title TEXT,
+  status TEXT NOT NULL DEFAULT 'parsed',
+  target_lane TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  confidence NUMERIC,
+  owner TEXT,
+  expected_result TEXT,
+  next_action TEXT,
+  reason TEXT,
+  idempotency_key TEXT,
+  source_stable_key TEXT,
+  source_id TEXT,
+  source_excerpt TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  sort_index INTEGER DEFAULT 0,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_run ON bna_canonical_parsed_entities(parse_run_id, sort_index);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_raw ON bna_canonical_parsed_entities(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_prompt ON bna_canonical_parsed_entities(parent_prompt_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_group ON bna_canonical_parsed_entities(entity_group, status);
 
 CREATE TABLE IF NOT EXISTS bna_section_definitions (
   id SERIAL PRIMARY KEY,
@@ -20166,6 +20596,15 @@ function intakeParseRunView(row = {}) {
   };
 }
 
+function rawIntakeView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    metadata: intakeJson(row.metadata, {}),
+    parsed_payload: intakeJson(row.parsed_payload, {}),
+  };
+}
+
 function intakeParseItemView(row = {}) {
   if (!row) return null;
   return {
@@ -20328,12 +20767,13 @@ async function createRawIntakeRecord({
 function normalizeRawIntakeSourceChannel(value = '') {
   const rawValue = String(value || '').trim();
   const channel = normalizeSourceChannel(rawValue);
-  if (['telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other'].includes(channel)) {
+  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
+  if (channel === 'class_recording') return 'class_recording';
+  if (['telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other'].includes(channel)) {
     return channel;
   }
   if (channel === 'operations_helper') return 'operations_ui';
   if (channel === 'website_helper') return 'website_bot';
-  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
   return 'other';
 }
 
@@ -20811,12 +21251,17 @@ async function createCanonicalIntakeParseRun({
 async function fetchIntakeRunDetail(id, db = pool) {
   const run = (await db.query('SELECT * FROM bna_intake_parse_runs WHERE id = $1', [id])).rows[0] || null;
   if (!run) return null;
+  const parsedRun = intakeParseRunView(run);
+  const rawIntakeStableId = parsedRun.metadata?.raw_intake_stable_id || null;
+  const rawIntake = rawIntakeStableId
+    ? (await db.query('SELECT * FROM bna_raw_intake WHERE stable_id = $1', [rawIntakeStableId])).rows[0] || null
+    : null;
   const items = (await db.query(
     'SELECT * FROM bna_intake_parse_items WHERE parse_run_id = $1 ORDER BY id ASC',
     [id]
   )).rows.map(intakeParseItemView);
   const reviews = (await fetchIntakeReviewItems({ parseRunId: id, db })).reviews;
-  return { parse_run: intakeParseRunView(run), items, review_items: reviews };
+  return { raw_intake: rawIntakeView(rawIntake), parse_run: parsedRun, items, review_items: reviews };
 }
 
 async function fetchIntakeReviewItems({ status = 'open', parseRunId = null, limit = 100, db = pool } = {}) {
@@ -40863,6 +41308,92 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, res) => {
+  try {
+    const expectedTables = [...ASSISTANT_DATA_MODEL_TABLES];
+    const expectedIndexes = [
+      'idx_assistant_identities_scope',
+      'idx_assistant_conversations_scope',
+      'idx_assistant_messages_conversation',
+      'idx_assistant_context_objects_scope',
+      'idx_assistant_action_plans_status',
+      'idx_assistant_action_runs_status',
+      'idx_assistant_previews_status',
+      'idx_assistant_approvals_status',
+      'idx_assistant_drafts_object',
+      'idx_assistant_draft_versions_draft',
+      'idx_assistant_templates_scope',
+      'idx_assistant_saved_views_owner',
+      'idx_assistant_reminders_status',
+      'idx_assistant_notifications_status',
+      'idx_assistant_onboarding_sessions_status',
+      'idx_assistant_delivery_outbox_status',
+      'idx_assistant_dead_letters_status',
+    ];
+    const [tableResult, indexResult] = await Promise.all([
+      pool.query(
+        `SELECT table_name
+           FROM information_schema.tables
+          WHERE table_schema = 'public'
+            AND table_name = ANY($1::text[])
+          ORDER BY table_name`,
+        [expectedTables]
+      ),
+      pool.query(
+        `SELECT indexname
+           FROM pg_indexes
+          WHERE schemaname = 'public'
+            AND indexname = ANY($1::text[])
+          ORDER BY indexname`,
+        [expectedIndexes]
+      ),
+    ]);
+    const tablesPresent = tableResult.rows.map((row) => row.table_name).sort();
+    const indexesPresent = indexResult.rows.map((row) => row.indexname).sort();
+    const tableSet = new Set(tablesPresent);
+    const indexSet = new Set(indexesPresent);
+    const missingTables = expectedTables.filter((table) => !tableSet.has(table));
+    const missingIndexes = expectedIndexes.filter((indexName) => !indexSet.has(indexName));
+    res.json({
+      success: true,
+      requirement_id: 'REQ-20260623-012',
+      status: missingTables.length || missingIndexes.length ? 'incomplete' : 'implemented_read_only',
+      canonical_model: 'assistant_control_plane_v1',
+      tables_expected: expectedTables.length,
+      tables_present: tablesPresent.length,
+      missing_tables: missingTables,
+      indexes_expected: expectedIndexes.length,
+      indexes_present: indexesPresent.length,
+      missing_indexes: missingIndexes,
+      channel_metadata_adapter_scoped: true,
+      legacy_bna_assistant_tables_preserved: true,
+      no_write_guard: [
+        'read_only_information_schema_and_pg_indexes_queries_only',
+        'no_assistant_rows_created_or_updated',
+        'no_external_send_publish_charge_dns_oauth_or_connector_call',
+        'no_secret_values_returned',
+      ],
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant control-plane readiness failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/assistant/control-center', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') {
+      return res.status(403).json({ success: false, error: 'Assistant Control Center is Super Admin only.' });
+    }
+    res.json(await buildAssistantControlCenterSnapshot({
+      db: pool,
+      actor: req.opsIdentity || {},
+    }));
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant Control Center failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
 app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, res) => {
   try {
     const resendConfig = resendServerRuntimeConfig();
@@ -64175,6 +64706,7 @@ function normalizeAssistantSurface(value) {
   if (['parent', 'parent_portal'].includes(normalized)) return 'parent_portal';
   if (['student', 'student_portal'].includes(normalized)) return 'student_portal';
   if (['provider', 'provider_portal', 'provider_workspace'].includes(normalized)) return 'provider_workspace';
+  if (['one_time', 'one_time_member', 'onetime_member', 'rabbi_member', 'member_library', 'one_time_classroom', 'provider_participant'].includes(normalized)) return 'one_time_member';
   if (['operations', 'admin', 'settings'].includes(normalized)) return 'operations';
   return 'public';
 }
@@ -74180,7 +74712,7 @@ function redactZoomLinks(value = '') {
 
 function liveMemberAccessUrl(req, accessCode = '') {
   const code = String(accessCode || '').trim();
-  return code ? `${requestBaseUrl(req)}/member?code=${encodeURIComponent(code)}` : '';
+  return code ? `${requestBaseUrl(req)}/member-library?code=${encodeURIComponent(code)}` : '';
 }
 
 function generateLiveMemberAccessCode() {
@@ -79331,10 +79863,18 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 });
+
+function redirectOneTimeMemberHome(req, res) {
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  res.setHeader('Cache-Control', 'no-store');
+  res.redirect(302, `/rabbi-member${query}`);
+}
+
+app.get(['/one-time/member-login', '/member', '/member-portal'], redirectOneTimeMemberHome);
 
 app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -79354,11 +79894,6 @@ app.get(['/member-library', '/one-time-member-library'], (req, res) => {
 app.get(['/one-time-classroom', '/one-time-classroom.html'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time-classroom.html'));
-});
-
-app.get(['/member', '/member-portal'], (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'member.html'));
 });
 
 app.get(['/provider-participant', '/provider/member'], (req, res) => {
