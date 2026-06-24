@@ -14,11 +14,14 @@ not authorize active GHL runtime paths.
   and local Rabbi closeout history, run the full release gate, merge the final
   PR, deploy merged `master` to Railway, live-smoke the deployed SHA, and apply
   class backfill only if Prompt 04's exact safe recommendation and all recovery
-  gates pass. Current status: blocked at preflight. The clean-slate
-  `CONTROL.json` exists and expected lane branches exist, but
-  `class-drive-intake` and `vimeo-media` pushed `RESULT.json` files still say
-  `not_started`, `operator-walkthrough` has no pushed `RESULT.json`, and the
-  current Vimeo worktree is dirty/diverged. Register:
+  gates pass. Current status: preflight passed and release-base sync is in
+  progress. All seven expected lane branches have terminal pushed RESULT
+  evidence: public UI `c9ba17da`, portal/auth/nav `e2aa72e5`, class/Drive
+  `b4958dc0`, assistant/ramble/usage `adf4e6d8`, Stripe sandbox `6c161c50`,
+  Vimeo media `f6975ab8`, and operator walkthrough `768a2ae0`. Class backfill
+  remains blocked under current evidence because Prompt 04 reports
+  `safe_to_apply=false`, zero approved candidate jobs, and no row-level write
+  plan. Register:
   `tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md`.
 - [x] Finish `RAW-20260624-003` / `TASK-20260624-001`: clean-slate control
   tower reconciliation for PR #14, PR #15, and the preserved local Rabbi
