@@ -1,14 +1,32 @@
-Owned prefixes:
-server.js
-src/lib/bna/intake-parser.js
-src/lib/bna/helper/
-telegram*
-scripts/*assistant*.mjs
-scripts/*telegram*.mjs
-tests/*assistant*.test.js
-tests/*helper*.test.js
-tests/*intake*.test.js
-tests/*telegram*.test.js
-ops/qa-runs/
+Branch:
+codex/closeout-assistant-ramble-usage-20260624
 
-Coordinate shared server/helper changes with portal-auth-nav and class-drive-intake.
+Changed implementation files:
+docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md
+migrations/20260624-provider-api-usage-persistence.sql
+ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json
+ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md
+ops/watchdog-audits/2026-06-24T13-05-watchdog-action-audit.md
+scripts/smoke-owner-review-assistant-runtime.mjs
+src/lib/bna/provider-api-usage.js
+src/lib/bna/ramble-routing.js
+src/platform/assistant/control-plane.js
+src/platform/assistant/model-readiness.js
+tests/assistant-model-readiness.test.js
+tests/provider-api-usage-readiness.test.js
+tests/ramble-routing-pipeline.test.js
+tests/universal-control-plane-scope-policy.test.js
+
+Lane evidence files:
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/ASSISTANT-RUNTIME-MATRIX.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/RAMBLE-ROUTING-MATRIX.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/API-USAGE-SCHEMA.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/MIGRATION-PLAN.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/MODEL-READINESS.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/SHARED-PATCH.diff
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/RESULT.json
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/TESTS.md
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/FILES.txt
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/BLOCKERS.md
+
+Forbidden central files were not edited in this lane.

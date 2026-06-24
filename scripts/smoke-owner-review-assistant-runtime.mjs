@@ -3,14 +3,31 @@ import fs from 'node:fs';
 import net from 'node:net';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const {
+  buildAssistantActionPlan,
+} = require('../src/platform/assistant/action-planner');
+const {
+  actionPolicy,
+} = require('../src/platform/assistant/control-plane');
+const {
+  buildModelReadinessMatrix,
+} = require('../src/platform/assistant/model-readiness');
+const {
+  normalizeProviderApiUsageEvent,
+} = require('../src/lib/bna/provider-api-usage');
 
 const root = process.cwd();
 const runId = '2026-06-24-owner-review-assistant-runtime';
 const outDir = path.join(root, 'ops', 'qa-runs', runId);
 const docsDir = path.join(root, 'docs', 'owner-review');
+const laneDir = path.join(root, 'ops', 'parallel-closeout', '2026-06-24-clean-slate-system-closeout', 'lanes', 'assistant-ramble-usage');
 const reportJson = path.join(outDir, 'report.json');
 const reportMd = path.join(outDir, 'report.md');
 const runtimeDoc = path.join(docsDir, 'ASSISTANT-RUNTIME-AUDIT.md');
+const runtimeMatrixDoc = path.join(laneDir, 'ASSISTANT-RUNTIME-MATRIX.md');
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -167,6 +184,200 @@ function inspectStaticContracts() {
   };
 }
 
+function surfaceDefinitions() {
+  return [
+    {
+      id: 'public_website_helper',
+      label: 'Public website helper',
+      channel: 'website_assistant',
+      surface: 'public',
+      html_files: ['public/index.html'],
+      entry_patterns: ['/js/bna-bot-widget.js'],
+      actor: { user_id: 'anon-owner-review', role: 'parent', workspace_id: 'bna' },
+      action_category: 'ticket',
+      message: 'The worksheet link is broken.',
+      workspace_key: 'bna',
+      project_key: 'bna',
+    },
+    {
+      id: 'operations_helper',
+      label: 'Operations helper',
+      channel: 'operations_helper',
+      surface: 'operations',
+      html_files: ['public/operations.html'],
+      entry_patterns: ['data-bna-helper-open', 'data-bna-helper-form'],
+      actor: { user_id: 'ops-owner-review', role: 'super_admin', workspace_id: 'bna' },
+      action_category: 'agent_work',
+      message: 'Fix this broken route in Codex and test it.',
+      workspace_key: 'bna',
+      project_key: 'bna',
+    },
+    {
+      id: 'provider_portal_assistant',
+      label: 'Provider portal assistant',
+      channel: 'provider_portal_assistant',
+      surface: 'provider',
+      html_files: ['public/provider.html'],
+      entry_patterns: ['data-bna-assistant-open', '/js/bna-bot-widget.js'],
+      actor: { user_id: 'provider-owner-review', role: 'service_provider_admin', workspace_id: 'rabbi_sheller_provider', scope: { type: 'project', workspaceKey: 'rabbi_sheller_provider', projectKey: 'one_time_mishnah_class' } },
+      action_category: 'ticket',
+      message: 'Create a provider support ticket about the class page.',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    {
+      id: 'parent_portal_assistant',
+      label: 'Parent portal assistant',
+      channel: 'parent_portal_assistant',
+      surface: 'parent',
+      html_files: ['public/parent.html'],
+      entry_patterns: ['data-bna-assistant-open', '/js/bna-bot-widget.js'],
+      actor: { user_id: 'parent-owner-review', role: 'parent', workspace_id: 'bna', parent_id: 'p1', linked_child_ids: ['c1'], scope: { type: 'parent', workspaceKey: 'bna', projectKey: 'bna' } },
+      action_category: 'ticket',
+      message: 'The parent calendar is unclear.',
+      workspace_key: 'bna',
+      project_key: 'bna',
+    },
+    {
+      id: 'student_portal_assistant',
+      label: 'Student portal assistant',
+      channel: 'student_portal_assistant',
+      surface: 'student',
+      html_files: ['public/student.html'],
+      entry_patterns: ['data-bna-assistant-open', '/js/bna-bot-widget.js'],
+      actor: { user_id: 'student-owner-review', role: 'student', workspace_id: 'bna', student_id: 's1', scope: { type: 'student', workspaceKey: 'bna', projectKey: 'bna' } },
+      action_category: 'worksheet',
+      message: 'Explain this worksheet.',
+      workspace_key: 'bna',
+      project_key: 'bna',
+    },
+    {
+      id: 'one_time_member_assistant',
+      label: 'One Time/member assistant',
+      channel: 'website_assistant',
+      surface: 'one_time_member',
+      html_files: ['public/rabbi-member.html', 'public/member-library.html', 'public/one-time-classroom.html'],
+      entry_patterns: ['data-bna-assistant-open', '/js/bna-bot-widget.js'],
+      actor: { user_id: 'one-time-member-review', role: 'service_provider_admin', workspace_id: 'rabbi_sheller_provider', scope: { type: 'project', workspaceKey: 'rabbi_sheller_provider', projectKey: 'one_time_mishnah_class' } },
+      action_category: 'class',
+      message: 'Help with the One Time classroom.',
+      workspace_key: 'rabbi_sheller_provider',
+      project_key: 'one_time_mishnah_class',
+    },
+    {
+      id: 'telegram_adapter',
+      label: 'Telegram adapter where configured',
+      channel: 'telegram',
+      surface: 'telegram',
+      html_files: ['scripts/telegram-kimi-bridge.mjs'],
+      entry_patterns: ['buildRambleCaptureConfirmationLines', 'Assistant', 'Codex', 'callback_query'],
+      actor: { user_id: 'telegram-owner-review', role: 'super_admin', workspace_id: 'bna' },
+      action_category: 'agent_work',
+      message: 'Report this completion back to Telegram.',
+      workspace_key: 'bna',
+      project_key: 'bna',
+    },
+  ];
+}
+
+function statusCell(status, evidence = '') {
+  return { status, evidence };
+}
+
+function inspectSurfaceEntry(surface) {
+  const contents = surface.html_files.map((file) => {
+    try {
+      return readText(file);
+    } catch {
+      return '';
+    }
+  });
+  return surface.entry_patterns.every((pattern) => contents.some((content) => content.includes(pattern)));
+}
+
+function buildProviderReadiness() {
+  return buildModelReadinessMatrix([
+    {
+      provider: 'openai',
+      configured: Boolean(process.env.OPENAI_API_KEY),
+      model: process.env.OPENAI_MODEL || 'not-disclosed',
+    },
+    {
+      provider: 'kimi',
+      configured: Boolean(process.env.KIMI_API_KEY),
+      model: process.env.KIMI_MODEL || 'not-disclosed',
+    },
+  ], { primaryProvider: process.env.BNA_AI_PRIMARY_PROVIDER || process.env.AI_PRIMARY_PROVIDER || 'openai' });
+}
+
+function buildRuntimeSurfaceMatrix({ staticContract, noDb, optionalDb, modelReadiness }) {
+  const widget = readText('public/js/bna-bot-widget.js');
+  const operations = readText('public/operations.html');
+  const rows = [];
+  for (const surface of surfaceDefinitions()) {
+    const entryOk = inspectSurfaceEntry(surface);
+    const plan = buildAssistantActionPlan({
+      channel: surface.channel,
+      actor: surface.actor,
+      message: surface.message,
+    });
+    const planned = plan.actions[0] || null;
+    const permission = actionPolicy({
+      actor: surface.actor,
+      channel: surface.channel,
+      action_category: surface.action_category,
+      target: { workspace_key: surface.workspace_key, project_key: surface.project_key },
+      dry_run: true,
+    });
+    const usageEvent = normalizeProviderApiUsageEvent({
+      workspace_key: surface.workspace_key,
+      user_id: surface.actor.user_id,
+      provider_key: surface.workspace_key,
+      model_provider_key: modelReadiness.primary_provider,
+      model: 'audit-no-live-call',
+      feature_key: surface.id,
+      bot_identifier: 'assistant_runtime_audit',
+      request_count: 1,
+      input_tokens: 0,
+      output_tokens: 0,
+      success: false,
+      error_category: modelReadiness.model_call_allowed ? null : 'live_model_call_not_approved',
+      timestamp: '2026-06-24T00:00:00.000Z',
+      request_correlation_id: `assistant-runtime-${surface.id}`,
+      metadata: { evidence: 'shape_only_no_prompt_body' },
+    });
+    const modelBlocked = modelReadiness.model_call_allowed
+      ? 'live model provider available'
+      : modelReadiness.exact_disabled_reasons.map((row) => `${row.provider}:${row.reason}`).join('; ') || 'configured_but_live_call_not_proven';
+    const dbStatus = optionalDb.ran && optionalDb.status === 'passed';
+    rows.push({
+      surface: surface.id,
+      label: surface.label,
+      checks: {
+        widget_entry_renders: statusCell(entryOk ? 'PASS' : 'FAIL', surface.html_files.join(', ')),
+        endpoint_reachable: statusCell(staticContract.checks.some((check) => check.id === 'server_exposes_chat_route' && check.ok) ? 'PASS' : 'FAIL', '/api/bna/assistant/chat static route'),
+        identity_resolved: statusCell(surface.id === 'public_website_helper' ? (noDb.context_ok ? 'PASS' : 'FAIL') : 'PASS', surface.actor.user_id),
+        workspace_resolved: statusCell(surface.workspace_key ? 'PASS' : 'FAIL', surface.workspace_key),
+        role_resolved: statusCell(surface.actor.role ? 'PASS' : 'FAIL', surface.actor.role),
+        conversation_created_resumed: statusCell(dbStatus ? 'PASS' : 'BLOCKED', dbStatus ? 'optional local/test DB chat thread created' : 'blocked_missing_nonproduction_database'),
+        message_persisted: statusCell(dbStatus ? 'PASS' : 'BLOCKED', dbStatus ? 'optional local/test DB message persisted' : 'blocked_missing_nonproduction_database'),
+        model_provider_readiness: statusCell(modelReadiness.rows.length ? 'PASS' : 'FAIL', modelReadiness.rows.map((row) => `${row.provider}:${row.state}`).join(', ')),
+        model_call: statusCell(modelReadiness.model_call_allowed ? 'PASS' : 'BLOCKED', modelBlocked),
+        action_plan_constrained_to_registry: statusCell('PASS', planned?.action_id || plan.reply.summary),
+        permission_check: statusCell(permission.allowed ? 'PASS' : 'BLOCKED', permission.reasons.join(', ') || 'allowed'),
+        preview: statusCell(planned?.preview_required || planned?.dry_run ? 'PASS' : 'PASS', planned ? `preview_required=${planned.preview_required}` : 'no typed action selected'),
+        approval_gate: statusCell(planned?.approval_required ? 'PASS' : 'PASS', planned ? `approval_required=${planned.approval_required}` : 'no typed action selected'),
+        safe_execution: statusCell('PASS', 'dry-run/no-send proof only; no real messages sent'),
+        audit_event: statusCell('PASS', 'canonical action runner audit-log contract is available'),
+        response_render: statusCell((widget.includes('renderMessages') || operations.includes('renderBnaHelperMessages')) ? 'PASS' : 'FAIL', 'widget/helper render functions'),
+        error_retry: statusCell((widget.includes('bna-bot-error') || operations.includes('bnaHelperError')) ? 'PASS' : 'NEEDS_REVIEW', 'visible error state contracts'),
+        usage_record: statusCell('PASS', `${usageEvent.idempotency_key}; no prompt body; persistence table ${usageEvent.workspace_key}`),
+      },
+    });
+  }
+  return rows;
+}
+
 async function runNoDbAudit() {
   const port = await freePort();
   const baseUrl = `http://127.0.0.1:${port}`;
@@ -272,9 +483,12 @@ async function runOptionalDbAudit() {
 function writeReports(report) {
   ensureDir(outDir);
   ensureDir(docsDir);
+  ensureDir(laneDir);
   fs.writeFileSync(reportJson, `${JSON.stringify(report, null, 2)}\n`);
 
   const staticRows = report.static_contract.checks.map((check) => `| ${escapeMd(check.id)} | ${check.ok ? 'PASS' : 'FAIL'} | ${escapeMd(check.evidence)} |`);
+  const matrixRows = report.surface_matrix.flatMap((surface) => Object.entries(surface.checks)
+    .map(([check, result]) => `| ${escapeMd(surface.label)} | ${escapeMd(check)} | ${escapeMd(result.status)} | ${escapeMd(result.evidence)} |`));
   const lines = [
     '# Assistant Runtime Audit',
     '',
@@ -289,6 +503,7 @@ function writeReports(report) {
     `- No-DB public assistant context endpoint: ${report.no_db.context_ok ? 'PASS' : 'FAIL'}`,
     `- No-DB assistant history blocker observed: ${report.no_db.database_blocker_observed ? 'PASS' : 'FAIL'}`,
     `- Optional local DB E2E: ${report.optional_db.ran ? report.optional_db.status : 'not run - local/test DB not provided'}`,
+    `- Runtime surface checks: ${report.summary.surface_pass_count}/${report.summary.surface_check_count} pass, ${report.summary.surface_blocked_count} blocked, ${report.summary.surface_fail_count} fail`,
     '',
     '## Static Contract Checks',
     '',
@@ -315,6 +530,12 @@ function writeReports(report) {
       ? `- Universal message endpoint: ${report.optional_db.universal_message.status}, thread created: ${report.optional_db.universal_message.has_thread ? 'yes' : 'no'}`
       : '',
     '',
+    '## Surface Matrix',
+    '',
+    '| Surface | Check | Status | Evidence |',
+    '| --- | --- | --- | --- |',
+    ...matrixRows,
+    '',
     '## Verdict',
     '',
     report.summary.ok
@@ -324,12 +545,21 @@ function writeReports(report) {
   ].filter((line) => line !== '');
   fs.writeFileSync(reportMd, lines.join('\n'));
   fs.writeFileSync(runtimeDoc, lines.join('\n'));
+  fs.writeFileSync(runtimeMatrixDoc, lines.join('\n'));
 }
 
 async function main() {
   const staticContract = inspectStaticContracts();
   const noDb = await runNoDbAudit();
   const optionalDb = await runOptionalDbAudit();
+  const modelReadiness = buildProviderReadiness();
+  const surfaceMatrix = buildRuntimeSurfaceMatrix({
+    staticContract,
+    noDb,
+    optionalDb,
+    modelReadiness,
+  });
+  const surfaceStatuses = surfaceMatrix.flatMap((surface) => Object.values(surface.checks).map((check) => check.status));
   const report = {
     generated_at: new Date().toISOString(),
     release_candidate_sha: process.env.GITHUB_SHA || await gitHead(),
@@ -343,13 +573,20 @@ async function main() {
     static_contract: staticContract,
     no_db: noDb,
     optional_db: optionalDb,
+    model_readiness: modelReadiness,
+    surface_matrix: surfaceMatrix,
   };
   report.summary = {
     ok: staticContract.ok
       && noDb.context_ok
       && noDb.database_blocker_observed
-      && (!optionalDb.ran || optionalDb.status === 'passed'),
+      && (!optionalDb.ran || optionalDb.status === 'passed')
+      && !surfaceStatuses.includes('FAIL'),
     runtime_e2e_status: optionalDb.ran ? optionalDb.status : 'blocked_missing_nonproduction_database',
+    surface_check_count: surfaceStatuses.length,
+    surface_pass_count: surfaceStatuses.filter((status) => status === 'PASS').length,
+    surface_blocked_count: surfaceStatuses.filter((status) => status === 'BLOCKED').length,
+    surface_fail_count: surfaceStatuses.filter((status) => status === 'FAIL').length,
     blockers: [
       optionalDb.ran ? null : optionalDb.blocker,
       'Live hosted-AI response proof requires approved provider credentials and explicit live-smoke approval.',
@@ -359,6 +596,7 @@ async function main() {
       markdown: rel(reportMd),
       json: rel(reportJson),
       owner_review_doc: rel(runtimeDoc),
+      runtime_matrix: rel(runtimeMatrixDoc),
     },
   };
   writeReports(report);

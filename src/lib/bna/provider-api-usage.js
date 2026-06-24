@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('node:crypto');
+
 const PROVIDER_BOT_FUTURE_REQUIREMENT = Object.freeze({
   id: 'MEM-20260623-007',
   title: 'Provider Workspace Bot',
@@ -8,6 +10,8 @@ const PROVIDER_BOT_FUTURE_REQUIREMENT = Object.freeze({
   requirement:
     'Provider Workspace Bot is a future workspace-scoped assistant, similar to the existing BNA assistant, adapted for provider permissions and provider data. API usage must be tracked by workspace, user, feature or agent, bot identifier, provider/model, request counts, tokens, cost, latency, success/failure, period, environment, and correlation ID. It must never use or expose cross-provider data.',
 });
+
+const PROVIDER_API_USAGE_TABLE = 'bna_provider_api_usage_events';
 
 const SECRET_FIELD_PATTERN = /(api[-_]?key|authorization|bearer|credential|full[-_]?prompt|messages?|prompt|response|secret|token|password|private)/i;
 
@@ -41,6 +45,10 @@ function normalizeTimestamp(value) {
   return date.toISOString();
 }
 
+function sha256(value = '') {
+  return crypto.createHash('sha256').update(String(value || '')).digest('hex');
+}
+
 function billingPeriodFor(timestamp, explicitPeriod) {
   const explicit = safeString(explicitPeriod, 24);
   if (explicit && /^\d{4}-\d{2}$/.test(explicit)) return explicit;
@@ -68,6 +76,26 @@ function normalizeProviderApiUsageEvent(input = {}) {
   }
 
   const timestamp = normalizeTimestamp(input.timestamp || input.created_at || input.createdAt);
+  const providerKey = safeString(
+    input.provider_key
+      || input.providerKey
+      || input.provider
+      || input.ai_provider
+      || input.aiProvider
+      || input.model_provider
+      || input.modelProvider,
+    80
+  );
+  const modelProviderKey = safeString(
+    input.model_provider_key
+      || input.modelProviderKey
+      || input.model_provider
+      || input.modelProvider
+      || input.ai_provider
+      || input.aiProvider
+      || providerKey,
+    80
+  );
   const requestCount = nonNegativeInteger(input.request_count ?? input.requestCount ?? 1, 1);
   const inputTokens = nonNegativeInteger(input.input_tokens ?? input.inputTokens ?? input.prompt_tokens ?? input.promptTokens);
   const outputTokens = nonNegativeInteger(input.output_tokens ?? input.outputTokens ?? input.completion_tokens ?? input.completionTokens);
@@ -78,11 +106,12 @@ function normalizeProviderApiUsageEvent(input = {}) {
       ? !/^(failed|failure|error)$/i.test(String(input.status || 'success'))
       : Boolean(input.success);
 
-  return {
+  const event = {
     workspace_key: workspaceKey,
     user_id: safeString(input.user_id || input.userId || input.actor_id || input.actorId, 120),
     user_label: safeString(input.user_label || input.userLabel || input.actor_label || input.actorLabel, 160),
-    provider_key: safeString(input.provider_key || input.providerKey || input.ai_provider || input.aiProvider, 80),
+    provider_key: providerKey,
+    model_provider_key: modelProviderKey,
     model: safeString(input.model || input.model_name || input.modelName, 120),
     feature_key: safeString(input.feature_key || input.featureKey || input.feature || input.agent_key || input.agentKey, 120),
     bot_identifier: safeString(input.bot_identifier || input.botIdentifier || input.bot_id || input.botId, 120),
@@ -104,6 +133,10 @@ function normalizeProviderApiUsageEvent(input = {}) {
       160
     ),
     metadata: scrubMetadata(input.metadata),
+  };
+  return {
+    idempotency_key: providerApiUsageIdempotencyKey(input, event),
+    ...event,
   };
 }
 
@@ -222,7 +255,7 @@ function aggregateProviderApiUsage(events, options = {}) {
     }
     increment(byFeature, event.feature_key || 'unclassified', event.request_count);
     increment(byBot, event.bot_identifier || 'none', event.request_count);
-    increment(byModelProvider, [event.provider_key || 'unknown', event.model || 'unknown'].join(':'), event.request_count);
+    increment(byModelProvider, [event.model_provider_key || event.provider_key || 'unknown', event.model || 'unknown'].join(':'), event.request_count);
   }
 
   totals.estimated_cost_usd = roundMoney(totals.estimated_cost_usd);
@@ -239,8 +272,274 @@ function aggregateProviderApiUsage(events, options = {}) {
   };
 }
 
+function providerApiUsageIdempotencyKey(input = {}, event = null) {
+  const explicit = safeString(
+    input.idempotency_key || input.idempotencyKey || input.event_id || input.eventId,
+    180
+  );
+  if (explicit) return explicit;
+  const normalized = event || {};
+  const parts = [
+    normalized.workspace_key,
+    normalized.request_correlation_id,
+    normalized.timestamp,
+    normalized.feature_key,
+    normalized.bot_identifier,
+    normalized.provider_key,
+    normalized.model_provider_key,
+    normalized.model,
+    normalized.request_count,
+    normalized.input_tokens,
+    normalized.output_tokens,
+    normalized.cached_tokens,
+    normalized.success,
+    normalized.error_category,
+  ];
+  return `usage_${sha256(parts.map((part) => part ?? '').join('|')).slice(0, 32)}`;
+}
+
+function assertUsageDb(db) {
+  if (!db || typeof db.query !== 'function') {
+    throw new Error('provider API usage persistence requires a db client with query(sql, params)');
+  }
+}
+
+function assertSafeUsageTable(tableName = PROVIDER_API_USAGE_TABLE) {
+  if (!/^[a-z][a-z0-9_]*$/i.test(tableName)) {
+    throw new Error('unsafe provider API usage table name');
+  }
+  return tableName;
+}
+
+function usageEventFromRow(row = {}) {
+  return normalizeProviderApiUsageEvent({
+    idempotency_key: row.idempotency_key,
+    workspace_key: row.workspace_key,
+    user_id: row.user_id,
+    user_label: row.user_label,
+    provider_key: row.provider_key,
+    model_provider_key: row.model_provider_key,
+    model: row.model,
+    feature_key: row.feature_key,
+    bot_identifier: row.bot_identifier,
+    request_count: row.request_count,
+    input_tokens: row.input_tokens,
+    output_tokens: row.output_tokens,
+    cached_tokens: row.cached_tokens,
+    estimated_cost_usd: row.estimated_cost_usd,
+    actual_cost_usd: row.actual_cost_usd,
+    latency_ms: row.latency_ms,
+    success: row.success,
+    error_category: row.error_category,
+    timestamp: row.occurred_at || row.timestamp || row.created_at,
+    billing_period: row.billing_period,
+    quota_key: row.quota_key,
+    environment: row.environment,
+    request_correlation_id: row.request_correlation_id,
+    metadata: row.metadata,
+  });
+}
+
+function normalizeLimit(value, fallback = 50, max = 500) {
+  const number = nonNegativeInteger(value, fallback);
+  return Math.max(1, Math.min(max, number || fallback));
+}
+
+function normalizeOffset(value) {
+  return nonNegativeInteger(value, 0);
+}
+
+function visibleWorkspaceKeysForIdentity(identity = {}) {
+  if (isPlatformScope(identity)) return null;
+  return workspaceList(identity)
+    .filter((workspaceKey) => canReadProviderApiUsage(identity, workspaceKey));
+}
+
+function buildProviderApiUsageListQuery(options = {}) {
+  const tableName = assertSafeUsageTable(options.tableName || PROVIDER_API_USAGE_TABLE);
+  const values = [];
+  const where = [];
+  const identity = options.identity || {};
+  const workspaceKey = normalizeWorkspaceKey(options.workspaceKey || options.workspace_key);
+  if (workspaceKey) {
+    if (!canReadProviderApiUsage(identity, workspaceKey)) {
+      const error = new Error('provider API usage access denied for workspace');
+      error.statusCode = 403;
+      throw error;
+    }
+    values.push(workspaceKey);
+    where.push(`workspace_key = $${values.length}`);
+  } else {
+    const visibleWorkspaceKeys = visibleWorkspaceKeysForIdentity(identity);
+    if (visibleWorkspaceKeys && !visibleWorkspaceKeys.length) {
+      const error = new Error('provider API usage access denied');
+      error.statusCode = 403;
+      throw error;
+    }
+    if (visibleWorkspaceKeys) {
+      values.push(visibleWorkspaceKeys);
+      where.push(`workspace_key = ANY($${values.length})`);
+    }
+  }
+
+  for (const [inputKey, column, maxLength] of [
+    ['providerKey', 'provider_key', 80],
+    ['provider_key', 'provider_key', 80],
+    ['modelProviderKey', 'model_provider_key', 80],
+    ['model_provider_key', 'model_provider_key', 80],
+    ['featureKey', 'feature_key', 120],
+    ['feature_key', 'feature_key', 120],
+    ['botIdentifier', 'bot_identifier', 120],
+    ['bot_identifier', 'bot_identifier', 120],
+    ['environment', 'environment', 40],
+    ['billingPeriod', 'billing_period', 24],
+    ['billing_period', 'billing_period', 24],
+  ]) {
+    const value = safeString(options[inputKey], maxLength);
+    if (!value) continue;
+    values.push(value);
+    where.push(`${column} = $${values.length}`);
+  }
+
+  const dateFrom = safeString(options.dateFrom || options.date_from, 40);
+  if (dateFrom) {
+    values.push(normalizeTimestamp(dateFrom));
+    where.push(`occurred_at >= $${values.length}`);
+  }
+  const dateTo = safeString(options.dateTo || options.date_to, 40);
+  if (dateTo) {
+    values.push(normalizeTimestamp(dateTo));
+    where.push(`occurred_at < $${values.length}`);
+  }
+  if (options.success !== undefined && options.success !== null && options.success !== '') {
+    values.push(Boolean(options.success));
+    where.push(`success = $${values.length}`);
+  }
+
+  values.push(normalizeLimit(options.limit, 50, 500));
+  const limitIndex = values.length;
+  values.push(normalizeOffset(options.offset));
+  const offsetIndex = values.length;
+  const sql = [
+    `SELECT idempotency_key, workspace_key, user_id, user_label, provider_key, model_provider_key, model,`,
+    `       feature_key, bot_identifier, request_count, input_tokens, output_tokens, cached_tokens,`,
+    `       estimated_cost_usd, actual_cost_usd, latency_ms, success, error_category, occurred_at,`,
+    `       billing_period, quota_key, environment, request_correlation_id, metadata, created_at`,
+    `FROM ${tableName}`,
+    where.length ? `WHERE ${where.join(' AND ')}` : '',
+    `ORDER BY occurred_at DESC, created_at DESC`,
+    `LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
+  ].filter(Boolean).join('\n');
+  return { sql, values };
+}
+
+async function recordProviderApiUsageEvent({ db, event, tableName = PROVIDER_API_USAGE_TABLE } = {}) {
+  assertUsageDb(db);
+  const normalized = normalizeProviderApiUsageEvent(event);
+  const table = assertSafeUsageTable(tableName);
+  const values = [
+    normalized.idempotency_key,
+    normalized.workspace_key,
+    normalized.user_id,
+    normalized.user_label,
+    normalized.provider_key,
+    normalized.model_provider_key,
+    normalized.model,
+    normalized.feature_key,
+    normalized.bot_identifier,
+    normalized.request_count,
+    normalized.input_tokens,
+    normalized.output_tokens,
+    normalized.cached_tokens,
+    normalized.estimated_cost_usd,
+    normalized.actual_cost_usd,
+    normalized.latency_ms,
+    normalized.success,
+    normalized.error_category,
+    normalized.timestamp,
+    normalized.billing_period,
+    normalized.quota_key,
+    normalized.environment,
+    normalized.request_correlation_id,
+    JSON.stringify(normalized.metadata || {}),
+  ];
+  const insertSql = `
+INSERT INTO ${table} (
+  idempotency_key, workspace_key, user_id, user_label, provider_key, model_provider_key, model,
+  feature_key, bot_identifier, request_count, input_tokens, output_tokens, cached_tokens,
+  estimated_cost_usd, actual_cost_usd, latency_ms, success, error_category, occurred_at,
+  billing_period, quota_key, environment, request_correlation_id, metadata
+) VALUES (
+  $1, $2, $3, $4, $5, $6, $7,
+  $8, $9, $10, $11, $12, $13,
+  $14, $15, $16, $17, $18, $19,
+  $20, $21, $22, $23, $24::jsonb
+)
+ON CONFLICT (idempotency_key) DO NOTHING
+RETURNING *`;
+  const inserted = await db.query(insertSql, values);
+  if (inserted.rows?.[0]) {
+    return {
+      recorded: true,
+      duplicate: false,
+      event: usageEventFromRow(inserted.rows[0]),
+      row: inserted.rows[0],
+    };
+  }
+  const existing = await db.query(`SELECT * FROM ${table} WHERE idempotency_key = $1 LIMIT 1`, [normalized.idempotency_key]);
+  return {
+    recorded: false,
+    duplicate: true,
+    reason: 'duplicate_idempotency_key',
+    event: usageEventFromRow(existing.rows?.[0] || normalized),
+    row: existing.rows?.[0] || null,
+  };
+}
+
+async function listProviderApiUsageEvents({ db, tableName = PROVIDER_API_USAGE_TABLE, ...options } = {}) {
+  assertUsageDb(db);
+  const { sql, values } = buildProviderApiUsageListQuery({ ...options, tableName });
+  const result = await db.query(sql, values);
+  return {
+    events: (result.rows || []).map(usageEventFromRow),
+    limit: values[values.length - 2],
+    offset: values[values.length - 1],
+  };
+}
+
+async function aggregateProviderApiUsageFromStore({ db, tableName = PROVIDER_API_USAGE_TABLE, ...options } = {}) {
+  const { events } = await listProviderApiUsageEvents({
+    db,
+    tableName,
+    ...options,
+    limit: options.limit || 500,
+    offset: options.offset || 0,
+  });
+  return aggregateProviderApiUsage(events, {
+    workspaceKey: options.workspaceKey || options.workspace_key,
+    identity: options.identity,
+  });
+}
+
+function createProviderApiUsageStore({ db, tableName = PROVIDER_API_USAGE_TABLE } = {}) {
+  assertUsageDb(db);
+  return {
+    table_name: assertSafeUsageTable(tableName),
+    async record(event = {}) {
+      return recordProviderApiUsageEvent({ db, tableName, event });
+    },
+    async list(options = {}) {
+      return listProviderApiUsageEvents({ db, tableName, ...options });
+    },
+    async aggregate(options = {}) {
+      return aggregateProviderApiUsageFromStore({ db, tableName, ...options });
+    },
+  };
+}
+
 function createProviderApiUsageRecorder(options = {}) {
   const writeEvent = typeof options.writeEvent === 'function' ? options.writeEvent : null;
+  const usageStore = options.usageStore || (options.db ? createProviderApiUsageStore({ db: options.db }) : null);
   const defaultEnvironment = safeString(options.environment || process.env.NODE_ENV || 'development', 40);
   const now = typeof options.now === 'function' ? options.now : () => new Date();
 
@@ -251,6 +550,10 @@ function createProviderApiUsageRecorder(options = {}) {
         timestamp: input.timestamp || input.created_at || input.createdAt || now().toISOString(),
         environment: input.environment || input.env || defaultEnvironment,
       });
+
+      if (usageStore) {
+        return usageStore.record(event);
+      }
 
       if (!writeEvent) {
         return {
@@ -291,10 +594,17 @@ function providerApiUsageEmptyState(workspaceKey) {
 
 module.exports = {
   PROVIDER_BOT_FUTURE_REQUIREMENT,
+  PROVIDER_API_USAGE_TABLE,
   aggregateProviderApiUsage,
+  aggregateProviderApiUsageFromStore,
+  buildProviderApiUsageListQuery,
   canReadProviderApiUsage,
   createProviderApiUsageRecorder,
+  createProviderApiUsageStore,
   filterProviderApiUsageForIdentity,
+  listProviderApiUsageEvents,
   normalizeProviderApiUsageEvent,
+  providerApiUsageIdempotencyKey,
   providerApiUsageEmptyState,
+  recordProviderApiUsageEvent,
 };
