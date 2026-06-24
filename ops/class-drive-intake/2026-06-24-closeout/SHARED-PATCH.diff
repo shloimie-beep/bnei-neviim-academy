@@ -1,0 +1,120 @@
+diff --git a/server.js b/server.js
+--- a/server.js
++++ b/server.js
+@@
+ async function parseMixedRecordingSource({
+   job = {},
+   instruction = '',
+   previousParse = {},
+   dryRun = false,
+@@
+ } = {}) {
+   const rawInput = [
+     instruction ? `Operator instruction:\n${instruction}` : '',
+     job.title ? `Recording title: ${job.title}` : '',
+     job.caption ? `Caption: ${job.caption}` : '',
+@@
+   const intake = await createCanonicalIntakeParseRun({
+     rawInput,
+     source_type: sourceType,
+     source_channel: job.source_type || sourceType,
+     source_id: sourceId,
+@@
+     created_by: 'recording_parser',
+     dry_run: Boolean(dryRun),
+   });
+   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
++  const students = await getStudentsForMixedRecording(projectKey || inferProjectKeyFromTranscript(rawInput));
++  const progressOnlyClassParse = await generateMixedRecordingParse({ job, students });
++  const progressOnlyParsed = {
++    tasks: [],
++    accountability_events: [],
++    class_notes: [],
++    group_goal_entries: Array.isArray(progressOnlyClassParse.group_goal_entries)
++      ? progressOnlyClassParse.group_goal_entries
++      : [],
++    daily_torah_updates: Array.isArray(progressOnlyClassParse.daily_torah_updates)
++      ? progressOnlyClassParse.daily_torah_updates
++      : [],
++    report: {
++      ...(progressOnlyClassParse.report || {}),
++      parser: 'mixed-recording-progress-only',
++      note: 'Tasks, class notes, and direct accountability rows are intentionally suppressed here to avoid duplicating canonical intake output.',
++    },
++  };
+   if (dryRun) {
++    const progressOnlyDryRun = await persistMixedRecordingParse({
++      job,
++      parsed: progressOnlyParsed,
++      students,
++      previousParse,
++      dryRun: true,
++      archiveSourceAfterParse,
++      contentBacked,
++      projectKey,
++    });
+     return {
+       success: true,
+       dry_run: true,
+       raw_intake: intake.raw_intake,
+       parse_run: intake.parse_run,
+       parsed,
++      progress_only_parsed: progressOnlyDryRun.parsed,
+       items: intake.items,
+       review_items: intake.review_items,
+       counts: mixedRecordingCountsFromApply(null, intake),
+       report: parsed.report,
+@@
+   if (contentBacked && job.id) {
+     await pool.query(
+       `UPDATE bna_content_jobs
+        SET parse_json = $1::jsonb,
+            status = CASE WHEN $2 THEN 'archived' ELSE status END,
+@@
+       [JSON.stringify(nextParse), Boolean(archiveSourceAfterParse), job.id]
+     );
+   }
++  const progressOnlyResult = await persistMixedRecordingParse({
++    job,
++    parsed: progressOnlyParsed,
++    students,
++    previousParse: {
++      ...nextParse,
++      canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
++    },
++    dryRun: false,
++    archiveSourceAfterParse,
++    contentBacked,
++    projectKey,
++  });
++  nextParse.mixed_recording_parse = {
++    ...nextParse.mixed_recording_parse,
++    progress_only: {
++      parser: 'mixed-recording-progress-only',
++      parsed_at: new Date().toISOString(),
++      counts: progressOnlyResult.counts,
++      group_goal_entries: progressOnlyParsed.group_goal_entries.length,
++      daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
++    },
++  };
++  if (contentBacked && job.id) {
++    await pool.query(
++      `UPDATE bna_content_jobs
++       SET parse_json = $1::jsonb,
++           updated_at = NOW()
++       WHERE id = $2`,
++      [JSON.stringify(nextParse), job.id]
++    );
++  }
+   return {
+     success: true,
+     dry_run: false,
+     raw_intake: intake.raw_intake,
+     parse_run: intake.parse_run,
+@@
+     report: parsed.report,
+     created: applied.created,
++    progress_only_created: progressOnlyResult.created,
+     parse_json: nextParse,
+   };
+ }
