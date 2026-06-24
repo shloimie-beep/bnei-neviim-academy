@@ -6,12 +6,15 @@ const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const smokeScript = fs.readFileSync('scripts/smoke-owner-review-role-flows-local.mjs', 'utf8');
 const visualScript = fs.readFileSync('scripts/smoke-owner-review-public-visual.mjs', 'utf8');
 const assistantRuntimeScript = fs.readFileSync('scripts/smoke-owner-review-assistant-runtime.mjs', 'utf8');
+const externalReadinessScript = fs.readFileSync('scripts/smoke-owner-review-external-readiness.mjs', 'utf8');
 const publicIndex = fs.readFileSync('public/index.html', 'utf8');
 const roleFlowDoc = fs.readFileSync('docs/owner-review/ROLE-FLOW-QA.md', 'utf8');
 const assistantRuntimeDoc = fs.readFileSync('docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md', 'utf8');
+const externalReadinessDoc = fs.readFileSync('docs/owner-review/EXTERNAL-READINESS-AUDIT.md', 'utf8');
 const roleFlowReport = JSON.parse(fs.readFileSync('ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.json', 'utf8'));
 const visualReport = JSON.parse(fs.readFileSync('ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.json', 'utf8'));
 const assistantRuntimeReport = JSON.parse(fs.readFileSync('ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json', 'utf8'));
+const externalReadinessReport = JSON.parse(fs.readFileSync('ops/qa-runs/2026-06-24-owner-review-external-readiness/report.json', 'utf8'));
 const requiredOwnerReviewDocs = [
   'docs/owner-review/APPLIED-NOT-APPLIED-MATRIX.md',
   'docs/owner-review/CANONICAL-SITEMAP.md',
@@ -25,6 +28,7 @@ const requiredOwnerReviewDocs = [
   'docs/owner-review/NAVIGATION-GRAPH.md',
   'docs/owner-review/PUBLIC-VISUAL-AUDIT.md',
   'docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md',
+  'docs/owner-review/EXTERNAL-READINESS-AUDIT.md',
 ];
 
 test('owner-review role-flow smoke is registered as a credential-free release gate', () => {
@@ -107,6 +111,38 @@ test('website assistant runtime has a credential-free owner-review gate', () => 
   assert.match(assistantRuntimeDoc, /Static shared-assistant contract: PASS/);
   assert.match(assistantRuntimeDoc, /No-DB public assistant context endpoint: PASS/);
   assert.match(assistantRuntimeDoc, /True chat\/message persistence remains blocked/);
+});
+
+test('class/Stripe/Vimeo readiness has a credential-free owner-review gate', () => {
+  assert.equal(
+    packageJson.scripts['owner-review:external-readiness'],
+    'node scripts/smoke-owner-review-external-readiness.mjs',
+  );
+  assert.match(externalReadinessScript, /buildUnifiedFileMediaIntake/);
+  assert.match(externalReadinessScript, /buildOneTimeDriveBriefIngestionPreview/);
+  assert.match(externalReadinessScript, /buildOneTimeStripeLocalBetaPlan/);
+  assert.match(externalReadinessScript, /buildRecordingPipelinePreview/);
+  assert.match(externalReadinessScript, /external_credentials: false/);
+  assert.match(externalReadinessScript, /production_state_readback: false/);
+  assert.match(externalReadinessScript, /production_database_mutation: false/);
+  assert.match(externalReadinessScript, /external_send_publish_upload_charge_dns: false/);
+  assert.equal(externalReadinessReport.summary.ok, true);
+  assert.equal(externalReadinessReport.summary.external_write_performed, false);
+  assert.equal(externalReadinessReport.summary.secret_leak_detected, false);
+  assert.deepEqual(
+    externalReadinessReport.sections.map((section) => section.requirement_id),
+    ['REQ-20260624-021', 'REQ-20260624-022', 'REQ-20260624-023'],
+  );
+  for (const section of externalReadinessReport.sections) {
+    assert.equal(section.status, 'credential_free_ready_with_external_blockers');
+    assert.equal(section.source_contract.ok, true);
+    assert.equal(section.behavior.ok, true);
+    assert.ok(section.blockers.length > 0);
+  }
+  assert.match(externalReadinessDoc, /Class Drive intake/);
+  assert.match(externalReadinessDoc, /Stripe sandbox readiness/);
+  assert.match(externalReadinessDoc, /Vimeo\/video-hosting readiness/);
+  assert.match(externalReadinessDoc, /External writes performed: NO/);
 });
 
 test('latest owner-review role-flow evidence is green for all primary journeys', () => {

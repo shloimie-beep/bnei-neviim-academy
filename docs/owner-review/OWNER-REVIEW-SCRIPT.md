@@ -10,14 +10,18 @@ Review PR #14 by user journey, not by commit history.
 4. Run `npm run owner-review:role-flows`.
 5. Run `npm run owner-review:visual`.
 6. Run `npm run owner-review:assistant-runtime`.
-7. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
+7. Run `npm run owner-review:external-readiness`.
+8. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
    authenticated/synthetic journeys.
-8. Open `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and confirm PR #14 local
+9. Open `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and confirm PR #14 local
    passes while production public remains a recorded stale delta until deploy.
-9. Open `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` and confirm the
+10. Open `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` and confirm the
    credential-free assistant source/no-DB runtime proof and the explicit
    local/test DB blocker for persisted chat/message E2E.
-10. Note that GitHub Actions is not attached yet: the attempted workflow push
+11. Open `docs/owner-review/EXTERNAL-READINESS-AUDIT.md` and confirm the
+   class/Drive, Stripe, and Vimeo local no-write readiness proof plus the
+   remaining external blockers.
+12. Note that GitHub Actions is not attached yet: the attempted workflow push
    was rejected because the current OAuth app lacks `workflow` scope.
 
 ## Public Site
@@ -148,6 +152,7 @@ npm run owner-review:routes
 npm run owner-review:role-flows
 npm run owner-review:visual
 npm run owner-review:assistant-runtime
+npm run owner-review:external-readiness
 npm run watchdog:links
 npm run watchdog:actions
 npm run watchdog:security
@@ -164,9 +169,13 @@ Expected local result:
 - Assistant runtime audit: PASS for static shared-assistant contract and local
   no-DB public context smoke; persisted chat/message E2E remains blocked unless
   `BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL` points to a local/test database.
+- External readiness audit: PASS for credential-free class/Drive intake,
+  Stripe no-charge preview, and Vimeo/manual video-hosting readiness; real
+  Drive/transcription, Stripe, and Vimeo proof remains approval/credential
+  gated.
 - Link/action/security watchdogs: severity `ok`, findings 0.
-- Full tests: PASS, 1215/1215.
-- Secret audit: PASS, 4271 tracked paths, 0 tracked secret-risk files.
+- Full tests: PASS, 1216/1216.
+- Secret audit: PASS, 4275 tracked paths, 0 tracked secret-risk files.
 - GitHub Actions: not attached yet. Adding the workflow requires GitHub
   `workflow` permission; local gates above are the current credential-free
   evidence until that external permission is granted.

@@ -22,6 +22,10 @@
   disables database-backed assistant history. `owner-review:assistant-runtime`
   verifies source contracts and anonymous context locally, then records the
   explicit blocker for a local/test DB or approved production readback.
+- Class/Drive, Stripe, and Vimeo are proven only to the credential-free
+  readiness boundary in `EXTERNAL-READINESS-AUDIT.md`. Real class job readback,
+  Drive file access, transcription, Stripe sandbox/live API checks, and Vimeo
+  API upload/playback verification remain external/approval gated.
 
 ## Product Decision
 
@@ -42,6 +46,9 @@
 - True website assistant conversation persistence can be smoke-tested with a
   local/test Postgres URL in `BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL`; the
   script intentionally ignores production `DATABASE_URL` and `.secrets`.
+- Real class/Drive readback needs the approved source folder/job range and
+  Drive auth. Real Stripe and Vimeo proof needs sandbox/test credentials,
+  account-owner policy, and explicit no-live-mutation smoke scope.
 
 ## Production Approval Required
 

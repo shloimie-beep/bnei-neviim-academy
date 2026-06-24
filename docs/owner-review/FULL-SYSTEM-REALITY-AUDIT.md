@@ -9,9 +9,9 @@ Register: `tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-impl
 ## Executive Verdict
 
 Status: `LOCAL VERIFIED` for the public visual repair, authenticated
-role-flow/navigation proof, and credential-free website-assistant runtime audit
-on top of the PR #14 owner-review candidate. Commit/push of the latest
-assistant-runtime batch is the next step.
+role-flow/navigation proof, credential-free website-assistant runtime audit,
+and credential-free external-readiness audit on top of the PR #14 owner-review
+candidate. Commit/push of the latest external-readiness batch is the next step.
 
 PR #14 is not merged, not deployed, and not live-verified. Public production
 still shows the header-to-hero gap and lacks semantic active-state attributes
@@ -75,6 +75,23 @@ Evidence: `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and
 Evidence: `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` and
 `ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json`.
 
+## External Readiness Audit
+
+- Added `npm run owner-review:external-readiness`.
+- Class/Drive intake proof uses existing unified file/media intake, class
+  recording parser, One Time Drive brief preview, and source-route checks. It
+  proves local no-write readiness for class media, worksheet resources,
+  class-session readback, and scoped Drive-brief previews.
+- Stripe proof uses existing readiness and local beta preview builders. It
+  verifies `not_configured` and test-local policy behavior without creating a
+  customer, checkout session, subscription, invoice credit, refund, or charge.
+- Vimeo proof uses existing video-hosting and Vimeo helper previews. It
+  verifies manual Vimeo URL attachment, recording pipeline preview, disabled API
+  upload, disabled provider publish/delete, and blocked upload route behavior.
+
+Evidence: `docs/owner-review/EXTERNAL-READINESS-AUDIT.md` and
+`ops/qa-runs/2026-06-24-owner-review-external-readiness/report.json`.
+
 ## Visual Defects Found
 
 | Route | Viewport | Selector | Observed | Expected | Severity | Status |
@@ -134,6 +151,8 @@ credential-free evidence is `1214/1214`.
 ## Current Overall State
 
 `PARTIAL`: PR #14 has local visual release-acceptance, role-flow navigation,
-and credential-free assistant runtime evidence, but it is not merged, not
-deployed, and not live-verified. Persisted assistant chat/message proof still
-requires a local/test database or approved production readback.
+credential-free assistant runtime, and credential-free external-readiness
+evidence, but it is not merged, not deployed, and not live-verified. Persisted
+assistant chat/message proof, real class/Drive readback, Stripe sandbox/live
+proof, and Vimeo API/upload proof still require local/test credentials or
+approved production/external readback.

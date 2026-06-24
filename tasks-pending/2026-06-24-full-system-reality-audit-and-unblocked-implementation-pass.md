@@ -51,9 +51,9 @@ Captured at start of this pass:
 | REQ-20260624-018 | Build/repair safe local authenticated navigation harness beyond synthetic route registry proof. | Section 5 | Auth/navigation | Done locally | Implemented and verified | Role-flow smoke now asserts expected assistant surfaces, forbidden cross-role fixture text, deep-link load, refresh, back navigation, logged-out/wrong-role recovery, API failure state, and browser hygiene. |
 | REQ-20260624-019 | Implement and verify clear super-admin path into Rabbi Scheller provider workspace. | Section 6 | Operations/provider workspace | Done locally | Implemented and verified | Role-flow smoke clicks the Operations workspace switcher into `rabbi_sheller_provider` on desktop and mobile and records the proof in `ROLE-FLOW-QA.md`. |
 | REQ-20260624-020 | Audit real website/portal bot runtime end to end, not only contracts/widgets. | Section 7 | Bot/runtime | Done for credential-free audit | Implemented and verified | Added `npm run owner-review:assistant-runtime`, static shared-assistant endpoint checks, local no-DB context smoke, explicit DB-backed history blocker proof, and reports at `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` plus `ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json`. True persisted chat/message E2E remains blocked without a local/test DB or approved production readback. |
-| REQ-20260624-021 | Reconcile class Drive intake, transcription, parsing, student matching, scores, questions, profiles, accountability, and UI read models. | Section 8 | Class intake/backfill | Not started | Follow-up PR / production readback blocked | Build read-only diagnostic, dry-run backfill, tests, and per-job report; no production mutations without approval. |
-| REQ-20260624-022 | Implement credential-free Stripe sandbox readiness and tests. | Section 9 | Billing | Not started | Follow-up PR | Add/verify explicit not_configured/sandbox/live states, mock tests, audit events, entitlement behavior; credentials require Decision. |
-| REQ-20260624-023 | Implement credential-free Vimeo readiness and tests. | Section 10 | Video integrations | Not started | Follow-up PR | Add/verify embed/readiness/upload-request/mock-upload/transcript/class linkage states; real upload requires Decision. |
+| REQ-20260624-021 | Reconcile class Drive intake, transcription, parsing, student matching, scores, questions, profiles, accountability, and UI read models. | Section 8 | Class intake/backfill | Done for credential-free readiness | Implemented and verified | Added `npm run owner-review:external-readiness`; it proves class/media intake, parser, Drive-brief preview, class-session readback route, and no-write linked outcomes locally. Real jobs 64-74/source-folder readback, real Drive files, real transcription, and production data reconciliation remain blocked by Decisions. |
+| REQ-20260624-022 | Implement credential-free Stripe sandbox readiness and tests. | Section 9 | Billing | Done for credential-free readiness | Implemented and verified | `owner-review:external-readiness` proves Stripe status/preview contracts, local beta policy shape, no-charge behavior, and create-route blockers. Real sandbox/live API proof remains blocked by Stripe credentials and billing policy decisions. |
+| REQ-20260624-023 | Implement credential-free Vimeo readiness and tests. | Section 10 | Video integrations | Done for credential-free readiness | Implemented and verified | `owner-review:external-readiness` proves Vimeo/video-hosting status routes, manual URL attach, recording pipeline preview, disabled API upload/provider publish, and upload blocker. Real Vimeo API/upload/playback proof remains blocked by account/token/asset approval. |
 | REQ-20260624-024 | Create/update canonical Decisions only for external/operator blockers. | Section 11 | Decisions | Not started | Needs operator decisions | Create blocker list for GitHub workflow scope, safe auth/demo sessions, production readback, Drive, Railway, Stripe, Vimeo, bot credentials, merge/deploy/live verification. |
 | REQ-20260624-025 | Keep PR strategy clean: PR #14 release-acceptance defects here, follow-up branches for broad runtime integrations. | Section 12 | PR strategy | In progress | Implemented as policy in this register | Record why any change belongs in PR #14 before committing it. |
 | REQ-20260624-026 | Run required validation with exact SHA/timestamp/credential/write metadata for every command. | Section 13 | Verification | Done for this batch | Implemented locally | Verification log below records command, SHA, result, credential use, and external-write status. |
@@ -77,9 +77,11 @@ Captured at start of this pass:
    `REQ-20260624-017`.
 2. PR #14 navigation/auth proof batch: `REQ-20260624-018` and
    `REQ-20260624-019`.
-3. Runtime follow-up registers/branches: class intake, Stripe, and Vimeo
-   (`REQ-20260624-021` through `REQ-20260624-023`), plus optional local/test DB
-   assistant persistence proof for the blocker recorded under `REQ-20260624-020`.
+3. Runtime follow-up registers/branches: optional local/test DB assistant
+   persistence proof for `REQ-20260624-020`, production class-intake readback
+   for `REQ-20260624-021`, Stripe sandbox/live proof for `REQ-20260624-022`,
+   and Vimeo API/upload proof for `REQ-20260624-023` after their Decisions are
+   resolved.
 
 ## Verification Log
 
@@ -106,12 +108,19 @@ Captured at start of this pass:
 | 2026-06-24T09:12+03:00 | `2a93ac9432345e8f3b381dcc1ed1caec2699cee0` + assistant-runtime worktree | `npm test` | PASS 1215/1215 | none | none |
 | 2026-06-24T09:12+03:00 | `2a93ac9432345e8f3b381dcc1ed1caec2699cee0` + assistant-runtime worktree | `npm run secrets:audit` | PASS, 4271 tracked paths, 0 findings | none | none |
 | 2026-06-24T09:12+03:00 | `2a93ac9432345e8f3b381dcc1ed1caec2699cee0` + assistant-runtime worktree | `git diff --check` | PASS; line-ending warnings only | none | none |
+| 2026-06-24T09:18+03:00 | `8a6d13cfa1d405d9c17e8d94b966e754466f54d6` + external-readiness worktree | `node --check scripts\smoke-owner-review-external-readiness.mjs` | PASS | none | none |
+| 2026-06-24T09:18+03:00 | `8a6d13cfa1d405d9c17e8d94b966e754466f54d6` + external-readiness worktree | `npm run owner-review:external-readiness` | PASS; class/Drive, Stripe, and Vimeo credential-free readiness reported with external blockers | none | none |
+| 2026-06-24T09:19+03:00 | `8a6d13cfa1d405d9c17e8d94b966e754466f54d6` + external-readiness worktree | `node --test tests\owner-review-role-flow-contract.test.js` | PASS 8/8 | none | none |
+| 2026-06-24T09:20+03:00 | `8a6d13cfa1d405d9c17e8d94b966e754466f54d6` + external-readiness worktree | `npm test` | PASS 1216/1216 | none | none |
+| 2026-06-24T09:20+03:00 | `8a6d13cfa1d405d9c17e8d94b966e754466f54d6` + external-readiness worktree | `npm run secrets:audit` | PASS, 4275 tracked paths, 0 findings | none | none |
+| 2026-06-24T09:20+03:00 | `8a6d13cfa1d405d9c17e8d94b966e754466f54d6` + external-readiness worktree | `git diff --check` | PASS; line-ending warnings only | none | none |
 
 ## Final Audit
 
-Open. The public visual release-acceptance, authenticated navigation, and
-credential-free website-assistant runtime batches are locally verified, but
-this goal is not complete: persisted assistant runtime without a local/test DB,
-Telegram/live bot proof, class-intake, Stripe, Vimeo, production readback,
-merge/deploy, and live-smoke items remain open or blocked by the Decisions
-above.
+Open. The public visual release-acceptance, authenticated navigation,
+credential-free website-assistant runtime, and credential-free external
+readiness batches are locally verified, but this goal is not complete:
+persisted assistant runtime without a local/test DB, Telegram/live bot proof,
+real class-intake production readback, Stripe sandbox/live proof, Vimeo
+API/upload proof, production readback, merge/deploy, and live-smoke items
+remain open or blocked by the Decisions above.
