@@ -21,7 +21,9 @@ Review PR #14 by user journey, not by commit history.
 11. Open `docs/owner-review/EXTERNAL-READINESS-AUDIT.md` and confirm the
    class/Drive, Stripe, and Vimeo local no-write readiness proof plus the
    remaining external blockers.
-12. Note that GitHub Actions is not attached yet: the attempted workflow push
+12. Open `docs/owner-review/FULL-SYSTEM-REALITY-FINAL-REPORT.md` for the
+   24-section pushed/not-merged/not-deployed status summary.
+13. Note that GitHub Actions is not attached yet: the attempted workflow push
    was rejected because the current OAuth app lacks `workflow` scope.
 
 ## Public Site
@@ -174,8 +176,8 @@ Expected local result:
   Drive/transcription, Stripe, and Vimeo proof remains approval/credential
   gated.
 - Link/action/security watchdogs: severity `ok`, findings 0.
-- Full tests: PASS, 1216/1216.
-- Secret audit: PASS, 4275 tracked paths, 0 tracked secret-risk files.
+- Full tests: PASS, 1217/1217.
+- Secret audit: PASS, 4279 tracked paths, 0 tracked secret-risk files.
 - GitHub Actions: not attached yet. Adding the workflow requires GitHub
   `workflow` permission; local gates above are the current credential-free
   evidence until that external permission is granted.

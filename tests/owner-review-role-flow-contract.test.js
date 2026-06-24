@@ -11,6 +11,7 @@ const publicIndex = fs.readFileSync('public/index.html', 'utf8');
 const roleFlowDoc = fs.readFileSync('docs/owner-review/ROLE-FLOW-QA.md', 'utf8');
 const assistantRuntimeDoc = fs.readFileSync('docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md', 'utf8');
 const externalReadinessDoc = fs.readFileSync('docs/owner-review/EXTERNAL-READINESS-AUDIT.md', 'utf8');
+const finalRealityReport = fs.readFileSync('docs/owner-review/FULL-SYSTEM-REALITY-FINAL-REPORT.md', 'utf8');
 const roleFlowReport = JSON.parse(fs.readFileSync('ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.json', 'utf8'));
 const visualReport = JSON.parse(fs.readFileSync('ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.json', 'utf8'));
 const assistantRuntimeReport = JSON.parse(fs.readFileSync('ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json', 'utf8'));
@@ -29,6 +30,7 @@ const requiredOwnerReviewDocs = [
   'docs/owner-review/PUBLIC-VISUAL-AUDIT.md',
   'docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md',
   'docs/owner-review/EXTERNAL-READINESS-AUDIT.md',
+  'docs/owner-review/FULL-SYSTEM-REALITY-FINAL-REPORT.md',
 ];
 
 test('owner-review role-flow smoke is registered as a credential-free release gate', () => {
@@ -184,4 +186,37 @@ test('owner-review packet includes all requested top-level artifacts', () => {
   assert.equal(fs.existsSync('raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md'), true);
   assert.equal(fs.existsSync('tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-implementation-pass.md'), true);
   assert.equal(fs.existsSync('raw-input/RAW-20260624-002-full-system-reality-audit-and-unblocked-implementation-pass.md'), true);
+});
+
+test('full-system reality final report keeps the required 24-section closeout shape', () => {
+  [
+    'Executive verdict',
+    'Current Git truth',
+    'Why previous work was not visible',
+    'Production versus PR #14 versus local',
+    'Visual defects found',
+    'Visual defects fixed',
+    'Public navigation',
+    'Authenticated navigation',
+    'Super-admin to Rabbi Scheller workspace',
+    'Unified login',
+    'Bot runtime',
+    'Uploaded class reconciliation',
+    'Scores, questions, profiles, and accountability',
+    'Dry-run backfill result',
+    'Stripe sandbox readiness',
+    'Vimeo readiness',
+    'Credential-free work completed',
+    'Operator Decisions remaining',
+    'Tests and evidence',
+    'Files changed',
+    'Commits and push state',
+    'Merge/deploy/live state',
+    'Exact links Shloimie should open',
+    'Recommended next action',
+  ].forEach((heading, index) => {
+    assert.ok(finalRealityReport.includes(`## ${index + 1}. ${heading}`), heading);
+  });
+  assert.match(finalRealityReport, /Overall state: `PUSHED`/);
+  assert.match(finalRealityReport, /Latest pushed code\/evidence batch before this final-report-only closeout/);
 });
