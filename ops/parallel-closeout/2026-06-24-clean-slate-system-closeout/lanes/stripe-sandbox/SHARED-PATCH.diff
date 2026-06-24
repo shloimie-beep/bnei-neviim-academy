@@ -1,0 +1,76 @@
+diff --git a/server.js b/server.js
+--- a/server.js
++++ b/server.js
+@@
+ app.get('/api/bna/integrations/stripe/status', requireAdmin, (req, res) => {
+-  res.json({ success: true, card: stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig }) });
++  const card = stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig });
++  res.json({
++    success: true,
++    card,
++    billing: stripeIntegration.buildSafeBillingPreview({ config: stripeRuntimeConfig }),
++  });
+ });
+@@
+ app.post('/api/bna/integrations/stripe/checkout-create', requireAdmin, async (req, res) => {
+   try {
+-    stripeIntegration.assertCheckoutCreateApproved(req.body || {}, { config: stripeRuntimeConfig });
+-    res.status(409).json({ success: false, error: 'Stripe checkout creation is not enabled in this closeout pass.' });
++    const stripeClient = stripeIntegration.getStripeClientWrapper({
++      secretKey: stripeRuntimeConfig.secretKey,
++    });
++    const account = await stripeClient.accounts.retrieve();
++    const configState = stripeIntegration.getStripeBillingRuntimeState({
++      config: stripeRuntimeConfig,
++      sandboxApiVerified: account?.livemode === false,
++      sandboxAccountLivemode: account?.livemode,
++    });
++    const policy = stripeIntegration.resolveBillingPolicy(req.body?.policy || {});
++    const priceMap = stripeIntegration.buildProductPriceMap({
++      policy,
++      tiers: req.body?.tiers || [],
++      priceIds: req.body?.price_ids || req.body?.priceIds || {},
++    });
++    const session = await stripeIntegration.createStripeCheckoutSession({
++      stripeClient,
++      config: configState,
++      policy,
++      priceMap,
++      request: req.body || {},
++      idempotencyKey: req.body?.idempotency_key || req.body?.idempotencyKey,
++    });
++    res.json({ success: true, checkout: session, config_state: configState.state });
+   } catch (err) {
+@@
+ });
++
++app.post('/api/bna/integrations/stripe/webhook-preview', requireAdmin, (req, res) => {
++  const initial = stripeIntegration.createInitialBillingState({
++    config: stripeIntegration.getStripeBillingRuntimeState({ config: stripeRuntimeConfig }),
++    policy: stripeIntegration.resolveBillingPolicy(req.body?.policy || {}),
++  });
++  const result = stripeIntegration.applyStripeBillingEvent(initial, req.body?.event || {});
++  res.json({
++    success: true,
++    duplicate: result.duplicate,
++    ignored: result.ignored,
++    lifecycle: stripeIntegration.buildLifecycleFinalAudit(result.state),
++    external_write_performed: false,
++  });
++});
+diff --git a/public/operations.html b/public/operations.html
+--- a/public/operations.html
++++ b/public/operations.html
+@@
++<!-- Proposed final-integrator UI wiring:
++  - Add a Billing > Stripe Sandbox readiness card that reads
++    /api/bna/integrations/stripe/status.
++  - Display billing_config_state exactly as returned:
++    not_configured, sandbox_configured, sandbox_invalid, sandbox_ready,
++    live_configured, live_disabled, live.
++  - Hide all secret values and show only non-secret price/product/webhook IDs.
++  - Enable "Create sandbox checkout" only when state is sandbox_ready.
++  - Keep live mode disabled unless final live acceptance criteria are met.
++  - Add a no-charge lifecycle preview button backed by
++    /api/bna/integrations/stripe/webhook-preview.
++-->
