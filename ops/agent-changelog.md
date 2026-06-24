@@ -25580,3 +25580,35 @@ No external send, charge, access grant, credential rotation, DNS write, Stripe,
 Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI, or production-data mutation
 was performed. Push/deploy/live smoke is authorized next from the isolated
 branch only.
+
+## 2026-06-24T10:06:00+03:00 - Rabbi Scheller Workspace Parity Pushed, Deployed, Live Smoked
+
+Pushed Rabbi Scheller workspace parity branch
+`codex/rabbi-scheller-parity-20260624` to GitHub and opened draft PR #15.
+Implementation commit:
+`8f8b0b458a95d146777808dbdf1f760618632615`.
+
+Railway doctor passed before deploy on existing production deployment
+`359bd3c5-8cdc-4b70-a2eb-535e03f8d62e`. The standard `npm run
+railway:redeploy` script failed only at its `railway link` step with
+`Unauthorized`, while token-based status access was valid. Codex used the
+script-created deploy bundle and ran `railway up` with explicit
+`--project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --service
+skillful-motivation --environment production`, avoiding any mutation of the
+local Railway link. Railway deployment
+`5e37d2a0-7e81-4339-a721-c4286e8ecaa8` reached `SUCCESS`.
+
+Live verification passed: standard app smoke
+`ops/live-smokes/2026-06-24T07-01-44-515Z-live-app-smoke.md` and Rabbi
+workspace live smoke
+`ops/live-smokes/2026-06-24T07-05-37-232Z-rabbi-scheller-workspace-live-smoke.md`.
+The Rabbi smoke verified health, deployed provider API Usage preview markers,
+Operations login chooser bundle markers, Operations login/session, deployed
+Operations Rabbi workspace API Usage markers, and scoped task API readback for
+`project_key=one_time_mishnah_class`.
+
+No external send, charge, access grant, credential rotation, DNS write, Stripe,
+Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI account mutation, provider
+account change, or production data mutation was performed. Remaining state is
+partial only because PR #15 is not merged and Rabbi owner/Shloimie role choices
+remain open.

@@ -6,15 +6,21 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] Finish `RAW-20260623-006`: Rabbi Scheller workspace parity, unified
+- [x] Finish `RAW-20260623-006`: Rabbi Scheller workspace parity, unified
   login, navigation, tenant isolation, and API-usage readiness on isolated
   branch `codex/rabbi-scheller-parity-20260624` in
   `C:\Users\User\Documents\Codex\2026-06-24\rabbi-scheller-parity`.
   Collision check completed against the dirty shared checkout and other active
   worktrees; local verification passed focused suite 74/74 plus provider API
   Usage, provider navigation, Operations navigation, and portal chooser browser
-  smokes at 390x844, 768x1024, and 1440x900. Next: commit, push, deploy, run
-  live smoke, and record final evidence.
+  smokes at 390x844, 768x1024, and 1440x900. Commit
+  `8f8b0b458a95d146777808dbdf1f760618632615` was pushed to GitHub branch
+  `codex/rabbi-scheller-parity-20260624` / draft PR #15, deployed to Railway
+  production deployment `5e37d2a0-7e81-4339-a721-c4286e8ecaa8`, and
+  live-smoked with standard app smoke
+  `ops/live-smokes/2026-06-24T07-01-44-515Z-live-app-smoke.md` plus
+  Rabbi workspace smoke
+  `ops/live-smokes/2026-06-24T07-05-37-232Z-rabbi-scheller-workspace-live-smoke.md`.
 - [x] Execute `RAW-20260623-001`: Universal Service Provider Studio goal-mode
   implementation in clean worktree
   `C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio`.
