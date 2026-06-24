@@ -1,0 +1,535 @@
+{
+  "generated_at": "2026-06-24T17:30:00.000Z",
+  "synthetic": true,
+  "production_write_performed": false,
+  "raw_source_preserved": "Synthetic clean-slate acceptance ramble for BNA, not a real operator task.\nPublic UI correction: the homepage top navigation should keep the Service Providers link visible on mobile and desktop.\nProvider portal correction: Rabbi Scheller provider workspace should label Classes clearly and not mix BNA super-admin controls into provider views.\nClass-intake diagnostic request: check whether recent One Time class uploads have transcript, parse, score, question, and UI-readback status without applying any backfill.\nSafe test request Codex can execute: run the repository queue validation and raw-intake drift watchdog.\nMissing external credential request: Vimeo API upload proof still needs an approved private test token and test folder before any real upload.\nOwner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review.\nRepeated statement: run the repository queue validation and raw-intake drift watchdog.\nAlready completed statement: PR #16 was merged, deployed, and live-smoked, so do not recreate the final release integration task.",
+  "source": {
+    "stable_key": "intake_source_05fc13e42e4b74d5",
+    "idempotency_key": "05fc13e42e4b74d567146f6a5c4cecd418062789f63fc659aa5c95da257e03b8",
+    "fingerprint": "463f4deaeb939c04c47b5b495f9124be05f2ecda62ed1389f6d028f8975fb80e",
+    "validation": {
+      "ok": true,
+      "errors": []
+    }
+  },
+  "statement_mapping": [
+    {
+      "statement_id": "SYN-20260624-001",
+      "kind": "public_ui_correction",
+      "expected": "executable Codex task or already-covered UI requirement",
+      "status": "mapped",
+      "matched_cues": [
+        "public",
+        "correction",
+        "homepage",
+        "navigation",
+        "should",
+        "service",
+        "providers",
+        "visible",
+        "mobile",
+        "desktop"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-002",
+      "kind": "provider_portal_correction",
+      "expected": "executable Codex task or provider portal requirement",
+      "status": "mapped",
+      "matched_cues": [
+        "provider",
+        "portal",
+        "correction",
+        "scheller",
+        "provider",
+        "workspace",
+        "should",
+        "classes",
+        "clearly",
+        "super-admin"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-003",
+      "kind": "class_intake_diagnostic_request",
+      "expected": "read-only diagnostic task linked to REQ-20260624-028, not an approved backfill",
+      "status": "mapped",
+      "matched_cues": [
+        "class-intake",
+        "diagnostic",
+        "request",
+        "whether",
+        "recent",
+        "uploads",
+        "transcript",
+        "question",
+        "ui-readback",
+        "status"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-004",
+      "kind": "safe_test_request",
+      "expected": "executable Codex validation task",
+      "status": "mapped",
+      "matched_cues": [
+        "request",
+        "execute",
+        "repository"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-005",
+      "kind": "missing_external_credential",
+      "expected": "Decision or external credential blocker, not Codex executable work",
+      "status": "mapped",
+      "matched_cues": [
+        "missing",
+        "external",
+        "credential",
+        "request",
+        "upload",
+        "approved",
+        "private",
+        "folder",
+        "before",
+        "upload"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-006",
+      "kind": "owner_policy_choice",
+      "expected": "Decision owned by Shloimie",
+      "status": "mapped",
+      "matched_cues": [
+        "policy",
+        "choice",
+        "shloimie",
+        "decide",
+        "whether",
+        "provider-visible",
+        "student",
+        "questions",
+        "parents",
+        "default"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-007",
+      "kind": "repeated_statement",
+      "expected": "deduplicated with SYN-20260624-004",
+      "status": "deduplicated_in_source",
+      "matched_cues": [
+        "repeated",
+        "statement",
+        "repository"
+      ]
+    },
+    {
+      "statement_id": "SYN-20260624-008",
+      "kind": "already_completed_statement",
+      "expected": "recognized as completed/already satisfied context, not a new task",
+      "status": "already_satisfied_context",
+      "matched_cues": [
+        "already",
+        "completed",
+        "statement",
+        "merged",
+        "deployed",
+        "live-smoked",
+        "recreate",
+        "release",
+        "integration"
+      ]
+    }
+  ],
+  "parsed": {
+    "counts": {
+      "decisions": 4,
+      "tasks": 1,
+      "calendar_events": 0,
+      "content_items": 0,
+      "community_items": 2,
+      "integration_items": 2,
+      "notes": 1,
+      "unresolved": 0
+    },
+    "active_work_count": 10,
+    "workspace": {
+      "key": "internal_super_admin",
+      "project_key": "bna_operations",
+      "resolution_status": "source_envelope_default"
+    },
+    "source_envelope": {
+      "default_workspace": "internal_super_admin",
+      "default_project": "bna_operations",
+      "default_context_type": "operations_ramble",
+      "privacy_level": "internal",
+      "source_level_confidence": 0.96
+    },
+    "items": {
+      "decisions": [
+        {
+          "item_type": "decision",
+          "title": "Decide intake workspace routing",
+          "target_lane": "Decisions",
+          "status": "parsed",
+          "owner": "Shloimie",
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "reason": null,
+          "source_excerpt": "Synthetic clean-slate acceptance ramble for BNA, not a real operator task. Public UI correction: the homepage top navigation should keep the Service Providers link visible on mobile and desktop. Provider portal correction: Rabbi Scheller provider workspace should label Classes clearly and not mix BNA super-admin...",
+          "idempotency_key": "1f35a333fff62addfeb55d4c0d0f0b9a189178f3c4b5697a180831aa6fdf712d"
+        },
+        {
+          "item_type": "decision",
+          "title": "Class-intake diagnostic request: check whether recent One Time class uploads have...",
+          "target_lane": "Decisions",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "reason": null,
+          "source_excerpt": "Class-intake diagnostic request: check whether recent One Time class uploads have transcript, parse, score, question, and UI-readback status without applying any backfill. Safe test request Codex can execute: ru",
+          "idempotency_key": "d7c5d81803565f2920cd95197e9b8507d57994c5b39187ff4724f2f2595cdeb0"
+        },
+        {
+          "item_type": "decision",
+          "title": "Owner policy choice: Shloimie must decide whether provider-visible student questions can...",
+          "target_lane": "Decisions",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "needs_routing_decision",
+          "project_key": "bna_operations",
+          "reason": null,
+          "source_excerpt": "Owner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review. Repeated statement: run the repository",
+          "idempotency_key": "ed7454ab495372373e4852ff3aa839aa493a1aee7171a14aaa0ac5e75756a34a"
+        },
+        {
+          "item_type": "decision",
+          "title": "Decide ambiguous intake routing",
+          "target_lane": "Decisions",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "internal_super_admin",
+          "project_key": "bna_operations",
+          "reason": null,
+          "source_excerpt": "Parser found ambiguous scope, person, or filing confidence.",
+          "idempotency_key": "34849ecefd82bb431b4ae9e652d48de0be94b601457e9a9c90de6839ea7d427a"
+        }
+      ],
+      "tasks": [
+        {
+          "item_type": "task",
+          "title": "Class-intake diagnostic request: check whether recent One Time class uploads have...",
+          "target_lane": "Tasks",
+          "status": "parsed",
+          "owner": "Codex",
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "reason": null,
+          "source_excerpt": "Class-intake diagnostic request: check whether recent One Time class uploads have transcript, parse, score, question, and UI-readback status without applying any backfill. Safe test request Codex can execute: ru",
+          "idempotency_key": "87c625fe60f27947e64c9bc116a244dbd742fb826fe60c6ec455934d2bbeb3c5"
+        }
+      ],
+      "calendar_events": [],
+      "content_items": [],
+      "community_items": [
+        {
+          "item_type": "community_item",
+          "title": "Provider portal correction: Rabbi Scheller provider workspace should label Classes...",
+          "target_lane": "Contacts",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "rabbi_sheller_provider",
+          "project_key": "one_time_mishnah_class",
+          "reason": null,
+          "source_excerpt": "Provider portal correction: Rabbi Scheller provider workspace should label Classes clearly and not mix BNA super-admin controls into provider views. Class-intake diagnostic request: check",
+          "idempotency_key": "af64b11316e23d000a0608c54d0832df86059115d004997a5cb7857807041ddc"
+        },
+        {
+          "item_type": "community_item",
+          "title": "Owner policy choice: Shloimie must decide whether provider-visible student questions can...",
+          "target_lane": "Contacts",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "needs_routing_decision",
+          "project_key": "bna_operations",
+          "reason": null,
+          "source_excerpt": "Owner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review. Repeated statement: run the repository",
+          "idempotency_key": "0a984828ad3d93ce0d43e6af6076774b6d7981c11ce76941865c101292aba5bc"
+        }
+      ],
+      "integration_items": [
+        {
+          "item_type": "integration_item",
+          "title": "Missing external credential request: Vimeo API upload proof still needs an approved...",
+          "target_lane": "Integrations",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "bna",
+          "project_key": "bna_operations",
+          "reason": null,
+          "source_excerpt": "Missing external credential request: Vimeo API upload proof still needs an approved private test token and test folder before any real upload. Owner policy choice: Shloimie must deci",
+          "idempotency_key": "28792fe2595f9525ad35980bce992324052f2cb560f7c6822612532ebff692d5"
+        },
+        {
+          "item_type": "integration_item",
+          "title": "Already completed statement: PR #16 was merged, deployed, and live-smoked, so do not...",
+          "target_lane": "Integrations",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "bna",
+          "project_key": "bna_operations",
+          "reason": null,
+          "source_excerpt": "Already completed statement: PR #16 was merged, deployed, and live-smoked, so do not recreate the final release integration task.",
+          "idempotency_key": "a341d2a9470a1405338de6778c6da9fb1ec567aed4af63f670a9281009ff61a6"
+        }
+      ],
+      "notes": [
+        {
+          "item_type": "note",
+          "title": "Owner policy choice: Shloimie must decide whether provider-visible student questions can...",
+          "target_lane": "Student Notes",
+          "status": "parsed",
+          "owner": null,
+          "workspace_key": "needs_routing_decision",
+          "project_key": "bna_operations",
+          "reason": null,
+          "source_excerpt": "Owner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review. Repeated statement: run the repository",
+          "idempotency_key": "f67b523299fcdab0d07f9d75d788c3cacab924a123021b2a9a8560050ad6a860"
+        }
+      ],
+      "unresolved": []
+    }
+  },
+  "persistence": {
+    "first_apply_counts": {
+      "raw_intake": 1,
+      "parse_runs": 1,
+      "parse_items": 10,
+      "parsed_entities": 10,
+      "parent_prompts": 1
+    },
+    "repeat_apply_before_counts": {
+      "raw_intake": 1,
+      "parse_runs": 1,
+      "parse_items": 10,
+      "parsed_entities": 10,
+      "parent_prompts": 1
+    },
+    "repeat_apply_after_counts": {
+      "raw_intake": 1,
+      "parse_runs": 1,
+      "parse_items": 10,
+      "parsed_entities": 10,
+      "parent_prompts": 1
+    },
+    "repeat_apply_idempotent": true,
+    "readback_found": true,
+    "external_write_performed": false
+  },
+  "second_ingestion_with_existing_records": {
+    "existing_record_count": 10,
+    "parsed": {
+      "counts": {
+        "decisions": 0,
+        "tasks": 0,
+        "calendar_events": 0,
+        "content_items": 0,
+        "community_items": 0,
+        "integration_items": 0,
+        "notes": 0,
+        "unresolved": 10
+      },
+      "active_work_count": 0,
+      "workspace": {
+        "key": "internal_super_admin",
+        "project_key": "bna_operations",
+        "resolution_status": "source_envelope_default"
+      },
+      "source_envelope": {
+        "default_workspace": "internal_super_admin",
+        "default_project": "bna_operations",
+        "default_context_type": "operations_ramble",
+        "privacy_level": "internal",
+        "source_level_confidence": 0.96
+      },
+      "items": {
+        "decisions": [],
+        "tasks": [],
+        "calendar_events": [],
+        "content_items": [],
+        "community_items": [],
+        "integration_items": [],
+        "notes": [],
+        "unresolved": [
+          {
+            "item_type": "decision",
+            "title": "Decide intake workspace routing",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Synthetic clean-slate acceptance ramble for BNA, not a real operator task. Public UI correction: the homepage top navigation should keep the Service Providers link visible on mobile and desktop. Provider portal correction: Rabbi Scheller provider workspace should label Classes clearly and not mix BNA super-admin...",
+            "idempotency_key": "1f35a333fff62addfeb55d4c0d0f0b9a189178f3c4b5697a180831aa6fdf712d"
+          },
+          {
+            "item_type": "decision",
+            "title": "Class-intake diagnostic request: check whether recent One Time class uploads have...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Class-intake diagnostic request: check whether recent One Time class uploads have transcript, parse, score, question, and UI-readback status without applying any backfill. Safe test request Codex can execute: ru",
+            "idempotency_key": "d7c5d81803565f2920cd95197e9b8507d57994c5b39187ff4724f2f2595cdeb0"
+          },
+          {
+            "item_type": "decision",
+            "title": "Owner policy choice: Shloimie must decide whether provider-visible student questions can...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Owner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review. Repeated statement: run the repository",
+            "idempotency_key": "ed7454ab495372373e4852ff3aa839aa493a1aee7171a14aaa0ac5e75756a34a"
+          },
+          {
+            "item_type": "community_item",
+            "title": "Provider portal correction: Rabbi Scheller provider workspace should label Classes...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Provider portal correction: Rabbi Scheller provider workspace should label Classes clearly and not mix BNA super-admin controls into provider views. Class-intake diagnostic request: check",
+            "idempotency_key": "af64b11316e23d000a0608c54d0832df86059115d004997a5cb7857807041ddc"
+          },
+          {
+            "item_type": "community_item",
+            "title": "Owner policy choice: Shloimie must decide whether provider-visible student questions can...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Owner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review. Repeated statement: run the repository",
+            "idempotency_key": "0a984828ad3d93ce0d43e6af6076774b6d7981c11ce76941865c101292aba5bc"
+          },
+          {
+            "item_type": "integration_item",
+            "title": "Missing external credential request: Vimeo API upload proof still needs an approved...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Missing external credential request: Vimeo API upload proof still needs an approved private test token and test folder before any real upload. Owner policy choice: Shloimie must deci",
+            "idempotency_key": "28792fe2595f9525ad35980bce992324052f2cb560f7c6822612532ebff692d5"
+          },
+          {
+            "item_type": "integration_item",
+            "title": "Already completed statement: PR #16 was merged, deployed, and live-smoked, so do not...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Already completed statement: PR #16 was merged, deployed, and live-smoked, so do not recreate the final release integration task.",
+            "idempotency_key": "a341d2a9470a1405338de6778c6da9fb1ec567aed4af63f670a9281009ff61a6"
+          },
+          {
+            "item_type": "note",
+            "title": "Owner policy choice: Shloimie must decide whether provider-visible student questions can...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Owner policy choice: Shloimie must decide whether provider-visible student questions can be shown to parents by default or only after review. Repeated statement: run the repository",
+            "idempotency_key": "f67b523299fcdab0d07f9d75d788c3cacab924a123021b2a9a8560050ad6a860"
+          },
+          {
+            "item_type": "task",
+            "title": "Class-intake diagnostic request: check whether recent One Time class uploads have...",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Class-intake diagnostic request: check whether recent One Time class uploads have transcript, parse, score, question, and UI-readback status without applying any backfill. Safe test request Codex can execute: ru",
+            "idempotency_key": "87c625fe60f27947e64c9bc116a244dbd742fb826fe60c6ec455934d2bbeb3c5"
+          },
+          {
+            "item_type": "decision",
+            "title": "Decide ambiguous intake routing",
+            "target_lane": null,
+            "status": null,
+            "owner": null,
+            "workspace_key": null,
+            "project_key": null,
+            "reason": "duplicate_active_or_recent_record",
+            "source_excerpt": "Parser found ambiguous scope, person, or filing confidence.",
+            "idempotency_key": "34849ecefd82bb431b4ae9e652d48de0be94b601457e9a9c90de6839ea7d427a"
+          }
+        ]
+      }
+    },
+    "no_new_active_work_created": true
+  },
+  "decision_resume": {
+    "plan": {
+      "contract_version": "w3-parent-prompt-queue-v1",
+      "prompt_id": "PROMPT-20260624-001-4B608941",
+      "generated_at": "2026-06-24T17:30:00.000Z",
+      "external_write_performed": false,
+      "action": "resume_after_decision",
+      "reason": "operator_decision_resolved",
+      "summary": "Operator decision is resolved; prompt can resume.",
+      "current_status": "needs_decision",
+      "target_status": "in_progress",
+      "requested_target_status": "in_progress",
+      "can_transition": true,
+      "stale": false,
+      "signal_at": "2026-06-24T17:30:00.000Z",
+      "signal_age_ms": 0,
+      "stale_after_ms": 1800000,
+      "child_outcome_count": 9,
+      "terminal_child_outcome_count": 0,
+      "blocked_child_outcome_count": 0
+    },
+    "apply": {
+      "applied": true,
+      "from_status": "needs_decision",
+      "to_status": "in_progress",
+      "external_write_performed": false
+    }
+  },
+  "cleanup": {
+    "synthetic_records_archived_from_real_queue": true,
+    "method": "No production rows were created. Proof artifacts only were kept under ops/acceptance/2026-06-24-clean-slate."
+  },
+  "acceptance": {
+    "raw_source_preserved": true,
+    "every_statement_has_mapping_status": true,
+    "duplicates_deduplicated": true,
+    "already_completed_not_new_task": true,
+    "executable_work_detected": true,
+    "credential_work_becomes_decision": true,
+    "owner_policy_becomes_decision": true,
+    "idempotent_repeat_apply": true,
+    "dependent_work_can_resume_after_decision": true
+  }
+}

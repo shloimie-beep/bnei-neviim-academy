@@ -2,6 +2,27 @@
 
 Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 
+## Current Clean-Slate Handoff
+
+As of 2026-06-24, the current handoff is
+`ops/execution-runs/2026-06-24-clean-slate-acceptance/`.
+
+Verified baseline:
+
+- PR #16 is merged to `master` at
+  `c14507ab121daa221689ba285c203605bf2d64bf`.
+- Current deployed Railway SHA is
+  `116fea3339a922b045857f7ece8cc9a64e7cda64` in deployment
+  `c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7`.
+- Live health and public/privacy smokes passed in the clean-slate acceptance
+  evidence.
+- `REQ-20260624-028` remains active blocked safety work for read-only class
+  intake reconciliation; use GitHub issue #18 and do not apply class backfill.
+- Owner walkthrough:
+  `ops/acceptance/2026-06-24-clean-slate/owner-walkthrough.md`.
+- Final handoff:
+  `ops/acceptance/2026-06-24-clean-slate/final-handoff.md`.
+
 1. Read `AGENTS.md`, then `docs/BNA-RAMBLE-TO-DONE.md`.
 2. Inspect the active execution run:
    - `ops/execution-runs/latest.json`

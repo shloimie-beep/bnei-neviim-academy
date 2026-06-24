@@ -1,15 +1,15 @@
 # One Time Task And Decision Production Cleanup
 
-Generated: 2026-06-21T09:00:17.765Z
+Generated: 2026-06-24T17:33:49.701Z
 Mode: applied
-Tasks seen: 864
-Actions planned: 1
-Actions applied: 1
+Tasks seen: 1000
+Actions planned: 3
+Actions applied: 3
 Actions failed: 0
 
 ## Action Counts
 
-- reclassify_one_time_record: 1
+- reclassify_one_time_record: 3
 
 ## Safety
 

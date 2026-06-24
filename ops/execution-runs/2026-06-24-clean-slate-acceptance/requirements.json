@@ -1,0 +1,424 @@
+{
+  "run_id": "2026-06-24-clean-slate-acceptance",
+  "title": "BNA Clean Slate - Reconcile Queues and Prove the Next Ramble",
+  "updated_at": "2026-06-24T20:41:31+03:00",
+  "git_refs": {
+    "base_branch": "master",
+    "working_branch": "codex/clean-slate-acceptance-20260624",
+    "origin_master_sha_at_start": "116fea3339a922b045857f7ece8cc9a64e7cda64",
+    "local_head_at_start": "116fea3339a922b045857f7ece8cc9a64e7cda64",
+    "release_pr_number": 16,
+    "release_pr_state": "MERGED",
+    "release_pr_merge_commit": "c14507ab121daa221689ba285c203605bf2d64bf",
+    "current_railway_deployment_id": "c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7",
+    "current_deployed_sha": "116fea3339a922b045857f7ece8cc9a64e7cda64",
+    "class_backfill_issue": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260624-007",
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "captured_at": "2026-06-24T20:41:31+03:00",
+      "content_fingerprint": "sha256:pending-final-hash",
+      "privacy_classification": "internal_operations_release_acceptance_packet",
+      "workspace": "bna_platform",
+      "project": "clean_slate_acceptance",
+      "source_type": "codex_goal_packet"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260624-007-S001",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Verify reported release truth against Git, GitHub, Railway, live readback, issue #18, and secrets audit before queue cleanup.",
+      "requirement_id": "REQ-20260624-032",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S002",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Repair active-run truth so latest.json and run metadata reflect the clean-slate handoff without reopening terminal release runs.",
+      "requirement_id": "REQ-20260624-033",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S003",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Classify active Tasks, Decisions, requirements, and queue records; keep real blockers visible and do not hide REQ-20260624-028.",
+      "requirement_id": "REQ-20260624-034",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S004",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Keep REQ-20260624-028 active, linked to GitHub issue #18, read-only, and not approved for production backfill.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S005",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Run canonical run/queue validation, raw watchdog, stale evidence validation, JSON/JSONL parsing, secrets audit, and git diff check.",
+      "requirement_id": "REQ-20260624-035",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S006",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Prove a synthetic next ramble through the real canonical intake path with mapping, dedupe, Decisions, idempotency, and no production pollution.",
+      "requirement_id": "REQ-20260624-036",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S007",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Create an owner-facing walkthrough with exact live links and role distinctions.",
+      "requirement_id": "REQ-20260624-037",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S008",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Inventory and preserve local-only worktrees and branches, especially the shared Vimeo checkout.",
+      "requirement_id": "REQ-20260624-038",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-007-S009",
+      "source_id": "RAW-20260624-007",
+      "source_statement": "Write GitHub-visible final handoff, update start files, push PR, merge, and avoid unnecessary docs-only Railway deploy.",
+      "requirement_id": "REQ-20260624-039",
+      "classification": "mapped"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260624-032",
+      "title": "Verify release truth against Git, GitHub, Railway, live readback, issue #18, and secrets audit",
+      "expected_result": "Reported release truth is either verified consistent or the run stops before queue cleanup with an exact inconsistency.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S001"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "preflight",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "release_truth_consistent",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to active-run and queue truth repair.",
+      "acceptance_criteria": ["Release truth is verified or the run stops with exact inconsistency."],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-clean-slate-acceptance/EVIDENCE.md",
+        "ops/live-smokes/2026-06-24T17-25-03-642Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-24T17-25-11-405Z-public-route-privacy-smoke.md"
+      ],
+      "verification": [
+        "PASS local HEAD and origin/master 116fea3339a922b045857f7ece8cc9a64e7cda64 at acceptance start.",
+        "PASS PR #16 merged at c14507ab121daa221689ba285c203605bf2d64bf.",
+        "PASS Railway deployment c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7 success at deployed SHA 116fea3339a922b045857f7ece8cc9a64e7cda64.",
+        "PASS live health readback and live smokes passed.",
+        "PASS GitHub issue #18 exists.",
+        "PASS secrets audit findings=0."
+      ],
+      "implementation_files": ["ops/execution-runs/2026-06-24-clean-slate-acceptance/EVIDENCE.md"],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-033",
+      "title": "Repair active-run truth and make clean-slate acceptance the current handoff",
+      "expected_result": "latest.json points to the clean-slate acceptance run, terminal release runs remain terminal, and run metadata matches repository reality.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S002"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": ["REQ-20260624-032"],
+      "status": "done",
+      "implementation_status": "active_run_truth_repaired_validation_passed",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to final PR/merge closeout.",
+      "acceptance_criteria": ["latest.json points to this run and terminal release runs remain terminal."],
+      "evidence": [
+        "ops/execution-runs/latest.json",
+        "ops/execution-runs/2026-06-24-clean-slate-acceptance/run.json",
+        "ops/execution-runs/2026-06-24-clean-slate-acceptance/TEST-RESULTS.md"
+      ],
+      "verification": ["PASS npm run bna:run:status", "PASS npm run bna:run:validate"],
+      "implementation_files": [
+        "ops/execution-runs/latest.json",
+        "ops/execution-runs/2026-06-24-clean-slate-acceptance/requirements.json",
+        "ops/execution-runs/2026-06-24-clean-slate-acceptance/run.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-034",
+      "title": "Complete Task, Decision, requirement, and queue census without hiding REQ-20260624-028",
+      "expected_result": "Queue counts and classifications are evidence-backed, safe reversible fixes are applied only when justified, and real blockers remain visible.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S003"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": ["REQ-20260624-032"],
+      "status": "done",
+      "implementation_status": "safe_scope_reclassification_applied_broader_cleanup_owner_gated",
+      "can_continue_without_operator": true,
+      "next_action": "Keep broader production queue cleanup behind explicit owner approval.",
+      "acceptance_criteria": ["Queue counts are evidence-backed and broader cleanup remains owner-gated."],
+      "evidence": [
+        "ops/task-decision-census/2026-06-24T17-34-13-314Z-task-decision-census.md",
+        "ops/queue-audits/2026-06-24T17-35-00-836Z-queue-audit.md",
+        "ops/system-audits/2026-06-24T17-35-53-601Z-task-queue-reconciler.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md"
+      ],
+      "verification": [
+        "PASS census query fixed and live census ran.",
+        "PASS applied 3 reversible One Time scope reclassifications.",
+        "PASS task reconciler active machine tasks=0."
+      ],
+      "implementation_files": [
+        "scripts/task-decision-census.mjs",
+        "scripts/task-decision-production-cleanup.mjs",
+        "ops/task-decision-census/2026-06-24T17-34-13-314Z-task-decision-census.md",
+        "ops/queue-audits/2026-06-24T17-35-00-836Z-queue-audit.md",
+        "ops/one-time-mishnah/task-decision-production-cleanup.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-035",
+      "title": "Validate the run and queue system with canonical commands",
+      "expected_result": "Canonical run, queue, watchdog, JSON/JSONL, secret, test, and diff checks pass or record a precise blocker.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S005"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "validation",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": ["REQ-20260624-033", "REQ-20260624-034"],
+      "status": "done",
+      "implementation_status": "validation_suite_passed_before_pr_closeout",
+      "can_continue_without_operator": true,
+      "next_action": "Rerun run CLI after final PR status update.",
+      "acceptance_criteria": ["Canonical run and queue validation passes or precise blocker is recorded."],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-clean-slate-acceptance/TEST-RESULTS.md",
+        "ops/watchdog-audits/2026-06-24T17-27-raw-intake-drift.md"
+      ],
+      "verification": [
+        "PASS npm run bna:run:source-coverage mapped=9 unmapped=0",
+        "PASS npm run bna:run:stale-evidence none",
+        "PASS railway run node scripts/task-decision-census.mjs --json --no-write read_only=true",
+        "PASS npm run watchdog:raw ok=true",
+        "PASS JSON/JSONL parsing with BOM-tolerant parser",
+        "PASS npm run secrets:audit findings=0",
+        "PASS git diff --check with CRLF warnings only",
+        "PASS focused script checks and tests"
+      ],
+      "implementation_files": ["ops/execution-runs/2026-06-24-clean-slate-acceptance/TEST-RESULTS.md"],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-036",
+      "title": "Prove a brand-new synthetic ramble routes correctly and idempotently",
+      "expected_result": "A synthetic ramble is preserved, fully mapped, deduped, routed into tasks/Decisions correctly, and repeated idempotently without production queue pollution.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S006"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "intake_acceptance",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": ["REQ-20260624-034"],
+      "status": "done",
+      "implementation_status": "synthetic_intake_acceptance_passed_no_production_queue_pollution",
+      "can_continue_without_operator": true,
+      "next_action": "Keep synthetic proof evidence.",
+      "acceptance_criteria": ["Synthetic ramble preserves, maps, dedupes, routes, resumes, and repeats idempotently."],
+      "evidence": [
+        "scripts/clean-slate-synthetic-ramble-proof.mjs",
+        "ops/acceptance/2026-06-24-clean-slate/synthetic-ramble-acceptance.md",
+        "ops/acceptance/2026-06-24-clean-slate/synthetic-ramble-acceptance.json"
+      ],
+      "verification": [
+        "PASS node --check scripts/clean-slate-synthetic-ramble-proof.mjs",
+        "PASS node scripts/clean-slate-synthetic-ramble-proof.mjs"
+      ],
+      "implementation_files": ["scripts/clean-slate-synthetic-ramble-proof.mjs"],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-037",
+      "title": "Create owner walkthrough with exact live links and role distinctions",
+      "expected_result": "The owner walkthrough includes every requested live link, role expectation, healthy state, disabled or preview-only state, and defect-report path.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S007"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "documentation",
+      "priority": "P1",
+      "batch_id": "F",
+      "depends_on": ["REQ-20260624-032"],
+      "status": "done",
+      "implementation_status": "owner_walkthrough_written",
+      "can_continue_without_operator": true,
+      "next_action": "Use the walkthrough for owner review and defect reports.",
+      "acceptance_criteria": ["All requested owner links and role distinctions are documented."],
+      "evidence": ["ops/acceptance/2026-06-24-clean-slate/owner-walkthrough.md"],
+      "verification": ["PASS route registry and live smoke reports inspected."],
+      "implementation_files": ["ops/acceptance/2026-06-24-clean-slate/owner-walkthrough.md"],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-038",
+      "title": "Preserve or reconcile local-only worktrees and branches",
+      "expected_result": "All worktrees and local branches are inventoried and unique or unknown work is preserved without destructive cleanup.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S008"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "G",
+      "depends_on": ["REQ-20260624-032"],
+      "status": "done",
+      "implementation_status": "manifest_written_no_worktrees_or_branches_removed",
+      "can_continue_without_operator": true,
+      "next_action": "Preserve all unique or unknown work until future explicit cleanup approval.",
+      "acceptance_criteria": ["All worktrees/local branches are classified; unique and unknown work is preserved."],
+      "evidence": ["ops/acceptance/2026-06-24-clean-slate/worktree-preservation-manifest.md"],
+      "verification": ["PASS git worktree list --porcelain and branch inventory inspected."],
+      "implementation_files": ["ops/acceptance/2026-06-24-clean-slate/worktree-preservation-manifest.md"],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-039",
+      "title": "Write GitHub-visible handoff, update start files, push PR, merge, and avoid unnecessary Railway deploy",
+      "expected_result": "The handoff is GitHub-visible through a focused PR/merge, future sessions can reconstruct state from GitHub, and no manual docs-only deployment is run.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S009"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_acceptance",
+      "owner": "Codex",
+      "category": "documentation",
+      "priority": "P0",
+      "batch_id": "H",
+      "depends_on": ["REQ-20260624-033", "REQ-20260624-034", "REQ-20260624-035", "REQ-20260624-036", "REQ-20260624-037", "REQ-20260624-038"],
+      "status": "in_progress",
+      "implementation_status": "handoff_artifacts_written_pr_merge_pending",
+      "can_continue_without_operator": true,
+      "next_action": "Run final validation, commit, push, open PR, merge, and verify master/deploy state.",
+      "acceptance_criteria": ["Final handoff is GitHub-visible and no manual docs-only deploy is run."],
+      "evidence": [
+        "ops/acceptance/2026-06-24-clean-slate/final-handoff.md",
+        "BNA-START-HERE.md",
+        "TASKS.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "verification": ["PENDING final PR/merge closeout."],
+      "implementation_files": [
+        "ops/acceptance/2026-06-24-clean-slate/final-handoff.md",
+        "BNA-START-HERE.md",
+        "TASKS.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    },
+    {
+      "id": "REQ-20260624-028",
+      "title": "Read-only class intake reconciliation and safe backfill evidence",
+      "expected_result": "Class backfill remains blocked until a separate read-only reconciliation proves no candidates or produces a safe owner-approved row-level plan.",
+      "source_id": "RAW-20260624-007",
+      "source_statement_ids": ["RAW-20260624-007-S004"],
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "class_drive_intake",
+      "owner": "Codex/Shloimie",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "BLOCKER",
+      "depends_on": [],
+      "status": "blocked",
+      "implementation_status": "blocked_read_only_reconciliation_required_no_backfill_apply_approved",
+      "can_continue_without_operator": false,
+      "blocker": "Current final-release evidence reports safe_to_apply=false, zero approved candidate jobs, and no row-level write plan. This clean-slate goal is not allowed to apply class backfill.",
+      "blocker_owner": "Shloimie and future Codex read-only reconciliation",
+      "blocker_next_action": "Work GitHub issue #18 in a separate narrow read-only run from master; produce candidate/no-candidate evidence and a row-level plan before any apply approval.",
+      "next_action": "Open https://github.com/shloimie-beep/bnei-neviim-academy/issues/18 and run only read-only reconciliation first.",
+      "acceptance_criteria": ["REQ-20260624-028 remains visible and blocked; no class backfill apply occurs in this goal."],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-final-release-integration/NEXT-SESSION.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18"
+      ],
+      "verification": [
+        "PASS gh issue view 18 confirmed OPEN and mapped to REQ-20260624-028.",
+        "PASS no class backfill apply command was run in this goal."
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-final-release-integration/NEXT-SESSION.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md"
+      ],
+      "deployment_required": false,
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18",
+      "updated_at": "2026-06-24T20:41:31+03:00"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-20260624-007",
+      "title": "Class backfill read-only reconciliation before any apply",
+      "owner": "Shloimie",
+      "status": "needs_operator_decision",
+      "blocks": ["REQ-20260624-028"],
+      "internal_link": "ops/execution-runs/2026-06-24-clean-slate-acceptance/requirements.json",
+      "external_link": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18",
+      "requested_action": "Approve only a future read-only reconciliation run first; do not approve production backfill until safe row-level evidence exists."
+    }
+  ],
+  "tasks": [
+    {
+      "canonical_task_key": "bna_platform|clean_slate_acceptance|RAW-20260624-007|codex_acceptance_run",
+      "title": "Execute clean-slate acceptance and handoff",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-032",
+      "status": "in_progress",
+      "source_path": "raw-input/RAW-20260624-007-clean-slate-acceptance-goal.md"
+    }
+  ]
+}

@@ -32,6 +32,12 @@
 
 ## Agentic Goal Memory And Intake
 
+- As of 2026-06-24, the clean-slate acceptance handoff is
+  `ops/execution-runs/2026-06-24-clean-slate-acceptance/`. It verifies PR #16
+  merged/deployed/live-smoked, proves synthetic ramble intake, and preserves
+  local worktree history. `REQ-20260624-028` remains active blocked read-only
+  class-backfill reconciliation linked to GitHub issue #18; no class backfill
+  apply is approved.
 - As of 2026-06-24, broad parallel-lane work must not start until the
   clean-slate control tower has one canonical integration base, active
   execution run, task/Decision reconciliation, and lane handoffs. The current

@@ -6,6 +6,20 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260624-007` / `REQ-20260624-032` through
+  `REQ-20260624-039`: Clean-slate acceptance, queue reconciliation, synthetic
+  ramble proof, owner walkthrough, preservation manifest, and GitHub-visible
+  handoff. Current status: release truth is consistent; PR #16 is merged,
+  current Railway deployment `c0aafbc5-a6fa-42ca-828e-38ac8ee02cc7` runs
+  deployed SHA `116fea3339a922b045857f7ece8cc9a64e7cda64`; live smokes passed;
+  live task reconciler reports 0 active machine tasks; production census
+  reports 19 Decisions, 48 blocked records from queue audit, and 308
+  Done/Activity records; synthetic ramble acceptance passed without production
+  queue pollution. Remaining in this acceptance run: final validation,
+  commit/PR/merge, and post-merge state report. `REQ-20260624-028` remains
+  active blocked read-only class-intake reconciliation linked to GitHub issue
+  #18; no class backfill apply is approved. Handoff:
+  `ops/acceptance/2026-06-24-clean-slate/final-handoff.md`.
 - [x] `RAW-20260624-005` / `REQ-20260624-019` through
   `REQ-20260624-031`: Final release integration, deployment,
   live verification, and guarded class recovery. Scope: verify the
