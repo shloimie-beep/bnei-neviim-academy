@@ -1,0 +1,15 @@
+Owned prefixes:
+server.js
+public/operations-login.html
+public/operations.html
+public/provider.html
+public/parent.html
+public/student.html
+src/lib/bna/provider-api-usage.js
+scripts/build-rabbi-scheller-route-map.mjs
+scripts/smoke-rabbi-scheller-*.mjs
+scripts/smoke-portal-agnostic-login-chooser-local.mjs
+tests/*rabbi-scheller*.test.js
+tests/*portal*.test.js
+
+Coordinate conflicts with public-ui and assistant-ramble-usage before editing shared shells.

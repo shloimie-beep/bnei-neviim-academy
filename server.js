@@ -8343,10 +8343,10 @@ function identifyOpsUser(username, password = null) {
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
   const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8842,6 +8842,249 @@ async function issueSession(username, db = pool) {
     [sessionId, username, expiresAt]
   );
   return sessionId;
+}
+
+function safePortalReturnPath(value, portal) {
+  const fallbackByPortal = {
+    operations: '/operations',
+    provider: '/provider',
+    parent: '/parent',
+    student: '/student',
+  };
+  const fallback = fallbackByPortal[portal] || '/';
+  if (portal === 'operations') return safeOperationsReturnPath(value || fallback);
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  try {
+    const url = new URL(raw, 'https://bna.local');
+    if (url.origin !== 'https://bna.local') return fallback;
+    const allowedPath = fallbackByPortal[portal];
+    if (!allowedPath || url.pathname !== allowedPath) return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
+function portalDestinationRedirect(destination, returnTo = '') {
+  if (destination?.portal === 'operations') {
+    return destination.identity?.scope?.type === 'project'
+      ? oneTimeOperationsReturnPath(returnTo)
+      : safeOperationsReturnPath(returnTo);
+  }
+  return safePortalReturnPath(returnTo, destination?.portal);
+}
+
+function publicPortalDestination(destination, returnTo = '') {
+  return {
+    id: destination.id,
+    portal: destination.portal,
+    role: destination.role,
+    label: destination.label,
+    workspace_key: destination.workspace_key || null,
+    project_key: destination.project_key || null,
+    redirect_to: portalDestinationRedirect(destination, returnTo),
+  };
+}
+
+async function collectPortalLoginDestinations({ username, password, db = pool } = {}) {
+  const rawUsername = String(username || '').trim();
+  const rawPassword = String(password || '');
+  if (!rawUsername || !rawPassword) return [];
+  const destinations = [];
+
+  const opsIdentity = identifyOpsUser(rawUsername, rawPassword);
+  if (opsIdentity) {
+    destinations.push({
+      id: `operations:${opsIdentity.username}`,
+      portal: 'operations',
+      role: opsIdentity.role,
+      label: opsIdentity.displayName || opsIdentity.username || 'Operations',
+      workspace_key: opsIdentity.scope?.type === 'project' ? 'rabbi_sheller_provider' : 'bna',
+      project_key: opsIdentity.scope?.projectKey || null,
+      identity: opsIdentity,
+    });
+  }
+
+  const provider = (await db.query(
+    `SELECT *
+     FROM bna_service_providers
+     WHERE lower(COALESCE(login_username, '')) = lower($1)
+       AND password_hash IS NOT NULL
+       AND status NOT IN ('draft', 'rejected', 'archived')
+     LIMIT 1`,
+    [rawUsername]
+  )).rows[0] || null;
+  if (provider && verifyParentPassword(rawPassword, provider.password_hash)) {
+    destinations.push({
+      id: `provider:${provider.id}`,
+      portal: 'provider',
+      role: 'service_provider',
+      label: provider.provider_name || provider.display_name || provider.contact_name || 'Provider workspace',
+      workspace_key: provider.workspace_key || provider.project_key || null,
+      project_key: provider.project_key || null,
+      provider,
+    });
+  }
+
+  const parentEmail = normalizeEmail(rawUsername);
+  if (parentEmail) {
+    const parentAccount = (await db.query(
+      `SELECT parent_email, password_hash
+       FROM bna_parent_password_accounts
+       WHERE lower(parent_email) = $1
+       LIMIT 1`,
+      [parentEmail]
+    )).rows[0] || null;
+    if (parentAccount && verifyParentPassword(rawPassword, parentAccount.password_hash)) {
+      const records = await findParentAccessRecords(parentEmail, db);
+      if (parentAccessEligible(records)) {
+        destinations.push({
+          id: `parent:${parentEmail}`,
+          portal: 'parent',
+          role: 'parent',
+          label: parentEmail,
+          workspace_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
+          project_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
+          parentEmail,
+        });
+      }
+    }
+  }
+
+  const studentUsername = normalizeStudentLoginUsername(rawUsername);
+  if (studentUsername) {
+    const studentAccount = (await db.query(
+      `SELECT a.student_id, a.username, a.password_hash, a.status,
+              s.id, s.name, s.name_en, s.name_he, s.status AS student_status
+       FROM bna_student_password_accounts a
+       JOIN bna_students s ON s.id = a.student_id
+       WHERE a.username_normalized = $1
+         AND a.status = 'active'
+         AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+       LIMIT 1`,
+      [studentUsername]
+    )).rows[0] || null;
+    if (studentAccount && verifyStudentPassword(rawPassword, studentAccount.password_hash)) {
+      destinations.push({
+        id: `student:${studentAccount.student_id}`,
+        portal: 'student',
+        role: 'student',
+        label: studentAccount.name || studentAccount.name_en || studentAccount.username || 'Student',
+        workspace_key: null,
+        project_key: null,
+        student: studentAccount,
+      });
+    }
+  }
+
+  return destinations;
+}
+
+async function issuePortalDestinationSession(destination, res, { db = pool, returnTo = '' } = {}) {
+  const redirectTo = portalDestinationRedirect(destination, returnTo);
+  if (destination.portal === 'operations') {
+    const sessionId = await issueSession(destination.identity.username, db);
+    setSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      user: destination.identity.username,
+      role: destination.identity.role,
+      scope: destination.identity.scope,
+      allowedViews: destination.identity.allowedViews,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'provider') {
+    const sessionId = await issueProviderSession(destination.provider.id, db);
+    await db.query(`UPDATE bna_service_providers SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`, [destination.provider.id]);
+    setProviderSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      provider_id: destination.provider.id,
+      provider_name: destination.provider.provider_name || destination.provider.display_name || null,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'parent') {
+    const sessionId = await issueParentSession(destination.parentEmail, db);
+    await db.query(
+      `UPDATE bna_parent_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE lower(parent_email) = $1`,
+      [destination.parentEmail]
+    );
+    setParentSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      email: destination.parentEmail,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'student') {
+    const studentId = Number(destination.student.student_id || destination.student.id);
+    const sessionId = await issueStudentSession(studentId, db, {
+      login_method: 'portal_agnostic_username_password',
+      raw_password_stored: false,
+    });
+    await db.query(
+      `UPDATE bna_student_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE student_id = $1`,
+      [studentId]
+    );
+    setStudentSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      student: {
+        id: studentId,
+        name: destination.student.name || destination.student.name_en || null,
+      },
+      redirect_to: redirectTo,
+    };
+  }
+  const error = new Error('Unsupported login destination');
+  error.statusCode = 400;
+  throw error;
+}
+
+async function maybeHandleOtherPortalLogin(req, res, {
+  username,
+  password,
+  currentPortal,
+  returnTo = '',
+  source = 'portal_login',
+  db = pool,
+} = {}) {
+  const destinations = (await collectPortalLoginDestinations({ username, password, db }))
+    .filter((destination) => destination.portal !== currentPortal);
+  if (!destinations.length) return false;
+  if (destinations.length > 1) {
+    res.json({
+      success: true,
+      chooser_required: true,
+      message: 'Choose which portal or workspace to open.',
+      destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      source,
+    });
+    return true;
+  }
+  const destination = destinations[0];
+  const sessionPayload = await issuePortalDestinationSession(destination, res, { db, returnTo });
+  res.json({
+    success: true,
+    portal_redirect: true,
+    redirect_to: sessionPayload.redirect_to,
+    role: destination.role,
+    destination: publicPortalDestination(destination, returnTo),
+    source,
+  });
+  return true;
 }
 
 async function createOpsAccessLink({
@@ -9942,7 +10185,7 @@ function oneTimeViewAsSessionView(payload, req) {
   const review = oneTimeSharedReviewDataForRequest(req);
   return {
     mode: 'view_as_rabbi',
-    banner: 'You are viewing One Time as Rabbi Elie Scheller',
+    banner: 'You are viewing One Time as Rabbi Eli Scheller',
     read_only: true,
     writes_disabled: true,
     external_sends_disabled: true,
@@ -10030,7 +10273,7 @@ app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
     target: {
       id: 'TEST-ONETIME-PROVIDER-RABBI',
       role: 'workspace_owner',
-      display_name: 'Rabbi Elie Scheller',
+      display_name: 'Rabbi Eli Scheller',
     },
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
@@ -45393,6 +45636,14 @@ app.post('/api/provider-portal/login', async (req, res) => {
     )).rows[0] || null;
 
     if (!provider || !verifyParentPassword(password, provider.password_hash)) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username,
+        password,
+        currentPortal: 'provider',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/provider',
+        source: 'provider_portal_login',
+      });
+      if (handled) return;
       clearProviderSessionCookie(res);
       return res.status(401).json({ success: false, error: 'Invalid provider credentials' });
     }
@@ -49321,6 +49572,15 @@ app.post('/api/student-portal/login', async (req, res) => {
       [usernameNormalized]
     )).rows[0];
     if (!account || !verifyStudentPassword(password, account.password_hash)) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username,
+        password,
+        currentPortal: 'student',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/student',
+        source: 'student_portal_login',
+        db: client,
+      });
+      if (handled) return;
       await recordPersistentStudentPasswordAuthAttempt(req, usernameNormalized, {
         outcome: 'failure',
         metadata: { reason: 'invalid_username_or_password' },
@@ -50088,9 +50348,22 @@ app.post('/api/student-portal/worksheets/:id/submit', async (req, res) => {
 });
 
 app.post('/api/parent-portal/login', async (req, res) => {
-  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  const parentIdentity = String((req.body || {}).parent_email || (req.body || {}).email || (req.body || {}).username || '').trim();
+  const parentEmail = normalizeEmail(parentIdentity);
   const password = String((req.body || {}).password || '');
-  if (!parentEmail || !password) return res.status(400).json({ error: 'Parent email and password are required' });
+  if (!parentEmail || !password) {
+    if (parentIdentity && password) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username: parentIdentity,
+        password,
+        currentPortal: 'parent',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/parent',
+        source: 'parent_portal_login',
+      });
+      if (handled) return;
+    }
+    return res.status(400).json({ error: 'Parent email or username and password are required' });
+  }
 
   const client = await pool.connect();
   try {
@@ -50102,6 +50375,15 @@ app.post('/api/parent-portal/login', async (req, res) => {
       [parentEmail]
     )).rows[0];
     if (!account || !verifyParentPassword(password, account.password_hash)) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username: parentIdentity,
+        password,
+        currentPortal: 'parent',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/parent',
+        source: 'parent_portal_login',
+        db: client,
+      });
+      if (handled) return;
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     const records = await findParentAccessRecords(parentEmail, client);
@@ -50229,35 +50511,35 @@ app.post('/api/bna/auth/setup-password', async (req, res) => {
 });
 
 app.post('/api/bna/auth/login', async (req, res) => {
-  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
-  const password = String((req.body || {}).password || '');
-  if (!parentEmail || !password) return res.status(400).json({ error: 'email and password are required' });
+  const body = req.body || {};
+  const username = String(body.username || body.login_username || body.identity || body.parent_email || body.email || '').trim();
+  const password = String(body.password || '');
+  const returnTo = String(body.returnTo || body.return_to || '');
+  if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
   const client = await pool.connect();
   try {
-    const account = (await client.query(
-      `SELECT parent_email, password_hash
-       FROM bna_parent_password_accounts
-       WHERE lower(parent_email) = $1
-       LIMIT 1`,
-      [parentEmail]
-    )).rows[0];
-    if (!account || !verifyParentPassword(password, account.password_hash)) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+    const destinations = await collectPortalLoginDestinations({ username, password, db: client });
+    if (!destinations.length) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
-    const records = await findParentAccessRecords(parentEmail, client);
-    if (!parentAccessEligible(records)) {
-      return res.status(404).json({ error: 'No active student or signup is linked to this email' });
+    if (destinations.length > 1) {
+      return res.json({
+        success: true,
+        chooser_required: true,
+        message: 'Choose which portal or workspace to open.',
+        destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      });
     }
-    const sessionId = await issueParentSession(parentEmail, client);
-    await client.query(
-      `UPDATE bna_parent_password_accounts
-       SET last_login_at = NOW(),
-           updated_at = NOW()
-       WHERE lower(parent_email) = $1`,
-      [parentEmail]
-    );
-    setParentSessionCookie(res, sessionId);
-    res.json({ success: true, role: 'parent' });
+    const destination = destinations[0];
+    const payload = await issuePortalDestinationSession(destination, res, { db: client, returnTo });
+    res.json({
+      success: true,
+      role: destination.role,
+      portal: destination.portal,
+      destination: publicPortalDestination(destination, returnTo),
+      redirect_to: payload.redirect_to,
+      ...payload,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
@@ -50267,8 +50549,14 @@ app.post('/api/bna/auth/login', async (req, res) => {
 
 app.post('/api/bna/auth/logout', async (req, res) => {
   const cookies = parseCookies(req);
+  await clearSession(cookies[SESSION_COOKIE_NAME]).catch(() => {});
   await clearParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => {});
+  await clearStudentSession(cookies[STUDENT_SESSION_COOKIE_NAME]).catch(() => {});
+  await clearProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME]).catch(() => {});
+  clearSessionCookie(res);
   clearParentSessionCookie(res);
+  clearStudentSessionCookie(res);
+  clearProviderSessionCookie(res);
   res.json({ success: true });
 });
 
@@ -78345,13 +78633,21 @@ app.get('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
        LIMIT 80`,
       [req.params.id]
     )).rows;
+    const linkedTaskParams = [req.params.id];
+    const linkedTaskWhere = ['child.parent_task_id = $1'];
+    const linkedTaskScopedProjectKey = opsScopeProjectKey(req);
+    if (linkedTaskScopedProjectKey) {
+      linkedTaskParams.push(linkedTaskScopedProjectKey);
+      linkedTaskWhere.push(`p.project_key = $${linkedTaskParams.length}`);
+    }
     const linkedTasks = (await pool.query(
-      `SELECT id, title, display_title, stage, task_kind, assigned_to, agent_status, decision_required, created_at, updated_at
-       FROM bna_tasks
-       WHERE parent_task_id = $1
-       ORDER BY updated_at DESC, created_at DESC
+      `SELECT child.id, child.title, child.display_title, child.stage, child.task_kind, child.assigned_to, child.agent_status, child.decision_required, child.created_at, child.updated_at
+       FROM bna_tasks child
+       LEFT JOIN bna_projects p ON p.id = child.project_id
+       WHERE ${linkedTaskWhere.join(' AND ')}
+       ORDER BY child.updated_at DESC, child.created_at DESC
        LIMIT 40`,
-      [req.params.id]
+      linkedTaskParams
     )).rows;
     const activeDecisionQueue = (await pool.query(
       `SELECT *
@@ -79733,6 +80029,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
 // Login endpoint for operations
 app.post('/api/operations/login', async (req, res) => {
   const { username, password } = req.body;
+  const returnTo = String((req.body || {}).returnTo || (req.body || {}).return_to || '/operations');
   const rateStatus = opsLoginRateStatus(req, username);
   if (rateStatus.blocked) {
     const retryAfterSeconds = Math.max(1, Math.ceil((rateStatus.reset_at - Date.now()) / 1000));
@@ -79754,6 +80051,29 @@ app.post('/api/operations/login', async (req, res) => {
       allowedViews: identity.allowedViews,
     });
   } else {
+    const destinations = (await collectPortalLoginDestinations({ username, password }))
+      .filter((destination) => destination.portal !== 'operations');
+    if (destinations.length > 1) {
+      clearOpsLoginRate(req, username);
+      return res.json({
+        success: true,
+        chooser_required: true,
+        message: 'Choose which portal or workspace to open.',
+        destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      });
+    }
+    if (destinations.length === 1) {
+      clearOpsLoginRate(req, username);
+      const destination = destinations[0];
+      const payload = await issuePortalDestinationSession(destination, res, { returnTo });
+      return res.json({
+        success: true,
+        portal_redirect: true,
+        role: destination.role,
+        destination: publicPortalDestination(destination, returnTo),
+        redirect_to: payload.redirect_to,
+      });
+    }
     recordOpsLoginFailure(req, username);
     clearSessionCookie(res);
     res.status(401).json({ success: false, error: 'Invalid credentials' });

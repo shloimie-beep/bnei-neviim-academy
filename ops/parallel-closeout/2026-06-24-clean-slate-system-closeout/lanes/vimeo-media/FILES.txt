@@ -1,0 +1,13 @@
+Owned prefixes:
+server.js
+src/lib/integrations/video-hosting.js
+src/lib/bna/*recording*
+src/lib/bna/*media*
+public/operations.html
+tests/*vimeo*.test.js
+tests/*video*.test.js
+tests/*recording*.test.js
+docs/integrations/VIMEO.md
+ops/qa-runs/
+
+Coordinate Operations UI edits with stripe-sandbox and class-drive-intake.

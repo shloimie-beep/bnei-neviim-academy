@@ -1,0 +1,14 @@
+Owned prefixes:
+server.js
+src/lib/bna/intake-parser.js
+src/lib/bna/helper/
+telegram*
+scripts/*assistant*.mjs
+scripts/*telegram*.mjs
+tests/*assistant*.test.js
+tests/*helper*.test.js
+tests/*intake*.test.js
+tests/*telegram*.test.js
+ops/qa-runs/
+
+Coordinate shared server/helper changes with portal-auth-nav and class-drive-intake.

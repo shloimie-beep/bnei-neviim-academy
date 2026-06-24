@@ -6,6 +6,46 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260624-005` / `REQ-20260624-019` through
+  `REQ-20260624-031`: Final release integration, deployment,
+  live verification, and guarded class recovery. Scope: verify the
+  clean-slate control manifest and Prompt 02-08 lane handoffs, integrate all
+  valid lane branches into the final release branch, reconcile PR #14, PR #15,
+  and local Rabbi closeout history, run the full release gate, merge the final
+  PR, deploy merged `master` to Railway, live-smoke the deployed SHA, and apply
+  class backfill only if Prompt 04's exact safe recommendation and all recovery
+  gates pass. Current status: blocked at preflight. The clean-slate
+  `CONTROL.json` exists and expected lane branches exist, but
+  `class-drive-intake` and `vimeo-media` pushed `RESULT.json` files still say
+  `not_started`, `operator-walkthrough` has no pushed `RESULT.json`, and the
+  current Vimeo worktree is dirty/diverged. Register:
+  `tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md`.
+- [x] Finish `RAW-20260624-003` / `TASK-20260624-001`: clean-slate control
+  tower reconciliation for PR #14, PR #15, and the preserved local Rabbi
+  closeout. Completed so far: repository/worktree census, preservation branch
+  `codex/preserve-rabbi-closeout-20260624` at `487a660b`, clean integration
+  branch `codex/clean-slate-integration-20260624`, PR #14 merge, PR #15 merge,
+  preserved closeout merge, PR reconciliation evidence, canonical execution
+  run, queue/Decision reconciliation, control/lane handoffs, pushed control
+  branch commit `f34cdd05`, and draft control PR #16:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`.
+  No deploy, production DB mutation, class backfill, Stripe/Vimeo write, real
+  send, DNS change, or credential change is approved in this goal.
+- [x] Finish `RAW-20260623-006`: Rabbi Scheller workspace parity, unified
+  login, navigation, tenant isolation, and API-usage readiness on isolated
+  branch `codex/rabbi-scheller-parity-20260624` in
+  `C:\Users\User\Documents\Codex\2026-06-24\rabbi-scheller-parity`.
+  Collision check completed against the dirty shared checkout and other active
+  worktrees; local verification passed focused suite 74/74 plus provider API
+  Usage, provider navigation, Operations navigation, and portal chooser browser
+  smokes at 390x844, 768x1024, and 1440x900. Commit
+  `8f8b0b458a95d146777808dbdf1f760618632615` was pushed to GitHub branch
+  `codex/rabbi-scheller-parity-20260624` / draft PR #15, deployed to Railway
+  production deployment `5e37d2a0-7e81-4339-a721-c4286e8ecaa8`, and
+  live-smoked with standard app smoke
+  `ops/live-smokes/2026-06-24T07-01-44-515Z-live-app-smoke.md` plus
+  Rabbi workspace smoke
+  `ops/live-smokes/2026-06-24T07-05-37-232Z-rabbi-scheller-workspace-live-smoke.md`.
 - [x] Execute `RAW-20260623-001`: Universal Service Provider Studio goal-mode
   implementation in clean worktree
   `C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio`.

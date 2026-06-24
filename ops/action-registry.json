@@ -125,6 +125,51 @@
       ]
     },
     {
+      "action_id": "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",
+      "label": "API Usage",
+      "surface": "provider_portal",
+      "route": "/provider?api_usage_preview=1&section=api_usage",
+      "selector_hint": "[data-provider-nav=\"api_usage\"]",
+      "expected_behavior": "Deep-links or switches the provider portal to a feature-flagged API Usage preview with an honest not-instrumented empty state; refresh and browser back must preserve understandable section navigation, and it must not display fabricated requests, token counts, costs, prompts, secrets, or cross-workspace usage.",
+      "permission": "provider_owner/provider_admin with api_usage_preview or api_usage entitlement",
+      "status": "preview_feature_flag",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "API Usage nav appears only behind the preview flag/entitlement, shows the honest empty state, supports direct section deep-link/refresh/back behavior, and passes local responsive smoke at 390x844, 768x1024, and 1440x900 without horizontal overflow."
+      },
+      "related_goal_ids": ["GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-SECTION-NAVIGATION",
+      "label": "Open provider workspace section",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "selector_hint": "[data-provider-nav][data-action-id=\"ACTION-PROVIDER-SECTION-NAVIGATION\"]",
+      "expected_behavior": "Switches between provider-scoped workspace sections using the supported provider section graph, updates the same-origin section query state, preserves browser back/refresh behavior, and must not reveal BNA super-admin sections such as Platform Suite, Team/Admin, Accounting, credentials, deployment controls, or other providers.",
+      "permission": "authenticated provider workspace member",
+      "status": "active",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Provider navigation buttons are registered, active state is correct, direct links and browser back work, and no super-admin sections are rendered for the provider portal."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014"]
+    },
+    {
+      "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
+      "label": "Open selected portal",
+      "surface": "portal_login",
+      "route": "/operations-login, /provider, /student, /parent",
+      "selector_hint": "#chooser a[data-action-id=\"ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION\"], #loginChooser a[data-action-id=\"ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION\"], #loginStatus a[data-action-id=\"ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION\"]",
+      "expected_behavior": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data.",
+      "permission": "authenticated identity with at least one resolved destination",
+      "status": "server_resolved_navigation",
+      "test": {
+        "type": "static_and_browser",
+        "expected_result": "Operations, provider, student, and parent password login pages render chooser links with this registered action id, use only server-provided redirect_to values, and pass the local responsive chooser smoke at 390x844, 768x1024, and 1440x900."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-014", "GOAL-CORE-015"]
+    },
+    {
       "action_id": "ACTION-ONETIME-JOIN-SHIR-CTA",
       "label": "Start 30 Days Free",
       "surface": "one_time_public_focused_offer",

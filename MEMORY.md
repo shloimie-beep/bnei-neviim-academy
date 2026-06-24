@@ -32,6 +32,13 @@
 
 ## Agentic Goal Memory And Intake
 
+- As of 2026-06-24, broad parallel-lane work must not start until the
+  clean-slate control tower has one canonical integration base, active
+  execution run, task/Decision reconciliation, and lane handoffs. The current
+  control tower source is `RAW-20260624-003`; its integration branch is
+  `codex/clean-slate-integration-20260624`; it reconciles PR #14, PR #15, and
+  the preserved Rabbi/One Time closeout branch without approving deployment or
+  external writes.
 - As of 2026-06-18, broad GPT/Codex correction packets should use the durable
   execution-run protocol in `BNA-START-HERE.md`,
   `docs/BNA-RAMBLE-TO-DONE.md`, and `ops/execution-runs/latest.json`.
@@ -986,6 +993,15 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
      `Content` for pre-production lesson/media preparation: source intake,
      storyboard/prompt/correction work, mock renders, usage metering, and
      no-publish handoff into Content/Library drafts.
+   - Rabbi Scheller workspace parity means provider-workspace parity, not BNA
+     super-admin parity. Rabbi/provider workspaces must not expose other
+     providers, BNA private operations, platform credentials, platform billing,
+     platform-wide API usage, or super-admin modules.
+   - Provider Workspace Bot is a future requirement, not current live scope.
+     When implemented, it must be workspace-scoped, provider-permission-aware,
+     no-cross-provider-data, and API-usage tracked by workspace/user/feature or
+     agent/model/tokens/cost/latency/result without storing secrets or full
+     private prompts in usage tables.
 
 4. **Affiliate Business Apprenticeship**
    - Student teams do real work for real businesses

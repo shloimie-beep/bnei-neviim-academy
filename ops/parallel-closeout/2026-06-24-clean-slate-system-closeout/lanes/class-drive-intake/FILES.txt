@@ -1,0 +1,14 @@
+Owned prefixes:
+server.js
+src/lib/bna/intake-parser.js
+src/lib/bna/
+scripts/*drive*.mjs
+scripts/*class*.mjs
+scripts/*intake*.mjs
+tests/*drive*.test.js
+tests/*class*.test.js
+tests/*intake*.test.js
+ops/qa-runs/
+ops/playwright-smokes/
+
+Coordinate server.js conflicts with portal-auth-nav and assistant-ramble-usage.

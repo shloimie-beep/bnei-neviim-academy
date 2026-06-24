@@ -1,0 +1,13 @@
+Owned prefixes:
+server.js
+src/lib/integrations/
+src/lib/bna/*billing*
+src/lib/bna/*stripe*
+public/operations.html
+tests/*billing*.test.js
+tests/*stripe*.test.js
+tests/*checkout*.test.js
+docs/integrations/
+ops/qa-runs/
+
+Coordinate shared Operations UI edits with public-ui and portal-auth-nav.

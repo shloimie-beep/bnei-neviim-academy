@@ -1,0 +1,439 @@
+{
+  "run_id": "2026-06-24-clean-slate-system-closeout",
+  "title": "Clean-Slate Control Tower System Closeout",
+  "updated_at": "2026-06-24T16:45:00+03:00",
+  "raw_id": "RAW-20260624-003",
+  "workspace_key": "bna_platform",
+  "project_key": "clean_slate_control_tower",
+  "git_refs": {
+    "expected_branch": "codex/clean-slate-integration-20260624",
+    "base_head": "a9528b2d9467174d76d4c25bfb028f9308f24b4f",
+    "last_validated_head": "161f8623c50d7ef226066d101bfa58c28aff2346",
+    "pr14_branch": "codex/integration-navigation-owner-review-20260624",
+    "pr14_head": "f9625e8c15e0a63a272582e839bf42b100cd6714",
+    "pr15_branch": "codex/rabbi-scheller-parity-20260624",
+    "pr15_head": "1ab57eac802ef172a5e96651dabc203d3420cbd9",
+    "preservation_branch": "codex/preserve-rabbi-closeout-20260624",
+    "preservation_head": "487a660ba62db91efb139adb62f11f47044d2ffe"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "captured_at": "2026-06-24T14:25:00+03:00",
+      "content_fingerprint": "codex-attachment-fd69e4fc-c591-4a1b-bb0d-c18a2b9c2f7c",
+      "privacy_classification": "internal_operations_prompt",
+      "workspace": "bna_platform",
+      "project": "clean_slate_control_tower",
+      "source_type": "codex_goal_mode_prompt"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "SRC-20260624-028",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Run full repository/worktree/PR/deploy census and classify dirty, untracked, ignored, stashed, local-only, and pushed-but-unmerged work.",
+      "requirement_id": "REQ-20260624-028",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260624-029",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Inspect and preserve the local Rabbi Eli Scheller / One Time QA closeout in service-provider-studio-integration.",
+      "requirement_id": "REQ-20260624-029",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260624-030",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Reconcile PR #14, PR #15, and any preservation branch into a new clean integration branch without rewriting published history.",
+      "requirement_id": "REQ-20260624-030",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260624-031",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Create the canonical 2026-06-24-clean-slate-system-closeout execution run and repair stale run metadata.",
+      "requirement_id": "REQ-20260624-031",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260624-032",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Reconcile queue, Tasks, and Decisions without deleting history.",
+      "requirement_id": "REQ-20260624-032",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260624-033",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Create the control manifest and parallel-lane handoff files.",
+      "requirement_id": "REQ-20260624-033",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260624-034",
+      "source_id": "RAW-20260624-003",
+      "source_statement": "Validate, push, open/update one draft control PR, and decide whether parallel lanes are safe to start.",
+      "requirement_id": "REQ-20260624-034",
+      "classification": "requirement"
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "task_id": "TASK-20260624-001",
+      "canonical_task_key": "clean-slate-control-tower-reconciliation",
+      "title": "Reconcile active PRs, local Rabbi closeout, stale run metadata, and lane handoffs into one integration base",
+      "owner": "Codex",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "source_id": "RAW-20260624-003",
+      "requirement_id": "REQ-20260624-028",
+      "visible": false,
+      "status": "completed"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260624-028",
+      "title": "Run full repository/worktree/PR/deploy census.",
+      "expected_result": "A complete repository, worktree, PR, and deployment census exists with source heads, dirty-work classifications, and integration implications recorded.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T16:45:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-028"
+      ],
+      "category": "reconciliation",
+      "batch_id": "A",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "census_recorded",
+      "next_action": "Use the census as source evidence for queue and lane reconciliation.",
+      "acceptance_criteria": [
+        "Worktree/PR/deploy census Markdown and JSON exist with source heads and classifications."
+      ],
+      "evidence": [
+        "PASS git fetch --all --prune",
+        "PASS git worktree/branch/status census",
+        "PASS read-only Railway deployment metadata inspected"
+      ],
+      "verification": [
+        "ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.md",
+        "ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.json"
+      ],
+      "implementation_files": [
+        "ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.md",
+        "ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.json"
+      ]
+    },
+    {
+      "id": "REQ-20260624-029",
+      "title": "Preserve local Rabbi Eli Scheller / One Time QA closeout.",
+      "expected_result": "Unique local Rabbi Eli Scheller and One Time closeout work is preserved on a pushed branch with leak checks, focused tests, and audit evidence.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T15:55:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-029"
+      ],
+      "category": "reconciliation",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260624-028"
+      ],
+      "status": "done",
+      "implementation_status": "preservation_branch_pushed",
+      "next_action": "Merge the preservation branch into the clean integration base.",
+      "acceptance_criteria": [
+        "Unique non-secret local Rabbi closeout work is committed and pushed or explicitly superseded."
+      ],
+      "evidence": [
+        "PASS staged leak scan",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit",
+        "PASS focused One Time tests 20/20 and 37/37",
+        "PASS git push -u origin codex/preserve-rabbi-closeout-20260624"
+      ],
+      "verification": [
+        "ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.md",
+        "ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.json",
+        "raw-input/RAW-20260623-002-one-time-rabbi-workspace-student-scope-badges.md"
+      ],
+      "implementation_files": [
+        "ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.md",
+        "ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.json",
+        "raw-input/RAW-20260623-002-one-time-rabbi-workspace-student-scope-badges.md"
+      ],
+      "implementation_commit": "487a660ba62db91efb139adb62f11f47044d2ffe",
+      "pushed_commit": "487a660ba62db91efb139adb62f11f47044d2ffe"
+    },
+    {
+      "id": "REQ-20260624-030",
+      "title": "Reconcile PR #14, PR #15, and preservation branch into clean integration branch.",
+      "expected_result": "A clean branch from origin/master contains PR #14, PR #15, and the preservation branch with conflicts resolved and focused verification passing.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T15:55:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-030"
+      ],
+      "category": "reconciliation",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260624-028",
+        "REQ-20260624-029"
+      ],
+      "status": "done",
+      "implementation_status": "integration_branch_merged",
+      "next_action": "Use the clean integration branch as the base for control manifests and draft PR.",
+      "acceptance_criteria": [
+        "Clean branch from origin/master includes PR #14, PR #15, and preservation work with conflicts resolved by tests."
+      ],
+      "evidence": [
+        "PASS PR #14 focused 72/72",
+        "PASS PR #15 focused 33/33 and four browser smokes",
+        "PASS preservation merge One Time 57/57 and Rabbi 33/33",
+        "PASS One Time canonical journey smoke",
+        "PASS npm run secrets:audit",
+        "PASS git diff --check"
+      ],
+      "verification": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md",
+        "public/",
+        "server.js",
+        "src/",
+        "tests/"
+      ],
+      "implementation_files": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md",
+        "public/provider.html",
+        "public/student.html",
+        "server.js",
+        "src/lib/bna/provider-api-usage.js",
+        "src/platform/instances/one-time-shared-review-data.js"
+      ],
+      "implementation_commit": "161f8623c50d7ef226066d101bfa58c28aff2346"
+    },
+    {
+      "id": "REQ-20260624-031",
+      "title": "Create canonical execution run and repair stale run metadata.",
+      "expected_result": "The canonical clean-slate execution run is active, the stale conflicting run is inactive or superseded, and run CLI validation can target the new run.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T15:55:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-031"
+      ],
+      "category": "run_control",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260624-030"
+      ],
+      "status": "done",
+      "implementation_status": "new_run_active_stale_run_inactive",
+      "next_action": "Proceed to queue/control reconciliation and final closeout.",
+      "acceptance_criteria": [
+        "New run folder includes all required files; latest.json points to it; stale prior active run is inactive."
+      ],
+      "evidence": [
+        "PASS npm run bna:run:validate after adding structured expected_result fields",
+        "PASS npm run bna:run:next identified REQ-20260624-032 before queue/control files were written"
+      ],
+      "verification": [
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/",
+        "ops/execution-runs/latest.json",
+        "ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/run.json",
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/requirements.json",
+        "ops/execution-runs/latest.json",
+        "ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json"
+      ]
+    },
+    {
+      "id": "REQ-20260624-032",
+      "title": "Reconcile queue, Tasks, and Decisions without deleting history.",
+      "expected_result": "Tasks, Decisions, stale run pointers, completed work, blockers, and lane tasks are reconciled into current control artifacts without deleting history.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T16:25:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-032"
+      ],
+      "category": "reconciliation",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260624-028"
+      ],
+      "status": "done",
+      "implementation_status": "queue_decision_reconciled",
+      "next_action": "Use the queue reconciliation as lane-control baseline.",
+      "acceptance_criteria": [
+        "Queue census names executable Codex tasks, operator Decisions, stale branch pointers, completed work, duplicate/superseded tasks, remaining blockers, and lane tasks for prompts 02-08."
+      ],
+      "evidence": [
+        "PASS queue/Decision reconciliation artifact written",
+        "PASS owner answers applied without creating duplicate human Pending cards",
+        "PASS lane tasks represented as internal handoff folders"
+      ],
+      "verification": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/QUEUE-DECISION-RECONCILIATION.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/QUEUE-DECISION-RECONCILIATION.json",
+        "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
+        "TASKS.md",
+        "MEMORY.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "implementation_files": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/QUEUE-DECISION-RECONCILIATION.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/QUEUE-DECISION-RECONCILIATION.json",
+        "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
+        "TASKS.md",
+        "MEMORY.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ]
+    },
+    {
+      "id": "REQ-20260624-033",
+      "title": "Create control manifest and parallel-lane handoff files.",
+      "expected_result": "Control manifest and lane handoff files exist for prompts 02-08 with branch names, ownership, approved effects, forbidden central files, merge order, and release gates.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T16:25:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-033"
+      ],
+      "category": "run_control",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260624-030",
+        "REQ-20260624-031",
+        "REQ-20260624-032"
+      ],
+      "status": "done",
+      "implementation_status": "control_manifest_and_lane_handoffs_written",
+      "next_action": "Proceed to final validation, push, and draft PR.",
+      "acceptance_criteria": [
+        "Control manifest and lane files exist with branch names, ownership, forbidden central files, approved effects, final integrator actions, merge order, and release gates."
+      ],
+      "evidence": [
+        "PASS CONTROL.json and CONTROL.md written",
+        "PASS seven lane handoff folders created with HANDOFF.md, RESULT.json, TESTS.md, FILES.txt, and BLOCKERS.md",
+        "PASS forbidden central files, approved effects, reserved final-integrator actions, merge order, and release gates recorded"
+      ],
+      "verification": [
+        "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/public-ui/HANDOFF.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/HANDOFF.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/HANDOFF.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/HANDOFF.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/HANDOFF.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/HANDOFF.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/operator-walkthrough/HANDOFF.md"
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/"
+      ]
+    },
+    {
+      "id": "REQ-20260624-034",
+      "title": "Validate, push, open/update one draft control PR, and decide lane safety.",
+      "expected_result": "The clean integration branch validates, is pushed, has one draft control PR, and reports whether parallel lanes are safe to begin with remaining blockers named.",
+      "source_id": "RAW-20260624-003",
+      "source_path": "raw-input/RAW-20260624-003-clean-slate-control-tower.md",
+      "workspace_key": "bna_platform",
+      "project_key": "clean_slate_control_tower",
+      "owner": "Codex",
+      "priority": "P0",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-24T16:25:00+03:00",
+      "source_statement_ids": [
+        "SRC-20260624-034"
+      ],
+      "category": "run_control",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260624-031",
+        "REQ-20260624-033"
+      ],
+      "status": "done",
+      "implementation_status": "validated_pushed_draft_pr_opened",
+      "next_action": "Start parallel lanes from the pushed control branch.",
+      "acceptance_criteria": [
+        "Run CLI passes or blockers are explicit; branch is pushed; one draft integration PR exists; final response reports lane safety only after all prior requirements are terminal."
+      ],
+      "evidence": [
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:status",
+        "PASS npm run bna:run:blockers returned no external blockers for this control run",
+        "PASS npm run bna:run:next pointed to REQ-20260624-034 before final closeout",
+        "PASS npm run secrets:audit",
+        "PASS git diff --check and staged JSON/JSONL parse",
+        "PASS git push -u origin codex/clean-slate-integration-20260624",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
+      ],
+      "verification": [
+        "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/run.json",
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/requirements.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.md"
+      ],
+      "implementation_commit": "f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0",
+      "pushed_commit": "f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
+    }
+  ]
+}

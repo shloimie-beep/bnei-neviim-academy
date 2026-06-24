@@ -2451,6 +2451,25 @@
             els.loginStatus.classList.toggle('error', Boolean(isError));
         }
 
+        function showPortalChooser(data) {
+            const destinations = Array.isArray(data?.destinations) ? data.destinations : [];
+            els.loginPanel.classList.remove('hidden');
+            els.portalLayout.classList.add('hidden');
+            if (!destinations.length) {
+                setLoginState(data?.message || 'Choose the portal you want to open.', true);
+                return;
+            }
+            els.loginStatus.classList.remove('error');
+            els.loginStatus.innerHTML = `
+                <p>${escapeHtml(data?.message || 'Choose the portal you want to open.')}</p>
+                <div class="button-row">
+                    ${destinations.map((destination) => `
+                        <a class="secondary" data-action-id="ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION" href="${escapeHtml(destination.redirect_to || '/')}">${escapeHtml(destination.label || destination.role || destination.portal || 'Open portal')}</a>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         function setSaveState(message = '', isError = false) {
             els.saveStatus.textContent = message;
             els.saveStatus.classList.toggle('error', Boolean(isError));
@@ -3677,7 +3696,7 @@
             els.portalMenuToggle.classList.remove('hidden');
             els.studentHelperDock.classList.add('hidden');
             els.pageTitle.textContent = student.display_name || student.name || 'TEST One Time student';
-            els.pageIntro.textContent = 'One Time student review mode with TEST-only Mishnah class data.';
+            els.pageIntro.textContent = 'Student dashboard for live Mishnayos, video review, worksheets, badges, and progress. This review uses TEST-only class data and excludes BNA school accountability goals.';
             els.portalSidebarName.textContent = student.display_name || student.name || 'TEST student';
             els.portalSidebarMeeting.textContent = classSession.title || 'One Time Mishnah class';
             els.portalSideStats.innerHTML = `
@@ -3707,7 +3726,7 @@
                         <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                         <p class="eyebrow">One Time student review</p>
                         <h2>${escapeHtml(student.display_name || student.name || 'TEST student')}</h2>
-                        <p class="small">This view contains only this TEST student's One Time class, course, and progress records.</p>
+                        <p class="small">This view focuses the student on live class, review video, worksheet, badges, attendance, and reward progress using only this TEST student's One Time records.</p>
                         <div class="metric-grid">
                             ${reviewMetric('Course progress', `${data.course?.progress_percent || 0}%`)}
                             ${reviewMetric('Attendance', `${attendance.percentage || 0}%`)}
@@ -3715,6 +3734,17 @@
                             ${reviewMetric('Reward', data.reward?.status)}
                         </div>
                     </div>
+                </section>
+                <section class="panel" id="reviewScope">
+                    <div class="section-title">
+                        <div>
+                            <span class="eyebrow">Portal boundary</span>
+                            <h2>One Time only</h2>
+                            <p class="small">This student portal shows Mishnayos class records, classroom/library progress, worksheets, private Rabbi questions, badges, achievements, and rewards for One Time.</p>
+                        </div>
+                        <span class="status-pill">No bot / no BNA goals</span>
+                    </div>
+                    <div class="notice">BNA school accountability goals, checkoffs, consequences, device controls, and other household/student records stay out of the One Time Rabbi Scheller workspace.</div>
                 </section>
                 <section class="panel" id="reviewClass">
                     <div class="section-title">
@@ -3856,10 +3886,22 @@
             els.studentLoginButton.disabled = true;
             setLoginState(t('opening'));
             try {
-                await apiRequest('/api/student-portal/login', {
+                const result = await apiRequest('/api/student-portal/login', {
                     method: 'POST',
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        returnTo: window.location.pathname + window.location.search + window.location.hash,
+                    }),
                 });
+                if (result.portal_redirect && result.redirect_to) {
+                    window.location.href = result.redirect_to;
+                    return;
+                }
+                if (result.chooser_required) {
+                    showPortalChooser(result);
+                    return;
+                }
                 els.studentPassword.value = '';
                 accessCode = '';
                 localStorage.removeItem(STORAGE_KEY);

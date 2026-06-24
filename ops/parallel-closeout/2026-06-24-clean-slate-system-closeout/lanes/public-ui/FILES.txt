@@ -1,0 +1,13 @@
+Owned prefixes:
+public/index.html
+public/blog*.html
+public/article*.html
+public/faq*.html
+public/manifest.json
+public/css/
+scripts/smoke-owner-review-public-visual.mjs
+tests/owner-review-role-flow-contract.test.js
+docs/owner-review/
+ops/playwright-smokes/
+
+Forbidden central files are listed in ../../CONTROL.md.
