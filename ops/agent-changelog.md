@@ -26313,3 +26313,46 @@ browser private capture, public publishing, or secret exposure was performed.
 `REQ-20260624-046` remains blocked from Done only because the queue API/UI
 changes require deploy/live proof under `REQ-20260624-048`. Next Issue #20
 batch is `REQ-20260624-047`.
+
+## 2026-06-25T00:55:00+03:00 - Issue #20 Owner Walkthrough Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-047`. Added
+the credential-safe public page `/issue-20-owner-walkthrough.html`, linked it
+from the Owner Setup Center, registered the route, and created
+`ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md`.
+
+The walkthrough covers current origin master and Issue #20 branch truth, live
+health, the Railway deployed-SHA proof blocker, active goal/lanes, agent fleet
+and watchdog controls, persistent browser profiles versus ChatGPT Agent,
+role-scoped links and helper/bot QA, the GitHub result bridge, Decisions/queue
+hygiene, next ramble submission, and stop/restart/release gates. Every setup
+card includes exact page, step, expected result, validation command, and
+recovery action.
+
+Verification passed: page/test syntax checks, focused owner/setup/link/route
+tests 8/8 with desktop/mobile layout checks, `npm run watchdog:actions` with 0
+findings, route registry JSON parse, live health readback, and remote master
+SHA readback. No deploy, production mutation, external write, GitHub status
+comment, send, charge, DNS change, credential/account change, class backfill,
+Drive write, browser private capture, public publishing, or secret exposure was
+performed.
+
+`REQ-20260624-047` remains blocked from Done only because the new public page
+and setup-center link require deploy/live proof under `REQ-20260624-048`. Next
+Issue #20 batch is `REQ-20260624-048`.
+
+## 2026-06-25T01:00:00+03:00 - Issue #20 Final Release Blocked
+
+Closed the current Issue #20 execution pass by marking `REQ-20260624-048` as
+blocked on the existing Railway targeting / deploy-live proof gate. All
+implementation batches now have terminal local statuses: Batches B and E are
+Done; Batches A, C, D, F, and G are locally verified and blocked only by
+deploy/live proof; Batch Z is blocked because Railway targeting cannot find
+the expected service and no alternate live-smoke path is approved.
+
+Recorded `FINAL-RELEASE-BLOCKER.md` with the exact blocker, current local
+truth, required next action, and guardrails. `npm run bna:run:next` reports no
+unblocked executable batch. No deploy, merge, production mutation, external
+write, GitHub status comment, send, charge, DNS change, credential/account
+change, class backfill, Drive write, browser private capture, public
+publishing, or secret exposure was performed.

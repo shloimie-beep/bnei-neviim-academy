@@ -1,6 +1,6 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
-  "updated_at": "2026-06-25T00:40:00+03:00",
+  "updated_at": "2026-06-25T01:00:00+03:00",
   "parent_branch": "codex/issue-20-parent-run-20260624",
   "parent_run_path": "ops/execution-runs/2026-06-24-issue-20-parent-run",
   "active_pointer_owner": "parent",
@@ -159,21 +159,37 @@
       "requirement_ids": [
         "REQ-20260624-047"
       ],
-      "status": "queued",
+      "status": "integrated",
       "owned_paths": [
         "public/",
         "docs/",
         "ops/issue-20/owner-walkthrough/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T00:55:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "pending_checkpoint_commit",
+        "evidence": [
+          "public/issue-20-owner-walkthrough.html",
+          "ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md",
+          "tests/issue-20-owner-walkthrough.test.js"
+        ],
+        "verification": [
+          "node --test tests\\issue-20-owner-walkthrough.test.js tests\\operator-walkthrough-links.test.js tests\\integration-setup-ui.test.js tests\\owner-review-route-inventory.test.js 8/8",
+          "npm run watchdog:actions finding_count=0",
+          "live health HTTP 200 database connected"
+        ],
+        "blocker": "Deploy/live smoke proof remains gated by REQ-20260624-048 Railway targeting blocker.",
+        "next_action": "Continue REQ-20260624-048 final integration and release gate."
+      }
     },
     {
       "lane_id": "final-integration",
       "requirement_ids": [
         "REQ-20260624-048"
       ],
-      "status": "queued",
+      "status": "blocked",
       "owned_paths": [
         "ops/execution-runs/2026-06-24-issue-20-parent-run/",
         "tasks-pending/2026-06-24-issue-20-parent-run.md",
@@ -182,7 +198,22 @@
         "ops/agent-changelog.md"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T01:00:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "pending_checkpoint_commit",
+        "evidence": [
+          "ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md",
+          "ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md"
+        ],
+        "verification": [
+          "npm run bna:run:next reported no unblocked executable batch",
+          "baseline Railway doctor blocker remains open",
+          "direct live health HTTP 200 database connected"
+        ],
+        "blocker": "Railway target mismatch blocks final deploy/live proof.",
+        "next_action": "Repair Railway targeting or approve alternate live-smoke path."
+      }
     }
   ]
 }

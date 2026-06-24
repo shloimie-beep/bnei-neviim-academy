@@ -139,3 +139,38 @@
   DNS change, credential/account change, class backfill, Drive write, public
   publishing, browser private capture, or secret exposure was performed.
 - Current batch moved to `REQ-20260624-047`.
+
+2026-06-25T00:55:00+03:00:
+
+- `REQ-20260624-047` owner setup and walkthrough is locally verified and
+  blocked from terminal Done only by deploy/live proof.
+- Added credential-safe public page `/issue-20-owner-walkthrough.html`, linked
+  it from the Owner Setup Center, and registered the route as public-safe.
+- Added `OWNER-WALKTHROUGH.md` under the Issue #20 run evidence with current
+  origin master SHA, branch SHA, health readback, Railway deploy-proof blocker,
+  setup cards, validation commands, and recovery actions.
+- Focused syntax checks, static/Playwright owner walkthrough tests, setup-center
+  UI tests, operator walkthrough link tests, owner-review route inventory, route
+  JSON parse, action watchdog, live health readback, and remote master readback
+  passed.
+- No deploy, production mutation, external write, GitHub status comment, send,
+  charge, DNS change, credential/account change, class backfill, Drive write,
+  public publishing, browser private capture, or secret exposure was performed.
+- Current batch moved to `REQ-20260624-048`.
+
+2026-06-25T01:00:00+03:00:
+
+- `REQ-20260624-048` final integration/deploy/live verification is blocked.
+- All implementation requirements now have terminal local statuses: Batches B
+  and E are Done; Batches A, C, D, F, and G are local verified and blocked only
+  by deploy/live proof; Batch Z is blocked by the Railway targeting/live-smoke
+  gate.
+- `npm run bna:run:next` reports no unblocked executable batch.
+- The exact blocker remains: local Railway CLI targeting points at
+  `one-time-production` and cannot find expected service
+  `skillful-motivation`; final closeout needs repaired targeting or an
+  approved alternate deploy/live-smoke path.
+- No deploy, merge, production mutation, external write, GitHub status comment,
+  send, charge, DNS change, credential/account change, class backfill, Drive
+  write, public publishing, browser private capture, or secret exposure was
+  performed.

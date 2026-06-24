@@ -133,6 +133,24 @@
   `npm run secrets:audit` with 4731 tracked paths and 0 tracked
   secret-risk files, `git diff --check` with Windows line-ending warnings
   only, and `npm run bna:run:next` selected `REQ-20260624-047`.
+- `node --check tests\issue-20-owner-walkthrough.test.js` passed.
+- `node --check tests\integration-setup-ui.test.js` passed.
+- `node --check tests\operator-walkthrough-links.test.js` passed.
+- `node --test tests\issue-20-owner-walkthrough.test.js tests\operator-walkthrough-links.test.js tests\integration-setup-ui.test.js tests\owner-review-route-inventory.test.js`
+  passed 8/8, including desktop/mobile no-horizontal-overflow checks for
+  `/issue-20-owner-walkthrough.html`.
+- `npm run watchdog:actions` passed with 0 findings and wrote
+  `ops/watchdog-audits/2026-06-24T21-54-watchdog-action-audit.md`.
+- `ops/route-registry.json` parsed successfully.
+- Live health readback for `https://bneineviimacademy.org/api/health` returned
+  HTTP 200 with database connected.
+- `git ls-remote origin refs/heads/master` read back
+  `50087ae5d8e120830ae8e1f8dcaab71f61389d7c`.
+- `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
+  `npm run bna:run:stale-evidence`, JSON/JSONL parse, and
+  `npm run secrets:audit` passed after REQ047 closeout.
+- `npm run bna:run:next` reported no unblocked executable batch once
+  deploy/live proof blockers were isolated.
 
 ## Known Non-Blocking Test Note
 
@@ -143,6 +161,7 @@
 
 ## Pending
 
-- Focused tests for remaining implementation lanes, starting with
-  `REQ-20260624-047`.
-- Full repository tests and watchdogs before final closeout.
+- Final deploy/live closeout remains blocked by Railway targeting or missing
+  approved alternate live-smoke path.
+- Full repository tests and watchdogs before any future final deploy/live
+  closeout.

@@ -9,5 +9,5 @@
 | D | REQ-20260624-044 | blocked | Local agent result bridge verified; deploy/live proof pending under final release gate. |
 | E | REQ-20260624-045 | done | Existing fleet hardened; permission tiers, startup/status controls, parent coordination audit, and synthetic no-write background proof verified. |
 | F | REQ-20260624-046 | blocked | Local queue hygiene and owner-facing lane reconciliation verified; deploy/live proof pending under final release gate. |
-| G | REQ-20260624-047 | not_started | Start owner setup and walkthrough artifact/page. |
-| Z | REQ-20260624-048 | not_started | Waiting for all implementation batches. |
+| G | REQ-20260624-047 | blocked | Local owner walkthrough page/artifact verified; deploy/live proof pending under final release gate. |
+| Z | REQ-20260624-048 | blocked | Final deploy/live closeout blocked by Railway targeting / missing approved live-smoke path. |

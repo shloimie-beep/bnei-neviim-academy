@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-24T03:22:00+03:00",
+  "updated_at": "2026-06-25T01:05:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -1397,6 +1397,23 @@
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/issue-20-owner-walkthrough.html",
+      "surface": "public_issue_20_owner_walkthrough",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_static_credential_safe_issue_20_owner_walkthrough",
+      "expected_logged_in_behavior": "load_static_credential_safe_issue_20_owner_walkthrough",
+      "privacy_risk": "normal",
+      "security_expectation": "Static owner walkthrough must not expose secrets, private student records, parent data, provider data, member data, or Operations sessions; it must label deploy/live SHA proof blockers explicitly.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
         "GOAL-CORE-010",
         "GOAL-CORE-015"
       ]

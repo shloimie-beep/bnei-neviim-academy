@@ -168,7 +168,50 @@ Queue hygiene readback summary:
   with 0 findings.
 - App-visible/API/UI Done remains blocked pending deploy/live proof.
 
+## Final Release Blocker Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md`
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md`
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/BASELINE-READBACK.md`
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json`
+- `tasks-pending/2026-06-24-issue-20-parent-run.md`
+
+Final release readback summary:
+
+- `npm run bna:run:next` reports no unblocked executable batch.
+- Final deploy/live closeout is blocked by the existing Railway targeting
+  blocker and missing approved alternate live-smoke path.
+- Direct live health returned HTTP 200 with database connected, but that does
+  not prove the Issue #20 branch is deployed.
+- No deploy, merge, production mutation, external write, GitHub status comment,
+  send, charge, DNS change, credential/account change, class backfill, Drive
+  write, public publishing, browser private capture, or secret exposure was
+  performed.
+
+## Owner Walkthrough Evidence
+
+- `public/issue-20-owner-walkthrough.html`
+- `public/integration-setup.html`
+- `public/css/integration-setup.css`
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md`
+- `ops/route-registry.json`
+- `tests/issue-20-owner-walkthrough.test.js`
+- `ops/watchdog-audits/2026-06-24T21-54-watchdog-action-audit.md`
+
+Owner walkthrough readback summary:
+
+- The page covers live/master/branch truth, active goal and lanes, agent fleet,
+  browser profiles versus ChatGPT Agent, role links and bot QA, GitHub bridge,
+  Decisions/queue/next ramble, and stop/restart/release gates.
+- Every setup card includes exact page, step, expected result, validation
+  command, and recovery action.
+- The page states that the deployed SHA is not currently provable through
+  Railway because final deploy/live proof remains blocked under
+  `REQ-20260624-048`.
+- Focused page/setup/link/route tests passed 8/8 and `watchdog:actions` passed
+  with 0 findings.
+- App-visible Done remains blocked pending deploy/live proof.
+
 ## Pending Evidence
 
-- Owner walkthrough proof.
 - Final release/deploy/live verification.

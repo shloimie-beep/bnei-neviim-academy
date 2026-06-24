@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
   "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
-  "updated_at": "2026-06-25T00:40:00+03:00",
+  "updated_at": "2026-06-25T01:00:00+03:00",
   "git_refs": {
     "base_branch": "codex/issue-18-class-intake-readonly-20260624",
     "working_branch": "codex/issue-20-parent-run-20260624",
@@ -628,30 +628,49 @@
       "depends_on": [
         "REQ-20260624-040"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_after_baseline",
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
       "can_continue_without_operator": true,
-      "next_action": "Create owner walkthrough artifact and page after baseline statuses and feature proofs exist.",
+      "next_action": "Continue to REQ-20260624-048 final integration and release gating; owner walkthrough Done remains blocked until deploy/live proof exists.",
       "acceptance_criteria": [
         "Walkthrough states current master/deployed/live SHA, active goal/lanes, fleet status, browser profiles, ChatGPT Agent steps, exact role links, bot/helper QA, GitHub bridge, Decisions, stop/restart, and next ramble flow.",
         "Every setup card includes exact page, step, expected result, validation button/command, and recovery action.",
         "No placeholder or unsupported setup claims remain."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "public/issue-20-owner-walkthrough.html",
+        "public/integration-setup.html",
+        "public/css/integration-setup.css",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md",
+        "ops/route-registry.json",
+        "tests/issue-20-owner-walkthrough.test.js",
+        "ops/watchdog-audits/2026-06-24T21-54-watchdog-action-audit.md",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending walkthrough implementation and proof."
+        "PASS node --check tests\\issue-20-owner-walkthrough.test.js",
+        "PASS node --check tests\\integration-setup-ui.test.js",
+        "PASS node --check tests\\operator-walkthrough-links.test.js",
+        "PASS node --test tests\\issue-20-owner-walkthrough.test.js tests\\operator-walkthrough-links.test.js tests\\integration-setup-ui.test.js tests\\owner-review-route-inventory.test.js 8/8",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS route registry JSON parse",
+        "PASS live health readback https://bneineviimacademy.org/api/health returned HTTP 200 database connected",
+        "PASS git ls-remote origin refs/heads/master read back 50087ae5d8e120830ae8e1f8dcaab71f61389d7c"
       ],
       "implementation_files": [
-        "public/",
-        "docs/",
-        "ops/"
+        "public/issue-20-owner-walkthrough.html",
+        "public/integration-setup.html",
+        "public/css/integration-setup.css",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md",
+        "ops/route-registry.json",
+        "tests/issue-20-owner-walkthrough.test.js"
       ],
       "deployment_required": true,
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-25T00:55:00+03:00",
+      "blocker": "App-visible owner walkthrough page/link changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke /issue-20-owner-walkthrough.html and the linked setup center entry."
     },
     {
       "id": "REQ-20260624-048",
@@ -677,10 +696,10 @@
         "REQ-20260624-046",
         "REQ-20260624-047"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_until_unblocked_requirements_terminal",
-      "can_continue_without_operator": true,
-      "next_action": "Run final integration, release gates, PR/merge/deploy/live smoke, cleanup, GitHub closeout, and final response after prerequisite requirements are terminal.",
+      "status": "blocked",
+      "implementation_status": "blocked_by_railway_targeting_and_missing_deploy_live_proof",
+      "can_continue_without_operator": false,
+      "next_action": "Repair Railway project/service targeting or record an approved alternate deploy/live-smoke path, then rerun final release gates and live-smoke the app-visible Issue #20 changes.",
       "acceptance_criteria": [
         "Focused and full repository tests pass or precise blockers are recorded.",
         "Route/action/security/raw/content/communications/visual watchdogs pass.",
@@ -692,22 +711,36 @@
         "Final response includes the 27 required sections and one allowed overall state."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/BASELINE-READBACK.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/BATCH-STATUS.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/TEST-RESULTS.md",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending final integration and live verification."
+        "PASS npm run bna:run:validate with all requirements terminal after blocker closeout",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4733 tracked paths and 0 tracked secret-risk files",
+        "PASS npm run bna:run:next reported no unblocked executable batch",
+        "BLOCKED npm run railway:doctor baseline failed because local Railway target cannot find expected service skillful-motivation"
       ],
       "implementation_files": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/run.json",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/LANE-MANIFEST.json",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "deployment_required": true,
-      "blocker": "Local Railway CLI target is currently one-time-production and cannot find expected service skillful-motivation; final deploy/live closeout needs repaired targeting or an approved alternate live-smoke path.",
+      "blocker": "Local Railway CLI target is linked to project one-time-production and cannot find expected service skillful-motivation; final deploy/live closeout needs repaired targeting or an approved alternate live-smoke path before app-visible work can be marked Done.",
       "blocker_owner": "Codex / Railway account owner",
-      "blocker_next_action": "Repair Railway project/service targeting or document a current approved deploy/live-smoke path before marking app-visible work Done.",
+      "blocker_next_action": "Repair Railway project/service targeting or document a current approved deploy/live-smoke path, then run final gates, deploy/live smoke, and update blocked app-visible requirements with proof.",
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-25T01:00:00+03:00"
     }
   ],
   "tasks": [
@@ -792,6 +825,32 @@
       "blocker": "App-visible/API/UI queue behavior needs deploy/live smoke before Done.",
       "blocker_owner": "Codex / Railway account owner",
       "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|owner_walkthrough|GITHUB-ISSUE-20|REQ-20260624-047|owner_setup_walkthrough",
+      "title": "Issue #20 owner setup and walkthrough page",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-047",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "App-visible owner walkthrough needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|issue_20_release|GITHUB-ISSUE-20|REQ-20260624-048|final_release_gate",
+      "title": "Issue #20 final release gate and live proof",
+      "owner": "Codex / Railway account owner",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-048",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "Railway targeting and deploy/live proof are missing.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway target or approve alternate live-smoke path, then complete final release gate."
     }
   ],
   "decisions": []
