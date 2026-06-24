@@ -422,6 +422,7 @@
           <a href="/member-library" aria-current="page">Library</a>
           <a href="/one-time-classroom">Classroom</a>
           <a href="/rabbi-member#support">Questions/support</a>
+          <a href="/rabbi-member?logout=1" id="memberLogoutLink">Account/logout</a>
           <a href="/">Return to public site</a>
         </nav>
         <div class="member-meta" id="memberMeta">Access code required</div>
@@ -459,6 +460,7 @@
     const classroomStrip = document.getElementById('classroomStrip');
     const libraryToolbar = document.getElementById('libraryToolbar');
     const librarySearch = document.getElementById('librarySearch');
+    const memberLogoutLink = document.getElementById('memberLogoutLink');
     const filterRail = document.getElementById('filterRail');
     let currentPayload = null;
     let activeFilter = 'all';
@@ -710,6 +712,12 @@
     librarySearch.addEventListener('input', (event) => {
       searchTerm = event.target.value || '';
       renderLibraryItems();
+    });
+
+    memberLogoutLink?.addEventListener('click', () => {
+      localStorage.removeItem('one_time_member_library_code');
+      localStorage.removeItem('oneTimeClassroomCode');
+      localStorage.removeItem('rabbi_member_session');
     });
 
     const params = new URLSearchParams(window.location.search);

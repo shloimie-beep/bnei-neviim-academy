@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-06-24T03:54:28.813Z",
+  "generated_at": "2026-06-24T04:09:38.199Z",
   "requirement_id": "REQ-20260624-003",
   "source_id": "RAW-20260624-001",
-  "content_hash": "318e55df2b725285c2a44bbc6db60fdcb204c74d50565f267addc70c608d7554",
+  "content_hash": "6f6f82a3edb4c11c84de0fc5e125b8b59bdbd9f28585f5dec6ece46ac1b2ddfd",
   "summary": {
     "total_routes": 689,
     "html_pages": 34,
     "server_routes": 753,
     "api_routes": 584,
-    "linked_destinations": 73,
-    "client_edges": 207,
+    "linked_destinations": 72,
+    "client_edges": 216,
     "manifest_edges": 9,
     "service_worker_edges": 13,
     "form_actions": 0,
     "forms_without_action": 92,
     "orphan_review_rows": 0,
     "duplicate_implementation_groups": 0,
-    "incomplete_rows": 27
+    "incomplete_rows": 26
   },
   "rows": [
     {
@@ -24,9 +24,9 @@
       "Implementation": "public/index.html",
       "Audience": "public",
       "Authentication": "none",
-      "Entry point": "/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href)",
+      "Entry point": "/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href)",
       "Back path": "/parents | /provider | /school",
-      "Inbound links": "/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | /signup-thank-you.html (literal-a-href) | /signup.html (window.location) | /student.html (literal-a-href) | public/manifest.json (manifest:id) | public/manifest.json (manifest:scope) | public/manifest.json (manifest:start_url)",
+      "Inbound links": "/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | /signup-thank-you.html (literal-a-href) | /signup.html (window.location) | /student.html (literal-a-href) | public/manifest.json (manifest:id) | public/manifest.json (manifest:scope) | public/manifest.json (manifest:start_url)",
       "Outbound links": "/api/torah-learning/public-summary (fetch) | /data/learning-moments.json (fetch) | /he (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href) | /provider (literal-a-href) | /providers/join (literal-a-href) | /school (literal-a-href) | /signup.html (literal-a-href) | /student/login (literal-a-href)",
       "Status": "keep",
       "Dependencies": "local",
@@ -5766,7 +5766,7 @@
     },
     {
       "Canonical URL": "/api/bna/telegram",
-      "Implementation": "server.js:79922",
+      "Implementation": "server.js:79925",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -9276,14 +9276,14 @@
     },
     {
       "Canonical URL": "/member",
-      "Implementation": "public/member.html",
+      "Implementation": "server.js:79876",
       "Audience": "member",
-      "Authentication": "protected",
+      "Authentication": "entry page",
       "Entry point": "/operations.html (literal-a-href) | public/sw.js (service-worker)",
       "Back path": "none detected",
       "Inbound links": "/operations.html (literal-a-href) | public/sw.js (service-worker)",
       "Outbound links": "",
-      "Status": "keep",
+      "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
       "Registry surface": "member_portal_alias",
@@ -9294,9 +9294,9 @@
       "Implementation": "public/member-library.html",
       "Audience": "member",
       "Authentication": "protected",
-      "Entry point": "/member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
+      "Entry point": "/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
       "Back path": "none detected",
-      "Inbound links": "/member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
+      "Inbound links": "/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
       "Outbound links": "",
       "Status": "keep",
       "Dependencies": "local",
@@ -9321,33 +9321,33 @@
     },
     {
       "Canonical URL": "/member-portal",
-      "Implementation": "public/member.html",
+      "Implementation": "server.js:79876",
       "Audience": "member",
-      "Authentication": "none",
-      "Entry point": "Alias/alternate route for /member",
+      "Authentication": "entry page",
+      "Entry point": "direct/server/static",
       "Back path": "none detected",
       "Inbound links": "",
       "Outbound links": "",
       "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
-      "Registry surface": "",
-      "Discovered as": "server-get"
+      "Registry surface": "member_portal_legacy_alias",
+      "Discovered as": "route-registry | server-get"
     },
     {
       "Canonical URL": "/member.html",
       "Implementation": "public/member.html",
       "Audience": "member",
-      "Authentication": "none",
-      "Entry point": "Alias/alternate route for /member",
-      "Back path": "none detected",
+      "Authentication": "entry page",
+      "Entry point": "direct/server/static",
+      "Back path": "/ | /member-library | /one-time-classroom | /rabbi-member",
       "Inbound links": "",
-      "Outbound links": "",
+      "Outbound links": "/ (literal-a-href) | /member-library (literal-a-href) | /one-time-classroom (literal-a-href) | /rabbi-member (literal-a-href)",
       "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
-      "Registry surface": "",
-      "Discovered as": "html-page"
+      "Registry surface": "member_portal_static_legacy_alias",
+      "Discovered as": "html-page | route-registry"
     },
     {
       "Canonical URL": "/one-time",
@@ -9355,10 +9355,10 @@
       "Audience": "one time",
       "Authentication": "none",
       "Entry point": "/member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href)",
-      "Back path": "/one-time",
+      "Back path": "/one-time | /rabbi-member",
       "Inbound links": "/member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string)",
-      "Outbound links": "/api/one-time/campaign (fetch) | /api/one-time/interest (fetch) | /one-time (literal-a-href) | /one-time/member-login (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href)",
-      "Status": "alias",
+      "Outbound links": "/api/one-time/campaign (fetch) | /api/one-time/interest (fetch) | /one-time (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /rabbi-member (literal-a-href)",
+      "Status": "keep",
       "Dependencies": "local",
       "Review state": "ready",
       "Registry surface": "one_time_public_focused_offer",
@@ -9369,9 +9369,9 @@
       "Implementation": "public/one-time-classroom.html",
       "Audience": "provider",
       "Authentication": "protected",
-      "Entry point": "/member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
+      "Entry point": "/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
       "Back path": "none detected",
-      "Inbound links": "/member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
+      "Inbound links": "/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
       "Outbound links": "",
       "Status": "keep",
       "Dependencies": "local",
@@ -9474,7 +9474,7 @@
       "Implementation": "public/one-time/index.html",
       "Audience": "one time",
       "Authentication": "none",
-      "Entry point": "Alias/alternate route for /one-time/member-login",
+      "Entry point": "Alias/alternate route for /one-time",
       "Back path": "none detected",
       "Inbound links": "",
       "Outbound links": "",
@@ -9489,7 +9489,7 @@
       "Implementation": "public/one-time/index.html",
       "Audience": "one time",
       "Authentication": "none",
-      "Entry point": "Alias/alternate route for /one-time/member-login",
+      "Entry point": "Alias/alternate route for /one-time",
       "Back path": "none detected",
       "Inbound links": "",
       "Outbound links": "",
@@ -9501,18 +9501,18 @@
     },
     {
       "Canonical URL": "/one-time/member-login",
-      "Implementation": "public/one-time/index.html",
+      "Implementation": "server.js:79876",
       "Audience": "member",
-      "Authentication": "none",
-      "Entry point": "/one-time (literal-a-href)",
+      "Authentication": "entry page",
+      "Entry point": "direct/server/static",
       "Back path": "none detected",
-      "Inbound links": "/one-time (literal-a-href)",
+      "Inbound links": "",
       "Outbound links": "",
-      "Status": "keep",
+      "Status": "alias",
       "Dependencies": "local",
-      "Review state": "incomplete",
-      "Registry surface": "",
-      "Discovered as": "literal-a-href | server-get"
+      "Review state": "ready",
+      "Registry surface": "one_time_member_login_alias",
+      "Discovered as": "route-registry | server-get"
     },
     {
       "Canonical URL": "/one-time/mishnayos",
@@ -9564,7 +9564,7 @@
       "Implementation": "public/one-time/index.html",
       "Audience": "one time",
       "Authentication": "none",
-      "Entry point": "Alias/alternate route for /one-time/member-login",
+      "Entry point": "Alias/alternate route for /one-time",
       "Back path": "none detected",
       "Inbound links": "",
       "Outbound links": "",
@@ -9579,7 +9579,7 @@
       "Implementation": "public/one-time/index.html",
       "Audience": "one time",
       "Authentication": "none",
-      "Entry point": "Alias/alternate route for /one-time/member-login",
+      "Entry point": "Alias/alternate route for /one-time",
       "Back path": "none detected",
       "Inbound links": "",
       "Outbound links": "",
@@ -10074,9 +10074,9 @@
       "Implementation": "public/rabbi-member.html",
       "Audience": "member",
       "Authentication": "entry page",
-      "Entry point": "/member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
+      "Entry point": "/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href)",
       "Back path": "none detected",
-      "Inbound links": "/member-library.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
+      "Inbound links": "/member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /operations.html (literal-a-href) | /provider-participant.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | public/sw.js (service-worker)",
       "Outbound links": "",
       "Status": "keep",
       "Dependencies": "local",
@@ -11016,6 +11016,13 @@
     },
     {
       "from": "/member-library.html",
+      "to": "/rabbi-member",
+      "kind": "literal-a-href",
+      "raw": "/rabbi-member?logout=1",
+      "source": "public/member-library.html"
+    },
+    {
+      "from": "/member-library.html",
       "to": "/",
       "kind": "literal-a-href",
       "raw": "/",
@@ -11036,6 +11043,41 @@
       "source": "public/member-library.html"
     },
     {
+      "from": "/member.html",
+      "to": "/rabbi-member",
+      "kind": "literal-a-href",
+      "raw": "/rabbi-member",
+      "source": "public/member.html"
+    },
+    {
+      "from": "/member.html",
+      "to": "/member-library",
+      "kind": "literal-a-href",
+      "raw": "/member-library",
+      "source": "public/member.html"
+    },
+    {
+      "from": "/member.html",
+      "to": "/one-time-classroom",
+      "kind": "literal-a-href",
+      "raw": "/one-time-classroom",
+      "source": "public/member.html"
+    },
+    {
+      "from": "/member.html",
+      "to": "/rabbi-member",
+      "kind": "literal-a-href",
+      "raw": "/rabbi-member?logout=1",
+      "source": "public/member.html"
+    },
+    {
+      "from": "/member.html",
+      "to": "/",
+      "kind": "literal-a-href",
+      "raw": "/",
+      "source": "public/member.html"
+    },
+    {
       "from": "/one-time",
       "to": "/one-time",
       "kind": "literal-a-href",
@@ -11044,9 +11086,9 @@
     },
     {
       "from": "/one-time",
-      "to": "/one-time/member-login",
+      "to": "/rabbi-member",
       "kind": "literal-a-href",
-      "raw": "/one-time/member-login",
+      "raw": "/rabbi-member",
       "source": "public/one-time/index.html"
     },
     {
@@ -11065,9 +11107,9 @@
     },
     {
       "from": "/one-time",
-      "to": "/one-time/member-login",
+      "to": "/rabbi-member",
       "kind": "literal-a-href",
-      "raw": "/one-time/member-login",
+      "raw": "/rabbi-member",
       "source": "public/one-time/index.html"
     },
     {
@@ -11131,6 +11173,13 @@
       "to": "/rabbi-member",
       "kind": "literal-a-href",
       "raw": "/rabbi-member#support",
+      "source": "public/one-time-classroom.html"
+    },
+    {
+      "from": "/one-time-classroom.html",
+      "to": "/rabbi-member",
+      "kind": "literal-a-href",
+      "raw": "/rabbi-member?logout=1",
       "source": "public/one-time-classroom.html"
     },
     {
@@ -11443,6 +11492,13 @@
     },
     {
       "from": "/provider-participant.html",
+      "to": "/rabbi-member",
+      "kind": "literal-a-href",
+      "raw": "/rabbi-member?logout=1",
+      "source": "public/provider-participant.html"
+    },
+    {
+      "from": "/provider-participant.html",
       "to": "/",
       "kind": "literal-a-href",
       "raw": "/",
@@ -11558,6 +11614,13 @@
       "to": "/one-time-classroom",
       "kind": "literal-a-href",
       "raw": "/one-time-classroom",
+      "source": "public/rabbi-member.html"
+    },
+    {
+      "from": "/rabbi-member.html",
+      "to": "/rabbi-member",
+      "kind": "literal-a-href",
+      "raw": "/rabbi-member?logout=1",
       "source": "public/rabbi-member.html"
     },
     {

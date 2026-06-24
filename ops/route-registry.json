@@ -351,7 +351,6 @@
       "expected_logged_out_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "privacy_risk": "normal",
-      "canonical_target": "/one-time/mishnayos",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014"
@@ -510,12 +509,62 @@
     {
       "route": "/member",
       "surface": "member_portal_alias",
-      "access": "private",
+      "access": "public_entry",
       "required_role": "member",
       "workspace_scope_required": true,
-      "public_allowed": false,
-      "expected_logged_out_behavior": "redirect_to_login_or_show_member_entry_without_private_data",
-      "expected_logged_in_behavior": "load_own_member_portal_only",
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "redirect_to_one_time_member_home_without_private_data",
+      "expected_logged_in_behavior": "redirect_to_one_time_member_home",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/member-portal",
+      "surface": "member_portal_legacy_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "redirect_to_one_time_member_home_without_private_data",
+      "expected_logged_in_behavior": "redirect_to_one_time_member_home",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/one-time/member-login",
+      "surface": "one_time_member_login_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "redirect_to_one_time_member_home_without_private_data",
+      "expected_logged_in_behavior": "redirect_to_one_time_member_home",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/member.html",
+      "surface": "member_portal_static_legacy_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "legacy_code_entry_without_private_data_and_with_safe_member_home_return",
+      "expected_logged_in_behavior": "legacy_code_entry_with_safe_member_home_return",
       "privacy_risk": "high",
       "related_goal_ids": [
         "GOAL-CORE-003",

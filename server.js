@@ -74711,7 +74711,7 @@ function redactZoomLinks(value = '') {
 
 function liveMemberAccessUrl(req, accessCode = '') {
   const code = String(accessCode || '').trim();
-  return code ? `${requestBaseUrl(req)}/member?code=${encodeURIComponent(code)}` : '';
+  return code ? `${requestBaseUrl(req)}/member-library?code=${encodeURIComponent(code)}` : '';
 }
 
 function generateLiveMemberAccessCode() {
@@ -79862,10 +79862,18 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 });
+
+function redirectOneTimeMemberHome(req, res) {
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  res.setHeader('Cache-Control', 'no-store');
+  res.redirect(302, `/rabbi-member${query}`);
+}
+
+app.get(['/one-time/member-login', '/member', '/member-portal'], redirectOneTimeMemberHome);
 
 app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -79885,11 +79893,6 @@ app.get(['/member-library', '/one-time-member-library'], (req, res) => {
 app.get(['/one-time-classroom', '/one-time-classroom.html'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time-classroom.html'));
-});
-
-app.get(['/member', '/member-portal'], (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'member.html'));
 });
 
 app.get(['/provider-participant', '/provider/member'], (req, res) => {

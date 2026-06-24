@@ -297,6 +297,7 @@
           <a href="/member-library"><button type="button">Library</button></a>
           <a href="/one-time-classroom" aria-current="page"><button type="button">Classroom</button></a>
           <a href="/rabbi-member#support"><button type="button">Questions/support</button></a>
+          <a href="/rabbi-member?logout=1" id="memberLogoutLink"><button type="button">Account/logout</button></a>
           <a href="/"><button type="button">Return to public site</button></a>
         </div>
       </div>
@@ -409,6 +410,7 @@
       participationList: document.getElementById('participationList'),
       topQuestions: document.getElementById('topQuestions'),
       threadList: document.getElementById('threadList'),
+      logoutLink: document.getElementById('memberLogoutLink'),
     };
 
     function escapeHtml(value) {
@@ -617,6 +619,12 @@
       } finally {
         button.disabled = false;
       }
+    });
+
+    els.logoutLink?.addEventListener('click', () => {
+      localStorage.removeItem('oneTimeClassroomCode');
+      localStorage.removeItem('one_time_member_library_code');
+      localStorage.removeItem('rabbi_member_session');
     });
 
     if (state.code) {

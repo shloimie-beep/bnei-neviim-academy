@@ -110,6 +110,7 @@ test('repeatable public route privacy smoke covers the Phase 1 unauthenticated r
     '/become-service-provider',
     '/member',
     '/member-portal',
+    '/one-time/member-login',
     '/rabbi-member',
     '/operations',
     '/api/parent-portal',
