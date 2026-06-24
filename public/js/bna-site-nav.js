@@ -46,6 +46,9 @@
       backToRegistration: 'Back to registration',
       language: 'עברית',
       openMenu: 'Open navigation menu',
+      skipToContent: 'Skip to main content',
+      footerExplore: 'Explore',
+      footerPortals: 'Portals',
     },
     he: {
       brand: "Bnei Nevi'im Academy",
@@ -67,6 +70,9 @@
       signup: 'הרשמה',
       backToRegistration: 'חזרה להרשמה',
       language: 'English',
+      skipToContent: '\u05d3\u05dc\u05d2\u05d5 \u05dc\u05ea\u05d5\u05db\u05df \u05d4\u05e2\u05de\u05d5\u05d3',
+      footerExplore: '\u05e0\u05d9\u05d5\u05d5\u05d8',
+      footerPortals: '\u05e4\u05d5\u05e8\u05d8\u05dc\u05d9\u05dd',
       openMenu: 'פתיחת תפריט ניווט',
     },
   };
@@ -235,6 +241,24 @@
     return `<a class="${escapeHtml(className)}" href="${escapeHtml(href)}"${activeAttrs}>${escapeHtml(label)}</a>`;
   }
 
+  function skipTarget(active) {
+    const targetId = 'mainContent';
+    const assignTarget = () => {
+      const target = active === 'home'
+        ? document.querySelector('.hero')
+        : document.querySelector('main');
+      if (target) target.id = targetId;
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', assignTarget, { once: true });
+    } else {
+      assignTarget();
+    }
+
+    return `#${targetId}`;
+  }
+
   function closeNav(mount) {
     const links = mount.querySelector('.bna-site-nav-actions');
     const toggle = mount.querySelector('.bna-site-nav-toggle');
@@ -258,6 +282,7 @@
 
     mount.innerHTML = `
       <nav class="bna-site-nav" aria-label="Primary navigation">
+        <a class="bna-site-skip-link" href="${escapeHtml(skipTarget(active))}">${escapeHtml(copy.skipToContent || COPY.en.skipToContent)}</a>
         <div class="bna-site-nav-inner">
           <a class="bna-site-brand" href="${homeUrl(lang)}">
             <img src="/images/bna-logo-nobg.png" alt="Bnei Neviim Academy">
@@ -336,17 +361,55 @@
     mount.dataset.bnaSiteFooterRendered = 'true';
     const lang = selectedLanguage(mount);
     const copy = COPY[lang] || COPY.en;
+    const active = mount?.dataset.navActive || inferActiveNav();
+    const year = new Date().getFullYear();
     const nonprofit = lang === 'he'
       ? '\u05e2\u05de\u05d5\u05ea\u05d4 \u05e8\u05e9\u05d5\u05de\u05d4 \u05d1\u05de\u05d3\u05d9\u05e0\u05ea \u05e0\u05d9\u05d5 \u05d2\u05f3\u05e8\u05d6\u05d9'
       : 'Registered nonprofit in the State of New Jersey';
     const copyright = lang === 'he'
-      ? '\u00a9 2025 \u05d0\u05e7\u05d3\u05de\u05d9\u05d9\u05ea \u05d1\u05e0\u05d9 \u05e0\u05d1\u05d9\u05d0\u05d9\u05dd. \u05db\u05dc \u05d4\u05d6\u05db\u05d5\u05d9\u05d5\u05ea \u05e9\u05de\u05d5\u05e8\u05d5\u05ea.'
-      : "\u00a9 2025 Bnei Nevi'im Academy. All rights reserved.";
+      ? `\u00a9 ${year} \u05d0\u05e7\u05d3\u05de\u05d9\u05d9\u05ea \u05d1\u05e0\u05d9 \u05e0\u05d1\u05d9\u05d0\u05d9\u05dd. \u05db\u05dc \u05d4\u05d6\u05db\u05d5\u05d9\u05d5\u05ea \u05e9\u05de\u05d5\u05e8\u05d5\u05ea.`
+      : `\u00a9 ${year} Bnei Nevi'im Academy. All rights reserved.`;
+    const exploreLinks = [
+      { id: 'home', href: homeUrl(lang), label: copy.home || COPY.en.home },
+      { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school },
+      { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents },
+      { id: 'service-providers', href: serviceProvidersUrl(lang), label: copy.serviceProviders || COPY.en.serviceProviders },
+      { id: 'one-time', href: oneTimeUrl(), label: copy.oneTime || COPY.en.oneTime },
+      { id: 'blog', href: blogUrl(lang), label: copy.blog || COPY.en.blog },
+      { id: 'faq', href: faqUrl(lang), label: copy.faq || COPY.en.faq },
+      { id: 'signup', href: signupUrl(lang), label: copy.signup || COPY.en.signup },
+      { id: 'provider-join', href: '/providers/join?onboard=provider', label: copy.providerJoin || COPY.en.providerJoin },
+    ];
+    const portalLinks = [
+      { id: 'parent-login', href: '/parent/login', label: copy.parentLogin || COPY.en.parentLogin },
+      { id: 'student-login', href: '/student/login', label: copy.studentLogin || COPY.en.studentLogin },
+      { id: 'provider-login', href: '/provider', label: copy.providerLogin || COPY.en.providerLogin },
+    ];
+    const footerLink = (item) => {
+      const activeAttr = active === item.id ? ' aria-current="page"' : '';
+      return `<a href="${escapeHtml(item.href)}"${activeAttr}>${escapeHtml(item.label)}</a>`;
+    };
     mount.innerHTML = `
       <footer class="bna-site-footer">
         <div class="bna-site-footer-inner">
-          <strong>${escapeHtml(copy.brand)}</strong>
-          <span>${escapeHtml(copy.location)}</span>
+          <div class="bna-site-footer-brand">
+            <strong>${escapeHtml(copy.brand)}</strong>
+            <span>${escapeHtml(copy.location)}</span>
+          </div>
+          <nav class="bna-site-footer-map" aria-label="Footer navigation">
+            <section class="bna-site-footer-group" aria-labelledby="footerExploreHeading">
+              <h2 id="footerExploreHeading">${escapeHtml(copy.footerExplore || COPY.en.footerExplore)}</h2>
+              <div class="bna-site-footer-links">
+                ${exploreLinks.map(footerLink).join('')}
+              </div>
+            </section>
+            <section class="bna-site-footer-group" aria-labelledby="footerPortalsHeading">
+              <h2 id="footerPortalsHeading">${escapeHtml(copy.footerPortals || COPY.en.footerPortals)}</h2>
+              <div class="bna-site-footer-links">
+                ${portalLinks.map(footerLink).join('')}
+              </div>
+            </section>
+          </nav>
           <div class="bna-site-footer-socials" aria-label="Social profiles">
             <a href="https://www.youtube.com/channel/UCKnmIcZqhzNCdAbE6RK-U-g" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on YouTube">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg>

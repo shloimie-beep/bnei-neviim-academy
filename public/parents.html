@@ -91,17 +91,44 @@
         linear-gradient(135deg, rgba(232, 240, 248, 0.84), rgba(251, 244, 223, 0.92));
     }
 
-    .screenshot-placeholder {
+    .parent-preview {
       min-height: 250px;
       display: grid;
-      place-items: center;
-      border: 1px dashed rgba(30, 58, 95, 0.28);
+      gap: 12px;
+      align-content: center;
+      border: 1px solid rgba(30, 58, 95, 0.18);
       border-radius: 8px;
       background: #ffffff;
       color: var(--blue);
       padding: 20px;
-      text-align: center;
-      font-weight: 900;
+    }
+
+    .parent-preview h2 {
+      margin-bottom: 0;
+      color: var(--blue);
+      font-size: 1.25rem;
+    }
+
+    .parent-preview-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid rgba(30, 58, 95, 0.12);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--ink);
+      background: #f8fafc;
+      font-weight: 800;
+    }
+
+    .parent-preview-status {
+      border-radius: 999px;
+      background: rgba(201, 162, 39, 0.18);
+      color: #6b4f05;
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      white-space: nowrap;
     }
 
     .button-row {
@@ -170,9 +197,14 @@
           <a class="button" href="/documents/parent-handbook">Parent handbook</a>
         </div>
       </div>
-      <aside class="panel screenshot-panel" aria-label="Parent app screenshots">
-        <div class="screenshot-placeholder">Parent app screenshots coming soon</div>
-        <p class="muted">Live screenshots should be captured from the approved parent portal before publishing a final public walkthrough.</p>
+      <aside class="panel screenshot-panel" aria-label="Parent app workflow preview">
+        <div class="parent-preview">
+          <h2>Parent workflow preview</h2>
+          <div class="parent-preview-row"><span>Weekly goals and follow-up</span><span class="parent-preview-status">Visible</span></div>
+          <div class="parent-preview-row"><span>Technology boundaries</span><span class="parent-preview-status">Tracked</span></div>
+          <div class="parent-preview-row"><span>Provider requests</span><span class="parent-preview-status">Connected</span></div>
+        </div>
+        <p class="muted">This public preview explains the family workflow while private student details stay inside the parent portal.</p>
       </aside>
     </section>
 

@@ -281,14 +281,31 @@ h3 {
   padding: 0.55rem 0.9rem;
   color: var(--primary-blue);
   background: rgba(255, 255, 255, 0.75);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
   font-weight: 800;
   cursor: pointer;
+}
+
+.filter-btn:focus-visible {
+  outline: 3px solid rgba(30, 58, 95, 0.72);
+  outline-offset: 2px;
 }
 
 .filter-btn.is-active {
   border-color: var(--accent-gold);
   color: var(--ink);
   background: var(--gold-soft);
+}
+
+.filter-btn.is-active::before {
+  content: "";
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 999px;
+  background: currentColor;
+  flex: 0 0 auto;
 }
 
 .blog-grid {

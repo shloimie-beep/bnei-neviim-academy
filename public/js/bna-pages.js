@@ -245,7 +245,7 @@
             </a>
           </div>
           <span>${escapeHtml(nonprofit)}</span>
-          <span>&copy; 2025 Bnei Neviim Academy. All rights reserved.</span>
+          <span>&copy; ${new Date().getFullYear()} Bnei Neviim Academy. All rights reserved.</span>
         </div>
       </footer>`;
   }
