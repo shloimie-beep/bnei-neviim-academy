@@ -25809,3 +25809,27 @@ write, no deployment, no super-admin cross-account access for Rabbi Eli, and
 no BNA school accountability goal rendering or writing inside One Time review
 mode. Live deployment and actual WhatsApp credential handoff remain blocked
 until explicit operator approval of the exact recipient and full message body.
+
+## 2026-06-24T15:45:00+03:00 - Clean-Slate Control Tower Integration Base Started
+
+Registered `RAW-20260624-003` from the Control Tower Reconciliation goal packet
+after detecting that PR #14 already owns `RAW-20260624-002` and
+`REQ-20260624-012` through `REQ-20260624-027`. The clean control register uses
+non-colliding IDs `REQ-20260624-028` through `REQ-20260624-034`.
+
+Completed the first control-tower requirements: repository/worktree/PR/Railway
+census, preservation of the local Rabbi/One Time closeout as branch
+`codex/preserve-rabbi-closeout-20260624` at `487a660b`, and clean integration
+branch reconciliation from `origin/master` through PR #14, PR #15, and the
+preservation branch. Current integration HEAD is `161f8623`. Evidence is in
+`ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.md`,
+`ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.md`, and
+`ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md`.
+
+Verification passed for the merged base: PR #14 focused gate 72/72 after
+generated action coverage refresh, PR #15 Rabbi/auth/provider suite 33/33 plus
+four browser smokes, preservation One Time suite 57/57, Rabbi suite 33/33,
+One Time canonical journey smoke, `npm run secrets:audit`, JSON/JSONL parse,
+and `git diff --check`. No deployment, production database mutation, class
+backfill, Stripe/Vimeo write, real send, DNS change, credential change, or
+other external write was performed.

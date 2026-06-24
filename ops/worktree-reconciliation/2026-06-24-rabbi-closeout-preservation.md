@@ -8,7 +8,7 @@
 | Source HEAD before preservation | `a9528b2d9467174d76d4c25bfb028f9308f24b4f` |
 | Preservation branch | `codex/preserve-rabbi-closeout-20260624` |
 | Raw source | `RAW-20260623-002` |
-| Control source | `RAW-20260624-002` / `REQ-20260624-013` |
+| Control source | `RAW-20260624-003` / `REQ-20260624-029` |
 | External writes | None |
 | Production deploy | Not attempted |
 

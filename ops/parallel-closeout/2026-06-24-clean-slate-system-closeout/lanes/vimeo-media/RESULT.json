@@ -1,0 +1,12 @@
+{
+  "lane": "vimeo-media",
+  "branch": "codex/closeout-vimeo-media-20260624",
+  "status": "not_started",
+  "base_branch": "codex/clean-slate-integration-20260624",
+  "result_summary": "",
+  "requirements_closed": [],
+  "files_changed": [],
+  "verification": [],
+  "blockers": [],
+  "safe_to_merge": false
+}

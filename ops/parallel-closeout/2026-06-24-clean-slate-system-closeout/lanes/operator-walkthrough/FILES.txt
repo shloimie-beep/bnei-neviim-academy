@@ -1,0 +1,9 @@
+Owned prefixes:
+docs/owner-review/
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/operator-walkthrough/
+ops/playwright-smokes/
+ops/qa-runs/
+scripts/*walkthrough*.mjs
+tests/*walkthrough*.test.js
+
+Do not edit central control files; final integrator handles release summaries.

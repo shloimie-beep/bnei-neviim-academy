@@ -2,8 +2,8 @@
   "run_id": "2026-06-23-complete-system-reconciliation",
   "title": "Complete System Reconciliation And Ramble Hardening",
   "created_at": "2026-06-23T13:45:00+03:00",
-  "updated_at": "2026-06-23T21:10:13+03:00",
-  "active": true,
+  "updated_at": "2026-06-24T15:55:00+03:00",
+  "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "git_refs": {
@@ -16,5 +16,6 @@
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/12",
     "pr_branch": "codex/issue-8-complete-system-reconciliation",
     "pr_head_branch": "codex/issue-8-complete-system-reconciliation"
-  }
+  },
+  "superseded_by": "ops/execution-runs/2026-06-24-clean-slate-system-closeout"
 }

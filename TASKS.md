@@ -6,6 +6,17 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] Finish `RAW-20260624-003` / `TASK-20260624-001`: clean-slate control
+  tower reconciliation for PR #14, PR #15, and the preserved local Rabbi
+  closeout. Completed so far: repository/worktree census, preservation branch
+  `codex/preserve-rabbi-closeout-20260624` at `487a660b`, clean integration
+  branch `codex/clean-slate-integration-20260624`, PR #14 merge, PR #15 merge,
+  preserved closeout merge, PR reconciliation evidence, canonical execution
+  run, queue/Decision reconciliation, and control/lane handoffs. Next: push
+  the integration branch, open one draft control PR, update PR metadata, and
+  close the run.
+  No deploy, production DB mutation, class backfill, Stripe/Vimeo write, real
+  send, DNS change, or credential change is approved in this goal.
 - [x] Finish `RAW-20260623-006`: Rabbi Scheller workspace parity, unified
   login, navigation, tenant isolation, and API-usage readiness on isolated
   branch `codex/rabbi-scheller-parity-20260624` in
