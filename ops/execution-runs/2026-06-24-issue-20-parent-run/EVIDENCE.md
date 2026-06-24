@@ -71,9 +71,30 @@ Agent browser readback summary:
   `https://bneineviimacademy.org/provider.html?review=one-time` with no
   screenshot, no private data capture, and no horizontal overflow.
 
+## Helper Destination Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/HELPER-LINK-QA.md`
+- `src/lib/bna/helper/destination-resolver.js`
+- `src/lib/bna/helper/tool-registry.js`
+- `scripts/watchdog-helper-destinations.mjs`
+- `tests/helper-destination-resolver.test.js`
+- `ops/action-registry.json`
+- `ops/watchdog-audits/2026-06-24T20-27-watchdog-action-audit.md`
+- `ops/helper-destination-qa/20260624T203546Z/helper-destination-matrix.md`
+- `ops/helper-destination-qa/20260624T203546Z/helper-destination-matrix.json`
+
+Helper destination readback summary:
+
+- `open_operations_view` returns canonical route/action/scope metadata from
+  the route and action registries.
+- `ACTION-HELPER-OPEN-OPERATIONS-VIEW` is registered as a helper action.
+- The watchdog matrix passed 10/10 cases covering owner, parent, student,
+  provider, public, wrong-role, wrong-workspace, missing-route, and external
+  URL handling.
+- Server-visible Done remains blocked pending deploy/live proof.
+
 ## Pending Evidence
 
-- Bot/helper matrix and agent-mode QA.
 - Result drop-off/GitHub bridge proof.
 - Fleet/startup/parallel lane proof.
 - Queue hygiene proof.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
   "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
-  "updated_at": "2026-06-24T23:30:00+03:00",
+  "updated_at": "2026-06-24T23:50:00+03:00",
   "git_refs": {
     "base_branch": "codex/issue-18-class-intake-readonly-20260624",
     "working_branch": "codex/issue-20-parent-run-20260624",
@@ -325,10 +325,10 @@
       "depends_on": [
         "REQ-20260624-040"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_after_baseline",
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
       "can_continue_without_operator": true,
-      "next_action": "Implement or harden canonical destination resolver and role-scoped helper intent evaluation.",
+      "next_action": "Continue to REQ-20260624-044 while final deploy/live proof remains gated by REQ-20260624-048.",
       "acceptance_criteria": [
         "Internal helper links come from route/action registries, identity, workspace, project, role, and current context.",
         "Each link includes route key, path, required role, scope, reason, and fallback.",
@@ -337,23 +337,44 @@
         "Agent-mode synthetic conversations follow suggested links without real private data."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/HELPER-LINK-QA.md",
+        "ops/watchdog-audits/2026-06-24T20-27-watchdog-action-audit.md",
+        "ops/helper-destination-qa/20260624T203546Z/helper-destination-matrix.md",
+        "ops/helper-destination-qa/20260624T203546Z/helper-destination-matrix.json",
+        "tests/helper-destination-resolver.test.js",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending resolver tests, matrix, and browser QA."
+        "PASS node --check src\\lib\\bna\\helper\\destination-resolver.js",
+        "PASS node --check src\\lib\\bna\\helper\\tool-registry.js",
+        "PASS node --check scripts\\watchdog-helper-destinations.mjs",
+        "PASS node --test tests\\helper-destination-resolver.test.js 5/5",
+        "PASS node --test tests\\bna-helper-tools.test.js tests\\helper-destination-resolver.test.js 15/15",
+        "PASS node --test tests\\action-registry-telegram-ui-bot.test.js 33/33",
+        "PASS node --test tests\\universal-control-plane-scope-policy.test.js 10/10",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS npm run watchdog:helper-destinations with 10/10 matrix cases",
+        "PASS npm run bna:run:source-coverage",
+        "PASS npm run bna:run:stale-evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4713 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-044"
       ],
       "implementation_files": [
-        "server.js",
-        "public/",
-        "scripts/",
-        "tests/",
-        "ops/route-registry.json",
+        "src/lib/bna/helper/destination-resolver.js",
+        "src/lib/bna/helper/tool-registry.js",
+        "scripts/watchdog-helper-destinations.mjs",
+        "tests/helper-destination-resolver.test.js",
+        "package.json",
         "ops/action-registry.json"
       ],
       "deployment_required": true,
+      "blocker": "Server-visible helper destination resolver changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke helper destination behavior.",
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-24T23:50:00+03:00"
     },
     {
       "id": "REQ-20260624-044",
@@ -627,6 +648,19 @@
       "requirement_id": "REQ-20260624-042",
       "status": "done",
       "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|helper_correctness|GITHUB-ISSUE-20|REQ-20260624-043|helper_destination_resolver",
+      "title": "Issue #20 helper/bot destination resolver and role QA",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-043",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "Server-visible helper behavior needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
     }
   ],
   "decisions": []

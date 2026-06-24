@@ -11,7 +11,7 @@ Current branch:
 
 Open requirement:
 
-- `REQ-20260624-043` - Bot/helper link correctness and agent-mode QA.
+- `REQ-20260624-044` - Durable agent result drop-off and GitHub bridge.
 
 Next safe step:
 
@@ -23,12 +23,12 @@ Then recheck Git/GitHub/Railway/live baseline only if the branch or live
 target has changed. Otherwise begin Batch C using the parent coordination
 rules in `COORDINATION.md` and `LANE-MANIFEST.json`.
 
-Batch B is now locally complete. If `npm run bna:run:next` selects
-`REQ-20260624-043`, begin the canonical helper/bot destination resolver,
-intent matrix, and role-scoped browser QA. Use the local agent browser harness
-from `docs/agent-browser-harness.md` for role smokes where a persistent
-profile is useful, but do not store screenshots or private authenticated page
-content from those profiles in the repo.
+Batch B is locally complete. Batch C is locally verified and blocked from Done
+only by deploy/live proof under `REQ-20260624-048`. If
+`npm run bna:run:next` selects `REQ-20260624-044`, begin the durable typed
+agent result drop-off and GitHub issue/comment bridge. Preserve idempotency,
+scope, and owner text; do not overwrite another workspace or post to GitHub
+without the approved same-thread status path.
 
 Do not run Tier 3 actions without explicit approval:
 

@@ -26200,3 +26200,31 @@ paths and 0 findings, diff check, and next-batch selection for
 No deploy, production mutation, external write, send, charge, DNS change,
 credential change, class backfill, Drive write, public publishing, or secret
 exposure was performed. Next Issue #20 batch is `REQ-20260624-043`.
+
+## 2026-06-24T23:50:00+03:00 - Issue #20 Helper Destination QA Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-043`. Added
+a registry-backed helper destination resolver, wired helper
+`open_operations_view` through it, registered
+`ACTION-HELPER-OPEN-OPERATIONS-VIEW`, and added a reusable
+`watchdog:helper-destinations` matrix report.
+
+The resolver returns same-origin route paths or safe fallbacks with route key,
+required role, access classification, actor scope, helper action key or typed
+action ID, reason, and checks for route/action registration, role, workspace,
+typed-action permission, and browser-click-substitution policy. The matrix
+passed 10/10 owner, parent, student, provider, public, wrong-role,
+wrong-workspace, missing-route, and external-URL cases.
+
+Verification passed: resolver/tool-registry/watchdog script syntax checks,
+resolver tests 5/5, helper+resolver tests 15/15, action-registry
+Telegram/UI/bot tests 33/33, control-plane scope-policy tests 10/10,
+`npm run watchdog:actions` with 0 findings, and
+`npm run watchdog:helper-destinations` with 10/10 matrix cases.
+
+`REQ-20260624-043` remains blocked from Done only because this is
+server-visible helper behavior and requires deploy/live proof under
+`REQ-20260624-048`. No deploy, production mutation, external write, browser
+profile screenshot, private page capture, send, charge, DNS change, credential
+change, class backfill, Drive write, public publishing, or secret exposure was
+performed. Next Issue #20 batch is `REQ-20260624-044`.

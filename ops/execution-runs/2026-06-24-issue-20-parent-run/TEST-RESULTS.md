@@ -56,9 +56,24 @@
   `npm run bna:run:stale-evidence`, JSON/JSONL parse, `npm run secrets:audit`
   with 4709 tracked paths and 0 tracked secret-risk files, `git diff --check`,
   and `npm run bna:run:next` selected `REQ-20260624-043`.
+- `node --check src\lib\bna\helper\destination-resolver.js` passed.
+- `node --check src\lib\bna\helper\tool-registry.js` passed.
+- `node --check scripts\watchdog-helper-destinations.mjs` passed.
+- `node --test tests\helper-destination-resolver.test.js` passed 5/5.
+- `node --test tests\bna-helper-tools.test.js tests\helper-destination-resolver.test.js` passed 15/15.
+- `node --test tests\action-registry-telegram-ui-bot.test.js` passed 33/33.
+- `node --test tests\universal-control-plane-scope-policy.test.js` passed 10/10.
+- `npm run watchdog:actions` passed with 0 findings.
+- `npm run watchdog:helper-destinations` passed with 10/10 matrix cases and
+  wrote `ops/helper-destination-qa/20260624T203546Z/`.
+- Post-helper execution-run validation passed:
+  `npm run bna:run:source-coverage`, `npm run bna:run:stale-evidence`,
+  JSON/JSONL parse, `npm run secrets:audit` with 4713 tracked paths and 0
+  tracked secret-risk files, `git diff --check`, and `npm run bna:run:next`
+  selected `REQ-20260624-044`.
 
 ## Pending
 
 - Focused tests for remaining implementation lanes, starting with
-  `REQ-20260624-043`.
+  `REQ-20260624-044`.
 - Full repository tests and watchdogs before final closeout.

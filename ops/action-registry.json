@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-23T10:05:23+03:00",
+  "updated_at": "2026-06-24T23:45:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -102,6 +102,26 @@
         "expected_result": "Planner maps watchdog audit language to run_watchdog_audit."
       },
       "related_goal_ids": [
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-HELPER-OPEN-OPERATIONS-VIEW",
+      "label": "Open Operations view",
+      "surface": "operations_helper",
+      "route": "/operations",
+      "selector_hint": "helper tool open_operations_view",
+      "expected_behavior": "Returns a canonical scoped Operations route from the route registry with route key, required role, scope, reason, and safe fallback metadata.",
+      "permission": "super_admin/project scoped helper",
+      "status": "active",
+      "helper_tool": "open_operations_view",
+      "test": {
+        "type": "helper_command",
+        "expected_result": "Destination resolver maps helper navigation only to registered same-origin routes and blocks wrong-role, wrong-workspace, nonexistent, or unregistered destinations."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
         "GOAL-CORE-010",
         "GOAL-CORE-015"
       ]

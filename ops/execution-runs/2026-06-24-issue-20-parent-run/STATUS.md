@@ -61,3 +61,20 @@
   connector tokens, production mutation, deploy, send, charge, DNS change,
   class backfill, Drive write, or credential change was performed.
 - Current batch moved to `REQ-20260624-043`.
+
+2026-06-24T23:50:00+03:00:
+
+- `REQ-20260624-043` helper/bot link correctness and agent-mode role QA is
+  locally verified and blocked from terminal Done only by deploy/live proof.
+- Added the registry-backed helper destination resolver, wired
+  `open_operations_view` through it, registered
+  `ACTION-HELPER-OPEN-OPERATIONS-VIEW`, and added a permanent
+  `watchdog:helper-destinations` matrix.
+- Matrix evidence passed 10/10 cases across owner, parent, student, provider,
+  public, wrong-role, wrong-workspace, missing-route, and external-URL paths.
+- Focused resolver/helper/action/control-plane tests and action/helper
+  destination watchdogs passed.
+- No deploy, production mutation, external write, browser profile screenshot,
+  private page capture, send, charge, DNS change, credential change, class
+  backfill, Drive write, public publishing, or secret exposure was performed.
+- Current batch moved to `REQ-20260624-044`.
