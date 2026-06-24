@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-clean-slate-system-closeout",
   "title": "Clean-Slate Control Tower System Closeout",
-  "updated_at": "2026-06-24T16:25:00+03:00",
+  "updated_at": "2026-06-24T16:45:00+03:00",
   "raw_id": "RAW-20260624-003",
   "workspace_key": "bna_platform",
   "project_key": "clean_slate_control_tower",
@@ -90,7 +90,7 @@
       "source_id": "RAW-20260624-003",
       "requirement_id": "REQ-20260624-028",
       "visible": false,
-      "status": "running"
+      "status": "completed"
     }
   ],
   "requirements": [
@@ -106,7 +106,7 @@
       "priority": "P0",
       "can_continue_without_operator": true,
       "deployment_required": false,
-      "updated_at": "2026-06-24T16:25:00+03:00",
+      "updated_at": "2026-06-24T16:45:00+03:00",
       "source_statement_ids": [
         "SRC-20260624-028"
       ],
@@ -402,23 +402,38 @@
         "REQ-20260624-031",
         "REQ-20260624-033"
       ],
-      "status": "in_progress",
-      "implementation_status": "validation_push_pr_in_progress",
-      "next_action": "Run run CLI status/validate/blockers/next, commit, push, open draft PR, and update final control result.",
+      "status": "done",
+      "implementation_status": "validated_pushed_draft_pr_opened",
+      "next_action": "Start parallel lanes from the pushed control branch.",
       "acceptance_criteria": [
         "Run CLI passes or blockers are explicit; branch is pushed; one draft integration PR exists; final response reports lane safety only after all prior requirements are terminal."
       ],
       "evidence": [
-        "PENDING final validation/push/PR"
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:status",
+        "PASS npm run bna:run:blockers returned no external blockers for this control run",
+        "PASS npm run bna:run:next pointed to REQ-20260624-034 before final closeout",
+        "PASS npm run secrets:audit",
+        "PASS git diff --check and staged JSON/JSONL parse",
+        "PASS git push -u origin codex/clean-slate-integration-20260624",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
       ],
       "verification": [
         "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
-        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/"
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
       ],
       "implementation_files": [
         "tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md",
-        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/run.json"
-      ]
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/run.json",
+        "ops/execution-runs/2026-06-24-clean-slate-system-closeout/requirements.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.md"
+      ],
+      "implementation_commit": "f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0",
+      "pushed_commit": "f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
     }
   ]
 }

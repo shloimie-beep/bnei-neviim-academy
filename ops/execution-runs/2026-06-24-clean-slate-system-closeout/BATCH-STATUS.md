@@ -8,4 +8,4 @@
 | D | REQ-20260624-031 | done | Validate run metadata. |
 | E | REQ-20260624-032 | done | Queue/Decision reconciliation written in control artifacts. |
 | F | REQ-20260624-033 | done | Control manifest and lane handoffs written. |
-| G | REQ-20260624-034 | in_progress | Validate, push, open draft PR. |
+| G | REQ-20260624-034 | done | Draft PR #16 opened; parallel lanes may start from the control branch. |

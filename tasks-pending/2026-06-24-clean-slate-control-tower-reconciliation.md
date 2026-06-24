@@ -16,7 +16,7 @@ Raw storage:
 |---|---|
 | Raw ID | RAW-20260624-003 |
 | Source | Codex chat attachment |
-| Parse status | registered / implementation running |
+| Parse status | implemented |
 | Requirement register | this file |
 | Active goal objective | `BNA CLEAN-SLATE CONTROL TOWER - RECONCILE ALL WORK AND CREATE INTEGRATION BASE` |
 | Goal tool used | yes |
@@ -33,7 +33,7 @@ Raw storage:
 | Execution directive | Preserve raw source, create this register, then execute practical batches until every requirement has a terminal status. |
 | Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
 | Deploy/live-smoke required for app-visible work | no deployment in this goal; integration branch and draft PR required |
-| Next requirement IDs to work | `REQ-20260624-034` final validation, push, and draft PR |
+| Next requirement IDs to work | none; parallel lanes may start from the control branch |
 
 ## Parsed requirements
 
@@ -45,7 +45,7 @@ Raw storage:
 | REQ-20260624-031 | Create the canonical `2026-06-24-clean-slate-system-closeout` execution run and repair stale run metadata. | RAW-20260624-003 | bna_platform / clean_slate_control_tower | Codex | execution_run_metadata | P0 | D | REQ-20260624-030 | New run folder includes required files; `latest.json` points to the new run; older active runs are inactive/superseded without deleting history; run metadata points to actual branch, SHA, draft PR, remote branch, and source coverage. | `ops/execution-runs/2026-06-24-clean-slate-system-closeout/*`; `ops/execution-runs/latest.json` | no | Done |
 | REQ-20260624-032 | Reconcile queue, Tasks, and Decisions without deleting history. | RAW-20260624-003 | bna_platform / clean_slate_control_tower | Codex | queue_decision_reconciliation | P0 | E | REQ-20260624-028 | Census covers executable Codex tasks, operator Decisions, completed/stale/duplicate/superseded tasks, old-branch pointers, resolved Decisions, remaining credential/account blockers, and lane tasks for Prompts 02-08. | `TASKS.md`; `tasks-pending/*`; `ops/agent-task-ledger.jsonl`; `ops/agent-changelog.md`; queue census artifacts | no | Done |
 | REQ-20260624-033 | Create the control manifest and parallel-lane handoff files. | RAW-20260624-003 | bna_platform / clean_slate_control_tower | Codex | control_manifest | P0 | F | REQ-20260624-030, REQ-20260624-031, REQ-20260624-032 | `CONTROL.json`, `CONTROL.md`, and lane `HANDOFF.md`, `RESULT.json`, `TESTS.md`, `FILES.txt`, `BLOCKERS.md` files exist with branch names, ownership, forbidden central files, approved effects, final integrator actions, merge order, and release gates. | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/*` | no | Done |
-| REQ-20260624-034 | Validate, push, open/update one draft control PR, and decide whether parallel lanes are safe to start. | RAW-20260624-003 | bna_platform / clean_slate_control_tower | Codex | control_pr_closeout | P0 | G | REQ-20260624-031, REQ-20260624-033 | `npm run bna:run:status`, `validate`, `blockers`, and `next` pass; integration branch and control files are committed/pushed; one draft integration PR exists; final response can report `SAFE_TO_START_PARALLEL_LANES: YES` only if every previous requirement is terminal. | git branch/PR; run CLI; final register audit | no | In progress |
+| REQ-20260624-034 | Validate, push, open/update one draft control PR, and decide whether parallel lanes are safe to start. | RAW-20260624-003 | bna_platform / clean_slate_control_tower | Codex | control_pr_closeout | P0 | G | REQ-20260624-031, REQ-20260624-033 | `npm run bna:run:status`, `validate`, `blockers`, and `next` pass; integration branch and control files are committed/pushed; one draft integration PR exists; final response can report `SAFE_TO_START_PARALLEL_LANES: YES` only if every previous requirement is terminal. | git branch/PR; run CLI; final register audit | no | Done |
 
 ## Parsed tasks
 
@@ -53,7 +53,7 @@ No new default visible human Task is created. This is Codex/Agent lifecycle work
 
 | ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
 |---|---|---|---|---|---|---|---|---|
-| TASK-20260624-001 | clean-slate-control-tower-reconciliation | Reconcile PR #14, PR #15, local Rabbi closeout, stale run metadata, and queue state into one canonical integration base. | Codex | bna_platform / clean_slate_control_tower | RAW-20260624-003 | REQ-20260624-028 through REQ-20260624-034 | Validate, push the integration branch, and open one draft control PR. | Agent lifecycle only | Running |
+| TASK-20260624-001 | clean-slate-control-tower-reconciliation | Reconcile PR #14, PR #15, local Rabbi closeout, stale run metadata, and queue state into one canonical integration base. | Codex | bna_platform / clean_slate_control_tower | RAW-20260624-003 | REQ-20260624-028 through REQ-20260624-034 | Start parallel lanes from the pushed control branch. | Agent lifecycle only | Completed |
 
 ## Decisions
 
@@ -83,7 +83,7 @@ No new default visible human Task is created. This is Codex/Agent lifecycle work
 | REQ-20260624-031 | execution-run files | Create canonical active run and validate CLI. | `npm run bna:run:validate` passed after structured schema repair. | pending | pending | no deploy |
 | REQ-20260624-032 | task/Decision queue | Census/dedupe/supersede without deleting history. | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/QUEUE-DECISION-RECONCILIATION.md` and JSON companion created. | pending | pending | no deploy |
 | REQ-20260624-033 | control manifests/handoffs | Write control and lane handoff files. | `CONTROL.md`, `CONTROL.json`, and seven lane handoff folders created. | pending | pending | no deploy |
-| REQ-20260624-034 | git/PR/validation | Push branch and draft PR, run run CLI closeout checks. | In progress | pending | pending | no deploy |
+| REQ-20260624-034 | git/PR/validation | Push branch and draft PR, run run CLI closeout checks. | Branch pushed at `f34cdd05`; draft PR #16 opened; run CLI/status/blockers/diff/secrets checks passed. | `f34cdd05` | `f34cdd05` | no deploy |
 
 ## Final audit
 
@@ -95,4 +95,10 @@ No new default visible human Task is created. This is Codex/Agent lifecycle work
 | REQ-20260624-031 | Done | New active run folder; `latest.json`; stale run superseded | execution-run files | `npm run bna:run:validate` passed | none |
 | REQ-20260624-032 | Done | `QUEUE-DECISION-RECONCILIATION.md` and JSON | control queue artifacts; register/task references | JSON/readback pending final closeout validation | none |
 | REQ-20260624-033 | Done | `CONTROL.md`, `CONTROL.json`, seven lane folders | control manifest and lane handoffs | JSON/readback pending final closeout validation | none |
-| REQ-20260624-034 | In progress | Run is ready for final validation/push/PR. | git/run/control files | pending | Need commit, push, draft PR, and final run CLI closeout. |
+| REQ-20260624-034 | Done | Branch `codex/clean-slate-integration-20260624` pushed; draft PR #16 opened at `https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`; run CLI/status/blockers/diff/secrets checks passed. | git/run/control files | `npm run bna:run:status`, `validate`, `blockers`, `next`, `npm run secrets:audit`, `git diff --check`, staged JSON/JSONL parse | none |
+
+## Closeout
+
+`SAFE_TO_START_PARALLEL_LANES: YES`.
+
+Parallel lane workers should branch from `codex/clean-slate-integration-20260624` after pulling the latest pushed control branch and should use `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.md` plus their lane folder as the handoff.

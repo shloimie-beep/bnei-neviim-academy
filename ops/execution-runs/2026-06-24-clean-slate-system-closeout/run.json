@@ -2,7 +2,7 @@
   "run_id": "2026-06-24-clean-slate-system-closeout",
   "title": "Clean-Slate Control Tower System Closeout",
   "created_at": "2026-06-24T15:55:00+03:00",
-  "updated_at": "2026-06-24T16:25:00+03:00",
+  "updated_at": "2026-06-24T16:45:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -22,12 +22,15 @@
     "pr15_branch": "codex/rabbi-scheller-parity-20260624",
     "pr15_head": "1ab57eac802ef172a5e96651dabc203d3420cbd9",
     "preservation_branch": "codex/preserve-rabbi-closeout-20260624",
-    "preservation_head": "487a660ba62db91efb139adb62f11f47044d2ffe"
+    "preservation_head": "487a660ba62db91efb139adb62f11f47044d2ffe",
+    "remote_branch": "origin/codex/clean-slate-integration-20260624",
+    "pushed_control_commit": "f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0",
+    "draft_pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
   },
   "current_batch": {
     "batch_id": "G",
     "requirement_id": "REQ-20260624-034",
     "title": "Validation, push, and draft PR",
-    "status": "in_progress"
+    "status": "done"
   }
 }

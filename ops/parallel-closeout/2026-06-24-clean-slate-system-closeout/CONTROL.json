@@ -2,10 +2,10 @@
   "run_id": "2026-06-24-clean-slate-system-closeout",
   "raw_id": "RAW-20260624-003",
   "created_at": "2026-06-24T16:20:00+03:00",
-  "updated_at": "2026-06-24T16:20:00+03:00",
+  "updated_at": "2026-06-24T16:45:00+03:00",
   "control_branch": "codex/clean-slate-integration-20260624",
   "integration_app_base_sha": "161f8623c50d7ef226066d101bfa58c28aff2346",
-  "draft_pr_url": null,
+  "draft_pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
   "master_sha": "a9528b2d9467174d76d4c25bfb028f9308f24b4f",
   "source_pr_heads": {
     "pr_14": {

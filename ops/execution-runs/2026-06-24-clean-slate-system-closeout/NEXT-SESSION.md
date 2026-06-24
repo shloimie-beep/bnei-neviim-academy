@@ -1,3 +1,3 @@
 # Next Session
 
-Continue from `REQ-20260624-034`: run final validation, commit and push `codex/clean-slate-integration-20260624`, open one draft integration PR, then update PR URL/head metadata and close the register.
+Parallel lanes may start from `codex/clean-slate-integration-20260624` after pulling the latest pushed branch. Draft PR #16 is the canonical control PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`.

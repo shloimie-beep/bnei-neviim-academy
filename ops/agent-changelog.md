@@ -25833,3 +25833,21 @@ One Time canonical journey smoke, `npm run secrets:audit`, JSON/JSONL parse,
 and `git diff --check`. No deployment, production database mutation, class
 backfill, Stripe/Vimeo write, real send, DNS change, credential change, or
 other external write was performed.
+
+## 2026-06-24T16:45:00+03:00 - Clean-Slate Control Tower Base Closed
+
+Completed `RAW-20260624-003` / `TASK-20260624-001` through terminal statuses.
+The canonical control branch `codex/clean-slate-integration-20260624` now
+contains `origin/master`, PR #14 including PR #12/#13 history, PR #15, the
+preserved Rabbi/One Time local closeout branch, the canonical execution run,
+queue/Decision reconciliation, and seven lane handoff folders.
+
+Pushed control commit `f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0` and opened
+draft PR #16:
+`https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`. Validation
+passed: `npm run bna:run:status`, `npm run bna:run:validate`,
+`npm run bna:run:blockers`, `npm run bna:run:next`, `npm run secrets:audit`,
+`git diff --check`, and staged JSON/JSONL parse. No deployment, production DB
+mutation, class backfill, Stripe/Vimeo external write, real send, DNS change,
+credential rotation, or production account change was performed. Parallel
+lanes are safe to start from the pushed control branch.
