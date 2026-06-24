@@ -11,7 +11,7 @@ Current branch:
 
 Open requirement:
 
-- `REQ-20260624-041` - Global visual quality system and watchdog.
+- `REQ-20260624-042` - Persistent authenticated agent-browser harness.
 
 Next safe step:
 
@@ -20,9 +20,9 @@ npm run bna:run:next
 ```
 
 Then recheck Git/GitHub/Railway/live baseline and write the parent coordination
-manifest only if the branch has changed. Otherwise begin the visual-quality
-audit from Batch A using the parent coordination rules in `COORDINATION.md` and
-`LANE-MANIFEST.json`.
+manifest only if the branch has changed. Otherwise begin the Batch B
+agent-browser harness using the parent coordination rules in `COORDINATION.md`
+and `LANE-MANIFEST.json`.
 
 Do not run Tier 3 actions without explicit approval:
 

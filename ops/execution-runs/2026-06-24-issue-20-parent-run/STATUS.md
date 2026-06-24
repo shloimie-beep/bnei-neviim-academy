@@ -30,3 +30,16 @@
 - Run validation, source coverage, stale-evidence detection, JSON/JSONL parse,
   `git diff --check`, and `npm run bna:run:next` passed for the checkpoint.
 - Next executable requirement remains `REQ-20260624-041`.
+
+2026-06-24T23:20:00+03:00:
+
+- `REQ-20260624-041` visual-quality implementation is locally verified and
+  blocked from terminal Done only by deploy/live proof.
+- Permanent `watchdog:visual` now supports `--start-local` browser auditing
+  across 9 public/app/review surfaces and 3 viewports with screenshot evidence.
+- Fixed public desktop nav clipping, One Time review tap-target sizing, and One
+  Time landing consent checkbox sizing.
+- Final visual matrix passed with 0 findings. Owner-review public visual,
+  focused visual/UI tests, static UI watchdog, and static visual watchdog also
+  passed.
+- Current batch moved to `REQ-20260624-042`.

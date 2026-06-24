@@ -200,10 +200,10 @@
       "depends_on": [
         "REQ-20260624-040"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_after_baseline",
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
       "can_continue_without_operator": true,
-      "next_action": "Audit rendered UI at 390x844, 768x1024, and 1440x900; record defects and implement shared invariants.",
+      "next_action": "Continue with REQ-20260624-042 while final deploy/live proof remains gated by REQ-20260624-048.",
       "acceptance_criteria": [
         "Required surfaces and states are audited with screenshots, selectors, severity, and acceptance tests.",
         "Canonical CSS/components implement measurable button, footer, spacing, card, form, alert, table, shell, and responsive invariants.",
@@ -211,20 +211,39 @@
         "Visual watchdogs fail or create findings for future regressions."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/VISUAL-QUALITY.md",
+        "ops/watchdog-audits/2026-06-24T20-01-watchdog-visual-baseline.md",
+        "ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/visual-baseline-browser-matrix.md",
+        "ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/visual-baseline-browser-matrix.json",
+        "docs/owner-review/PUBLIC-VISUAL-AUDIT.md",
+        "ops/watchdog-audits/2026-06-24T20-03-watchdog-visual-baseline.md",
+        "ops/watchdog-audits/2026-06-24T20-03-watchdog-ui-smoke.md",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending visual audit and watchdog implementation."
+        "PASS node --check scripts/watchdog-visual-baseline.mjs",
+        "PASS node --check public/js/bna-site-nav.js",
+        "PASS npm run watchdog:visual:local with 0 findings across 9 routes and 3 viewports",
+        "PASS npm run owner-review:visual",
+        "PASS focused visual/UI tests 22/22",
+        "PASS npm run watchdog:ui with 0 findings",
+        "PASS npm run watchdog:visual with 0 findings"
       ],
       "implementation_files": [
-        "public/",
-        "scripts/",
-        "tests/"
+        "scripts/watchdog-visual-baseline.mjs",
+        "package.json",
+        "public/css/bna-site-nav.css",
+        "public/css/one-time-shared-review.css",
+        "public/js/bna-site-nav.js",
+        "public/index.html",
+        "public/one-time/index.html"
       ],
       "deployment_required": true,
+      "blocker": "App-visible visual-quality changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke these app-visible changes.",
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-24T23:20:00+03:00"
     },
     {
       "id": "REQ-20260624-042",
@@ -568,6 +587,19 @@
       "requirement_id": "REQ-20260624-040",
       "status": "done",
       "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|visual_quality|GITHUB-ISSUE-20|REQ-20260624-041|visual_watchdog",
+      "title": "Issue #20 visual-quality watchdog and first UI fixes",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-041",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "App-visible changes need deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
     }
   ],
   "decisions": []

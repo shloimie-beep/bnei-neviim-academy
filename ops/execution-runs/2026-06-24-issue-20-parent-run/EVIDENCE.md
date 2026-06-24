@@ -28,9 +28,28 @@ Readback summary:
 - Validation: run validate, source coverage, stale-evidence, JSON/JSONL parse,
   diff check, and next-batch selection passed.
 
+## Visual Quality Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/VISUAL-QUALITY.md`
+- `ops/watchdog-audits/2026-06-24T20-01-watchdog-visual-baseline.md`
+- `ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/visual-baseline-browser-matrix.md`
+- `ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/visual-baseline-browser-matrix.json`
+- `ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/screenshots/`
+- `docs/owner-review/PUBLIC-VISUAL-AUDIT.md`
+- `ops/watchdog-audits/2026-06-24T20-03-watchdog-visual-baseline.md`
+- `ops/watchdog-audits/2026-06-24T20-03-watchdog-ui-smoke.md`
+
+Visual readback summary:
+
+- Local browser matrix covered 9 routes across 390x844, 768x1024, and
+  1440x900.
+- Final findings: 0.
+- Fixed public nav clipping, One Time review tap-target sizing, and One Time
+  landing consent checkbox sizing.
+- App-visible Done remains blocked pending deploy/live proof.
+
 ## Pending Evidence
 
-- Visual audit screenshots and defect register.
 - Browser harness smoke evidence.
 - Bot/helper matrix and agent-mode QA.
 - Result drop-off/GitHub bridge proof.

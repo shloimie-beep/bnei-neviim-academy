@@ -21,8 +21,25 @@
 - `npm run bna:run:next` selected `REQ-20260624-041`.
 - Checkpoint commit `3e0902f651302ae594e5462f3a88913b40406d8c` was pushed to
   `origin/codex/issue-20-parent-run-20260624`.
+- `node --check scripts\watchdog-visual-baseline.mjs` passed.
+- `node --check public\js\bna-site-nav.js` passed.
+- `npm run watchdog:visual:local` passed with 0 findings across 9 routes and 3
+  viewports.
+- `npm run owner-review:visual` passed for release-local and production public.
+- Focused visual/UI tests passed 22/22:
+  `tests\bna-brand-shell.test.js`,
+  `tests\app-wide-brand-shell.test.js`,
+  `tests\one-time-shared-review-branding.test.js`,
+  `tests\one-time-focused-landing.test.js`, and
+  `tests\one-time-product-system.test.js`.
+- `npm run watchdog:ui` passed with 0 findings.
+- `npm run watchdog:visual` passed with 0 findings.
+- Post-visual execution-run validation passed:
+  `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
+  `npm run bna:run:stale-evidence`, JSON/JSONL parse, `git diff --check`, and
+  `npm run bna:run:next` selected `REQ-20260624-042`.
 
 ## Pending
 
-- Focused tests for each implementation lane.
+- Focused tests for remaining implementation lanes.
 - Full repository tests and watchdogs before final closeout.

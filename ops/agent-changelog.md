@@ -26146,3 +26146,28 @@ Checkpoint commit `3e0902f651302ae594e5462f3a88913b40406d8c` was pushed to
 `npm run bna:run:validate`, `npm run bna:run:source-coverage`, `npm run
 bna:run:stale-evidence`, JSON/JSONL parsing, `git diff --check`, and `npm run
 bna:run:next`.
+
+## 2026-06-24T23:20:00+03:00 - Issue #20 Visual Quality Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-041`. The
+permanent `watchdog:visual` command now supports `--start-local` browser
+auditing and writes screenshot-backed matrix evidence across public,
+Operations, provider, parent/support, student/support, One Time, classroom, and
+email/support review surfaces at 390x844, 768x1024, and 1440x900.
+
+Fixed the public desktop nav clipping by shortening the provider CTA to
+`Advertise for free` and giving the public brand lockup stable width. Fixed One
+Time review-mode topbar/button tap targets and the One Time public landing
+consent checkbox size.
+
+Verification passed: `node --check scripts/watchdog-visual-baseline.mjs`,
+`node --check public/js/bna-site-nav.js`, `npm run watchdog:visual:local` with
+0 findings, `npm run owner-review:visual`, focused visual/UI tests 22/22,
+`npm run watchdog:ui`, and `npm run watchdog:visual`.
+
+`REQ-20260624-041` is blocked from Done only because the changes are
+app-visible and require deploy/live proof. The deploy/live gate remains under
+`REQ-20260624-048` with the Railway targeting blocker already recorded. No
+deploy, production mutation, external write, send, charge, DNS change,
+credential change, class backfill, Drive write, or secret exposure was
+performed.

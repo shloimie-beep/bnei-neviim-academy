@@ -138,6 +138,7 @@
     "owner-review:assistant-runtime": "node scripts/smoke-owner-review-assistant-runtime.mjs",
     "owner-review:external-readiness": "node scripts/smoke-owner-review-external-readiness.mjs",
     "watchdog:visual": "node scripts/watchdog-visual-baseline.mjs",
+    "watchdog:visual:local": "node scripts/watchdog-visual-baseline.mjs --start-local",
     "watchdog:all": "npm run watchdog:audit && npm run watchdog:links && npm run watchdog:actions && npm run watchdog:security && npm run watchdog:raw && npm run watchdog:content && npm run watchdog:communications",
     "studio:smoke": "node --test tests/service-provider-studio-browser-smoke.test.js",
     "watchdog:once": "node scripts/agent-fleet-supervisor.mjs --watchdog --once",
