@@ -119,9 +119,34 @@ Agent result bridge readback summary:
   by explicit post approval gates; no GitHub status comment was posted.
 - Server-visible/API/UI Done remains blocked pending deploy/live proof.
 
+## Agent Fleet Hardening Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-FLEET-HARDENING.md`
+- `src/lib/bna/agent-fleet-hardening.js`
+- `scripts/agent-fleet-supervisor.mjs`
+- `scripts/start-agent-fleet.ps1`
+- `scripts/start-watchdog.ps1`
+- `scripts/agent-fleet-readiness.mjs`
+- `tests/agent-fleet-hardening.test.js`
+- `ops/agent-fleet-hardening/latest-agent-fleet-readiness.md`
+- `ops/agent-fleet-hardening/latest-agent-fleet-readiness.json`
+
+Agent fleet hardening readback summary:
+
+- The existing supervisor is reused and hardened; no second agent fleet was
+  created.
+- Permission tiers 0-3 are explicit. Tier 3 actions are blocked by default
+  pending explicit Decision/approval.
+- Windows launchers expose start, stop, restart, status, and open-log controls
+  with bounded hidden startup retries and current-login metadata.
+- Parent coordination audit passed with 0 findings.
+- Synthetic no-write proof covered GitHub intake preview, claim/worktree
+  preview, `record_agent_result` dry-run, Operations activity link preview,
+  GitHub same-thread status preview, and parent closeout without external
+  writes.
+
 ## Pending Evidence
 
-- Fleet/startup/parallel lane proof.
 - Queue hygiene proof.
 - Owner walkthrough proof.
 - Final release/deploy/live verification.

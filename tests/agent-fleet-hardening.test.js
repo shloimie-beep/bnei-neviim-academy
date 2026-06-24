@@ -1,0 +1,124 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const test = require('node:test');
+const { pathToFileURL } = require('node:url');
+
+const {
+  AGENT_FLEET_PERMISSION_TIERS,
+  buildParentCoordinationAudit,
+  buildStartupShortcutMatrix,
+  classifyAgentFleetCommand,
+  redactAgentFleetText,
+} = require('../src/lib/bna/agent-fleet-hardening');
+
+test('agent fleet permission tiers classify safe, release, and blocked commands', () => {
+  assert.equal(AGENT_FLEET_PERMISSION_TIERS.tier_3.blocked_by_default, true);
+  assert.equal(classifyAgentFleetCommand('npm test').tier, 0);
+  assert.equal(classifyAgentFleetCommand('git commit -m checkpoint').tier, 1);
+  assert.equal(classifyAgentFleetCommand('npm run railway:doctor').tier, 2);
+  const send = classifyAgentFleetCommand('node scripts/send-parent-update.mjs --send');
+  assert.equal(send.tier, 3);
+  assert.equal(send.blocked_by_default, true);
+  const backfill = classifyAgentFleetCommand('APPLY_GUARDED_CLASS_BACKFILL=true npm run class:backfill');
+  assert.equal(backfill.tier, 3);
+  assert.equal(backfill.allowed_without_decision, false);
+});
+
+test('agent fleet redaction removes common secret-shaped values from logs', () => {
+  const text = [
+    'Authorization: Bearer abc123456789SECRET',
+    `token=ghp_${'A'.repeat(24)}`,
+    `api_key=sk-${'b'.repeat(24)}`,
+  ].join('\n');
+  const redacted = redactAgentFleetText(text);
+
+  assert.doesNotMatch(redacted, /abc123456789SECRET/);
+  assert.doesNotMatch(redacted, /ghp_A/);
+  assert.doesNotMatch(redacted, /sk-b/);
+  assert.match(redacted, /\[redacted/);
+});
+
+test('parent coordination audit catches pointer drift and duplicate canonical tasks', () => {
+  const clean = buildParentCoordinationAudit({
+    latest: { path: 'ops/execution-runs/2026-06-24-issue-20-parent-run' },
+    laneManifest: {
+      parent_run_path: 'ops/execution-runs/2026-06-24-issue-20-parent-run',
+      active_pointer_owner: 'parent',
+      parent_branch: 'codex/issue-20-parent-run-20260624',
+      lanes: [
+        { lane_id: 'agent-fleet', status: 'queued', requirement_ids: ['REQ-20260624-045'] },
+      ],
+    },
+    requirements: {
+      requirements: [
+        { id: 'REQ-20260624-045', status: 'not_started' },
+        { id: 'REQ-20260624-048', status: 'not_started', depends_on: ['REQ-20260624-045'] },
+      ],
+      tasks: [
+        { canonical_task_key: 'bna_platform|agent_fleet|REQ-20260624-045' },
+      ],
+    },
+    git: { branch: 'codex/issue-20-parent-run-20260624' },
+  });
+  assert.equal(clean.ok, true);
+  assert.equal(clean.finding_count, 0);
+
+  const drift = buildParentCoordinationAudit({
+    latest: { path: 'ops/execution-runs/other' },
+    laneManifest: {
+      parent_run_path: 'ops/execution-runs/2026-06-24-issue-20-parent-run',
+      active_pointer_owner: 'child',
+      lanes: [],
+    },
+    requirements: {
+      requirements: [{ id: 'REQ-1' }, { id: 'REQ-1' }],
+      tasks: [{ canonical_task_key: 'dup' }, { canonical_task_key: 'dup' }],
+    },
+  });
+
+  assert.equal(drift.ok, false);
+  assert.ok(drift.findings.some((finding) => finding.type === 'active_pointer_drift'));
+  assert.ok(drift.findings.some((finding) => finding.type === 'duplicate_requirement_id'));
+  assert.ok(drift.findings.some((finding) => finding.type === 'duplicate_canonical_task'));
+});
+
+test('startup shortcut matrix exposes start stop restart status and open-log controls', () => {
+  const actions = new Set(buildStartupShortcutMatrix().map((item) => item.action));
+  for (const action of ['start', 'stop', 'restart', 'status', 'open_log', 'watchdog_start', 'watchdog_stop', 'watchdog_status']) {
+    assert.equal(actions.has(action), true);
+  }
+});
+
+test('supervisor and Windows launchers wire the hardening controls', async () => {
+  const supervisor = fs.readFileSync('scripts/agent-fleet-supervisor.mjs', 'utf8');
+  const fleetPs1 = fs.readFileSync('scripts/start-agent-fleet.ps1', 'utf8');
+  const watchdogPs1 = fs.readFileSync('scripts/start-watchdog.ps1', 'utf8');
+  const supervisorModule = await import(pathToFileURL(path.join(process.cwd(), 'scripts', 'agent-fleet-supervisor.mjs')).href);
+
+  assert.equal(supervisorModule.AGENT_FLEET_PERMISSION_TIERS.tier_3.blocked_by_default, true);
+  assert.equal(supervisorModule.classifyAgentFleetCommand('node scripts/send.mjs --send').tier, 3);
+  assert.match(supervisor, /permission_tier_3_blocked/);
+  assert.match(supervisor, /Permission tiers: Tier 0/);
+  assert.match(supervisor, /redactAgentFleetText/);
+
+  for (const script of [fleetPs1, watchdogPs1]) {
+    assert.match(script, /\[switch\]\$Stop/);
+    assert.match(script, /\[switch\]\$Status/);
+    assert.match(script, /\[switch\]\$OpenLog/);
+    assert.match(script, /\$MaxStartAttempts/);
+    assert.match(script, /Get-CurrentLoginName/);
+    assert.match(script, /-WindowStyle Hidden/);
+    assert.match(script, /Start-Process -FilePath "notepad\.exe"/);
+  }
+});
+
+test('readiness script contains no-write synthetic GitHub and result bridge proof', () => {
+  const script = fs.readFileSync('scripts/agent-fleet-readiness.mjs', 'utf8');
+
+  assert.match(script, /buildGitHubIntakePreview/);
+  assert.match(script, /buildGitHubStatusPreview/);
+  assert.match(script, /record_agent_result/);
+  assert.match(script, /external_write_performed: false/);
+  assert.match(script, /parent_run_not_marked_complete: true/);
+});

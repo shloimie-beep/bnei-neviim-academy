@@ -26259,3 +26259,30 @@ server-visible/API/UI behavior and requires deploy/live proof under
 external write, send, charge, DNS change, credential change, class backfill,
 Drive write, browser private capture, public publishing, or secret exposure was
 performed. Next Issue #20 batch is `REQ-20260624-045`.
+
+## 2026-06-25T00:25:00+03:00 - Issue #20 Agent Fleet Hardening Done
+
+Completed local implementation and verification for `REQ-20260624-045`.
+Hardened the existing agent fleet in place with explicit permission tiers,
+redacted supervisor output, deploy/Tier 3 permission gates, Windows launcher
+start/stop/restart/status/open-log controls, bounded hidden startup retries,
+current-login startup metadata, parent coordination audit, and a synthetic
+no-write background proof.
+
+The synthetic proof exercised trusted GitHub intake preview, agent claim and
+worktree preview, `record_agent_result` dry-run, Operations activity link
+preview, same-thread GitHub status preview, and parent closeout guardrails. It
+reported synthetic ID `51db2f8fb2ce22e1`, parent coordination 0 findings, and
+`external_write_performed=false`.
+
+Verification passed: changed-module syntax checks, PowerShell parse checks,
+focused fleet tests 6/6, broader fleet/watchdog/workspace tests 25/25,
+agent-control/activity UI tests 5/5, package/lane JSON parse, launcher status
+readbacks, `npm run watchdog:agent-fleet -- --json`, and post-closeout run
+validation/source coverage/stale-evidence/secret/diff gates with
+`npm run bna:run:next` selecting `REQ-20260624-046`.
+
+No second agent fleet, deploy, production mutation, external write, GitHub
+status comment, send, charge, DNS change, credential/account change, class
+backfill, Drive write, browser private capture, public publishing, or secret
+exposure was performed. Next Issue #20 batch is `REQ-20260624-046`.

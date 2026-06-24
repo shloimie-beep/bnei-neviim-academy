@@ -99,3 +99,26 @@
   evidence, JSON/JSONL parse, secret audit, diff check, and next-batch
   selection.
 - Current batch moved to `REQ-20260624-045`.
+
+2026-06-25T00:25:00+03:00:
+
+- `REQ-20260624-045` agent fleet hardening, permission tiers, startup, and
+  parallel-lane proof is done.
+- Hardened the existing `scripts/agent-fleet-supervisor.mjs`; no second agent
+  fleet, active-run pointer, task manager, intake protocol, or memory system
+  was created.
+- Added explicit permission tiers 0-3, with Tier 3 sends, charges, DNS,
+  credential/account changes, production mutation, Drive writes, public
+  publishing, and class backfill blocked by default pending an explicit
+  Decision/approval.
+- Added Windows start/stop/restart/status/open-log controls, bounded hidden
+  startup retries, login-context metadata, and local redacted log handling for
+  the agent fleet and watchdog launchers.
+- `npm run watchdog:agent-fleet -- --json` passed with parent coordination
+  `ok=true`, 0 findings, synthetic ID `51db2f8fb2ce22e1`, result action
+  dry-run success, Operations activity link preview, GitHub status preview, and
+  `external_write_performed=false`.
+- No GitHub status comment, deploy, production mutation, external write, send,
+  charge, DNS change, credential change, class backfill, Drive write, public
+  publishing, browser private capture, or secret exposure was performed.
+- Current batch moved to `REQ-20260624-046`.

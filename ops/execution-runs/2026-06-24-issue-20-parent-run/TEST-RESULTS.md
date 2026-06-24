@@ -92,6 +92,31 @@
   `npm run secrets:audit` with 4720 tracked paths and 0 tracked
   secret-risk files, `git diff --check`, and `npm run bna:run:next`
   selected `REQ-20260624-045`.
+- `node --check src\lib\bna\agent-fleet-hardening.js` passed.
+- `node --check scripts\agent-fleet-readiness.mjs` passed.
+- `node --check scripts\agent-fleet-supervisor.mjs` passed.
+- `node --check tests\agent-fleet-hardening.test.js` passed.
+- PowerShell parse check for `scripts\start-agent-fleet.ps1` and
+  `scripts\start-watchdog.ps1` passed.
+- `node --test tests\agent-fleet-hardening.test.js` passed 6/6.
+- `node --test tests\agent-fleet-hardening.test.js tests\watchdog-soft-repair.test.js tests\workspace-task-no-stale-agent.test.js`
+  passed 25/25.
+- `node --test tests\agent-control-api-readback.test.js tests\operations-activity-queue-health-ui.test.js`
+  passed 5/5.
+- `npm run watchdog:agent-fleet -- --json` passed with `ok=true`,
+  parent coordination 0 findings, synthetic ID `51db2f8fb2ce22e1`, and
+  `external_write_performed=false`.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\start-agent-fleet.ps1 -Status`
+  passed and read back `DESKTOP-E984MCC\User`.
+- `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\start-watchdog.ps1 -Status`
+  passed and read back `DESKTOP-E984MCC\User`.
+- Package and lane-manifest JSON parse check passed.
+- Post-agent-fleet execution-run validation passed:
+  `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
+  `npm run bna:run:stale-evidence`, JSON/JSONL parse,
+  `npm run secrets:audit` with 4723 tracked paths and 0 tracked
+  secret-risk files, `git diff --check`, and `npm run bna:run:next`
+  selected `REQ-20260624-046`.
 
 ## Known Non-Blocking Test Note
 
@@ -103,5 +128,5 @@
 ## Pending
 
 - Focused tests for remaining implementation lanes, starting with
-  `REQ-20260624-045`.
+  `REQ-20260624-046`.
 - Full repository tests and watchdogs before final closeout.

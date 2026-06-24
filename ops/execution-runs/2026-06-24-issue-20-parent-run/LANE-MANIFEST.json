@@ -1,6 +1,6 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
-  "updated_at": "2026-06-24T22:55:00+03:00",
+  "updated_at": "2026-06-25T00:29:00+03:00",
   "parent_branch": "codex/issue-20-parent-run-20260624",
   "parent_run_path": "ops/execution-runs/2026-06-24-issue-20-parent-run",
   "active_pointer_owner": "parent",
@@ -97,7 +97,7 @@
       "requirement_ids": [
         "REQ-20260624-045"
       ],
-      "status": "queued",
+      "status": "integrated",
       "owned_paths": [
         "scripts/agent-fleet-supervisor.mjs",
         "scripts/start-agent-fleet.ps1",
@@ -106,7 +106,21 @@
         "tests/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T00:29:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "332a445a4239",
+        "evidence": [
+          "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-FLEET-HARDENING.md",
+          "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md"
+        ],
+        "verification": [
+          "node --test tests\\agent-fleet-hardening.test.js tests\\watchdog-soft-repair.test.js tests\\workspace-task-no-stale-agent.test.js 25/25",
+          "node --test tests\\agent-control-api-readback.test.js tests\\operations-activity-queue-health-ui.test.js 5/5",
+          "npm run watchdog:agent-fleet -- --json ok=true external_write_performed=false"
+        ],
+        "next_action": "Continue REQ-20260624-046 queue hygiene."
+      }
     },
     {
       "lane_id": "queue-hygiene",
