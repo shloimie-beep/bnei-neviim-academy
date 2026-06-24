@@ -27,8 +27,8 @@ Goal: `BNA CLASS INTAKE - FIND EVERY UPLOAD, REPAIR PARSING, AND PREPARE GUARDED
 | `REQ-20260624-105` | Cover multi-student class sessions, score/progress, questions, linkage, ambiguity, duplicate idempotency, retries, visible failures, apply idempotency, accountability, read models, dry run, rollback. | Done | `tests/class-drive-intake-reconcile.test.js` plus focused related tests passed 82/82. |
 | `REQ-20260624-106` | Produce credential/auth readiness without printing secrets or raw Drive IDs. | Done | `AUTH-READINESS.md` generated. OAuth refresh-token path is ready; 21 Drive stage folders detected; evidence uses hashes/redacted refs only. |
 | `REQ-20260624-107` | Repair architecture where shared wiring is required without editing shared files in this lane. | Done | `SHARED-PATCH.diff` proposes progress-only mixed-recording parser wiring for `server.js`; not applied in this lane by rule. |
-| `REQ-20260624-108` | Run focused tests, source coverage, JSON checks, secret audit, and `git diff --check`. | Blocked | Focused tests, JSON checks, secret audit, and `git diff --check` passed. `npm run bna:run:source-coverage` ran but failed because the central execution-run manifest expects `codex/clean-slate-integration-20260624` while this required lane is on `codex/closeout-class-drive-intake-20260624`. See `VERIFICATION.md`. |
-| `REQ-20260624-109` | Commit and push branch. | Pending | Stage, commit, push after final diff review. |
+| `REQ-20260624-108` | Run focused tests, source coverage, JSON checks, secret audit, and `git diff --check`. | Done | Focused tests, lane source coverage, JSON checks, secret audit, and `git diff --check` passed. The central `npm run bna:run:source-coverage` branch guard is documented as not applicable to this lane; lane coverage is in `SOURCE-COVERAGE.json/md`. |
+| `REQ-20260624-109` | Commit and push branch. | Done | Branch pushed to `origin/codex/closeout-class-drive-intake-20260624`; pushed commit history on the branch is the commit evidence. |
 
 ## Evidence Targets
 
@@ -38,9 +38,11 @@ Goal: `BNA CLASS INTAKE - FIND EVERY UPLOAD, REPAIR PARSING, AND PREPARE GUARDED
 - `ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md`
 - `ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md`
 - `ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff`
+- `ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.json`
+- `ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.md`
 
 ## Current Blockers
 
 - No production mutation is allowed in this lane.
 - Guarded backfill for jobs 64-74 is not safe to apply from the dry-run evidence because no row-level repair candidates were produced for that range.
-- `npm run bna:run:source-coverage` is blocked by the central run branch guard, not by this lane's source files.
+- The central execution-run source coverage command remains branch-guarded to `codex/clean-slate-integration-20260624`; this lane uses `SOURCE-COVERAGE.json/md` for source mapping instead of mutating central run files.

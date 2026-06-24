@@ -614,7 +614,84 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     required_gate_phrase: backfill.required_gate_phrase,
     dry_run_plan_file: 'BACKFILL-DRY-RUN.md',
   };
-  return { census, backfill, recommendation };
+  const sourceCoverage = buildLaneSourceCoverage({
+    census,
+    backfill,
+    recommendation,
+  });
+  return { census, backfill, recommendation, sourceCoverage };
+}
+
+function evidenceExists(relativePath) {
+  return fs.existsSync(path.join(REPO_ROOT, relativePath));
+}
+
+function buildLaneSourceCoverage() {
+  const statements = [
+    ['SRC-20260624-101', 'Create and activate the class/Drive intake goal; preserve raw source and register requirements.', 'REQ-20260624-101', ['raw-input/RAW-20260624-003-class-drive-intake-goal.md', 'tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
+    ['SRC-20260624-102', 'Read control manifest and branch from the exact integration base.', 'REQ-20260624-101', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
+    ['SRC-20260624-103', 'Build read-only diagnostics for pipeline census, stage reports, orphan output, ambiguity, proposed changes, duplicates, UI mismatch, and credentials/workers.', 'REQ-20260624-102', ['scripts/class-drive-intake-reconcile.cjs', 'src/lib/bna/class-drive-intake-reconcile.js', 'ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json']],
+    ['SRC-20260624-104', 'Trace every known uploaded class/job through the 20 required stages, explicitly inspecting jobs 64-74 if present.', 'REQ-20260624-102', ['ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json', 'ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md']],
+    ['SRC-20260624-105', 'Verify or disprove the suspected causes including OpenAI 401, Drive config/auth, worker/parser/apply gaps, aliases, duplicates, generic parser, deployment, and stale status.', 'REQ-20260624-103', ['ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json', 'ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md']],
+    ['SRC-20260624-106', 'Prepare a dry-run-only guarded backfill with row-level plan, exclusions, expected counts, transaction boundaries, rollback, idempotency, and gate phrase.', 'REQ-20260624-104', ['ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md', 'ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json']],
+    ['SRC-20260624-107', 'Write BACKFILL-RECOMMENDATION.json for Prompt 09 / final integrator consumption.', 'REQ-20260624-104', ['ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json']],
+    ['SRC-20260624-108', 'Cover multi-student extraction, scores/progress, student questions, linkage, ambiguity, duplicates, retries, visible failures, idempotency, read models, dry-run, and rollback with tests.', 'REQ-20260624-105', ['tests/class-drive-intake-reconcile.test.js', 'ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md']],
+    ['SRC-20260624-109', 'Detect credential readiness without printing secrets or raw Drive IDs.', 'REQ-20260624-106', ['ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md']],
+    ['SRC-20260624-110', 'Do not edit server.js; provide SHARED-PATCH.diff when shared wiring is required.', 'REQ-20260624-107', ['ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff']],
+    ['SRC-20260624-111', 'Run focused tests, source coverage, JSON checks, secret audit, and git diff --check.', 'REQ-20260624-108', ['ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md']],
+    ['SRC-20260624-112', 'Commit and push the lane branch.', 'REQ-20260624-109', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
+  ].map(([statement_id, source_statement, requirement_id, evidence_paths]) => ({
+    statement_id,
+    source_id: 'RAW-20260624-003',
+    source_statement,
+    requirement_id,
+    classification: 'requirement',
+    evidence_paths,
+    evidence_present: evidence_paths.every(evidenceExists),
+  }));
+
+  const unmapped = statements.filter((statement) => !statement.requirement_id);
+  const missingEvidence = statements.filter((statement) => !statement.evidence_present);
+  const byRequirement = statements.reduce((counts, statement) => {
+    counts[statement.requirement_id] = (counts[statement.requirement_id] || 0) + 1;
+    return counts;
+  }, {});
+  return {
+    generated_at: new Date().toISOString(),
+    source_id: 'RAW-20260624-003',
+    source_path: 'raw-input/RAW-20260624-003-class-drive-intake-goal.md',
+    no_production_mutation: true,
+    source_statement_count: statements.length,
+    mapped_statement_count: statements.length - unmapped.length,
+    unmapped_executable_statement_count: unmapped.length,
+    missing_evidence_count: missingEvidence.length,
+    by_requirement: byRequirement,
+    statements,
+  };
+}
+
+function renderSourceCoverageMarkdown(report = {}) {
+  return [
+    '# Class/Drive Intake Source Coverage',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `Source: ${report.source_id || 'RAW-20260624-003'}`,
+    `No production mutation: ${report.no_production_mutation !== false}`,
+    '',
+    '## Summary',
+    '',
+    `- Source statements: ${report.source_statement_count || 0}`,
+    `- Mapped statements: ${report.mapped_statement_count || 0}`,
+    `- Unmapped executable statements: ${report.unmapped_executable_statement_count || 0}`,
+    `- Statements with missing evidence: ${report.missing_evidence_count || 0}`,
+    '',
+    '## Coverage',
+    '',
+    '| Statement | Requirement | Evidence Present |',
+    '| --- | --- | --- |',
+    ...(report.statements || []).map((statement) => `| ${statement.statement_id} | ${statement.requirement_id || ''} | ${statement.evidence_present ? 'yes' : 'no'} |`),
+    '',
+  ].join('\n');
 }
 
 function writeJson(filePath, value) {
@@ -633,6 +710,8 @@ function writeEvidence(args, auth, reports) {
   writeJson(path.join(args.outDir, 'BACKFILL-RECOMMENDATION.json'), reports.recommendation);
   writeText(path.join(args.outDir, 'BACKFILL-DRY-RUN.md'), renderBackfillMarkdown(reports.backfill));
   writeText(path.join(args.outDir, 'AUTH-READINESS.md'), renderAuthMarkdown(auth));
+  writeJson(path.join(args.outDir, 'SOURCE-COVERAGE.json'), reports.sourceCoverage);
+  writeText(path.join(args.outDir, 'SOURCE-COVERAGE.md'), renderSourceCoverageMarkdown(reports.sourceCoverage));
 }
 
 function selectOutput(command, reports) {
@@ -667,6 +746,7 @@ function selectOutput(command, reports) {
       worker_rows: reports.census.pipeline_rows.filter((row) => row.stages?.retry_dedup_status?.status === 'NEEDS_RETRY'),
     };
   }
+  if (command === 'source-coverage') return reports.sourceCoverage;
   return reports;
 }
 

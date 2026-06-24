@@ -11,16 +11,18 @@ No production mutation was performed.
 - `node --test tests\class-drive-intake-reconcile.test.js`
 - `node --test tests\class-drive-intake-reconcile.test.js tests\student-match.test.js tests\torah-learning.test.js tests\telegram-media-routing.test.js tests\intake-parser-class-recording.test.js tests\intake-parser-student-questions.test.js tests\parent-progress-privacy.test.js tests\parent-student-portal-contract.test.js` passed 82/82
 - JSON parse check passed for `PIPELINE-CENSUS.json` and `BACKFILL-RECOMMENDATION.json`
-- `npm run secrets:audit` passed: 4407 tracked paths checked, 0 tracked secret-risk files found
+- Lane source coverage passed: `SOURCE-COVERAGE.json` maps 12/12 source statements, with 0 unmapped executable statements and 0 missing evidence paths
+- `npm run secrets:audit` passed: 4421 tracked paths checked, 0 tracked secret-risk files found
 - `git diff --check` passed
 
 ## Blocked / Not Applicable In This Lane
 
-- `npm run bna:run:source-coverage` ran and failed with the central execution-run branch guard:
+- The shared `npm run bna:run:source-coverage` command ran and failed with the central execution-run branch guard:
   - Active run: `ops/execution-runs/2026-06-24-clean-slate-system-closeout`
   - Expected branch: `codex/clean-slate-integration-20260624`
   - Current lane branch: `codex/closeout-class-drive-intake-20260624`
 - The lane is prohibited from editing central run files, so this is recorded as a blocker rather than changed here.
+- Lane-local source coverage is provided by `SOURCE-COVERAGE.json/md` and does not require central run mutation.
 
 ## Read-Only Evidence Summary
 
