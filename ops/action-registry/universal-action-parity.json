@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T12:48:16.211Z",
+  "generated_at": "2026-06-24T15:12:32.418Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,56 +16,56 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "17aa82faeecadc9f068c7bb48c71f9f27da486faed14b3aa2c5489957ed7d676",
+  "content_hash": "03a511888d1dbd2c8029a9269bdbb1cd20f799c87d67469daa120e3aa890cc89",
   "source_hashes": {
-    "ops/action-registry.json": "fadc9b0662137279c0f99db86f5b4310f578a722503ffd2066e882e3112c390a",
+    "ops/action-registry.json": "85aac11402626731ac0309e2765970eebcef8db62ed1a06d1841a30264186992",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "3737a34c4b49dec37d424fb1f2bed26791fb85349d760fefc56b0b9beec5b4da",
+    "public/operations.html": "4e9a32bd0028dc6f5b5e9db2cc24d078db52002904c21258d33f2b777376f199",
     "public/parent.html": "a7b532eccb128ecb8606cc56b0357a9eea4dc00a99d8baff42aff1041c0c2d08",
     "public/student.html": "3a6ada46825b42f2b5ddf17f683553c267c9f64680664157b754c624c29475fe",
     "public/provider.html": "3e6c8cd9c3391cd3db74da93d701806bdfe23c867029aa455ad74509e56d5b6c",
-    "src/platform/assistant/control-plane.js": "290094ebc3f9cc89c591487bb355dad630594a3ae0896a9df7844adfcde5b787"
+    "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 61,
+    "root_actions": 63,
     "detailed_actions": 80,
-    "total_registry_rows": 141,
-    "visible_controls": 26,
-    "visible_controls_classified": 26,
+    "total_registry_rows": 143,
+    "visible_controls": 28,
+    "visible_controls_classified": 28,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
-    "blocked_connector": 6,
-    "risky_actions": 74,
+    "blocked_connector": 7,
+    "risky_actions": 75,
     "risky_without_approval": 0,
     "visible_by_classification": {
-      "read_only": 2,
+      "read_only": 3,
       "secure_deep_link_only": 2,
       "preview_then_approve": 19,
       "not_applicable": 2,
-      "blocked_connector": 1
+      "blocked_connector": 2
     },
     "registry_by_classification": {
       "secure_deep_link_only": 11,
       "executable": 10,
       "preview_then_approve": 67,
-      "read_only": 45,
-      "blocked_connector": 6,
+      "read_only": 46,
+      "blocked_connector": 7,
       "not_applicable": 2
     }
   },
   "parity_sources": {
     "ui_button": {
-      "count": 26
+      "count": 28
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 141
+      "count": 143
     },
     "operations_helper_request": {
-      "count": 134
+      "count": 136
     },
     "automation_action": {
       "count": 74
@@ -79,7 +79,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "26/26"
+        "value": "28/28"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -109,7 +109,7 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 141
+        "value": 143
       },
       {
         "name": "agent_work_handoff_parity_present",
@@ -216,6 +216,34 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "Remains disabled until a relationship-scoped protected join reference is approved; raw Zoom join URLs and host/start URLs are never exposed."
+    },
+    {
+      "action_id": "ACTION-INTEGRATION-SETUP-OPEN",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "blocked_connector",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Opens the static credential-safe owner setup center."
+    },
+    {
+      "action_id": "ACTION-INTEGRATION-SETUP-VALIDATE",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Calls the protected owner setup readiness endpoint and displays success or blocker status without secrets."
     },
     {
       "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
@@ -2374,6 +2402,68 @@
       ],
       "result_renderer": "Sends one password setup/reset email only after the explicit UI confirmation and SEND_PARENT_PASSWORD_SETUP server confirmation token.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-INTEGRATION-SETUP-OPEN",
+      "label": "Open setup page",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_integrations",
+      "route": "/operations?view=integrations&section=owner_setup",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the static credential-safe owner setup center.",
+      "status": "active",
+      "classification": "blocked_connector",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open setup page"
+      ],
+      "result_renderer": "Opens the static credential-safe owner setup center.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-INTEGRATION-SETUP-VALIDATE",
+      "label": "Run validation",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_integrations",
+      "route": "/operations?view=integrations&section=owner_setup",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Calls the protected owner setup readiness endpoint and displays success or blocker status without secrets.",
+      "status": "preview_only",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Run validation"
+      ],
+      "result_renderer": "Calls the protected owner setup readiness endpoint and displays success or blocker status without secrets.",
+      "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
     {
@@ -7049,6 +7139,8 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-INTEGRATION-SETUP-OPEN",
+        "ACTION-INTEGRATION-SETUP-VALIDATE",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
         "ACTION-PARENT-ACCESS-LINK-WHATSAPP",

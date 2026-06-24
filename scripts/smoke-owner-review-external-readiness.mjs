@@ -187,7 +187,14 @@ function runStripeReadiness() {
   const sourceChecks = [
     check('stripe_status_route_exists', server.includes("app.get('/api/bna/integrations/stripe/status'"), '/api/bna/integrations/stripe/status'),
     check('stripe_checkout_preview_route_exists', server.includes("app.post('/api/bna/integrations/stripe/checkout-preview'"), '/api/bna/integrations/stripe/checkout-preview'),
-    check('stripe_checkout_create_is_blocked_in_closeout', server.includes('Stripe checkout creation is not enabled in this closeout pass.'), 'checkout create blocker'),
+    check(
+      'stripe_checkout_create_is_approval_gated',
+      server.includes("app.post('/api/bna/integrations/stripe/checkout-create'")
+        && server.includes('stripeIntegration.assertCheckoutCreateApproved')
+        && server.includes("action: 'checkout_create'")
+        && server.includes('previewOnly: true'),
+      'approval-gated checkout create route with preview-only failure audit'
+    ),
     check('safe_smoke_blocks_live_key', safeSmoke.includes('stripe_live_key_blocked_for_no_charge_sandbox_smoke'), 'safe smoke live-key blocker'),
     check('safe_smoke_does_not_create_stripe_objects', !/\.checkout\.sessions\.create\s*\(|\.customers\.create\s*\(|\.subscriptions\.create\s*\(|\.paymentLinks\.create\s*\(/.test(safeSmoke), 'no create calls in safe smoke'),
   ];
@@ -268,11 +275,11 @@ function runVimeoReadiness() {
     check('safe_smoke_does_not_call_vimeo_api', !/vimeoApiRequest\s*\(/.test(safeSmoke), 'no Vimeo API request in safe smoke'),
   ];
   const behaviorChecks = [
-    check('readiness_reports_manual_mode', readiness.status === 'manual_upload_required', readiness.status),
+    check('readiness_reports_manual_ready', readiness.status === 'manual_ready', readiness.status),
     check('recording_pipeline_is_preview_only', recordingPipeline.preview_only === true && recordingPipeline.external_write_performed === false, recordingPipeline.status),
     check('recording_pipeline_keeps_api_upload_disabled', recordingPipeline.gates.api_upload_enabled === false && recordingPipeline.gates.provider_publish_enabled === false, 'api/provider publish disabled'),
     check('manual_vimeo_url_attach_parses_embed', attach.ok === true && attach.library_item?.vimeo_id === '123456789', attach.status),
-    check('upload_intent_is_manual_without_token', uploadIntent.status === 'manual_upload_required' && uploadIntent.external_write_performed === false, uploadIntent.status),
+    check('upload_intent_is_manual_without_token', uploadIntent.status === 'manual_ready' && uploadIntent.legacy_status === 'manual_upload_required' && uploadIntent.external_write_performed === false, uploadIntent.status),
   ];
   return {
     requirement_id: 'REQ-20260624-023',

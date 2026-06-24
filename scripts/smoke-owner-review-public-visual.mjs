@@ -199,7 +199,7 @@ function summarize(rows) {
     if (!row.activeTabSemanticsOk) rowFailures.push({ target: row.target, viewport: row.viewport, check: 'active_tab_semantics', tabs: row.tabs.filter((tab) => !tab.semanticOk) });
     if (row.horizontalOverflowPx > 1) rowFailures.push({ target: row.target, viewport: row.viewport, check: 'horizontal_overflow', value: row.horizontalOverflowPx });
     if (row.consoleErrors.length) rowFailures.push({ target: row.target, viewport: row.viewport, check: 'console_errors', value: row.consoleErrors });
-    if (row.target === 'pr14-local') localFailures.push(...rowFailures);
+    if (row.target === 'release-local') localFailures.push(...rowFailures);
     else productionDefects.push(...rowFailures);
   }
   return {
@@ -250,7 +250,7 @@ function writeReports(report) {
     '',
     '## Defects',
     '',
-    report.summary.failures.length ? JSON.stringify(report.summary.failures, null, 2) : 'No PR #14 local blocking visual defects detected by computed assertions.',
+    report.summary.failures.length ? JSON.stringify(report.summary.failures, null, 2) : 'No release-local blocking visual defects detected by computed assertions.',
     '',
     '## Production Public Delta',
     '',
@@ -280,11 +280,11 @@ async function main() {
     browser = await chromium.launch({ headless: true });
     for (const viewport of viewports) {
       for (const target of [
-        { id: 'pr14-local', url: localUrl },
+        { id: 'release-local', url: localUrl },
         { id: 'production-public', url: productionUrl },
       ]) {
         const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height }, isMobile: viewport.width < 768, hasTouch: viewport.width < 768 });
-        if (target.id === 'pr14-local') {
+        if (target.id === 'release-local') {
           await context.route('**/api/torah-learning/public-summary', async (route) => {
             await route.fulfill({
               status: 200,
@@ -331,16 +331,16 @@ async function main() {
   };
   writeReports(report);
   if (!report.summary.ok) {
-    console.error(`Public visual audit needs PR #14 review. Reports: ${rel(reportMd)} ${rel(reportJson)}`);
+    console.error(`Public visual audit needs release-candidate review. Reports: ${rel(reportMd)} ${rel(reportJson)}`);
     console.error(JSON.stringify(report.summary.failures, null, 2));
     process.exitCode = 1;
     return;
   }
   if (!report.summary.production_public_ok) {
-    console.log(`Public visual audit passed for PR #14 local; production still has recorded deltas. Reports: ${rel(reportMd)} ${rel(reportJson)}`);
+    console.log(`Public visual audit passed for release-local; production still has recorded deltas. Reports: ${rel(reportMd)} ${rel(reportJson)}`);
     return;
   }
-  console.log(`Public visual audit passed for PR #14 local and production public. Reports: ${rel(reportMd)} ${rel(reportJson)}`);
+  console.log(`Public visual audit passed for release-local and production public. Reports: ${rel(reportMd)} ${rel(reportJson)}`);
 }
 
 main().catch((error) => {

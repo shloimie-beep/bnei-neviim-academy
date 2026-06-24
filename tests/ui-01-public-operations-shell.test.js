@@ -87,7 +87,8 @@ test('UI-01 audience pages keep safe public promises', () => {
   assert.match(parents, /Families \/ Parent App/);
   assert.match(parents, /family accountability app/i);
   assert.match(parents, /href="\/parent\/login">Open Parent Login/);
-  assert.match(parents, /Parent app screenshots coming soon/);
+  assert.match(parents, /Parent workflow preview/);
+  assert.match(parents, /private student details stay inside the parent portal/i);
   assert.doesNotMatch(parents, /create account|grant access|payment setup/i);
   assert.match(school, /relationship-first learning environment/i);
   assert.match(serviceProviders, /Advertise your program for free/);

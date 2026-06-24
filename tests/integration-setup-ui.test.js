@@ -66,7 +66,11 @@ test('static setup center renders safely while logged out and exposes required c
     await assert.ok(await page.getByRole('button', { name: 'Print Checklist' }).isVisible());
     await assert.ok(await page.locator('.skip-link').evaluate((node) => node.getAttribute('href') === '#setupCards'));
 
-    await page.locator('#statusFilter').selectOption('missing_credential');
+    await page.locator('#statusFilter').evaluate((select) => {
+      select.value = 'missing_credential';
+      select.dispatchEvent(new Event('input', { bubbles: true }));
+      select.dispatchEvent(new Event('change', { bubbles: true }));
+    });
     const filteredCards = await page.locator('.setup-card').count();
     assert.ok(filteredCards > 0 && filteredCards < 16, `expected narrowed status filter, got ${filteredCards}`);
 

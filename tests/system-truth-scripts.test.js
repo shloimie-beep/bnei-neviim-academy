@@ -120,7 +120,10 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.ok(integrationGroups.stripe.fields.some((field) => field.name === 'RABBI_STRIPE_MODE'));
   assert.ok(integrationGroups.rabbi_telegram.blockers.some((blocker) => /deployment state is not verified/i.test(blocker)));
   assert.doesNotMatch(JSON.stringify(report.integration_readiness), /secret-value|postgres:\/\/|sk_live_|sk_test_/);
-  const run = JSON.parse(read('ops/execution-runs/2026-06-23-complete-system-reconciliation/run.json'));
+  const activeRunPath = report.system_truth.active_run;
+  const run = activeRunPath
+    ? JSON.parse(read(`${activeRunPath}/run.json`))
+    : {};
   if (run.git_refs?.last_validated_head) {
     assert.equal(report.system_truth.validated_agent_work_head, run.git_refs.last_validated_head);
     for (const item of report.agent_work) {
@@ -130,6 +133,13 @@ test('return packet report keeps private and redacted packet paths explicit', as
       if (item.validated_commit !== item.current_branch_head) {
         assert.equal(item.commit_basis, 'execution_run_last_validated_head');
       }
+    }
+  } else {
+    assert.equal(report.system_truth.validated_agent_work_head, report.system_truth.head);
+    for (const item of report.agent_work) {
+      assert.equal(item.commit, report.system_truth.head);
+      assert.equal(item.validated_commit, report.system_truth.head);
+      assert.equal(item.commit_basis, 'current_branch_head');
     }
   }
   for (const item of report.agent_work) {

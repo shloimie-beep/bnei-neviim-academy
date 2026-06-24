@@ -1,27 +1,27 @@
 # Universal Action Parity
 
-Generated at 2026-06-24T12:48:16.211Z.
+Generated at 2026-06-24T15:12:32.418Z.
 
 Requirement: REQ-20260623-013
 
 ## Release Gate
 
 - Status: passed
-- all_visible_controls_classified: pass (26/26)
+- all_visible_controls_classified: pass (28/28)
 - zero_visible_missing_contracts: pass (0)
 - zero_missing_handlers: pass (0)
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (141)
+- website_assistant_request_parity_present: pass (143)
 - agent_work_handoff_parity_present: pass (76)
 
 ## Summary
 
-- Root registry actions: 61
+- Root registry actions: 63
 - Detailed typed actions: 80
-- Visible UI hooks: 26
-- Visible UI hooks classified: 26
+- Visible UI hooks: 28
+- Visible UI hooks classified: 28
 - Missing contracts: 0
 - Missing handlers: 0
 - Missing tests: 0
@@ -31,10 +31,10 @@ Requirement: REQ-20260623-013
 
 | Source | Count |
 | --- | ---: |
-| ui_button | 26 |
+| ui_button | 28 |
 | telegram_request | 80 |
-| website_assistant_request | 141 |
-| operations_helper_request | 134 |
+| website_assistant_request | 143 |
+| operations_helper_request | 136 |
 | automation_action | 74 |
 | agent_work_handoff | 76 |
 
@@ -42,11 +42,11 @@ Requirement: REQ-20260623-013
 
 | Classification | Count |
 | --- | ---: |
-| read_only | 2 |
+| read_only | 3 |
 | secure_deep_link_only | 2 |
 | preview_then_approve | 19 |
 | not_applicable | 2 |
-| blocked_connector | 1 |
+| blocked_connector | 2 |
 
 ## Required Category Coverage
 
@@ -76,7 +76,7 @@ Requirement: REQ-20260623-013
 | ticket | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_report_problem_ticket<br>create_ticket<br>route_bug_to_codex |
 | support | covered_by_canonical_registry | ACTION-ONETIME-MEMBER-SUPPORT-TICKET<br>create_help_request<br>create_report_problem_ticket<br>create_ticket<br>request_provider_contact<br>route_bug_to_codex |
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
-| integration | covered_by_canonical_registry | ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP<br>ACTION-PROVIDER-API-USAGE-PREVIEW-NAV<br>capture_provider_google_business_link<br>generate_whatsapp_from_newsletter |
+| integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP<br>ACTION-PROVIDER-API-USAGE-PREVIEW-NAV |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
 | agent_work | covered_by_canonical_registry | ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL<br>ACTION-AGENT-RUN-HANDOFF<br>ACTION-AGENT-RUN-PREPARE<br>ACTION-AGENT-RUN-PROGRESS-EVIDENCE<br>ACTION-AGENT-RUN-SUBMIT-SEAL<br>ACTION-HELPER-RUN-WATCHDOG-AUDIT |
 | deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |
