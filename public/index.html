@@ -202,7 +202,7 @@
             height: calc(100vh - 70px);
             min-height: 680px;
             max-height: 820px;
-            margin-top: 70px;
+            margin-top: 0;
             padding: 0;
             display: block;
             overflow: hidden;
@@ -987,6 +987,10 @@
             border: 0;
             background: transparent;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
             transition: transform 0.2s ease, background 0.2s ease;
         }
 
@@ -1528,7 +1532,7 @@
             .hero {
                 display: block !important;
                 position: relative;
-                margin-top: 58px;
+                margin-top: 0;
                 height: 620px;
                 min-height: 620px;
                 max-height: none;
@@ -2199,14 +2203,42 @@
             transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
-        .home-filter-chip:hover,
-        .home-filter-chip:focus-visible,
+        .home-filter-chip:hover {
+            background: var(--light-blue);
+            border-color: rgba(30, 58, 95, 0.3);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .home-filter-chip:focus-visible {
+            background: #ffffff;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            outline: 3px solid rgba(15, 23, 42, 0.7);
+            outline-offset: 3px;
+            transform: translateY(-2px);
+        }
+
         .home-filter-chip.is-active {
             background: var(--primary-blue);
             border-color: var(--primary-blue);
             color: #ffffff;
-            outline: none;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7), 0 12px 26px rgba(17, 35, 63, 0.16);
             transform: translateY(-2px);
+        }
+
+        .home-filter-chip.is-active::before {
+            content: "";
+            width: 0.42rem;
+            height: 0.42rem;
+            border-radius: 999px;
+            background: currentColor;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.42);
+            flex: 0 0 auto;
+        }
+
+        .home-filter-chip.is-active:focus-visible {
+            outline-color: rgba(15, 23, 42, 0.9);
         }
 
         .home-blog-grid {
@@ -3748,6 +3780,7 @@
                 <button
                     class="home-filter-chip${category === activeHomeBlogCategory ? ' is-active' : ''}"
                     type="button"
+                    aria-pressed="${category === activeHomeBlogCategory ? 'true' : 'false'}"
                     data-category="${escapeHtml(category)}"
                 >${escapeHtml(localizedCategoryName(category))}</button>
             `).join('');
@@ -3814,6 +3847,7 @@
                 <button
                     class="home-filter-chip${topic === activeHomeFaqTopic ? ' is-active' : ''}"
                     type="button"
+                    aria-pressed="${topic === activeHomeFaqTopic ? 'true' : 'false'}"
                     data-topic="${escapeHtml(topic)}"
                 >${escapeHtml(labels[topic] || topic)}</button>
             `).join('');

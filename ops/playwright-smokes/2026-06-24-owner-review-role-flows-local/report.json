@@ -1,7 +1,7 @@
 {
-  "started_at": "2026-06-24T04:51:39.707Z",
-  "base_url": "http://127.0.0.1:55206",
-  "release_candidate_sha": "d853b9205626e6ea50bd3b639b7718b1f374040d",
+  "started_at": "2026-06-24T05:45:29.176Z",
+  "base_url": "http://127.0.0.1:52980",
+  "release_candidate_sha": "7da18227804498d8868201f8f94a266da048ba50",
   "guardrails": {
     "external_credentials": false,
     "production_state_readback": false,
@@ -17,7 +17,7 @@
       "viewport": "desktop",
       "url": "/",
       "status": "passed",
-      "duration_ms": 2540,
+      "duration_ms": 2751,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-public-visitor.png",
       "assistant": {
         "opened": true,
@@ -102,7 +102,7 @@
       "viewport": "desktop",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1246,
+      "duration_ms": 1332,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-one-child.png",
       "assistant": {
         "opened": true,
@@ -152,7 +152,7 @@
       "viewport": "desktop",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1268,
+      "duration_ms": 1326,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-multiple-children.png",
       "assistant": {
         "opened": true,
@@ -202,7 +202,7 @@
       "viewport": "desktop",
       "url": "/student?code=QA-STUDENT",
       "status": "passed",
-      "duration_ms": 1230,
+      "duration_ms": 1278,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-student.png",
       "assistant": {
         "opened": true,
@@ -252,7 +252,7 @@
       "viewport": "desktop",
       "url": "/provider",
       "status": "passed",
-      "duration_ms": 1170,
+      "duration_ms": 1163,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-admin.png",
       "assistant": {
         "opened": true,
@@ -302,7 +302,7 @@
       "viewport": "desktop",
       "url": "/provider-participant",
       "status": "passed",
-      "duration_ms": 1149,
+      "duration_ms": 1160,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-participant.png",
       "assistant": {
         "opened": true,
@@ -362,7 +362,7 @@
       "viewport": "desktop",
       "url": "/rabbi-member",
       "status": "passed",
-      "duration_ms": 1202,
+      "duration_ms": 1225,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-one-time-member.png",
       "assistant": {
         "opened": true,
@@ -422,7 +422,7 @@
       "viewport": "desktop",
       "url": "/operations",
       "status": "passed",
-      "duration_ms": 1866,
+      "duration_ms": 1915,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-super-admin.png",
       "assistant": {
         "opened": true,
@@ -448,7 +448,7 @@
       "viewport": "mobile",
       "url": "/",
       "status": "passed",
-      "duration_ms": 2021,
+      "duration_ms": 2184,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-public-visitor.png",
       "assistant": {
         "opened": true,
@@ -533,7 +533,7 @@
       "viewport": "mobile",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1222,
+      "duration_ms": 1256,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-one-child.png",
       "assistant": {
         "opened": true,
@@ -583,7 +583,7 @@
       "viewport": "mobile",
       "url": "/parent",
       "status": "passed",
-      "duration_ms": 1227,
+      "duration_ms": 1274,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-multiple-children.png",
       "assistant": {
         "opened": true,
@@ -633,7 +633,7 @@
       "viewport": "mobile",
       "url": "/student?code=QA-STUDENT",
       "status": "passed",
-      "duration_ms": 1189,
+      "duration_ms": 1203,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-student.png",
       "assistant": {
         "opened": true,
@@ -683,7 +683,7 @@
       "viewport": "mobile",
       "url": "/provider",
       "status": "passed",
-      "duration_ms": 1167,
+      "duration_ms": 1159,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-admin.png",
       "assistant": {
         "opened": true,
@@ -733,7 +733,7 @@
       "viewport": "mobile",
       "url": "/provider-participant",
       "status": "passed",
-      "duration_ms": 1138,
+      "duration_ms": 1163,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-participant.png",
       "assistant": {
         "opened": true,
@@ -793,7 +793,7 @@
       "viewport": "mobile",
       "url": "/rabbi-member",
       "status": "passed",
-      "duration_ms": 1167,
+      "duration_ms": 1196,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-one-time-member.png",
       "assistant": {
         "opened": true,
@@ -853,7 +853,7 @@
       "viewport": "mobile",
       "url": "/operations",
       "status": "passed",
-      "duration_ms": 1836,
+      "duration_ms": 1881,
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-super-admin.png",
       "assistant": {
         "opened": true,
@@ -969,6 +969,6 @@
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
     "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-    "BNA Server running on 127.0.0.1:55206"
+    "BNA Server running on 127.0.0.1:52980"
   ]
 }

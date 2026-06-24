@@ -14,6 +14,9 @@
 - Provider onboarding form submission screenshots were not produced because
   this pass avoided writes. The provider admin and directory navigation are
   covered.
+- Public production still has the homepage header-to-hero gap and missing
+  active-filter semantics until PR #14 is merged and deployed. The local PR #14
+  branch now fixes both, with computed evidence in `PUBLIC-VISUAL-AUDIT.md`.
 
 ## Product Decision
 

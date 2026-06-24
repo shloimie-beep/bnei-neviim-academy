@@ -1,6 +1,6 @@
 # Navigation Graph
 
-Generated at 2026-06-24T04:54:06.024Z.
+Generated at 2026-06-24T05:46:40.851Z.
 
 Edges are discovered from literal anchors, JavaScript navigation, form actions, redirects, manifests, service-worker cache entries, and fetch/API calls.
 

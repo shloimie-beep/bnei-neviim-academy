@@ -8,9 +8,12 @@ Review PR #14 by user journey, not by commit history.
 2. Run `npm ci` if dependencies are not installed.
 3. Run `npm run owner-review:routes`.
 4. Run `npm run owner-review:role-flows`.
-5. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
+5. Run `npm run owner-review:visual`.
+6. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
    authenticated/synthetic journeys.
-6. Note that GitHub Actions is not attached yet: the attempted workflow push
+7. Open `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and confirm PR #14 local
+   passes while production public remains a recorded stale delta until deploy.
+8. Note that GitHub Actions is not attached yet: the attempted workflow push
    was rejected because the current OAuth app lacks `workflow` scope.
 
 ## Public Site
@@ -33,11 +36,16 @@ Check:
 - Operations is not a primary public navigation item.
 - Public assistant opens as the public surface and does not expose private data.
 - Mobile menu opens, closes, and has no horizontal overflow.
+- Header-to-hero gap is no more than 1px in the PR #14 local visual audit.
+- Homepage active filter chips have readable active text and semantic
+  `aria-pressed` state in the PR #14 local visual audit.
 
 Evidence:
 
 - `ROLE-FLOW-QA.md`: Anonymous public visitor rows.
 - `CANONICAL-SITEMAP.md`: public route rows.
+- `PUBLIC-VISUAL-AUDIT.md`: 390x844, 768x1024, and 1440x900 computed visual
+  assertions and screenshots.
 
 ## One Time
 
@@ -123,7 +131,7 @@ Check:
 Evidence:
 
 - `ROLE-FLOW-QA.md`: Platform super-admin and wrong-role/logged-out rows.
-- Final clean watchdog reports under `ops/watchdog-audits/2026-06-24T04-59-*`.
+- Final clean watchdog reports under `ops/watchdog-audits/2026-06-24T05-52-*`.
 
 ## Final Local Gates
 
@@ -132,6 +140,7 @@ Run:
 ```powershell
 npm run owner-review:routes
 npm run owner-review:role-flows
+npm run owner-review:visual
 npm run watchdog:links
 npm run watchdog:actions
 npm run watchdog:security
@@ -143,9 +152,11 @@ Expected local result:
 
 - Route inventory: 689 routes, 34 HTML pages, 0 orphan-review rows.
 - Role-flow QA: PASS.
+- Public visual audit: PR #14 local PASS; production public deltas remain until
+  merge/deploy.
 - Link/action/security watchdogs: severity `ok`, findings 0.
-- Full tests: PASS, 1213/1213.
-- Secret audit: PASS, 4219 tracked paths, 0 tracked secret-risk files.
+- Full tests: PASS, 1214/1214.
+- Secret audit: PASS, 4254 tracked paths, 0 tracked secret-risk files.
 - GitHub Actions: not attached yet. Adding the workflow requires GitHub
   `workflow` permission; local gates above are the current credential-free
   evidence until that external permission is granted.

@@ -1,8 +1,8 @@
 # Role Flow QA
 
-Generated: 2026-06-24T04:51:39.707Z
-Release candidate SHA: d853b9205626e6ea50bd3b639b7718b1f374040d
-Local base URL: http://127.0.0.1:55206
+Generated: 2026-06-24T05:45:29.176Z
+Release candidate SHA: 7da18227804498d8868201f8f94a266da048ba50
+Local base URL: http://127.0.0.1:52980
 Result: PASS
 
 Guardrail: this run used a local server plus Playwright route mocks for `/api/*`. It did not use external credentials, read production state, mutate a production database, deploy, send email or Telegram messages, publish, upload, charge, alter DNS, or request secret values.

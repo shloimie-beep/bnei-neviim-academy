@@ -25578,3 +25578,25 @@ before Content. No live vendor generation, external send, public publish,
 charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
 external CRM/GHL write, raw private source readback, or secret exposure was
 performed.
+
+## 2026-06-24T09:08:00+03:00 - PR #14 Public Visual Reality Audit Batch Verified
+
+Registered `RAW-20260624-002` from the full-system reality audit addendum and
+created the requirement register
+`tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-implementation-pass.md`.
+The credential-free PR #14 public visual batch fixes the homepage
+header-to-hero gap, adds semantic `aria-pressed` state for homepage filter
+chips, strengthens active/focus filter styles, and adds
+`npm run owner-review:visual` with computed desktop/tablet/mobile assertions.
+
+Verification passed locally: `npm run owner-review:visual`,
+`node --test tests\owner-review-role-flow-contract.test.js`,
+`npm run owner-review:role-flows`, `npm run owner-review:routes`,
+`npm run watchdog:links`, `npm run watchdog:actions`,
+`npm run watchdog:security`, full `npm test` 1214/1214, and
+`npm run secrets:audit` with 4254 tracked paths and 0 findings.
+
+No external credentials, private production readback, production database
+mutation, backfill, deploy, email or Telegram send, publish, upload, charge,
+DNS mutation, OAuth, or secret exposure was performed. Production remains stale
+until PR #14 is merged/deployed and live-smoked.
