@@ -6,6 +6,18 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260624-009` / `REQ-20260624-040` through
+  `REQ-20260624-048`: GitHub issue #20 parent run is active in
+  `ops/execution-runs/2026-06-24-issue-20-parent-run/` on branch
+  `codex/issue-20-parent-run-20260624`. Scope: visual-quality gate,
+  persistent agent browser, bot/helper accuracy, durable result drop-off,
+  background agent fleet execution, queue hygiene, owner walkthrough, and final
+  integration/deploy/live closeout. Current batch: `REQ-20260624-041`
+  global visual quality system and watchdog. Baseline truth readback and the
+  parent coordination manifest are recorded. No Tier 3 action,
+  deploy, production mutation, class backfill, send, charge, DNS, credential,
+  account-permission, Drive write, or public publishing is approved without its
+  explicit gate/Decision.
 - [x] `RAW-20260624-008` / `REQ-20260624-028`: GitHub issue #18 read-only
   class intake reconciliation has local terminal evidence in
   `ops/execution-runs/2026-06-24-issue-18-class-intake-readonly/` on branch

@@ -1,0 +1,158 @@
+{
+  "run_id": "2026-06-24-issue-20-parent-run",
+  "updated_at": "2026-06-24T22:55:00+03:00",
+  "parent_branch": "codex/issue-20-parent-run-20260624",
+  "parent_run_path": "ops/execution-runs/2026-06-24-issue-20-parent-run",
+  "active_pointer_owner": "parent",
+  "permission_tiers": {
+    "tier_0": "read/audit/test/report",
+    "tier_1": "local code edits, tests, isolated branch/worktree, draft PR",
+    "tier_2": "merge/deploy/live smoke only after release gates and parent authorization",
+    "tier_3": "sends, charges, refunds, DNS, public publishing, account permissions, production mutation, class backfill only with explicit owner Decision"
+  },
+  "baseline_blockers": [
+    {
+      "id": "BLOCK-20260624-ISSUE20-RAILWAY-TARGET",
+      "severity": "release_blocker",
+      "status": "open",
+      "summary": "Local Railway CLI context is linked to project one-time-production and cannot find expected service skillful-motivation.",
+      "blocks": [
+        "REQ-20260624-048 deploy/live closeout",
+        "app-visible requirements moving to Done without alternate approved live proof"
+      ],
+      "does_not_block": [
+        "Tier 0 read/audit/test/report",
+        "Tier 1 local implementation and draft PR work"
+      ],
+      "next_action": "Repair Railway project/service targeting or document a current approved deploy/live-smoke path before final release."
+    }
+  ],
+  "lanes": [
+    {
+      "lane_id": "visual-quality",
+      "requirement_ids": [
+        "REQ-20260624-041"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "public/",
+        "scripts/",
+        "tests/",
+        "ops/issue-20/visual-quality/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "agent-browser",
+      "requirement_ids": [
+        "REQ-20260624-042"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "scripts/",
+        "tests/",
+        ".gitignore",
+        "ops/issue-20/agent-browser/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "helper-correctness",
+      "requirement_ids": [
+        "REQ-20260624-043"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "server.js",
+        "public/",
+        "scripts/",
+        "tests/",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "ops/issue-20/helper-correctness/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "result-bridge",
+      "requirement_ids": [
+        "REQ-20260624-044"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "server.js",
+        "public/",
+        "scripts/",
+        "tests/",
+        "ops/issue-20/result-bridge/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "agent-fleet",
+      "requirement_ids": [
+        "REQ-20260624-045"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "scripts/agent-fleet-supervisor.mjs",
+        "scripts/start-agent-fleet.ps1",
+        "scripts/",
+        "ops/issue-20/agent-fleet/",
+        "tests/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "queue-hygiene",
+      "requirement_ids": [
+        "REQ-20260624-046"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "server.js",
+        "public/operations.html",
+        "scripts/",
+        "tests/",
+        "ops/issue-20/queue-hygiene/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "owner-walkthrough",
+      "requirement_ids": [
+        "REQ-20260624-047"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "public/",
+        "docs/",
+        "ops/issue-20/owner-walkthrough/"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    },
+    {
+      "lane_id": "final-integration",
+      "requirement_ids": [
+        "REQ-20260624-048"
+      ],
+      "status": "queued",
+      "owned_paths": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md",
+        "TASKS.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "integration_owner": "parent",
+      "heartbeat": null
+    }
+  ]
+}

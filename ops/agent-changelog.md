@@ -26120,3 +26120,23 @@ evidence was posted to GitHub issue #18 at comment `4792923047`.
 No `APPLY_GUARDED_CLASS_BACKFILL`, production DB mutation, Drive write,
 transcription call, worker restart, send, charge, credential change, deploy, or
 live mutation was performed. Next sequenced work is GitHub issue #20.
+
+## 2026-06-24T22:55:00+03:00 - Issue #20 Parent Run Baseline Registered
+
+Registered `RAW-20260624-009` from GitHub issue #20 and created the parent
+execution run `ops/execution-runs/2026-06-24-issue-20-parent-run/` on branch
+`codex/issue-20-parent-run-20260624`, based on the terminal Issue #18 branch.
+The raw source, dated requirement register, source mapping, active-run pointer,
+baseline readback, parent coordination rules, and child lane manifest are now
+recorded.
+
+Issue #18 terminal evidence was rechecked through PR #21 and issue comment
+`4792923047`; direct live health for `https://bneineviimacademy.org/api/health`
+returned HTTP 200 with the database connected. `npm run railway:doctor` found a
+local Railway CLI targeting mismatch to `one-time-production`, which is carried
+as the final deploy/live closeout blocker for `REQ-20260624-048`.
+
+`REQ-20260624-040` is done. The next executable batch is `REQ-20260624-041`,
+the global visual-quality system and watchdog. No child implementation lane,
+Tier 3 action, class backfill, production mutation, deploy, send, charge, DNS
+change, credential change, external write, or live mutation was performed.
