@@ -3,19 +3,50 @@
 | Field | Value |
 |---|---|
 | Branch | `codex/closeout-class-drive-intake-20260624` |
-| Base | `codex/clean-slate-integration-20260624` after control PR publication |
+| Head | `ecdc22ed94559745ce8bd30bdbea67d0a3c01024` |
+| Base branch | `codex/clean-slate-integration-20260624` |
+| Merge base used by lane | `68f0b02fa1fe8928a8b4dd52704ec7e92c0fcba5` |
+| Control app base | `161f8623c50d7ef226066d101bfa58c28aff2346` |
 | Owner | Codex lane worker |
 | Scope | Class intake, Drive/source ingestion, transcription readiness, parser output, student matching, class-session read models, guarded backfill safeguards. |
-| Forbidden central files | See `../../CONTROL.md`; do not edit central run, task, memory, ledger, changelog, or control files. |
+| Status | Complete; safe to merge; backfill apply is not safe from current dry-run evidence. |
+| Forbidden central files | Respected. Central run, task, memory, ledger, changelog, and control files were not edited by this lane. |
 
-## Objective
+## Summary
 
-Close credential-free class/Drive intake readiness and build the safety gates needed before any real backfill. Real class backfill is not approved in this lane unless the required safeguards and final approval are both present.
+This lane completed the read-only class/Drive intake closeout. It inspected the
+configured production database/Drive state without mutation, generated a
+pipeline census, produced a guarded dry-run recommendation, and prepared a
+shared parser/apply repair patch for the final integrator.
 
-## Approved Effects
+Key finding: the suspected jobs 64-74 backfill must not be applied from the
+current evidence. `BACKFILL-RECOMMENDATION.json` says `safe_to_apply=false`,
+with zero approved candidate jobs and no row-level write plan.
 
-Local no-write parsing, local fixtures, read-only configured diagnostics, and safeguard tests are approved. No production DB mutation, Drive write, transcription of real private media, class backfill, or external send is approved here.
+## Final Integrator Actions
 
-## Required Closeout
+1. Merge the branch if the final release integrator accepts the lane-local
+   evidence and blockers.
+2. Review and apply `ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff`
+   only after checking it against the integrated files.
+3. Do not run `APPLY_GUARDED_CLASS_BACKFILL` from this lane recommendation.
+4. If new source evidence appears, rerun the dry-run before any backfill
+   decision.
 
-Record exact inspected routes/workflows, local/read-only evidence, and blockers for real jobs/source folders. Use `BLOCKERS.md` for any missing Drive/auth/transcription target.
+## Evidence
+
+- `ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json`
+- `ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md`
+- `ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json`
+- `ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md`
+- `ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff`
+- `ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.json`
+- `ops/class-drive-intake/2026-06-24-closeout/SOURCE-COVERAGE.md`
+- `ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md`
+
+## Guardrails
+
+No production DB mutation, Drive write, private-media transcription, class
+backfill, external send, deploy, secret print, or central-run edit was
+performed.
