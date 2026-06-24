@@ -1,7 +1,7 @@
 # One Time Canonical Journey Local Smoke
 
-Started: 2026-06-24T04:08:51.684Z
-Base URL: http://127.0.0.1:54130
+Started: 2026-06-24T04:30:46.795Z
+Base URL: http://127.0.0.1:58716
 Result: passed
 
 ## Checks

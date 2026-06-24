@@ -64706,6 +64706,7 @@ function normalizeAssistantSurface(value) {
   if (['parent', 'parent_portal'].includes(normalized)) return 'parent_portal';
   if (['student', 'student_portal'].includes(normalized)) return 'student_portal';
   if (['provider', 'provider_portal', 'provider_workspace'].includes(normalized)) return 'provider_workspace';
+  if (['one_time', 'one_time_member', 'onetime_member', 'rabbi_member', 'member_library', 'one_time_classroom', 'provider_participant'].includes(normalized)) return 'one_time_member';
   if (['operations', 'admin', 'settings'].includes(normalized)) return 'operations';
   return 'public';
 }

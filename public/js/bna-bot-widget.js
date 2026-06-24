@@ -12,6 +12,8 @@
   } catch {}
   if (isParent && query.get('onboard') === 'accountability') return;
   window.BNABotWidgetLoaded = true;
+  const isOneTimeMember = /^(?:\/rabbi-member|\/member-library|\/one-time-classroom|\/provider-participant)(?:\/|$|\.html$)/.test(path)
+    || ['/member', '/member.html', '/member-portal', '/one-time/member-login'].includes(path);
   const isProvider = [
     '/provider',
     '/provider/',
@@ -27,11 +29,13 @@
       ? 'parent_portal'
       : isStudent
         ? 'student_portal'
-        : isProvider
-          ? 'provider_workspace'
-          : isSignup
-            ? 'signup'
-            : 'public';
+        : isOneTimeMember
+          ? 'one_time_member'
+          : isProvider
+            ? 'provider_workspace'
+            : isSignup
+              ? 'signup'
+              : 'public';
   const storagePrefix = `bnaAssistant:${surface}`;
   const HELPER_FIRST_NUDGE_DELAY_MS = 12000;
   const HELPER_SECOND_NUDGE_DELAY_MS = 45000;
@@ -170,6 +174,23 @@
         prompts: he
           ? ['מה אני צריך לעשות היום?', 'עזור לי להבין את היעד שלי.', 'אני רוצה לשלוח שאלה לרב.']
           : ['What do I need to do today?', 'Help me understand my goal.', 'I want to send a question to my rebbi.'],
+      };
+    }
+    if (isOneTimeMember) {
+      return {
+        ...base,
+        surfaceLabel: 'One Time member help',
+        intro: "Hi, I'm the One Time member assistant. I can help with member access, the library, the classroom, questions for Rabbi Scheller, support tickets, and account help. This scope does not show BNA school goals, parent dashboards, other students, or admin data.",
+        cards: [
+          ['Member access', 'Help with login links, access codes, account status, and safe return paths.'],
+          ['Library and classroom', 'Find the right recording, worksheet/source sheet, live class, or classroom section.'],
+          ['Questions and support', 'Draft a clear question or support ticket without opening a public forum.'],
+        ],
+        prompts: [
+          'I cannot open the member library.',
+          'Where is the latest Mishnah class recording?',
+          'Help me ask Rabbi Scheller a question.',
+        ],
       };
     }
     if (isProvider) {
@@ -925,6 +946,23 @@
     }
   }
 
+  window.BNAAssistant = {
+    ...(window.BNAAssistant || {}),
+    open(message = '') {
+      setOpen(true, { focus: true });
+      const seeded = String(message || '').trim();
+      if (seeded) input.value = seeded;
+      focusAssistantInput({ force: true });
+    },
+    close() {
+      setOpen(false);
+    },
+    surface,
+    currentThreadId() {
+      return threadId || '';
+    },
+  };
+
   function setHistoryOpen(open) {
     historyPanel.classList.toggle('is-open', open);
     historyToggle.setAttribute('aria-expanded', String(open));
@@ -1260,9 +1298,9 @@
     }
   });
   document.addEventListener('click', (event) => {
-    const opener = event.target.closest?.('[data-helper-open]');
+    const opener = event.target.closest?.('[data-helper-open], [data-bna-assistant-open]');
     if (!opener) return;
     event.preventDefault();
-    setOpen(true, { focus: false });
+    window.BNAAssistant.open(opener.getAttribute('data-assistant-prompt') || '');
   });
 })();

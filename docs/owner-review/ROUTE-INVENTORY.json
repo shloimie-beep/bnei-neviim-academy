@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-24T04:19:04.264Z",
+  "generated_at": "2026-06-24T04:29:31.232Z",
   "requirement_id": "REQ-20260624-003",
   "source_id": "RAW-20260624-001",
-  "content_hash": "5e4f043e3d7a3063d6f179de3c1b3be2ba7e1c57c3a2790cb1129abfb7a5d908",
+  "content_hash": "a93a59302f75840841269f94d19b9de6333640ea6745e327848328fd21ba01f0",
   "summary": {
     "total_routes": 689,
     "html_pages": 34,
@@ -36,7 +36,7 @@
     },
     {
       "Canonical URL": "/api/assistant/action",
-      "Implementation": "server.js:69603",
+      "Implementation": "server.js:69604",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -51,7 +51,7 @@
     },
     {
       "Canonical URL": "/api/assistant/message",
-      "Implementation": "server.js:68398",
+      "Implementation": "server.js:68399",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "/assistant-setup.html (fetch) | /signup-he.html (fetch) | /signup.html (fetch)",
@@ -66,7 +66,7 @@
     },
     {
       "Canonical URL": "/api/assistant/threads",
-      "Implementation": "server.js:69503 | server.js:69528",
+      "Implementation": "server.js:69504 | server.js:69529",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -81,7 +81,7 @@
     },
     {
       "Canonical URL": "/api/assistant/threads/:id/messages",
-      "Implementation": "server.js:69544 | server.js:69562",
+      "Implementation": "server.js:69545 | server.js:69563",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -171,7 +171,7 @@
     },
     {
       "Canonical URL": "/api/bna/actions",
-      "Implementation": "server.js:76361",
+      "Implementation": "server.js:76362",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -186,7 +186,7 @@
     },
     {
       "Canonical URL": "/api/bna/actions/audit-log",
-      "Implementation": "server.js:76372",
+      "Implementation": "server.js:76373",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -201,7 +201,7 @@
     },
     {
       "Canonical URL": "/api/bna/actions/run",
-      "Implementation": "server.js:76409",
+      "Implementation": "server.js:76410",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -516,7 +516,7 @@
     },
     {
       "Canonical URL": "/api/bna/agent-status",
-      "Implementation": "server.js:68415",
+      "Implementation": "server.js:68416",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -636,7 +636,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/actions/:action",
-      "Implementation": "server.js:68662",
+      "Implementation": "server.js:68663",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -651,7 +651,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/actions/:id",
-      "Implementation": "server.js:68428",
+      "Implementation": "server.js:68429",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -666,7 +666,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/agent-status",
-      "Implementation": "server.js:68402",
+      "Implementation": "server.js:68403",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -681,7 +681,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/chat",
-      "Implementation": "server.js:68464",
+      "Implementation": "server.js:68465",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "public/js/bna-bot-widget.js (fetch)",
@@ -696,7 +696,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/context",
-      "Implementation": "server.js:68563",
+      "Implementation": "server.js:68564",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -741,7 +741,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/message",
-      "Implementation": "server.js:68394",
+      "Implementation": "server.js:68395",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -756,7 +756,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/threads",
-      "Implementation": "server.js:68511 | server.js:68584",
+      "Implementation": "server.js:68512 | server.js:68585",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "public/js/bna-bot-widget.js (fetch)",
@@ -771,7 +771,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/threads/:id",
-      "Implementation": "server.js:68541",
+      "Implementation": "server.js:68542",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "public/js/bna-bot-widget.js (fetch)",
@@ -786,7 +786,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/threads/:id/files",
-      "Implementation": "server.js:77728",
+      "Implementation": "server.js:77729",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -801,7 +801,7 @@
     },
     {
       "Canonical URL": "/api/bna/assistant/threads/:id/messages",
-      "Implementation": "server.js:68600 | server.js:68618",
+      "Implementation": "server.js:68601 | server.js:68619",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -921,7 +921,7 @@
     },
     {
       "Canonical URL": "/api/bna/bot-actions/execute",
-      "Implementation": "server.js:76469",
+      "Implementation": "server.js:76470",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -936,7 +936,7 @@
     },
     {
       "Canonical URL": "/api/bna/bot-actions/preview",
-      "Implementation": "server.js:76431",
+      "Implementation": "server.js:76432",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -951,7 +951,7 @@
     },
     {
       "Canonical URL": "/api/bna/bot-captures",
-      "Implementation": "server.js:78276",
+      "Implementation": "server.js:78277",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -966,7 +966,7 @@
     },
     {
       "Canonical URL": "/api/bna/bot/capture",
-      "Implementation": "server.js:78275",
+      "Implementation": "server.js:78276",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -996,7 +996,7 @@
     },
     {
       "Canonical URL": "/api/bna/calendar-events",
-      "Implementation": "server.js:75976 | server.js:76010",
+      "Implementation": "server.js:75977 | server.js:76011",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1011,7 +1011,7 @@
     },
     {
       "Canonical URL": "/api/bna/calendar-events/:id",
-      "Implementation": "server.js:76051",
+      "Implementation": "server.js:76052",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1086,7 +1086,7 @@
     },
     {
       "Canonical URL": "/api/bna/classes",
-      "Implementation": "server.js:77524 | server.js:77552",
+      "Implementation": "server.js:77525 | server.js:77553",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1101,7 +1101,7 @@
     },
     {
       "Canonical URL": "/api/bna/classes/:id",
-      "Implementation": "server.js:77594",
+      "Implementation": "server.js:77595",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1116,7 +1116,7 @@
     },
     {
       "Canonical URL": "/api/bna/classes/:id/attendance",
-      "Implementation": "server.js:77621 | server.js:77644",
+      "Implementation": "server.js:77622 | server.js:77645",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1131,7 +1131,7 @@
     },
     {
       "Canonical URL": "/api/bna/classes/import",
-      "Implementation": "server.js:77660",
+      "Implementation": "server.js:77661",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1311,7 +1311,7 @@
     },
     {
       "Canonical URL": "/api/bna/communities",
-      "Implementation": "server.js:77473 | server.js:77497",
+      "Implementation": "server.js:77474 | server.js:77498",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1326,7 +1326,7 @@
     },
     {
       "Canonical URL": "/api/bna/connector-settings",
-      "Implementation": "server.js:75903",
+      "Implementation": "server.js:75904",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1341,7 +1341,7 @@
     },
     {
       "Canonical URL": "/api/bna/connector-settings/:id",
-      "Implementation": "server.js:75925",
+      "Implementation": "server.js:75926",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1746,7 +1746,7 @@
     },
     {
       "Canonical URL": "/api/bna/create_task_from_text",
-      "Implementation": "server.js:78257",
+      "Implementation": "server.js:78258",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -1896,7 +1896,7 @@
     },
     {
       "Canonical URL": "/api/bna/files/intake",
-      "Implementation": "server.js:77695",
+      "Implementation": "server.js:77696",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2061,7 +2061,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/action-log",
-      "Implementation": "server.js:69489",
+      "Implementation": "server.js:69490",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2076,7 +2076,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/audit",
-      "Implementation": "server.js:69475",
+      "Implementation": "server.js:69476",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2091,7 +2091,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/chat",
-      "Implementation": "server.js:69279",
+      "Implementation": "server.js:69280",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2106,7 +2106,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/confirm",
-      "Implementation": "server.js:69281",
+      "Implementation": "server.js:69282",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2121,7 +2121,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/context",
-      "Implementation": "server.js:69118",
+      "Implementation": "server.js:69119",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2136,7 +2136,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/execute",
-      "Implementation": "server.js:69428",
+      "Implementation": "server.js:69429",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2151,7 +2151,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/knowledge",
-      "Implementation": "server.js:69189 | server.js:69200",
+      "Implementation": "server.js:69190 | server.js:69201",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2166,7 +2166,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/message",
-      "Implementation": "server.js:69278",
+      "Implementation": "server.js:69279",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2181,7 +2181,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/plan",
-      "Implementation": "server.js:69361",
+      "Implementation": "server.js:69362",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2196,7 +2196,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/profile",
-      "Implementation": "server.js:69156 | server.js:69167",
+      "Implementation": "server.js:69157 | server.js:69168",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2211,7 +2211,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/profile/questionnaire",
-      "Implementation": "server.js:69178",
+      "Implementation": "server.js:69179",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2226,7 +2226,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/runs/:id",
-      "Implementation": "server.js:69336",
+      "Implementation": "server.js:69337",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2241,7 +2241,7 @@
     },
     {
       "Canonical URL": "/api/bna/helper/tools",
-      "Implementation": "server.js:69132",
+      "Implementation": "server.js:69133",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2931,7 +2931,7 @@
     },
     {
       "Canonical URL": "/api/bna/internal-dialogue",
-      "Implementation": "server.js:76251",
+      "Implementation": "server.js:76252",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2946,7 +2946,7 @@
     },
     {
       "Canonical URL": "/api/bna/internal-dialogue/messages",
-      "Implementation": "server.js:76298",
+      "Implementation": "server.js:76299",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -2991,7 +2991,7 @@
     },
     {
       "Canonical URL": "/api/bna/live-sessions",
-      "Implementation": "server.js:75235 | server.js:75268",
+      "Implementation": "server.js:75236 | server.js:75269",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3006,7 +3006,7 @@
     },
     {
       "Canonical URL": "/api/bna/live-sessions/:id",
-      "Implementation": "server.js:75341",
+      "Implementation": "server.js:75342",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3021,7 +3021,7 @@
     },
     {
       "Canonical URL": "/api/bna/live-sessions/:id/check-in",
-      "Implementation": "server.js:75393",
+      "Implementation": "server.js:75394",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3036,7 +3036,7 @@
     },
     {
       "Canonical URL": "/api/bna/live-sessions/:id/communications",
-      "Implementation": "server.js:75480",
+      "Implementation": "server.js:75481",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3051,7 +3051,7 @@
     },
     {
       "Canonical URL": "/api/bna/live-sessions/:id/send-zoom-link",
-      "Implementation": "server.js:75429",
+      "Implementation": "server.js:75430",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3066,7 +3066,7 @@
     },
     {
       "Canonical URL": "/api/bna/live-sessions/tonight",
-      "Implementation": "server.js:75317",
+      "Implementation": "server.js:75318",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3096,7 +3096,7 @@
     },
     {
       "Canonical URL": "/api/bna/members",
-      "Implementation": "server.js:75110 | server.js:75143",
+      "Implementation": "server.js:75111 | server.js:75144",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3111,7 +3111,7 @@
     },
     {
       "Canonical URL": "/api/bna/members/:id",
-      "Implementation": "server.js:75182",
+      "Implementation": "server.js:75183",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3126,7 +3126,7 @@
     },
     {
       "Canonical URL": "/api/bna/members/:id/access-code",
-      "Implementation": "server.js:75214",
+      "Implementation": "server.js:75215",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3141,7 +3141,7 @@
     },
     {
       "Canonical URL": "/api/bna/migrate-db",
-      "Implementation": "server.js:79554",
+      "Implementation": "server.js:79555",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3156,7 +3156,7 @@
     },
     {
       "Canonical URL": "/api/bna/notification-preferences",
-      "Implementation": "server.js:76599 | server.js:76630",
+      "Implementation": "server.js:76600 | server.js:76631",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3171,7 +3171,7 @@
     },
     {
       "Canonical URL": "/api/bna/notifications",
-      "Implementation": "server.js:76518",
+      "Implementation": "server.js:76519",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3186,7 +3186,7 @@
     },
     {
       "Canonical URL": "/api/bna/notifications/:id",
-      "Implementation": "server.js:76575",
+      "Implementation": "server.js:76576",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3201,7 +3201,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/agent-mode-acceptance",
-      "Implementation": "server.js:72799",
+      "Implementation": "server.js:72800",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3216,7 +3216,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/app-access-readiness",
-      "Implementation": "server.js:69772",
+      "Implementation": "server.js:69773",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3231,7 +3231,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/appointment-intents",
-      "Implementation": "server.js:73047 | server.js:73070",
+      "Implementation": "server.js:73048 | server.js:73071",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3246,7 +3246,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/assets/:assetId",
-      "Implementation": "server.js:70033",
+      "Implementation": "server.js:70034",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3261,7 +3261,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/calendar",
-      "Implementation": "server.js:72942",
+      "Implementation": "server.js:72943",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3276,7 +3276,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/calendar-events",
-      "Implementation": "server.js:72957",
+      "Implementation": "server.js:72958",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3291,7 +3291,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes",
-      "Implementation": "server.js:69784 | server.js:69858",
+      "Implementation": "server.js:69785 | server.js:69859",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3306,7 +3306,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes/:id",
-      "Implementation": "server.js:69914 | server.js:69931",
+      "Implementation": "server.js:69915 | server.js:69932",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3321,7 +3321,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes/:id/approve-library",
-      "Implementation": "server.js:70155",
+      "Implementation": "server.js:70156",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3336,7 +3336,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes/:id/assets",
-      "Implementation": "server.js:69998",
+      "Implementation": "server.js:69999",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3351,7 +3351,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes/:id/member-preview",
-      "Implementation": "server.js:70120",
+      "Implementation": "server.js:70121",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3366,7 +3366,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes/:id/package-preview",
-      "Implementation": "server.js:70084",
+      "Implementation": "server.js:70085",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3381,7 +3381,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classes/:id/publish-library",
-      "Implementation": "server.js:70196",
+      "Implementation": "server.js:70197",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3396,7 +3396,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classroom",
-      "Implementation": "server.js:70694",
+      "Implementation": "server.js:70695",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3411,7 +3411,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classroom/assignment-preview",
-      "Implementation": "server.js:70709",
+      "Implementation": "server.js:70710",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3426,7 +3426,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classroom/assignments",
-      "Implementation": "server.js:70721",
+      "Implementation": "server.js:70722",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3441,7 +3441,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classroom/messages/:id/review",
-      "Implementation": "server.js:70828",
+      "Implementation": "server.js:70829",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3456,7 +3456,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/classroom/threads",
-      "Implementation": "server.js:70752",
+      "Implementation": "server.js:70753",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3471,7 +3471,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/community-moderation-readiness",
-      "Implementation": "server.js:72850",
+      "Implementation": "server.js:72851",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3486,7 +3486,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/crm-import-preview",
-      "Implementation": "server.js:72775",
+      "Implementation": "server.js:72776",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3501,7 +3501,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/drive-social-ingestion",
-      "Implementation": "server.js:69760",
+      "Implementation": "server.js:69761",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3531,7 +3531,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/library-items/:id/rollback",
-      "Implementation": "server.js:70318",
+      "Implementation": "server.js:70319",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3546,7 +3546,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/library-smoke",
-      "Implementation": "server.js:70391",
+      "Implementation": "server.js:70392",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3561,7 +3561,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/payment-access-class-links",
-      "Implementation": "server.js:72756",
+      "Implementation": "server.js:72757",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3576,7 +3576,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/product-leads",
-      "Implementation": "server.js:72908",
+      "Implementation": "server.js:72909",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3591,7 +3591,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/product-system",
-      "Implementation": "server.js:72730",
+      "Implementation": "server.js:72731",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3606,7 +3606,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/question-moderation",
-      "Implementation": "server.js:75724",
+      "Implementation": "server.js:75725",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3621,7 +3621,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/roadmap",
-      "Implementation": "server.js:77767",
+      "Implementation": "server.js:77768",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3636,7 +3636,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/source-prep-jobs",
-      "Implementation": "server.js:73145 | server.js:73162",
+      "Implementation": "server.js:73146 | server.js:73163",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3651,7 +3651,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/study-assistant-readiness",
-      "Implementation": "server.js:72871",
+      "Implementation": "server.js:72872",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3666,7 +3666,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/test-identities-preview",
-      "Implementation": "server.js:72784",
+      "Implementation": "server.js:72785",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3681,7 +3681,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/transcript-privacy",
-      "Implementation": "server.js:72814",
+      "Implementation": "server.js:72815",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -3696,7 +3696,7 @@
     },
     {
       "Canonical URL": "/api/bna/one-time/trial-referral-config",
-      "Implementation": "server.js:72738",
+      "Implementation": "server.js:72739",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4116,7 +4116,7 @@
     },
     {
       "Canonical URL": "/api/bna/pending-briefs",
-      "Implementation": "server.js:77809",
+      "Implementation": "server.js:77810",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4146,7 +4146,7 @@
     },
     {
       "Canonical URL": "/api/bna/pipeline-cards",
-      "Implementation": "server.js:76121 | server.js:76154",
+      "Implementation": "server.js:76122 | server.js:76155",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4161,7 +4161,7 @@
     },
     {
       "Canonical URL": "/api/bna/pipeline-cards/:id",
-      "Implementation": "server.js:76193",
+      "Implementation": "server.js:76194",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4191,7 +4191,7 @@
     },
     {
       "Canonical URL": "/api/bna/product-leads",
-      "Implementation": "server.js:72908 | server.js:72925",
+      "Implementation": "server.js:72909 | server.js:72926",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4416,7 +4416,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/access-grants",
-      "Implementation": "server.js:73689",
+      "Implementation": "server.js:73690",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4431,7 +4431,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/access-grants/:id/revoke",
-      "Implementation": "server.js:73749",
+      "Implementation": "server.js:73750",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4446,7 +4446,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/access-grants/manual",
-      "Implementation": "server.js:73708",
+      "Implementation": "server.js:73709",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4461,7 +4461,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/checkouts",
-      "Implementation": "server.js:73434",
+      "Implementation": "server.js:73435",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4476,7 +4476,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/checkouts/:id",
-      "Implementation": "server.js:73543",
+      "Implementation": "server.js:73544",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4491,7 +4491,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/checkouts/:id/mark-abandoned",
-      "Implementation": "server.js:73567",
+      "Implementation": "server.js:73568",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4506,7 +4506,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/checkouts/manual",
-      "Implementation": "server.js:73453",
+      "Implementation": "server.js:73454",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4521,7 +4521,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/communications",
-      "Implementation": "server.js:73954",
+      "Implementation": "server.js:73955",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4536,7 +4536,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/communications/send",
-      "Implementation": "server.js:73971",
+      "Implementation": "server.js:73972",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4551,7 +4551,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/config",
-      "Implementation": "server.js:73231 | server.js:73269",
+      "Implementation": "server.js:73232 | server.js:73270",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4566,7 +4566,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/library-items",
-      "Implementation": "server.js:73779 | server.js:73792",
+      "Implementation": "server.js:73780 | server.js:73793",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4581,7 +4581,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/library-items/:id",
-      "Implementation": "server.js:73826",
+      "Implementation": "server.js:73827",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4596,7 +4596,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/live-sessions",
-      "Implementation": "server.js:73867 | server.js:73880",
+      "Implementation": "server.js:73868 | server.js:73881",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4611,7 +4611,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/live-sessions/:id",
-      "Implementation": "server.js:73916",
+      "Implementation": "server.js:73917",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4626,7 +4626,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/members",
-      "Implementation": "server.js:73593 | server.js:73620",
+      "Implementation": "server.js:73594 | server.js:73621",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4641,7 +4641,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/members/:id",
-      "Implementation": "server.js:73654",
+      "Implementation": "server.js:73655",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4656,7 +4656,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/provider-settings",
-      "Implementation": "server.js:73385",
+      "Implementation": "server.js:73386",
       "Audience": "provider",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4671,7 +4671,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/provider-settings/:provider",
-      "Implementation": "server.js:73394",
+      "Implementation": "server.js:73395",
       "Audience": "provider",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4686,7 +4686,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/site",
-      "Implementation": "server.js:73991 | server.js:74004",
+      "Implementation": "server.js:73992 | server.js:74005",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4701,7 +4701,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/site/approve-public-replacement",
-      "Implementation": "server.js:74047",
+      "Implementation": "server.js:74048",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4716,7 +4716,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/tiers",
-      "Implementation": "server.js:73278 | server.js:73287",
+      "Implementation": "server.js:73279 | server.js:73288",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -4731,7 +4731,7 @@
     },
     {
       "Canonical URL": "/api/bna/rabbi/tiers/:id",
-      "Implementation": "server.js:73346",
+      "Implementation": "server.js:73347",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5436,7 +5436,7 @@
     },
     {
       "Canonical URL": "/api/bna/support-tickets",
-      "Implementation": "server.js:77047 | server.js:77093",
+      "Implementation": "server.js:77048 | server.js:77094",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5451,7 +5451,7 @@
     },
     {
       "Canonical URL": "/api/bna/support-tickets/:id",
-      "Implementation": "server.js:77176 | server.js:77196",
+      "Implementation": "server.js:77177 | server.js:77197",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5466,7 +5466,7 @@
     },
     {
       "Canonical URL": "/api/bna/support-tickets/:id/comments",
-      "Implementation": "server.js:77252 | server.js:77268",
+      "Implementation": "server.js:77253 | server.js:77269",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5496,7 +5496,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks",
-      "Implementation": "server.js:77829 | server.js:78135",
+      "Implementation": "server.js:77830 | server.js:78136",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5511,7 +5511,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id",
-      "Implementation": "server.js:78296 | server.js:78567 | server.js:79762",
+      "Implementation": "server.js:78297 | server.js:78568 | server.js:79763",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5526,7 +5526,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/archive-duplicate",
-      "Implementation": "server.js:79358",
+      "Implementation": "server.js:79359",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5541,7 +5541,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/choose-decision",
-      "Implementation": "server.js:79492",
+      "Implementation": "server.js:79493",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5556,7 +5556,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/convert-to-task",
-      "Implementation": "server.js:79333",
+      "Implementation": "server.js:79334",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5571,7 +5571,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/mark-done",
-      "Implementation": "server.js:79143",
+      "Implementation": "server.js:79144",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5586,7 +5586,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/mark-pending",
-      "Implementation": "server.js:79297",
+      "Implementation": "server.js:79298",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5601,7 +5601,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/mark-received",
-      "Implementation": "server.js:79261",
+      "Implementation": "server.js:79262",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5616,7 +5616,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/needs-more-info",
-      "Implementation": "server.js:79454",
+      "Implementation": "server.js:79455",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5631,7 +5631,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/reassign",
-      "Implementation": "server.js:79429",
+      "Implementation": "server.js:79430",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5646,7 +5646,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/request-missing-input",
-      "Implementation": "server.js:79222",
+      "Implementation": "server.js:79223",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5661,7 +5661,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/actions/spawn-agent-job",
-      "Implementation": "server.js:79120",
+      "Implementation": "server.js:79121",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5676,7 +5676,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/comments",
-      "Implementation": "server.js:78383 | server.js:78419",
+      "Implementation": "server.js:78384 | server.js:78420",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5706,7 +5706,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/:id/decision-action",
-      "Implementation": "server.js:79118",
+      "Implementation": "server.js:79119",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5751,7 +5751,7 @@
     },
     {
       "Canonical URL": "/api/bna/tasks/create-from-text",
-      "Implementation": "server.js:78256",
+      "Implementation": "server.js:78257",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5766,7 +5766,7 @@
     },
     {
       "Canonical URL": "/api/bna/telegram",
-      "Implementation": "server.js:79925",
+      "Implementation": "server.js:79926",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5781,7 +5781,7 @@
     },
     {
       "Canonical URL": "/api/bna/tickets",
-      "Implementation": "server.js:61428 | server.js:77293 | server.js:77329",
+      "Implementation": "server.js:61428 | server.js:77294 | server.js:77330",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5796,7 +5796,7 @@
     },
     {
       "Canonical URL": "/api/bna/tickets/:id",
-      "Implementation": "server.js:61454 | server.js:77395 | server.js:77406",
+      "Implementation": "server.js:61454 | server.js:77396 | server.js:77407",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -5811,7 +5811,7 @@
     },
     {
       "Canonical URL": "/api/bna/tickets/:id/comments",
-      "Implementation": "server.js:77438 | server.js:77451",
+      "Implementation": "server.js:77439 | server.js:77452",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6246,7 +6246,7 @@
     },
     {
       "Canonical URL": "/api/bna/workspace-settings/:workspaceKey",
-      "Implementation": "server.js:75815",
+      "Implementation": "server.js:75816",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6261,7 +6261,7 @@
     },
     {
       "Canonical URL": "/api/bna/workspace-settings/:workspaceKey/branding",
-      "Implementation": "server.js:75863",
+      "Implementation": "server.js:75864",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6741,7 +6741,7 @@
     },
     {
       "Canonical URL": "/api/member-library",
-      "Implementation": "server.js:70977",
+      "Implementation": "server.js:70978",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "/member-library.html (fetch)",
@@ -6756,7 +6756,7 @@
     },
     {
       "Canonical URL": "/api/member-portal",
-      "Implementation": "server.js:391 | server.js:75497",
+      "Implementation": "server.js:391 | server.js:75498",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6771,7 +6771,7 @@
     },
     {
       "Canonical URL": "/api/member-portal/library",
-      "Implementation": "server.js:75570",
+      "Implementation": "server.js:75571",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6786,7 +6786,7 @@
     },
     {
       "Canonical URL": "/api/member-portal/live-sessions",
-      "Implementation": "server.js:75506",
+      "Implementation": "server.js:75507",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6801,7 +6801,7 @@
     },
     {
       "Canonical URL": "/api/member-portal/live-sessions/:id/check-in",
-      "Implementation": "server.js:75533",
+      "Implementation": "server.js:75534",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6816,7 +6816,7 @@
     },
     {
       "Canonical URL": "/api/one-time-classroom",
-      "Implementation": "server.js:70991",
+      "Implementation": "server.js:70992",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6831,7 +6831,7 @@
     },
     {
       "Canonical URL": "/api/one-time-classroom/bot",
-      "Implementation": "server.js:71122",
+      "Implementation": "server.js:71123",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6846,7 +6846,7 @@
     },
     {
       "Canonical URL": "/api/one-time-classroom/threads/:id/responses",
-      "Implementation": "server.js:71015",
+      "Implementation": "server.js:71016",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "/one-time-classroom.html (fetch)",
@@ -6951,7 +6951,7 @@
     },
     {
       "Canonical URL": "/api/one-time/calendar",
-      "Implementation": "server.js:73032",
+      "Implementation": "server.js:73033",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -6996,7 +6996,7 @@
     },
     {
       "Canonical URL": "/api/one-time/interest",
-      "Implementation": "server.js:72925",
+      "Implementation": "server.js:72926",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "/one-time (fetch)",
@@ -7026,7 +7026,7 @@
     },
     {
       "Canonical URL": "/api/operations/login",
-      "Implementation": "server.js:79733",
+      "Implementation": "server.js:79734",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "/operations-login.html (fetch) | /test-login.html (fetch)",
@@ -7041,7 +7041,7 @@
     },
     {
       "Canonical URL": "/api/operations/logout",
-      "Implementation": "server.js:79774",
+      "Implementation": "server.js:79775",
       "Audience": "admin",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8226,7 +8226,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/checkout",
-      "Implementation": "server.js:74094",
+      "Implementation": "server.js:74095",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8256,7 +8256,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/library",
-      "Implementation": "server.js:74263",
+      "Implementation": "server.js:74264",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8271,7 +8271,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/live-sessions",
-      "Implementation": "server.js:74310",
+      "Implementation": "server.js:74311",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8286,7 +8286,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/login",
-      "Implementation": "server.js:74236",
+      "Implementation": "server.js:74237",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8301,7 +8301,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/questions",
-      "Implementation": "server.js:74511 | server.js:74538",
+      "Implementation": "server.js:74512 | server.js:74539",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8316,7 +8316,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/request-login",
-      "Implementation": "server.js:74187",
+      "Implementation": "server.js:74188",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8331,7 +8331,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/session",
-      "Implementation": "server.js:74254",
+      "Implementation": "server.js:74255",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8346,7 +8346,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/support-tickets",
-      "Implementation": "server.js:74333 | server.js:74374",
+      "Implementation": "server.js:74334 | server.js:74375",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8361,7 +8361,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/member/support-tickets/:id",
-      "Implementation": "server.js:74478",
+      "Implementation": "server.js:74479",
       "Audience": "member",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8376,7 +8376,7 @@
     },
     {
       "Canonical URL": "/api/rabbi/tiers",
-      "Implementation": "server.js:74079",
+      "Implementation": "server.js:74080",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8646,7 +8646,7 @@
     },
     {
       "Canonical URL": "/api/tickets",
-      "Implementation": "server.js:69637 | server.js:69666",
+      "Implementation": "server.js:69638 | server.js:69667",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8661,7 +8661,7 @@
     },
     {
       "Canonical URL": "/api/tickets/:id",
-      "Implementation": "server.js:69703",
+      "Implementation": "server.js:69704",
       "Audience": "internal",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -8751,7 +8751,7 @@
     },
     {
       "Canonical URL": "/api/webhooks/green-invoice/rabbi",
-      "Implementation": "server.js:74584",
+      "Implementation": "server.js:74585",
       "Audience": "one time",
       "Authentication": "protected",
       "Entry point": "direct/server/static",
@@ -9276,7 +9276,7 @@
     },
     {
       "Canonical URL": "/member",
-      "Implementation": "server.js:79876",
+      "Implementation": "server.js:79877",
       "Audience": "member",
       "Authentication": "entry page",
       "Entry point": "/operations.html (literal-a-href) | public/sw.js (service-worker)",
@@ -9321,7 +9321,7 @@
     },
     {
       "Canonical URL": "/member-portal",
-      "Implementation": "server.js:79876",
+      "Implementation": "server.js:79877",
       "Audience": "member",
       "Authentication": "entry page",
       "Entry point": "direct/server/static",
@@ -9501,7 +9501,7 @@
     },
     {
       "Canonical URL": "/one-time/member-login",
-      "Implementation": "server.js:79876",
+      "Implementation": "server.js:79877",
       "Audience": "member",
       "Authentication": "entry page",
       "Entry point": "direct/server/static",
