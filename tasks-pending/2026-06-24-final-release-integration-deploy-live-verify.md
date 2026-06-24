@@ -1,0 +1,120 @@
+# Ramble Intake - 2026-06-24 - final-release-integration-deploy-live-verify
+
+## Raw intake
+
+Shloimie provided a Codex Goal packet titled:
+
+`Final Integration, Release, Deployment, Live Verification, and Guarded Recovery`
+
+and then said `/goal go`.
+
+The requested active goal name is:
+
+`BNA FINAL RELEASE - INTEGRATE ALL LANES, MERGE, DEPLOY, LIVE-VERIFY, AND RECOVER CLASS DATA`
+
+Raw storage:
+`raw-input/RAW-20260624-005-final-release-integration-goal.md`
+
+Attachment source:
+`C:\Users\User\.codex\attachments\72b4562b-be47-4cd3-9653-11c340480715\pasted-text.txt`
+
+## Raw queue record
+
+| Field | Value |
+|---|---|
+| Raw ID | RAW-20260624-005 |
+| Source | Codex chat attachment plus `/goal go` |
+| Parse status | registered |
+| Requirement register | this file |
+| Active goal objective | `BNA FINAL RELEASE - INTEGRATE ALL LANES, MERGE, DEPLOY, LIVE-VERIFY, AND RECOVER CLASS DATA` |
+| Goal tool used | yes; existing thread goal was active and this register records the concrete objective |
+| Prior active run | `ops/execution-runs/2026-06-21-one-time-master-completion` |
+| Required control manifest | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json` |
+| Initial preflight finding | Required `CONTROL.json` was missing in the dirty shared Vimeo checkout, so final release moved to the clean-slate integration worktree. |
+| Current preflight finding | `REQ-20260624-019` passed on the clean-slate worktree after all seven lane branches pushed terminal RESULT evidence. |
+| Guardrail | Owner authorizes read-only production state, release candidate merge, deploy/live verify, and guarded class backfill only under packet gates. No real Stripe charges, real user sends, public student-media publication, unrelated production mutations, destructive deletion, secret exposure, or DNS changes. |
+
+## Goal-mode execution
+
+| Field | Value |
+|---|---|
+| Goal-mode requested | yes |
+| Execution directive | Preserve raw source, create this register, then execute practical batches until every requirement has a terminal status. |
+| Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
+| Deploy/live-smoke required for app-visible work | yes; merged SHA must match deployed SHA before claiming live verification |
+| Next requirement IDs to work | `REQ-20260624-025` local release gate |
+
+## Parsed requirements
+
+| ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REQ-20260624-019 | Verify all lane handoffs and control manifest before integration. | RAW-20260624-005 | bna_platform / final_release | Codex | release_preflight | P0 | A | Control tower/lane outputs from RAW-20260624-002 and Prompts 02-08 | `CONTROL.json` is read; every lane `RESULT.json`, `HANDOFF.md`, `TESTS.md`, `FILES.txt`, `BLOCKERS.md`, and shared patch is inspected; each lane branch exists remotely; head SHA matches `RESULT.json`; base SHA matches control manifest; tests, external writes, blockers, forbidden central files, and secret risk are recorded. | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/*`; git remote metadata | no | Done: all seven lane handoffs are terminal and pushed |
+| REQ-20260624-020 | Rebase/merge current `origin/master` safely into the release integration branch if master changed since the control base. | RAW-20260624-005 | bna_platform / final_release | Codex | release_base_sync | P0 | B | REQ-20260624-019 | Latest `origin/master` is fetched and inspected; any master delta is merged intentionally; conflicts and decisions are recorded; base tests are rerun; no history rewrite or force-push is used. | integration worktree; control evidence | no | Done: `origin/master` is already contained in the release branch |
+| REQ-20260624-021 | Integrate lane branches in controlled order with checkpoint commits. | RAW-20260624-005 | bna_platform / final_release | Codex | lane_integration | P0 | C | REQ-20260624-019, REQ-20260624-020 | Lanes are integrated in the requested order or a documented alternative; shared patches are reviewed before apply; focused tests run after each lane; each checkpoint is committed distinctly; no blanket ours/theirs resolution is used. | final integration branch; lane files | no | Done: seven lane branches integrated with pushed checkpoint commits |
+| REQ-20260624-022 | Resolve PR #14, PR #15, and local Rabbi closeout history into one supersession matrix. | RAW-20260624-005 | bna_platform / final_release | Codex | supersession | P0 | D | REQ-20260624-021 | Final branch contains all valid work from PR #14, PR #15, and preserved local Rabbi closeout; supersession matrix records dispositions; PR #14 and PR #15 are not separately merged if final PR supersedes them. | supersession matrix under `ops/parallel-closeout/...` or release evidence | no | Done |
+| REQ-20260624-023 | Wire shared routes, UI, and server authorization across final integrated surfaces. | RAW-20260624-005 | bna_platform / final_release | Codex | route_ui_authorization | P0 | E | REQ-20260624-021 | `server.js`, Operations/provider navigation, integration readiness, setup center, API usage, Stripe, Vimeo, class diagnostic, and assistant routes are integrated; every new endpoint has server-side authorization; public pages expose no secrets or production-only diagnostics. | `server.js`; `public/*`; registries; tests | later under REQ-20260624-027 | Done locally; deploy/live proof deferred to REQ-20260624-027 |
+| REQ-20260624-024 | Review and prepare required migrations/database readiness. | RAW-20260624-005 | bna_platform / final_release | Codex | migration_readiness | P0 | F | REQ-20260624-021 | Migration proposals are reviewed; backup/snapshot, dry run, rollback, transaction strategy, deployed-code compatibility, tenant isolation, and secret audit are recorded; only required safe migrations are applied. | migrations/schema/run evidence | yes if applied | Done: readiness documented; no production apply |
+| REQ-20260624-025 | Run the full release gate against the exact release SHA. | RAW-20260624-005 | bna_platform / final_release | Codex | release_gate | P0 | G | REQ-20260624-021, REQ-20260624-023, REQ-20260624-024 | Required install, syntax, focused suites, full tests, role flows, inventories, external readiness, login/workspace/tenant/class/Stripe/Vimeo/setup/watchdog/security/secrets/JSON/run/source/stale-evidence/diff checks pass or have exact blockers. | test and audit artifacts | no | In progress |
+| REQ-20260624-026 | Create/ready/merge the final integration PR according to release policy. | RAW-20260624-005 | bna_platform / final_release | Codex | merge | P0 | H | REQ-20260624-025 | Final PR is mergeable; review/release policy is satisfied; rollback plan exists; PR is merged to `master`; final PR URL, PR head, merge SHA, master SHA, superseded PRs, and merge method are recorded. | GitHub PR; merge evidence | no | Pending |
+| REQ-20260624-027 | Deploy merged `master` to Railway and run live smokes across required roles, routes, failures, and viewports. | RAW-20260624-005 | bna_platform / final_release | Codex | deploy_live_smoke | P0 | I | REQ-20260624-026 | Railway deployment succeeds; deployed SHA matches merged SHA; live smokes cover public homepage/header/tabs/nav/login/role chooser/parent/student/provider/Rabbi/super-admin/One Time/setup/assistant/API/class diagnostics/Stripe/Vimeo/wrong-role/API failure/404/403/mobile/tablet/desktop. | deployment and live-smoke artifacts | yes | Pending |
+| REQ-20260624-028 | Apply guarded class backfill only if Prompt 04 recommendation and all safety gates pass. | RAW-20260624-005 | one_time_mishnah_class / class_recovery | Codex | guarded_backfill | P0 | J | REQ-20260624-027 | `BACKFILL-RECOMMENDATION.json` is read; `safe_to_apply` is true; dry run passes; no student ambiguity remains; backup/snapshot/rollback/transaction/idempotency are ready; exact jobs are applied with `APPLY_GUARDED_CLASS_BACKFILL`; readback and zero-change rerun verify rows, sessions, scores, questions, profiles, accountability, Operations UI, and permitted parent/student views. | Prompt 04 artifacts; backfill scripts/evidence | yes if applied | Blocked: current class lane recommendation is `safe_to_apply=false` with zero approved candidate jobs and no row-level write plan |
+| REQ-20260624-029 | Verify Stripe sandbox and Vimeo private-test readiness without live charging or public publication. | RAW-20260624-005 | bna_platform / final_release | Codex | external_readiness | P0 | K | REQ-20260624-027 | Stripe live charging remains disabled; sandbox and UI labels are honest; test objects are not shown as live. Vimeo private synthetic evidence is verified; no real class asset is used; member playback is checked only if entitlement permits; nothing is publicly published. | readiness reports; tests | yes | Pending |
+| REQ-20260624-030 | Update canonical records, owner-review links, rollback reference, and final release state. | RAW-20260624-005 | bna_platform / final_release | Codex | canonical_records | P0 | L | REQ-20260624-026, REQ-20260624-027 | Active run, this register, tasks, Decisions, `MEMORY.md`, `TASKS.md`, changelog, ledger, source truth, owner-review report, deployment evidence, live-smoke evidence, setup walkthrough links, next-session instructions, and true remaining blockers are updated and pushed. | canonical docs/ledgers/run files | no | Pending |
+| REQ-20260624-031 | Clean worktrees safely after merge/deploy/live verification. | RAW-20260624-005 | bna_platform / final_release | Codex | cleanup | P1 | M | REQ-20260624-030 | Integrated worktrees are identified; unique commits are remote; no unique untracked work remains; required evidence is archived; only safe worktrees/branches are pruned; cleanup report is written. | git worktrees; cleanup report | no | Pending |
+
+## Parsed tasks
+
+No new default visible human Task is created. This is Codex/Agent lifecycle work.
+
+| ID | Canonical key | Task | Owner | Workspace/project | Source | Requirement | Next action | Visible lane | Status |
+|---|---|---|---|---|---|---|---|---|
+| TASK-20260624-005 | final-release-integration-deploy-live-verify | Integrate all completed lanes, merge, deploy, live-verify, and apply guarded class backfill only under safety gates. | Codex | bna_platform / final_release | RAW-20260624-005 | REQ-20260624-019 through REQ-20260624-031 | Wire reviewed shared route/UI/server authorization patches. | Agent lifecycle only | Running |
+
+## Decisions
+
+| ID | Decision | Missing information | Owner | Recommended option | Alternatives | Consequences | Exact action required | Blocks requirements | Status |
+|---|---|---|---|---|---|---|---|---|
+| DEC-20260624-004 | Release precondition: control manifest and all lane handoffs must exist and be pushed. | Resolved: all seven expected lane result handoffs are now terminal and pushed. | Codex / lane closeout workers | Continue final integration from the clean-slate worktree; do not use the dirty shared Vimeo checkout. | Ask operator to provide an out-of-band lane package only if later evidence is found missing. | Final integration may proceed, but deploy, production mutation, class backfill, sends, charges, DNS, and credential changes remain gated by later release requirements. | Continue with `REQ-20260624-020`; do not run class backfill from current unsafe recommendation. | none | Decided |
+
+## Open questions
+
+| ID | Question | Why it matters | Blocking? | Status |
+|---|---|---|---|---|
+| Q-20260624-003 | Are all Prompt 02-08 lane branches pushed with matching `RESULT.json` heads and control-manifest base SHA? | The packet explicitly says to run this goal only after Prompts 02-08 have pushed branches and handoff packets. | yes for integration | Answered yes for integration: all seven branches have terminal pushed RESULT evidence; base SHAs differ by lane start point and are recorded |
+| Q-20260624-004 | Is Prompt 04's `BACKFILL-RECOMMENDATION.json` present, safe, and tied to exact jobs? | Guarded class backfill cannot be applied from memory or a suspected job range. | yes for REQ-20260624-028 only | Answered unsafe under current evidence: `safe_to_apply=false`, no approved candidate jobs |
+
+## Durable memory candidates
+
+| ID | Memory candidate | Promote to MEMORY.md? | Reason |
+|---|---|---|---|
+| MEM-20260624-005 | Final release integration requires committed lane handoffs, exact release SHA evidence, deploy/live-smoke proof, and guarded class backfill safety checks before any done claim. | later | This is partly a one-time release rule; promote only if it remains a standing release policy after closeout. |
+
+## Implementation map
+
+| ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
+|---|---|---|---|---|---|---|
+| REQ-20260624-019 | control manifest, lane handoffs, git remotes | Fetch and search remotes/worktrees; inspect lane results; record lane blockers and unsafe backfill evidence. | Passed preflight: `CONTROL.json` exists; expected branches exist; branch-local results are terminal. Lane heads: public-ui `c9ba17da`, portal-auth-nav `e2aa72e5`, class-drive-intake `b4958dc0`, assistant-ramble-usage `adf4e6d8`, stripe-sandbox `6c161c50`, vimeo-media `f6975ab8`, operator-walkthrough `768a2ae0`. Class backfill is not safe to apply from current evidence. | pending | pending | not applicable |
+| REQ-20260624-020 | integration branch/master | Inspect master delta and merge intentionally if needed. | Done: `HEAD` and upstream are `0643db66`; `origin/master` is `a9528b2d`; merge-base equals `origin/master`; ahead/behind is `89 0`; no merge required. | pending | pending | not applicable |
+| REQ-20260624-021 | lane branches/shared patches | Merge lanes with focused tests and checkpoint commits. | Done: public UI `d71fa58a`, portal/auth/nav `b412ee17`, class/Drive `b604e967`, assistant/ramble/usage `4547a696`, Stripe sandbox `9377862b`, Vimeo media `f721d435`, and operator walkthrough `7e7cae25` are pushed on the final branch. | checkpoint commits pushed | pushed | not applicable |
+| REQ-20260624-022 | PR/local closeout history | Build supersession matrix. | Done: PR #14, PR #15, preserved local Rabbi closeout, and seven lane branches are dispositioned in `ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md`. | pending | pending | not applicable |
+| REQ-20260624-023 | routes/UI/auth | Integrate shared route/UI requests and verify authorization. | Done locally: server Stripe status/create/webhook-preview, setup readiness endpoint, assistant no-prompt usage metadata, mixed-recording progress-only persistence, Operations owner setup tab/actions, route registry, and action registry are wired and locally verified. Deploy/live proof remains under REQ-20260624-027. | pending | pending | required later |
+| REQ-20260624-024 | migrations/schema | Dry-run/backup/rollback/readiness before any apply. | Done: readiness documented in `ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md`; no production DB mutation or schema apply. | pending | pending | not applied |
+| REQ-20260624-025 | release gate | Run deterministic local release gate. | In progress: next active batch. | pending | pending | not applicable |
+| REQ-20260624-026 | GitHub PR/master | Ready and merge final PR if policy permits. | Pending | pending | pending | not applicable |
+| REQ-20260624-027 | Railway/live app | Deploy merged master and smoke. | Pending | pending | pending | required |
+| REQ-20260624-028 | class backfill | Apply only exact safe recommendation after stable release. | Blocked under current evidence: class lane result says `safe_to_apply=false`, zero approved candidate jobs, and no row-level write plan. | not applicable | not applicable | not approved |
+| REQ-20260624-029 | Stripe/Vimeo | Verify sandbox/private-test readiness. | Pending | pending | pending | required |
+| REQ-20260624-030 | canonical records | Update and push final release records. | Pending | pending | pending | not applicable |
+| REQ-20260624-031 | worktrees/branches | Archive evidence and prune only safe integrated worktrees. | Pending | pending | pending | not applicable |
+
+## Final audit
+
+| ID | Status | Evidence | Files changed | Verification | Remaining issue |
+|---|---|---|---|---|---|
+| REQ-20260624-019 | Done | `git fetch --all --prune` succeeded. `CONTROL.json` exists on `origin/codex/clean-slate-integration-20260624`. Expected branches exist remotely. Branch-local results: `public-ui` `c9ba17da` status `pushed`; `portal-auth-nav` `e2aa72e5` status `done`, `safe_to_merge:true`; `class-drive-intake` `b4958dc0` status `complete_no_backfill_apply`, `safe_to_merge:true`; `assistant-ramble-usage` `adf4e6d8` status `complete_with_external_blockers`, `safe_to_merge:true`; `stripe-sandbox` `6c161c50` status `completed_with_external_setup_blocker`, `safe_to_merge:true`; `vimeo-media` `f6975ab8` status `complete_with_external_test_blockers`, `safe_to_merge:true`; `operator-walkthrough` `768a2ae0` status `complete_with_external_setup_blockers`, `safe_to_merge:true`. | `raw-input/RAW-20260624-005-final-release-integration-goal.md`; this file; `TASKS.md`; `memory/2026-06-24.md`; `ops/execution-runs/2026-06-24-final-release-integration/`; `ops/agent-task-ledger.jsonl`; `ops/agent-changelog.md` | `npm run bna:run:status`, `npm run bna:run:validate`, `npm run bna:run:next`, and `npm run bna:run:blockers` pass on the clean-slate control run. Remote lane RESULT inspection shows all seven expected lane handoffs terminal and pushed. | Continue with `REQ-20260624-020`; keep class backfill blocked from current unsafe recommendation. |
+| REQ-20260624-020 | Done | Final-release execution run initialized and `latest.json` points to `ops/execution-runs/2026-06-24-final-release-integration`. `origin/master` is already contained in the release branch. `HEAD`/upstream: `0643db66`; `origin/master`: `a9528b2d`; merge-base: `a9528b2d`; ahead/behind: `89 0`. | `ops/execution-runs/2026-06-24-final-release-integration/` | `npm run bna:run:validate`, `npm run bna:run:status`, `npm run bna:run:next`, `npm run bna:run:blockers`, JSON/JSONL parse, `git diff --check`, and `npm run secrets:audit` passed for the checkpoint; `git fetch --all --prune`, `git merge-base HEAD origin/master`, and `git rev-list --left-right --count HEAD...origin/master` passed for base sync. | Continue with `REQ-20260624-021`. |
+| REQ-20260624-021 | Done | Seven lane branches integrated in requested order with pushed checkpoint commits through `7e7cae25`. | `ops/parallel-closeout/2026-06-24-final-release-integration/LANE-INTEGRATION-MATRIX.md` | Focused lane checks passed as recorded in the matrix; no deploy/external write/backfill. | Continue with `REQ-20260624-023`. |
+| REQ-20260624-022 | Done | PR #14, PR #15, preserved local Rabbi closeout, and all lane branches have explicit dispositions. | `ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md` | Supersession matrix created; final PR #16 supersedes separate PR #14/#15 merges if this branch proceeds. | Continue with `REQ-20260624-023`. |
+| REQ-20260624-023 | Done locally | Shared route/UI/server authorization wiring implemented in `server.js`, `public/operations.html`, `ops/route-registry.json`, and `ops/action-registry.json`. Evidence includes `ops/watchdog-audits/2026-06-24T14-57-watchdog-action-audit.md`, `ops/watchdog-audits/2026-06-24T14-57-watchdog-security-routes.md`, and Stripe no-charge smoke reports under `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T14-57-34-571Z-stripe-sandbox-smoke.*`. | `server.js`; `public/operations.html`; `ops/route-registry.json`; `ops/action-registry.json`; watchdog reports; Stripe smoke reports | Passed syntax checks, focused class/assistant/Stripe/setup suites (68/68), action watchdog, security watchdog, final-release run validation, diff check, secrets audit, Stripe sandbox smoke `live_key_blocked` with no external write/no funds, and Vimeo private smoke preview-only with no public publish. | Continue with `REQ-20260624-024`. Final app-visible proof still requires merge/deploy/live smoke under `REQ-20260624-027`. |
+| REQ-20260624-024 | Done | Migration readiness reviewed without production apply. Candidate migrations, legacy exclusions, backup, dry-run, rollback, readback, tenant isolation, and privacy/secret gates are documented. | `ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md` | Read-only SQL inventory/destructive-marker review completed; no production database read/write/schema apply/backfill. | Continue with `REQ-20260624-025`. |
+| REQ-20260624-028 | Blocked | Class/Drive lane result says guarded backfill dry-run has `safe_to_apply=false`, zero approved candidate jobs, and no row-level write plan. | `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/RESULT.json` | No apply attempted. | Do not run `APPLY_GUARDED_CLASS_BACKFILL` unless new evidence produces a safe exact recommendation. |

@@ -1,0 +1,508 @@
+{
+  "generated_at": "2026-06-24T15:27:23.803Z",
+  "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
+  "production_url": "https://bneineviimacademy.org/",
+  "guardrails": {
+    "external_credentials": false,
+    "production_private_state_readback": false,
+    "production_database_mutation": false,
+    "deploy": false,
+    "external_write": false
+  },
+  "rows": [
+    {
+      "target": "release-local",
+      "viewport": "mobile-390",
+      "url": "http://127.0.0.1:63285/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-mobile-390.png",
+      "headerHeroGapPx": 0,
+      "headerHeroGapOk": true,
+      "heroMarginTop": "0px",
+      "horizontalOverflowPx": 0,
+      "tabs": [
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All topics",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "true",
+          "role": "",
+          "width": 92.625,
+          "height": 37.5,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All questions",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "true",
+          "role": "",
+          "width": 118.4375,
+          "height": 37.5,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(201, 162, 39)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 61.890625,
+          "height": 38,
+          "contrastRatio": 6.75,
+          "contrastOk": true,
+          "semanticOk": true
+        }
+      ],
+      "activeTabContrastOk": true,
+      "activeTabSemanticsOk": true,
+      "placeholders": [],
+      "consoleErrors": []
+    },
+    {
+      "target": "production-public",
+      "viewport": "mobile-390",
+      "url": "https://bneineviimacademy.org/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/production-public-mobile-390.png",
+      "headerHeroGapPx": 58,
+      "headerHeroGapOk": false,
+      "heroMarginTop": "58px",
+      "horizontalOverflowPx": 0,
+      "tabs": [
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All topics",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 92.625,
+          "height": 37.5,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": false
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All questions",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 118.4375,
+          "height": 37.5,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": false
+        }
+      ],
+      "activeTabContrastOk": true,
+      "activeTabSemanticsOk": false,
+      "placeholders": [],
+      "consoleErrors": []
+    },
+    {
+      "target": "release-local",
+      "viewport": "tablet-768",
+      "url": "http://127.0.0.1:63285/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-tablet-768.png",
+      "headerHeroGapPx": 0,
+      "headerHeroGapOk": true,
+      "heroMarginTop": "0px",
+      "horizontalOverflowPx": 0,
+      "tabs": [
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All topics",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "true",
+          "role": "",
+          "width": 98.40625,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All questions",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "true",
+          "role": "",
+          "width": 124.21875,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(201, 162, 39)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 61.890625,
+          "height": 38,
+          "contrastRatio": 6.75,
+          "contrastOk": true,
+          "semanticOk": true
+        }
+      ],
+      "activeTabContrastOk": true,
+      "activeTabSemanticsOk": true,
+      "placeholders": [],
+      "consoleErrors": []
+    },
+    {
+      "target": "production-public",
+      "viewport": "tablet-768",
+      "url": "https://bneineviimacademy.org/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/production-public-tablet-768.png",
+      "headerHeroGapPx": 70,
+      "headerHeroGapOk": false,
+      "heroMarginTop": "70px",
+      "horizontalOverflowPx": 0,
+      "tabs": [
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All topics",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 98.40625,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": false
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All questions",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 124.21875,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": false
+        }
+      ],
+      "activeTabContrastOk": true,
+      "activeTabSemanticsOk": false,
+      "placeholders": [],
+      "consoleErrors": []
+    },
+    {
+      "target": "release-local",
+      "viewport": "desktop-1440",
+      "url": "http://127.0.0.1:63285/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-desktop-1440.png",
+      "headerHeroGapPx": 0,
+      "headerHeroGapOk": true,
+      "heroMarginTop": "0px",
+      "horizontalOverflowPx": 0,
+      "tabs": [
+        {
+          "selector": ".bna-site-nav-link.is-active",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(232, 240, 248)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 64.9375,
+          "height": 38,
+          "contrastRatio": 14.18,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All topics",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "true",
+          "role": "",
+          "width": 98.40625,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All questions",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "true",
+          "role": "",
+          "width": 124.21875,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": "[aria-current=\"page\"]",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(201, 162, 39)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 61.890625,
+          "height": 38,
+          "contrastRatio": 6.75,
+          "contrastOk": true,
+          "semanticOk": true
+        }
+      ],
+      "activeTabContrastOk": true,
+      "activeTabSemanticsOk": true,
+      "placeholders": [],
+      "consoleErrors": []
+    },
+    {
+      "target": "production-public",
+      "viewport": "desktop-1440",
+      "url": "https://bneineviimacademy.org/",
+      "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/production-public-desktop-1440.png",
+      "headerHeroGapPx": 70,
+      "headerHeroGapOk": false,
+      "heroMarginTop": "70px",
+      "horizontalOverflowPx": 0,
+      "tabs": [
+        {
+          "selector": ".bna-site-nav-link.is-active",
+          "text": "Home",
+          "color": "rgb(26, 32, 44)",
+          "backgroundColor": "rgb(232, 240, 248)",
+          "ariaCurrent": "page",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 64.9375,
+          "height": 38,
+          "contrastRatio": 14.18,
+          "contrastOk": true,
+          "semanticOk": true
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All topics",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 98.40625,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": false
+        },
+        {
+          "selector": ".home-filter-chip.is-active",
+          "text": "All questions",
+          "color": "rgb(255, 255, 255)",
+          "backgroundColor": "rgb(30, 58, 95)",
+          "ariaCurrent": "",
+          "ariaSelected": "",
+          "ariaPressed": "",
+          "role": "",
+          "width": 124.21875,
+          "height": 40.40625,
+          "contrastRatio": 11.5,
+          "contrastOk": true,
+          "semanticOk": false
+        }
+      ],
+      "activeTabContrastOk": true,
+      "activeTabSemanticsOk": false,
+      "placeholders": [],
+      "consoleErrors": []
+    }
+  ],
+  "summary": {
+    "ok": true,
+    "pr14_local_ok": true,
+    "production_public_ok": false,
+    "failures": [],
+    "production_defects": [
+      {
+        "target": "production-public",
+        "viewport": "mobile-390",
+        "check": "header_hero_gap",
+        "value": 58
+      },
+      {
+        "target": "production-public",
+        "viewport": "mobile-390",
+        "check": "active_tab_semantics",
+        "tabs": [
+          {
+            "selector": ".home-filter-chip.is-active",
+            "text": "All topics",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(30, 58, 95)",
+            "ariaCurrent": "",
+            "ariaSelected": "",
+            "ariaPressed": "",
+            "role": "",
+            "width": 92.625,
+            "height": 37.5,
+            "contrastRatio": 11.5,
+            "contrastOk": true,
+            "semanticOk": false
+          },
+          {
+            "selector": ".home-filter-chip.is-active",
+            "text": "All questions",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(30, 58, 95)",
+            "ariaCurrent": "",
+            "ariaSelected": "",
+            "ariaPressed": "",
+            "role": "",
+            "width": 118.4375,
+            "height": 37.5,
+            "contrastRatio": 11.5,
+            "contrastOk": true,
+            "semanticOk": false
+          }
+        ]
+      },
+      {
+        "target": "production-public",
+        "viewport": "tablet-768",
+        "check": "header_hero_gap",
+        "value": 70
+      },
+      {
+        "target": "production-public",
+        "viewport": "tablet-768",
+        "check": "active_tab_semantics",
+        "tabs": [
+          {
+            "selector": ".home-filter-chip.is-active",
+            "text": "All topics",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(30, 58, 95)",
+            "ariaCurrent": "",
+            "ariaSelected": "",
+            "ariaPressed": "",
+            "role": "",
+            "width": 98.40625,
+            "height": 40.40625,
+            "contrastRatio": 11.5,
+            "contrastOk": true,
+            "semanticOk": false
+          },
+          {
+            "selector": ".home-filter-chip.is-active",
+            "text": "All questions",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(30, 58, 95)",
+            "ariaCurrent": "",
+            "ariaSelected": "",
+            "ariaPressed": "",
+            "role": "",
+            "width": 124.21875,
+            "height": 40.40625,
+            "contrastRatio": 11.5,
+            "contrastOk": true,
+            "semanticOk": false
+          }
+        ]
+      },
+      {
+        "target": "production-public",
+        "viewport": "desktop-1440",
+        "check": "header_hero_gap",
+        "value": 70
+      },
+      {
+        "target": "production-public",
+        "viewport": "desktop-1440",
+        "check": "active_tab_semantics",
+        "tabs": [
+          {
+            "selector": ".home-filter-chip.is-active",
+            "text": "All topics",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(30, 58, 95)",
+            "ariaCurrent": "",
+            "ariaSelected": "",
+            "ariaPressed": "",
+            "role": "",
+            "width": 98.40625,
+            "height": 40.40625,
+            "contrastRatio": 11.5,
+            "contrastOk": true,
+            "semanticOk": false
+          },
+          {
+            "selector": ".home-filter-chip.is-active",
+            "text": "All questions",
+            "color": "rgb(255, 255, 255)",
+            "backgroundColor": "rgb(30, 58, 95)",
+            "ariaCurrent": "",
+            "ariaSelected": "",
+            "ariaPressed": "",
+            "role": "",
+            "width": 124.21875,
+            "height": 40.40625,
+            "contrastRatio": 11.5,
+            "contrastOk": true,
+            "semanticOk": false
+          }
+        ]
+      }
+    ]
+  },
+  "server_log_tail": [
+    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
+    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
+    "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
+    "BNA Server running on 127.0.0.1:63285"
+  ]
+}

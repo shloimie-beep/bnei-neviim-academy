@@ -202,7 +202,7 @@
             height: calc(100vh - 70px);
             min-height: 680px;
             max-height: 820px;
-            margin-top: 70px;
+            margin-top: 0;
             padding: 0;
             display: block;
             overflow: hidden;
@@ -980,18 +980,35 @@
         }
 
         .media-dot {
-            width: 10px;
-            height: 10px;
+            position: relative;
+            width: 32px;
+            height: 32px;
             border-radius: 999px;
             border: 0;
-            background: rgba(30, 58, 95, 0.24);
+            background: transparent;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
             transition: transform 0.2s ease, background 0.2s ease;
         }
 
-        .media-dot.active {
+        .media-dot::after {
+            content: "";
+            position: absolute;
+            inset: 50% auto auto 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(30, 58, 95, 0.24);
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .media-dot.active::after {
             background: var(--accent-gold);
-            transform: scale(1.2);
+            transform: translate(-50%, -50%) scale(1.2);
         }
 
         /* ===== LEARNING ECOSYSTEM SECTION ===== */
@@ -1515,7 +1532,7 @@
             .hero {
                 display: block !important;
                 position: relative;
-                margin-top: 58px;
+                margin-top: 0;
                 height: 620px;
                 min-height: 620px;
                 max-height: none;
@@ -2186,14 +2203,42 @@
             transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
-        .home-filter-chip:hover,
-        .home-filter-chip:focus-visible,
+        .home-filter-chip:hover {
+            background: var(--light-blue);
+            border-color: rgba(30, 58, 95, 0.3);
+            color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .home-filter-chip:focus-visible {
+            background: #ffffff;
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            outline: 3px solid rgba(15, 23, 42, 0.7);
+            outline-offset: 3px;
+            transform: translateY(-2px);
+        }
+
         .home-filter-chip.is-active {
             background: var(--primary-blue);
             border-color: var(--primary-blue);
             color: #ffffff;
-            outline: none;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7), 0 12px 26px rgba(17, 35, 63, 0.16);
             transform: translateY(-2px);
+        }
+
+        .home-filter-chip.is-active::before {
+            content: "";
+            width: 0.42rem;
+            height: 0.42rem;
+            border-radius: 999px;
+            background: currentColor;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.42);
+            flex: 0 0 auto;
+        }
+
+        .home-filter-chip.is-active:focus-visible {
+            outline-color: rgba(15, 23, 42, 0.9);
         }
 
         .home-blog-grid {
@@ -2534,10 +2579,12 @@
                     </details>
                     <a href="#blog" class="nav-link nav-link--mobile-only" data-i18n="navBlog" data-en-href="#blog" data-he-href="#blog">Blog</a>
                     <a href="#faq" class="nav-link" data-i18n="navFaq" data-en-href="#faq" data-he-href="#faq">FAQ</a>
+                    <a href="/providers" class="nav-link" data-i18n="navProviderDirectory" data-en-href="/providers" data-he-href="/he/providers">Service Provider Directory</a>
+                    <a href="/one-time" class="nav-link" data-i18n="navOneTime" data-en-href="/one-time" data-he-href="/one-time">One Time</a>
                     <a href="/parent/login" class="nav-link" data-i18n="navParentLogin" data-en-href="/parent/login" data-he-href="/parent/login">Parent Login</a>
                     <a href="/student/login" class="nav-link" data-i18n="navStudentLogin" data-en-href="/student/login" data-he-href="/student/login">Student Login</a>
                     <a href="/provider" class="nav-link" data-i18n="navProviderAccess" data-en-href="/provider" data-he-href="/provider">Rabbi / Provider Login</a>
-                    <a href="/become-service-provider?onboard=provider" class="nav-link" data-i18n="navProviderJoin" data-en-href="/become-service-provider?onboard=provider" data-he-href="/become-service-provider?onboard=provider">Advertise your program for free</a>
+                    <a href="/providers/join?onboard=provider" class="nav-link" data-i18n="navProviderJoin" data-en-href="/providers/join?onboard=provider" data-he-href="/providers/join?onboard=provider">Advertise your program for free</a>
                 </div>
                 <div class="nav-buttons">
                     <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
@@ -2840,7 +2887,7 @@
             <div class="ecosystem-ctas" aria-label="Learning ecosystem actions">
                 <a class="ecosystem-cta ecosystem-cta--gold" href="/school" data-i18n="ecosystemParentCta">Explore schools</a>
                 <a class="ecosystem-cta" href="/parents" data-i18n="ecosystemFamilyCta">Explore families</a>
-                <a class="ecosystem-cta" href="/become-service-provider?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list</a>
+                <a class="ecosystem-cta" href="/providers/join?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list</a>
                 <button class="ecosystem-cta ecosystem-cta--quiet" type="button" data-helper-open data-i18n="ecosystemHelperCta">Ask the helper</button>
             </div>
         </div>
@@ -2934,7 +2981,7 @@
                 </a>
             </div>
             <p class="footer-nonprofit" data-i18n="footerNonprofit">Registered nonprofit in the State of New Jersey</p>
-            <p class="footer-copyright" data-i18n="footerCopyright">&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
+            <p class="footer-copyright" data-i18n="footerCopyright">&copy; 2026 Bnei Nevi'im Academy. All rights reserved.</p>
         </div>
     </footer>
 
@@ -3334,6 +3381,8 @@
                 navBlogTechnology: "Technology",
                 navBlogFuture: "Future Vision",
                 navFaq: "FAQ",
+                navProviderDirectory: "Service Provider Directory",
+                navOneTime: "One Time",
                 navParentLogin: "Parent Login",
                 navStudentLogin: "Student Login",
                 navProviderAccess: "Rabbi / Provider Login",
@@ -3455,7 +3504,7 @@
 
                 footerLocation: "Ramat Beit Shemesh",
                 footerNonprofit: "Registered nonprofit in the State of New Jersey",
-                footerCopyright: "© 2025 Bnei Nevi'im Academy. All rights reserved."
+                footerCopyright: "© 2026 Bnei Nevi'im Academy. All rights reserved."
             },
 
             he: {
@@ -3479,6 +3528,8 @@
                 navBlogTechnology: "טכנולוגיה",
                 navBlogFuture: "חזון עתידי",
                 navFaq: "שאלות",
+                navProviderDirectory: "\u05d0\u05d9\u05e0\u05d3\u05e7\u05e1 \u05e1\u05e4\u05e7\u05d9\u05dd",
+                navOneTime: "\u05d5\u05d5\u05d0\u05df \u05d8\u05d9\u05d9\u05dd",
                 navParentLogin: "כניסת הורים",
                 navStudentLogin: "כניסת תלמיד",
                 navProviderAccess: "כניסת רב / ספק",
@@ -3561,7 +3612,7 @@
 
                 footerLocation: "רמת בית שמש",
                 footerNonprofit: "עמותה רשומה במדינת ניו ג׳רזי",
-                footerCopyright: "© 2025 אקדמיית בני נביאים. כל הזכויות שמורות."
+                footerCopyright: "© 2026 אקדמיית בני נביאים. כל הזכויות שמורות."
             }
         };
 
@@ -3729,6 +3780,7 @@
                 <button
                     class="home-filter-chip${category === activeHomeBlogCategory ? ' is-active' : ''}"
                     type="button"
+                    aria-pressed="${category === activeHomeBlogCategory ? 'true' : 'false'}"
                     data-category="${escapeHtml(category)}"
                 >${escapeHtml(localizedCategoryName(category))}</button>
             `).join('');
@@ -3795,6 +3847,7 @@
                 <button
                     class="home-filter-chip${topic === activeHomeFaqTopic ? ' is-active' : ''}"
                     type="button"
+                    aria-pressed="${topic === activeHomeFaqTopic ? 'true' : 'false'}"
                     data-topic="${escapeHtml(topic)}"
                 >${escapeHtml(labels[topic] || topic)}</button>
             `).join('');

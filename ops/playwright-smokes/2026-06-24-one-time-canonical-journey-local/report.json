@@ -1,0 +1,33 @@
+{
+  "started_at": "2026-06-24T12:12:37.212Z",
+  "base_url": "http://127.0.0.1:62458",
+  "ok": true,
+  "viewports": [
+    {
+      "viewport": "desktop",
+      "screenshots": [
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/desktop-one-time-landing.png",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/desktop-member-home.png",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/desktop-member-library.png",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/desktop-classroom.png"
+      ],
+      "console_errors": []
+    },
+    {
+      "viewport": "mobile",
+      "screenshots": [
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/mobile-one-time-landing.png",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/mobile-member-home.png",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/mobile-member-library.png",
+        "ops/playwright-smokes/2026-06-24-one-time-canonical-journey-local/mobile-classroom.png"
+      ],
+      "console_errors": []
+    }
+  ],
+  "server_log_tail": [
+    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
+    "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
+    "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
+    "BNA Server running on 127.0.0.1:62458"
+  ]
+}

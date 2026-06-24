@@ -24,7 +24,7 @@ test('Operations task lanes keep internal handoff briefs out of operator-facing 
     'Blocked',
     'Due Soon',
     'Calendar',
-    'Completed / Activity',
+    'Done / Activity',
     'Needs My Decision',
     'Needs Rabbi Scheller',
     'Needs External Owner',

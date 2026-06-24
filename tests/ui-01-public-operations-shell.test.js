@@ -32,15 +32,18 @@ test('UI-01 public routes and aliases are wired without changing PWA identities'
   assert.match(fs.readFileSync('public/parent-manifest.json', 'utf8'), /"start_url": "\/parent\?source=parent-pwa"/);
 });
 
-test('UI-01 shared public shell exposes the audience taxonomy and footer mount', () => {
-  for (const label of ['Explore', 'School', 'Families', 'Service Providers', 'Portal Login']) {
+test('UI-01 shared public shell exposes direct audience navigation and footer mount', () => {
+  for (const label of ['School', 'Families', 'Provider Directory', 'One Time', 'Blog', 'FAQ', 'Portal Login']) {
     assert.match(siteNav, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
-  assert.match(siteNav, /function renderAudienceDropdown/);
+  assert.match(siteNav, /id: 'school', href: schoolUrl\(lang\)/);
+  assert.match(siteNav, /id: 'parents', href: parentsUrl\(lang\)/);
+  assert.match(siteNav, /id: 'service-providers', href: serviceProvidersUrl\(lang\)/);
   assert.match(siteNav, /function renderPortalDropdown/);
   for (const safeHref of ['/parent/login', '/student/login', '/provider']) {
     assert.match(siteNav, new RegExp(safeHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
+  assert.doesNotMatch(siteNav, /\/operations(?:-login)?(?:\.html)?/);
   assert.doesNotMatch(siteNav, /\/operations-login\.html/);
   assert.match(siteNav, /function renderSiteFooter/);
   assert.match(siteNavCss, /body > nav:not\(\.bna-site-nav\)/);
@@ -71,7 +74,7 @@ test('UI-01 homepage positions schools, families, providers, and AI overhead cle
   }
   assert.match(home, /href="\/school" data-i18n="ecosystemParentCta">Explore schools/);
   assert.match(home, /href="\/parents" data-i18n="ecosystemFamilyCta">Explore families/);
-  assert.match(home, /href="\/become-service-provider\?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list/);
+  assert.match(home, /href="\/providers\/join\?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list/);
   assert.match(home, /class="ecosystem-media"[\s\S]*?\/images\/learning-moments\/forest-learning-01-web\.jpg/);
 });
 
@@ -84,7 +87,8 @@ test('UI-01 audience pages keep safe public promises', () => {
   assert.match(parents, /Families \/ Parent App/);
   assert.match(parents, /family accountability app/i);
   assert.match(parents, /href="\/parent\/login">Open Parent Login/);
-  assert.match(parents, /Parent app screenshots coming soon/);
+  assert.match(parents, /Parent workflow preview/);
+  assert.match(parents, /private student details stay inside the parent portal/i);
   assert.doesNotMatch(parents, /create account|grant access|payment setup/i);
   assert.match(school, /relationship-first learning environment/i);
   assert.match(serviceProviders, /Advertise your program for free/);

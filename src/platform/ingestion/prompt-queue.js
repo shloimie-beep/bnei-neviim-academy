@@ -15,6 +15,23 @@ const PROMPT_STATUSES = [
 ];
 
 const TERMINAL_PROMPT_STATUSES = new Set(['completed', 'failed', 'archived']);
+const PROMPT_STATUS_ALIASES = {
+  done: 'completed',
+  pass: 'completed',
+  passed: 'completed',
+  sealed_pass: 'completed',
+  sealed_fail: 'failed',
+};
+const CHILD_OUTCOME_STATUS_ALIASES = {
+  done: 'completed',
+  pass: 'passed',
+  sealed_pass: 'passed',
+  sealed_fail: 'failed',
+  needs_operator: 'blocked',
+  needs_operator_decision: 'blocked',
+};
+const TERMINAL_CHILD_OUTCOME_STATUSES = new Set(['passed', 'completed', 'blocked', 'failed', 'archived']);
+const DEFAULT_AUTO_RESUME_STALE_AFTER_MS = 30 * 60 * 1000;
 
 const PROMPT_STATUS_TRANSITIONS = {
   new: new Set(['triaged', 'queued', 'needs_decision', 'failed', 'archived']),
@@ -40,7 +57,17 @@ function compactWhitespace(value = '') {
 
 function normalizePromptStatus(value = 'new') {
   const status = String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  return PROMPT_STATUSES.includes(status) ? status : 'new';
+  const normalized = PROMPT_STATUS_ALIASES[status] || status;
+  return PROMPT_STATUSES.includes(normalized) ? normalized : 'new';
+}
+
+function normalizeChildOutcomeStatus(value = 'queued') {
+  const status = String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  return CHILD_OUTCOME_STATUS_ALIASES[status] || status || 'queued';
+}
+
+function isTerminalChildOutcomeStatus(value = '') {
+  return TERMINAL_CHILD_OUTCOME_STATUSES.has(normalizeChildOutcomeStatus(value));
 }
 
 function promptTitleFromSource(sourceRecord = {}, fallback = 'Review intake prompt') {
@@ -139,7 +166,7 @@ function appendChildOutcome(prompt = {}, outcome = {}) {
     child_id: outcome.child_id || outcome.childId || `CHILD-${stableHash(JSON.stringify(outcome)).slice(0, 10).toUpperCase()}`,
     item_type: outcome.item_type || outcome.itemType || 'task',
     title: compactWhitespace(outcome.title || outcome.summary || 'Child outcome'),
-    status: outcome.status || 'queued',
+    status: normalizeChildOutcomeStatus(outcome.status || 'queued'),
     owner: outcome.owner || null,
     blocker: outcome.blocker || null,
     evidence: Array.isArray(outcome.evidence) ? outcome.evidence : [],
@@ -162,6 +189,122 @@ function elapsedMs(start, end) {
   const endMs = end ? Date.parse(end) : Date.now();
   if (!Number.isFinite(startMs) || !Number.isFinite(endMs) || endMs < startMs) return 0;
   return endMs - startMs;
+}
+
+function resolvedDecision(input = {}) {
+  const decision = input.decision_resolution || input.decisionResolution || input.operator_decision || input.operatorDecision || {};
+  const status = String(decision.status || decision.state || '').toLowerCase();
+  return Boolean(
+    decision.resolved === true ||
+    decision.approved === true ||
+    ['resolved', 'approved', 'unblocked', 'resume', 'resumed'].includes(status)
+  );
+}
+
+function promptSignalAt(prompt = {}) {
+  return prompt.heartbeat_at || prompt.started_at || prompt.queued_at || prompt.created_at || null;
+}
+
+function buildPromptAutoResumePlan(prompt = {}, options = {}) {
+  const now = options.now || new Date().toISOString();
+  const status = normalizePromptStatus(prompt.status);
+  const childOutcomes = prompt.child_outcomes || [];
+  const terminalChildren = childOutcomes.filter((child) => isTerminalChildOutcomeStatus(child.status));
+  const blockedChildren = childOutcomes.filter((child) => ['blocked', 'failed'].includes(normalizeChildOutcomeStatus(child.status)));
+  const allChildrenTerminal = childOutcomes.length > 0 && terminalChildren.length === childOutcomes.length;
+  const signalAt = promptSignalAt(prompt);
+  const staleAfterMs = Number(options.stale_after_ms ?? options.staleAfterMs ?? DEFAULT_AUTO_RESUME_STALE_AFTER_MS);
+  const signalAgeMs = elapsedMs(signalAt, now);
+  const stale = Boolean(
+    signalAt &&
+    Number.isFinite(staleAfterMs) &&
+    staleAfterMs > 0 &&
+    signalAgeMs >= staleAfterMs &&
+    ['in_progress', 'verifying'].includes(status)
+  );
+  let action = 'none';
+  let targetStatus = null;
+  let reason = 'no_auto_resume_needed';
+  let summary = 'No lifecycle transition is needed.';
+
+  if (TERMINAL_PROMPT_STATUSES.has(status)) {
+    reason = 'parent_prompt_terminal';
+    summary = 'Parent prompt is already terminal.';
+  } else if (status === 'needs_decision' && resolvedDecision(options)) {
+    action = 'resume_after_decision';
+    targetStatus = normalizePromptStatus(options.resume_status || options.resumeStatus || 'in_progress');
+    reason = 'operator_decision_resolved';
+    summary = 'Operator decision is resolved; prompt can resume.';
+  } else if (allChildrenTerminal && blockedChildren.length) {
+    action = 'route_to_decision';
+    targetStatus = 'needs_decision';
+    reason = 'terminal_child_blocked_or_failed';
+    summary = 'At least one terminal child is blocked or failed; operator decision is required.';
+  } else if (allChildrenTerminal && status === 'verifying') {
+    action = 'close_completed';
+    targetStatus = 'completed';
+    reason = 'all_child_outcomes_terminal';
+    summary = 'All child outcomes are terminal and can close the parent prompt.';
+  } else if (stale) {
+    action = 'route_to_decision';
+    targetStatus = 'needs_decision';
+    reason = 'stale_heartbeat';
+    summary = 'Prompt heartbeat is stale; route to an operator decision instead of silently continuing.';
+  } else if (prompt.blocker) {
+    action = 'route_to_decision';
+    targetStatus = 'needs_decision';
+    reason = 'blocker_present';
+    summary = 'Prompt has a blocker and should be made explicit as a decision.';
+  }
+
+  const canTransition = targetStatus ? canTransitionPrompt(status, targetStatus) : false;
+  return {
+    contract_version: PROMPT_QUEUE_CONTRACT_VERSION,
+    prompt_id: prompt.prompt_id || null,
+    generated_at: now,
+    external_write_performed: false,
+    action,
+    reason,
+    summary,
+    current_status: status,
+    target_status: canTransition ? targetStatus : null,
+    requested_target_status: targetStatus,
+    can_transition: canTransition,
+    stale,
+    signal_at: signalAt,
+    signal_age_ms: signalAgeMs,
+    stale_after_ms: staleAfterMs,
+    child_outcome_count: childOutcomes.length,
+    terminal_child_outcome_count: terminalChildren.length,
+    blocked_child_outcome_count: blockedChildren.length,
+  };
+}
+
+function applyPromptAutoResumePlan(prompt = {}, plan = {}, fields = {}) {
+  if (!plan.can_transition || !plan.target_status) {
+    return {
+      prompt,
+      applied: false,
+      reason: plan.reason || 'no_transition',
+      external_write_performed: false,
+    };
+  }
+  const timestamp = fields.timestamp || fields.at || plan.generated_at || new Date().toISOString();
+  const next = transitionPrompt(prompt, plan.target_status, {
+    ...fields,
+    timestamp,
+    blocker: plan.target_status === 'needs_decision' ? (fields.blocker || prompt.blocker || plan.summary) : null,
+    result: fields.result || plan.summary,
+  });
+  return {
+    prompt: next,
+    applied: true,
+    action: plan.action,
+    reason: plan.reason,
+    from_status: plan.current_status,
+    to_status: next.status,
+    external_write_performed: false,
+  };
 }
 
 function promptQueueSortValue(prompt = {}) {
@@ -229,7 +372,8 @@ function buildPromptDetailViewModel(prompt = {}, { now = new Date().toISOString(
 
 function buildRambleStatusViewModel(prompt = {}, { now = new Date().toISOString() } = {}) {
   const childOutcomes = prompt.child_outcomes || [];
-  const terminalChildren = childOutcomes.filter((child) => ['done', 'completed', 'sealed_pass', 'blocked', 'failed', 'archived'].includes(String(child.status || '').toLowerCase()));
+  const terminalChildren = childOutcomes.filter((child) => isTerminalChildOutcomeStatus(child.status));
+  const allChildrenTerminal = childOutcomes.length > 0 && terminalChildren.length === childOutcomes.length;
   return {
     contract_version: PROMPT_QUEUE_CONTRACT_VERSION,
     route: QUEUE_ROUTE_CONTRACTS.ramble_status,
@@ -244,6 +388,8 @@ function buildRambleStatusViewModel(prompt = {}, { now = new Date().toISOString(
       ? 'Resolve the blocker or move the prompt to needs_decision.'
       : TERMINAL_PROMPT_STATUSES.has(normalizePromptStatus(prompt.status))
         ? 'Review evidence and archive when appropriate.'
+        : allChildrenTerminal
+          ? 'All child outcomes are terminal; move the parent prompt to completed, failed, or needs_decision with evidence.'
         : 'Continue the current work package and update heartbeat/evidence.',
     evidence: prompt.evidence || [],
   };
@@ -253,14 +399,20 @@ module.exports = {
   PROMPT_QUEUE_CONTRACT_VERSION,
   PROMPT_STATUSES,
   TERMINAL_PROMPT_STATUSES,
+  TERMINAL_CHILD_OUTCOME_STATUSES,
+  DEFAULT_AUTO_RESUME_STALE_AFTER_MS,
   PROMPT_STATUS_TRANSITIONS,
   QUEUE_ROUTE_CONTRACTS,
   normalizePromptStatus,
+  normalizeChildOutcomeStatus,
+  isTerminalChildOutcomeStatus,
   createPromptId,
   createParentPrompt,
   canTransitionPrompt,
   transitionPrompt,
   appendChildOutcome,
+  buildPromptAutoResumePlan,
+  applyPromptAutoResumePlan,
   buildQueueViewModel,
   buildPromptDetailViewModel,
   buildRambleStatusViewModel,

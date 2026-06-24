@@ -6,15 +6,25 @@ test('OneTime focused landing copy uses launch funnel offer and safe CTAs', () =
   const html = fs.readFileSync('public/one-time/index.html', 'utf8');
 
   assert.match(html, /OneTimeOneTime Mishnah/);
-  assert.match(html, /Learn Mishnayos Live with Rabbi Elie Scheller/);
+  assert.match(html, /Learn Mishnayos Live with Rabbi Eli Scheller/);
   assert.match(html, /START 30 DAYS FREE/);
   assert.match(html, /WATCH RABBI SCHELLER/);
   assert.match(html, /Member Login/);
   assert.match(html, /\$67 USD per month after a 30-day free trial/);
+  assert.match(html, /Inside The Program/);
+  assert.match(html, /How It Works/);
+  assert.match(html, /Quick answers before you start/);
+  assert.match(html, /Your request was saved\. We will follow up with next steps\./);
   assert.match(html, /https:\/\/player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
   assert.match(html, /\/api\/one-time\/campaign/);
   assert.match(html, /Consent is required before submitting/);
-  assert.match(html, /No charge or external send was performed/);
+  assert.doesNotMatch(html, /private asset library/i);
+  assert.doesNotMatch(html, /server-backed/i);
+  assert.doesNotMatch(html, /video ID/i);
+  assert.doesNotMatch(html, /approved launch configuration/i);
+  assert.doesNotMatch(html, /No charge or external send was performed/i);
+  assert.doesNotMatch(html, /raw external page/i);
+  assert.doesNotMatch(html, /CAPTCHA/i);
   assert.doesNotMatch(html, /\/provider\.html\?review=one-time/);
   assert.doesNotMatch(html, /\/parent\.html\?review=one-time/);
   assert.doesNotMatch(html, /\/student\.html\?review=one-time/);

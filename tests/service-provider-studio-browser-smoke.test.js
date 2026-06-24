@@ -190,7 +190,12 @@ test('Operations Studio browser smoke renders and exercises the local no-send wo
     await page.setViewportSize({ width: 390, height: 900 });
     await page.evaluate(() => window.toggleBnaHelper?.(false));
     await page.addStyleTag({ content: '.bna-helper-dock,.bna-helper-backdrop{display:none!important;}' });
-    await page.getByText('Latest Handoff').scrollIntoViewIfNeeded();
+    await page.waitForFunction(() => document.body.textContent.includes('Latest Handoff'));
+    await page.evaluate(() => {
+      const target = Array.from(document.querySelectorAll('h1,h2,h3,h4,section,article,div'))
+        .find((node) => /\bLatest Handoff\b/.test(node.textContent || ''));
+      target?.scrollIntoView({ block: 'center' });
+    });
     await page.waitForTimeout(100);
     await page.screenshot({ path: path.join(screenshotDir, 'mobile-handoff.png'), fullPage: true });
     const body = await page.locator('body').innerText();

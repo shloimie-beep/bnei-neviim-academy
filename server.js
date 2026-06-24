@@ -118,6 +118,9 @@ const {
   buildBufferAssets,
 } = require('./src/lib/bna/buffer-media-assets');
 const {
+  createProviderApiUsageRecorder,
+} = require('./src/lib/bna/provider-api-usage');
+const {
   buildTelegramRuntimeReadiness,
 } = require('./src/lib/bna/telegram-runtime-status');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
@@ -127,6 +130,9 @@ const stripeIntegration = require('./src/lib/integrations/stripe');
 const zoomIntegration = require('./src/lib/integrations/zoom');
 const videoHostingIntegration = require('./src/lib/integrations/video-hosting');
 const externalActions = require('./src/lib/integrations/external-actions');
+const {
+  buildOwnerSetupCatalog,
+} = require('./src/lib/integrations/setup-catalog');
 const {
   buildPublicHelperRetrievalContext,
 } = require('./src/lib/bna/public-helper-retrieval');
@@ -145,6 +151,12 @@ const {
 const {
   buildOneTimeIntegrationReadinessPayload,
 } = require('./src/platform/integrations/readiness');
+const {
+  ASSISTANT_DATA_MODEL_TABLES,
+} = require('./src/platform/assistant/control-plane');
+const {
+  buildAssistantControlCenterSnapshot,
+} = require('./src/platform/assistant/control-center');
 const {
   buildOneTimeRuntimeFlags,
 } = require('./src/platform/instances/one-time-separate-deployment');
@@ -8337,10 +8349,10 @@ function identifyOpsUser(username, password = null) {
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
   const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8427,6 +8439,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/helper/knowledge' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/helper/action-log' && method === 'GET') return true;
   if (/^\/api\/bna\/helper\/runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/assistant/control-plane/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/intake/parse' && method === 'POST') return true;
   if (routePath === '/api/bna/intake/parse-runs' && method === 'GET') return true;
   if (/^\/api\/bna\/intake\/parse-runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
@@ -8835,6 +8848,249 @@ async function issueSession(username, db = pool) {
     [sessionId, username, expiresAt]
   );
   return sessionId;
+}
+
+function safePortalReturnPath(value, portal) {
+  const fallbackByPortal = {
+    operations: '/operations',
+    provider: '/provider',
+    parent: '/parent',
+    student: '/student',
+  };
+  const fallback = fallbackByPortal[portal] || '/';
+  if (portal === 'operations') return safeOperationsReturnPath(value || fallback);
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  try {
+    const url = new URL(raw, 'https://bna.local');
+    if (url.origin !== 'https://bna.local') return fallback;
+    const allowedPath = fallbackByPortal[portal];
+    if (!allowedPath || url.pathname !== allowedPath) return fallback;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
+function portalDestinationRedirect(destination, returnTo = '') {
+  if (destination?.portal === 'operations') {
+    return destination.identity?.scope?.type === 'project'
+      ? oneTimeOperationsReturnPath(returnTo)
+      : safeOperationsReturnPath(returnTo);
+  }
+  return safePortalReturnPath(returnTo, destination?.portal);
+}
+
+function publicPortalDestination(destination, returnTo = '') {
+  return {
+    id: destination.id,
+    portal: destination.portal,
+    role: destination.role,
+    label: destination.label,
+    workspace_key: destination.workspace_key || null,
+    project_key: destination.project_key || null,
+    redirect_to: portalDestinationRedirect(destination, returnTo),
+  };
+}
+
+async function collectPortalLoginDestinations({ username, password, db = pool } = {}) {
+  const rawUsername = String(username || '').trim();
+  const rawPassword = String(password || '');
+  if (!rawUsername || !rawPassword) return [];
+  const destinations = [];
+
+  const opsIdentity = identifyOpsUser(rawUsername, rawPassword);
+  if (opsIdentity) {
+    destinations.push({
+      id: `operations:${opsIdentity.username}`,
+      portal: 'operations',
+      role: opsIdentity.role,
+      label: opsIdentity.displayName || opsIdentity.username || 'Operations',
+      workspace_key: opsIdentity.scope?.type === 'project' ? 'rabbi_sheller_provider' : 'bna',
+      project_key: opsIdentity.scope?.projectKey || null,
+      identity: opsIdentity,
+    });
+  }
+
+  const provider = (await db.query(
+    `SELECT *
+     FROM bna_service_providers
+     WHERE lower(COALESCE(login_username, '')) = lower($1)
+       AND password_hash IS NOT NULL
+       AND status NOT IN ('draft', 'rejected', 'archived')
+     LIMIT 1`,
+    [rawUsername]
+  )).rows[0] || null;
+  if (provider && verifyParentPassword(rawPassword, provider.password_hash)) {
+    destinations.push({
+      id: `provider:${provider.id}`,
+      portal: 'provider',
+      role: 'service_provider',
+      label: provider.provider_name || provider.display_name || provider.contact_name || 'Provider workspace',
+      workspace_key: provider.workspace_key || provider.project_key || null,
+      project_key: provider.project_key || null,
+      provider,
+    });
+  }
+
+  const parentEmail = normalizeEmail(rawUsername);
+  if (parentEmail) {
+    const parentAccount = (await db.query(
+      `SELECT parent_email, password_hash
+       FROM bna_parent_password_accounts
+       WHERE lower(parent_email) = $1
+       LIMIT 1`,
+      [parentEmail]
+    )).rows[0] || null;
+    if (parentAccount && verifyParentPassword(rawPassword, parentAccount.password_hash)) {
+      const records = await findParentAccessRecords(parentEmail, db);
+      if (parentAccessEligible(records)) {
+        destinations.push({
+          id: `parent:${parentEmail}`,
+          portal: 'parent',
+          role: 'parent',
+          label: parentEmail,
+          workspace_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
+          project_key: records.workspace?.project_key || records.signups?.[0]?.project_key || records.students?.[0]?.project_key || null,
+          parentEmail,
+        });
+      }
+    }
+  }
+
+  const studentUsername = normalizeStudentLoginUsername(rawUsername);
+  if (studentUsername) {
+    const studentAccount = (await db.query(
+      `SELECT a.student_id, a.username, a.password_hash, a.status,
+              s.id, s.name, s.name_en, s.name_he, s.status AS student_status
+       FROM bna_student_password_accounts a
+       JOIN bna_students s ON s.id = a.student_id
+       WHERE a.username_normalized = $1
+         AND a.status = 'active'
+         AND COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+       LIMIT 1`,
+      [studentUsername]
+    )).rows[0] || null;
+    if (studentAccount && verifyStudentPassword(rawPassword, studentAccount.password_hash)) {
+      destinations.push({
+        id: `student:${studentAccount.student_id}`,
+        portal: 'student',
+        role: 'student',
+        label: studentAccount.name || studentAccount.name_en || studentAccount.username || 'Student',
+        workspace_key: null,
+        project_key: null,
+        student: studentAccount,
+      });
+    }
+  }
+
+  return destinations;
+}
+
+async function issuePortalDestinationSession(destination, res, { db = pool, returnTo = '' } = {}) {
+  const redirectTo = portalDestinationRedirect(destination, returnTo);
+  if (destination.portal === 'operations') {
+    const sessionId = await issueSession(destination.identity.username, db);
+    setSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      user: destination.identity.username,
+      role: destination.identity.role,
+      scope: destination.identity.scope,
+      allowedViews: destination.identity.allowedViews,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'provider') {
+    const sessionId = await issueProviderSession(destination.provider.id, db);
+    await db.query(`UPDATE bna_service_providers SET last_login_at = NOW(), updated_at = NOW() WHERE id = $1`, [destination.provider.id]);
+    setProviderSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      provider_id: destination.provider.id,
+      provider_name: destination.provider.provider_name || destination.provider.display_name || null,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'parent') {
+    const sessionId = await issueParentSession(destination.parentEmail, db);
+    await db.query(
+      `UPDATE bna_parent_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE lower(parent_email) = $1`,
+      [destination.parentEmail]
+    );
+    setParentSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      email: destination.parentEmail,
+      redirect_to: redirectTo,
+    };
+  }
+  if (destination.portal === 'student') {
+    const studentId = Number(destination.student.student_id || destination.student.id);
+    const sessionId = await issueStudentSession(studentId, db, {
+      login_method: 'portal_agnostic_username_password',
+      raw_password_stored: false,
+    });
+    await db.query(
+      `UPDATE bna_student_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE student_id = $1`,
+      [studentId]
+    );
+    setStudentSessionCookie(res, sessionId);
+    return {
+      sessionId,
+      role: destination.role,
+      student: {
+        id: studentId,
+        name: destination.student.name || destination.student.name_en || null,
+      },
+      redirect_to: redirectTo,
+    };
+  }
+  const error = new Error('Unsupported login destination');
+  error.statusCode = 400;
+  throw error;
+}
+
+async function maybeHandleOtherPortalLogin(req, res, {
+  username,
+  password,
+  currentPortal,
+  returnTo = '',
+  source = 'portal_login',
+  db = pool,
+} = {}) {
+  const destinations = (await collectPortalLoginDestinations({ username, password, db }))
+    .filter((destination) => destination.portal !== currentPortal);
+  if (!destinations.length) return false;
+  if (destinations.length > 1) {
+    res.json({
+      success: true,
+      chooser_required: true,
+      message: 'Choose which portal or workspace to open.',
+      destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      source,
+    });
+    return true;
+  }
+  const destination = destinations[0];
+  const sessionPayload = await issuePortalDestinationSession(destination, res, { db, returnTo });
+  res.json({
+    success: true,
+    portal_redirect: true,
+    redirect_to: sessionPayload.redirect_to,
+    role: destination.role,
+    destination: publicPortalDestination(destination, returnTo),
+    source,
+  });
+  return true;
 }
 
 async function createOpsAccessLink({
@@ -9935,7 +10191,7 @@ function oneTimeViewAsSessionView(payload, req) {
   const review = oneTimeSharedReviewDataForRequest(req);
   return {
     mode: 'view_as_rabbi',
-    banner: 'You are viewing One Time as Rabbi Elie Scheller',
+    banner: 'You are viewing One Time as Rabbi Eli Scheller',
     read_only: true,
     writes_disabled: true,
     external_sends_disabled: true,
@@ -10023,7 +10279,7 @@ app.post('/api/bna/one-time/view-as-rabbi/start', requireAdmin, (req, res) => {
     target: {
       id: 'TEST-ONETIME-PROVIDER-RABBI',
       role: 'workspace_owner',
-      display_name: 'Rabbi Elie Scheller',
+      display_name: 'Rabbi Eli Scheller',
     },
     workspace_key: 'rabbi_sheller_provider',
     project_key: 'one_time_mishnah_class',
@@ -11977,6 +12233,342 @@ CREATE TABLE IF NOT EXISTS bna_assistant_onboarding_intakes (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS assistant_channels (
+  id SERIAL PRIMARY KEY,
+  channel_key TEXT NOT NULL UNIQUE,
+  display_name TEXT NOT NULL,
+  adapter_kind TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'disabled', 'archived')),
+  workspace_key TEXT,
+  project_key TEXT,
+  channel_metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_identities (
+  id SERIAL PRIMARY KEY,
+  identity_key TEXT NOT NULL UNIQUE,
+  person_id INTEGER,
+  user_account_id INTEGER,
+  telegram_user_id TEXT,
+  email TEXT,
+  role_key TEXT NOT NULL DEFAULT 'viewer',
+  workspace_key TEXT,
+  project_key TEXT,
+  relationship_scope JSONB DEFAULT '{}'::jsonb,
+  consent_state JSONB DEFAULT '{}'::jsonb,
+  revoked_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_conversations (
+  id SERIAL PRIMARY KEY,
+  conversation_key TEXT NOT NULL UNIQUE,
+  channel_id INTEGER REFERENCES assistant_channels(id) ON DELETE SET NULL,
+  identity_id INTEGER REFERENCES assistant_identities(id) ON DELETE SET NULL,
+  parent_conversation_key TEXT,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'waiting', 'planned', 'approval_pending', 'running', 'completed', 'blocked', 'archived')),
+  workspace_key TEXT,
+  project_key TEXT,
+  role_key TEXT,
+  active_object_type TEXT,
+  active_object_id TEXT,
+  selected_child_id TEXT,
+  selected_provider_id TEXT,
+  selected_course_id TEXT,
+  selected_campaign_id TEXT,
+  current_draft_id TEXT,
+  current_draft_version_id TEXT,
+  pending_preview_id TEXT,
+  pending_approval_id TEXT,
+  last_channel_key TEXT,
+  state JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  last_message_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_messages (
+  id SERIAL PRIMARY KEY,
+  message_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT NOT NULL,
+  channel_key TEXT NOT NULL,
+  identity_key TEXT,
+  sender_type TEXT NOT NULL DEFAULT 'user' CHECK (sender_type IN ('user', 'assistant', 'system', 'tool', 'agent')),
+  body_redacted TEXT,
+  source_envelope_id TEXT,
+  channel_message_id TEXT,
+  reply_to_message_key TEXT,
+  attachments JSONB DEFAULT '[]'::jsonb,
+  privacy_classification TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_context_objects (
+  id SERIAL PRIMARY KEY,
+  context_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  object_type TEXT NOT NULL,
+  object_id TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  role_scope TEXT,
+  relationship_scope JSONB DEFAULT '{}'::jsonb,
+  source_envelope_id TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_action_plans (
+  id SERIAL PRIMARY KEY,
+  plan_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  message_key TEXT,
+  actor_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  mode TEXT NOT NULL DEFAULT 'plan' CHECK (mode IN ('answer', 'read', 'act', 'plan', 'agent_work')),
+  action_id TEXT,
+  action_category TEXT,
+  inputs JSONB DEFAULT '{}'::jsonb,
+  missing_inputs JSONB DEFAULT '[]'::jsonb,
+  dry_run BOOLEAN DEFAULT TRUE,
+  preview_required BOOLEAN DEFAULT FALSE,
+  approval_required BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'planned' CHECK (status IN ('planned', 'needs_input', 'preview_ready', 'approval_pending', 'approved', 'running', 'completed', 'blocked', 'failed', 'cancelled', 'archived')),
+  planner_version TEXT,
+  idempotency_key TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_action_runs (
+  id SERIAL PRIMARY KEY,
+  run_key TEXT NOT NULL UNIQUE,
+  plan_key TEXT,
+  action_id TEXT,
+  actor_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  dry_run BOOLEAN DEFAULT TRUE,
+  approval_id TEXT,
+  idempotency_key TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'running', 'succeeded', 'failed', 'blocked', 'cancelled', 'archived')),
+  result JSONB DEFAULT '{}'::jsonb,
+  error_message TEXT,
+  audit_event_id TEXT,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_previews (
+  id SERIAL PRIMARY KEY,
+  preview_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  plan_key TEXT,
+  draft_version_key TEXT,
+  preview_type TEXT NOT NULL,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  real_data BOOLEAN DEFAULT FALSE,
+  sample_data BOOLEAN DEFAULT TRUE,
+  payload JSONB DEFAULT '{}'::jsonb,
+  blockers JSONB DEFAULT '[]'::jsonb,
+  external_action BOOLEAN DEFAULT FALSE,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'ready', 'approved', 'applied', 'expired', 'archived')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_approvals (
+  id SERIAL PRIMARY KEY,
+  approval_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  plan_key TEXT,
+  run_key TEXT,
+  preview_key TEXT,
+  requested_by_identity_key TEXT,
+  approver_identity_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  risk_level TEXT NOT NULL DEFAULT 'low',
+  approval_policy TEXT NOT NULL DEFAULT 'none',
+  nonce_hash TEXT,
+  expires_at TIMESTAMP,
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'expired', 'cancelled', 'used', 'archived')),
+  decision_summary TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  decided_at TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_drafts (
+  id SERIAL PRIMARY KEY,
+  draft_key TEXT NOT NULL UNIQUE,
+  object_type TEXT NOT NULL,
+  object_id TEXT,
+  conversation_key TEXT,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  active_version_key TEXT,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  use_state TEXT NOT NULL DEFAULT 'not_scheduled',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_draft_versions (
+  id SERIAL PRIMARY KEY,
+  version_key TEXT NOT NULL UNIQUE,
+  draft_key TEXT NOT NULL,
+  parent_version_key TEXT,
+  editor_identity_key TEXT,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  prompt_instruction TEXT,
+  content JSONB DEFAULT '{}'::jsonb,
+  change_summary TEXT,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  active_state TEXT NOT NULL DEFAULT 'inactive',
+  scheduled_use_state TEXT NOT NULL DEFAULT 'not_scheduled',
+  rollback_to_version_key TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_templates (
+  id SERIAL PRIMARY KEY,
+  template_key TEXT NOT NULL UNIQUE,
+  template_type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  channel_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  content JSONB DEFAULT '{}'::jsonb,
+  version_key TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_saved_views (
+  id SERIAL PRIMARY KEY,
+  view_key TEXT NOT NULL UNIQUE,
+  owner_identity_key TEXT,
+  view_type TEXT NOT NULL,
+  name TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  role_scope TEXT,
+  object_scope JSONB DEFAULT '{}'::jsonb,
+  config JSONB DEFAULT '{}'::jsonb,
+  active_version_key TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_reminders (
+  id SERIAL PRIMARY KEY,
+  reminder_key TEXT NOT NULL UNIQUE,
+  actor_identity_key TEXT,
+  audience_scope JSONB DEFAULT '{}'::jsonb,
+  workspace_key TEXT,
+  project_key TEXT,
+  timezone TEXT,
+  recurrence_rule TEXT,
+  trigger JSONB DEFAULT '{}'::jsonb,
+  delivery_channels JSONB DEFAULT '[]'::jsonb,
+  quiet_hours JSONB DEFAULT '{}'::jsonb,
+  consent_state JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'paused', 'sent', 'completed', 'cancelled', 'failed', 'archived')),
+  next_run_at TIMESTAMP,
+  last_run_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_notifications (
+  id SERIAL PRIMARY KEY,
+  notification_key TEXT NOT NULL UNIQUE,
+  reminder_key TEXT,
+  conversation_key TEXT,
+  recipient_identity_key TEXT,
+  channel_key TEXT NOT NULL,
+  workspace_key TEXT,
+  project_key TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'sent', 'delivered', 'failed', 'cancelled', 'archived')),
+  dedupe_key TEXT,
+  sent_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_onboarding_sessions (
+  id SERIAL PRIMARY KEY,
+  onboarding_key TEXT NOT NULL UNIQUE,
+  provider_profile_id INTEGER,
+  identity_key TEXT,
+  conversation_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  stage TEXT NOT NULL DEFAULT 'start',
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'waiting', 'submitted', 'approved', 'blocked', 'archived')),
+  collected_fields JSONB DEFAULT '{}'::jsonb,
+  asset_refs JSONB DEFAULT '[]'::jsonb,
+  studio_draft_refs JSONB DEFAULT '{}'::jsonb,
+  integration_blockers JSONB DEFAULT '[]'::jsonb,
+  approval_state TEXT NOT NULL DEFAULT 'draft',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_delivery_outbox (
+  id SERIAL PRIMARY KEY,
+  delivery_key TEXT NOT NULL UNIQUE,
+  conversation_key TEXT,
+  channel_key TEXT NOT NULL,
+  recipient_identity_key TEXT,
+  payload JSONB DEFAULT '{}'::jsonb,
+  idempotency_key TEXT,
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'sending', 'sent', 'failed', 'dead_lettered', 'cancelled')),
+  attempts INTEGER NOT NULL DEFAULT 0,
+  next_attempt_at TIMESTAMP,
+  last_error TEXT,
+  sent_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS assistant_dead_letters (
+  id SERIAL PRIMARY KEY,
+  dead_letter_key TEXT NOT NULL UNIQUE,
+  source_table TEXT NOT NULL,
+  source_key TEXT,
+  channel_key TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  reason TEXT NOT NULL,
+  payload_redacted JSONB DEFAULT '{}'::jsonb,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'reviewing', 'replayed', 'resolved', 'archived')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  resolved_at TIMESTAMP
+);
+
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_actor ON bna_assistant_threads(actor_type, actor_id, actor_email);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_status ON bna_assistant_threads(status, updated_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_messages_thread ON bna_assistant_messages(thread_id, created_at ASC);
@@ -11985,6 +12577,24 @@ CREATE INDEX IF NOT EXISTS idx_bna_assistant_onboarding_intakes_actor
   ON bna_assistant_onboarding_intakes(actor_type, actor_id, actor_email, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_onboarding_intakes_review
   ON bna_assistant_onboarding_intakes(review_status, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_assistant_identities_scope ON assistant_identities(workspace_key, project_key, role_key);
+CREATE INDEX IF NOT EXISTS idx_assistant_conversations_scope ON assistant_conversations(workspace_key, project_key, status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_messages_conversation ON assistant_messages(conversation_key, created_at ASC);
+CREATE INDEX IF NOT EXISTS idx_assistant_context_objects_scope ON assistant_context_objects(workspace_key, project_key, object_type, object_id);
+CREATE INDEX IF NOT EXISTS idx_assistant_action_plans_status ON assistant_action_plans(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_action_runs_status ON assistant_action_runs(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_previews_status ON assistant_previews(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_approvals_status ON assistant_approvals(status, workspace_key, project_key, expires_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_drafts_object ON assistant_drafts(object_type, object_id, workspace_key, project_key);
+CREATE INDEX IF NOT EXISTS idx_assistant_draft_versions_draft ON assistant_draft_versions(draft_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_templates_scope ON assistant_templates(template_type, workspace_key, project_key, status);
+CREATE INDEX IF NOT EXISTS idx_assistant_saved_views_owner ON assistant_saved_views(owner_identity_key, view_type, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_reminders_status ON assistant_reminders(status, next_run_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_notifications_status ON assistant_notifications(status, channel_key, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_onboarding_sessions_status ON assistant_onboarding_sessions(status, workspace_key, project_key, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_assistant_delivery_outbox_status ON assistant_delivery_outbox(status, next_attempt_at);
+CREATE INDEX IF NOT EXISTS idx_assistant_dead_letters_status ON assistant_dead_letters(status, created_at DESC);
 `;
 
 const createBnaHelperSQL = `
@@ -16497,7 +17107,7 @@ CREATE INDEX IF NOT EXISTS idx_bna_person_relationships_related ON bna_person_re
 CREATE TABLE IF NOT EXISTS bna_raw_intake (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   stable_id TEXT UNIQUE NOT NULL,
-  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other')),
+  source_channel TEXT NOT NULL CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other')),
   source_message_id TEXT,
   source_user TEXT,
   raw_text TEXT,
@@ -16518,6 +17128,9 @@ CREATE TABLE IF NOT EXISTS bna_raw_intake (
   parsed_at TIMESTAMPTZ,
   archived_at TIMESTAMPTZ
 );
+ALTER TABLE bna_raw_intake DROP CONSTRAINT IF EXISTS bna_raw_intake_source_channel_check;
+ALTER TABLE bna_raw_intake ADD CONSTRAINT bna_raw_intake_source_channel_check
+  CHECK (source_channel IN ('telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other'));
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_stable_id ON bna_raw_intake(stable_id);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_source_channel ON bna_raw_intake(source_channel);
 CREATE INDEX IF NOT EXISTS idx_bna_raw_intake_parse_status ON bna_raw_intake(parse_status);
@@ -16575,6 +17188,72 @@ CREATE TABLE IF NOT EXISTS bna_intake_parse_items (
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_run ON bna_intake_parse_items(parse_run_id, status);
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_type ON bna_intake_parse_items(item_type, status);
 CREATE INDEX IF NOT EXISTS idx_bna_intake_parse_items_target ON bna_intake_parse_items(target_table, target_id);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_intake_parse_runs (
+  parse_run_id TEXT PRIMARY KEY,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parent_prompt_id TEXT,
+  legacy_parse_run_id INTEGER REFERENCES bna_intake_parse_runs(id) ON DELETE SET NULL,
+  parser_version TEXT,
+  status TEXT NOT NULL DEFAULT 'parsed',
+  parse_run_json JSONB NOT NULL DEFAULT '{}',
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_intake_parse_runs_raw ON bna_canonical_intake_parse_runs(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_intake_parse_runs_prompt ON bna_canonical_intake_parse_runs(parent_prompt_id);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_parent_prompts (
+  prompt_id TEXT PRIMARY KEY,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parse_run_id TEXT REFERENCES bna_canonical_intake_parse_runs(parse_run_id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'queued',
+  child_outcome_count INTEGER NOT NULL DEFAULT 0,
+  prompt_json JSONB NOT NULL DEFAULT '{}',
+  metadata JSONB NOT NULL DEFAULT '{}',
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_raw ON bna_canonical_parent_prompts(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_run ON bna_canonical_parent_prompts(parse_run_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parent_prompts_status ON bna_canonical_parent_prompts(status, updated_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_canonical_parsed_entities (
+  entity_id TEXT PRIMARY KEY,
+  parse_item_id TEXT,
+  parse_run_id TEXT REFERENCES bna_canonical_intake_parse_runs(parse_run_id) ON DELETE CASCADE,
+  raw_intake_stable_id TEXT REFERENCES bna_raw_intake(stable_id) ON DELETE SET NULL,
+  parent_prompt_id TEXT REFERENCES bna_canonical_parent_prompts(prompt_id) ON DELETE SET NULL,
+  item_id TEXT,
+  entity_key TEXT,
+  entity_group TEXT NOT NULL DEFAULT 'unknown',
+  entity_type TEXT NOT NULL DEFAULT 'unknown',
+  title TEXT,
+  status TEXT NOT NULL DEFAULT 'parsed',
+  target_lane TEXT,
+  workspace_key TEXT,
+  project_key TEXT,
+  confidence NUMERIC,
+  owner TEXT,
+  expected_result TEXT,
+  next_action TEXT,
+  reason TEXT,
+  idempotency_key TEXT,
+  source_stable_key TEXT,
+  source_id TEXT,
+  source_excerpt TEXT,
+  metadata JSONB NOT NULL DEFAULT '{}',
+  sort_index INTEGER DEFAULT 0,
+  external_write_performed BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_run ON bna_canonical_parsed_entities(parse_run_id, sort_index);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_raw ON bna_canonical_parsed_entities(raw_intake_stable_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_prompt ON bna_canonical_parsed_entities(parent_prompt_id);
+CREATE INDEX IF NOT EXISTS idx_bna_canonical_parsed_entities_group ON bna_canonical_parsed_entities(entity_group, status);
 
 CREATE TABLE IF NOT EXISTS bna_section_definitions (
   id SERIAL PRIMARY KEY,
@@ -20166,6 +20845,15 @@ function intakeParseRunView(row = {}) {
   };
 }
 
+function rawIntakeView(row = {}) {
+  if (!row) return null;
+  return {
+    ...row,
+    metadata: intakeJson(row.metadata, {}),
+    parsed_payload: intakeJson(row.parsed_payload, {}),
+  };
+}
+
 function intakeParseItemView(row = {}) {
   if (!row) return null;
   return {
@@ -20328,12 +21016,13 @@ async function createRawIntakeRecord({
 function normalizeRawIntakeSourceChannel(value = '') {
   const rawValue = String(value || '').trim();
   const channel = normalizeSourceChannel(rawValue);
-  if (['telegram', 'website_bot', 'codex_chat', 'operations_ui', 'drive', 'manual', 'other'].includes(channel)) {
+  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
+  if (channel === 'class_recording') return 'class_recording';
+  if (['telegram', 'website_bot', 'codex_chat', 'chatgpt', 'github', 'github_issue', 'github_pr', 'operations_ui', 'drive', 'approved_upload', 'class_recording', 'website_helper', 'operations_helper', 'email', 'whatsapp', 'wapi', 'manual', 'other'].includes(channel)) {
     return channel;
   }
   if (channel === 'operations_helper') return 'operations_ui';
   if (channel === 'website_helper') return 'website_bot';
-  if (channel === 'class_recording' && /drive|google/i.test(rawValue)) return 'drive';
   return 'other';
 }
 
@@ -20811,12 +21500,17 @@ async function createCanonicalIntakeParseRun({
 async function fetchIntakeRunDetail(id, db = pool) {
   const run = (await db.query('SELECT * FROM bna_intake_parse_runs WHERE id = $1', [id])).rows[0] || null;
   if (!run) return null;
+  const parsedRun = intakeParseRunView(run);
+  const rawIntakeStableId = parsedRun.metadata?.raw_intake_stable_id || null;
+  const rawIntake = rawIntakeStableId
+    ? (await db.query('SELECT * FROM bna_raw_intake WHERE stable_id = $1', [rawIntakeStableId])).rows[0] || null
+    : null;
   const items = (await db.query(
     'SELECT * FROM bna_intake_parse_items WHERE parse_run_id = $1 ORDER BY id ASC',
     [id]
   )).rows.map(intakeParseItemView);
   const reviews = (await fetchIntakeReviewItems({ parseRunId: id, db })).reviews;
-  return { parse_run: intakeParseRunView(run), items, review_items: reviews };
+  return { raw_intake: rawIntakeView(rawIntake), parse_run: parsedRun, items, review_items: reviews };
 }
 
 async function fetchIntakeReviewItems({ status = 'open', parseRunId = null, limit = 100, db = pool } = {}) {
@@ -40863,6 +41557,103 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/integration-setup/readiness', requireAdmin, async (req, res) => {
+  res.json(buildOwnerSetupCatalog({
+    generatedAt: new Date().toISOString(),
+    env: process.env,
+    validationTimestamps: {},
+    statusOverrides: {
+      githubWorkflow: process.env.BNA_GITHUB_WORKFLOW_SCOPE_READY === 'true' ? 'available' : '',
+    },
+  }));
+});
+
+app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, res) => {
+  try {
+    const expectedTables = [...ASSISTANT_DATA_MODEL_TABLES];
+    const expectedIndexes = [
+      'idx_assistant_identities_scope',
+      'idx_assistant_conversations_scope',
+      'idx_assistant_messages_conversation',
+      'idx_assistant_context_objects_scope',
+      'idx_assistant_action_plans_status',
+      'idx_assistant_action_runs_status',
+      'idx_assistant_previews_status',
+      'idx_assistant_approvals_status',
+      'idx_assistant_drafts_object',
+      'idx_assistant_draft_versions_draft',
+      'idx_assistant_templates_scope',
+      'idx_assistant_saved_views_owner',
+      'idx_assistant_reminders_status',
+      'idx_assistant_notifications_status',
+      'idx_assistant_onboarding_sessions_status',
+      'idx_assistant_delivery_outbox_status',
+      'idx_assistant_dead_letters_status',
+    ];
+    const [tableResult, indexResult] = await Promise.all([
+      pool.query(
+        `SELECT table_name
+           FROM information_schema.tables
+          WHERE table_schema = 'public'
+            AND table_name = ANY($1::text[])
+          ORDER BY table_name`,
+        [expectedTables]
+      ),
+      pool.query(
+        `SELECT indexname
+           FROM pg_indexes
+          WHERE schemaname = 'public'
+            AND indexname = ANY($1::text[])
+          ORDER BY indexname`,
+        [expectedIndexes]
+      ),
+    ]);
+    const tablesPresent = tableResult.rows.map((row) => row.table_name).sort();
+    const indexesPresent = indexResult.rows.map((row) => row.indexname).sort();
+    const tableSet = new Set(tablesPresent);
+    const indexSet = new Set(indexesPresent);
+    const missingTables = expectedTables.filter((table) => !tableSet.has(table));
+    const missingIndexes = expectedIndexes.filter((indexName) => !indexSet.has(indexName));
+    res.json({
+      success: true,
+      requirement_id: 'REQ-20260623-012',
+      status: missingTables.length || missingIndexes.length ? 'incomplete' : 'implemented_read_only',
+      canonical_model: 'assistant_control_plane_v1',
+      tables_expected: expectedTables.length,
+      tables_present: tablesPresent.length,
+      missing_tables: missingTables,
+      indexes_expected: expectedIndexes.length,
+      indexes_present: indexesPresent.length,
+      missing_indexes: missingIndexes,
+      channel_metadata_adapter_scoped: true,
+      legacy_bna_assistant_tables_preserved: true,
+      no_write_guard: [
+        'read_only_information_schema_and_pg_indexes_queries_only',
+        'no_assistant_rows_created_or_updated',
+        'no_external_send_publish_charge_dns_oauth_or_connector_call',
+        'no_secret_values_returned',
+      ],
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant control-plane readiness failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/assistant/control-center', requireAdmin, async (req, res) => {
+  try {
+    if (req.opsIdentity?.scope?.type !== 'all') {
+      return res.status(403).json({ success: false, error: 'Assistant Control Center is Super Admin only.' });
+    }
+    res.json(await buildAssistantControlCenterSnapshot({
+      db: pool,
+      actor: req.opsIdentity || {},
+    }));
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Assistant Control Center failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
 app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, res) => {
   try {
     const resendConfig = resendServerRuntimeConfig();
@@ -40904,7 +41695,11 @@ app.get('/api/bna/integrations/telegram/status', requireAdmin, async (req, res) 
 });
 
 app.get('/api/bna/integrations/stripe/status', requireAdmin, (req, res) => {
-  res.json({ success: true, card: stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig }) });
+  res.json({
+    success: true,
+    card: stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig }),
+    billing: stripeIntegration.buildSafeBillingPreview({ config: stripeRuntimeConfig }),
+  });
 });
 
 app.post('/api/bna/integrations/stripe/checkout-preview', requireAdmin, (req, res) => {
@@ -40913,8 +41708,37 @@ app.post('/api/bna/integrations/stripe/checkout-preview', requireAdmin, (req, re
 
 app.post('/api/bna/integrations/stripe/checkout-create', requireAdmin, async (req, res) => {
   try {
-    stripeIntegration.assertCheckoutCreateApproved(req.body || {}, { config: stripeRuntimeConfig });
-    res.status(409).json({ success: false, error: 'Stripe checkout creation is not enabled in this closeout pass.' });
+    const body = req.body || {};
+    stripeIntegration.assertCheckoutCreateApproved(body, { config: stripeRuntimeConfig });
+    const stripeClient = stripeIntegration.getStripeClientWrapper({ secretKey: stripeRuntimeConfig.secretKey });
+    const account = stripeClient?.accounts?.retrieve
+      ? await stripeClient.accounts.retrieve()
+      : null;
+    const configState = stripeIntegration.getStripeBillingRuntimeState({
+      config: stripeRuntimeConfig,
+      sandboxApiVerified: account?.livemode === false,
+      sandboxAccountLivemode: account?.livemode,
+    });
+    const policy = stripeIntegration.resolveBillingPolicy(body);
+    const priceMap = stripeIntegration.buildProductPriceMap({
+      policy,
+      tiers: body.tiers || [],
+      priceIds: body.priceIds || body.price_ids || {},
+    });
+    const checkout = await stripeIntegration.createStripeCheckoutSession({
+      stripeClient,
+      config: configState,
+      request: body,
+      policy,
+      priceMap,
+      idempotencyKey: body.idempotency_key || body.idempotencyKey,
+    });
+    res.json({
+      success: true,
+      preview_only: false,
+      checkout,
+      config_state: stripeIntegration.safeConfigView(configState),
+    });
   } catch (err) {
     await externalActions.recordExternalActionAudit(pool, {
       provider: 'stripe',
@@ -40929,6 +41753,30 @@ app.post('/api/bna/integrations/stripe/checkout-create', requireAdmin, async (re
     const safe = safeIntegrationError(err, 'Stripe checkout create blocked');
     res.status(safe.status || 409).json({ success: false, blocked: true, error: safe.error, blocker: safe.blocker });
   }
+});
+
+app.post('/api/bna/integrations/stripe/webhook-preview', requireAdmin, (req, res) => {
+  const body = req.body || {};
+  const policy = stripeIntegration.resolveBillingPolicy(body);
+  const config = stripeIntegration.getStripeBillingRuntimeState({ config: stripeRuntimeConfig });
+  const initialState = stripeIntegration.createInitialBillingState({ policy, config });
+  const events = Array.isArray(body.events)
+    ? body.events
+    : [stripeIntegration.buildSyntheticStripeEvent({
+      type: body.type || 'checkout.session.completed',
+      object: body.object || {},
+    })];
+  const lifecycle = events.reduce((state, event) => (
+    stripeIntegration.applyStripeBillingEvent(state, event).state
+  ), initialState);
+  res.json({
+    success: true,
+    provider: 'stripe',
+    preview_only: true,
+    external_write_performed: false,
+    lifecycle,
+    final_audit: stripeIntegration.buildLifecycleFinalAudit(lifecycle),
+  });
 });
 
 app.get('/api/bna/integrations/zoom/status', requireAdmin, (req, res) => {
@@ -44862,6 +45710,14 @@ app.post('/api/provider-portal/login', async (req, res) => {
     )).rows[0] || null;
 
     if (!provider || !verifyParentPassword(password, provider.password_hash)) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username,
+        password,
+        currentPortal: 'provider',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/provider',
+        source: 'provider_portal_login',
+      });
+      if (handled) return;
       clearProviderSessionCookie(res);
       return res.status(401).json({ success: false, error: 'Invalid provider credentials' });
     }
@@ -48790,6 +49646,15 @@ app.post('/api/student-portal/login', async (req, res) => {
       [usernameNormalized]
     )).rows[0];
     if (!account || !verifyStudentPassword(password, account.password_hash)) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username,
+        password,
+        currentPortal: 'student',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/student',
+        source: 'student_portal_login',
+        db: client,
+      });
+      if (handled) return;
       await recordPersistentStudentPasswordAuthAttempt(req, usernameNormalized, {
         outcome: 'failure',
         metadata: { reason: 'invalid_username_or_password' },
@@ -49557,9 +50422,22 @@ app.post('/api/student-portal/worksheets/:id/submit', async (req, res) => {
 });
 
 app.post('/api/parent-portal/login', async (req, res) => {
-  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  const parentIdentity = String((req.body || {}).parent_email || (req.body || {}).email || (req.body || {}).username || '').trim();
+  const parentEmail = normalizeEmail(parentIdentity);
   const password = String((req.body || {}).password || '');
-  if (!parentEmail || !password) return res.status(400).json({ error: 'Parent email and password are required' });
+  if (!parentEmail || !password) {
+    if (parentIdentity && password) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username: parentIdentity,
+        password,
+        currentPortal: 'parent',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/parent',
+        source: 'parent_portal_login',
+      });
+      if (handled) return;
+    }
+    return res.status(400).json({ error: 'Parent email or username and password are required' });
+  }
 
   const client = await pool.connect();
   try {
@@ -49571,6 +50449,15 @@ app.post('/api/parent-portal/login', async (req, res) => {
       [parentEmail]
     )).rows[0];
     if (!account || !verifyParentPassword(password, account.password_hash)) {
+      const handled = await maybeHandleOtherPortalLogin(req, res, {
+        username: parentIdentity,
+        password,
+        currentPortal: 'parent',
+        returnTo: req.body?.returnTo || req.body?.return_to || '/parent',
+        source: 'parent_portal_login',
+        db: client,
+      });
+      if (handled) return;
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     const records = await findParentAccessRecords(parentEmail, client);
@@ -49698,35 +50585,35 @@ app.post('/api/bna/auth/setup-password', async (req, res) => {
 });
 
 app.post('/api/bna/auth/login', async (req, res) => {
-  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
-  const password = String((req.body || {}).password || '');
-  if (!parentEmail || !password) return res.status(400).json({ error: 'email and password are required' });
+  const body = req.body || {};
+  const username = String(body.username || body.login_username || body.identity || body.parent_email || body.email || '').trim();
+  const password = String(body.password || '');
+  const returnTo = String(body.returnTo || body.return_to || '');
+  if (!username || !password) return res.status(400).json({ error: 'username and password are required' });
   const client = await pool.connect();
   try {
-    const account = (await client.query(
-      `SELECT parent_email, password_hash
-       FROM bna_parent_password_accounts
-       WHERE lower(parent_email) = $1
-       LIMIT 1`,
-      [parentEmail]
-    )).rows[0];
-    if (!account || !verifyParentPassword(password, account.password_hash)) {
-      return res.status(401).json({ error: 'Invalid email or password' });
+    const destinations = await collectPortalLoginDestinations({ username, password, db: client });
+    if (!destinations.length) {
+      return res.status(401).json({ error: 'Invalid username or password' });
     }
-    const records = await findParentAccessRecords(parentEmail, client);
-    if (!parentAccessEligible(records)) {
-      return res.status(404).json({ error: 'No active student or signup is linked to this email' });
+    if (destinations.length > 1) {
+      return res.json({
+        success: true,
+        chooser_required: true,
+        message: 'Choose which portal or workspace to open.',
+        destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      });
     }
-    const sessionId = await issueParentSession(parentEmail, client);
-    await client.query(
-      `UPDATE bna_parent_password_accounts
-       SET last_login_at = NOW(),
-           updated_at = NOW()
-       WHERE lower(parent_email) = $1`,
-      [parentEmail]
-    );
-    setParentSessionCookie(res, sessionId);
-    res.json({ success: true, role: 'parent' });
+    const destination = destinations[0];
+    const payload = await issuePortalDestinationSession(destination, res, { db: client, returnTo });
+    res.json({
+      success: true,
+      role: destination.role,
+      portal: destination.portal,
+      destination: publicPortalDestination(destination, returnTo),
+      redirect_to: payload.redirect_to,
+      ...payload,
+    });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
@@ -49736,8 +50623,14 @@ app.post('/api/bna/auth/login', async (req, res) => {
 
 app.post('/api/bna/auth/logout', async (req, res) => {
   const cookies = parseCookies(req);
+  await clearSession(cookies[SESSION_COOKIE_NAME]).catch(() => {});
   await clearParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => {});
+  await clearStudentSession(cookies[STUDENT_SESSION_COOKIE_NAME]).catch(() => {});
+  await clearProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME]).catch(() => {});
+  clearSessionCookie(res);
   clearParentSessionCookie(res);
+  clearStudentSessionCookie(res);
+  clearProviderSessionCookie(res);
   res.json({ success: true });
 });
 
@@ -55564,6 +56457,98 @@ function mixedRecordingCountsFromApply(applied = null, intake = {}) {
   };
 }
 
+function progressOnlyMixedRecordingParsePayload(parsed = {}) {
+  const report = parsed.report && typeof parsed.report === 'object' && !Array.isArray(parsed.report)
+    ? parsed.report
+    : {};
+  return {
+    tasks: [],
+    accountability_events: [],
+    class_notes: [],
+    group_goal_entries: Array.isArray(parsed.group_goal_entries)
+      ? parsed.group_goal_entries.slice(0, 60)
+      : [],
+    daily_torah_updates: Array.isArray(parsed.daily_torah_updates)
+      ? parsed.daily_torah_updates.slice(0, 60)
+      : [],
+    report: {
+      ...report,
+      parser: 'mixed-recording-progress-only',
+      note: 'Canonical tasks, class notes, and direct accountability rows stay in the intake output; progress-only persistence writes only progress/timer rows and avoids duplicate class-session output.',
+    },
+  };
+}
+
+async function contentJobHasProgressOnlyWrites(contentJobId, db = pool) {
+  if (!contentJobId) return false;
+  const groupRows = await db.query(
+    `SELECT id
+     FROM bna_group_goal_entries
+     WHERE source_content_job_id = $1
+     LIMIT 1`,
+    [contentJobId]
+  );
+  if (groupRows.rows[0]) return true;
+
+  const timerEvents = await db.query(
+    `SELECT id
+     FROM bna_accountability_events
+     WHERE source = 'recording'
+       AND source_message_id = $1
+       AND metadata::text ILIKE '%mixed-recording-v1%'
+       AND metadata::text ILIKE '%timer_mapping%'
+     LIMIT 1`,
+    [String(contentJobId)]
+  );
+  return Boolean(timerEvents.rows[0]);
+}
+
+async function persistProgressOnlyMixedRecordingParse({
+  job = {},
+  previousParse = {},
+  projectKey = '',
+  students = [],
+  progressOnlyParsed = null,
+} = {}) {
+  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(job?.transcript_text || '') || DEFAULT_PROJECT_KEY;
+  const effectiveStudents = students.length
+    ? students
+    : await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
+  const parsedPayload = progressOnlyParsed
+    || progressOnlyMixedRecordingParsePayload(await generateMixedRecordingParse({ job, students: effectiveStudents }));
+  const markedApplied = Boolean(previousParse?.mixed_recording_parse?.progress_only?.applied_at);
+  const existingWrites = job.id ? await contentJobHasProgressOnlyWrites(job.id) : false;
+  if (markedApplied || existingWrites) {
+    return {
+      skipped_existing: true,
+      parsed: parsedPayload,
+      counts: {
+        group_goal_entries: 0,
+        daily_torah_updates: 0,
+        torah_learning_entries: 0,
+        accountability_events: 0,
+      },
+      created: {
+        group_goal_entries: [],
+        daily_torah_updates: [],
+        torah_learning_entries: [],
+        accountability_events: [],
+      },
+    };
+  }
+
+  return persistMixedRecordingParse({
+    job,
+    parsed: parsedPayload,
+    students: effectiveStudents,
+    previousParse,
+    dryRun: false,
+    archiveSourceAfterParse: false,
+    contentBacked: false,
+    projectKey: effectiveProjectKey,
+  });
+}
+
 async function parseMixedRecordingSource({
   job = {},
   instruction = '',
@@ -55591,13 +56576,29 @@ async function parseMixedRecordingSource({
     dry_run: Boolean(dryRun),
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
+  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(rawInput) || DEFAULT_PROJECT_KEY;
+  const students = await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
+  const progressOnlyParsed = progressOnlyMixedRecordingParsePayload(
+    await generateMixedRecordingParse({ job, students })
+  );
   if (dryRun) {
+    const progressOnlyDryRun = await persistMixedRecordingParse({
+      job,
+      parsed: progressOnlyParsed,
+      students,
+      previousParse,
+      dryRun: true,
+      archiveSourceAfterParse: false,
+      contentBacked: false,
+      projectKey: effectiveProjectKey,
+    });
     return {
       success: true,
       dry_run: true,
       raw_intake: intake.raw_intake,
       parse_run: intake.parse_run,
       parsed,
+      progress_only_parsed: progressOnlyDryRun.parsed,
       items: intake.items,
       review_items: intake.review_items,
       counts: mixedRecordingCountsFromApply(null, intake),
@@ -55605,7 +56606,7 @@ async function parseMixedRecordingSource({
     };
   }
 
-  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: projectKey || DEFAULT_PROJECT_KEY });
+  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: effectiveProjectKey });
   const counts = mixedRecordingCountsFromApply(applied, intake);
   const nextParse = {
     ...(previousParse || {}),
@@ -55634,6 +56635,39 @@ async function parseMixedRecordingSource({
       [JSON.stringify(nextParse), Boolean(archiveSourceAfterParse), job.id]
     );
   }
+  const progressOnlyResult = await persistProgressOnlyMixedRecordingParse({
+    job,
+    previousParse: nextParse,
+    projectKey: effectiveProjectKey,
+    students,
+    progressOnlyParsed,
+  });
+  const combinedParse = {
+    ...nextParse,
+    canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
+    mixed_recording_parse: {
+      ...nextParse.mixed_recording_parse,
+      progress_only: {
+        parser: 'mixed-recording-progress-only',
+        parsed_at: new Date().toISOString(),
+        applied_at: progressOnlyResult.skipped_existing ? null : new Date().toISOString(),
+        skipped_existing: Boolean(progressOnlyResult.skipped_existing),
+        counts: progressOnlyResult.counts || {},
+        group_goal_entries: progressOnlyParsed.group_goal_entries.length,
+        daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
+        report: progressOnlyParsed.report,
+      },
+    },
+  };
+  if (contentBacked && job.id) {
+    await pool.query(
+      `UPDATE bna_content_jobs
+       SET parse_json = $1::jsonb,
+           updated_at = NOW()
+       WHERE id = $2`,
+      [JSON.stringify(combinedParse), job.id]
+    );
+  }
   return {
     success: true,
     dry_run: false,
@@ -55645,7 +56679,9 @@ async function parseMixedRecordingSource({
     counts,
     report: parsed.report,
     created: applied.created,
-    parse_json: nextParse,
+    progress_only_created: progressOnlyResult.created,
+    progress_only_counts: progressOnlyResult.counts,
+    parse_json: combinedParse,
   };
 }
 
@@ -64175,6 +65211,7 @@ function normalizeAssistantSurface(value) {
   if (['parent', 'parent_portal'].includes(normalized)) return 'parent_portal';
   if (['student', 'student_portal'].includes(normalized)) return 'student_portal';
   if (['provider', 'provider_portal', 'provider_workspace'].includes(normalized)) return 'provider_workspace';
+  if (['one_time', 'one_time_member', 'onetime_member', 'rabbi_member', 'member_library', 'one_time_classroom', 'provider_participant'].includes(normalized)) return 'one_time_member';
   if (['operations', 'admin', 'settings'].includes(normalized)) return 'operations';
   return 'public';
 }
@@ -67931,6 +68968,7 @@ app.get('/api/bna/assistant/actions/:id', async (req, res) => {
 });
 
 app.post('/api/bna/assistant/chat', async (req, res) => {
+  const startedAtMs = Date.now();
   const body = req.body || {};
   const messageText = limitText(body.message || body.body || body.text || '', 8000);
   if (!messageText) return res.status(400).json({ error: 'message is required' });
@@ -67952,6 +68990,50 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
       db: client,
     });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
+    let usageRecord = { recorded: false, reason: 'assistant_reply_not_hosted_ai' };
+    const replyProvider = reply.provider || reply.metadata?.provider || reply.metadata?.ai_provider || null;
+    const replyModel = reply.model || reply.metadata?.model || reply.metadata?.ai_model || null;
+    if (replyProvider) {
+      const usageRecorder = createProviderApiUsageRecorder({
+        db: client,
+        environment: process.env.NODE_ENV || 'production',
+      });
+      await client.query('SAVEPOINT assistant_usage_record');
+      try {
+        usageRecord = await usageRecorder.record({
+          workspace_key: thread.workspace_key || actor.workspaceKey || body.workspace_key || body.workspace || 'bna',
+          user_id: actor.id || actor.anonymousId || null,
+          user_label: actor.name || actor.email || actor.role || actor.type || null,
+          provider_key: replyProvider,
+          model_provider_key: replyProvider,
+          model: replyModel,
+          feature_key: 'bna_assistant_chat',
+          bot_identifier: actor.canUseCodex ? 'bna_operations_assistant' : 'bna_public_assistant',
+          request_count: 1,
+          input_tokens: 0,
+          output_tokens: 0,
+          cached_tokens: 0,
+          latency_ms: Date.now() - startedAtMs,
+          success: true,
+          request_correlation_id: body.request_id || body.requestId || req.headers['x-request-id'] || null,
+          metadata: {
+            no_prompt_body: true,
+            thread_id: thread.id,
+            actor_type: actor.type,
+            surface: body.surface || null,
+          },
+        });
+      } catch (usageErr) {
+        await client.query('ROLLBACK TO SAVEPOINT assistant_usage_record').catch(() => null);
+        usageRecord = {
+          recorded: false,
+          reason: 'usage_record_failed',
+          error: limitText(usageErr.message || String(usageErr), 240),
+        };
+      } finally {
+        await client.query('RELEASE SAVEPOINT assistant_usage_record').catch(() => null);
+      }
+    }
     const assistantMessage = await insertAssistantMessage({
       threadId: thread.id,
       authorType: 'assistant',
@@ -67968,6 +69050,7 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
       thread: assistantThreadView(refreshedThread),
       messages: [assistantMessageView(userMessage), assistantMessageView(assistantMessage)],
       anonymous_id: actor.anonymousId || null,
+      usage_recorded: Boolean(usageRecord.recorded),
     });
   } catch (err) {
     try { await client.query('ROLLBACK'); } catch {}
@@ -74180,7 +75263,7 @@ function redactZoomLinks(value = '') {
 
 function liveMemberAccessUrl(req, accessCode = '') {
   const code = String(accessCode || '').trim();
-  return code ? `${requestBaseUrl(req)}/member?code=${encodeURIComponent(code)}` : '';
+  return code ? `${requestBaseUrl(req)}/member-library?code=${encodeURIComponent(code)}` : '';
 }
 
 function generateLiveMemberAccessCode() {
@@ -77813,13 +78896,21 @@ app.get('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
        LIMIT 80`,
       [req.params.id]
     )).rows;
+    const linkedTaskParams = [req.params.id];
+    const linkedTaskWhere = ['child.parent_task_id = $1'];
+    const linkedTaskScopedProjectKey = opsScopeProjectKey(req);
+    if (linkedTaskScopedProjectKey) {
+      linkedTaskParams.push(linkedTaskScopedProjectKey);
+      linkedTaskWhere.push(`p.project_key = $${linkedTaskParams.length}`);
+    }
     const linkedTasks = (await pool.query(
-      `SELECT id, title, display_title, stage, task_kind, assigned_to, agent_status, decision_required, created_at, updated_at
-       FROM bna_tasks
-       WHERE parent_task_id = $1
-       ORDER BY updated_at DESC, created_at DESC
+      `SELECT child.id, child.title, child.display_title, child.stage, child.task_kind, child.assigned_to, child.agent_status, child.decision_required, child.created_at, child.updated_at
+       FROM bna_tasks child
+       LEFT JOIN bna_projects p ON p.id = child.project_id
+       WHERE ${linkedTaskWhere.join(' AND ')}
+       ORDER BY child.updated_at DESC, child.created_at DESC
        LIMIT 40`,
-      [req.params.id]
+      linkedTaskParams
     )).rows;
     const activeDecisionQueue = (await pool.query(
       `SELECT *
@@ -79201,6 +80292,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
 // Login endpoint for operations
 app.post('/api/operations/login', async (req, res) => {
   const { username, password } = req.body;
+  const returnTo = String((req.body || {}).returnTo || (req.body || {}).return_to || '/operations');
   const rateStatus = opsLoginRateStatus(req, username);
   if (rateStatus.blocked) {
     const retryAfterSeconds = Math.max(1, Math.ceil((rateStatus.reset_at - Date.now()) / 1000));
@@ -79222,6 +80314,29 @@ app.post('/api/operations/login', async (req, res) => {
       allowedViews: identity.allowedViews,
     });
   } else {
+    const destinations = (await collectPortalLoginDestinations({ username, password }))
+      .filter((destination) => destination.portal !== 'operations');
+    if (destinations.length > 1) {
+      clearOpsLoginRate(req, username);
+      return res.json({
+        success: true,
+        chooser_required: true,
+        message: 'Choose which portal or workspace to open.',
+        destinations: destinations.map((destination) => publicPortalDestination(destination, returnTo)),
+      });
+    }
+    if (destinations.length === 1) {
+      clearOpsLoginRate(req, username);
+      const destination = destinations[0];
+      const payload = await issuePortalDestinationSession(destination, res, { returnTo });
+      return res.json({
+        success: true,
+        portal_redirect: true,
+        role: destination.role,
+        destination: publicPortalDestination(destination, returnTo),
+        redirect_to: payload.redirect_to,
+      });
+    }
     recordOpsLoginFailure(req, username);
     clearSessionCookie(res);
     res.status(401).json({ success: false, error: 'Invalid credentials' });
@@ -79331,10 +80446,18 @@ app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
-app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest', '/one-time/member-login'], (req, res) => {
+app.get(['/one-time', '/one-time/mishnayos', '/one-time/us', '/one-time/uk', '/one-time/israel', '/one-time/interest'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time', 'index.html'));
 });
+
+function redirectOneTimeMemberHome(req, res) {
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  res.setHeader('Cache-Control', 'no-store');
+  res.redirect(302, `/rabbi-member${query}`);
+}
+
+app.get(['/one-time/member-login', '/member', '/member-portal'], redirectOneTimeMemberHome);
 
 app.get(['/rabbi', '/rabbi-preview', '/one-time-mishnayos'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -79354,11 +80477,6 @@ app.get(['/member-library', '/one-time-member-library'], (req, res) => {
 app.get(['/one-time-classroom', '/one-time-classroom.html'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'one-time-classroom.html'));
-});
-
-app.get(['/member', '/member-portal'], (req, res) => {
-  res.setHeader('Cache-Control', 'no-store');
-  res.sendFile(path.join(__dirname, 'public', 'member.html'));
 });
 
 app.get(['/provider-participant', '/provider/member'], (req, res) => {

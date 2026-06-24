@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BNA Owner Setup Center</title>
+  <link rel="stylesheet" href="/css/integration-setup.css">
+</head>
+<body data-page="integration-setup">
+  <a class="skip-link" href="#setupCards">Skip to integrations</a>
+  <header class="setup-header">
+    <div>
+      <p class="eyebrow">BNA Operations</p>
+      <h1>Owner Setup Center</h1>
+      <p class="header-copy">Exact links, steps, status, and validation for BNA integrations.</p>
+    </div>
+    <div class="header-actions" aria-label="Setup center actions">
+      <a class="button secondary" href="/operations?view=integrations&section=readiness">Open Operations</a>
+      <button class="button" type="button" id="printChecklist">Print Checklist</button>
+    </div>
+  </header>
+
+  <main class="setup-main">
+    <section class="status-band" aria-live="polite">
+      <div>
+        <strong id="catalogState">Loading setup catalog</strong>
+        <span id="catalogMeta">Static catalog is available even before credentials are configured.</span>
+      </div>
+      <div class="state-counts" id="stateCounts" aria-label="Integration status counts"></div>
+    </section>
+
+    <section class="filters" aria-label="Integration filters">
+      <label>
+        <span>Search</span>
+        <input id="searchInput" type="search" autocomplete="off" placeholder="Integration, variable, command">
+      </label>
+      <label>
+        <span>Status</span>
+        <select id="statusFilter">
+          <option value="">All statuses</option>
+        </select>
+      </label>
+      <label>
+        <span>Owner</span>
+        <select id="ownerFilter">
+          <option value="">All owners</option>
+        </select>
+      </label>
+    </section>
+
+    <section class="cards" id="setupCards" aria-label="Integration setup cards"></section>
+  </main>
+
+  <template id="cardTemplate">
+    <article class="setup-card">
+      <div class="card-heading">
+        <div>
+          <h2></h2>
+          <p class="purpose"></p>
+        </div>
+        <span class="status-pill"></span>
+      </div>
+      <dl class="card-facts">
+        <div><dt>Reason</dt><dd data-field="reason"></dd></div>
+        <div><dt>Next action</dt><dd data-field="next"></dd></div>
+        <div><dt>Who acts</dt><dd data-field="actor"></dd></div>
+        <div><dt>Last validation</dt><dd data-field="lastValidation"></dd></div>
+      </dl>
+      <div class="card-grid">
+        <section>
+          <h3>Links</h3>
+          <div class="link-row" data-field="links"></div>
+        </section>
+        <section>
+          <h3>Identifiers</h3>
+          <div class="chip-list" data-field="identifiers"></div>
+        </section>
+        <section>
+          <h3>Secret variables</h3>
+          <div class="chip-list" data-field="secrets"></div>
+        </section>
+        <section>
+          <h3>Validation</h3>
+          <p data-field="command" class="command-line"></p>
+          <p data-field="expected"></p>
+          <p data-field="effects"></p>
+        </section>
+      </div>
+      <details>
+        <summary>Live acceptance criteria</summary>
+        <ol data-field="criteria"></ol>
+      </details>
+    </article>
+  </template>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/js/app-select.js"></script>
+  <script src="/js/integration-setup.js" defer></script>
+</body>
+</html>

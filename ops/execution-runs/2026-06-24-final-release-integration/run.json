@@ -1,0 +1,30 @@
+{
+  "run_id": "2026-06-24-final-release-integration",
+  "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
+  "created_at": "2026-06-24T17:16:04+03:00",
+  "updated_at": "2026-06-24T18:28:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260624-005",
+  "workspace_key": "bna_platform",
+  "project_key": "final_release",
+  "predecessor_runs": [
+    "ops/execution-runs/2026-06-24-clean-slate-system-closeout"
+  ],
+  "git_refs": {
+    "expected_branch": "codex/clean-slate-integration-20260624",
+    "remote_branch": "origin/codex/clean-slate-integration-20260624",
+    "draft_pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
+    "control_commit": "199e010310245ebbd81d972ea79c93651b97f8b1",
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
+    "release_gate_head": "03454ea4a9152946d21452141ed427277705fab1",
+    "release_gate_branch": "codex/clean-slate-integration-20260624"
+  },
+  "current_batch": {
+    "batch_id": "H",
+    "requirement_id": "REQ-20260624-026",
+    "title": "Create, ready, and merge final integration PR according to release policy",
+    "status": "in_progress"
+  }
+}

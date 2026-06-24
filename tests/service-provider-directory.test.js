@@ -141,8 +141,8 @@ test('provider onboarding route and page create pending free-listing records saf
 });
 
 test('public provider join path is conversational and website-linked', () => {
-  assert.match(indexHtml, /\/become-service-provider\?onboard=provider/);
-  assert.match(serviceProviders, /\/provider-signup\?onboard=provider/);
+  assert.match(indexHtml, /\/providers\/join\?onboard=provider/);
+  assert.match(serviceProviders, /\/providers\/join\?onboard=provider/);
   assert.match(providerJoin, /data-provider-onboarding-bot/);
   assert.match(providerJoin, /Provider onboarding assistant/);
   assert.match(providerJoin, /students, homeschoolers, and alternative education families/);

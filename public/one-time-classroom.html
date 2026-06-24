@@ -292,8 +292,14 @@
           </div>
         </div>
         <div class="top-actions">
-          <a href="/one-time"><button type="button">One Time</button></a>
-          <a href="/provider.html?review=one-time"><button type="button">Provider Review</button></a>
+          <a href="/one-time"><button type="button">One Time home</button></a>
+          <a href="/rabbi-member"><button type="button">Member home</button></a>
+          <a href="/member-library"><button type="button">Library</button></a>
+          <a href="/one-time-classroom" aria-current="page"><button type="button">Classroom</button></a>
+          <button type="button" data-bna-assistant-open aria-controls="bnaBotPanel">Assistant/help</button>
+          <a href="/rabbi-member#support"><button type="button">Questions/support</button></a>
+          <a href="/rabbi-member?logout=1" id="memberLogoutLink"><button type="button">Account/logout</button></a>
+          <a href="/"><button type="button">Return to public site</button></a>
         </div>
       </div>
     </header>
@@ -301,8 +307,8 @@
     <main>
       <div class="hero">
         <div class="hero-copy">
-          <h1>Mishnah Classroom</h1>
-          <p>Follow the class videos by Seder, see what is scheduled, and respond to Rabbi-reviewed prompts without an open student chat. This review route uses TEST-only member-library data.</p>
+          <h1>One Time Mishnah Classroom</h1>
+          <p>Follow the live shiur path, review class videos by Seder, open worksheets, and respond to Rabbi-reviewed prompts without an open student chat. This review route uses TEST-only member-library data.</p>
           <div class="pill-row">
             <span class="pill">Internal calendar</span>
             <span class="pill">Approved questions</span>
@@ -405,6 +411,7 @@
       participationList: document.getElementById('participationList'),
       topQuestions: document.getElementById('topQuestions'),
       threadList: document.getElementById('threadList'),
+      logoutLink: document.getElementById('memberLogoutLink'),
     };
 
     function escapeHtml(value) {
@@ -615,10 +622,18 @@
       }
     });
 
+    els.logoutLink?.addEventListener('click', () => {
+      localStorage.removeItem('oneTimeClassroomCode');
+      localStorage.removeItem('one_time_member_library_code');
+      localStorage.removeItem('rabbi_member_session');
+    });
+
     if (state.code) {
       els.code.value = state.code;
       loadClassroom(state.code).catch((error) => { els.status.textContent = error.message; });
     }
   </script>
+  <script src="/js/bna-helper-knowledge.js"></script>
+  <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

@@ -64,8 +64,8 @@ test('Operations login accepts configured admin email aliases without mixing por
   assert.match(serverJs, /OPS_LOGIN_ALIASES\.has\(normalizedUser\)/);
   assert.match(serverJs, /username: OPS_USERNAME/);
   assert.match(loginHtml, /Operations email or username/);
-  assert.match(loginHtml, /Use the private Operations credentials/);
-  assert.match(loginHtml, /not a parent, student, or provider login/);
+  assert.match(loginHtml, /Use the same identity password from any legitimate portal/);
+  assert.match(loginHtml, /Access still follows your actual role and workspace permissions/);
   assert.match(loginHtml, /document\.getElementById\('username'\)\.value\.trim\(\)/);
   assert.doesNotMatch(serverJs, /bna_parent_password_accounts[\s\S]{0,500}role: 'super_admin'/);
 });

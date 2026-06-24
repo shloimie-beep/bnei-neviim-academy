@@ -4,6 +4,9 @@ const path = require('path');
 
 const PLACEHOLDER_PATTERNS = [
   /^\s*$/,
+  /^(?:none|null|undefined|not configured|not-configured|missing|todo|tbd|n\/a|na|-|_)$/i,
+  /^<[^>]+>$/,
+  /^\$\{[^}]+\}$/,
   /your[-_\s]?api[-_\s]?key/i,
   /your[-_\s]?token/i,
   /replace[-_\s]?me/i,

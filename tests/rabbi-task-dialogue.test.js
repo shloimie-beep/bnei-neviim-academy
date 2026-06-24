@@ -78,7 +78,7 @@ test('Operations renders a four-column Rabbi dialogue board with card and drawer
   assert.match(operations, /\{ id: 'decisions', label: 'Decisions'/);
   assert.match(operations, /\{ id: 'pending', label: 'Blocked\/access'/);
   assert.match(operations, /\{ id: 'tasks', label: 'Tasks'/);
-  assert.match(operations, /\{ id: 'done_activity', label: 'Completed \/ Activity'/);
+  assert.match(operations, /\{ id: 'done_activity', label: 'Done \/ Activity'/);
   assert.match(operations, /function renderOneTimeDialogueBoard/);
   assert.match(operations, /state\.focusMap\[column\.id\]/);
   assert.match(operations, /rabbi-dialogue-board/);

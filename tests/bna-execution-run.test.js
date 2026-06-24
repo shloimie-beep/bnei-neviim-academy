@@ -458,6 +458,75 @@ test('resume output identifies next unblocked executable batch', () => {
   assert.match(result.stdout, /batch-next \/ REQ-20260618-902/);
 });
 
+test('next output does not advertise approval-gated requirements as executable', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'in_progress',
+        can_continue_without_operator: false,
+        blocker: 'Production readback requires explicit approval.',
+        blocker_owner: 'Operator',
+        blocker_next_action: 'Approve the production readback gate.',
+        next_action: 'After approval, run the guarded production readback.'
+      })
+    ],
+    nextSessionContent: '# Next Session\nResume REQ-20260618-901 after approval.\n'
+  });
+  const result = spawnSync(process.execPath, [scriptPath, 'next', '--root', root], {
+    encoding: 'utf8'
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Next unblocked executable batch: none/);
+  assert.match(result.stdout, /Approval-gated open requirements:/);
+  assert.match(result.stdout, /REQ-20260618-901 in_progress/);
+  assert.doesNotMatch(result.stdout, /batch-fixture \/ REQ-20260618-901/);
+});
+
+test('blockers output includes approval-gated open requirements', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'in_progress',
+        can_continue_without_operator: false,
+        blocker: 'Deploy requires an explicit release approval.',
+        blocker_owner: 'Operator',
+        blocker_next_action: 'Approve the release gate.'
+      })
+    ],
+    nextSessionContent: '# Next Session\nResume REQ-20260618-901 after approval.\n'
+  });
+  const result = spawnSync(process.execPath, [scriptPath, 'blockers', '--root', root], {
+    encoding: 'utf8'
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Remaining external blockers:/);
+  assert.match(result.stdout, /Approval-gated open requirements:/);
+  assert.match(result.stdout, /REQ-20260618-901 in_progress/);
+  assert.match(result.stdout, /Deploy requires an explicit release approval/);
+});
+
+test('resume output shows approval-gated requirements when no executable batch remains', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'in_progress',
+        can_continue_without_operator: false,
+        blocker: 'Live verification requires approved credentials.',
+        blocker_owner: 'Operator',
+        blocker_next_action: 'Approve live verification credentials.'
+      })
+    ],
+    nextSessionContent: '# Next Session\nResume REQ-20260618-901 after approval.\n'
+  });
+  const result = spawnSync(process.execPath, [scriptPath, 'resume', '--root', root], {
+    encoding: 'utf8'
+  });
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /Next unblocked executable batch: none/);
+  assert.match(result.stdout, /Approval-gated open requirements:/);
+  assert.match(result.stdout, /Live verification requires approved credentials/);
+});
+
 test('duplicate canonical tasks fail', () => {
   const root = makeRoot({
     docOverrides: {

@@ -507,17 +507,37 @@ function getVideoHostingReadiness(options = {}) {
   if (config.accountOwner === 'unknown') blockers.push('Video-host account owner/admin must be documented before upload or publish actions.');
   const manualFallbackReady = config.providerDecision === 'vimeo' || !config.providerDecision;
   const automatedUpload = buildVimeoAutomatedUploadReadiness({ ...options, config });
+  const readinessStatus = (() => {
+    if (!config.providerDecision) return 'not_configured';
+    if (config.providerDecision !== 'vimeo') return 'preview_only';
+    if (!config.vimeoToken) return 'manual_ready';
+    if (!config.vimeoPlan || config.accountOwner === 'unknown') return 'test_target_missing';
+    return 'private_test_ready';
+  })();
+  const readinessReason = (() => {
+    if (readinessStatus === 'manual_ready') return 'Manual Vimeo URL attachment is available, but automated Vimeo upload still needs a configured token and test target.';
+    if (readinessStatus === 'private_test_ready') return 'Vimeo token and plan metadata are present; private synthetic upload still requires account/target proof before live use.';
+    if (readinessStatus === 'test_target_missing') return 'Vimeo automated readiness needs plan, account owner, intended test account, and private test project proof.';
+    if (readinessStatus === 'preview_only') return 'A non-Vimeo video host is selected; this Vimeo lane stays preview-only.';
+    return 'Video hosting is not configured.';
+  })();
   return {
     provider: 'video_hosting',
     label: 'Vimeo / Video Hosting',
     selectedProviderDecision: SELECTED_VIDEO_HOST_PROVIDER,
     decisionStatus: 'vimeo_selected_for_one_time',
     configured: Boolean(config.providerDecision && (config.providerDecision !== 'vimeo' || config.vimeoToken)),
-    status: config.providerDecision === 'vimeo' && !config.vimeoToken
+    status: readinessStatus,
+    readiness_status: readinessStatus,
+    legacy_status: config.providerDecision === 'vimeo' && !config.vimeoToken
       ? 'manual_upload_required'
       : config.providerDecision && (config.providerDecision !== 'vimeo' || config.vimeoToken)
         ? 'configured'
         : 'not_configured',
+    reason: readinessReason,
+    next_action: readinessStatus === 'private_test_ready'
+      ? 'Run Vimeo token capability and private synthetic smoke checks before automated upload.'
+      : 'Complete the missing Vimeo owner, token, plan, or test-project setup item, then rerun readiness.',
     mode: config.providerDecision || 'undecided',
     accountOwner: config.accountOwner,
     safeActions: ['hosting_decision_review', 'video_library_draft', 'manual_vimeo_url_attach', 'worksheet_preview', 'upload_preview'],
@@ -529,13 +549,15 @@ function getVideoHostingReadiness(options = {}) {
       appCredentialsConfigured: Boolean(config.vimeoClientId && config.vimeoClientSecret),
       planConfigured: Boolean(config.vimeoPlan),
       manualUploadFallbackReady: manualFallbackReady,
-      apiUploadStatus: config.vimeoToken && config.vimeoPlan ? 'needs_upload_access_check' : 'manual_only',
+      readiness_status: readinessStatus,
+      apiUploadStatus: config.vimeoToken && config.vimeoPlan ? 'private_test_ready' : 'credential_missing',
+      legacyApiUploadStatus: config.vimeoToken && config.vimeoPlan ? 'needs_upload_access_check' : 'manual_only',
       automatedUploadEnabled: automatedUpload.feature_flag_enabled,
     },
     manualFallback: {
       ready: manualFallbackReady,
       mode: 'manual_vimeo_url_attach',
-      library_item_status: 'usable_now_with_internal_approval',
+      library_item_status: manualFallbackReady ? 'manual_ready' : 'not_configured',
       workflow_steps: MANUAL_VIMEO_WORKFLOW_STEPS,
       next_step: 'Manually upload/select the Vimeo video, paste the Vimeo URL, complete learning metadata, approve, then publish to the first-party member library.',
     },

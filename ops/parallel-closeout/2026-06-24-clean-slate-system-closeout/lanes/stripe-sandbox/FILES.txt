@@ -1,0 +1,13 @@
+Owned/changed files:
+src/lib/billing/stripe-billing-lifecycle.js
+src/lib/integrations/stripe.js
+scripts/smoke-stripe-sandbox-billing.mjs
+tests/stripe-billing-lifecycle.test.js
+migrations/parallel-20260624-stripe-billing-lifecycle.sql
+docs/integrations/STRIPE.md
+package.json
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/*
+
+Shared but not edited:
+server.js -> SHARED-PATCH.diff
+public/operations.html -> SHARED-PATCH.diff

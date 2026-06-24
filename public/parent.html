@@ -1189,6 +1189,8 @@
         <div class="portal-topbar-actions" aria-label="Safe portal navigation">
             <a class="portal-topbar-link" href="/">Public site</a>
             <a class="portal-topbar-link" href="/parents">Families</a>
+            <a class="portal-topbar-link" href="/parent">Parent home</a>
+            <a class="portal-topbar-link" href="#bnaBotPanel" data-bna-assistant-open aria-controls="bnaBotPanel">Assistant/help</a>
             <a class="portal-topbar-link" href="/student/login">Student login</a>
             <span class="brand-chip">Secure family dashboard</span>
         </div>
@@ -1216,7 +1218,7 @@
             <form id="requestForm" class="stack">
                 <label>
                     Parent email
-                    <input id="parentEmail" type="email" autocomplete="email" required placeholder="parent@example.com">
+                    <input id="parentEmail" type="text" autocomplete="username" required placeholder="parent@example.com or username">
                 </label>
                 <label>
                     Password
@@ -3029,6 +3031,27 @@
             els.loginStatus.classList.toggle('error', Boolean(isError));
         }
 
+        function showPortalChooser(data) {
+            const destinations = Array.isArray(data?.destinations) ? data.destinations : [];
+            els.loginPanel.classList.remove('hidden');
+            els.parentOnboardingPanel.classList.add('hidden');
+            els.portalPanel.classList.add('hidden');
+            if (!destinations.length) {
+                els.loginStatus.textContent = data?.message || 'Choose the portal you want to open.';
+                els.loginStatus.classList.add('error');
+                return;
+            }
+            els.loginStatus.classList.remove('error');
+            els.loginStatus.innerHTML = `
+                <p>${escapeHtml(data?.message || 'Choose the portal you want to open.')}</p>
+                <div class="login-actions">
+                    ${destinations.map((destination) => `
+                        <a class="secondary" data-action-id="ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION" href="${escapeHtml(destination.redirect_to || '/')}">${escapeHtml(destination.label || destination.role || destination.portal || 'Open portal')}</a>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         function showPasswordResetForm(token, message = '', isError = false) {
             els.loginPanel.classList.remove('hidden');
             els.parentOnboardingPanel.classList.add('hidden');
@@ -4555,7 +4578,7 @@
             const languageToggle = document.querySelector('[data-language-toggle]');
             if (heroEyebrow) heroEyebrow.textContent = 'OneTimeOneTime Mishnah';
             if (heroTitle) heroTitle.textContent = 'Parent Review Portal';
-            if (heroCopy) heroCopy.textContent = 'One Time parent review portal with TEST-only family, class, library, payment/trial, and support data.';
+            if (heroCopy) heroCopy.textContent = "Parent dashboard for Rabbi Scheller's One Time Mishnayos program, using TEST-only family, class, library, payment/trial, and support data.";
             if (languageToggle) languageToggle.classList.add('hidden');
             const mark = document.querySelector('.brand-mark');
             if (mark && !mark.querySelector('img')) {
@@ -4602,7 +4625,7 @@
                             <img class="one-time-page-logo" src="/images/one-time/brand/onetimelogo.webp" alt="" aria-hidden="true">
                             <span class="eyebrow">One Time parent review</span>
                             <h1>${escapeHtml(data.parent?.name || 'TEST Parent')}</h1>
-                            <p class="small">TEST-only parent view for Rabbi Scheller's One Time workspace. This payload intentionally includes only one linked TEST student.</p>
+                            <p class="small">Parent-facing view for Rabbi Scheller's One Time workspace. TEST-only data is limited to one linked student, class progress, library access, and support context.</p>
                         </div>
                         <span class="status-pill">Preview only</span>
                     </div>
@@ -5167,13 +5190,22 @@
             els.loginStatus.textContent = t('loggingIn');
             els.loginStatus.classList.remove('error');
             try {
-                await api('/api/parent-portal/login', {
+                const result = await api('/api/parent-portal/login', {
                     method: 'POST',
                     body: JSON.stringify({
                         parent_email: els.parentEmail.value,
                         password: els.parentPassword.value,
+                        returnTo: window.location.pathname + window.location.search + window.location.hash,
                     }),
                 });
+                if (result.portal_redirect && result.redirect_to) {
+                    window.location.href = result.redirect_to;
+                    return;
+                }
+                if (result.chooser_required) {
+                    showPortalChooser(result);
+                    return;
+                }
                 await loadPortal();
             } catch (error) {
                 els.loginStatus.textContent = error.message || t('loginFailed');

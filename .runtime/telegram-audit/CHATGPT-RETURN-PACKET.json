@@ -1,0 +1,36 @@
+{
+  "verdict": "PARTIAL_EXTERNAL_DECISION_REMAINS",
+  "deployed_commit": "296a276a",
+  "deployment_id": "02944240-4c1b-477b-a57f-5f6140e80400",
+  "standard_live_smoke": "ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md",
+  "control_center_live_readback_status": 200,
+  "action_parity": {
+    "visible_controls": 22,
+    "registry_rows": 138,
+    "runtime_actions": 79,
+    "missing_contract": 0,
+    "missing_handler": 0,
+    "missing_tests": 0,
+    "risky_without_approval": 0
+  },
+  "completed_addendum_requirements": [
+    "REQ-20260623-010",
+    "REQ-20260623-011",
+    "REQ-20260623-012",
+    "REQ-20260623-013",
+    "REQ-20260623-014",
+    "REQ-20260623-015",
+    "REQ-20260623-016",
+    "REQ-20260623-017",
+    "REQ-20260623-018",
+    "REQ-20260623-019",
+    "REQ-20260623-020",
+    "REQ-20260623-021",
+    "REQ-20260623-022",
+    "REQ-20260623-023",
+    "REQ-20260623-024",
+    "REQ-20260623-025",
+    "REQ-20260623-026"
+  ],
+  "remaining_external_blockers": ["REQ-20260619-313"]
+}

@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-06-21T15:49:28.596Z",
+  "checked_at": "2026-06-23T12:02:50.509Z",
   "run_id": "PARALLEL-20260619-001",
   "mode": "local_in_memory_fixtures_no_external_writes",
   "external_write_performed": false,
@@ -95,11 +95,11 @@
     },
     {
       "type": "parent_prompt",
-      "id": "PROMPT-20260621-001-C34964C1"
+      "id": "PROMPT-20260623-001-958243D1"
     },
     {
       "type": "work_package",
-      "id": "WP-7A4D794E5B26"
+      "id": "WP-1B2929C9FFDE"
     }
   ],
   "duplicate_identity": {
@@ -114,6 +114,38 @@
     "community_items": 1,
     "content_items": 1,
     "unresolved": 0
+  },
+  "canonical_intake": {
+    "packet_contract_version": "w3-canonical-intake-service-v1",
+    "source_stable_key": "intake_source_27801e59f10cf632",
+    "source_provider": "manual",
+    "parent_prompt_id": "PROMPT-20260623-001-958243D1",
+    "child_outcome_count": 7,
+    "persistence_contract_version": "w3-canonical-intake-persistence-v1",
+    "raw_intake_stable_id": "intake_source_27801e59f10cf632",
+    "parse_run_id": "parse_run_d6662be3dd4cae3c",
+    "parse_item_count": 9,
+    "parsed_entity_count": 9,
+    "readback_found": true,
+    "readback_parse_item_count": 9,
+    "readback_parsed_entity_count": 9,
+    "readback_entity_counts_by_group": {
+      "decisions": 2,
+      "tasks": 1,
+      "calendar_events": 2,
+      "content_items": 1,
+      "community_items": 1,
+      "notes": 2
+    },
+    "external_write_performed": false
+  },
+  "lifecycle_auto_resume": {
+    "action": "resume_after_decision",
+    "reason": "operator_decision_resolved",
+    "target_status": "in_progress",
+    "applied": true,
+    "resumed_status": "in_progress",
+    "external_write_performed": false
   },
   "idempotent_rerun": {
     "deduplication_keys": 9,
@@ -141,10 +173,10 @@
     "redeem_state": "redeemed"
   },
   "agent_loop": {
-    "parent_prompt_id": "PROMPT-20260621-001-C34964C1",
+    "parent_prompt_id": "PROMPT-20260623-001-958243D1",
     "queue_position": 1,
     "ramble_phase": "in_progress",
-    "work_package_id": "WP-7A4D794E5B26",
+    "work_package_id": "WP-1B2929C9FFDE",
     "pass_status": "passed",
     "requeue_status": "requeued",
     "missing_credential_status": "needs_operator_decision"
@@ -200,8 +232,8 @@
       "REWARD-982f2b0225230ea2",
       "REWARDRULE-4d2eef9ee78b441a",
       "REWARDASSIGNMENT-2634f67b2bc4b731",
-      "PROMPT-20260621-001-C34964C1",
-      "WP-7A4D794E5B26"
+      "PROMPT-20260623-001-958243D1",
+      "WP-1B2929C9FFDE"
     ],
     "remaining_in_memory_records": 0,
     "passed": true

@@ -24509,6 +24509,30 @@ send, DNS/Railway propagation, WAPI outbound use, Buffer publish/schedule,
 billing, Zoom, Vimeo, GHL, external connector, or external-account write was
 performed.
 
+## 2026-06-24T08:02:00+03:00 - Integration Navigation Owner-Review Candidate Verified
+
+Created the credential-free owner-review release-candidate packet for the
+combined integration branch and draft PR #14. The branch now has automatic route
+inventory, canonical sitemap, navigation graph, orphan/duplicate review,
+applied/not-applied matrix, One Time and role-flow diagrams, role-flow QA,
+UX-backlog reconciliation, known gaps, and an owner-review script.
+
+Local verification passed without external credentials, production readback,
+deployment, live sends, publish/upload/charge, DNS changes, or secret exposure:
+`npm run owner-review:role-flows`, `npm run owner-review:routes`,
+`npm run watchdog:links`, `npm run watchdog:actions`,
+`npm run watchdog:security`, the focused owner-review/navigation suite 70/70,
+full `npm test` 1213/1213, and `npm run secrets:audit` over 4219 tracked paths.
+The remaining blockers are intentionally limited to merge/deploy/live
+production verification, live credential integrations, and full historical
+click-map rerun scope beyond the credential-free local harness.
+
+Attempted to add `.github/workflows/owner-review.yml` for an independent
+credential-free CI gate, but GitHub rejected the workflow commit because the
+current OAuth app lacks `workflow` scope. The blocker is recorded in the
+owner-review packet; the pushed branch keeps the local credential-free gates as
+release-candidate evidence until workflow permission is granted.
+
 ## 2026-06-19T13:45:00+03:00 - One Time Master Recovery Batch 6 Product Readiness
 
 Completed the local implementation slice for `REQ-20260619-306` and set the
@@ -25554,3 +25578,426 @@ before Content. No live vendor generation, external send, public publish,
 charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
 external CRM/GHL write, raw private source readback, or secret exposure was
 performed.
+
+## 2026-06-24T09:08:00+03:00 - PR #14 Public Visual Reality Audit Batch Verified
+
+Registered `RAW-20260624-002` from the full-system reality audit addendum and
+created the requirement register
+`tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-implementation-pass.md`.
+The credential-free PR #14 public visual batch fixes the homepage
+header-to-hero gap, adds semantic `aria-pressed` state for homepage filter
+chips, strengthens active/focus filter styles, and adds
+`npm run owner-review:visual` with computed desktop/tablet/mobile assertions.
+
+Verification passed locally: `npm run owner-review:visual`,
+`node --test tests\owner-review-role-flow-contract.test.js`,
+`npm run owner-review:role-flows`, `npm run owner-review:routes`,
+`npm run watchdog:links`, `npm run watchdog:actions`,
+`npm run watchdog:security`, full `npm test` 1214/1214, and
+`npm run secrets:audit` with 4254 tracked paths and 0 findings.
+
+No external credentials, private production readback, production database
+mutation, backfill, deploy, email or Telegram send, publish, upload, charge,
+DNS mutation, OAuth, or secret exposure was performed. Production remains stale
+until PR #14 is merged/deployed and live-smoked.
+
+## 2026-06-24T09:00:00+03:00 - PR #14 Auth Navigation Harness Strengthened
+
+Extended the credential-free owner-review role-flow smoke so it now asserts
+expected assistant surfaces, rejects forbidden cross-role fixture leakage, and
+clicks the Operations workspace switcher into the One Time Mishnah Class
+provider workspace (`rabbi_sheller_provider`) on desktop and mobile.
+
+Verification passed locally: `npm run owner-review:role-flows`,
+`node --test tests\owner-review-role-flow-contract.test.js` 6/6, full
+`npm test` 1214/1214, and `npm run secrets:audit` with 4271 tracked paths and 0
+findings. The generated `docs/owner-review/ROLE-FLOW-QA.md` report now shows
+the workspace switch proof for both super-admin viewports.
+
+## 2026-06-24T09:10:00+03:00 - PR #14 Website Assistant Runtime Audit Added
+
+Added `npm run owner-review:assistant-runtime` and the report
+`docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md`. The audit verifies the shared
+website assistant source contract, confirms the public anonymous context
+endpoint in the local no-DB server, and records the explicit expected blocker
+for database-backed assistant history in no-DB mode.
+
+Verification passed locally: `node --check
+scripts\smoke-owner-review-assistant-runtime.mjs`, `npm run
+owner-review:assistant-runtime`, `node --test
+tests\owner-review-role-flow-contract.test.js` 7/7, full `npm test`
+1215/1215, `npm run secrets:audit` with 4271 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+Persisted assistant chat/message E2E remains blocked until a local/test
+database is provided or production readback is approved.
+
+## 2026-06-24T09:20:00+03:00 - PR #14 External Readiness Audit Added
+
+Added `npm run owner-review:external-readiness` and the report
+`docs/owner-review/EXTERNAL-READINESS-AUDIT.md`. The audit verifies local
+no-write readiness for class/Drive intake, Stripe no-charge preview behavior,
+and Vimeo/manual video-hosting previews using the existing first-party
+contracts rather than creating a second integration path.
+
+Verification passed locally: `node --check
+scripts\smoke-owner-review-external-readiness.mjs`, `npm run
+owner-review:external-readiness`, `node --test
+tests\owner-review-role-flow-contract.test.js` 8/8, full `npm test`
+1216/1216, `npm run secrets:audit` with 4275 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+Real class/Drive readback, transcription, Stripe sandbox/live API proof, and
+Vimeo API/upload/playback proof remain approval/credential gated.
+
+## 2026-06-24T09:25:00+03:00 - PR #14 Full-System Reality Final Report Added
+
+Added `docs/owner-review/FULL-SYSTEM-REALITY-FINAL-REPORT.md` with the exact
+24 sections requested by `RAW-20260624-002`, using explicit status vocabulary
+and ending with overall state `PUSHED`. The report names PR #14 head
+`10a2386ea6271de59829115dd16fc9b3c5f49883`, base `a9528b2d...`, clean draft
+merge state, no attached checks, and all remaining external/operator blockers.
+
+Verification passed locally: `node --test
+tests\owner-review-role-flow-contract.test.js` 9/9, full `npm test`
+1217/1217, `npm run secrets:audit` with 4279 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+## 2026-06-24T09:50:00+03:00 - Rabbi Scheller Workspace Parity Local Verified In Isolated Branch
+
+Continued `RAW-20260623-006` after Shloimie chose Option A and warned that
+another agent was working. Collision check found the shared checkout dirty and
+other worktrees active, so the Rabbi bundle is isolated in
+`C:\Users\User\Documents\Codex\2026-06-24\rabbi-scheller-parity` on branch
+`codex/rabbi-scheller-parity-20260624` from `origin/master` at `a9528b2d`.
+
+Local implementation and audit evidence now covers unified portal login
+resolver/chooser behavior, provider-scoped allowed-view hardening, Operations
+provider navigation/back/deep-link behavior, tenant-scoped task detail child
+links, feature-flagged honest Provider API Usage preview, provider API-usage
+instrumentation foundation, route inventory, action registry coverage, durable
+future provider-bot requirement, and provider/BNA parity documentation.
+
+Verification passed locally: `node --check server.js`, `node --check
+src/lib/bna/provider-api-usage.js`, action-registry JSON parse, regenerated
+route map with 738 Express routes, focused suite 74/74, and four Playwright
+local smokes: Provider API Usage, Provider navigation, Operations navigation,
+and portal-agnostic login chooser at 390x844, 768x1024, and 1440x900.
+
+No external send, charge, access grant, credential rotation, DNS write, Stripe,
+Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI, or production-data mutation
+was performed. Push/deploy/live smoke is authorized next from the isolated
+branch only.
+
+## 2026-06-24T10:06:00+03:00 - Rabbi Scheller Workspace Parity Pushed, Deployed, Live Smoked
+
+Pushed Rabbi Scheller workspace parity branch
+`codex/rabbi-scheller-parity-20260624` to GitHub and opened draft PR #15.
+Implementation commit:
+`8f8b0b458a95d146777808dbdf1f760618632615`.
+
+Railway doctor passed before deploy on existing production deployment
+`359bd3c5-8cdc-4b70-a2eb-535e03f8d62e`. The standard `npm run
+railway:redeploy` script failed only at its `railway link` step with
+`Unauthorized`, while token-based status access was valid. Codex used the
+script-created deploy bundle and ran `railway up` with explicit
+`--project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --service
+skillful-motivation --environment production`, avoiding any mutation of the
+local Railway link. Railway deployment
+`5e37d2a0-7e81-4339-a721-c4286e8ecaa8` reached `SUCCESS`.
+
+Live verification passed: standard app smoke
+`ops/live-smokes/2026-06-24T07-01-44-515Z-live-app-smoke.md` and Rabbi
+workspace live smoke
+`ops/live-smokes/2026-06-24T07-05-37-232Z-rabbi-scheller-workspace-live-smoke.md`.
+The Rabbi smoke verified health, deployed provider API Usage preview markers,
+Operations login chooser bundle markers, Operations login/session, deployed
+Operations Rabbi workspace API Usage markers, and scoped task API readback for
+`project_key=one_time_mishnah_class`.
+
+No external send, charge, access grant, credential rotation, DNS write, Stripe,
+Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI account mutation, provider
+account change, or production data mutation was performed. Remaining state is
+partial only because PR #15 is not merged and Rabbi owner/Shloimie role choices
+remain open.
+## 2026-06-23T16:58:00+03:00 - One Time Homepage Funnel Copy Refined
+
+Confirmed the existing One Time funnel instructions under
+`raw-input/RAW-20260622-003-one-time-assets-funnel-vimeo-email-stripe-view-as-rabbi.md`
+and refined `/one-time` so the homepage reads as a basic signup funnel rather
+than an implementation report. The page now leads with the Mishnayos mission,
+public Vimeo hero, 30-day-free CTA, program preview using approved teaching
+stills, proof/logo strip, three-step flow, Rabbi portrait section, classroom
+preview, FAQ, and final interest form.
+
+Removed public-facing private asset-library, video-ID, launch-approval,
+server-backed timer, raw external page/CAPTCHA, and no-charge/no-send debug
+phrasing. The rights blockers remain in
+`ops/one-time-mishnah/asset-intake/2026-06-22/RIGHTS-BLOCKERS.md`, not on the
+homepage. Focused One Time tests passed 15/15, `git diff --check` passed with
+Windows line-ending warnings only, and local Playwright static smoke confirmed
+no body overflow plus loaded teaching images at mobile and desktop widths.
+
+## 2026-06-23T17:10:00+03:00 - One Time Review Front-End Brand Pass
+
+Applied the OneTimeOneTime brand kit across the shared review front-end
+surfaces: provider/Rabbi workspace, read-only View as Rabbi mode, parent
+portal, student portal, classroom, and email review. The shared
+`public/css/one-time-shared-review.css` now maps the exact One Time palette
+onto review-mode portal variables and styles top bars, cards, sidebars,
+buttons, inputs, progress bars, pills, the classroom shell, and the Rabbi
+read-only banner without changing normal BNA portal mode.
+
+Polished review-mode copy for the provider/Rabbi, parent, student, classroom,
+and email-review screens while preserving TEST-only scoping, no-send/no-write
+guardrails, and the student `No bot / no BNA goals` marker. Added shared CSS
+contract assertions. Verification passed: focused One Time suite 15/15,
+portal/brand-shell review suite 49/49, and local Playwright smoke against the
+`ONE_TIME_REVIEW_ONLY_NO_DB=1` server at mobile and desktop widths across
+landing, provider, parent, student, classroom, and email review routes.
+
+## 2026-06-23T17:34:00+03:00 - One Time Rabbi Workspace Scope and Badges
+
+Captured the new operator ramble as
+`raw-input/RAW-20260623-002-one-time-rabbi-workspace-student-scope-badges.md`
+and implemented the local review slice. Rabbi Eli Scheller's provider review
+now behaves like a scoped One Time workspace: desktop sidebar, mobile hamburger
+drawer, workspace identity, `ELISHELLER` owner login display, users, CRM,
+content, automations, badge awarding, communications, live class, library,
+payments, integrations, settings, support, and links into the parent, student,
+classroom, email review, and landing surfaces.
+
+Added explicit One Time-vs-school student portal boundaries in review data,
+provider Settings, and the student review page: One Time includes Mishnayos
+class/library, worksheets, private Rabbi questions, badges, achievements, and
+rewards; BNA school accountability goals, checkoffs, consequences, device
+controls, bot/accountability goals, and unrelated household/student records are
+excluded. Added One Time badge awarding and badge automation cards with a
+guardrail that badges do not write to school accountability ledgers.
+
+Verification passed: focused One Time/portal suite 20/20, review-only server
+and external portal suite 37/37, and local Playwright smoke at desktop/mobile
+against `http://127.0.0.1:19731` covering the new provider sidebar/hamburger,
+Users/CRM/Content/Automations/Badges/Settings sections, `Thoughtful Question`
+badge, `ELISHELLER`, and student `No bot / no BNA goals` boundary.
+
+## 2026-06-24T05:51:00+03:00 - One Time Rabbi Workspace QA Closeout
+
+Closed out the local QA/handoff pass for Rabbi Eli Scheller's One Time
+workspace. No functional UI changes were added in this pass; this was a
+verification and coordination closeout so other agents can see the Rabbi
+workspace, badges, and One Time student boundary are already implemented
+locally and should not be duplicated.
+
+Verification passed again: focused One Time/portal suite 20/20, review-only
+server and external portal suite 37/37, `node --check server.js`,
+`git diff --check` with Windows line-ending warnings only, and local Playwright
+smoke against `http://127.0.0.1:19731` at `1440x900` and `390x844`. The smoke
+confirmed provider desktop nav, provider mobile hamburger drawer, Badges and
+Rewards with `Thoughtful Question`, `ELISHELLER`, student One Time-only
+boundary text, `No bot / no BNA goals`, BNA school-accountability exclusion,
+Mishnayos content, and no horizontal overflow. The in-app browser was restored
+to `student.html?review=one-time#reviewClass` and read back the One Time-only
+boundary with no horizontal overflow.
+
+Guardrails remain unchanged: no WhatsApp/email/SMS send, no password emitted,
+no charge or checkout session, no access grant, no Zoom/Vimeo/external CRM
+write, no deployment, no super-admin cross-account access for Rabbi Eli, and
+no BNA school accountability goal rendering or writing inside One Time review
+mode. Live deployment and actual WhatsApp credential handoff remain blocked
+until explicit operator approval of the exact recipient and full message body.
+
+## 2026-06-24T15:45:00+03:00 - Clean-Slate Control Tower Integration Base Started
+
+Registered `RAW-20260624-003` from the Control Tower Reconciliation goal packet
+after detecting that PR #14 already owns `RAW-20260624-002` and
+`REQ-20260624-012` through `REQ-20260624-027`. The clean control register uses
+non-colliding IDs `REQ-20260624-028` through `REQ-20260624-034`.
+
+Completed the first control-tower requirements: repository/worktree/PR/Railway
+census, preservation of the local Rabbi/One Time closeout as branch
+`codex/preserve-rabbi-closeout-20260624` at `487a660b`, and clean integration
+branch reconciliation from `origin/master` through PR #14, PR #15, and the
+preservation branch. Current integration HEAD is `161f8623`. Evidence is in
+`ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.md`,
+`ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.md`, and
+`ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md`.
+
+Verification passed for the merged base: PR #14 focused gate 72/72 after
+generated action coverage refresh, PR #15 Rabbi/auth/provider suite 33/33 plus
+four browser smokes, preservation One Time suite 57/57, Rabbi suite 33/33,
+One Time canonical journey smoke, `npm run secrets:audit`, JSON/JSONL parse,
+and `git diff --check`. No deployment, production database mutation, class
+backfill, Stripe/Vimeo write, real send, DNS change, credential change, or
+other external write was performed.
+
+## 2026-06-24T16:45:00+03:00 - Clean-Slate Control Tower Base Closed
+
+Completed `RAW-20260624-003` / `TASK-20260624-001` through terminal statuses.
+The canonical control branch `codex/clean-slate-integration-20260624` now
+contains `origin/master`, PR #14 including PR #12/#13 history, PR #15, the
+preserved Rabbi/One Time local closeout branch, the canonical execution run,
+queue/Decision reconciliation, and seven lane handoff folders.
+
+Pushed control commit `f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0` and opened
+draft PR #16:
+`https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`. Validation
+passed: `npm run bna:run:status`, `npm run bna:run:validate`,
+`npm run bna:run:blockers`, `npm run bna:run:next`, `npm run secrets:audit`,
+`git diff --check`, and staged JSON/JSONL parse. No deployment, production DB
+mutation, class backfill, Stripe/Vimeo external write, real send, DNS change,
+credential rotation, or production account change was performed. Parallel
+lanes are safe to start from the pushed control branch.
+
+## 2026-06-24T16:51:19+03:00 - Final Release Preflight Blocked
+
+Registered `RAW-20260624-005` and `REQ-20260624-019` through
+`REQ-20260624-031` for the final integration, release, deployment,
+live-verification, and guarded class-recovery goal.
+
+Ran Step 1 preflight. `git fetch --all --prune` succeeded. The required
+`CONTROL.json` exists on clean-slate branch
+`origin/codex/clean-slate-integration-20260624` at
+`68f0b02fa1fe8928a8b4dd52704ec7e92c0fcba5`, and the clean-slate execution run
+validates with no remaining work.
+
+Pushed lane evidence is not complete enough to integrate:
+
+- `public-ui`: terminal branch-local result, `safe_to_merge: true`
+- `portal-auth-nav`: terminal branch-local result, `safe_to_merge: true`
+- `assistant-ramble-usage`: terminal branch-local result with external blockers,
+  `safe_to_merge: true`
+- `stripe-sandbox`: terminal branch-local result with external setup blockers,
+  `safe_to_merge: true`
+- `class-drive-intake`: branch-local `RESULT.json` still says `not_started`
+- `vimeo-media`: branch-local `RESULT.json` still says `not_started`; the
+  current Vimeo worktree is also dirty and diverged from the pushed branch
+- `operator-walkthrough`: pushed branch is missing lane `RESULT.json`
+
+No integration merge, PR merge, deployment, live smoke, production DB mutation,
+class backfill, external write, send, charge, DNS change, or secret exposure was
+performed. Final release remains blocked until the missing lane handoffs are
+terminal and pushed.
+
+## 2026-06-24T17:17:00+03:00 - Final Release Preflight Passed
+
+Re-ran `REQ-20260624-019` from the clean-slate integration worktree after the
+missing lane closeouts were pushed. All seven expected lane branches now have
+terminal branch-local RESULT evidence:
+
+- `public-ui`: `c9ba17da`, status `pushed`
+- `portal-auth-nav`: `e2aa72e5`, status `done`, `safe_to_merge: true`
+- `class-drive-intake`: `b4958dc0`, status `complete_no_backfill_apply`,
+  `safe_to_merge: true`
+- `assistant-ramble-usage`: `adf4e6d8`, status
+  `complete_with_external_blockers`, `safe_to_merge: true`
+- `stripe-sandbox`: `6c161c50`, status
+  `completed_with_external_setup_blocker`, `safe_to_merge: true`
+- `vimeo-media`: `f6975ab8`, status `complete_with_external_test_blockers`,
+  `safe_to_merge: true`
+- `operator-walkthrough`: `768a2ae0`, status
+  `complete_with_external_setup_blockers`, `safe_to_merge: true`
+
+Initialized the active final-release execution run at
+`ops/execution-runs/2026-06-24-final-release-integration` and moved
+`latest.json` to that run. The closed clean-slate control run remains preserved
+but is no longer the active run. Class backfill is explicitly blocked under
+current Prompt 04 evidence: `safe_to_apply=false`, zero approved candidate jobs,
+and no row-level write plan. No integration merge, PR merge, deployment, live
+smoke, production database mutation, class backfill, external write, send,
+charge, DNS change, credential change, or secret exposure was performed.
+
+## 2026-06-24T17:26:00+03:00 - Final Release Base Sync Done
+
+Completed `REQ-20260624-020`. After `git fetch --all --prune`, the release
+branch `codex/clean-slate-integration-20260624` is at `0643db66` and
+`origin/master` is `a9528b2d`. The merge-base is `a9528b2d`, and
+`git rev-list --left-right --count HEAD...origin/master` returned `89 0`, so
+`origin/master` has no commits missing from the release branch. No master merge
+was required and no history rewrite was performed.
+
+`REQ-20260624-021` is now the active batch for lane integration with checkpoint
+commits. No integration merge, PR merge, deployment, live smoke, production DB
+mutation, class backfill, external write, send, charge, DNS change, credential
+change, or secret exposure was performed in this base-sync step.
+
+## 2026-06-24T17:51:00+03:00 - Final Release Lane Integration Done
+
+Completed `REQ-20260624-021` and `REQ-20260624-022`. Seven lane branches were
+integrated in the user-packet order with pushed checkpoint commits:
+
+- public UI: `d71fa58a`
+- portal/auth/nav: `b412ee17`
+- class/Drive intake: `b604e967`
+- assistant/ramble/usage: `4547a696`
+- Stripe sandbox: `9377862b`
+- Vimeo media: `f721d435`
+- operator walkthrough: `7e7cae25`
+
+Wrote lane integration evidence to
+`ops/parallel-closeout/2026-06-24-final-release-integration/LANE-INTEGRATION-MATRIX.md`
+and PR/local history disposition evidence to
+`ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md`.
+
+Final PR #16 now supersedes separate PR #14/#15 merges if this branch proceeds.
+Shared patches were reviewed and remain assigned to `REQ-20260624-023` for
+server/UI authorization wiring. No deployment, live smoke, production DB
+mutation, class backfill, Stripe write, Vimeo write, send, charge, DNS change,
+credential change, or secret exposure was performed.
+
+## 2026-06-24T17:58:00+03:00 - Final Release Shared Route/UI Wiring Verified
+
+Completed local release-candidate wiring for `REQ-20260624-023`. The final
+branch now includes protected owner setup readiness, Operations owner setup
+actions, Stripe safe billing status/preview plus approval-gated checkout
+creation and webhook preview, assistant provider-usage metadata without prompt
+body storage, and mixed-recording progress-only persistence. Route and action
+registries cover the new surfaces.
+
+Verification passed: `node --check server.js`, `node --check
+public/js/integration-setup.js`, focused class/assistant/Stripe/setup suites
+68/68, `npm run watchdog:actions`, `npm run watchdog:security`, `npm run
+bna:run:validate`, `git diff --check`, `npm run secrets:audit`, Stripe sandbox
+smoke `live_key_blocked` with no external write/no real funds, and Vimeo
+private smoke preview-only with no public publish. No deploy, live smoke,
+production DB mutation, class backfill, Stripe charge, Vimeo upload/publication,
+real send, DNS change, credential change, or secret exposure was performed.
+`REQ-20260624-024` is now the active migration/database readiness batch.
+
+## 2026-06-24T18:09:00+03:00 - Final Release Migration Readiness Documented
+
+Completed `REQ-20260624-024` as a readiness review with no production database
+apply. Active migration candidates were inventoried, `migrate-railway.sql` was
+explicitly excluded because it contains legacy `DROP TABLE` markers, and the
+backup, target inventory, dry-run, apply, rollback, post-apply readback, tenant
+isolation, privacy, and no-secret gates are documented in
+`ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md`.
+
+No production database read, write, schema apply, class backfill, deploy, live
+smoke, send, charge, upload, publish, DNS change, credential change, or secret
+exposure was performed. `REQ-20260624-025` is now the active local release-gate
+batch.
+
+## 2026-06-24T18:28:00+03:00 - Final Release Local Release Gate Passed
+
+Completed `REQ-20260624-025` on pushed release-code SHA
+`03454ea4a9152946d21452141ed427277705fab1`. The dry-run production closeout
+gate passed with `head_pushed=true`, `dirty_total=0`, no blockers, no
+production mutation, no deploy, and no live verification. Full `npm test`
+passed 1301/1301 on the pushed SHA.
+
+Additional gate evidence passed: owner-review route inventory, role-flow smoke,
+public visual audit using `release-local`, assistant-runtime audit,
+external-readiness audit, execution-run validate/source-coverage/stale-evidence,
+link/action/security/content/communications watchdogs, raw-intake watchdog
+`ok=true` with two historical medium fallback findings, secret audit,
+`git diff --check`, Stripe sandbox smoke `live_key_blocked` with no real funds,
+and Vimeo private smoke preview-only with no upload or public publication.
+
+No PR merge, deployment, live smoke, production database mutation, class
+backfill, Stripe charge, Vimeo upload/publication, real send, DNS change,
+credential change, or secret exposure was performed. `REQ-20260624-026` is now
+active for PR #16 mergeability, release policy, and rollback-plan review.

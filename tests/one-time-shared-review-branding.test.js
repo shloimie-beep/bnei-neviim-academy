@@ -16,11 +16,18 @@ test('shared One Time review data stays scoped, branded, and preview-only', () =
   assert.equal(review.brand.logo, '/images/one-time/brand/onetimelogo.webp');
   assert.equal(review.brand.hero, '/images/one-time/brand/onetime-hero-vertical.webp');
   assert.equal(review.brand.site_config, 'config/service-provider-sites/one-time.json');
+  assert.equal(review.identities.rabbi.display_name, 'Rabbi Eli Scheller');
+  assert.equal(review.identities.rabbi.login_username, 'ELISHELLER');
 
   assert.equal(review.parent_portal.linked_students_visible.length, 1);
   assert.equal(review.parent_portal.linked_students_visible[0].id, 'TEST-ONETIME-STUDENT-001');
   assert.equal(review.student_portal.bot_enabled, false);
   assert.equal(review.student_portal.bna_accountability_enabled, false);
+  assert.match(review.student_portal.portal_scope.display_rule, /No bot \/ no BNA goals/);
+  assert.ok(review.student_portal.portal_scope.excluded_school_portal_features.includes('BNA school accountability goals'));
+  assert.ok(review.provider_portal.workspace_users.some((user) => user.login_username === 'ELISHELLER'));
+  assert.ok(review.provider_portal.badge_system.badges.some((badge) => badge.title === 'Thoughtful Question'));
+  assert.match(review.provider_portal.badge_system.guardrail, /BNA school accountability goals/);
 
   assert.equal(review.provider_portal.video.vimeo_video_id, '1178363755');
   assert.match(review.provider_portal.video.media_url, /1178363755/);
@@ -77,17 +84,20 @@ test('shared One Time review pages include review branding assets', () => {
   }
 
   const oneTimeHtml = fs.readFileSync('public/one-time/index.html', 'utf8');
-  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Elie Scheller/);
+  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Eli Scheller/);
   assert.match(oneTimeHtml, /\/images\/one-time\/brand\/onetime-hero-vertical\.webp/);
   assert.match(oneTimeHtml, /\/images\/one-time\/press\/torahanytime-logo\.png/);
   assert.match(oneTimeHtml, /player\.vimeo\.com\/video\/1158542993\?h=daa31d3417/);
   assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
   assert.doesNotMatch(oneTimeHtml, /TEST-ONETIME-REVIEW-ACCESS/);
   assert.match(fs.readFileSync('public/provider.html', 'utf8'), /\/css\/one-time-shared-review\.css/);
-  assert.match(fs.readFileSync('public/provider.html', 'utf8'), /OneTimeOneTime Provider Review/);
+  assert.match(fs.readFileSync('public/provider.html', 'utf8'), /OneTimeOneTime Rabbi Workspace Review/);
+  assert.match(fs.readFileSync('public/provider.html', 'utf8'), /ELISHELLER/);
+  assert.match(fs.readFileSync('public/provider.html', 'utf8'), /Badges and Rewards/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
   assert.match(fs.readFileSync('public/parent.html', 'utf8'), /OneTimeOneTime Parent Review/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /No bot \/ no BNA goals/);
+  assert.match(fs.readFileSync('public/student.html', 'utf8'), /excludes BNA school accountability goals/);
   assert.match(fs.readFileSync('public/student.html', 'utf8'), /OneTimeOneTime Student Review/);
   const classroomHtml = fs.readFileSync('public/one-time-classroom.html', 'utf8');
   assert.match(classroomHtml, /TEST-only member-library data/);
@@ -96,6 +106,14 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(classroomHtml, /Fallback Vimeo Link/);
   assert.match(classroomHtml, /\.video-embed \{ min-height: 0; \}/);
   assert.match(fs.readFileSync('public/one-time-email-review.html', 'utf8'), /\/images\/one-time\/brand\/onetimelogo\.webp/);
+
+  const sharedReviewCss = fs.readFileSync('public/css/one-time-shared-review.css', 'utf8');
+  assert.match(sharedReviewCss, /--one-time-black: #080910/);
+  assert.match(sharedReviewCss, /--one-time-cyan: #0b9fc9/);
+  assert.match(sharedReviewCss, /--one-time-yellow: #ede518/);
+  assert.match(sharedReviewCss, /body\.one-time-review-active \.portal-sidebar/);
+  assert.match(sharedReviewCss, /body\.one-time-review-active \.one-time-review-hero-card/);
+  assert.match(sharedReviewCss, /body\.one-time-review-active \.progress-fill/);
 });
 
 test('committed One Time review assets and manifest exist', () => {
@@ -143,7 +161,7 @@ test('One Time brand kit and service-provider site config are present', () => {
   assert.equal(site.key, 'one_time');
   assert.equal(site.status, 'shared_review');
   assert.equal(site.external_write_performed, false);
-  assert.equal(site.copy.headline, 'Learn Mishnayos Live with Rabbi Elie Scheller');
+  assert.equal(site.copy.headline, 'Learn Mishnayos Live with Rabbi Eli Scheller');
   assert.equal(site.copy.primary_cta, 'START 30 DAYS FREE');
   assert.equal(site.copy.secondary_cta, 'WATCH RABBI SCHELLER');
   assert.equal(site.assets.social_og, '/images/one-time/social/one-time-og-20260622.jpg');

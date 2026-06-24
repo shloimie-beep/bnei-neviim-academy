@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-23T10:05:23+03:00",
+  "updated_at": "2026-06-24T03:22:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -127,6 +127,22 @@
       ]
     },
     {
+      "route": "/parent.html",
+      "surface": "parent_portal_static_alias",
+      "access": "private",
+      "required_role": "parent",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/parent",
+      "expected_logged_out_behavior": "redirect_to_login_or_show_anonymous_shell_without_private_data",
+      "expected_logged_in_behavior": "own_parent_dashboard_only",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
       "route": "/student",
       "surface": "student_portal",
       "access": "private",
@@ -137,6 +153,22 @@
       "expected_logged_in_behavior": "own_student_dashboard_only",
       "privacy_risk": "high",
       "related_goal_ids": [
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/student.html",
+      "surface": "student_portal_static_alias",
+      "access": "private",
+      "required_role": "student",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/student",
+      "expected_logged_out_behavior": "show_student_login_shell_without_private_data",
+      "expected_logged_in_behavior": "own_student_dashboard_only",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
         "GOAL-CORE-006"
       ]
     },
@@ -250,6 +282,38 @@
       ]
     },
     {
+      "route": "/providers",
+      "surface": "public_provider_index_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/service-providers",
+      "expected_logged_out_behavior": "load_public_provider_index_only",
+      "expected_logged_in_behavior": "load_public_provider_index_only",
+      "privacy_risk": "normal",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/he/providers",
+      "surface": "public_provider_index_hebrew_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/service-providers",
+      "expected_logged_out_behavior": "load_public_provider_index_only",
+      "expected_logged_in_behavior": "load_public_provider_index_only",
+      "privacy_risk": "normal",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
       "route": "/become-service-provider",
       "surface": "public_provider_join",
       "access": "public",
@@ -319,7 +383,6 @@
       "expected_logged_out_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "expected_logged_in_behavior": "load_worldwide_onetime_mishnayos_offer_without_private_member_data",
       "privacy_risk": "normal",
-      "canonical_target": "/one-time/mishnayos",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-014"
@@ -478,12 +541,62 @@
     {
       "route": "/member",
       "surface": "member_portal_alias",
-      "access": "private",
+      "access": "public_entry",
       "required_role": "member",
       "workspace_scope_required": true,
-      "public_allowed": false,
-      "expected_logged_out_behavior": "redirect_to_login_or_show_member_entry_without_private_data",
-      "expected_logged_in_behavior": "load_own_member_portal_only",
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "redirect_to_one_time_member_home_without_private_data",
+      "expected_logged_in_behavior": "redirect_to_one_time_member_home",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/member-portal",
+      "surface": "member_portal_legacy_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "redirect_to_one_time_member_home_without_private_data",
+      "expected_logged_in_behavior": "redirect_to_one_time_member_home",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/one-time/member-login",
+      "surface": "one_time_member_login_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "redirect_to_one_time_member_home_without_private_data",
+      "expected_logged_in_behavior": "redirect_to_one_time_member_home",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/member.html",
+      "surface": "member_portal_static_legacy_alias",
+      "access": "public_entry",
+      "required_role": "member",
+      "workspace_scope_required": true,
+      "public_allowed": true,
+      "canonical_target": "/rabbi-member",
+      "expected_logged_out_behavior": "legacy_code_entry_without_private_data_and_with_safe_member_home_return",
+      "expected_logged_in_behavior": "legacy_code_entry_with_safe_member_home_return",
       "privacy_risk": "high",
       "related_goal_ids": [
         "GOAL-CORE-003",
@@ -504,6 +617,41 @@
         "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time-classroom.html",
+      "surface": "one_time_classroom_static_alias",
+      "access": "private",
+      "required_role": "provider_or_member",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "canonical_target": "/one-time-classroom",
+      "expected_logged_out_behavior": "redirect_to_login_or_show_classroom_entry_without_private_data",
+      "expected_logged_in_behavior": "load_scoped_one_time_classroom_only",
+      "privacy_risk": "high",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/one-time-email-review.html",
+      "surface": "one_time_email_review",
+      "access": "public_entry",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_review_only_email_templates_without_private_member_data",
+      "expected_logged_in_behavior": "load_review_only_email_templates_without_private_member_data",
+      "privacy_risk": "high",
+      "security_expectation": "Review-only One Time email template surface; no send, account grant, checkout, member-library publication, or external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-014",
+        "GOAL-CORE-015"
       ]
     },
     {
@@ -845,6 +993,26 @@
         "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/assistant/control-plane/readiness",
+      "surface": "operations_api_assistant_control_plane_readiness",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_read_only_assistant_control_plane_table_and_index_readiness",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/assistant/control-plane/readiness",
+      "security_expectation": "Readiness only: no assistant rows, external sends, publish actions, charges, DNS changes, OAuth actions, connector calls, secret values, or row payloads are returned or mutated.",
+      "smoke_expectation": "authenticated_read_only_schema_metadata_no_rows_or_secret_values",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
         "GOAL-CORE-015"
       ]
     },
@@ -1228,6 +1396,130 @@
       "security_expectation": "Creates local Content job/output rows only; no publish, Buffer, email, access grant, upload, payment, or external CRM write.",
       "related_goal_ids": [
         "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/integration-setup.html",
+      "surface": "public_owner_setup_center",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_static_credential_safe_owner_setup_page",
+      "expected_logged_in_behavior": "load_static_credential_safe_owner_setup_page",
+      "privacy_risk": "normal",
+      "security_expectation": "Static setup page must not expose secrets, private student records, parent data, provider data, or Operations sessions.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integration-setup/readiness",
+      "surface": "operations_api_owner_setup_readiness",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_credential_safe_owner_setup_catalog",
+      "privacy_risk": "critical",
+      "security_expectation": "Endpoint requires admin auth and returns setup status without raw secrets.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/status",
+      "surface": "operations_api_stripe_status",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_stripe_readiness_and_safe_billing_preview_without_secrets",
+      "privacy_risk": "critical",
+      "security_expectation": "Readiness payload redacts Stripe secrets and performs no external write.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/checkout-preview",
+      "surface": "operations_api_stripe_checkout_preview",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_checkout_preview_without_customer_or_charge_creation",
+      "privacy_risk": "critical",
+      "security_expectation": "Preview is local only and reports external_write_performed=false.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/checkout-create",
+      "surface": "operations_api_stripe_checkout_create",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_stripe_checkout_session_only_after_explicit_approval_gate",
+      "privacy_risk": "critical",
+      "security_expectation": "Checkout creation remains explicit-approval gated and live mode is blocked without separate final live billing approval.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/webhook-preview",
+      "surface": "operations_api_stripe_webhook_preview",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "simulate_stripe_billing_lifecycle_without_accepting_live_webhooks",
+      "privacy_risk": "critical",
+      "security_expectation": "Preview applies synthetic or supplied events in memory only and reports external_write_performed=false.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/assistant/chat",
+      "surface": "assistant_chat_api",
+      "access": "mixed",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "create_anonymous_safe_assistant_chat_thread",
+      "expected_logged_in_behavior": "create_scoped_assistant_chat_thread_and_record_provider_usage_without_prompt_body",
+      "privacy_risk": "critical",
+      "security_expectation": "Anonymous assistant remains public-safe; usage metadata must not store prompt or response bodies.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
         "GOAL-CORE-006",
         "GOAL-CORE-010",
         "GOAL-CORE-015"

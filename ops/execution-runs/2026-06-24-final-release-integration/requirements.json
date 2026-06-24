@@ -1,0 +1,641 @@
+{
+  "run_id": "2026-06-24-final-release-integration",
+  "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
+  "updated_at": "2026-06-24T18:28:00+03:00",
+  "git_refs": {
+    "expected_branch": "codex/clean-slate-integration-20260624",
+    "branch": "codex/clean-slate-integration-20260624",
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260624-005",
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "captured_at": "2026-06-24T16:51:19+03:00",
+      "content_fingerprint": "sha256:see raw intake file; attachment source C:/Users/User/.codex/attachments/72b4562b-be47-4cd3-9653-11c340480715/pasted-text.txt",
+      "privacy_classification": "internal_release_packet",
+      "workspace": "bna_platform",
+      "project": "final_release",
+      "source_type": "codex_goal_packet"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260624-019",
+      "title": "Verify all lane handoffs and control manifest before integration",
+      "expected_result": "All seven lane branches have pushed terminal RESULT handoffs, the clean-slate control manifest is present, branch heads and blockers are recorded, and final integration is no longer blocked by missing lane packets.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S001"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "preflight",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "preflight_passed_terminal_lane_handoffs",
+      "can_continue_without_operator": true,
+      "next_action": "Start REQ-20260624-020 by syncing the release branch against current origin/master before lane integration.",
+      "acceptance_criteria": [
+        "CONTROL.json is read from the clean-slate release branch.",
+        "Every expected lane branch exists remotely.",
+        "Each lane has terminal branch-local RESULT evidence and blocker status.",
+        "Class backfill recommendation is recorded before any apply attempt."
+      ],
+      "evidence": [
+        "tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/CONTROL.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/public-ui/RESULT.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/portal-auth-nav/RESULT.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/RESULT.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/RESULT.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/RESULT.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/vimeo-media/RESULT.json",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/operator-walkthrough/RESULT.json"
+      ],
+      "verification": [
+        "PASS git fetch --all --prune",
+        "PASS remote RESULT inspection: public-ui c9ba17da status pushed; portal-auth-nav e2aa72e5 status done safe_to_merge true; class-drive-intake b4958dc0 status complete_no_backfill_apply safe_to_merge true; assistant-ramble-usage adf4e6d8 status complete_with_external_blockers safe_to_merge true; stripe-sandbox 6c161c50 status completed_with_external_setup_blocker safe_to_merge true; vimeo-media f6975ab8 status complete_with_external_test_blockers safe_to_merge true; operator-walkthrough 768a2ae0 status complete_with_external_setup_blockers safe_to_merge true.",
+        "PASS npm run bna:run:status on clean-slate control run",
+        "PASS npm run bna:run:validate on clean-slate control run",
+        "PASS npm run bna:run:next on clean-slate control run",
+        "PASS npm run bna:run:blockers on clean-slate control run"
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/requirements.json",
+        "ops/execution-runs/2026-06-24-final-release-integration/run.json",
+        "TASKS.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T17:17:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-020",
+      "title": "Synchronize release branch with current origin/master if needed",
+      "expected_result": "The release integration branch has inspected latest origin/master and intentionally merged or documented no-op base synchronization without rewriting history.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S002"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "release_base_sync",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260624-019"
+      ],
+      "status": "done",
+      "implementation_status": "release_branch_already_contains_origin_master",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-021 lane integration.",
+      "acceptance_criteria": [
+        "Latest origin/master is fetched and compared to the release branch.",
+        "Any base delta is merged intentionally with conflicts recorded.",
+        "No force-push or history rewrite is used."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-final-release-integration/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/EVIDENCE.md"
+      ],
+      "verification": [
+        "PASS git fetch --all --prune",
+        "PASS git rev-parse HEAD origin/codex/clean-slate-integration-20260624 origin/master -> HEAD and upstream 0643db66, origin/master a9528b2d",
+        "PASS git merge-base HEAD origin/master -> a9528b2d",
+        "PASS git rev-list --left-right --count HEAD...origin/master -> 89 0, so origin/master has no commits missing from the release branch"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-final-release-integration/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T17:26:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-021",
+      "title": "Integrate lane branches in controlled order with checkpoint commits",
+      "expected_result": "All valid lane branches are integrated into the release branch in the requested order or a documented safe alternative, with focused checks after each checkpoint.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S003"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "lane_integration",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260624-019",
+        "REQ-20260624-020"
+      ],
+      "status": "done",
+      "implementation_status": "all_lane_branches_integrated_with_checkpoint_commits",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-022 and REQ-20260624-023.",
+      "acceptance_criteria": [
+        "Shared patches are reviewed before use.",
+        "No blanket ours/theirs conflict resolution is used.",
+        "Focused tests run after each lane or documented equivalent gate."
+      ],
+      "evidence": [
+        "ops/parallel-closeout/2026-06-24-final-release-integration/LANE-INTEGRATION-MATRIX.md"
+      ],
+      "verification": [
+        "PASS seven first-parent merge checkpoints pushed: d71fa58a public-ui, b412ee17 portal-auth-nav, b604e967 class-drive-intake, 4547a696 assistant-ramble-usage, 9377862b stripe-sandbox, f721d435 vimeo-media, 7e7cae25 operator-walkthrough",
+        "PASS focused lane verification rerun after each merge as recorded in LANE-INTEGRATION-MATRIX.md",
+        "PASS no deployment, production mutation, class backfill, send, charge, public media publish, DNS change, credential change, or secret exposure"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/",
+        "src/",
+        "tests/",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T17:51:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-022",
+      "title": "Resolve PR #14, PR #15, and local Rabbi closeout into one supersession matrix",
+      "expected_result": "The final branch contains all valid work from PR #14, PR #15, and preserved local Rabbi closeout, with superseded PR dispositions recorded.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S004"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260624-021"
+      ],
+      "status": "done",
+      "implementation_status": "source_history_supersession_matrix_recorded",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-023 shared route/UI/server authorization wiring.",
+      "acceptance_criteria": [
+        "PR #14, PR #15, and preserved closeout histories have explicit dispositions."
+      ],
+      "evidence": [
+        "ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md"
+      ],
+      "verification": [
+        "PASS PR #14, PR #15, preserved local Rabbi closeout, and all seven lane branch dispositions recorded",
+        "PASS final PR #16 identified as superseding PR #14 and PR #15 if this final branch proceeds"
+      ],
+      "implementation_files": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T17:51:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-023",
+      "title": "Wire shared routes, UI, and server authorization across final integrated surfaces",
+      "expected_result": "Final integrated routes, Operations/provider navigation, setup center, assistant, class diagnostic, Stripe, Vimeo, and API surfaces are wired with server-side authorization and no public secret leakage.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S005"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "route_ui_authorization",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260624-021"
+      ],
+      "status": "done",
+      "implementation_status": "shared_routes_ui_authorization_wired_local_verified_deploy_pending_release_gate",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-024 migration and database readiness review; deploy/live smoke remains required later under REQ-20260624-027 before final app-visible closeout.",
+      "acceptance_criteria": [
+        "Every new endpoint has server-side authorization.",
+        "Public pages expose no private diagnostics or secrets."
+      ],
+      "evidence": [
+        "server.js",
+        "public/operations.html",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "ops/watchdog-audits/2026-06-24T14-57-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-24T14-57-watchdog-security-routes.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T14-57-34-571Z-stripe-sandbox-smoke.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T14-57-34-571Z-stripe-sandbox-smoke.json"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check public/js/integration-setup.js",
+        "PASS node --test tests/class-drive-intake-shared-patch.test.js tests/class-drive-intake-reconcile.test.js (17/17)",
+        "PASS node --test tests/provider-api-usage-readiness.test.js tests/assistant-model-readiness.test.js tests/ramble-routing-pipeline.test.js (23/23)",
+        "PASS node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-resend-vimeo-stripe-safe-smoke.test.js tests/rabbi-checkout-access.test.js (21/21)",
+        "PASS node --test tests/integration-setup-catalog.test.js tests/integration-setup-ui.test.js tests/operator-walkthrough-links.test.js (7/7)",
+        "PASS npm run watchdog:actions finding_count=0",
+        "PASS npm run watchdog:security finding_count=0 after adding GOAL-CORE-006 coverage to new Stripe route rows",
+        "PASS npm run bna:run:validate before status update",
+        "PASS git diff --check (Windows line-ending warnings only)",
+        "PASS npm run secrets:audit tracked_paths=4581 findings=0",
+        "PASS npm run stripe:sandbox-smoke status=live_key_blocked external_write_performed=false no_real_funds=true",
+        "PASS node scripts/vimeo-private-smoke.mjs --json exited safely with status=preview_only external_write_performed=false public_publish_performed=false"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "ops/watchdog-audits/2026-06-24T14-57-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-24T14-57-watchdog-security-routes.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T18:01:00+03:00",
+      "deployment_live_smoke": {
+        "status": "owned_by_later_release_deploy_requirement",
+        "requirement_id": "REQ-20260624-027",
+        "note": "REQ-20260624-023 is local release-candidate wiring; deployment/live smoke is explicitly required before final app-visible closeout under REQ-20260624-027."
+      }
+    },
+    {
+      "id": "REQ-20260624-024",
+      "title": "Review and prepare required migrations and database readiness",
+      "expected_result": "Required migration readiness is documented with backup, dry-run, rollback, transaction, compatibility, tenant isolation, and secret-audit notes before any apply.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S006"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "migration_readiness",
+      "priority": "P0",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260624-021"
+      ],
+      "status": "done",
+      "implementation_status": "migration_readiness_review_complete_no_production_apply",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-025 local release gate against exact release SHA. Do not apply production DB changes unless a later gate authorizes the exact target, backup, dry run, rollback, and readback.",
+      "acceptance_criteria": [
+        "Migration and rollback strategy is recorded.",
+        "Only required safe migrations are applied, if any."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md"
+      ],
+      "verification": [
+        "PASS active SQL candidate inventory: migrations/20260624-provider-api-usage-persistence.sql, migrations/parallel-20260624-stripe-billing-lifecycle.sql, railway-migration-2026-06-21-one-time-transcript-privacy.sql, railway-migration-2026-06-21-one-time-trial-referral-config.sql, railway-migration-2026-06-23-service-provider-studio.sql, migrations/parallel-20260619-core-001-platform-core.sql",
+        "PASS destructive marker review: provider API usage and Stripe lifecycle candidates have no destructive markers; legacy migrate-railway.sql contains DROP TABLE markers and is explicitly excluded",
+        "PASS readiness report records backup, target inventory, dry-run, apply, rollback, post-apply readback, tenant isolation, privacy, and no-secret requirements",
+        "PASS no production database read/write/schema apply/backfill/deploy/live smoke was performed"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md",
+        "migrations/20260624-provider-api-usage-persistence.sql",
+        "migrations/parallel-20260624-stripe-billing-lifecycle.sql",
+        "railway-migration-2026-06-21-one-time-transcript-privacy.sql",
+        "railway-migration-2026-06-21-one-time-trial-referral-config.sql",
+        "railway-migration-2026-06-23-service-provider-studio.sql",
+        "migrations/parallel-20260619-core-001-platform-core.sql"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T18:09:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-025",
+      "title": "Run full release gate against exact release SHA",
+      "expected_result": "The exact release candidate SHA passes install, syntax, focused suites, full tests, role flows, inventories, external readiness, watchdog/security/secrets/JSON/source/stale-evidence/diff checks or records exact blockers.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S007"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "release_gate",
+      "priority": "P0",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260624-021",
+        "REQ-20260624-023",
+        "REQ-20260624-024"
+      ],
+      "status": "done",
+      "implementation_status": "local_release_gate_passed_on_pushed_sha_03454ea4",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-026 final PR merge policy; do not deploy or live-smoke until the merge requirement is closed.",
+      "acceptance_criteria": [
+        "Release SHA is recorded.",
+        "Required gates pass or exact blockers are recorded."
+      ],
+      "evidence": [
+        "03454ea4a9152946d21452141ed427277705fab1",
+        "ops/execution-runs/2026-06-24-final-release-integration/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/EVIDENCE.md",
+        "docs/owner-review/ROUTE-INVENTORY.json",
+        "docs/owner-review/ROLE-FLOW-QA.md",
+        "docs/owner-review/PUBLIC-VISUAL-AUDIT.md",
+        "docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md",
+        "docs/owner-review/EXTERNAL-READINESS-AUDIT.md",
+        "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.md",
+        "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+        "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
+        "ops/qa-runs/2026-06-24-owner-review-external-readiness/report.md",
+        "ops/watchdog-audits/2026-06-24T15-27-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-24T15-27-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-24T15-27-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-24T15-27-raw-intake-drift.md",
+        "ops/watchdog-audits/2026-06-24T15-27-content-routing.md",
+        "ops/watchdog-audits/2026-06-24T15-27-communications-alerts.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T15-27-52-118Z-stripe-sandbox-smoke.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/2026-06-24T15-27-52-118Z-stripe-sandbox-smoke.json"
+      ],
+      "verification": [
+        "PASS git status --short --branch clean before release-gate dry run",
+        "PASS git rev-parse HEAD and origin/codex/clean-slate-integration-20260624 both 03454ea4a9152946d21452141ed427277705fab1",
+        "PASS npm run bna:release-gate -- --json mode=dry_run ok=true head_pushed=true dirty_total=0 blockers=0 production_mutation_performed=false deploy_performed=false live_verification_performed=false",
+        "PASS npm test on pushed release-code SHA 03454ea4a9152946d21452141ed427277705fab1 (1301/1301)",
+        "PASS node --check server.js; node --check public/js/integration-setup.js; node --check scripts/smoke-owner-review-external-readiness.mjs; node --check scripts/smoke-owner-review-public-visual.mjs",
+        "PASS npm run owner-review:routes route inventory 692 routes, 35 HTML pages, 0 orphan-review rows",
+        "PASS npm run owner-review:role-flows report ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.md",
+        "PASS npm run owner-review:visual release-local passed; production deltas recorded separately",
+        "PASS npm run owner-review:assistant-runtime report ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
+        "PASS npm run owner-review:external-readiness no external writes, class/Stripe/Vimeo credential-free readiness passed with external blockers recorded",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage",
+        "PASS npm run bna:run:stale-evidence none",
+        "PASS npm run watchdog:links finding_count=0",
+        "PASS npm run watchdog:actions finding_count=0",
+        "PASS npm run watchdog:security finding_count=0",
+        "PASS npm run watchdog:content finding_count=0",
+        "PASS npm run watchdog:communications finding_count=0",
+        "PASS npm run watchdog:raw ok=true with two medium historical raw fallback findings for RAW-20260618-002 and RAW-20260617-020",
+        "PASS npm run secrets:audit tracked_paths=4586 findings=0",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run stripe:sandbox-smoke status=live_key_blocked external_write_performed=false no_real_customer_data=true no_real_funds=true",
+        "PASS node scripts/vimeo-private-smoke.mjs --json status=preview_only external_write_performed=false public_publish_performed=false smoke_ran=false"
+      ],
+      "implementation_files": [
+        "public/integration-setup.html",
+        "scripts/smoke-owner-review-external-readiness.mjs",
+        "scripts/smoke-owner-review-public-visual.mjs",
+        "tests/app-select-dropdown.test.js",
+        "tests/integration-setup-ui.test.js",
+        "tests/bna-production-closeout-gate.test.js",
+        "tests/system-truth-scripts.test.js",
+        "tests/operations-pwa-login.test.js",
+        "tests/ui-01-public-operations-shell.test.js",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "docs/owner-review/",
+        "ops/watchdog-audits/",
+        "ops/qa-runs/",
+        "ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/",
+        "ops/playwright-smokes/2026-06-24-owner-review-public-visual/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T18:28:00+03:00",
+      "release_candidate_sha": "03454ea4a9152946d21452141ed427277705fab1",
+      "commit_push": {
+        "branch": "codex/clean-slate-integration-20260624",
+        "commit": "03454ea4a9152946d21452141ed427277705fab1",
+        "pushed_to": "origin/codex/clean-slate-integration-20260624"
+      }
+    },
+    {
+      "id": "REQ-20260624-026",
+      "title": "Create, ready, and merge final integration PR according to release policy",
+      "expected_result": "Final PR is mergeable, release policy is satisfied, rollback plan exists, master merge SHA is recorded, and superseded PRs are documented.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S008"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "merge",
+      "priority": "P0",
+      "batch_id": "H",
+      "depends_on": [
+        "REQ-20260624-025"
+      ],
+      "status": "in_progress",
+      "implementation_status": "final_pr_merge_policy_started_after_local_release_gate",
+      "can_continue_without_operator": true,
+      "next_action": "Inspect PR #16 mergeability/release policy, record rollback plan, then merge only if policy permits and no external blocker appears.",
+      "acceptance_criteria": [
+        "PR URL, PR head, merge SHA, master SHA, and merge method are recorded."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T18:28:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-027",
+      "title": "Deploy merged master to Railway and run live smokes",
+      "expected_result": "Railway deployment succeeds, deployed SHA matches merged SHA, and live smokes cover required public, role, API, class, Stripe, Vimeo, setup, failure, and viewport paths.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S009"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "deploy_live_smoke",
+      "priority": "P0",
+      "batch_id": "I",
+      "depends_on": [
+        "REQ-20260624-026"
+      ],
+      "status": "not_started",
+      "implementation_status": "waiting_for_merge",
+      "can_continue_without_operator": true,
+      "next_action": "Deploy merged master only after the final release PR is merged and exact deploy/live-smoke prerequisites are available.",
+      "acceptance_criteria": [
+        "Deployed SHA equals merged master SHA.",
+        "Live-smoke artifacts exist for required routes and roles."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "scripts/smoke-*.mjs",
+        "ops/live-smokes/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-24T17:17:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-028",
+      "title": "Apply guarded class backfill only if safety gates pass",
+      "expected_result": "Class backfill is applied only from an exact safe recommendation; current Prompt 04 evidence says safe_to_apply=false, so no backfill apply is allowed from the present lane packet.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S010"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "one_time_mishnah_class",
+      "project_key": "class_recovery",
+      "owner": "Codex",
+      "category": "guarded_backfill",
+      "priority": "P0",
+      "batch_id": "J",
+      "depends_on": [
+        "REQ-20260624-027"
+      ],
+      "status": "blocked",
+      "implementation_status": "blocked_by_prompt_04_recommendation_safe_to_apply_false",
+      "can_continue_without_operator": false,
+      "next_action": "Do not run APPLY_GUARDED_CLASS_BACKFILL from current evidence; rerun a guarded dry run only if new evidence changes the candidate set.",
+      "acceptance_criteria": [
+        "safe_to_apply must be true before any apply.",
+        "Exact job IDs and row-level write plan must exist before mutation."
+      ],
+      "evidence": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/RESULT.json"
+      ],
+      "verification": [
+        "Class lane result reports complete_no_backfill_apply; blocker says safe_to_apply=false, zero approved candidate jobs, and no row-level write plan."
+      ],
+      "implementation_files": [
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/class-drive-intake/"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-24T17:17:00+03:00",
+      "blocker": "Prompt 04 guarded backfill recommendation is not safe to apply: safe_to_apply=false, zero approved candidate jobs, and no row-level write plan.",
+      "blocker_owner": "Codex / final integrator",
+      "blocker_next_action": "Keep class backfill unapplied unless a later dry run with new evidence produces safe_to_apply=true and exact approved candidate jobs."
+    },
+    {
+      "id": "REQ-20260624-029",
+      "title": "Verify Stripe sandbox and Vimeo private-test readiness without live charge or public publication",
+      "expected_result": "Stripe remains sandbox-only, live charges are disabled, Vimeo private synthetic readiness is honest, and no real class asset is publicly published.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S011"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "external_readiness",
+      "priority": "P0",
+      "batch_id": "K",
+      "depends_on": [
+        "REQ-20260624-027"
+      ],
+      "status": "not_started",
+      "implementation_status": "waiting_for_deployed_release_candidate",
+      "can_continue_without_operator": true,
+      "next_action": "Run sandbox/private-test readiness after deploy while preserving no-charge/no-publication guardrails.",
+      "acceptance_criteria": [
+        "No live Stripe charge/refund/subscription occurs.",
+        "No public Vimeo publication occurs."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "tests/",
+        "scripts/stripe-*.mjs",
+        "scripts/vimeo-*.mjs"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-24T17:17:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-030",
+      "title": "Update canonical records, owner-review links, rollback reference, and final release state",
+      "expected_result": "Run files, register, tasks, decisions, memory, changelog, ledger, owner-review report, deployment evidence, smoke evidence, setup links, and true remaining blockers are updated and pushed.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S012"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "L",
+      "depends_on": [
+        "REQ-20260624-026",
+        "REQ-20260624-027"
+      ],
+      "status": "not_started",
+      "implementation_status": "waiting_for_release_merge_and_live_smoke",
+      "can_continue_without_operator": true,
+      "next_action": "Update canonical records after merge/deploy/live verification or exact blockers.",
+      "acceptance_criteria": [
+        "All terminal statuses and proof paths are visible to Shloimie."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "TASKS.md",
+        "MEMORY.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/execution-runs/2026-06-24-final-release-integration/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T17:17:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-031",
+      "title": "Clean worktrees safely after merge, deploy, and live verification",
+      "expected_result": "Integrated worktrees are identified, unique commits are remote, required evidence is archived, and only safe branches/worktrees are pruned.",
+      "source_id": "RAW-20260624-005",
+      "source_statement_ids": [
+        "RAW-20260624-005-S013"
+      ],
+      "source_path": "raw-input/RAW-20260624-005-final-release-integration-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "final_release",
+      "owner": "Codex",
+      "category": "cleanup",
+      "priority": "P1",
+      "batch_id": "M",
+      "depends_on": [
+        "REQ-20260624-030"
+      ],
+      "status": "not_started",
+      "implementation_status": "waiting_for_final_records",
+      "can_continue_without_operator": true,
+      "next_action": "After the release is closed or blocked, inspect worktrees and prune only safe integrated branches.",
+      "acceptance_criteria": [
+        "No unique untracked work is deleted.",
+        "Cleanup report is written."
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [
+        "ops/worktree-reconciliation/"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-24T17:17:00+03:00"
+    }
+  ]
+}

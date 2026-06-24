@@ -6,6 +6,7 @@ const {
 const {
   requireExternalApproval,
 } = require('./external-actions');
+const stripeLifecycle = require('../billing/stripe-billing-lifecycle');
 
 function secretMode(value = '', fallback = '') {
   const text = String(value || '').trim();
@@ -51,6 +52,8 @@ function getStripeConfig(options = {}) {
     secretKey: activeSecret.value,
     source_type: activeSecret.source_type || null,
     mode: secretMode(activeSecret.value, modeHint || 'test'),
+    modeHint: String(modeHint || '').trim(),
+    modeInferredFromKey: Boolean(activeSecret.value && !String(modeHint || '').trim()),
     accountOwner: String(options.accountOwner || loadConfigValue({
       envName: 'STRIPE_ACCOUNT_OWNER',
       names: ['stripe-account-owner', 'stripe'],
@@ -63,14 +66,49 @@ function getStripeConfig(options = {}) {
       fileNames: ['stripe-provider-account.txt', 'STRIPE_PROVIDER_ACCOUNT.txt', 'stripe.txt'],
       ...loaderOptions,
     }) || '').trim(),
+    webhookSecret: String(options.webhookSecret || loadConfigValue({
+      envName: rabbiSecret.value ? 'RABBI_STRIPE_WEBHOOK_SECRET' : 'STRIPE_WEBHOOK_SECRET',
+      names: ['stripe-webhook-secret', 'rabbi-stripe-webhook-secret', 'stripe'],
+      fileNames: ['stripe-webhook-secret.txt', 'rabbi-stripe-webhook-secret.txt', 'STRIPE_WEBHOOK_SECRET.txt', 'RABBI_STRIPE_WEBHOOK_SECRET.txt'],
+      ...loaderOptions,
+    }) || '').trim(),
+    liveBillingEnabled: String((options.liveBillingEnabled ?? loadConfigValue({
+      envName: 'STRIPE_LIVE_BILLING_ENABLED',
+      names: ['stripe-live-billing-enabled', 'stripe'],
+      fileNames: ['stripe-live-billing-enabled.txt', 'STRIPE_LIVE_BILLING_ENABLED.txt', 'stripe.txt'],
+      ...loaderOptions,
+    })) || '').trim(),
+    liveApproved: String((options.liveApproved ?? loadConfigValue({
+      envName: 'STRIPE_LIVE_APPROVED',
+      names: ['stripe-live-approved', 'stripe'],
+      fileNames: ['stripe-live-approved.txt', 'STRIPE_LIVE_APPROVED.txt', 'stripe.txt'],
+      ...loaderOptions,
+    })) || '').trim(),
   };
+}
+
+function getStripeBillingRuntimeState(options = {}) {
+  const config = options.config || getStripeConfig(options);
+  return stripeLifecycle.resolveStripeBillingConfig({
+    secretKey: config.secretKey,
+    webhookSecret: config.webhookSecret,
+    mode: config.modeHint || config.requestedMode || '',
+    accountOwner: config.accountOwner,
+    liveBillingEnabled: config.liveBillingEnabled,
+    liveApproved: config.liveApproved,
+    sandboxApiVerified: options.sandboxApiVerified,
+    sandboxAccountLivemode: options.sandboxAccountLivemode,
+  });
 }
 
 function getStripeReadiness(options = {}) {
   const config = options.config || getStripeConfig(options);
+  const billingState = getStripeBillingRuntimeState({ ...options, config });
   const blockers = [];
   const safeActions = ['health_check', 'checkout_preview'];
-  const blockedActions = ['product_write', 'price_write', 'checkout_create', 'live_billing'];
+  const blockedActions = billingState.state === 'sandbox_ready'
+    ? ['live_billing']
+    : ['product_write', 'price_write', 'checkout_create', 'live_billing'];
   if (!config.configured) blockers.push('Stripe secret key is not configured server-side.');
   if (!config.accountOwner || config.accountOwner === 'unknown') blockers.push('Stripe account ownership must be documented before checkout or live billing.');
   if (config.mode === 'live') blockers.push('Live Stripe billing requires a separate final approval and test-buyer rollback plan.');
@@ -81,23 +119,33 @@ function getStripeReadiness(options = {}) {
     status: config.configured
       ? (config.mode === 'live' ? 'configured_live_mode' : config.mode === 'test' ? 'configured_test_mode' : 'configured')
       : 'not_configured',
+    billing_config_state: billingState.state,
+    billing_effective_mode: billingState.effective_mode,
+    webhook_secret_configured: billingState.webhook_secret_configured,
     mode: config.mode,
     accountOwner: config.accountOwner || 'unknown',
     providerAccount: config.providerAccount || null,
     safeActions,
     blockedActions,
-    blockers,
+    blockers: [...new Set([...blockers, ...(billingState.blockers || [])])],
     lastCheckedAt: new Date().toISOString(),
   };
 }
 
 function buildCheckoutPreview(payload = {}, options = {}) {
   const readiness = getStripeReadiness(options);
+  const billingPreview = stripeLifecycle.buildSafeBillingPreview({
+    config: options.config || {},
+    request: payload,
+    tiers: payload.tiers || [],
+    priceIds: payload.priceIds || payload.price_ids || {},
+  });
   return {
     provider: 'stripe',
     preview_only: true,
     external_write_performed: false,
     readiness,
+    billing_preview: billingPreview,
     checkout: {
       title: String(payload.title || payload.product_name || 'BNA checkout').slice(0, 160),
       currency: String(payload.currency || 'usd').toLowerCase().slice(0, 12),
@@ -196,8 +244,10 @@ function safeStripeError(error, config = {}) {
 
 module.exports = {
   assertCheckoutCreateApproved,
+  ...stripeLifecycle,
   buildCheckoutPreview,
   buildOneTimeStripeLocalBetaPlan,
+  getStripeBillingRuntimeState,
   getStripeConfig,
   getStripeReadiness,
   safeStripeError,

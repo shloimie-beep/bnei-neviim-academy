@@ -1,0 +1,80 @@
+{
+  "raw_id": "RAW-20260624-003",
+  "requirement_id": "REQ-20260624-032",
+  "run_id": "2026-06-24-clean-slate-system-closeout",
+  "status": "done",
+  "history_policy": "preserve_history_supersede_or_link_stale_records",
+  "active_agent_tasks": [
+    {
+      "task_id": "TASK-20260624-001",
+      "owner": "Codex",
+      "status": "running_until_REQ_20260624_034",
+      "visible_lane": "agent_lifecycle_only"
+    }
+  ],
+  "completed_or_superseded": [
+    {
+      "item": "PR #12 and PR #13 history",
+      "state": "represented_by_PR_14"
+    },
+    {
+      "item": "PR #14",
+      "state": "merged_into_clean_integration_branch"
+    },
+    {
+      "item": "PR #15",
+      "state": "merged_into_clean_integration_branch_deployed_relation_partial"
+    },
+    {
+      "item": "local Rabbi / One Time QA closeout",
+      "state": "preserved_and_merged_from_codex/preserve-rabbi-closeout-20260624"
+    },
+    {
+      "item": "2026-06-23-complete-system-reconciliation active run",
+      "state": "superseded_for_current_control_work"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-20260624-001",
+      "state": "open_external_workflow_scope"
+    },
+    {
+      "id": "DEC-20260624-002",
+      "state": "approved_when_configured_but_target_credentials_gate_private_readback"
+    },
+    {
+      "id": "DEC-20260624-003",
+      "state": "open_until_safe_fixture_or_demo_identity_policy_is_satisfied"
+    },
+    {
+      "id": "DEC-20260624-004",
+      "state": "open_for_real_class_job_readback_and_any_mutation"
+    },
+    {
+      "id": "DEC-20260624-005",
+      "state": "open_for_sandbox_secret_storage_and_billing_policy"
+    },
+    {
+      "id": "DEC-20260624-006",
+      "state": "open_for_vimeo_test_account_token_folder_asset"
+    },
+    {
+      "id": "DEC-20260624-007",
+      "state": "open_for_final_merge_deploy_live_verification"
+    },
+    {
+      "id": "DEC-20260624-008",
+      "state": "done_read_only_railway_metadata_used"
+    }
+  ],
+  "lane_task_policy": "lane_work_lives_in_ops_parallel_closeout_handoffs_not_human_pending_cards",
+  "remaining_blockers": [
+    "configured private production readback target and credentials",
+    "approved safe demo identities or fixture sufficiency per lane",
+    "class Drive/readback/backfill safeguards and exact target",
+    "Stripe sandbox secrets and policy choices",
+    "Vimeo test account/token/folder/synthetic asset",
+    "final merge/deploy/live-smoke approval"
+  ]
+}

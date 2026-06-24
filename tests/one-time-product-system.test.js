@@ -332,19 +332,20 @@ test('server exposes scoped OneTime product APIs and public draft routes', () =>
   assert.match(server, /appointment_intents_internal_only: true/);
   assert.match(server, /\/api\/bna\/one-time\/calendar-events/);
   assert.match(server, /\/api\/bna\/one-time\/appointment-intents/);
-  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest', '\/one-time\/member-login'\]/);
+  assert.match(server, /app\.get\(\['\/one-time', '\/one-time\/mishnayos', '\/one-time\/us', '\/one-time\/uk', '\/one-time\/israel', '\/one-time\/interest'\]/);
+  assert.match(server, /app\.get\(\['\/one-time\/member-login', '\/member', '\/member-portal'\], redirectOneTimeMemberHome\)/);
 });
 
 test('public OneTime draft page is noindex, interest-only, and has no checkout call', () => {
   assert.match(oneTimeHtml, /<meta name="robots" content="noindex, nofollow">/);
   assert.match(oneTimeHtml, /OneTimeOneTime Mishnah/);
-  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Elie Scheller/);
+  assert.match(oneTimeHtml, /Learn Mishnayos Live with Rabbi Eli Scheller/);
   assert.match(oneTimeHtml, /\$67 USD per month after a 30-day free trial/);
   assert.match(oneTimeHtml, /START 30 DAYS FREE/);
   assert.match(oneTimeHtml, /\/api\/one-time\/campaign/);
   assert.match(oneTimeHtml, /\/api\/one-time\/interest/);
   assert.match(oneTimeHtml, /Consent is required before submitting/);
-  assert.match(oneTimeHtml, /No charge or external send was performed/);
+  assert.match(oneTimeHtml, /Your request was saved\. We will follow up with next steps\./);
   assert.doesNotMatch(oneTimeHtml, /\/api\/rabbi\/checkout/);
   assert.doesNotMatch(oneTimeHtml, /Stripe checkout/i);
   assert.doesNotMatch(oneTimeHtml, /GreenInvoice checkout/i);

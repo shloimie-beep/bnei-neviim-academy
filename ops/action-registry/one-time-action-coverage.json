@@ -1,9 +1,65 @@
 {
-  "generated_at": "2026-06-21T15:25:00+03:00",
+  "generated_at": "2026-06-24T15:12:30.366Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
+  "requirement_id": "REQ-20260621-502",
   "coverage_status": "verified_local_pending_deploy",
   "policy": "Visible One Time actions are classified as working, setup_path, disabled_blocker, or informational. External writes stay gated unless an explicit confirmation field is listed.",
+  "ok": true,
+  "content_hash": "ddd1a0a6eba54165ec7185ee7b4b36518b98a8d3fc3c947c55dd8023089a4212",
+  "source_hashes": {
+    "public/operations.html": "4e9a32bd0028dc6f5b5e9db2cc24d078db52002904c21258d33f2b777376f199",
+    "server.js": "bfd31f64285821a064f73a8f128c47d3ee1af05f201307b708052b9fdb590d58",
+    "ops/action-registry.json": "85aac11402626731ac0309e2765970eebcef8db62ed1a06d1841a30264186992",
+    "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5"
+  },
+  "summary": {
+    "controls": 40,
+    "product_controls": 21,
+    "root_actions": 63,
+    "detailed_actions": 80,
+    "external_write_controls": 7,
+    "approval_gated_controls": 11,
+    "needs_repair": 0,
+    "by_classification": {
+      "typed_action": 1,
+      "read_only_navigation": 1,
+      "preview_then_approve": 1,
+      "preview_only": 6,
+      "approval_gated": 9,
+      "deep_link_only": 1
+    },
+    "by_surface": {
+      "operations": 2,
+      "operations_automation_center": 1,
+      "operations_content_meeting_drops": 1,
+      "operations_content_one_time_library": 7,
+      "operations_live_classes": 2,
+      "operations_parent_access": 6
+    }
+  },
+  "registry_summary": {
+    "controls": 19,
+    "external_write_controls": 7,
+    "approval_gated_controls": 11,
+    "needs_repair": 0,
+    "by_classification": {
+      "typed_action": 1,
+      "read_only_navigation": 1,
+      "preview_then_approve": 1,
+      "preview_only": 6,
+      "approval_gated": 9,
+      "deep_link_only": 1
+    },
+    "by_surface": {
+      "operations": 2,
+      "operations_automation_center": 1,
+      "operations_content_meeting_drops": 1,
+      "operations_content_one_time_library": 7,
+      "operations_live_classes": 2,
+      "operations_parent_access": 6
+    }
+  },
   "controls": [
     {
       "page_module": "Operations / Admin / Users",
@@ -118,7 +174,7 @@
       "test": "tests/one-time-classroom-calendar-community-bot.test.js"
     },
     {
-      "page_module": "Operations / Product Readiness",
+      "page_module": "Operations / Service Providers / Schedule",
       "control_label": "Add Appointment setup",
       "action_key": "one_time.appointment.setup_task",
       "status": "setup_path",
@@ -126,12 +182,12 @@
       "api_endpoint": "/api/bna/actions/run",
       "http_method": "POST",
       "required_role": "workspace_admin",
-      "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "helper setup path only",
-      "success_state": "operator receives exact appointment setup task prompt",
-      "error_state": "helper error banner",
-      "disabled_reason": "live booking/Zoom/external calendar requires Batch 9/12 setup and operator decisions",
-      "test": "tests/one-time-action-coverage.test.js"
+      "workspace_scope": "rabbi_sheller_provider",
+      "confirmation_level": "setup task only; no external booking write",
+      "success_state": "Codex/helper task is prepared for missing appointment workflow",
+      "error_state": "helper/action runner error",
+      "disabled_reason": "requires booking destination, policy, and no-send appointment contract",
+      "test": "tests/watchdog-action-registry.test.js"
     },
     {
       "page_module": "Operations / Content / One Time Library",
@@ -143,11 +199,11 @@
       "http_method": "PATCH",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "manual URL/ID save only; no Vimeo upload",
-      "success_state": "media_url/vimeo_id saved to class package",
+      "confirmation_level": "manual URL attach only; Vimeo upload remains setup-gated",
+      "success_state": "class package stores hosted media metadata",
       "error_state": "manager notice from API error",
       "disabled_reason": "",
-      "test": "tests/one-time-action-coverage.test.js"
+      "test": "tests/one-time-member-library.test.js"
     },
     {
       "page_module": "Operations / Content / One Time Library",
@@ -159,11 +215,11 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "preview only; no upload",
-      "success_state": "package preview/readiness returned",
+      "confirmation_level": "preview only; no upload, publish, or send",
+      "success_state": "package preview displays linked assets and blockers",
       "error_state": "manager notice from API error",
       "disabled_reason": "",
-      "test": "tests/one-time-action-coverage.test.js"
+      "test": "tests/one-time-member-library.test.js"
     },
     {
       "page_module": "Operations / Content / One Time Library",
@@ -175,11 +231,11 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "internal approval state only",
-      "success_state": "class package marked approved for member-library publishing",
+      "confirmation_level": "requires APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING",
+      "success_state": "package approved internally; no notification send",
       "error_state": "manager notice from API error",
-      "disabled_reason": "",
-      "test": "tests/one-time-action-coverage.test.js"
+      "disabled_reason": "approval phrase required",
+      "test": "tests/one-time-member-library.test.js"
     },
     {
       "page_module": "Operations / Content / One Time Library",
@@ -191,11 +247,11 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "requires APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING for exact item",
-      "success_state": "member-library item created locally and visible to scoped library readback",
+      "confirmation_level": "requires approval phrase, destination, visibility, and rollback note",
+      "success_state": "member-library item published and previous item archived for rollback",
       "error_state": "manager notice from API error",
-      "disabled_reason": "blocked until exact approval phrase, destination, visibility, hosted media, smoke and rollback are explicit",
-      "test": "tests/one-time-action-coverage.test.js"
+      "disabled_reason": "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and explicit member-visible tier required",
+      "test": "tests/one-time-member-library.test.js"
     },
     {
       "page_module": "Operations / Content / One Time Library",
@@ -207,14 +263,14 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "approval-gated rollback note required",
-      "success_state": "latest library item is rolled back/restored out of published state",
+      "confirmation_level": "manual rollback note; member-library visibility change only",
+      "success_state": "latest item archived or restored according to rollback path",
       "error_state": "manager notice from API error",
-      "disabled_reason": "approval-gated and only visible when a library item exists",
-      "test": "tests/one-time-action-coverage.test.js"
+      "disabled_reason": "requires existing published item and rollback reason",
+      "test": "tests/one-time-member-library.test.js"
     },
     {
-      "page_module": "Operations / Content / Recording Vimeo Readiness",
+      "page_module": "Operations / Content / Meeting Drops",
       "control_label": "Retry setup",
       "action_key": "one_time.recording.retry_setup",
       "status": "setup_path",
@@ -223,10 +279,10 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "helper setup path only",
-      "success_state": "operator receives retry/dead-letter setup task prompt",
-      "error_state": "helper error banner",
-      "disabled_reason": "real retry processing waits for recording/transcript pipeline implementation",
+      "confirmation_level": "setup task only; no duplicate recording job",
+      "success_state": "retry/dead-letter repair prompt is created",
+      "error_state": "helper/action runner error",
+      "disabled_reason": "requires source fingerprint and retry policy before processor rerun",
       "test": "tests/one-time-action-coverage.test.js"
     },
     {
@@ -239,8 +295,8 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "teacher-led internal classroom thread",
-      "success_state": "thread appears in classroom data",
+      "confirmation_level": "first-party classroom thread only; no public forum",
+      "success_state": "thread created in scoped classroom",
       "error_state": "classroom notice from API error",
       "disabled_reason": "",
       "test": "tests/one-time-classroom-calendar-community-bot.test.js"
@@ -255,14 +311,14 @@
       "http_method": "POST",
       "required_role": "workspace_admin",
       "workspace_scope": "rabbi_sheller_provider / one_time_mishnah_class",
-      "confirmation_level": "internal moderation state only",
-      "success_state": "message review state updated; no public auto-publish",
+      "confirmation_level": "moderated visibility update only",
+      "success_state": "message review state updated",
       "error_state": "classroom notice from API error",
-      "disabled_reason": "only visible when held messages exist",
-      "test": "tests/one-time-action-coverage.test.js"
+      "disabled_reason": "",
+      "test": "tests/one-time-classroom-calendar-community-bot.test.js"
     },
     {
-      "page_module": "Operations / Integrations / Settings",
+      "page_module": "Operations / Integrations",
       "control_label": "Configure Integration",
       "action_key": "one_time.integrations.configure",
       "status": "working",
@@ -270,15 +326,15 @@
       "api_endpoint": "",
       "http_method": "client",
       "required_role": "workspace_admin",
-      "workspace_scope": "current workspace",
-      "confirmation_level": "navigation/readiness only",
-      "success_state": "operator lands on exact connector setup section",
-      "error_state": "no mutation; no API error state",
-      "disabled_reason": "",
-      "test": "tests/one-time-action-coverage.test.js"
+      "workspace_scope": "rabbi_sheller_provider",
+      "confirmation_level": "read-only/setup fields unless connector credentials are confirmed",
+      "success_state": "integration setup status is visible",
+      "error_state": "inline settings error",
+      "disabled_reason": "external connector writes require owner approval and credentials",
+      "test": "tests/integrations/w4-onetime-readiness.test.js"
     },
     {
-      "page_module": "Operations / Integrations / Google",
+      "page_module": "Operations / Integrations",
       "control_label": "Test Connection",
       "action_key": "one_time.integrations.test_connection",
       "status": "working_gated",
@@ -286,12 +342,12 @@
       "api_endpoint": "/api/google/connections/status",
       "http_method": "GET",
       "required_role": "workspace_admin",
-      "workspace_scope": "current workspace",
-      "confirmation_level": "read-only connection test",
-      "success_state": "connection test reaches server and card can be refreshed",
-      "error_state": "alert explains the blocked connection/readiness error",
-      "disabled_reason": "OAuth credentials or provider account may be missing",
-      "test": "tests/one-time-action-coverage.test.js"
+      "workspace_scope": "rabbi_sheller_provider",
+      "confirmation_level": "read-only status probe; live connector actions stay gated",
+      "success_state": "connection status displayed without secrets",
+      "error_state": "alert from API error",
+      "disabled_reason": "requires configured connector for live test",
+      "test": "tests/google-workspace-settings-contract.test.js"
     },
     {
       "page_module": "Operations / Communications",
@@ -301,13 +357,13 @@
       "client_handler": "createCommunicationEmailDraft / createCommunicationSocialDraft",
       "api_endpoint": "/api/bna/communications/email/drafts or /api/bna/communications/social/drafts",
       "http_method": "POST",
-      "required_role": "workspace_admin",
-      "workspace_scope": "selected workspace; One Time when scoped",
-      "confirmation_level": "draft-only; no send",
-      "success_state": "local draft saved with readiness blocker where applicable",
+      "required_role": "workspace_manager",
+      "workspace_scope": "rabbi_sheller_provider",
+      "confirmation_level": "draft only; no send or publish",
+      "success_state": "draft record created for review",
       "error_state": "alert from API error",
-      "disabled_reason": "send remains separately confirmation-gated",
-      "test": "tests/communications-integrations-contract.test.js"
+      "disabled_reason": "",
+      "test": "tests/action-registry-telegram-ui-bot.test.js"
     },
     {
       "page_module": "Operations / Agents",
@@ -318,12 +374,12 @@
       "api_endpoint": "/api/bna/agent-runs/:run_key",
       "http_method": "GET",
       "required_role": "workspace_manager",
-      "workspace_scope": "selected workspace; One Time when scoped",
-      "confirmation_level": "read-only",
-      "success_state": "agent run detail and evidence artifacts are shown",
+      "workspace_scope": "rabbi_sheller_provider",
+      "confirmation_level": "read-only evidence view",
+      "success_state": "agent run evidence and prompt are visible",
       "error_state": "agent run notice from API error",
-      "disabled_reason": "only meaningful when a run has evidence artifacts",
-      "test": "tests/agent-control-api-readback.test.js"
+      "disabled_reason": "",
+      "test": "tests/agent-control-center.test.js"
     },
     {
       "page_module": "Operations / Tasks",
@@ -336,10 +392,597 @@
       "required_role": "workspace_manager",
       "workspace_scope": "selected workspace; One Time when scoped",
       "confirmation_level": "first-party task lifecycle write",
-      "success_state": "task moves to archived or reopened lifecycle view",
-      "error_state": "task workflow notice or alert from API error",
-      "disabled_reason": "archive duplicate requires reason/provenance",
-      "test": "tests/operations-task-queue-visibility.test.js"
+      "success_state": "task moves to archive or active lane with audit",
+      "error_state": "alert from API error",
+      "disabled_reason": "archive requires explicit clicked task",
+      "test": "tests/workspace-task-no-stale-agent.test.js"
     }
-  ]
+  ],
+  "registry_controls": [
+    {
+      "control_id": "operations_helper_open",
+      "action_id": "ACTION-OPERATIONS-HELPER-OPEN",
+      "registry_layer": "root",
+      "surface": "operations",
+      "route": "/operations",
+      "label": "Ask / Search",
+      "classification": "typed_action",
+      "risk": "low",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-OPERATIONS-HELPER-OPEN\"",
+        "data-bna-helper-open=\"true\""
+      ],
+      "tests": [
+        "npm run watchdog:actions"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "active",
+      "permission": "super_admin",
+      "dry_run_supported": false,
+      "approval_required": false,
+      "execution_handler": "Opens the scoped Operations helper drawer.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_workspace_view",
+      "action_id": "ACTION-ONETIME-WORKSPACE-VIEW",
+      "registry_layer": "root",
+      "surface": "operations",
+      "route": "/operations?workspace=rabbi_sheller_provider",
+      "label": "View One Time as Rabbi",
+      "classification": "read_only_navigation",
+      "risk": "low",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-WORKSPACE-VIEW\"",
+        "switchWorkspace('${option.id}')"
+      ],
+      "tests": [
+        "npm run app:smoke:operations-workspace-taxonomy"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "active",
+      "permission": "super_admin/project_owner/project_admin",
+      "dry_run_supported": false,
+      "approval_required": false,
+      "execution_handler": "Switches the Operations workspace context into the One Time provider view without mutating records or exposing unrelated workspace data.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "helper_create_automation",
+      "action_id": "ACTION-HELPER-CREATE-AUTOMATION",
+      "registry_layer": "root",
+      "surface": "operations_automation_center",
+      "route": "/operations?view=settings&section=automation_center",
+      "label": "Create automation with helper",
+      "classification": "preview_then_approve",
+      "risk": "medium",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-HELPER-CREATE-AUTOMATION\"",
+        "Create automation with helper"
+      ],
+      "tests": [
+        "tests/watchdog-action-registry.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "active",
+      "permission": "super_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Creates local automation metadata draft only after confirmation.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_drive_brief_preview",
+      "action_id": "ACTION-ONETIME-DRIVE-BRIEF-PREVIEW",
+      "registry_layer": "root",
+      "surface": "operations_content_meeting_drops",
+      "route": "/operations?view=content&section=meetings",
+      "label": "Preview Drive Brief",
+      "classification": "preview_only",
+      "risk": "low",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-DRIVE-BRIEF-PREVIEW\"",
+        "data-preview-one-time-drive-brief"
+      ],
+      "tests": [
+        "tests/watchdog-action-registry.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "active",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": true,
+      "approval_required": false,
+      "execution_handler": "Runs a no-write preview of the latest Rabbi Elie / One Time Drive brief, proves One Time-only scope, displays owner/admin assignments, and lists credential or owner-only blockers.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_publish_package_preview",
+      "action_id": "preview_one_time_member_library_publish_package",
+      "registry_layer": "detailed",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Package Preview",
+      "classification": "preview_only",
+      "risk": "medium",
+      "external_write": false,
+      "source_tokens": [
+        "previewOneTimePublishPackage",
+        "No publishing, send, member visibility"
+      ],
+      "tests": [
+        "tests/action-registry-telegram-ui-bot.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin/platform_manager/support_admin/technical_agent/admin/bna_admin/school_manager/operator/system",
+      "dry_run_supported": true,
+      "approval_required": true,
+      "execution_handler": "content.previewOneTimeMemberLibraryPublishPackage",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_member_library_smoke",
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
+      "registry_layer": "root",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Run Smoke",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-MEMBER-LIBRARY-SMOKE\"",
+        "runOneTimeLibrarySmoke(event)"
+      ],
+      "tests": [
+        "tests/one-time-member-library.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Runs the bounded member-library smoke only with APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING and preserves rollback evidence.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_class_package_preview",
+      "action_id": "ACTION-ONETIME-CLASS-PACKAGE-PREVIEW",
+      "registry_layer": "root",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Preview Package",
+      "classification": "preview_only",
+      "risk": "low",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-CLASS-PACKAGE-PREVIEW\"",
+        "previewOneTimeClassPackage(event"
+      ],
+      "tests": [
+        "tests/one-time-member-library.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "preview_only",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": true,
+      "approval_required": false,
+      "execution_handler": "Previews the selected One Time class package and linked assets without publishing, sending, billing, Drive/video-host, social, or external CRM writes.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_member_visibility_preview",
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-PREVIEW",
+      "registry_layer": "root",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Member Preview",
+      "classification": "preview_only",
+      "risk": "low",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-MEMBER-LIBRARY-PREVIEW\"",
+        "previewOneTimeClassMember(event"
+      ],
+      "tests": [
+        "tests/one-time-member-library.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "preview_only",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": true,
+      "approval_required": false,
+      "execution_handler": "Shows whether the selected package would be visible for the chosen member tier without changing member-library state.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_member_library_approve",
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
+      "registry_layer": "root",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Approve",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": false,
+      "gate_tokens": [
+        "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-MEMBER-LIBRARY-APPROVE\"",
+        "approveOneTimeClassLibrary(event"
+      ],
+      "tests": [
+        "tests/one-time-member-library.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Records internal package approval only when the exact member-library approval phrase is present; it does not publish or notify members.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_member_library_publish",
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-PUBLISH",
+      "registry_layer": "root",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Publish",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING",
+        "library_visibility must be an explicit member-visible tier"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-MEMBER-LIBRARY-PUBLISH\"",
+        "publishOneTimeClassLibrary(event"
+      ],
+      "tests": [
+        "tests/one-time-member-library.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Publishes a member-library item only after explicit destination, tier visibility, and APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING; previous published item is archived for rollback.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_member_library_rollback",
+      "action_id": "ACTION-ONETIME-MEMBER-LIBRARY-ROLLBACK",
+      "registry_layer": "root",
+      "surface": "operations_content_one_time_library",
+      "route": "/operations?view=content&section=one_time_library",
+      "label": "Rollback Latest",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "rollbackOneTimeLibraryItem",
+        "rollback_metadata"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-MEMBER-LIBRARY-ROLLBACK\"",
+        "rollbackOneTimeLibraryItem(event"
+      ],
+      "tests": [
+        "tests/one-time-member-library.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Archives the selected member-library item with a rollback note and keeps the source class package intact.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_live_zoom_dry_run",
+      "action_id": "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
+      "registry_layer": "root",
+      "surface": "operations_live_classes",
+      "route": "/operations?view=live_classes",
+      "label": "Dry-run send",
+      "classification": "preview_only",
+      "risk": "medium",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN\"",
+        "sendLiveZoomLinks(${Number(session.id)}, true)"
+      ],
+      "tests": [
+        "tests/live-class-infrastructure.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "preview_only",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": true,
+      "approval_required": false,
+      "execution_handler": "Calculates eligible/skipped recipients for a One Time live session and returns a summary without sending messages.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "one_time_live_zoom_send",
+      "action_id": "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
+      "registry_layer": "root",
+      "surface": "operations_live_classes",
+      "route": "/operations?view=live_classes",
+      "label": "Send links",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "Send the current Zoom link to all eligible members",
+        "dryRun=false"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-ONETIME-LIVE-ZOOM-LINK-SEND\"",
+        "sendLiveZoomLinks(${Number(session.id)}, false)"
+      ],
+      "tests": [
+        "tests/live-class-infrastructure.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin/project_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Sends the current Zoom link only after the explicit Operations confirmation prompt and project-scoped recipient resolution.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "parent_access_code_generate",
+      "action_id": "ACTION-PARENT-ACCESS-CODE-GENERATE",
+      "registry_layer": "root",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "label": "Generate Access Code",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": false,
+      "gate_tokens": [
+        "Generate or rotate this parent access code now"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-PARENT-ACCESS-CODE-GENERATE\"",
+        "generateParentAccessCode(event"
+      ],
+      "tests": [
+        "tests/operations-pwa-login.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Generates or rotates one parent access code only after an explicit confirmation prompt and shows the raw code once.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "parent_access_link_open",
+      "action_id": "ACTION-PARENT-ACCESS-LINK-OPEN",
+      "registry_layer": "root",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "label": "Open Parent Portal",
+      "classification": "deep_link_only",
+      "risk": "medium",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-PARENT-ACCESS-LINK-OPEN\"",
+        "channel === 'open'"
+      ],
+      "tests": [
+        "tests/operations-pwa-login.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "active",
+      "permission": "super_admin",
+      "dry_run_supported": false,
+      "approval_required": false,
+      "execution_handler": "Creates a short-lived parent portal link and opens it locally; no email or WhatsApp send runs.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "parent_access_link_email",
+      "action_id": "ACTION-PARENT-ACCESS-LINK-EMAIL",
+      "registry_layer": "root",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "label": "Email Login Link",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "single-family send",
+        "send_email: channel === 'email'"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-PARENT-ACCESS-LINK-EMAIL\"",
+        "channel === 'email'"
+      ],
+      "tests": [
+        "tests/operations-pwa-login.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Sends one short-lived parent portal login link by email through the admin-only parent access endpoint.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "parent_access_link_whatsapp",
+      "action_id": "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
+      "registry_layer": "root",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "label": "WhatsApp Login Link",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "SEND_WHATSAPP",
+        "Send this short-lived parent portal login link by WhatsApp now"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-PARENT-ACCESS-LINK-WHATSAPP\"",
+        "channel === 'whatsapp'"
+      ],
+      "tests": [
+        "tests/operations-pwa-login.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin",
+      "dry_run_supported": false,
+      "approval_required": true,
+      "execution_handler": "Sends one short-lived parent portal login link by WhatsApp only after an explicit confirmation prompt and SEND_WHATSAPP server confirmation token.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "parent_password_setup_preview",
+      "action_id": "ACTION-PARENT-PASSWORD-SETUP-PREVIEW",
+      "registry_layer": "root",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "label": "Preview Password Setup",
+      "classification": "preview_only",
+      "risk": "medium",
+      "external_write": false,
+      "source_tokens": [
+        "data-action-id=\"ACTION-PARENT-PASSWORD-SETUP-PREVIEW\"",
+        "dry_run: Boolean(dryRun)"
+      ],
+      "tests": [
+        "tests/operations-pwa-login.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "preview_only",
+      "permission": "super_admin",
+      "dry_run_supported": true,
+      "approval_required": false,
+      "execution_handler": "Shows the parent password setup/reset email preview with dry_run=true and no email send.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    },
+    {
+      "control_id": "parent_password_setup_send",
+      "action_id": "ACTION-PARENT-PASSWORD-SETUP-SEND",
+      "registry_layer": "root",
+      "surface": "operations_parent_access",
+      "route": "/operations?view=students",
+      "label": "Email Password Setup",
+      "classification": "approval_gated",
+      "risk": "high",
+      "external_write": true,
+      "gate_tokens": [
+        "SEND_PARENT_PASSWORD_SETUP",
+        "Email this parent a password setup/reset link now"
+      ],
+      "source_tokens": [
+        "data-action-id=\"ACTION-PARENT-PASSWORD-SETUP-SEND\"",
+        "sendParentPasswordSetup(event"
+      ],
+      "tests": [
+        "tests/operations-pwa-login.test.js"
+      ],
+      "status": "covered",
+      "registered": true,
+      "action_status": "approval_gated",
+      "permission": "super_admin",
+      "dry_run_supported": true,
+      "approval_required": true,
+      "execution_handler": "Sends one password setup/reset email only after the explicit UI confirmation and SEND_PARENT_PASSWORD_SETUP server confirmation token.",
+      "missing_source_tokens": [],
+      "missing_gate_tokens": [],
+      "approval_safe": true,
+      "coverage_result": "covered"
+    }
+  ],
+  "findings": []
 }

@@ -152,6 +152,20 @@
     renderSupportTickets();
   }
 
+  function clearMemberSession(message = 'Member session cleared.') {
+    state.token = '';
+    state.member = null;
+    state.library = [];
+    state.sessions = [];
+    state.questions = [];
+    state.supportTickets = [];
+    state.notice = message;
+    localStorage.removeItem('rabbi_member_session');
+    localStorage.removeItem('one_time_member_library_code');
+    localStorage.removeItem('oneTimeClassroomCode');
+    renderAll();
+  }
+
   async function requestLogin(event) {
     event?.preventDefault?.();
     const email = $('loginEmail')?.value || '';
@@ -285,6 +299,11 @@
     $('questionForm')?.addEventListener('submit', submitQuestion);
     $('supportForm')?.addEventListener('submit', submitSupportTicket);
     const params = new URLSearchParams(window.location.search);
+    if (params.get('logout') === '1') {
+      clearMemberSession();
+      window.history.replaceState({}, '', '/rabbi-member');
+      return;
+    }
     const token = params.get('token');
     if (token) {
       try {

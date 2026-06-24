@@ -1,0 +1,17 @@
+{
+  "requirement_id": "REQ-20260623-026",
+  "branch": "codex/one-time-batch4-control-plane-20260623",
+  "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/13",
+  "latest_control_plane_commit": "296a276a",
+  "latest_deployment_id": "02944240-4c1b-477b-a57f-5f6140e80400",
+  "deployment_status": "SUCCESS",
+  "standard_live_smoke": "ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md",
+  "focused_live_readback": {
+    "endpoint": "/api/bna/assistant/control-center",
+    "status": 200,
+    "requirement_id": "REQ-20260623-025",
+    "no_write_guard_present": true
+  },
+  "duplicate_systems_added": false,
+  "remaining_external_blockers": ["REQ-20260619-313"]
+}
