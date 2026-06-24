@@ -25666,3 +25666,60 @@ tests\owner-review-role-flow-contract.test.js` 9/9, full `npm test`
 `git diff --check`. No external credentials, private production readback,
 production database mutation, backfill, deploy, email or Telegram send,
 publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+## 2026-06-24T09:50:00+03:00 - Rabbi Scheller Workspace Parity Local Verified In Isolated Branch
+
+Continued `RAW-20260623-006` after Shloimie chose Option A and warned that
+another agent was working. Collision check found the shared checkout dirty and
+other worktrees active, so the Rabbi bundle is isolated in
+`C:\Users\User\Documents\Codex\2026-06-24\rabbi-scheller-parity` on branch
+`codex/rabbi-scheller-parity-20260624` from `origin/master` at `a9528b2d`.
+
+Local implementation and audit evidence now covers unified portal login
+resolver/chooser behavior, provider-scoped allowed-view hardening, Operations
+provider navigation/back/deep-link behavior, tenant-scoped task detail child
+links, feature-flagged honest Provider API Usage preview, provider API-usage
+instrumentation foundation, route inventory, action registry coverage, durable
+future provider-bot requirement, and provider/BNA parity documentation.
+
+Verification passed locally: `node --check server.js`, `node --check
+src/lib/bna/provider-api-usage.js`, action-registry JSON parse, regenerated
+route map with 738 Express routes, focused suite 74/74, and four Playwright
+local smokes: Provider API Usage, Provider navigation, Operations navigation,
+and portal-agnostic login chooser at 390x844, 768x1024, and 1440x900.
+
+No external send, charge, access grant, credential rotation, DNS write, Stripe,
+Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI, or production-data mutation
+was performed. Push/deploy/live smoke is authorized next from the isolated
+branch only.
+
+## 2026-06-24T10:06:00+03:00 - Rabbi Scheller Workspace Parity Pushed, Deployed, Live Smoked
+
+Pushed Rabbi Scheller workspace parity branch
+`codex/rabbi-scheller-parity-20260624` to GitHub and opened draft PR #15.
+Implementation commit:
+`8f8b0b458a95d146777808dbdf1f760618632615`.
+
+Railway doctor passed before deploy on existing production deployment
+`359bd3c5-8cdc-4b70-a2eb-535e03f8d62e`. The standard `npm run
+railway:redeploy` script failed only at its `railway link` step with
+`Unauthorized`, while token-based status access was valid. Codex used the
+script-created deploy bundle and ran `railway up` with explicit
+`--project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --service
+skillful-motivation --environment production`, avoiding any mutation of the
+local Railway link. Railway deployment
+`5e37d2a0-7e81-4339-a721-c4286e8ecaa8` reached `SUCCESS`.
+
+Live verification passed: standard app smoke
+`ops/live-smokes/2026-06-24T07-01-44-515Z-live-app-smoke.md` and Rabbi
+workspace live smoke
+`ops/live-smokes/2026-06-24T07-05-37-232Z-rabbi-scheller-workspace-live-smoke.md`.
+The Rabbi smoke verified health, deployed provider API Usage preview markers,
+Operations login chooser bundle markers, Operations login/session, deployed
+Operations Rabbi workspace API Usage markers, and scoped task API readback for
+`project_key=one_time_mishnah_class`.
+
+No external send, charge, access grant, credential rotation, DNS write, Stripe,
+Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI account mutation, provider
+account change, or production data mutation was performed. Remaining state is
+partial only because PR #15 is not merged and Rabbi owner/Shloimie role choices
+remain open.

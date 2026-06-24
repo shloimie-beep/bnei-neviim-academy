@@ -2451,6 +2451,25 @@
             els.loginStatus.classList.toggle('error', Boolean(isError));
         }
 
+        function showPortalChooser(data) {
+            const destinations = Array.isArray(data?.destinations) ? data.destinations : [];
+            els.loginPanel.classList.remove('hidden');
+            els.portalLayout.classList.add('hidden');
+            if (!destinations.length) {
+                setLoginState(data?.message || 'Choose the portal you want to open.', true);
+                return;
+            }
+            els.loginStatus.classList.remove('error');
+            els.loginStatus.innerHTML = `
+                <p>${escapeHtml(data?.message || 'Choose the portal you want to open.')}</p>
+                <div class="button-row">
+                    ${destinations.map((destination) => `
+                        <a class="secondary" data-action-id="ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION" href="${escapeHtml(destination.redirect_to || '/')}">${escapeHtml(destination.label || destination.role || destination.portal || 'Open portal')}</a>
+                    `).join('')}
+                </div>
+            `;
+        }
+
         function setSaveState(message = '', isError = false) {
             els.saveStatus.textContent = message;
             els.saveStatus.classList.toggle('error', Boolean(isError));
@@ -3856,10 +3875,22 @@
             els.studentLoginButton.disabled = true;
             setLoginState(t('opening'));
             try {
-                await apiRequest('/api/student-portal/login', {
+                const result = await apiRequest('/api/student-portal/login', {
                     method: 'POST',
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        returnTo: window.location.pathname + window.location.search + window.location.hash,
+                    }),
                 });
+                if (result.portal_redirect && result.redirect_to) {
+                    window.location.href = result.redirect_to;
+                    return;
+                }
+                if (result.chooser_required) {
+                    showPortalChooser(result);
+                    return;
+                }
                 els.studentPassword.value = '';
                 accessCode = '';
                 localStorage.removeItem(STORAGE_KEY);
