@@ -60,6 +60,7 @@
     "one-time:agent-mode-acceptance": "node scripts/one-time-agent-mode-acceptance.mjs",
     "one-time:smoke:canonical-journey-local": "node scripts/smoke-one-time-canonical-journey-local.mjs",
     "one-time:smoke:resend-vimeo-stripe": "node scripts/smoke-one-time-resend-vimeo-stripe-safe.mjs",
+    "stripe:sandbox-smoke": "node scripts/smoke-stripe-sandbox-billing.mjs",
     "one-time:separate-instance-package": "node scripts/generate-onetime-separate-instance-package.mjs",
     "one-time:railway-provision:check": "node scripts/preflight-onetime-railway-provisioning.mjs --allow-blocked",
     "one-time:railway-provision:apply": "node scripts/provision-onetime-railway-instance.mjs",

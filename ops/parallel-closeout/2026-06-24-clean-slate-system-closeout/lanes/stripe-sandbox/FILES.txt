@@ -1,13 +1,13 @@
-Owned prefixes:
-server.js
-src/lib/integrations/
-src/lib/bna/*billing*
-src/lib/bna/*stripe*
-public/operations.html
-tests/*billing*.test.js
-tests/*stripe*.test.js
-tests/*checkout*.test.js
-docs/integrations/
-ops/qa-runs/
+Owned/changed files:
+src/lib/billing/stripe-billing-lifecycle.js
+src/lib/integrations/stripe.js
+scripts/smoke-stripe-sandbox-billing.mjs
+tests/stripe-billing-lifecycle.test.js
+migrations/parallel-20260624-stripe-billing-lifecycle.sql
+docs/integrations/STRIPE.md
+package.json
+ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/stripe-sandbox/*
 
-Coordinate shared Operations UI edits with public-ui and portal-auth-nav.
+Shared but not edited:
+server.js -> SHARED-PATCH.diff
+public/operations.html -> SHARED-PATCH.diff
