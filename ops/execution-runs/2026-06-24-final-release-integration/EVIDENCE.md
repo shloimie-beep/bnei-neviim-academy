@@ -107,3 +107,35 @@ merge only if GitHub still reports the PR clean and mergeable. Deployment,
 live-smoke proof, production database work, guarded class backfill, Stripe,
 Vimeo, send, DNS, credential, and secret-changing work remain outside this
 merge gate.
+
+Final PR merge evidence:
+
+- PR #16: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`
+- Merge commit / merged master SHA:
+  `c14507ab121daa221689ba285c203605bf2d64bf`
+
+Summary: `REQ-20260624-026` is done. PR #16 was marked ready, remained clean
+and mergeable, and was merged to `master` with GitHub's merge-commit method.
+
+Deployment and live verification evidence:
+
+- `ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md`
+- Railway deployment:
+  `e26fec62-1a08-43a8-abb9-1b030b0ea786`
+- Deployed SHA:
+  `c14507ab121daa221689ba285c203605bf2d64bf`
+
+Summary: `REQ-20260624-027` is done. Railway auto-deployed the merged master
+SHA and live smokes passed for public/protected routes, Operations auth/API,
+student auth failures, operator setup, provider classroom settings, class
+upload trace, Stripe/payment guardrails, One Time/Vimeo review, negative
+routes, and mobile/tablet/desktop viewports.
+
+Post-deploy Stripe/Vimeo readiness evidence:
+
+- `ops/live-smokes/2026-06-24T15-43-35-411Z-one-time-payment-access-class-links-live-smoke.md`
+- `ops/live-smokes/2026-06-24T15-49-47-953Z-one-time-shared-review-live-smoke.md`
+
+Summary: `REQ-20260624-029` is done. Live readiness checks performed no Stripe
+charge/refund/subscription, access grant, Vimeo upload/publication, send, DNS
+change, credential copy/rotation, or external connector write.

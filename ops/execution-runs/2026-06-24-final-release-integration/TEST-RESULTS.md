@@ -125,3 +125,24 @@ Local release-gate checks for `REQ-20260624-025`:
 - PASS `node scripts/vimeo-private-smoke.mjs --json`: `preview_only`,
   `external_write_performed=false`, `public_publish_performed=false`, and
   `smoke_ran=false`.
+
+Final merge, deploy, and live verification:
+
+- PASS PR #16 marked ready and merged to `master` with merge commit
+  `c14507ab121daa221689ba285c203605bf2d64bf`.
+- PASS Railway deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786` reports
+  deployed commit `c14507ab121daa221689ba285c203605bf2d64bf` and status
+  `SUCCESS`.
+- PASS `railway service status --service skillful-motivation --environment production`.
+- PASS `npm run railway:doctor`.
+- PASS `npm run app:smoke`.
+- PASS `npm run app:smoke:public-privacy`.
+- PASS `railway run npm run app:smoke:student-auth`.
+- PASS `railway run npm run app:smoke:operator-setup`.
+- PASS `railway run npm run app:smoke:provider-classroom-settings`.
+- PASS `railway run npm run app:smoke:class-upload-trace`.
+- PASS `railway run npm run app:smoke:one-time-payment-access-class-links`.
+- PASS `railway run npm run app:smoke:one-time-shared-review`.
+- PASS generated final-release negative route smoke.
+- PASS `node --check scripts/smoke-class-upload-trace-live.mjs`.
+- PASS `node --check scripts/smoke-one-time-shared-review-live.mjs`.

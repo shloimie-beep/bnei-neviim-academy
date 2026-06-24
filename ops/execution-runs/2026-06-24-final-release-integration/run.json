@@ -2,7 +2,7 @@
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
   "created_at": "2026-06-24T17:16:04+03:00",
-  "updated_at": "2026-06-24T18:28:00+03:00",
+  "updated_at": "2026-06-24T18:58:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -13,18 +13,29 @@
     "ops/execution-runs/2026-06-24-clean-slate-system-closeout"
   ],
   "git_refs": {
-    "expected_branch": "codex/clean-slate-integration-20260624",
-    "remote_branch": "origin/codex/clean-slate-integration-20260624",
+    "expected_branch": "master",
+    "current_branch": "master",
+    "remote_branch": "master",
+    "integration_branch": "codex/clean-slate-integration-20260624",
     "draft_pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
     "control_commit": "199e010310245ebbd81d972ea79c93651b97f8b1",
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
     "release_gate_head": "03454ea4a9152946d21452141ed427277705fab1",
-    "release_gate_branch": "codex/clean-slate-integration-20260624"
+    "release_gate_branch": "codex/clean-slate-integration-20260624",
+    "pr_number": 16,
+    "pr_state": "MERGED",
+    "pr_ready_head": "8f66cbca16dbba445f536043d620e2c701e1b3cb",
+    "pr_merge_commit": "c14507ab121daa221689ba285c203605bf2d64bf",
+    "merged_master_sha": "c14507ab121daa221689ba285c203605bf2d64bf",
+    "railway_project": "skillful-motivation",
+    "railway_service": "skillful-motivation",
+    "railway_deployment_id": "e26fec62-1a08-43a8-abb9-1b030b0ea786",
+    "deployed_sha": "c14507ab121daa221689ba285c203605bf2d64bf"
   },
   "current_batch": {
-    "batch_id": "H",
-    "requirement_id": "REQ-20260624-026",
-    "title": "Create, ready, and merge final integration PR according to release policy",
+    "batch_id": "L",
+    "requirement_id": "REQ-20260624-030",
+    "title": "Update canonical records, owner-review links, rollback reference, and final release state",
     "status": "in_progress"
   }
 }

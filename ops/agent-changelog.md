@@ -6,6 +6,32 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-06-24T18:58:00+03:00 - Final release PR merged, deployed, and live-verified
+
+Merged final integration PR #16 to `master`, verified Railway auto-deployed the
+same merge SHA, and ran the post-deploy smoke matrix.
+
+Evidence:
+- PR #16 merge commit: `c14507ab121daa221689ba285c203605bf2d64bf`
+- Railway deployment: `e26fec62-1a08-43a8-abb9-1b030b0ea786`
+- Live summary:
+  `ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md`
+
+Verification:
+- PASS `npm run railway:doctor`
+- PASS live app, public/privacy, student auth, operator setup, provider
+  classroom, class upload trace, payment/access, One Time shared-review, and
+  negative route smokes.
+
+Guardrails:
+- No production database migration, class backfill, Stripe charge/refund/
+  subscription, access grant, Vimeo upload/publication, email/WhatsApp/
+  Telegram/social send, DNS change, credential copy/rotation, secret exposure,
+  external CRM/GHL runtime, or external connector write was performed.
+- Class backfill remains blocked because current evidence has
+  `safe_to_apply=false`, zero approved candidate jobs, and no row-level write
+  plan.
+
 ## 2026-06-19T11:30:00+03:00 - Approved Release Closeout Checkpoint
 
 Completed the approved Railway release closeout for the active BNA recovery

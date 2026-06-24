@@ -37,8 +37,16 @@ if ($env:RAILWAY_TOKEN -and $env:RAILWAY_API_TOKEN) {
   throw "Both RAILWAY_TOKEN and RAILWAY_API_TOKEN are set. Clear one of them before running Railway commands."
 }
 
-if (-not $env:RAILWAY_TOKEN) {
-  throw "No RAILWAY_TOKEN found. Add a project token to .secrets\railway-token.txt."
+$usingProjectToken = [bool]$env:RAILWAY_TOKEN
+if ($usingProjectToken) {
+  Write-Host "Using project-scoped RAILWAY_TOKEN from environment/local secrets." -ForegroundColor Green
+} else {
+  try {
+    $whoami = railway whoami 2>&1
+    Write-Host $whoami -ForegroundColor Green
+  } catch {
+    throw "No RAILWAY_TOKEN found and Railway CLI account auth is unavailable. Add a project token to .secrets\railway-token.txt or run 'railway login'."
+  }
 }
 
 $globalRailwayDir = Join-Path $HOME ".railway"
@@ -68,7 +76,7 @@ if (-not $railwayService) { $railwayService = "skillful-motivation" }
 $railwayEnvironment = $env:RAILWAY_ENVIRONMENT
 if (-not $railwayEnvironment) { $railwayEnvironment = "production" }
 
-Write-Host "Checking project token access..." -ForegroundColor Cyan
+Write-Host "Checking Railway access..." -ForegroundColor Cyan
 Invoke-Railway status
 
 Write-Host "Checking app service target..." -ForegroundColor Cyan

@@ -15,12 +15,20 @@ Current status: running.
   production apply.
 - `REQ-20260624-025`: Done. Deterministic local release gates passed on pushed
   release-code SHA `03454ea4a9152946d21452141ed427277705fab1`.
-- `REQ-20260624-026`: In progress. Next action is final PR #16 mergeability,
-  release policy, and rollback-plan review before any merge.
+- `REQ-20260624-026`: Done. PR #16 was marked ready and merged to `master` at
+  `c14507ab121daa221689ba285c203605bf2d64bf`.
+- `REQ-20260624-027`: Done. Railway auto-deployed merged master deployment
+  `e26fec62-1a08-43a8-abb9-1b030b0ea786`; Railway doctor and live smokes
+  passed.
 - `REQ-20260624-028`: Blocked for class backfill apply under current evidence;
   this does not block code integration.
+- `REQ-20260624-029`: Done. Stripe/payment and Vimeo/shared-review readiness
+  passed post-deploy with no charge, grant, upload, publication, send, DNS,
+  credential, or external connector write.
+- `REQ-20260624-030`: In progress. Canonical records are being updated and
+  pushed.
 
-Guardrails remain active: no deploy, production DB mutation, class backfill,
-external write, send, charge, upload, publish, DNS change, credential rotation,
-or secret exposure unless the later release gates explicitly authorize an exact
+Guardrails remain active: no production DB mutation, class backfill, external
+write, send, charge, upload, publish, DNS change, credential rotation, or
+secret exposure unless a later release gate explicitly authorizes an exact
 action.

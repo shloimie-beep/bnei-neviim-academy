@@ -14,15 +14,13 @@ not authorize active GHL runtime paths.
   and local Rabbi closeout history, run the full release gate, merge the final
   PR, deploy merged `master` to Railway, live-smoke the deployed SHA, and apply
   class backfill only if Prompt 04's exact safe recommendation and all recovery
-  gates pass. Current status: all seven lane branches are merged and pushed
-  through `7e7cae25`; shared route/UI/server authorization wiring is locally
-  verified, migration/database readiness is documented with no production
-  apply, and the local release gate passed on pushed SHA `03454ea4`. PR #16
-  mergeability/release-policy review is the active next batch. All seven expected lane branches have terminal pushed RESULT
-  evidence: public UI `c9ba17da`, portal/auth/nav `e2aa72e5`, class/Drive
-  `b4958dc0`, assistant/ramble/usage `adf4e6d8`, Stripe sandbox `6c161c50`,
-  Vimeo media `f6975ab8`, and operator walkthrough `768a2ae0`. Class backfill
-  remains blocked under current evidence because Prompt 04 reports
+  gates pass. Current status: PR #16 was merged to `master` at
+  `c14507ab121daa221689ba285c203605bf2d64bf`; Railway auto-deployed that same
+  SHA in deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786`; Railway doctor and
+  live smokes passed; Stripe/payment and Vimeo/shared-review readiness passed
+  without charge, grant, upload, publication, send, DNS, credential, or
+  external connector writes. Canonical records are being updated. Class
+  backfill remains blocked under current evidence because Prompt 04 reports
   `safe_to_apply=false`, zero approved candidate jobs, and no row-level write
   plan. Register:
   `tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md`.

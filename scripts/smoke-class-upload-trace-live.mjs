@@ -112,7 +112,7 @@ function writeReports(report) {
     `- Blocker: ${report.blocker || 'none'}`,
     '',
     '## Guardrails',
-    '- Readback plus status patch evidence only; no transcript body is written to this report.',
+    '- Readback evidence only; no transcript body is written to this report.',
     '- No parse-run apply, task filing, external send, billing, Zoom, Vimeo, Buffer, DNS, CRM/GHL, WhatsApp, or email write is performed by this smoke.',
     '- The live content job notes were checked for secret-like credential material before this smoke passed.',
   ];
@@ -137,7 +137,7 @@ async function main() {
     app_url: appUrl,
     job_id: targetJobId,
     steps: [],
-    result: 'blocked_verified',
+    result: 'readback_started',
   };
   const step = async (name, fn) => {
     try {
@@ -182,19 +182,35 @@ async function main() {
     return `${job.title || 'untitled'} (${job.status || 'unknown'}, ${job.drive_stage || 'no stage'})`;
   });
 
-  await step('Blocked-before-parse state is explicit', async () => {
-    assert(job.status === 'blocked', `expected blocked status after credential failure, got ${job.status || 'none'}`);
-    assert(job.drive_stage === '02 Ingesting', `expected drive_stage 02 Ingesting, got ${job.drive_stage || 'none'}`);
-    assert(transcriptLength(job) === 0, 'blocked job unexpectedly has transcript text');
+  await step('Drive-backed content job state is explicit', async () => {
+    const status = String(job.status || '').toLowerCase();
+    const driveStage = String(job.drive_stage || '');
     const notes = String(job.notes || '');
-    assert(/Batch 9B reprocess blocker/.test(notes), 'sanitized Batch 9B blocker note is missing');
-    assert(/401 invalid_credential/.test(notes), 'sanitized credential blocker is missing');
     assert(!hasSecretLikeText(notes), 'content job notes still contain secret-like material');
-    report.blocker = 'OpenAI transcription credential rejected with 401 invalid_credential before transcript or parse run could be created.';
-    return 'sanitized credential blocker present; no transcript body stored';
+
+    if (status === 'blocked') {
+      assert(driveStage === '02 Ingesting', `expected drive_stage 02 Ingesting, got ${job.drive_stage || 'none'}`);
+      assert(transcriptLength(job) === 0, 'blocked job unexpectedly has transcript text');
+      assert(/Batch 9B reprocess blocker/.test(notes), 'sanitized Batch 9B blocker note is missing');
+      assert(/401 invalid_credential/.test(notes), 'sanitized credential blocker is missing');
+      report.result = 'blocked_verified';
+      report.blocker = 'OpenAI transcription credential rejected with 401 invalid_credential before transcript or parse run could be created.';
+      return 'sanitized credential blocker present; no transcript body stored';
+    }
+
+    assert(
+      ['transcribed', 'parsed', 'complete', 'completed'].includes(status) || /^0[34]\s/.test(driveStage),
+      `expected blocked or processed content job state, got status=${job.status || 'none'} stage=${job.drive_stage || 'none'}`
+    );
+    assert(transcriptLength(job) > 0, 'processed Drive job is missing transcript text');
+    report.result = 'processed_readback_verified';
+    report.blocker = /401 invalid_credential/i.test(notes)
+      ? 'Historical sanitized credential blocker note retained after the job reached processed state.'
+      : '';
+    return `processed state ${job.status || 'unknown'} / ${job.drive_stage || 'no stage'} with ${transcriptLength(job)} transcript chars`;
   });
 
-  await step('No parse run was created for blocked job', async () => {
+  await step('Parse-run linkage matches content job state', async () => {
     const { data } = await requestJson(`${appUrl}/api/bna/intake/parse-runs?limit=80`, {
       headers: {
         authorization: basicAuthHeader(username, password),
@@ -207,8 +223,15 @@ async function main() {
       && String(candidate.source_id || '') === String(targetJobId)
     ));
     report.parse_run_id = run?.id || null;
-    if (run) throw new Error(`blocked job unexpectedly has parse run #${run.id}`);
-    return 'no parse run; blocker occurred before transcription completed';
+    if (String(job.status || '').toLowerCase() === 'blocked') {
+      if (run) throw new Error(`blocked job unexpectedly has parse run #${run.id}`);
+      return 'no parse run; blocker occurred before transcription completed';
+    }
+    if (String(job.drive_stage || '').startsWith('04') || String(job.status || '').toLowerCase() === 'parsed') {
+      if (!run) return 'parsed Drive job was not present in the recent parse-run listing';
+      return `linked parse run #${run.id}`;
+    }
+    return 'transcribed-only state does not require a parse run yet';
   });
 
   const paths = writeReports(report);

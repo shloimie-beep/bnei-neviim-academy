@@ -1,10 +1,12 @@
 {
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
-  "updated_at": "2026-06-24T18:28:00+03:00",
+  "updated_at": "2026-06-24T18:58:00+03:00",
   "git_refs": {
-    "expected_branch": "codex/clean-slate-integration-20260624",
-    "branch": "codex/clean-slate-integration-20260624",
+    "expected_branch": "master",
+    "branch": "master",
+    "current_branch": "master",
+    "integration_branch": "codex/clean-slate-integration-20260624",
     "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16"
   },
   "sources": [
@@ -438,20 +440,32 @@
       "depends_on": [
         "REQ-20260624-025"
       ],
-      "status": "in_progress",
-      "implementation_status": "final_pr_merge_policy_started_after_local_release_gate",
+      "status": "done",
+      "implementation_status": "final_pr_ready_and_merged_to_master",
       "can_continue_without_operator": true,
-      "next_action": "Inspect PR #16 mergeability/release policy, record rollback plan, then merge only if policy permits and no external blocker appears.",
+      "next_action": "Continue to deploy/live verification on merged master SHA c14507ab121daa221689ba285c203605bf2d64bf.",
       "acceptance_criteria": [
         "PR URL, PR head, merge SHA, master SHA, and merge method are recorded."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/16",
+        "c14507ab121daa221689ba285c203605bf2d64bf",
+        "ops/execution-runs/2026-06-24-final-release-integration/MERGE-READINESS.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md"
+      ],
+      "verification": [
+        "PASS PR #16 marked ready for review",
+        "PASS PR #16 mergeable=MERGEABLE mergeStateStatus=CLEAN before merge",
+        "PASS gh pr merge 16 --merge --delete-branch=false",
+        "PASS PR #16 state MERGED mergedAt 2026-06-24T15:37:18Z mergeCommit c14507ab121daa221689ba285c203605bf2d64bf",
+        "PASS origin/master equals c14507ab121daa221689ba285c203605bf2d64bf after fetch"
+      ],
       "implementation_files": [
-        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/"
+        "ops/execution-runs/2026-06-24-final-release-integration/MERGE-READINESS.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T18:28:00+03:00"
+      "updated_at": "2026-06-24T18:58:00+03:00"
     },
     {
       "id": "REQ-20260624-027",
@@ -471,22 +485,56 @@
       "depends_on": [
         "REQ-20260624-026"
       ],
-      "status": "not_started",
-      "implementation_status": "waiting_for_merge",
+      "status": "done",
+      "implementation_status": "merged_master_deployed_and_live_smoked",
       "can_continue_without_operator": true,
-      "next_action": "Deploy merged master only after the final release PR is merged and exact deploy/live-smoke prerequisites are available.",
+      "next_action": "Continue with post-deploy Stripe/Vimeo readiness and canonical closeout records; class backfill remains blocked.",
       "acceptance_criteria": [
         "Deployed SHA equals merged master SHA.",
         "Live-smoke artifacts exist for required routes and roles."
       ],
-      "evidence": [],
-      "verification": [],
-      "implementation_files": [
-        "scripts/smoke-*.mjs",
-        "ops/live-smokes/"
+      "evidence": [
+        "Railway deployment e26fec62-1a08-43a8-abb9-1b030b0ea786",
+        "c14507ab121daa221689ba285c203605bf2d64bf",
+        "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md",
+        "ops/live-smokes/2026-06-24T15-41-49-356Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-24T15-41-59-671Z-public-route-privacy-smoke.md",
+        "ops/live-smokes/2026-06-24T15-44-50-267Z-student-auth-policy-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-43-35-427Z-operator-setup-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-43-35-404Z-provider-classroom-settings-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-48-56-513Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-43-35-411Z-one-time-payment-access-class-links-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-49-47-953Z-one-time-shared-review-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-52-27-795Z-final-release-negative-route-smoke.md"
       ],
+      "verification": [
+        "PASS Railway auto-deployed master commit c14507ab121daa221689ba285c203605bf2d64bf to deployment e26fec62-1a08-43a8-abb9-1b030b0ea786",
+        "PASS railway service status --service skillful-motivation --environment production -> SUCCESS",
+        "PASS npm run railway:doctor after account-auth fallback update -> SUCCESS",
+        "PASS npm run app:smoke",
+        "PASS npm run app:smoke:public-privacy",
+        "PASS railway run npm run app:smoke:student-auth",
+        "PASS railway run npm run app:smoke:operator-setup",
+        "PASS railway run npm run app:smoke:provider-classroom-settings",
+        "PASS railway run npm run app:smoke:class-upload-trace",
+        "PASS railway run npm run app:smoke:one-time-payment-access-class-links",
+        "PASS railway run npm run app:smoke:one-time-shared-review across mobile390/tablet768/desktop1440",
+        "PASS final-release negative route smoke for 404 and anonymous API refusal paths"
+      ],
+      "implementation_files": [
+        "scripts/railway-doctor.ps1",
+        "scripts/smoke-class-upload-trace-live.mjs",
+        "scripts/smoke-one-time-shared-review-live.mjs",
+        "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md"
+      ],
+      "deployment_evidence": [
+        "Railway deployment e26fec62-1a08-43a8-abb9-1b030b0ea786 reached SUCCESS for merged master commit c14507ab121daa221689ba285c203605bf2d64bf.",
+        "Live smoke PASS suite recorded in ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md with runtime reports under ops/live-smokes/."
+      ],
+      "deployment_id": "Railway deployment e26fec62-1a08-43a8-abb9-1b030b0ea786",
+      "deployed_commit": "c14507ab121daa221689ba285c203605bf2d64bf",
       "deployment_required": true,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T18:58:00+03:00"
     },
     {
       "id": "REQ-20260624-028",
@@ -547,23 +595,37 @@
       "depends_on": [
         "REQ-20260624-027"
       ],
-      "status": "not_started",
-      "implementation_status": "waiting_for_deployed_release_candidate",
+      "status": "done",
+      "implementation_status": "post_deploy_stripe_vimeo_readiness_verified_no_charge_no_publication",
       "can_continue_without_operator": true,
-      "next_action": "Run sandbox/private-test readiness after deploy while preserving no-charge/no-publication guardrails.",
+      "next_action": "Continue to canonical closeout records; no Stripe charge, access grant, Vimeo upload, or public publication was performed.",
       "acceptance_criteria": [
         "No live Stripe charge/refund/subscription occurs.",
         "No public Vimeo publication occurs."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/live-smokes/2026-06-24T15-43-35-411Z-one-time-payment-access-class-links-live-smoke.md",
+        "ops/live-smokes/2026-06-24T15-49-47-953Z-one-time-shared-review-live-smoke.md",
+        "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md"
+      ],
+      "verification": [
+        "PASS payment/access/class-link live smoke reports live_charges_enabled=false, checkout_session_creation_enabled=false, payment_link_creation_enabled=false, and external_write_performed=false",
+        "PASS One Time shared-review live smoke verifies Vimeo iframe/manual sample references without Vimeo upload or public publication",
+        "PASS no live Stripe charge/refund/subscription, access grant, Vimeo upload/publication, send, DNS change, credential copy, or external connector write was performed"
+      ],
       "implementation_files": [
         "tests/",
         "scripts/stripe-*.mjs",
         "scripts/vimeo-*.mjs"
       ],
+      "deployment_evidence": [
+        "Live smoke PASS for Stripe no-charge/payment-link/access-grant safeguards and Vimeo private review readiness on Railway deployment e26fec62-1a08-43a8-abb9-1b030b0ea786.",
+        "Tracked live-readiness summary recorded in ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md."
+      ],
+      "deployment_id": "Railway deployment e26fec62-1a08-43a8-abb9-1b030b0ea786",
+      "deployed_commit": "c14507ab121daa221689ba285c203605bf2d64bf",
       "deployment_required": true,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T18:58:00+03:00"
     },
     {
       "id": "REQ-20260624-030",
@@ -584,15 +646,22 @@
         "REQ-20260624-026",
         "REQ-20260624-027"
       ],
-      "status": "not_started",
-      "implementation_status": "waiting_for_release_merge_and_live_smoke",
+      "status": "in_progress",
+      "implementation_status": "canonical_records_update_started_after_merge_deploy_live_smoke",
       "can_continue_without_operator": true,
-      "next_action": "Update canonical records after merge/deploy/live verification or exact blockers.",
+      "next_action": "Commit and push canonical run, task, changelog, ledger, and release evidence updates; then continue to safe cleanup.",
       "acceptance_criteria": [
         "All terminal statuses and proof paths are visible to Shloimie."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md",
+        "TASKS.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "verification": [
+        "Merge, deploy, live-smoke, and Stripe/Vimeo readiness proof collected; canonical records are being updated in this batch."
+      ],
       "implementation_files": [
         "TASKS.md",
         "MEMORY.md",
@@ -601,7 +670,7 @@
         "ops/execution-runs/2026-06-24-final-release-integration/"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T18:58:00+03:00"
     },
     {
       "id": "REQ-20260624-031",

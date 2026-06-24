@@ -64,6 +64,18 @@ Requirement: `REQ-20260624-026`
    clean and mergeable.
 4. Record the resulting master merge SHA before starting deployment.
 
+## Merge Result
+
+- PR #16 was marked ready for review.
+- PR #16 remained `MERGEABLE` and `CLEAN` after the readiness checkpoint.
+- PR #16 was merged with GitHub's merge-commit method.
+- Merge commit / merged master SHA:
+  `c14507ab121daa221689ba285c203605bf2d64bf`
+- Head merged into master:
+  `8f66cbca16dbba445f536043d620e2c701e1b3cb`
+- Merged at: `2026-06-24T15:37:18Z`
+- Branch was not deleted; cleanup remains under `REQ-20260624-031`.
+
 ## Rollback Plan
 
 - If the merge introduces an immediate code regression before deployment,
