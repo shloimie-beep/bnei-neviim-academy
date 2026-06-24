@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-24T06:12:11.875Z",
-  "release_candidate_sha": "2a93ac9432345e8f3b381dcc1ed1caec2699cee0",
+  "generated_at": "2026-06-24T14:38:24.744Z",
+  "release_candidate_sha": "06fd00703a1be4558f1a37e211e6b500fb525532",
   "guardrails": {
     "external_credentials": false,
     "production_state_readback": false,
@@ -60,7 +60,7 @@
   },
   "no_db": {
     "mode": "ONE_TIME_REVIEW_ONLY_NO_DB",
-    "base_url": "http://127.0.0.1:58915",
+    "base_url": "http://127.0.0.1:60802",
     "context": {
       "status": 200,
       "ok": true,
@@ -91,7 +91,7 @@
     "server_log_tail": {
       "stdout": [
         "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-        "BNA Server running on 127.0.0.1:58915"
+        "BNA Server running on 127.0.0.1:60802"
       ],
       "stderr": [
         "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
@@ -104,9 +104,603 @@
     "status": "blocked_missing_nonproduction_database",
     "blocker": "Set BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL to a local/test Postgres URL to run a true assistant chat/message persistence smoke. The script intentionally ignores production DATABASE_URL and .secrets."
   },
+  "model_readiness": {
+    "matrix_version": "assistant-model-readiness-v1",
+    "primary_provider": "openai",
+    "rows": [
+      {
+        "provider": "openai",
+        "model": "not-disclosed",
+        "state": "missing",
+        "configured": false,
+        "live_call_allowed": false,
+        "disabled_reason": "missing_model_credential. No configured model credential is available for this environment.",
+        "diagnostic_detail": "No configured model credential is available for this environment.",
+        "secret_visible": false
+      },
+      {
+        "provider": "kimi",
+        "model": "not-disclosed",
+        "state": "missing",
+        "configured": false,
+        "live_call_allowed": false,
+        "disabled_reason": "missing_model_credential. No configured model credential is available for this environment.",
+        "diagnostic_detail": "No configured model credential is available for this environment.",
+        "secret_visible": false
+      }
+    ],
+    "live_provider_count": 0,
+    "configured_provider_count": 0,
+    "model_call_allowed": false,
+    "exact_disabled_reasons": [
+      {
+        "provider": "openai",
+        "state": "missing",
+        "reason": "missing_model_credential. No configured model credential is available for this environment."
+      },
+      {
+        "provider": "kimi",
+        "state": "missing",
+        "reason": "missing_model_credential. No configured model credential is available for this environment."
+      }
+    ],
+    "user_safe_unavailable_message": "The hosted assistant is temporarily unavailable. I can still create a task or support ticket if you tell me what needs to happen."
+  },
+  "surface_matrix": [
+    {
+      "surface": "public_website_helper",
+      "label": "Public website helper",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "public/index.html"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "anon-owner-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "bna"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "parent"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "create_ticket"
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "preview_required=true"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "approval_required=false"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_1347984bb13078e830f8713a2a67bfeb; no prompt body; persistence table bna"
+        }
+      }
+    },
+    {
+      "surface": "operations_helper",
+      "label": "Operations helper",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "public/operations.html"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "ops-owner-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "bna"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "super_admin"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "route_bug_to_codex"
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "preview_required=true"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "approval_required=true"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_ce48160e84855f153455758ecb383923; no prompt body; persistence table bna"
+        }
+      }
+    },
+    {
+      "surface": "provider_portal_assistant",
+      "label": "Provider portal assistant",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "public/provider.html"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "provider-owner-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "rabbi_sheller_provider"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "service_provider_admin"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "No typed action matched confidently."
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "no typed action selected"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "no typed action selected"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_5725cf0515faf55a1f45c599b4d5da2e; no prompt body; persistence table rabbi_sheller_provider"
+        }
+      }
+    },
+    {
+      "surface": "parent_portal_assistant",
+      "label": "Parent portal assistant",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "public/parent.html"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "parent-owner-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "bna"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "parent"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "create_report_problem_ticket"
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "preview_required=true"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "approval_required=false"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_534b5143a5dbcd6a4809687e812deb07; no prompt body; persistence table bna"
+        }
+      }
+    },
+    {
+      "surface": "student_portal_assistant",
+      "label": "Student portal assistant",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "public/student.html"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "student-owner-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "bna"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "student"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "No typed action matched confidently."
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "no typed action selected"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "no typed action selected"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_774e828a54e6450d66859b58e83da046; no prompt body; persistence table bna"
+        }
+      }
+    },
+    {
+      "surface": "one_time_member_assistant",
+      "label": "One Time/member assistant",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "public/rabbi-member.html, public/member-library.html, public/one-time-classroom.html"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "one-time-member-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "rabbi_sheller_provider"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "service_provider_admin"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "No typed action matched confidently."
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "no typed action selected"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "no typed action selected"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_a0aa79d01df3b3ada60855417703be85; no prompt body; persistence table rabbi_sheller_provider"
+        }
+      }
+    },
+    {
+      "surface": "telegram_adapter",
+      "label": "Telegram adapter where configured",
+      "checks": {
+        "widget_entry_renders": {
+          "status": "PASS",
+          "evidence": "scripts/telegram-kimi-bridge.mjs"
+        },
+        "endpoint_reachable": {
+          "status": "PASS",
+          "evidence": "/api/bna/assistant/chat static route"
+        },
+        "identity_resolved": {
+          "status": "PASS",
+          "evidence": "telegram-owner-review"
+        },
+        "workspace_resolved": {
+          "status": "PASS",
+          "evidence": "bna"
+        },
+        "role_resolved": {
+          "status": "PASS",
+          "evidence": "super_admin"
+        },
+        "conversation_created_resumed": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "message_persisted": {
+          "status": "BLOCKED",
+          "evidence": "blocked_missing_nonproduction_database"
+        },
+        "model_provider_readiness": {
+          "status": "PASS",
+          "evidence": "openai:missing, kimi:missing"
+        },
+        "model_call": {
+          "status": "BLOCKED",
+          "evidence": "openai:missing_model_credential. No configured model credential is available for this environment.; kimi:missing_model_credential. No configured model credential is available for this environment."
+        },
+        "action_plan_constrained_to_registry": {
+          "status": "PASS",
+          "evidence": "queue_telegram_report"
+        },
+        "permission_check": {
+          "status": "PASS",
+          "evidence": "allowed"
+        },
+        "preview": {
+          "status": "PASS",
+          "evidence": "preview_required=true"
+        },
+        "approval_gate": {
+          "status": "PASS",
+          "evidence": "approval_required=true"
+        },
+        "safe_execution": {
+          "status": "PASS",
+          "evidence": "dry-run/no-send proof only; no real messages sent"
+        },
+        "audit_event": {
+          "status": "PASS",
+          "evidence": "canonical action runner audit-log contract is available"
+        },
+        "response_render": {
+          "status": "PASS",
+          "evidence": "widget/helper render functions"
+        },
+        "error_retry": {
+          "status": "PASS",
+          "evidence": "visible error state contracts"
+        },
+        "usage_record": {
+          "status": "PASS",
+          "evidence": "usage_7622018cdb7f7685efc52c391cbf113f; no prompt body; persistence table bna"
+        }
+      }
+    }
+  ],
   "summary": {
     "ok": true,
     "runtime_e2e_status": "blocked_missing_nonproduction_database",
+    "surface_check_count": 126,
+    "surface_pass_count": 105,
+    "surface_blocked_count": 21,
+    "surface_fail_count": 0,
     "blockers": [
       "Set BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL to a local/test Postgres URL to run a true assistant chat/message persistence smoke. The script intentionally ignores production DATABASE_URL and .secrets.",
       "Live hosted-AI response proof requires approved provider credentials and explicit live-smoke approval.",
@@ -115,7 +709,8 @@
     "paths": {
       "markdown": "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
       "json": "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json",
-      "owner_review_doc": "docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md"
+      "owner_review_doc": "docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md",
+      "runtime_matrix": "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/assistant-ramble-usage/ASSISTANT-RUNTIME-MATRIX.md"
     }
   }
 }

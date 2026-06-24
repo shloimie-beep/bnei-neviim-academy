@@ -21,6 +21,7 @@ const SHARED_CONTROL_PLANE_LAYERS = Object.freeze([
   'preview_system',
   'approval_system',
   'audit_event',
+  'api_usage_recorder',
   'draft_template_versioning',
   'reminders_notifications',
   'ticketing',
