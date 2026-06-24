@@ -24527,6 +24527,12 @@ The remaining blockers are intentionally limited to merge/deploy/live
 production verification, live credential integrations, and full historical
 click-map rerun scope beyond the credential-free local harness.
 
+Attempted to add `.github/workflows/owner-review.yml` for an independent
+credential-free CI gate, but GitHub rejected the workflow commit because the
+current OAuth app lacks `workflow` scope. The blocker is recorded in the
+owner-review packet; the pushed branch keeps the local credential-free gates as
+release-candidate evidence until workflow permission is granted.
+
 ## 2026-06-19T13:45:00+03:00 - One Time Master Recovery Batch 6 Product Readiness
 
 Completed the local implementation slice for `REQ-20260619-306` and set the

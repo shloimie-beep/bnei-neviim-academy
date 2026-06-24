@@ -10,6 +10,8 @@ Review PR #14 by user journey, not by commit history.
 4. Run `npm run owner-review:role-flows`.
 5. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
    authenticated/synthetic journeys.
+6. Note that GitHub Actions is not attached yet: the attempted workflow push
+   was rejected because the current OAuth app lacks `workflow` scope.
 
 ## Public Site
 
@@ -144,6 +146,9 @@ Expected local result:
 - Link/action/security watchdogs: severity `ok`, findings 0.
 - Full tests: PASS, 1213/1213.
 - Secret audit: PASS, 4219 tracked paths, 0 tracked secret-risk files.
+- GitHub Actions: not attached yet. Adding the workflow requires GitHub
+  `workflow` permission; local gates above are the current credential-free
+  evidence until that external permission is granted.
 
 Do not deploy from this script. Deployment and live production verification are
 separate approvals after PR #14 is reviewed and merged or an exact release

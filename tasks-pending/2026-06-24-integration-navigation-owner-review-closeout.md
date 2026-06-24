@@ -24,7 +24,7 @@ Guardrails:
 | REQ-20260624-004 | Repair broken navigation, public IA, missing return paths, duplicate canonical destinations, and route registry gaps. | Done | Public nav now exposes `/providers` and `/one-time`; `/providers` and `/he/providers` are registered in `ops/route-registry.json`; `npm run watchdog:links` reports severity `ok`, findings 0. |
 | REQ-20260624-005 | Canonicalize One Time journey across public/member/library/classroom routes. | Done | One Time canonical journey tests and local smoke pass; role-flow QA covers `/rabbi-member`, `/member-library`, and `/one-time-classroom`. |
 | REQ-20260624-006 | Make shared website assistant visible and correctly scoped on intended public, parent, student, provider, One Time member, and Operations surfaces. | Done | `docs/owner-review/ROLE-FLOW-QA.md`; shared assistant surfaces passed for `public`, `parent_portal`, `student_portal`, `provider_workspace`, `one_time_member`, and Operations helper. |
-| REQ-20260624-007 | Add permanent release tests/gates for route discovery, link/watchdog health, assistant/portal coverage, and role-flow evidence. | Done | `npm run owner-review:routes`, `npm run owner-review:role-flows`, `npm run watchdog:links`, `npm run watchdog:actions`, `npm run watchdog:security`, and `tests/owner-review-role-flow-contract.test.js`. |
+| REQ-20260624-007 | Add permanent release tests/gates for route discovery, link/watchdog health, assistant/portal coverage, and role-flow evidence. | Done, CI workflow blocked | `npm run owner-review:routes`, `npm run owner-review:role-flows`, `npm run watchdog:links`, `npm run watchdog:actions`, `npm run watchdog:security`, and `tests/owner-review-role-flow-contract.test.js`. GitHub rejected the attempted workflow commit because the OAuth app lacks `workflow` scope. |
 | REQ-20260624-008 | Run credential-free role browser QA on desktop and mobile with synthetic fixtures and mock integrations. | Done | `npm run owner-review:role-flows` passed; screenshots and JSON/Markdown evidence under `ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/`; summary in `docs/owner-review/ROLE-FLOW-QA.md`. |
 | REQ-20260624-009 | Reconcile June 11 UX click-map backlog against the integrated branch. | Partial | `docs/owner-review/UX-BACKLOG-RECONCILIATION.md` classifies priority areas covered by the role-flow pass. Full 2,205-route bulk rerun remains deferred because the full-ui audit defaults to live URLs/private auth and is not credential-free as configured. |
 | REQ-20260624-010 | Produce owner-review packet with applied matrix, sitemap, flows, orphan report, screenshots, gaps, and review script. | Done | `docs/owner-review/APPLIED-NOT-APPLIED-MATRIX.md`, `CANONICAL-SITEMAP.md`, `PAGE-FLOW-DIAGRAMS.md`, `ORPHAN-AND-DUPLICATE-PAGES.md`, `ROLE-FLOW-QA.md`, `UX-BACKLOG-RECONCILIATION.md`, `KNOWN-GAPS.md`, `OWNER-REVIEW-SCRIPT.md`. |
@@ -39,9 +39,13 @@ Guardrails:
 - Focused owner-review/portal/assistant tests: PASS, 70/70.
 - `npm test`: PASS, 1213/1213.
 - `npm run secrets:audit`: PASS, 4219 tracked paths, 0 tracked secret-risk files.
+- GitHub Actions workflow: attempted, but blocked by GitHub because the current
+  OAuth app lacks `workflow` scope.
 
 ## Remaining External / Deferred Work
 
 - Merge PR #14 before deploy/live production verification.
 - Read-only production state, Railway deployment trace, Drive auth, guarded backfills, production DB apply/readback, live deploy, and live integration credentials remain unapproved by design.
 - Full legacy click-map rerun needs either safe local auth mode added to `scripts/full-ui-audit.mjs` or explicit safe demo credentials/access links; the priority findings are reconciled in the owner-review packet.
+- Independent GitHub Actions CI requires a token/app with `workflow` scope; the
+  attempted workflow commit was rejected before it could be pushed.
