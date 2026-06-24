@@ -9,7 +9,7 @@ Active run:
 Current branch:
 `codex/issue-18-class-intake-readonly-20260624`
 
-Open requirement:
+Terminal requirement:
 
 - `REQ-20260624-028` - read-only class intake reconciliation and safe backfill
   evidence
@@ -20,16 +20,17 @@ Current state:
   `ops/class-drive-intake/2026-06-24-issue-18/`.
 - Terminal verdict is `NOT SAFE TO APPLY - reasons listed`.
 - Local verification passed.
-- Requirement status is `needs_verification` only because GitHub closeout is
-  still pending.
+- Requirement status is `done`.
+- Draft PR #21 is open:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/21`.
+- GitHub issue #18 terminal comment is posted:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047`.
 
 Next safe steps:
 
-1. Commit the Issue #18 artifacts.
-2. Push `codex/issue-18-class-intake-readonly-20260624`.
-3. Open a PR.
-4. Post the terminal verdict to GitHub issue #18.
-5. Mark `REQ-20260624-028` done and then create/continue the Issue #20 run.
+1. Create or continue the Issue #20 parent run.
+2. Keep the Issue #18 no-write verdict intact unless new source evidence
+   changes the dry-run result.
 
 Do not run:
 

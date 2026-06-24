@@ -2,8 +2,8 @@
   "run_id": "2026-06-24-issue-18-class-intake-readonly",
   "title": "Issue #18 - Read-only class intake reconciliation",
   "created_at": "2026-06-24T19:02:42.921Z",
-  "updated_at": "2026-06-24T22:25:00+03:00",
-  "active": true,
+  "updated_at": "2026-06-24T22:40:00+03:00",
+  "active": false,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
   "raw_id": "RAW-20260624-008",
@@ -26,6 +26,6 @@
     "batch_id": "A",
     "requirement_id": "REQ-20260624-028",
     "title": "Read-only class intake reconciliation and safe backfill evidence",
-    "status": "needs_verification"
+    "status": "done"
   }
 }

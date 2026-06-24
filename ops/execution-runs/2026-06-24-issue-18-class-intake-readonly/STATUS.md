@@ -29,3 +29,13 @@
   stable labels or hashes in tracked artifacts.
 - `REQ-20260624-028` moved to `needs_verification` until push, PR, and GitHub
   issue #18 terminal comment are complete.
+
+2026-06-24T22:40:00+03:00:
+
+- Branch `codex/issue-18-class-intake-readonly-20260624` pushed to origin.
+- Draft PR opened: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/21`.
+- Terminal evidence posted to GitHub issue #18:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047`.
+- `REQ-20260624-028` moved to `done`.
+- Run marked inactive so the sequenced Issue #20 parent run can become the
+  next active execution run.

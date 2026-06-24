@@ -6,16 +6,16 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260624-008` / `REQ-20260624-028`: GitHub issue #18 read-only
+- [x] `RAW-20260624-008` / `REQ-20260624-028`: GitHub issue #18 read-only
   class intake reconciliation has local terminal evidence in
   `ops/execution-runs/2026-06-24-issue-18-class-intake-readonly/` on branch
   `codex/issue-18-class-intake-readonly-20260624`. Verdict:
   `NOT SAFE TO APPLY - reasons listed`; `safe_to_apply=false`, no approved
   candidate jobs, no row-level change plan, and expected row counts `{}`.
   Focused validation, run validation, source coverage, stale-evidence check,
-  secret audit, and diff check passed. Remaining closeout: push/PR, post
-  terminal evidence to Issue #18, then continue Issue #20. No class backfill
-  apply or production write is approved.
+  secret audit, privacy scans, and diff check passed. Draft PR #21 is open and
+  terminal evidence was posted to Issue #18 at comment `4792923047`. Next:
+  continue Issue #20. No class backfill apply or production write is approved.
 - [x] `RAW-20260624-007` / `REQ-20260624-032` through
   `REQ-20260624-039`: Clean-slate acceptance, queue reconciliation, synthetic
   ramble proof, owner walkthrough, preservation manifest, and GitHub-visible

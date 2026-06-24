@@ -16,10 +16,14 @@
 - Privacy scans passed: no known student/family-name matches in issue evidence;
   no raw transcript/parse/question/student-name/original-filename fields; 0
   non-redacted pipeline titles, candidate titles, or Drive readback names.
+- Branch push passed: `codex/issue-18-class-intake-readonly-20260624`.
+- Draft PR opened:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/21`.
+- GitHub issue #18 terminal comment posted:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047`.
 
 ## Pending
 
-- Push/PR/GitHub issue #18 terminal comment.
 - Full repository `npm test` was not run because Issue #18 changed read-only
   evidence generation and focused class-intake tests covered the affected
   behavior.

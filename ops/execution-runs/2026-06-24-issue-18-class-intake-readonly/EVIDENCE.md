@@ -47,9 +47,13 @@ Evidence summary:
 - Pipeline census inspected 150 rows: 75 content jobs and 75 Drive orphans.
 - Census found 1 missing canonical write and no student ambiguity/review rows.
 
-## Remaining External Closeout
+## GitHub Closeout
 
-- Commit and push the Issue #18 branch.
-- Open a PR.
-- Post the terminal verdict to GitHub issue #18.
-- After that, create or continue the Issue #20 run.
+- Commit pushed: `8dd41084`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/21`
+- GitHub issue #18 terminal comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047`
+
+## Next Sequenced Work
+
+- Create or continue the Issue #20 parent run.

@@ -28,7 +28,7 @@
 
 | ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Acceptance criteria | Implementation files | Deploy/live required | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| REQ-20260624-028 | Produce read-only class intake reconciliation and safe dry-run backfill evidence without applying production writes. | RAW-20260624-008; GitHub issue #18 | BNA / class_drive_intake | Codex | reconciliation | P0 | A | none | Per-job census, dry-run row plan, safe-to-apply gate, tests, and terminal verdict are recorded. | `scripts/class-drive-intake-reconcile.cjs`, `tests/class-drive-intake-reconcile.test.js`, `ops/class-drive-intake/2026-06-24-issue-18/` | no | Needs verification |
+| REQ-20260624-028 | Produce read-only class intake reconciliation and safe dry-run backfill evidence without applying production writes. | RAW-20260624-008; GitHub issue #18 | BNA / class_drive_intake | Codex | reconciliation | P0 | A | none | Per-job census, dry-run row plan, safe-to-apply gate, tests, and terminal verdict are recorded. | `scripts/class-drive-intake-reconcile.cjs`, `tests/class-drive-intake-reconcile.test.js`, `ops/class-drive-intake/2026-06-24-issue-18/` | no | Done |
 
 ## Parsed tasks
 
@@ -44,7 +44,7 @@ No new visible human Tasks are created. This is Codex/agent work under the exist
 
 | ID | Files/routes/components | Plan | Verification | Commit | Pushed commit | Deployment/live-smoke |
 |---|---|---|---|---|---|---|
-| REQ-20260624-028 | Class intake diagnostics, tests, run artifacts, GitHub issue comment | Reused and tightened read-only reconciliation script, generated sanitized issue-specific evidence, and recorded a terminal verdict. | Focused tests, run validation, source coverage, stale-evidence check, secret audit, and diff check passed. | Pending | Pending | Not applicable; no app-visible change or production write |
+| REQ-20260624-028 | Class intake diagnostics, tests, run artifacts, GitHub issue comment | Reused and tightened read-only reconciliation script, generated sanitized issue-specific evidence, and recorded a terminal verdict. | Focused tests, run validation, source coverage, stale-evidence check, secret audit, diff check, and privacy scans passed. | `8dd41084` | Branch pushed; PR #21 opened | Not applicable; no app-visible change or production write |
 
 ## Guardrails
 
@@ -58,4 +58,4 @@ No new visible human Tasks are created. This is Codex/agent work under the exist
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
-| REQ-20260624-028 | Needs verification | `ops/class-drive-intake/2026-06-24-issue-18/TERMINAL-VERDICT.md`; `BACKFILL-RECOMMENDATION.json` has `safe_to_apply=false`, no approved candidate jobs, no row-level change plan, and expected row counts `{}`. Verdict: `NOT SAFE TO APPLY - reasons listed`. | `scripts/class-drive-intake-reconcile.cjs`; `src/lib/bna/class-drive-intake-reconcile.js`; `tests/class-drive-intake-reconcile.test.js`; `ops/class-drive-intake/2026-06-24-issue-18/`; run docs | `node --test tests\class-drive-intake-reconcile.test.js tests\class-drive-intake-shared-patch.test.js`; `npm run bna:run:validate`; `npm run bna:run:source-coverage`; `npm run bna:run:stale-evidence`; `npm run secrets:audit`; `git diff --check`; privacy scans found no raw name/transcript/question/title leaks | Push, PR, and GitHub issue #18 terminal comment pending |
+| REQ-20260624-028 | Done | `ops/class-drive-intake/2026-06-24-issue-18/TERMINAL-VERDICT.md`; `BACKFILL-RECOMMENDATION.json` has `safe_to_apply=false`, no approved candidate jobs, no row-level change plan, and expected row counts `{}`. Verdict: `NOT SAFE TO APPLY - reasons listed`. PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/21`. Issue comment: `https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047`. | `scripts/class-drive-intake-reconcile.cjs`; `src/lib/bna/class-drive-intake-reconcile.js`; `tests/class-drive-intake-reconcile.test.js`; `ops/class-drive-intake/2026-06-24-issue-18/`; run docs | `node --test tests\class-drive-intake-reconcile.test.js tests\class-drive-intake-shared-patch.test.js`; `npm run bna:run:validate`; `npm run bna:run:source-coverage`; `npm run bna:run:stale-evidence`; `npm run secrets:audit`; `git diff --check`; privacy scans found no raw name/transcript/question/title leaks | Continue Issue #20 |

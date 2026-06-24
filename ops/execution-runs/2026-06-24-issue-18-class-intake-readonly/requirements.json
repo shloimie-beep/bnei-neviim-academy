@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-issue-18-class-intake-readonly",
   "title": "Issue #18 - Read-only class intake reconciliation",
-  "updated_at": "2026-06-24T22:25:00+03:00",
+  "updated_at": "2026-06-24T22:40:00+03:00",
   "git_refs": {
     "base_branch": "master",
     "working_branch": "codex/issue-18-class-intake-readonly-20260624",
@@ -133,10 +133,10 @@
       "priority": "P0",
       "batch_id": "A",
       "depends_on": [],
-      "status": "needs_verification",
-      "implementation_status": "read_only_reconciliation_complete_terminal_verdict_not_safe_to_apply_external_closeout_pending",
+      "status": "done",
+      "implementation_status": "terminal_read_only_verdict_not_safe_to_apply_pr_and_issue_comment_posted",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, open a PR, and post the Issue #18 terminal verdict before starting Issue #20.",
+      "next_action": "Continue the sequenced Issue #20 parent run.",
       "acceptance_criteria": [
         "All relevant uploaded class jobs are reconciled with sanitized per-job evidence.",
         "The full pipeline is traced or explicitly blocked at each stage.",
@@ -155,7 +155,9 @@
         "ops/class-drive-intake/2026-06-24-issue-18/AUTH-READINESS.md",
         "ops/class-drive-intake/2026-06-24-issue-18/SOURCE-COVERAGE.md",
         "ops/class-drive-intake/2026-06-24-issue-18/VERIFICATION.md",
-        "ops/class-drive-intake/2026-06-24-issue-18/TERMINAL-VERDICT.md"
+        "ops/class-drive-intake/2026-06-24-issue-18/TERMINAL-VERDICT.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/21",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047"
       ],
       "verification": [
         "node --test tests/class-drive-intake-reconcile.test.js tests/class-drive-intake-shared-patch.test.js passed: 17 tests.",
@@ -175,8 +177,10 @@
         "ops/class-drive-intake/2026-06-24-issue-18/"
       ],
       "deployment_required": false,
-      "pull_request": "pending",
-      "updated_at": "2026-06-24T22:25:00+03:00"
+      "implementation_commit": "8dd41084",
+      "pushed_commit": "8dd41084",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/21",
+      "updated_at": "2026-06-24T22:40:00+03:00"
     }
   ],
   "tasks": [
@@ -187,7 +191,7 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260624-028",
-      "status": "needs_verification",
+      "status": "done",
       "source_path": "raw-input/RAW-20260624-008-codex-kickoff-issue-18-then-20.md"
     }
   ],
