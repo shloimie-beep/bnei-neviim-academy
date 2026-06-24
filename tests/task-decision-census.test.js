@@ -128,6 +128,7 @@ test('task decision census flags pending and decision records that lack actionab
 test('task decision census exposes required default views, card contract, and audit dimensions', async () => {
   const {
     buildTaskDecisionCensus,
+    TASK_OPERATIONAL_VIEWS,
     TASK_DEFAULT_VIEWS,
     DECISION_DEFAULT_VIEWS
   } = await loadModule();
@@ -153,13 +154,18 @@ test('task decision census exposes required default views, card contract, and au
   });
 
   assert.deepEqual(TASK_DEFAULT_VIEWS.map((view) => view.label), [
+    'Active Now',
+    'Needs Your Decision',
+    'Waiting Externally',
+    'Recently Completed',
+    'Full History / Search'
+  ]);
+  assert.deepEqual(TASK_OPERATIONAL_VIEWS.map((view) => view.label), [
     'My Tasks',
     'One Time Tasks',
     'Codex / Agent Work',
-    'Blocked',
     'Due Soon',
     'Calendar',
-    'Done / Activity',
     'Archived'
   ]);
   assert.deepEqual(DECISION_DEFAULT_VIEWS.map((view) => view.label), [
@@ -188,6 +194,7 @@ test('task decision census exposes required default views, card contract, and au
     assert.ok(census.counts[dimension], `${dimension} should be present`);
   }
   assert.ok(census.card_contract.includes('latest meaningful activity'));
+  assert.ok(census.operational_task_views.some((view) => view.label === 'Codex / Agent Work'));
   assert.equal(census.cleanup_behavior.mode, 'dry_run_only_no_production_mutation');
   assert.equal(census.cleanup_behavior.no_private_parent_student_data_deleted, true);
 });

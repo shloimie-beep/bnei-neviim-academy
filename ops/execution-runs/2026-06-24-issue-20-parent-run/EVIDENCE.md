@@ -145,8 +145,30 @@ Agent fleet hardening readback summary:
   GitHub same-thread status preview, and parent closeout without external
   writes.
 
+## Queue Hygiene Evidence
+
+- `ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md`
+- `server.js`
+- `public/operations.html`
+- `scripts/task-decision-census.mjs`
+- `tests/operations-task-queue-visibility.test.js`
+- `tests/task-decision-census.test.js`
+- `ops/watchdog-audits/2026-06-24T21-46-watchdog-action-audit.md`
+
+Queue hygiene readback summary:
+
+- Machine-owned rows, `agent_job` rows, and queued/running/failed/blocked agent
+  lifecycle states are routed to `codex_queue` instead of human/external
+  waiting.
+- Owner default views are Active Now, Needs Your Decision, Waiting Externally,
+  Recently Completed, and Full History / Search.
+- Operational review lanes still expose My Tasks, One Time Tasks, Codex /
+  Agent Work, Due Soon, Calendar, and Archived.
+- Focused queue/UI/reconciler tests passed 23/23 and `watchdog:actions` passed
+  with 0 findings.
+- App-visible/API/UI Done remains blocked pending deploy/live proof.
+
 ## Pending Evidence
 
-- Queue hygiene proof.
 - Owner walkthrough proof.
 - Final release/deploy/live verification.

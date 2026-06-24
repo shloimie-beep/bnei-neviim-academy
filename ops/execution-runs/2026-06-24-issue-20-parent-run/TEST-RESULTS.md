@@ -117,6 +117,22 @@
   `npm run secrets:audit` with 4723 tracked paths and 0 tracked
   secret-risk files, `git diff --check`, and `npm run bna:run:next`
   selected `REQ-20260624-046`.
+- `node --check server.js` passed.
+- `node --check scripts\task-decision-census.mjs` passed.
+- `node --check tests\operations-task-queue-visibility.test.js` passed.
+- `node --check tests\task-decision-census.test.js` passed.
+- `node --test tests\operations-activity-queue-health-ui.test.js tests\operations-task-queue-visibility.test.js tests\task-decision-census.test.js tests\ops-queue-reconciler.test.js tests\task-queue-reconciler.test.js tests\workspace-task-no-stale-agent.test.js`
+  passed 23/23.
+- `npm run watchdog:actions` passed with 0 findings and wrote
+  `ops/watchdog-audits/2026-06-24T21-46-watchdog-action-audit.md`.
+- `node scripts\task-decision-census.mjs --json --no-live --no-write` passed
+  as a no-write contract readback and intentionally skipped live reads.
+- Post-queue-hygiene execution-run validation passed:
+  `npm run bna:run:validate`, `npm run bna:run:source-coverage`,
+  `npm run bna:run:stale-evidence`, JSON/JSONL parse,
+  `npm run secrets:audit` with 4731 tracked paths and 0 tracked
+  secret-risk files, `git diff --check` with Windows line-ending warnings
+  only, and `npm run bna:run:next` selected `REQ-20260624-047`.
 
 ## Known Non-Blocking Test Note
 
@@ -128,5 +144,5 @@
 ## Pending
 
 - Focused tests for remaining implementation lanes, starting with
-  `REQ-20260624-046`.
+  `REQ-20260624-047`.
 - Full repository tests and watchdogs before final closeout.

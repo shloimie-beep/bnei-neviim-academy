@@ -18,6 +18,11 @@ test('Operations task lanes keep internal handoff briefs out of operator-facing 
   assert.doesNotMatch(operations, /pending-briefs/);
   assert.match(operations, /Codex Queue/);
   for (const label of [
+    'Active Now',
+    'Needs Your Decision',
+    'Waiting Externally',
+    'Recently Completed',
+    'Full History / Search',
     'My Tasks',
     'One Time Tasks',
     'Codex / Agent Work',
@@ -37,8 +42,9 @@ test('Operations task lanes keep internal handoff briefs out of operator-facing 
   assert.match(operations, /Blocked means access or outside input, not Codex queue work/);
   assert.match(operations, /It is not the human Pending lane/);
   assert.match(operations, /if \(taskKind === 'pending_access'\) return 'pending';/);
-  assert.match(operations, /if \(taskKind === 'agent_job'\) return 'tasks';/);
-  assert.match(operations, /const codexQueueTasks = buckets\.tasks\.filter\(taskMatchesCodexQueue\)/);
+  assert.match(operations, /taskKind === 'agent_job' \|\| taskIsMachine\(task\)\) return 'codex_queue';/);
+  assert.match(operations, /const codexQueueTasks = buckets\.codex_queue\.slice\(\)\.sort\(sortTasks\)/);
+  assert.match(operations, /OWNER_TASK_DEFAULT_VIEWS\.map/);
 });
 
 test('tasks API exposes server-side filters for default Task and Decision views', () => {
@@ -52,6 +58,7 @@ test('tasks API exposes server-side filters for default Task and Decision views'
   assert.match(route, /my_tasks/);
   assert.match(route, /one_time_tasks/);
   assert.match(route, /codex_agent_work/);
+  assert.match(route, /status_bucket = 'codex_queue'/);
   assert.match(route, /due_soon/);
   assert.match(route, /completed_activity/);
   assert.match(route, /needs_my_decision/);

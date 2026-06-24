@@ -122,3 +122,20 @@
   charge, DNS change, credential change, class backfill, Drive write, public
   publishing, browser private capture, or secret exposure was performed.
 - Current batch moved to `REQ-20260624-046`.
+
+2026-06-25T00:40:00+03:00:
+
+- `REQ-20260624-046` queue hygiene and owner clarity is locally verified and
+  blocked from terminal Done only by deploy/live proof.
+- Server-side `/api/bna/tasks` classification now separates machine-owned
+  agent jobs and active agent lifecycle rows into `codex_queue` before the
+  human/external waiting lane.
+- The owner-facing default task experience now presents Active Now, Needs Your
+  Decision, Waiting Externally, Recently Completed, and Full History / Search,
+  while deeper operational lanes keep Codex / Agent Work separate.
+- Focused syntax checks, focused queue/UI/reconciler tests 23/23, action
+  watchdog, and no-live/no-write census contract verification passed.
+- No hard-delete, deploy, production mutation, external write, send, charge,
+  DNS change, credential/account change, class backfill, Drive write, public
+  publishing, browser private capture, or secret exposure was performed.
+- Current batch moved to `REQ-20260624-047`.

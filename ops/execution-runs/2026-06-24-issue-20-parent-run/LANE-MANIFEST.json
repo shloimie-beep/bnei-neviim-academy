@@ -1,6 +1,6 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
-  "updated_at": "2026-06-25T00:29:00+03:00",
+  "updated_at": "2026-06-25T00:40:00+03:00",
   "parent_branch": "codex/issue-20-parent-run-20260624",
   "parent_run_path": "ops/execution-runs/2026-06-24-issue-20-parent-run",
   "active_pointer_owner": "parent",
@@ -127,7 +127,7 @@
       "requirement_ids": [
         "REQ-20260624-046"
       ],
-      "status": "queued",
+      "status": "integrated",
       "owned_paths": [
         "server.js",
         "public/operations.html",
@@ -136,7 +136,23 @@
         "ops/issue-20/queue-hygiene/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T00:40:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "pending_checkpoint_commit",
+        "evidence": [
+          "ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md",
+          "tests/operations-task-queue-visibility.test.js",
+          "tests/task-decision-census.test.js"
+        ],
+        "verification": [
+          "node --test tests\\operations-activity-queue-health-ui.test.js tests\\operations-task-queue-visibility.test.js tests\\task-decision-census.test.js tests\\ops-queue-reconciler.test.js tests\\task-queue-reconciler.test.js tests\\workspace-task-no-stale-agent.test.js 23/23",
+          "npm run watchdog:actions finding_count=0",
+          "node scripts\\task-decision-census.mjs --json --no-live --no-write"
+        ],
+        "blocker": "Deploy/live smoke proof remains gated by REQ-20260624-048 Railway targeting blocker.",
+        "next_action": "Continue REQ-20260624-047 owner setup and walkthrough."
+      }
     },
     {
       "lane_id": "owner-walkthrough",

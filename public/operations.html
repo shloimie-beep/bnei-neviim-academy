@@ -9033,6 +9033,7 @@
             { id: 'due_soon', label: 'Due Soon' },
             { id: 'schedule', label: 'Calendar' },
             { id: 'done_activity', label: 'Done / Activity' },
+            { id: 'full_history', label: 'Full History / Search' },
             { id: 'archived', label: 'Archived' },
             { id: 'decisions', label: 'Decisions' },
             { id: 'needs_my_decision', label: 'Needs My Decision' },
@@ -9068,6 +9069,13 @@
         const TASK_LANE_IDS = TASK_SUBTABS.map(tab => tab.id);
         const TASK_STAGE_FLOW = TASK_SUBTABS;
         const TASK_OPERATIONAL_LANES = TASK_SUBTABS;
+        const OWNER_TASK_DEFAULT_VIEWS = [
+            { id: 'active_now', label: 'Active Now', focus: 'tasks', note: 'Actionable work that can move now.' },
+            { id: 'needs_your_decision', label: 'Needs Your Decision', focus: 'needs_my_decision', note: 'Choices that need your input before work moves.' },
+            { id: 'waiting_externally', label: 'Waiting Externally', focus: 'pending', note: 'Human, account, credential, or outside-service blockers only.' },
+            { id: 'recently_completed', label: 'Recently Completed', focus: 'done_activity', note: 'Completed work and recent verified activity.' },
+            { id: 'full_history', label: 'Full History / Search', focus: 'full_history', note: 'All visible task records, archived records, and activity for search/review.' }
+        ];
         const RABBI_DIALOGUE_COLUMNS = [
             { id: 'decisions', label: 'Decisions', note: 'Human choices that unlock the next step.' },
             { id: 'pending', label: 'Blocked/access', note: 'Missing access, assets, or outside systems.' },
@@ -11182,8 +11190,8 @@
 
             return {
                 decisions: buckets.decisions.length,
-                codexPending: Number(queue.pending ?? buckets.tasks.filter(task => taskIsMachine(task) && String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0),
-                codexInProgress: Number(queue.in_progress ?? buckets.tasks.filter(task => String(task.agent_status || '').toLowerCase() === 'running').length ?? 0),
+                codexPending: Number(queue.pending ?? buckets.codex_queue.filter(task => String(task.agent_status || task.effective_agent_status || '').toLowerCase() === 'queued').length ?? 0),
+                codexInProgress: Number(queue.in_progress ?? buckets.codex_queue.filter(task => String(task.agent_status || task.effective_agent_status || '').toLowerCase() === 'running').length ?? 0),
                 notifications: unreadNotifications.length,
                 urgentNotifications: unreadNotifications.filter(item => ['urgent', 'high'].includes(String(item.priority || '').toLowerCase())).length,
                 accountabilityAttention: snapshots.filter(snapshot => ['needs_setup', 'due_today', 'missed', 'needs_review'].includes(snapshot.status)).length,
@@ -11203,6 +11211,7 @@
                 decisions: [],
                 pending: [],
                 tasks: [],
+                codex_queue: [],
                 done: [],
                 activity: []
             };
@@ -11319,7 +11328,7 @@
         function renderAgentStatusPanel(buckets) {
             const queue = agentFleetStatus?.queue || {};
             const fleet = agentFleetStatus?.fleet || {};
-            const agentWork = (buckets.tasks || []).filter(task => taskIsMachine(task) || ['queued', 'running', 'failed', 'blocked_needs_human_decision'].includes(String(task.agent_status || '').toLowerCase()));
+            const agentWork = (buckets.codex_queue || []).filter(task => taskIsMachine(task) || ['queued', 'running', 'failed', 'blocked_needs_human_decision'].includes(String(task.agent_status || task.effective_agent_status || '').toLowerCase()));
             const queued = Number(queue.pending ?? agentWork.filter(task => String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0);
             const inProgress = Number(queue.in_progress ?? agentWork.filter(task => String(task.agent_status || '').toLowerCase() === 'running').length ?? 0);
             const urgent = Number(queue.urgent_today ?? agentWork.filter(task => ['urgent', 'today'].includes(String(task.urgency || '').toLowerCase())).length ?? 0);
@@ -11522,8 +11531,8 @@
 
         function taskViewState() {
             const { buckets } = getTaskBuckets();
-            const codexQueueTasks = buckets.tasks.filter(taskMatchesCodexQueue).sort(sortTasks);
-            const regularTasks = buckets.tasks.filter(task => !taskMatchesCodexQueue(task)).sort(sortTasks);
+            const codexQueueTasks = buckets.codex_queue.slice().sort(sortTasks);
+            const regularTasks = buckets.tasks.slice().sort(sortTasks);
             const openTasks = [...buckets.decisions, ...buckets.pending, ...regularTasks, ...codexQueueTasks].sort(sortTasks);
             const myTasks = openTasks
                 .filter(task => taskMatchesSignalFilter(task, 'assigned_shloimie') || taskMatchesSignalFilter(task, 'needs_shloimie'))
@@ -11532,6 +11541,14 @@
             const dueSoonTasks = openTasks.filter(task => taskIsDueWithinDays(task, 7)).sort(sortTasks);
             const scheduleTasks = tasks.filter(task => taskHasSchedule(task) && taskStatusBucket(task) !== null).sort(sortTasks);
             const archivedTasks = tasks.filter(taskIsArchivedRecord).sort(sortTasks);
+            const fullHistoryTasks = uniqueTasksById([
+                ...tasks.filter(task => taskStatusBucket(task) !== null),
+                ...archivedTasks
+            ]).sort((a, b) => {
+                const aTime = Date.parse(a.last_activity_at || a.updated_at || a.created_at || 0);
+                const bTime = Date.parse(b.last_activity_at || b.updated_at || b.created_at || 0);
+                return bTime - aTime;
+            });
             const activityTasks = (buckets.activity.length ? buckets.activity : tasks).slice().sort((a, b) => {
                 const aTime = Date.parse(a.last_activity_at || a.updated_at || a.created_at || 0);
                 const bTime = Date.parse(b.last_activity_at || b.updated_at || b.created_at || 0);
@@ -11565,6 +11582,7 @@
                 due_soon: dueSoonTasks,
                 schedule: scheduleTasks,
                 done_activity: doneActivityTasks,
+                full_history: fullHistoryTasks,
                 archived: archivedTasks,
                 needs_my_decision: needsMyDecisionTasks,
                 needs_rabbi_decision: needsRabbiDecisionTasks,
@@ -11599,6 +11617,7 @@
                 due_soon: 'Due Soon',
                 schedule: 'Calendar',
                 done_activity: 'Done / Activity',
+                full_history: 'Full History / Search',
                 archived: 'Archived',
                 needs_my_decision: 'Needs My Decision',
                 needs_rabbi_decision: 'Needs Rabbi Scheller',
@@ -11617,6 +11636,7 @@
                 due_soon: dueSoonTasks.length,
                 schedule: scheduleTasks.length,
                 done_activity: doneActivityTasks.length,
+                full_history: fullHistoryTasks.length,
                 archived: archivedTasks.length,
                 needs_my_decision: needsMyDecisionTasks.length,
                 needs_rabbi_decision: needsRabbiDecisionTasks.length,
@@ -11645,6 +11665,7 @@
                 doneCount,
                 urgentCount,
                 dueSoonCount: dueSoonTasks.length,
+                fullHistoryCount: fullHistoryTasks.length,
                 archivedCount: archivedTasks.length,
                 rawInputCount: 0,
                 assignedCount: regularTasks.filter(task => task.assigned_to && !taskMatchesCodexQueue(task)).length,
@@ -12954,19 +12975,11 @@
             return `
                 <section class="focus-panel" aria-label="Tasks overview">
                     <div class="focused-grid">
-                        ${renderMetricButton('Urgent / Today', state.urgentCount, 'Open work due now.', "openTaskUrgentToday()")}
-                        ${renderMetricButton('My Tasks', state.myTaskCount, 'Open work owned by Shloimie/operator roles.', "setTaskFocus('mine')")}
-                        ${renderMetricButton('One Time Tasks', state.oneTimeTaskCount, 'Open One Time Mishnah Class work only.', "setTaskFocus('one_time')")}
-                        ${renderMetricButton('Decisions', state.decisionCount, 'Human choices that unlock the next step.', "setTaskFocus('decisions')")}
-                        ${renderMetricButton('Blocked', state.pendingCount, 'Human or external blockers only.', "setTaskFocus('pending')")}
-                        ${renderMetricButton('Due Soon', state.dueSoonCount, 'Open work due within seven days.', "setTaskFocus('due_soon')")}
-                        ${renderMetricButton('All Tasks', state.taskCount, 'Actionable work that can move now.', "setTaskFocus('tasks')")}
-                        ${renderMetricButton('Codex / Agent Work', state.codexQueueCount, 'Machine work that is queued, running, failed, or waiting for a decision.', "setTaskFocus('codex_queue')")}
-                        ${renderMetricButton('Done / Activity', state.activityCount, 'Completed work and recent task history.', "setTaskFocus('done_activity')")}
+                        ${OWNER_TASK_DEFAULT_VIEWS.map(view => renderMetricButton(view.label, taskOwnerDefaultCount(state, view.id), view.note, `setTaskFocus('${view.focus}')`)).join('')}
                     </div>
                     <details class="workflow-details">
                         <summary>Workflow rule</summary>
-                        <p>Captures become Decisions only when a human choice is needed, Blocked only when held by a human or outside service, Tasks when work can move, and Codex Queue when machine work is in progress.</p>
+                        <p>Captures become Decisions only when a human choice is needed, Waiting Externally only when held by a human or outside service, Active Now when work can move, and Codex Queue when machine work is in progress.</p>
                     </details>
                 </section>
             `;
@@ -12983,6 +12996,7 @@
                 due_soon: state.dueSoonCount,
                 schedule: state.tabCounts?.schedule || 0,
                 done_activity: state.activityCount,
+                full_history: state.fullHistoryCount,
                 archived: state.archivedCount,
                 needs_my_decision: state.tabCounts?.needs_my_decision || 0,
                 needs_rabbi_decision: state.tabCounts?.needs_rabbi_decision || 0,
@@ -13012,6 +13026,7 @@
                 due_soon: state.dueSoonCount || 0,
                 schedule: state.tabCounts?.schedule || 0,
                 done_activity: state.activityCount || 0,
+                full_history: state.fullHistoryCount || 0,
                 archived: state.archivedCount || 0,
                 needs_my_decision: state.tabCounts?.needs_my_decision || 0,
                 needs_rabbi_decision: state.tabCounts?.needs_rabbi_decision || 0,
@@ -13045,6 +13060,7 @@
                 due_soon: "setTaskFocus('due_soon')",
                 schedule: "setTaskFocus('schedule')",
                 done_activity: "setTaskFocus('done_activity')",
+                full_history: "setTaskFocus('full_history')",
                 archived: "setTaskFocus('archived')",
                 needs_my_decision: "setTaskFocus('needs_my_decision')",
                 needs_rabbi_decision: "setTaskFocus('needs_rabbi_decision')",
@@ -13066,6 +13082,7 @@
                 due_soon: 'due_soon',
                 schedule: 'schedule',
                 done_activity: 'done_activity',
+                full_history: 'full_history',
                 archived: 'archived',
                 needs_my_decision: 'needs_my_decision',
                 needs_rabbi_decision: 'needs_rabbi_decision',
@@ -13087,6 +13104,7 @@
                 due_soon: 'Open work due within seven days.',
                 schedule: 'Tasks with due or planned dates.',
                 done_activity: 'Completed work and recent activity.',
+                full_history: 'All visible task records plus archived/history rows for search and review.',
                 archived: 'Archived, hidden, or duplicate-linked records.',
                 needs_my_decision: 'Open Decisions owned by Shloimie/operator roles.',
                 needs_rabbi_decision: 'Open Decisions owned by Rabbi Ellie Scheller or provider staff.',
@@ -13585,6 +13603,7 @@
                 due_soon: 'No due-soon items match these filters.',
                 schedule: 'No calendar items match these filters.',
                 done_activity: 'No completed or recent activity items match these filters.',
+                full_history: 'No task history records match these filters.',
                 archived: 'No archived records match these filters.',
                 needs_my_decision: 'No Decisions need your input under these filters.',
                 needs_rabbi_decision: 'No Decisions need Rabbi Scheller under these filters.',
@@ -13605,7 +13624,7 @@
             const bucket = taskStatusBucket(task) || columnId;
             const agentStatus = String(task.agent_status || '').toLowerCase();
             if (bucket === 'done') return 'Done';
-            if (['queued', 'running'].includes(agentStatus) || (taskMatchesCodexQueue(task) && bucket === 'tasks')) return 'Codex Queue';
+            if (['queued', 'running'].includes(agentStatus) || taskMatchesCodexQueue(task)) return 'Codex Queue';
             if (bucket === 'decisions') return 'Decision';
             if (bucket === 'pending') return 'Blocked';
             return 'Task';
@@ -13712,6 +13731,16 @@
                     }).join('')}
                 </div>
             `;
+        }
+
+        function taskOwnerDefaultCount(state = {}, viewId = '') {
+            return ({
+                active_now: state.taskCount || 0,
+                needs_your_decision: state.tabCounts?.needs_my_decision || 0,
+                waiting_externally: state.pendingCount || 0,
+                recently_completed: state.activityCount || 0,
+                full_history: state.fullHistoryCount || 0
+            })[viewId] || 0;
         }
 
 
@@ -32947,8 +32976,8 @@
             if (task.completed_at || task.verified_at || ['done', 'archive'].includes(stage)) return 'done';
             if (taskKind === 'history') return 'done';
             if (taskKind === 'decision') return 'decisions';
+            if (taskKind === 'agent_job' || taskIsMachine(task)) return 'codex_queue';
             if (taskKind === 'pending_access') return 'pending';
-            if (taskKind === 'agent_job') return 'tasks';
             const itemType = String(task.item_type || '').toLowerCase();
             if (itemType === 'decision' || stage === 'needs_decision' || task.decision_required) return 'decisions';
             const waitingOn = String(task.waiting_on || '').trim();

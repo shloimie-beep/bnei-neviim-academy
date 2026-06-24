@@ -26286,3 +26286,30 @@ No second agent fleet, deploy, production mutation, external write, GitHub
 status comment, send, charge, DNS change, credential/account change, class
 backfill, Drive write, browser private capture, public publishing, or secret
 exposure was performed. Next Issue #20 batch is `REQ-20260624-046`.
+
+## 2026-06-25T00:40:00+03:00 - Issue #20 Queue Hygiene Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-046`.
+Operations task queues now separate machine-owned Codex/agent work from
+human/external waiting, and the default owner task experience is Active Now,
+Needs Your Decision, Waiting Externally, Recently Completed, and Full History /
+Search.
+
+The server-side `/api/bna/tasks` status-bucket filter now exposes
+`codex_queue` and classifies `agent_job`, machine-owned rows, and active agent
+lifecycle states into that lane. The Operations UI keeps Codex / Agent Work as
+an operational lane while the owner defaults stay focused on current human
+decisions, external blockers, recent completion, and searchable history.
+
+Verification passed: changed-file syntax checks, focused Operations
+activity/queue/census/reconciler/workspace tests 23/23, `npm run
+watchdog:actions` with 0 findings, and no-live/no-write queue census contract
+readback. Post-closeout run validation/source coverage/stale evidence,
+JSON/JSONL parsing, secret audit, diff check, and next-batch selection also
+passed. No hard-delete, deploy, production mutation, external write, send,
+charge, DNS change, credential/account change, class backfill, Drive write,
+browser private capture, public publishing, or secret exposure was performed.
+
+`REQ-20260624-046` remains blocked from Done only because the queue API/UI
+changes require deploy/live proof under `REQ-20260624-048`. Next Issue #20
+batch is `REQ-20260624-047`.

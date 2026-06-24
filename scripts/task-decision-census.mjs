@@ -19,13 +19,19 @@ export const TASK_DECISION_LANES = [
 ];
 
 export const TASK_DEFAULT_VIEWS = [
+  { id: 'active_now', label: 'Active Now', description: 'Actionable open work that can move now.' },
+  { id: 'needs_your_decision', label: 'Needs Your Decision', description: 'Open Decisions owned by Shloimie/operator roles.' },
+  { id: 'waiting_externally', label: 'Waiting Externally', description: 'Human, account, credential, or outside-service blockers only.' },
+  { id: 'recently_completed', label: 'Recently Completed', description: 'Closed work and recent task activity.' },
+  { id: 'full_history_search', label: 'Full History / Search', description: 'Archived, duplicate-linked, hidden, completed, and searchable historical records.' }
+];
+
+export const TASK_OPERATIONAL_VIEWS = [
   { id: 'my_tasks', label: 'My Tasks', description: 'Open work owned by Shloimie/operator roles.' },
   { id: 'one_time_tasks', label: 'One Time Tasks', description: 'Open One Time Mishnah Class work only.' },
   { id: 'codex_agent_work', label: 'Codex / Agent Work', description: 'Machine work and observable agent jobs.' },
-  { id: 'blocked', label: 'Blocked', description: 'Open work blocked by a human or external account/system.' },
   { id: 'due_soon', label: 'Due Soon', description: 'Open work due within seven days.' },
   { id: 'calendar', label: 'Calendar', description: 'Open work with a planned or due date.' },
-  { id: 'completed_activity', label: 'Done / Activity', description: 'Closed work and recent task activity.' },
   { id: 'archived', label: 'Archived', description: 'Reversible archive, duplicate, or hidden records.' }
 ];
 
@@ -769,6 +775,7 @@ export function buildTaskDecisionCensus({ tasks = [], generated_at = new Date().
       by_last_activity: countBy(redactedTasks, (task) => task.last_activity_bucket)
     },
     default_task_views: TASK_DEFAULT_VIEWS,
+    operational_task_views: TASK_OPERATIONAL_VIEWS,
     default_decision_views: DECISION_DEFAULT_VIEWS,
     card_contract: [
       'concise title',
@@ -785,14 +792,14 @@ export function buildTaskDecisionCensus({ tasks = [], generated_at = new Date().
       'direct action'
     ],
     default_view_rules: [
-      'My Tasks: open work assigned to or waiting on Shloimie/operator roles.',
+      'Active Now: actionable open human work, excluding Decisions, external waiting, Codex Queue, and completed/history rows.',
+      'Needs Your Decision: open Decisions owned by Shloimie/operator roles.',
+      'Waiting Externally: human or external blockers only, with blocker owner and next action.',
+      'Recently Completed: done/activity rows with proof or verification notes.',
+      'Full History / Search: archived, hidden, duplicate-linked, completed, and searchable historical records.',
+      'Codex / Agent Work: Codex/agent/system work and agent_job rows, including queued/running/failed machine states, outside the human waiting lane.',
       'One Time Tasks: open rabbi_sheller_provider / one_time_mishnah_class records only.',
-      'Codex / Agent Work: Codex/agent/system work and agent_job rows, including queued/running/failed machine states.',
-      'Blocked: human or external blockers only, with blocker owner and next action.',
-      'Due Soon: open work due within seven days.',
-      'Calendar: open work with due_date or planned_at.',
-      'Done / Activity: done/archive/history rows with proof or verification notes.',
-      'Archived: archived, hidden, or duplicate-archived rows excluded from default active views.'
+      'Calendar: open work with due_date or planned_at.'
     ],
     duplicate_groups,
     violations,
@@ -950,6 +957,14 @@ export function censusMarkdown(census = {}) {
     markdownTableRow(['---', '---']),
     ...(census.default_task_views?.length
       ? census.default_task_views.map((view) => markdownTableRow([view.label, view.description]))
+      : [markdownTableRow(['none', ''])]),
+    '',
+    '## Operational Task Views',
+    '',
+    markdownTableRow(['View', 'Description']),
+    markdownTableRow(['---', '---']),
+    ...(census.operational_task_views?.length
+      ? census.operational_task_views.map((view) => markdownTableRow([view.label, view.description]))
       : [markdownTableRow(['none', ''])]),
     '',
     '## Default Decision Views',

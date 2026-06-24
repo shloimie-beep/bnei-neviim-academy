@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
   "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
-  "updated_at": "2026-06-25T00:29:00+03:00",
+  "updated_at": "2026-06-25T00:40:00+03:00",
   "git_refs": {
     "base_branch": "codex/issue-18-class-intake-readonly-20260624",
     "working_branch": "codex/issue-20-parent-run-20260624",
@@ -556,10 +556,10 @@
       "depends_on": [
         "REQ-20260624-040"
       ],
-      "status": "not_started",
-      "implementation_status": "queued_after_baseline",
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
       "can_continue_without_operator": true,
-      "next_action": "Classify visible records and implement owner-focused default lanes with audit-safe archive/supersede/reclassify behavior.",
+      "next_action": "Continue to REQ-20260624-047 owner setup and walkthrough while final deploy/live proof remains gated by REQ-20260624-048.",
       "acceptance_criteria": [
         "Every visible record is classified as active executable, awaiting owner, externally blocked, completed/history, duplicate, superseded, or internal evidence incorrectly surfaced.",
         "Default owner experience shows Active now, Needs your decision, Waiting externally, Recently completed, and Full history/search.",
@@ -567,22 +567,48 @@
         "Cleanup archives/supersedes/reclassifies with audit trail and does not hard-delete canonical history or Issue #18."
       ],
       "evidence": [
-        "ops/execution-runs/2026-06-24-issue-20-parent-run/",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md",
+        "server.js",
+        "public/operations.html",
+        "scripts/task-decision-census.mjs",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/task-decision-census.test.js",
+        "tests/ops-queue-reconciler.test.js",
+        "tests/task-queue-reconciler.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "ops/watchdog-audits/2026-06-24T21-46-watchdog-action-audit.md",
         "tasks-pending/2026-06-24-issue-20-parent-run.md"
       ],
       "verification": [
-        "Pending queue census and UI proof."
+        "PASS node --check server.js",
+        "PASS node --check scripts\\task-decision-census.mjs",
+        "PASS node --check tests\\operations-task-queue-visibility.test.js",
+        "PASS node --check tests\\task-decision-census.test.js",
+        "PASS node --test tests\\operations-activity-queue-health-ui.test.js tests\\operations-task-queue-visibility.test.js tests\\task-decision-census.test.js tests\\ops-queue-reconciler.test.js tests\\task-queue-reconciler.test.js tests\\workspace-task-no-stale-agent.test.js 23/23",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS node scripts\\task-decision-census.mjs --json --no-live --no-write produced owner default view contract and skipped live reads by explicit flag",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4731 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-047"
       ],
       "implementation_files": [
         "server.js",
         "public/operations.html",
-        "scripts/",
-        "tests/",
-        "ops/"
+        "scripts/task-decision-census.mjs",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/task-decision-census.test.js",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md"
       ],
       "deployment_required": true,
       "pull_request": "pending",
-      "updated_at": "2026-06-24T22:45:00+03:00"
+      "updated_at": "2026-06-25T00:40:00+03:00",
+      "blocker": "App-visible/API/UI queue-lane changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke the Operations queue UI/API owner-lane behavior."
     },
     {
       "id": "REQ-20260624-047",
@@ -753,6 +779,19 @@
       "requirement_id": "REQ-20260624-045",
       "status": "done",
       "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|operations_queue|GITHUB-ISSUE-20|REQ-20260624-046|queue_hygiene_owner_clarity",
+      "title": "Issue #20 queue hygiene and owner-facing lane clarity",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-046",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "App-visible/API/UI queue behavior needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
     }
   ],
   "decisions": []

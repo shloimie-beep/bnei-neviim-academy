@@ -11,7 +11,7 @@ Current branch:
 
 Open requirement:
 
-- `REQ-20260624-046` - Queue hygiene and owner clarity.
+- `REQ-20260624-047` - Owner setup and walkthrough.
 
 Next safe step:
 
@@ -20,14 +20,14 @@ npm run bna:run:next
 ```
 
 Then recheck Git/GitHub/Railway/live baseline only if the branch or live
-target has changed. Otherwise begin Batch F using the parent coordination
+target has changed. Otherwise begin Batch G using the parent coordination
 rules in `COORDINATION.md` and `LANE-MANIFEST.json`.
 
-Batches A, C, and D are locally verified and blocked from Done only by
+Batches A, C, D, and F are locally verified and blocked from Done only by
 deploy/live proof under `REQ-20260624-048`. Batches B and E are Done. If
-`npm run bna:run:next` selects `REQ-20260624-046`, classify visible queue
-records into owner-meaningful lanes without deleting canonical history or
-surfacing internal handoff files as current owner work.
+`npm run bna:run:next` selects `REQ-20260624-047`, create the owner
+setup/walkthrough artifact and page without claiming unsupported deploy/live
+state.
 
 Do not run Tier 3 actions without explicit approval:
 
