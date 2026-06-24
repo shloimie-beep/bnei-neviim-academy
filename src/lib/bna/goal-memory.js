@@ -1,11 +1,9 @@
 const { affectedGoalIdsForText } = require('./goal-registry');
 const { defaultItemFields } = require('./intake-schema');
-const { compactWhitespace, formatStableId, sourceQuote, titleFromText } = require('./ramble-protocol');
+const { compactWhitespace, dateStamp, formatStableId, sourceQuote, titleFromText } = require('./ramble-protocol');
 
 function sourceDateStamp(value = null) {
-  const explicit = String(value || '').match(/\b(20\d{2})-?(\d{2})-?(\d{2})\b/);
-  if (explicit) return `${explicit[1]}${explicit[2]}${explicit[3]}`;
-  return new Date().toISOString().slice(0, 10).replace(/-/g, '');
+  return dateStamp(value);
 }
 
 function titleForGoal(text = '') {
@@ -27,7 +25,15 @@ function createGoalCandidateFromText({
   const clean = compactWhitespace(text);
   const relatedGoalIds = affectedGoalIdsForText(clean);
   return defaultItemFields({
-    stable_id: formatStableId('goal_candidate', date || sourceDateStamp(), index),
+    stable_id: formatStableId('goal_candidate', date || sourceDateStamp(), index, {
+      text: clean,
+      raw_id,
+      source,
+      scope_type,
+      scope_id,
+      workspace_key,
+      project_key,
+    }),
     item_type: 'goal_candidate',
     goal_type: 'standing_goal_candidate',
     title: titleForGoal(clean),
@@ -145,7 +151,14 @@ function recordGoalCheckResult({
   index = 1,
 } = {}) {
   return {
-    stable_id: formatStableId('watchdog_finding', date || sourceDateStamp(), index),
+    stable_id: formatStableId('watchdog_finding', date || sourceDateStamp(), index, {
+      goal_id,
+      check_name,
+      status,
+      evidence_path,
+      report_path,
+      finding_id,
+    }),
     goal_id,
     check_name,
     status,
@@ -172,7 +185,16 @@ function createWatchdogRepairTask({
   date = null,
   index = 1,
 } = {}) {
-  const stable_id = formatStableId('task', date || sourceDateStamp(), index);
+  const stable_id = formatStableId('task', date || sourceDateStamp(), index, {
+    finding_id,
+    goal_id,
+    title,
+    route,
+    selector,
+    evidence_path,
+    expected_behavior,
+    suggested_fix,
+  });
   const routeText = route ? ` on ${route}` : '';
   return {
     stable_id,

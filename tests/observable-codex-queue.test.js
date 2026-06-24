@@ -50,6 +50,7 @@ test('server exposes idempotent bot capture and observable agent job lifecycle A
 
 test('agent fleet prefers observable jobs and reports source-chat status transitions', () => {
   const supervisor = read('scripts/agent-fleet-supervisor.mjs');
+  const envExample = read('.env.example');
 
   assert.match(supervisor, /loadAgentJobs/);
   assert.match(supervisor, /claimAgentJob/);
@@ -61,6 +62,8 @@ test('agent fleet prefers observable jobs and reports source-chat status transit
   assert.match(supervisor, /Codex completed task/);
   assert.match(supervisor, /status = 'queued'/);
   assert.match(supervisor, /blocked_needs_human_decision/);
+  assert.match(supervisor, /autoDeploy: String\(env\.AGENT_FLEET_AUTO_DEPLOY \|\| '0'\) === '1'/);
+  assert.match(envExample, /AGENT_FLEET_AUTO_DEPLOY=0/);
   assert.doesNotMatch(supervisor, /queued_for_codex/);
 });
 

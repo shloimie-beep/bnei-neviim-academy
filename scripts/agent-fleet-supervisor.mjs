@@ -198,7 +198,7 @@ function loadConfig() {
     maxRetries: Number(env.AGENT_FLEET_MAX_RETRIES || 2),
     openAiSmoke: String(env.AGENT_FLEET_OPENAI_SMOKE || '1') !== '0',
     verifyCommandsRaw: env.AGENT_FLEET_VERIFY_COMMANDS || '',
-    autoDeploy: String(env.AGENT_FLEET_AUTO_DEPLOY || '1') !== '0',
+    autoDeploy: String(env.AGENT_FLEET_AUTO_DEPLOY || '0') === '1',
     deployCommand: env.AGENT_FLEET_DEPLOY_COMMAND || 'npm run railway:redeploy',
     deployDoctorCommand: env.AGENT_FLEET_DEPLOY_DOCTOR_COMMAND || 'npm run railway:doctor',
     deployTimeoutMs: Number(env.AGENT_FLEET_DEPLOY_TIMEOUT_MS || 15 * 60 * 1000),

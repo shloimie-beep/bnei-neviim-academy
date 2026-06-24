@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-06-23T10:45:18.452Z",
+  "mode": "dry_run",
+  "external_write_performed": false,
+  "secret_values_printed": false,
+  "repo": "shloimie-beep/bnei-neviim-academy",
+  "issue_number": 7,
+  "comment_id": null,
+  "url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/7",
+  "trusted_source": true,
+  "source_envelope": {
+    "source_id": "shloimie-beep/bnei-neviim-academy#7",
+    "stable_key": "intake_source_3e5fec3798dc69f8",
+    "idempotency_key": "3e5fec3798dc69f8f3207ef91f110c4bea90fda3f18917295f06c512a03eae9c",
+    "fingerprint": "b14eea7716850bac9c2138ff386ad9f31be8041cf3112097f88cceab8f12a551",
+    "body_length": 25127,
+    "excerpt": "# Make every operator ramble flow through one canonical agent-execution system # BNA goal-mode work order: unified ramble-to-execution operating system ## Operator outcome Make this the normal way Shloimie works: 1. Shloimie speaks naturally in ChatGPT, Telegram, Codex, Operations, Drive, a recording, or another approved channel. 2. The system preserves the ",
+    "privacy_classification": "redacted_repo_safe"
+  },
+  "parser_counts": {
+    "decisions": 27,
+    "tasks": 102,
+    "content_items": 5,
+    "community_items": 38,
+    "integration_items": 10,
+    "notes": 84,
+    "unresolved": 0,
+    "schema_valid": true,
+    "schema_errors": []
+  },
+  "apply_blocker": "Database persistence and GitHub acknowledgement are intentionally not performed by this dry-run command."
+}
