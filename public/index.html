@@ -980,18 +980,31 @@
         }
 
         .media-dot {
-            width: 10px;
-            height: 10px;
+            position: relative;
+            width: 32px;
+            height: 32px;
             border-radius: 999px;
             border: 0;
-            background: rgba(30, 58, 95, 0.24);
+            background: transparent;
             cursor: pointer;
             transition: transform 0.2s ease, background 0.2s ease;
         }
 
-        .media-dot.active {
+        .media-dot::after {
+            content: "";
+            position: absolute;
+            inset: 50% auto auto 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(30, 58, 95, 0.24);
+            transform: translate(-50%, -50%);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .media-dot.active::after {
             background: var(--accent-gold);
-            transform: scale(1.2);
+            transform: translate(-50%, -50%) scale(1.2);
         }
 
         /* ===== LEARNING ECOSYSTEM SECTION ===== */
@@ -2534,6 +2547,8 @@
                     </details>
                     <a href="#blog" class="nav-link nav-link--mobile-only" data-i18n="navBlog" data-en-href="#blog" data-he-href="#blog">Blog</a>
                     <a href="#faq" class="nav-link" data-i18n="navFaq" data-en-href="#faq" data-he-href="#faq">FAQ</a>
+                    <a href="/providers" class="nav-link" data-i18n="navProviderDirectory" data-en-href="/providers" data-he-href="/he/providers">Service Provider Directory</a>
+                    <a href="/one-time" class="nav-link" data-i18n="navOneTime" data-en-href="/one-time" data-he-href="/one-time">One Time</a>
                     <a href="/parent/login" class="nav-link" data-i18n="navParentLogin" data-en-href="/parent/login" data-he-href="/parent/login">Parent Login</a>
                     <a href="/student/login" class="nav-link" data-i18n="navStudentLogin" data-en-href="/student/login" data-he-href="/student/login">Student Login</a>
                     <a href="/provider" class="nav-link" data-i18n="navProviderAccess" data-en-href="/provider" data-he-href="/provider">Rabbi / Provider Login</a>
@@ -3334,6 +3349,8 @@
                 navBlogTechnology: "Technology",
                 navBlogFuture: "Future Vision",
                 navFaq: "FAQ",
+                navProviderDirectory: "Service Provider Directory",
+                navOneTime: "One Time",
                 navParentLogin: "Parent Login",
                 navStudentLogin: "Student Login",
                 navProviderAccess: "Rabbi / Provider Login",
@@ -3479,6 +3496,8 @@
                 navBlogTechnology: "טכנולוגיה",
                 navBlogFuture: "חזון עתידי",
                 navFaq: "שאלות",
+                navProviderDirectory: "\u05d0\u05d9\u05e0\u05d3\u05e7\u05e1 \u05e1\u05e4\u05e7\u05d9\u05dd",
+                navOneTime: "\u05d5\u05d5\u05d0\u05df \u05d8\u05d9\u05d9\u05dd",
                 navParentLogin: "כניסת הורים",
                 navStudentLogin: "כניסת תלמיד",
                 navProviderAccess: "כניסת רב / ספק",

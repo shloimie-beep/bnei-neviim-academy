@@ -282,6 +282,38 @@
       ]
     },
     {
+      "route": "/providers",
+      "surface": "public_provider_index_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/service-providers",
+      "expected_logged_out_behavior": "load_public_provider_index_only",
+      "expected_logged_in_behavior": "load_public_provider_index_only",
+      "privacy_risk": "normal",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
+      "route": "/he/providers",
+      "surface": "public_provider_index_hebrew_alias",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "canonical_target": "/service-providers",
+      "expected_logged_out_behavior": "load_public_provider_index_only",
+      "expected_logged_in_behavior": "load_public_provider_index_only",
+      "privacy_risk": "normal",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-014"
+      ]
+    },
+    {
       "route": "/become-service-provider",
       "surface": "public_provider_join",
       "access": "public",

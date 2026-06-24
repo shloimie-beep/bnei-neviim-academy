@@ -1,6 +1,6 @@
 # Navigation Graph
 
-Generated at 2026-06-24T04:29:31.232Z.
+Generated at 2026-06-24T04:54:06.024Z.
 
 Edges are discovered from literal anchors, JavaScript navigation, form actions, redirects, manifests, service-worker cache entries, and fetch/API calls.
 
@@ -9,6 +9,8 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | / | /api/torah-learning/public-summary | fetch | public/index.html |
 | / | /data/learning-moments.json | fetch | public/index.html |
 | / | /he | literal-a-href | public/index.html |
+| / | /he/providers | literal-a-href | public/index.html |
+| / | /one-time | literal-a-href | public/index.html |
 | / | /parent/login | literal-a-href | public/index.html |
 | / | /parents | literal-a-href | public/index.html |
 | / | /provider | literal-a-href | public/index.html |

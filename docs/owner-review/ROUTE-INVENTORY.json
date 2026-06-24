@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-06-24T04:29:31.232Z",
+  "generated_at": "2026-06-24T04:54:06.024Z",
   "requirement_id": "REQ-20260624-003",
   "source_id": "RAW-20260624-001",
-  "content_hash": "a93a59302f75840841269f94d19b9de6333640ea6745e327848328fd21ba01f0",
+  "content_hash": "d33845346b9e5402677f9bc7f5879b8c3c9befa36f39e1cd8d76889f4714a46a",
   "summary": {
     "total_routes": 689,
     "html_pages": 34,
     "server_routes": 753,
     "api_routes": 584,
-    "linked_destinations": 72,
-    "client_edges": 219,
+    "linked_destinations": 73,
+    "client_edges": 221,
     "manifest_edges": 9,
     "service_worker_edges": 13,
     "form_actions": 0,
@@ -25,9 +25,9 @@
       "Audience": "public",
       "Authentication": "none",
       "Entry point": "/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href)",
-      "Back path": "/parents | /provider | /school",
+      "Back path": "/one-time | /parents | /provider | /school",
       "Inbound links": "/assistant-setup.html (literal-a-href) | /documents/parent-handbook.html (literal-a-href) | /member-library.html (literal-a-href) | /member.html (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent-login.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /rabbi.html (literal-a-href) | /signup-thank-you.html (literal-a-href) | /signup.html (window.location) | /student.html (literal-a-href) | public/manifest.json (manifest:id) | public/manifest.json (manifest:scope) | public/manifest.json (manifest:start_url)",
-      "Outbound links": "/api/torah-learning/public-summary (fetch) | /data/learning-moments.json (fetch) | /he (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href) | /provider (literal-a-href) | /providers/join (literal-a-href) | /school (literal-a-href) | /signup.html (literal-a-href) | /student/login (literal-a-href)",
+      "Outbound links": "/api/torah-learning/public-summary (fetch) | /data/learning-moments.json (fetch) | /he (literal-a-href) | /he/providers (literal-a-href) | /one-time (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href) | /provider (literal-a-href) | /providers/join (literal-a-href) | /school (literal-a-href) | /signup.html (literal-a-href) | /student/login (literal-a-href)",
       "Status": "keep",
       "Dependencies": "local",
       "Review state": "ready",
@@ -9174,15 +9174,15 @@
       "Implementation": "public/service-providers.html",
       "Audience": "provider",
       "Authentication": "none",
-      "Entry point": "Alias/alternate route for /he/service-providers",
+      "Entry point": "/ (literal-a-href)",
       "Back path": "none detected",
-      "Inbound links": "",
+      "Inbound links": "/ (literal-a-href)",
       "Outbound links": "",
       "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
-      "Registry surface": "",
-      "Discovered as": "server-get"
+      "Registry surface": "public_provider_index_hebrew_alias",
+      "Discovered as": "literal-a-href | route-registry | server-get"
     },
     {
       "Canonical URL": "/he/school",
@@ -9354,9 +9354,9 @@
       "Implementation": "public/one-time/index.html",
       "Audience": "one time",
       "Authentication": "none",
-      "Entry point": "/member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href)",
+      "Entry point": "/ (literal-a-href) | /member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href)",
       "Back path": "/one-time | /rabbi-member",
-      "Inbound links": "/member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string)",
+      "Inbound links": "/ (literal-a-href) | /member-library.html (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /one-time-email-review.html (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /parent.html (literal-a-href) | /provider-participant.html (literal-a-href) | /provider.html (literal-a-href) | /rabbi-member.html (literal-a-href) | /student.html (literal-a-href) | public/js/bna-site-nav.js (js-generated-route-string)",
       "Outbound links": "/api/one-time/campaign (fetch) | /api/one-time/interest (fetch) | /one-time (literal-a-href) | /one-time/privacy.html (literal-a-href) | /one-time/terms.html (literal-a-href) | /rabbi-member (literal-a-href)",
       "Status": "keep",
       "Dependencies": "local",
@@ -9991,8 +9991,8 @@
       "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
-      "Registry surface": "",
-      "Discovered as": "server-get"
+      "Registry surface": "public_provider_index_alias",
+      "Discovered as": "route-registry | server-get"
     },
     {
       "Canonical URL": "/providers-join.html",
@@ -10389,6 +10389,20 @@
       "to": "/he",
       "kind": "literal-a-href",
       "raw": "/he",
+      "source": "public/index.html"
+    },
+    {
+      "from": "/",
+      "to": "/he/providers",
+      "kind": "literal-a-href",
+      "raw": "/he/providers",
+      "source": "public/index.html"
+    },
+    {
+      "from": "/",
+      "to": "/one-time",
+      "kind": "literal-a-href",
+      "raw": "/one-time",
       "source": "public/index.html"
     },
     {
