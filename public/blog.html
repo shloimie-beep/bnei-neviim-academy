@@ -102,7 +102,7 @@
       document.getElementById("categoryFilters").innerHTML = categories.map((category) => {
         const isAll = category === copy.all;
         const normalizedActive = activeCategory === "All" ? copy.all : activeCategory;
-        return `<button class="filter-btn ${category === normalizedActive ? "is-active" : ""}" type="button" data-category="${BNAPages.escapeHtml(isAll ? "All" : category)}">${BNAPages.escapeHtml(category)}</button>`;
+        return `<button class="filter-btn ${category === normalizedActive ? "is-active" : ""}" type="button" aria-pressed="${category === normalizedActive ? "true" : "false"}" data-category="${BNAPages.escapeHtml(isAll ? "All" : category)}">${BNAPages.escapeHtml(category)}</button>`;
       }).join("");
       document.querySelectorAll(".filter-btn").forEach((button) => {
         button.addEventListener("click", () => {

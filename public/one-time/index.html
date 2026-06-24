@@ -348,12 +348,16 @@
       font-weight: 780;
     }
     .checkbox-label {
-      grid-template-columns: 20px minmax(0, 1fr);
-      align-items: start;
+      grid-template-columns: 28px minmax(0, 1fr);
+      align-items: center;
       color: #344252;
       line-height: 1.35;
     }
-    .checkbox-label input { width: auto; margin-top: 3px; }
+    .checkbox-label input {
+      width: 24px;
+      height: 24px;
+      margin-top: 0;
+    }
     input,
     select,
     textarea {
@@ -376,14 +380,41 @@
       background: var(--ot-black);
     }
     .footer-row {
+      display: grid;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .footer-links {
       display: flex;
       flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 14px;
+      gap: 8px 14px;
     }
-    .footer-row a {
+
+    .footer-row a,
+    .footer-links a {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 8px;
       color: rgba(255,255,255,0.74);
+      padding: 7px 9px;
       text-decoration: none;
+    }
+
+    .footer-row a:hover,
+    .footer-row a:focus-visible,
+    .footer-links a:hover,
+    .footer-links a:focus-visible,
+    .footer-links a[aria-current="page"] {
+      color: var(--ot-yellow);
+      outline: none;
+    }
+
+    .footer-row a:focus-visible,
+    .footer-links a:focus-visible {
+      outline: 3px solid rgba(237,229,24,0.8);
+      outline-offset: 3px;
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -442,7 +473,7 @@
         <a href="#watch-rabbi">Watch</a>
         <a href="#what-you-get">Program</a>
         <a href="#how-it-works">How It Works</a>
-        <a href="#faq">FAQ</a>
+        <a href="#faq">Campaign FAQ</a>
         <a href="#signup">Start Free</a>
         <a href="/rabbi-member">Member Login</a>
       </nav>
@@ -691,11 +722,19 @@
   <footer>
     <div class="wrap footer-row">
       <span>OneTimeOneTime Mishnayos</span>
-      <span>
-        <a href="/one-time/privacy.html">Privacy</a> |
-        <a href="/one-time/terms.html">Terms</a> |
+      <nav class="footer-links" aria-label="One Time footer navigation">
+        <a href="/">BNA</a>
+        <a href="/school">School</a>
+        <a href="/parents">Families</a>
+        <a href="/service-providers">Provider Directory</a>
+        <a href="/one-time" aria-current="page">One Time</a>
+        <a href="/blog">Blog</a>
+        <a href="/faq">FAQ</a>
+        <a href="/signup.html">BNA Register</a>
+        <a href="/one-time/privacy.html">Privacy</a>
+        <a href="/one-time/terms.html">Terms</a>
         <a href="/rabbi-member">Member Login</a>
-      </span>
+      </nav>
     </div>
   </footer>
 

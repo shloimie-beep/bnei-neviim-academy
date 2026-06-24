@@ -1,0 +1,63 @@
+{
+  "lane": "public-ui",
+  "branch": "codex/closeout-public-ui-20260624",
+  "base_sha": "161f8623c50d7ef226066d101bfa58c28aff2346",
+  "status": "pushed",
+  "goal_status": "all_lane_requirements_done",
+  "deploy_run": false,
+  "external_reads": [
+    {
+      "target": "https://bneineviimacademy.org",
+      "type": "anonymous_public_browser_screenshots",
+      "writes": false
+    }
+  ],
+  "external_writes": [],
+  "routes_inspected": [
+    "/",
+    "/school",
+    "/parents",
+    "/service-providers",
+    "/providers/join?onboard=provider",
+    "/one-time",
+    "/blog",
+    "/faq",
+    "/signup.html",
+    "/signup-he.html",
+    "/parent/login",
+    "/student/login",
+    "/provider",
+    "/operations-login.html",
+    "/register",
+    "/families",
+    "/parent-app",
+    "/providers",
+    "/community",
+    "/he",
+    "/he/blog",
+    "/he/faq",
+    "/he/school",
+    "/he/parents",
+    "/he/service-providers",
+    "/one-time/mishnayos",
+    "/one-time/member-login"
+  ],
+  "viewports": [
+    "390x844",
+    "768x1024",
+    "1440x900"
+  ],
+  "primary_evidence": [
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/public-ui/PUBLIC-UI-SMOKE.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/public-ui/VISUAL-DELTA.md",
+    "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/lanes/public-ui/public-ui-smoke-report.json"
+  ],
+  "summary": {
+    "local_smoke": "pass",
+    "required_viewports": "pass",
+    "alias_checks": "pass",
+    "production_comparison": "captured_read_only",
+    "shared_patch_requested": false,
+    "lane_blockers": []
+  }
+}

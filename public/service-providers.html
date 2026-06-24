@@ -437,7 +437,7 @@
                                         <p class="meta">${escapeHtml([service.offering_type || service.service_type, service.age_range, service.schedule_text, service.is_free ? 'Free' : service.price_text || 'Price/details by provider'].filter(Boolean).join(' / '))}</p>
                                         ${service.description ? `<p>${escapeHtml(service.description)}</p>` : ''}
                                     </div>
-                                `).join('') || '<div class="service"><strong>Profile listing</strong><p class="meta">Service details can be added later.</p></div>'}
+                                `).join('') || '<div class="service"><strong>Profile listing</strong><p class="meta">Current details can be requested through the parent portal.</p></div>'}
                             </div>
                             <div class="actions" style="justify-content:flex-start;margin-top:12px;">${links}</div>
                         </div>
