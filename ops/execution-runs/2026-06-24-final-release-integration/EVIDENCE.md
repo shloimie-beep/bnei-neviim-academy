@@ -97,3 +97,13 @@ Summary: `REQ-20260624-025` passed the local deterministic release gate on the
 pushed release-code SHA. No PR merge, deploy, live smoke, production database
 mutation, class backfill, Stripe charge, Vimeo upload/publication, send, DNS
 change, credential change, or secret exposure was performed.
+
+Final PR merge-readiness evidence:
+
+- `ops/execution-runs/2026-06-24-final-release-integration/MERGE-READINESS.md`
+
+Summary: `REQ-20260624-026` is cleared to move PR #16 from draft to ready and
+merge only if GitHub still reports the PR clean and mergeable. Deployment,
+live-smoke proof, production database work, guarded class backfill, Stripe,
+Vimeo, send, DNS, credential, and secret-changing work remain outside this
+merge gate.
