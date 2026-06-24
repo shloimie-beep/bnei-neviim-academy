@@ -32,15 +32,18 @@ test('UI-01 public routes and aliases are wired without changing PWA identities'
   assert.match(fs.readFileSync('public/parent-manifest.json', 'utf8'), /"start_url": "\/parent\?source=parent-pwa"/);
 });
 
-test('UI-01 shared public shell exposes the audience taxonomy and footer mount', () => {
-  for (const label of ['Explore', 'School', 'Families', 'Service Providers', 'Portal Login']) {
+test('UI-01 shared public shell exposes direct audience navigation and footer mount', () => {
+  for (const label of ['School', 'Families', 'Provider Directory', 'One Time', 'Blog', 'FAQ', 'Portal Login']) {
     assert.match(siteNav, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
-  assert.match(siteNav, /function renderAudienceDropdown/);
+  assert.match(siteNav, /id: 'school', href: schoolUrl\(lang\)/);
+  assert.match(siteNav, /id: 'parents', href: parentsUrl\(lang\)/);
+  assert.match(siteNav, /id: 'service-providers', href: serviceProvidersUrl\(lang\)/);
   assert.match(siteNav, /function renderPortalDropdown/);
   for (const safeHref of ['/parent/login', '/student/login', '/provider']) {
     assert.match(siteNav, new RegExp(safeHref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
+  assert.doesNotMatch(siteNav, /\/operations(?:-login)?(?:\.html)?/);
   assert.doesNotMatch(siteNav, /\/operations-login\.html/);
   assert.match(siteNav, /function renderSiteFooter/);
   assert.match(siteNavCss, /body > nav:not\(\.bna-site-nav\)/);

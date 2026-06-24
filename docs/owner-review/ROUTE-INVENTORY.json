@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-06-24T04:09:38.199Z",
+  "generated_at": "2026-06-24T04:19:04.264Z",
   "requirement_id": "REQ-20260624-003",
   "source_id": "RAW-20260624-001",
-  "content_hash": "6f6f82a3edb4c11c84de0fc5e125b8b59bdbd9f28585f5dec6ece46ac1b2ddfd",
+  "content_hash": "5e4f043e3d7a3063d6f179de3c1b3be2ba7e1c57c3a2790cb1129abfb7a5d908",
   "summary": {
     "total_routes": 689,
     "html_pages": 34,
     "server_routes": 753,
     "api_routes": 584,
     "linked_destinations": 72,
-    "client_edges": 216,
+    "client_edges": 219,
     "manifest_edges": 9,
     "service_worker_edges": 13,
     "form_actions": 0,
@@ -9684,9 +9684,9 @@
       "Implementation": "public/parent.html",
       "Audience": "parent",
       "Authentication": "protected",
-      "Entry point": "/parent-login.html (literal-a-href) | /parent-login.html (window.location) | public/parent-manifest.json (manifest:id) | public/parent-manifest.json (manifest:scope) | public/parent-manifest.json (manifest:start_url) | public/sw.js (service-worker)",
+      "Entry point": "/parent-login.html (literal-a-href) | /parent-login.html (window.location) | /parent.html (literal-a-href) | public/parent-manifest.json (manifest:id) | public/parent-manifest.json (manifest:scope) | public/parent-manifest.json (manifest:start_url) | public/sw.js (service-worker)",
       "Back path": "none detected",
-      "Inbound links": "/parent-login.html (literal-a-href) | /parent-login.html (window.location) | public/parent-manifest.json (manifest:id) | public/parent-manifest.json (manifest:scope) | public/parent-manifest.json (manifest:start_url) | public/sw.js (service-worker)",
+      "Inbound links": "/parent-login.html (literal-a-href) | /parent-login.html (window.location) | /parent.html (literal-a-href) | public/parent-manifest.json (manifest:id) | public/parent-manifest.json (manifest:scope) | public/parent-manifest.json (manifest:start_url) | public/sw.js (service-worker)",
       "Outbound links": "",
       "Status": "keep",
       "Dependencies": "local",
@@ -9745,9 +9745,9 @@
       "Audience": "parent",
       "Authentication": "protected",
       "Entry point": "/one-time-email-review.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href)",
-      "Back path": "/ | /one-time | /parents",
+      "Back path": "/ | /one-time | /parent | /parents",
       "Inbound links": "/one-time-email-review.html (literal-a-href) | /provider.html (literal-a-href) | /student.html (literal-a-href)",
-      "Outbound links": "/ (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parents (literal-a-href) | /student.html (literal-a-href) | /student/login (literal-a-href)",
+      "Outbound links": "/ (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent (literal-a-href) | /parents (literal-a-href) | /student.html (literal-a-href) | /student/login (literal-a-href)",
       "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
@@ -10299,15 +10299,15 @@
       "Implementation": "public/student.html",
       "Audience": "student",
       "Authentication": "protected",
-      "Entry point": "public/sw.js (service-worker)",
+      "Entry point": "/student.html (literal-a-href) | public/sw.js (service-worker)",
       "Back path": "none detected",
-      "Inbound links": "public/sw.js (service-worker)",
+      "Inbound links": "/student.html (literal-a-href) | public/sw.js (service-worker)",
       "Outbound links": "",
       "Status": "keep",
       "Dependencies": "local",
       "Review state": "ready",
       "Registry surface": "student_portal",
-      "Discovered as": "route-registry | server-get | service-worker"
+      "Discovered as": "literal-a-href | route-registry | server-get | service-worker"
     },
     {
       "Canonical URL": "/student.html",
@@ -10315,9 +10315,9 @@
       "Audience": "student",
       "Authentication": "protected",
       "Entry point": "/one-time-email-review.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href)",
-      "Back path": "/ | /one-time | /parents",
+      "Back path": "/ | /one-time | /parents | /student",
       "Inbound links": "/one-time-email-review.html (literal-a-href) | /parent.html (literal-a-href) | /provider.html (literal-a-href)",
-      "Outbound links": "/ (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent.html (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href)",
+      "Outbound links": "/ (literal-a-href) | /one-time (literal-a-href) | /one-time-classroom.html (literal-a-href) | /parent.html (literal-a-href) | /parent/login (literal-a-href) | /parents (literal-a-href) | /student (literal-a-href)",
       "Status": "alias",
       "Dependencies": "local",
       "Review state": "ready",
@@ -11415,6 +11415,13 @@
     },
     {
       "from": "/parent.html",
+      "to": "/parent",
+      "kind": "literal-a-href",
+      "raw": "/parent",
+      "source": "public/parent.html"
+    },
+    {
+      "from": "/parent.html",
       "to": "/student/login",
       "kind": "literal-a-href",
       "raw": "/student/login",
@@ -11530,6 +11537,13 @@
       "to": "/service-providers",
       "kind": "literal-a-href",
       "raw": "/service-providers",
+      "source": "public/provider.html"
+    },
+    {
+      "from": "/provider.html",
+      "to": "/provider",
+      "kind": "literal-a-href",
+      "raw": "/provider",
       "source": "public/provider.html"
     },
     {
@@ -11824,6 +11838,13 @@
       "to": "/parents",
       "kind": "literal-a-href",
       "raw": "/parents",
+      "source": "public/student.html"
+    },
+    {
+      "from": "/student.html",
+      "to": "/student",
+      "kind": "literal-a-href",
+      "raw": "/student",
       "source": "public/student.html"
     },
     {

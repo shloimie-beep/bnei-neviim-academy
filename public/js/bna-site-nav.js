@@ -31,7 +31,7 @@
       home: 'Home',
       school: 'School',
       parents: 'Families',
-      serviceProviders: 'Service Providers',
+      serviceProviders: 'Provider Directory',
       oneTime: 'One Time',
       audience: 'Explore',
       portals: 'Portal Login',
@@ -272,7 +272,9 @@
           <div class="bna-site-nav-actions" id="mainNavActions">
             <div class="bna-site-nav-menu" aria-label="Primary links">
               ${renderNavLink(active, { id: 'home', href: homeUrl(lang), label: copy.home })}
-              ${renderAudienceDropdown(active, copy, lang)}
+              ${renderNavLink(active, { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school })}
+              ${renderNavLink(active, { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents })}
+              ${renderNavLink(active, { id: 'service-providers', href: serviceProvidersUrl(lang), label: copy.serviceProviders || COPY.en.serviceProviders })}
               ${renderNavLink(active, { id: 'one-time', href: oneTimeUrl(lang), label: copy.oneTime || COPY.en.oneTime })}
               <details class="bna-site-nav-dropdown bna-site-nav-dropdown-desktop">
                 <summary>${escapeHtml(copy.blog)}</summary>

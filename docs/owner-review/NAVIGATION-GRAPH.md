@@ -1,6 +1,6 @@
 # Navigation Graph
 
-Generated at 2026-06-24T04:09:38.199Z.
+Generated at 2026-06-24T04:19:04.264Z.
 
 Edges are discovered from literal anchors, JavaScript navigation, form actions, redirects, manifests, service-worker cache entries, and fetch/API calls.
 
@@ -89,6 +89,7 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /parent.html | / | literal-a-href | public/parent.html |
 | /parent.html | /one-time | literal-a-href | public/parent.html |
 | /parent.html | /one-time-classroom.html | literal-a-href | public/parent.html |
+| /parent.html | /parent | literal-a-href | public/parent.html |
 | /parent.html | /parents | literal-a-href | public/parent.html |
 | /parent.html | /student.html | literal-a-href | public/parent.html |
 | /parent.html | /student/login | literal-a-href | public/parent.html |
@@ -108,6 +109,7 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /provider.html | /one-time | literal-a-href | public/provider.html |
 | /provider.html | /one-time-classroom.html | literal-a-href | public/provider.html |
 | /provider.html | /parent.html | literal-a-href | public/provider.html |
+| /provider.html | /provider | literal-a-href | public/provider.html |
 | /provider.html | /provider | literal-a-href | public/provider.html |
 | /provider.html | /providers/join | literal-a-href | public/provider.html |
 | /provider.html | /service-providers | literal-a-href | public/provider.html |
@@ -151,6 +153,7 @@ Edges are discovered from literal anchors, JavaScript navigation, form actions, 
 | /student.html | /parent.html | literal-a-href | public/student.html |
 | /student.html | /parent/login | literal-a-href | public/student.html |
 | /student.html | /parents | literal-a-href | public/student.html |
+| /student.html | /student | literal-a-href | public/student.html |
 | /test-login.html | /api/operations/login | fetch | public/test-login.html |
 | /test-login.html | /operations | window.location | public/test-login.html |
 | public/js/bna-bot-widget.js | /api/bna/assistant/chat | fetch | public/js/bna-bot-widget.js |

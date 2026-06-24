@@ -82,9 +82,9 @@ test('parent login public entry avoids silent private-dashboard redirect', () =>
 });
 
 test('portal topbars expose only safe public navigation destinations', () => {
-  assert.match(parentHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/parents"[\s\S]*href="\/student\/login"/);
-  assert.match(studentHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/parents"[\s\S]*href="\/parent\/login"/);
-  assert.match(providerHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/service-providers"[\s\S]*href="\/providers\/join\?onboard=provider"/);
+  assert.match(parentHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/parents"[\s\S]*href="\/parent"[\s\S]*href="#parentAssistantDock"[\s\S]*href="\/student\/login"/);
+  assert.match(studentHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/parents"[\s\S]*href="\/student"[\s\S]*href="#assistantSection"[\s\S]*href="\/parent\/login"/);
+  assert.match(providerHtml, /aria-label="Safe portal navigation"[\s\S]*href="\/"[\s\S]*href="\/service-providers"[\s\S]*href="\/provider"[\s\S]*href="\/providers\/join\?onboard=provider"/);
   assert.doesNotMatch(parentHtml, /href="\/operations"/);
   assert.doesNotMatch(studentHtml, /href="\/operations"/);
   assert.doesNotMatch(providerHtml, /href="\/operations"/);

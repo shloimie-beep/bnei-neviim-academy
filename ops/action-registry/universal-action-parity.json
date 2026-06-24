@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T04:04:44.484Z",
+  "generated_at": "2026-06-24T04:18:27.956Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,14 +16,14 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "8761a3d77b7d10416d2ad6643d1a1c7bdda14f87e7ea4ea866e3828860daf8dc",
+  "content_hash": "e08dcde5274a2133949ba49ad17c36f0bf62e87b0a8fc3d03c52535f541ec4d8",
   "source_hashes": {
     "ops/action-registry.json": "2bf55cf163171e90a78b7ab8580201c7ffbde56c90dc323accc70fb5b8acdd2b",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
     "public/operations.html": "8e3d4cf87449af232ffe7f6eb1937189456f7f90367a1916eaf76c010ebcf8e4",
-    "public/parent.html": "f165af4e0d52fb9d634db205603ead0a36096dc931e02d00459e691c4bdf60dc",
-    "public/student.html": "698a6cacb1d76cfd7fdade8b7c199be575dcbf2e0af9c740c49f0908e8c609b6",
-    "public/provider.html": "21c88e867da7fe1b8b5a33caf3be5a4a9cf94b0824f2ab4e6248a2231cd95c45",
+    "public/parent.html": "19b577d7b9f573af98574ea73f88c96c97f3c5c025465af56ca02cfa7a46063d",
+    "public/student.html": "b8488ffdfa2a5f5cc8e2425ce0af6bae94b3a0654c6b39d6690ffde7b53af7e1",
+    "public/provider.html": "6242fce8f2213dee84532f13ccf154e48550590185257c087892d95ec2d77386",
     "src/platform/assistant/control-plane.js": "290094ebc3f9cc89c591487bb355dad630594a3ae0896a9df7844adfcde5b787"
   },
   "summary": {
