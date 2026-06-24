@@ -25851,3 +25851,33 @@ passed: `npm run bna:run:status`, `npm run bna:run:validate`,
 mutation, class backfill, Stripe/Vimeo external write, real send, DNS change,
 credential rotation, or production account change was performed. Parallel
 lanes are safe to start from the pushed control branch.
+
+## 2026-06-24T16:51:19+03:00 - Final Release Preflight Blocked
+
+Registered `RAW-20260624-005` and `REQ-20260624-019` through
+`REQ-20260624-031` for the final integration, release, deployment,
+live-verification, and guarded class-recovery goal.
+
+Ran Step 1 preflight. `git fetch --all --prune` succeeded. The required
+`CONTROL.json` exists on clean-slate branch
+`origin/codex/clean-slate-integration-20260624` at
+`68f0b02fa1fe8928a8b4dd52704ec7e92c0fcba5`, and the clean-slate execution run
+validates with no remaining work.
+
+Pushed lane evidence is not complete enough to integrate:
+
+- `public-ui`: terminal branch-local result, `safe_to_merge: true`
+- `portal-auth-nav`: terminal branch-local result, `safe_to_merge: true`
+- `assistant-ramble-usage`: terminal branch-local result with external blockers,
+  `safe_to_merge: true`
+- `stripe-sandbox`: terminal branch-local result with external setup blockers,
+  `safe_to_merge: true`
+- `class-drive-intake`: branch-local `RESULT.json` still says `not_started`
+- `vimeo-media`: branch-local `RESULT.json` still says `not_started`; the
+  current Vimeo worktree is also dirty and diverged from the pushed branch
+- `operator-walkthrough`: pushed branch is missing lane `RESULT.json`
+
+No integration merge, PR merge, deployment, live smoke, production DB mutation,
+class backfill, external write, send, charge, DNS change, or secret exposure was
+performed. Final release remains blocked until the missing lane handoffs are
+terminal and pushed.

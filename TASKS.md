@@ -6,6 +6,20 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260624-005` / `REQ-20260624-019` through
+  `REQ-20260624-031`: Final release integration, deployment,
+  live verification, and guarded class recovery. Scope: verify the
+  clean-slate control manifest and Prompt 02-08 lane handoffs, integrate all
+  valid lane branches into the final release branch, reconcile PR #14, PR #15,
+  and local Rabbi closeout history, run the full release gate, merge the final
+  PR, deploy merged `master` to Railway, live-smoke the deployed SHA, and apply
+  class backfill only if Prompt 04's exact safe recommendation and all recovery
+  gates pass. Current status: blocked at preflight. The clean-slate
+  `CONTROL.json` exists and expected lane branches exist, but
+  `class-drive-intake` and `vimeo-media` pushed `RESULT.json` files still say
+  `not_started`, `operator-walkthrough` has no pushed `RESULT.json`, and the
+  current Vimeo worktree is dirty/diverged. Register:
+  `tasks-pending/2026-06-24-final-release-integration-deploy-live-verify.md`.
 - [x] Finish `RAW-20260624-003` / `TASK-20260624-001`: clean-slate control
   tower reconciliation for PR #14, PR #15, and the preserved local Rabbi
   closeout. Completed so far: repository/worktree census, preservation branch
