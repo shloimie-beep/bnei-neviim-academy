@@ -21,3 +21,12 @@
   or superseded by an approved live-smoke path.
 - `REQ-20260624-040` moved to `done`; next executable batch is
   `REQ-20260624-041`.
+
+2026-06-24T23:00:00+03:00:
+
+- Parent-run checkpoint commit
+  `3e0902f651302ae594e5462f3a88913b40406d8c` was pushed to
+  `origin/codex/issue-20-parent-run-20260624`.
+- Run validation, source coverage, stale-evidence detection, JSON/JSONL parse,
+  `git diff --check`, and `npm run bna:run:next` passed for the checkpoint.
+- Next executable requirement remains `REQ-20260624-041`.

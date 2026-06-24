@@ -177,6 +177,9 @@
       ],
       "deployment_required": false,
       "pull_request": "pending",
+      "commit": "3e0902f651302ae594e5462f3a88913b40406d8c",
+      "pushed_branch": "origin/codex/issue-20-parent-run-20260624",
+      "pushed_commit": "3e0902f651302ae594e5462f3a88913b40406d8c",
       "updated_at": "2026-06-24T22:55:00+03:00"
     },
     {

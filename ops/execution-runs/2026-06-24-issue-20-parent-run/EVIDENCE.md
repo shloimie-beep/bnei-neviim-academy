@@ -15,6 +15,9 @@
 - `ops/execution-runs/2026-06-24-issue-20-parent-run/BASELINE-READBACK.md`
 - `ops/execution-runs/2026-06-24-issue-20-parent-run/COORDINATION.md`
 - `ops/execution-runs/2026-06-24-issue-20-parent-run/LANE-MANIFEST.json`
+- Pushed checkpoint:
+  `3e0902f651302ae594e5462f3a88913b40406d8c` on
+  `origin/codex/issue-20-parent-run-20260624`
 
 Readback summary:
 
@@ -22,6 +25,8 @@ Readback summary:
 - Issue #18 PR #21 head: `63db04468b1d7695292e922ff6757d1f42aef033`
 - Live health: HTTP 200, database connected.
 - Railway doctor: blocked by local CLI targeting mismatch.
+- Validation: run validate, source coverage, stale-evidence, JSON/JSONL parse,
+  diff check, and next-batch selection passed.
 
 ## Pending Evidence
 

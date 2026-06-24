@@ -11,11 +11,18 @@
 - `npm run railway:doctor` was run and failed due to local Railway CLI
   targeting mismatch; this is recorded as the final deploy/live closeout
   blocker for `REQ-20260624-048`.
+- `npm run bna:run:validate` passed.
+- `npm run bna:run:source-coverage` passed with 11 mapped source statements
+  and 0 unmapped executable statements.
+- `npm run bna:run:stale-evidence` passed with no stale evidence.
+- `node -e` JSON/JSONL parse for `LANE-MANIFEST.json` and
+  `ops/agent-task-ledger.jsonl` passed.
+- `git diff --check` passed with Windows line-ending warnings only.
+- `npm run bna:run:next` selected `REQ-20260624-041`.
+- Checkpoint commit `3e0902f651302ae594e5462f3a88913b40406d8c` was pushed to
+  `origin/codex/issue-20-parent-run-20260624`.
 
 ## Pending
 
-- `npm run bna:run:validate`
-- `npm run bna:run:source-coverage`
-- `npm run bna:run:stale-evidence`
 - Focused tests for each implementation lane.
 - Full repository tests and watchdogs before final closeout.
