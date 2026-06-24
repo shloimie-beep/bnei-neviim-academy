@@ -74,6 +74,21 @@ Evidence: `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and
 - Added `npm run owner-review:visual` with bounding-rectangle and computed
   contrast/semantic assertions.
 
+## Authenticated Navigation Harness Added
+
+- `npm run owner-review:role-flows` now asserts the expected assistant surface
+  for every local synthetic role journey.
+- Parent, student, provider, provider participant, and One Time member journeys
+  fail on forbidden cross-role fixture text, so the smoke catches obvious local
+  relationship/scope leakage.
+- The super-admin Operations journey now clicks the workspace switcher into the
+  One Time Mishnah Class provider workspace (`rabbi_sheller_provider`) on
+  desktop and mobile.
+- The generated `ROLE-FLOW-QA.md` report records deep-link loading, refresh,
+  back navigation, workspace switching, logged-out/wrong-role recovery, failure
+  state, assistant surface, console errors, broken images, links, overflow, and
+  mobile tap-target findings.
+
 ## Test Count Reconciliation
 
 | Count | Current interpretation | Evidence |

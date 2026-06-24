@@ -83,9 +83,28 @@ test('latest owner-review role-flow evidence is green for all primary journeys',
   assert.equal(roleFlowReport.role_runs.length, 16);
   assert.equal(roleFlowReport.access_runs.length, 2);
   assert.equal(roleFlowReport.failure_runs.length, 2);
+  assert.match(smokeScript, /expectedSurface/);
+  assert.match(smokeScript, /forbidden/);
+  assert.match(smokeScript, /switchOperationsWorkspace/);
   assert.match(roleFlowDoc, /Result: PASS/);
   for (const surface of ['public', 'parent_portal', 'student_portal', 'provider_workspace', 'one_time_member', 'operations']) {
     assert.match(roleFlowDoc, new RegExp(`\\| ${surface} \\|`));
+  }
+  for (const run of roleFlowReport.role_runs) {
+    assert.equal(run.status, 'passed', `${run.role_id} ${run.viewport}`);
+    assert.equal(run.direct_deep_link_loaded, true, `${run.role_id} ${run.viewport}`);
+    assert.equal(run.refresh_ok, true, `${run.role_id} ${run.viewport}`);
+    assert.notEqual(run.assistant?.surface, 'unknown', `${run.role_id} ${run.viewport}`);
+    assert.equal(run.broken_visible_images.length, 0, `${run.role_id} ${run.viewport}`);
+    assert.equal(run.console_errors.length, 0, `${run.role_id} ${run.viewport}`);
+    assert.equal(run.failed_requests.length, 0, `${run.role_id} ${run.viewport}`);
+  }
+  const superAdminRuns = roleFlowReport.role_runs.filter((run) => run.role_id === 'super-admin');
+  assert.equal(superAdminRuns.length, 2);
+  for (const run of superAdminRuns) {
+    assert.equal(run.workspace_switch?.tested, true, `${run.viewport} super-admin workspace switch tested`);
+    assert.equal(run.workspace_switch?.target_workspace, 'rabbi_sheller_provider', `${run.viewport} super-admin workspace switch target`);
+    assert.equal(run.workspace_switch?.ok, true, `${run.viewport} super-admin workspace switch passed`);
   }
 });
 

@@ -25600,3 +25600,16 @@ No external credentials, private production readback, production database
 mutation, backfill, deploy, email or Telegram send, publish, upload, charge,
 DNS mutation, OAuth, or secret exposure was performed. Production remains stale
 until PR #14 is merged/deployed and live-smoked.
+
+## 2026-06-24T09:00:00+03:00 - PR #14 Auth Navigation Harness Strengthened
+
+Extended the credential-free owner-review role-flow smoke so it now asserts
+expected assistant surfaces, rejects forbidden cross-role fixture leakage, and
+clicks the Operations workspace switcher into the One Time Mishnah Class
+provider workspace (`rabbi_sheller_provider`) on desktop and mobile.
+
+Verification passed locally: `npm run owner-review:role-flows`,
+`node --test tests\owner-review-role-flow-contract.test.js` 6/6, full
+`npm test` 1214/1214, and `npm run secrets:audit` with 4271 tracked paths and 0
+findings. The generated `docs/owner-review/ROLE-FLOW-QA.md` report now shows
+the workspace switch proof for both super-admin viewports.

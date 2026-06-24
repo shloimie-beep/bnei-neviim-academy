@@ -126,6 +126,8 @@ Check:
 - Logged-out `/operations` redirects to login with a return URL.
 - Synthetic super-admin Operations page exposes the Operations helper Ask/Search
   control.
+- Desktop and mobile role-flow evidence show the workspace switcher opening the
+  One Time Mishnah Class provider workspace (`rabbi_sheller_provider`).
 - No public navigation exposes Operations as a consumer-primary destination.
 
 Evidence:
@@ -156,7 +158,7 @@ Expected local result:
   merge/deploy.
 - Link/action/security watchdogs: severity `ok`, findings 0.
 - Full tests: PASS, 1214/1214.
-- Secret audit: PASS, 4254 tracked paths, 0 tracked secret-risk files.
+- Secret audit: PASS, 4271 tracked paths, 0 tracked secret-risk files.
 - GitHub Actions: not attached yet. Adding the workflow requires GitHub
   `workflow` permission; local gates above are the current credential-free
   evidence until that external permission is granted.

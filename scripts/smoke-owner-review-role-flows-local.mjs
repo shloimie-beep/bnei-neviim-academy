@@ -17,14 +17,14 @@ const viewports = [
 ];
 
 const journeys = [
-  { id: 'public-visitor', title: 'Anonymous public visitor', url: '/', audience: 'Public', assistant: 'website', expected: ['Bnei Neviim Academy', 'Families'], expectedLinks: ['/providers', '/one-time'], backTarget: '/one-time' },
-  { id: 'parent-one-child', title: 'Parent with one linked child', url: '/parent', audience: 'Parent', fixture: 'parent-one-child', assistant: 'website', expected: ['Synthetic Parent', 'Avi Synthetic', 'Assistant/help'], backTarget: '/' },
-  { id: 'parent-multiple-children', title: 'Parent with multiple children', url: '/parent', audience: 'Parent', fixture: 'parent-multiple-children', assistant: 'website', expected: ['Synthetic Parent', 'Avi Synthetic', 'Benny Synthetic', 'Assistant/help'], backTarget: '/' },
-  { id: 'student', title: 'Student', url: '/student?code=QA-STUDENT', audience: 'Student', fixture: 'student', assistant: 'website', expected: ['Avi Synthetic', 'Assistant/help'], backTarget: '/' },
-  { id: 'provider-admin', title: 'Provider administrator', url: '/provider', audience: 'Provider admin', fixture: 'provider-admin', assistant: 'website', expected: ['Synthetic Robotics Lab', 'Assistant/help'], backTarget: '/providers' },
-  { id: 'provider-participant', title: 'Provider participant/member', url: '/provider-participant', audience: 'Provider participant', assistant: 'website', expected: ['Mishnayos Membership', 'Assistant/help', 'No BNA accountability'], backTarget: '/rabbi-member' },
-  { id: 'one-time-member', title: 'One Time member', url: '/rabbi-member', audience: 'One Time member', assistant: 'website', expected: ['Member home', 'Library', 'Classroom', 'Assistant/help'], backTarget: '/member-library' },
-  { id: 'super-admin', title: 'Platform super-admin', url: '/operations', audience: 'Super admin', fixture: 'super-admin', assistant: 'operations-helper', expected: ['Operations', 'Ask'] },
+  { id: 'public-visitor', title: 'Anonymous public visitor', url: '/', audience: 'Public', assistant: 'website', expectedSurface: 'public', expected: ['Bnei Neviim Academy', 'Families'], expectedLinks: ['/providers', '/one-time'], backTarget: '/one-time' },
+  { id: 'parent-one-child', title: 'Parent with one linked child', url: '/parent', audience: 'Parent', fixture: 'parent-one-child', assistant: 'website', expectedSurface: 'parent_portal', expected: ['Synthetic Parent', 'Avi Synthetic', 'Assistant/help'], forbidden: ['Benny Synthetic', 'Synthetic Robotics Lab'], backTarget: '/' },
+  { id: 'parent-multiple-children', title: 'Parent with multiple children', url: '/parent', audience: 'Parent', fixture: 'parent-multiple-children', assistant: 'website', expectedSurface: 'parent_portal', expected: ['Synthetic Parent', 'Avi Synthetic', 'Benny Synthetic', 'Assistant/help'], forbidden: ['Synthetic Robotics Lab'], backTarget: '/' },
+  { id: 'student', title: 'Student', url: '/student?code=QA-STUDENT', audience: 'Student', fixture: 'student', assistant: 'website', expectedSurface: 'student_portal', expected: ['Avi Synthetic', 'Assistant/help'], forbidden: ['Benny Synthetic', 'Synthetic Parent', 'Synthetic Robotics Lab'], backTarget: '/' },
+  { id: 'provider-admin', title: 'Provider administrator', url: '/provider', audience: 'Provider admin', fixture: 'provider-admin', assistant: 'website', expectedSurface: 'provider_workspace', expected: ['Synthetic Robotics Lab', 'Assistant/help'], forbidden: ['Avi Synthetic', 'Benny Synthetic', 'Synthetic Parent'], backTarget: '/providers' },
+  { id: 'provider-participant', title: 'Provider participant/member', url: '/provider-participant', audience: 'Provider participant', assistant: 'website', expectedSurface: 'one_time_member', expected: ['Mishnayos Membership', 'Assistant/help', 'No BNA accountability'], forbidden: ['Avi Synthetic', 'Benny Synthetic', 'Synthetic Parent'], backTarget: '/rabbi-member' },
+  { id: 'one-time-member', title: 'One Time member', url: '/rabbi-member', audience: 'One Time member', assistant: 'website', expectedSurface: 'one_time_member', expected: ['Member home', 'Library', 'Classroom', 'Assistant/help'], forbidden: ['Avi Synthetic', 'Benny Synthetic', 'Synthetic Parent'], backTarget: '/member-library' },
+  { id: 'super-admin', title: 'Platform super-admin', url: '/operations', audience: 'Super admin', fixture: 'super-admin', assistant: 'operations-helper', expectedSurface: 'operations', expected: ['Operations', 'Ask'], workspaceSwitch: 'rabbi_sheller_provider' },
 ];
 
 function ensureDir(dir) {
@@ -319,6 +319,53 @@ async function openAssistant(page, kind) {
   return { opened: true, kind: 'website-assistant', surface };
 }
 
+async function switchOperationsWorkspace(page, workspaceId) {
+  if (!workspaceId) return { tested: false };
+  const result = {
+    tested: true,
+    target_workspace: workspaceId,
+    url_before: page.url(),
+    url_after: '',
+    active_workspace: '',
+    ok: false,
+  };
+  try {
+    const menu = page.locator('.workspace-menu').first();
+    if (await menu.count()) {
+      const summary = menu.locator('summary').first();
+      if (!(await summary.isVisible().catch(() => false))) {
+        const drawerButton = page.locator('.menu-button').first();
+        if (await drawerButton.isVisible().catch(() => false)) {
+          await drawerButton.click();
+          await page.locator('.ops-app-shell.drawer-open .ops-sidebar').first().waitFor({ timeout: 5000 });
+        }
+      }
+      const open = await menu.evaluate((node) => node.hasAttribute('open')).catch(() => false);
+      if (!open) await summary.click({ timeout: 5000 });
+    }
+    const option = page.locator(`[data-workspace-option][onclick*="${workspaceId}"], [data-action-id="ACTION-ONETIME-WORKSPACE-VIEW"]`).first();
+    await option.waitFor({ timeout: 8000 });
+    await option.click();
+    await page.waitForTimeout(500);
+    result.url_after = page.url();
+    result.active_workspace = await page.evaluate(() => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('workspace')
+        || window.currentWorkspaceKey?.()
+        || document.querySelector('[data-workspace-option][aria-current="true"]')?.getAttribute('onclick')?.match(/switchWorkspace\('([^']+)'/)?.[1]
+        || '';
+    }).catch(() => '');
+    const text = await bodyText(page);
+    result.ok = result.active_workspace === workspaceId
+      || new URL(result.url_after).searchParams.get('workspace') === workspaceId
+      || /One Time Mishnah Class/.test(text);
+  } catch (error) {
+    result.error = error.message;
+    result.url_after = page.url();
+  }
+  return result;
+}
+
 async function backNavigation(page, baseUrl, journey) {
   if (!journey.backTarget) return { tested: false };
   const expectedPath = new URL(journey.url, baseUrl).pathname;
@@ -356,6 +403,8 @@ async function runJourney(browser, baseUrl, viewport, journey) {
   const text = await bodyText(page);
   const missing = journey.expected.filter((expected) => !text.includes(expected));
   assert(missing.length === 0, `${journey.id} missing expected text: ${missing.join(', ')}`);
+  const leaked = (journey.forbidden || []).filter((forbidden) => text.includes(forbidden));
+  assert(leaked.length === 0, `${journey.id} leaked forbidden fixture text: ${leaked.join(', ')}`);
   if (journey.expectedLinks?.length) {
     const missingLinks = [];
     for (const href of journey.expectedLinks) {
@@ -366,7 +415,11 @@ async function runJourney(browser, baseUrl, viewport, journey) {
   }
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(400);
+  const workspaceSwitch = await switchOperationsWorkspace(page, journey.workspaceSwitch);
   const assistant = await openAssistant(page, journey.assistant);
+  if (journey.expectedSurface) {
+    assert(assistant.surface === journey.expectedSurface, `${journey.id} assistant surface expected ${journey.expectedSurface}, got ${assistant.surface}`);
+  }
   const screenshot = path.join(outDir, `${viewport.id}-${journey.id}.png`);
   await page.screenshot({ path: screenshot, fullPage: true });
   const result = {
@@ -379,6 +432,7 @@ async function runJourney(browser, baseUrl, viewport, journey) {
     duration_ms: Date.now() - started,
     screenshot: rel(screenshot),
     assistant,
+    workspace_switch: workspaceSwitch,
     direct_deep_link_loaded: true,
     refresh_ok: true,
     back_navigation: await backNavigation(page, baseUrl, journey),
@@ -431,7 +485,10 @@ function summarize(report) {
   const linkFailures = report.role_runs.flatMap((item) => item.internal_link_statuses.filter((link) => !link.ok).map((link) => ({ role_id: item.role_id, viewport: item.viewport, ...link })));
   const overflow = report.role_runs.filter((item) => item.horizontal_overflow_px > 12);
   const smallTargets = report.role_runs.flatMap((item) => item.small_mobile_targets.map((target) => ({ role_id: item.role_id, viewport: item.viewport, ...target })));
-  return { ok: failed.length === 0 && consoleErrors.length === 0 && failedRequests.length === 0 && brokenImages.length === 0 && linkFailures.length === 0 && overflow.length === 0, failed, consoleErrors, failedRequests, brokenImages, linkFailures, overflow, smallTargets };
+  const workspaceSwitchFailures = report.role_runs
+    .filter((item) => item.workspace_switch?.tested && !item.workspace_switch?.ok)
+    .map((item) => ({ role_id: item.role_id, viewport: item.viewport, workspace_switch: item.workspace_switch }));
+  return { ok: failed.length === 0 && consoleErrors.length === 0 && failedRequests.length === 0 && brokenImages.length === 0 && linkFailures.length === 0 && overflow.length === 0 && workspaceSwitchFailures.length === 0, failed, consoleErrors, failedRequests, brokenImages, linkFailures, overflow, smallTargets, workspaceSwitchFailures };
 }
 
 function writeReports(report) {
@@ -451,7 +508,7 @@ function writeReports(report) {
   const jsonPath = path.join(outDir, 'report.json');
   const mdPath = path.join(outDir, 'report.md');
   fs.writeFileSync(jsonPath, `${JSON.stringify(report, null, 2)}\n`);
-  const primaryRows = report.role_runs.map((run) => [run.title, run.audience, run.viewport, run.status, run.assistant?.kind || 'n/a', run.assistant?.surface || 'n/a', run.direct_deep_link_loaded ? 'yes' : 'no', run.refresh_ok ? 'yes' : 'no', run.back_navigation?.tested ? (run.back_navigation.ok ? 'yes' : 'no') : 'n/a', run.horizontal_overflow_px ?? 'n/a', (run.broken_visible_images || []).length, (run.console_errors || []).length, run.screenshot || run.error || 'n/a']);
+  const primaryRows = report.role_runs.map((run) => [run.title, run.audience, run.viewport, run.status, run.assistant?.kind || 'n/a', run.assistant?.surface || 'n/a', run.direct_deep_link_loaded ? 'yes' : 'no', run.refresh_ok ? 'yes' : 'no', run.back_navigation?.tested ? (run.back_navigation.ok ? 'yes' : 'no') : 'n/a', run.workspace_switch?.tested ? (run.workspace_switch.ok ? run.workspace_switch.target_workspace : 'failed') : 'n/a', run.horizontal_overflow_px ?? 'n/a', (run.broken_visible_images || []).length, (run.console_errors || []).length, run.screenshot || run.error || 'n/a']);
   const accessRows = report.access_runs.map((run) => [run.title, run.viewport, run.status, (run.checks || []).map((check) => `${check.url} -> ${check.final_url}`).join('; ') || run.error || 'n/a', run.screenshot || 'n/a']);
   const failureRows = report.failure_runs.map((run) => [run.title, run.viewport, run.status, run.screenshot || run.error || 'n/a']);
   const screenshotLines = [...report.role_runs, ...report.access_runs, ...report.failure_runs].map((run) => `- ${run.viewport} / ${run.title}: ${run.screenshot}`);
@@ -467,8 +524,8 @@ function writeReports(report) {
     '',
     '## Primary Role Journeys',
     '',
-    '| Journey | Audience | Viewport | Status | Assistant | Surface | Deep link | Refresh | Back nav | Overflow px | Broken images | Console errors | Screenshot |',
-    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |',
+    '| Journey | Audience | Viewport | Status | Assistant | Surface | Deep link | Refresh | Back nav | Workspace switch | Overflow px | Broken images | Console errors | Screenshot |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |',
     ...primaryRows.map((row) => `| ${row.map(escapeMd).join(' | ')} |`),
     '',
     '## Logged-Out And Wrong-Role Access',
@@ -494,6 +551,7 @@ function writeReports(report) {
     report.summary.failedRequests.length ? `- Failed network requests require review: ${report.summary.failedRequests.length}.` : '- No failed browser requests were detected outside the favicon allowlist.',
     report.summary.linkFailures.length ? `- Internal header/navigation link failures require review: ${report.summary.linkFailures.length}.` : '- Header/navigation internal links returned expected local statuses.',
     report.summary.brokenImages.length ? `- Broken visible images require review: ${report.summary.brokenImages.length}.` : '- No broken visible images were detected on the checked surfaces.',
+    report.summary.workspaceSwitchFailures.length ? `- Workspace switching requires review: ${report.summary.workspaceSwitchFailures.length}.` : '- Super-admin workspace switching into the One Time provider workspace passed where applicable.',
     '',
   ];
   fs.writeFileSync(mdPath, docLines.join('\n'));

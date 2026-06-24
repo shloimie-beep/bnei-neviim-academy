@@ -1,32 +1,32 @@
 # Role Flow QA
 
-Generated: 2026-06-24T05:45:29.176Z
-Release candidate SHA: 7da18227804498d8868201f8f94a266da048ba50
-Local base URL: http://127.0.0.1:52980
+Generated: 2026-06-24T05:58:27.071Z
+Release candidate SHA: cd0d0fcf6fd5cb248c45476c54fa55d7cf7dd2ca
+Local base URL: http://127.0.0.1:52699
 Result: PASS
 
 Guardrail: this run used a local server plus Playwright route mocks for `/api/*`. It did not use external credentials, read production state, mutate a production database, deploy, send email or Telegram messages, publish, upload, charge, alter DNS, or request secret values.
 
 ## Primary Role Journeys
 
-| Journey | Audience | Viewport | Status | Assistant | Surface | Deep link | Refresh | Back nav | Overflow px | Broken images | Console errors | Screenshot |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |
-| Anonymous public visitor | Public | desktop | passed | website-assistant | public | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-public-visitor.png |
-| Parent with one linked child | Parent | desktop | passed | website-assistant | parent_portal | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-one-child.png |
-| Parent with multiple children | Parent | desktop | passed | website-assistant | parent_portal | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-multiple-children.png |
-| Student | Student | desktop | passed | website-assistant | student_portal | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-student.png |
-| Provider administrator | Provider admin | desktop | passed | website-assistant | provider_workspace | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-admin.png |
-| Provider participant/member | Provider participant | desktop | passed | website-assistant | one_time_member | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-participant.png |
-| One Time member | One Time member | desktop | passed | website-assistant | one_time_member | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-one-time-member.png |
-| Platform super-admin | Super admin | desktop | passed | operations-helper | operations | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-super-admin.png |
-| Anonymous public visitor | Public | mobile | passed | website-assistant | public | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-public-visitor.png |
-| Parent with one linked child | Parent | mobile | passed | website-assistant | parent_portal | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-one-child.png |
-| Parent with multiple children | Parent | mobile | passed | website-assistant | parent_portal | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-multiple-children.png |
-| Student | Student | mobile | passed | website-assistant | student_portal | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-student.png |
-| Provider administrator | Provider admin | mobile | passed | website-assistant | provider_workspace | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-admin.png |
-| Provider participant/member | Provider participant | mobile | passed | website-assistant | one_time_member | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-participant.png |
-| One Time member | One Time member | mobile | passed | website-assistant | one_time_member | yes | yes | yes | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-one-time-member.png |
-| Platform super-admin | Super admin | mobile | passed | operations-helper | operations | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-super-admin.png |
+| Journey | Audience | Viewport | Status | Assistant | Surface | Deep link | Refresh | Back nav | Workspace switch | Overflow px | Broken images | Console errors | Screenshot |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |
+| Anonymous public visitor | Public | desktop | passed | website-assistant | public | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-public-visitor.png |
+| Parent with one linked child | Parent | desktop | passed | website-assistant | parent_portal | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-one-child.png |
+| Parent with multiple children | Parent | desktop | passed | website-assistant | parent_portal | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-parent-multiple-children.png |
+| Student | Student | desktop | passed | website-assistant | student_portal | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-student.png |
+| Provider administrator | Provider admin | desktop | passed | website-assistant | provider_workspace | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-admin.png |
+| Provider participant/member | Provider participant | desktop | passed | website-assistant | one_time_member | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-provider-participant.png |
+| One Time member | One Time member | desktop | passed | website-assistant | one_time_member | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-one-time-member.png |
+| Platform super-admin | Super admin | desktop | passed | operations-helper | operations | yes | yes | n/a | rabbi_sheller_provider | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/desktop-super-admin.png |
+| Anonymous public visitor | Public | mobile | passed | website-assistant | public | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-public-visitor.png |
+| Parent with one linked child | Parent | mobile | passed | website-assistant | parent_portal | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-one-child.png |
+| Parent with multiple children | Parent | mobile | passed | website-assistant | parent_portal | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-parent-multiple-children.png |
+| Student | Student | mobile | passed | website-assistant | student_portal | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-student.png |
+| Provider administrator | Provider admin | mobile | passed | website-assistant | provider_workspace | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-admin.png |
+| Provider participant/member | Provider participant | mobile | passed | website-assistant | one_time_member | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-provider-participant.png |
+| One Time member | One Time member | mobile | passed | website-assistant | one_time_member | yes | yes | yes | n/a | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-one-time-member.png |
+| Platform super-admin | Super admin | mobile | passed | operations-helper | operations | yes | yes | n/a | rabbi_sheller_provider | 0 | 0 | 0 | ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/mobile-super-admin.png |
 
 ## Logged-Out And Wrong-Role Access
 
@@ -72,3 +72,4 @@ Guardrail: this run used a local server plus Playwright route mocks for `/api/*`
 - No failed browser requests were detected outside the favicon allowlist.
 - Header/navigation internal links returned expected local statuses.
 - No broken visible images were detected on the checked surfaces.
+- Super-admin workspace switching into the One Time provider workspace passed where applicable.
