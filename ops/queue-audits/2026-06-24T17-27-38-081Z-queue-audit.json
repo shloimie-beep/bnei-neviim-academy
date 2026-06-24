@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T17:35:00.836Z",
+  "generated_at": "2026-06-24T17:27:38.081Z",
   "cycle_id": "2026-06-15-cycle-ops-queue-helper-integrations",
   "counts": {
     "active_fresh": 0,
@@ -10,7 +10,7 @@
     "completed_verified": 326,
     "done_missing_report": 40,
     "duplicate": 570,
-    "abandoned_unknown": 372,
+    "abandoned_unknown": 370,
     "do_not_redo": 913
   },
   "stale_threshold_minutes": 15,
@@ -11895,7 +11895,7 @@
       "duplicate_of": null,
       "blocker": null,
       "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-24T14:33:52.000Z",
+      "last_seen_at": "2026-06-23T05:30:35.000Z",
       "started_at": null,
       "completed_at": null,
       "verified_at": null,
@@ -12911,7 +12911,7 @@
       "duplicate_of": null,
       "blocker": null,
       "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-24T14:33:51.000Z",
+      "last_seen_at": "2026-06-23T05:30:35.000Z",
       "started_at": null,
       "completed_at": null,
       "verified_at": null,
@@ -17650,30 +17650,6 @@
       "confidence": "high"
     },
     {
-      "id": "task:1609",
-      "task_id": 1609,
-      "source": "live_task",
-      "requested_work": "WhatsApp action from 972509036644",
-      "current_status": "abandoned_unknown",
-      "status_label": "Abandoned/unknown",
-      "evidence": [
-        "Live task #1609 is assigned assigned to Shloimie."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review and reconcile this item before hiding or requeueing.",
-      "safe_to_requeue": false,
-      "do_not_redo": false,
-      "duplicate_of": null,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-24T14:33:08.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
       "id": "task:1195",
       "task_id": 1195,
       "source": "live_task",
@@ -18509,30 +18485,6 @@
       "blocker": null,
       "needed_from_shloimie": null,
       "last_seen_at": "2026-06-21T07:24:42.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:1610",
-      "task_id": 1610,
-      "source": "live_task",
-      "requested_work": "WhatsApp from 972509036644: Well be in touch next week",
-      "current_status": "abandoned_unknown",
-      "status_label": "Abandoned/unknown",
-      "evidence": [
-        "Live task #1610 is assigned assigned to Shloimie."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review and reconcile this item before hiding or requeueing.",
-      "safe_to_requeue": false,
-      "do_not_redo": false,
-      "duplicate_of": null,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-24T14:33:19.000Z",
       "started_at": null,
       "completed_at": null,
       "verified_at": null,
@@ -22047,14 +21999,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1576",
-      "task_id": 1576,
+      "id": "task:1578",
+      "task_id": 1578,
       "source": "live_task",
       "requested_work": "Because I tell it to do too many things at once, so it doesn't fix everything.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1576 is assigned assigned to Codex.",
+        "Live task #1578 is assigned assigned to Codex.",
         "Similar active item found; canonical candidate is task #1575."
       ],
       "report_paths": [],
@@ -22072,14 +22024,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1578",
-      "task_id": 1578,
+      "id": "task:1576",
+      "task_id": 1576,
       "source": "live_task",
       "requested_work": "Because I tell it to do too many things at once, so it doesn't fix everything.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1578 is assigned assigned to Codex.",
+        "Live task #1576 is assigned assigned to Codex.",
         "Similar active item found; canonical candidate is task #1575."
       ],
       "report_paths": [],
@@ -22199,14 +22151,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1152",
-      "task_id": 1152,
+      "id": "task:1159",
+      "task_id": 1159,
       "source": "live_task",
       "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1152 is assigned.",
+        "Live task #1159 is assigned.",
         "Similar active item found; canonical candidate is task #1149."
       ],
       "report_paths": [],
@@ -22224,39 +22176,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1164",
-      "task_id": 1164,
+      "id": "task:1158",
+      "task_id": 1158,
       "source": "live_task",
       "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1164 is assigned.",
-        "Similar active item found; canonical candidate is task #1149."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": 1149,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-18T11:46:59.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:1155",
-      "task_id": 1155,
-      "source": "live_task",
-      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Live task #1155 is assigned.",
+        "Live task #1158 is assigned.",
         "Similar active item found; canonical candidate is task #1149."
       ],
       "report_paths": [],
@@ -22307,56 +22234,6 @@
       "status_label": "Duplicate",
       "evidence": [
         "Live task #1163 is assigned.",
-        "Similar active item found; canonical candidate is task #1149."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": 1149,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-18T11:46:59.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:1151",
-      "task_id": 1151,
-      "source": "live_task",
-      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Live task #1151 is assigned.",
-        "Similar active item found; canonical candidate is task #1149."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": 1149,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-18T11:46:59.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:1156",
-      "task_id": 1156,
-      "source": "live_task",
-      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Live task #1156 is assigned.",
         "Similar active item found; canonical candidate is task #1149."
       ],
       "report_paths": [],
@@ -22449,14 +22326,114 @@
       "confidence": "high"
     },
     {
-      "id": "task:1159",
-      "task_id": 1159,
+      "id": "task:1156",
+      "task_id": 1156,
       "source": "live_task",
       "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1159 is assigned.",
+        "Live task #1156 is assigned.",
+        "Similar active item found; canonical candidate is task #1149."
+      ],
+      "report_paths": [],
+      "artifact_paths": [],
+      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": 1149,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-18T11:46:59.000Z",
+      "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
+      "id": "task:1151",
+      "task_id": 1151,
+      "source": "live_task",
+      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #1151 is assigned.",
+        "Similar active item found; canonical candidate is task #1149."
+      ],
+      "report_paths": [],
+      "artifact_paths": [],
+      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": 1149,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-18T11:46:59.000Z",
+      "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
+      "id": "task:1164",
+      "task_id": 1164,
+      "source": "live_task",
+      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #1164 is assigned.",
+        "Similar active item found; canonical candidate is task #1149."
+      ],
+      "report_paths": [],
+      "artifact_paths": [],
+      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": 1149,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-18T11:46:59.000Z",
+      "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
+      "id": "task:1152",
+      "task_id": 1152,
+      "source": "live_task",
+      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #1152 is assigned.",
+        "Similar active item found; canonical candidate is task #1149."
+      ],
+      "report_paths": [],
+      "artifact_paths": [],
+      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": 1149,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-18T11:46:59.000Z",
+      "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
+      "id": "task:1155",
+      "task_id": 1155,
+      "source": "live_task",
+      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #1155 is assigned.",
         "Similar active item found; canonical candidate is task #1149."
       ],
       "report_paths": [],
@@ -22499,31 +22476,6 @@
       "confidence": "high"
     },
     {
-      "id": "task:1158",
-      "task_id": 1158,
-      "source": "live_task",
-      "requested_work": "But if one kid goes early and he didn't clean up, so he doesn't get to play tomorrow.",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Live task #1158 is assigned.",
-        "Similar active item found; canonical candidate is task #1149."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": 1149,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-18T11:46:59.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
       "id": "task:982",
       "task_id": 982,
       "source": "live_task",
@@ -22544,6 +22496,38 @@
       "needed_from_shloimie": null,
       "last_seen_at": "2026-06-17T14:09:41.000Z",
       "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
+      "id": "task:193",
+      "task_id": 193,
+      "source": "live_task",
+      "requested_work": "Clean raw natural-language wording from the Tasks dashboard",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #193 is archive assigned to Codex.",
+        "Latest ledger event: duplicate_task_archived at 2026-06-08T21:00:03+03:00.",
+        "1 changelog entry mention this item."
+      ],
+      "report_paths": [
+        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
+        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md"
+      ],
+      "artifact_paths": [
+        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
+        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md"
+      ],
+      "next_action": "Keep archived/linked to the canonical item; create a new task only if Shloimie asks.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": null,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-08T18:00:03.000Z",
+      "started_at": "2026-06-08T18:00:03.000Z",
       "completed_at": null,
       "verified_at": null,
       "confidence": "high"
@@ -22758,7 +22742,7 @@
       "duplicate_of": 556,
       "blocker": null,
       "needed_from_shloimie": "Choose Resend ownership",
-      "last_seen_at": "2026-06-24T14:33:50.000Z",
+      "last_seen_at": "2026-06-24T13:15:43.000Z",
       "started_at": null,
       "completed_at": null,
       "verified_at": null,
@@ -22829,31 +22813,6 @@
       "confidence": "high"
     },
     {
-      "id": "task:1065",
-      "task_id": 1065,
-      "source": "live_task",
-      "requested_work": "Does that make sense?",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Live task #1065 is assigned.",
-        "Similar active item found; canonical candidate is task #878."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": 878,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-17T14:38:57.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
       "id": "task:1062",
       "task_id": 1062,
       "source": "live_task",
@@ -22879,14 +22838,39 @@
       "confidence": "high"
     },
     {
-      "id": "task:966",
-      "task_id": 966,
+      "id": "task:1065",
+      "task_id": 1065,
       "source": "live_task",
       "requested_work": "Does that make sense?",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #966 is assigned.",
+        "Live task #1065 is assigned.",
+        "Similar active item found; canonical candidate is task #878."
+      ],
+      "report_paths": [],
+      "artifact_paths": [],
+      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": 878,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-17T14:38:57.000Z",
+      "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
+      "id": "task:965",
+      "task_id": 965,
+      "source": "live_task",
+      "requested_work": "Does that make sense?",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #965 is assigned.",
         "Similar active item found; canonical candidate is task #878."
       ],
       "report_paths": [],
@@ -22904,14 +22888,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:965",
-      "task_id": 965,
+      "id": "task:966",
+      "task_id": 966,
       "source": "live_task",
       "requested_work": "Does that make sense?",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #965 is assigned.",
+        "Live task #966 is assigned.",
         "Similar active item found; canonical candidate is task #878."
       ],
       "report_paths": [],
@@ -23268,14 +23252,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1479",
-      "task_id": 1479,
+      "id": "task:1478",
+      "task_id": 1478,
       "source": "live_task",
       "requested_work": "Five, you run for an hour and you're back by six and you shower off as well.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1479 is assigned.",
+        "Live task #1478 is assigned.",
         "Similar active item found; canonical candidate is task #1477."
       ],
       "report_paths": [],
@@ -23293,14 +23277,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1478",
-      "task_id": 1478,
+      "id": "task:1482",
+      "task_id": 1482,
       "source": "live_task",
       "requested_work": "Five, you run for an hour and you're back by six and you shower off as well.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1478 is assigned.",
+        "Live task #1482 is assigned.",
         "Similar active item found; canonical candidate is task #1477."
       ],
       "report_paths": [],
@@ -23343,14 +23327,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1481",
-      "task_id": 1481,
+      "id": "task:1479",
+      "task_id": 1479,
       "source": "live_task",
       "requested_work": "Five, you run for an hour and you're back by six and you shower off as well.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1481 is assigned.",
+        "Live task #1479 is assigned.",
         "Similar active item found; canonical candidate is task #1477."
       ],
       "report_paths": [],
@@ -23368,14 +23352,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1482",
-      "task_id": 1482,
+      "id": "task:1481",
+      "task_id": 1481,
       "source": "live_task",
       "requested_work": "Five, you run for an hour and you're back by six and you shower off as well.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1482 is assigned.",
+        "Live task #1481 is assigned.",
         "Similar active item found; canonical candidate is task #1477."
       ],
       "report_paths": [],
@@ -27513,6 +27497,31 @@
       "confidence": "high"
     },
     {
+      "id": "task:1028",
+      "task_id": 1028,
+      "source": "live_task",
+      "requested_work": "I'm trying to fix the father topics.",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #1028 is assigned.",
+        "Similar active item found; canonical candidate is task #1026."
+      ],
+      "report_paths": [],
+      "artifact_paths": [],
+      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": 1026,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-17T14:29:19.000Z",
+      "started_at": null,
+      "completed_at": null,
+      "verified_at": null,
+      "confidence": "high"
+    },
+    {
       "id": "task:1029",
       "task_id": 1029,
       "source": "live_task",
@@ -27546,31 +27555,6 @@
       "status_label": "Duplicate",
       "evidence": [
         "Live task #1027 is assigned.",
-        "Similar active item found; canonical candidate is task #1026."
-      ],
-      "report_paths": [],
-      "artifact_paths": [],
-      "next_action": "Review duplicate linkage; do not requeue unless Shloimie explicitly creates a new task.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": 1026,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-17T14:29:19.000Z",
-      "started_at": null,
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:1028",
-      "task_id": 1028,
-      "source": "live_task",
-      "requested_work": "I'm trying to fix the father topics.",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Live task #1028 is assigned.",
         "Similar active item found; canonical candidate is task #1026."
       ],
       "report_paths": [],
@@ -28283,14 +28267,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1505",
-      "task_id": 1505,
+      "id": "task:1501",
+      "task_id": 1501,
       "source": "live_task",
       "requested_work": "Let's make a decision.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1505 is assigned.",
+        "Live task #1501 is assigned.",
         "Similar active item found; canonical candidate is task #1500."
       ],
       "report_paths": [],
@@ -28333,14 +28317,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1501",
-      "task_id": 1501,
+      "id": "task:1506",
+      "task_id": 1506,
       "source": "live_task",
       "requested_work": "Let's make a decision.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1501 is assigned.",
+        "Live task #1506 is assigned.",
         "Similar active item found; canonical candidate is task #1500."
       ],
       "report_paths": [],
@@ -28383,14 +28367,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:1506",
-      "task_id": 1506,
+      "id": "task:1505",
+      "task_id": 1505,
       "source": "live_task",
       "requested_work": "Let's make a decision.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #1506 is assigned.",
+        "Live task #1505 is assigned.",
         "Similar active item found; canonical candidate is task #1500."
       ],
       "report_paths": [],
@@ -28492,14 +28476,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:980",
-      "task_id": 980,
+      "id": "task:978",
+      "task_id": 978,
       "source": "live_task",
       "requested_work": "No, he couldn't make it for me.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #980 is assigned.",
+        "Live task #978 is assigned.",
         "Similar active item found; canonical candidate is task #938."
       ],
       "report_paths": [],
@@ -28517,14 +28501,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:978",
-      "task_id": 978,
+      "id": "task:980",
+      "task_id": 980,
       "source": "live_task",
       "requested_work": "No, he couldn't make it for me.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #978 is assigned.",
+        "Live task #980 is assigned.",
         "Similar active item found; canonical candidate is task #938."
       ],
       "report_paths": [],
@@ -28650,14 +28634,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:992",
-      "task_id": 992,
+      "id": "task:995",
+      "task_id": 995,
       "source": "live_task",
       "requested_work": "Okay, that's the task, Mr.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #992 is assigned.",
+        "Live task #995 is assigned.",
         "Similar active item found; canonical candidate is task #952."
       ],
       "report_paths": [],
@@ -28675,14 +28659,14 @@
       "confidence": "high"
     },
     {
-      "id": "task:995",
-      "task_id": 995,
+      "id": "task:992",
+      "task_id": 992,
       "source": "live_task",
       "requested_work": "Okay, that's the task, Mr.",
       "current_status": "duplicate",
       "status_label": "Duplicate",
       "evidence": [
-        "Live task #995 is assigned.",
+        "Live task #992 is assigned.",
         "Similar active item found; canonical candidate is task #952."
       ],
       "report_paths": [],
@@ -30731,77 +30715,6 @@
       "needed_from_shloimie": null,
       "last_seen_at": "2026-06-07T09:45:04.000Z",
       "started_at": "2026-06-07T09:45:04.000Z",
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:193",
-      "task_id": 193,
-      "source": "ledger",
-      "requested_work": "Task #?",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Latest ledger event: duplicate_task_archived at 2026-06-08T21:00:03+03:00.",
-        "1 changelog entry mention this item."
-      ],
-      "report_paths": [
-        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
-        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md"
-      ],
-      "artifact_paths": [
-        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
-        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md"
-      ],
-      "next_action": "Keep archived/linked to the canonical item; create a new task only if Shloimie asks.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": null,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-08T18:00:03.000Z",
-      "started_at": "2026-06-08T18:00:03.000Z",
-      "completed_at": null,
-      "verified_at": null,
-      "confidence": "high"
-    },
-    {
-      "id": "task:195",
-      "task_id": 195,
-      "source": "ledger",
-      "requested_work": "Task #?",
-      "current_status": "duplicate",
-      "status_label": "Duplicate",
-      "evidence": [
-        "Latest ledger event: watchdog_status_ok_verified at 2026-06-08T21:05:53+03:00.",
-        "4 changelog entries mention this item."
-      ],
-      "report_paths": [
-        "ops/openai-smokes/2026-06-08T17-59-49-371Z-openai-sidekick-smoke.md",
-        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md",
-        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
-        "ops/agent-fleet-runs/2026-06-08T18-15-05-258Z-task-195.md",
-        "ops/agent-fleet-runs/2026-06-08T18-19-45-740Z-task-195.md",
-        "ops/system-audits/2026-06-08T18-17-03-089Z-watchdog.md"
-      ],
-      "artifact_paths": [
-        "ops/openai-smokes/2026-06-08T17-59-49-371Z-openai-sidekick-smoke.md",
-        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md",
-        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
-        "ops/agent-fleet-runs/2026-06-08T18-15-05-258Z-task-195.md",
-        "ops/agent-fleet-runs/2026-06-08T18-19-45-740Z-task-195.md",
-        "ops/system-audits/2026-06-08T18-17-03-089Z-watchdog.md",
-        "tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md"
-      ],
-      "next_action": "Keep archived/linked to the canonical item; create a new task only if Shloimie asks.",
-      "safe_to_requeue": false,
-      "do_not_redo": true,
-      "duplicate_of": null,
-      "blocker": null,
-      "needed_from_shloimie": null,
-      "last_seen_at": "2026-06-08T18:05:53.000Z",
-      "started_at": "2026-06-08T18:05:53.000Z",
       "completed_at": null,
       "verified_at": null,
       "confidence": "high"
@@ -36667,6 +36580,47 @@
       "started_at": "2026-06-11T09:24:57.000Z",
       "completed_at": "2026-06-11T06:26:48.000Z",
       "verified_at": "2026-06-11T06:26:48.810Z",
+      "confidence": "high"
+    },
+    {
+      "id": "task:195",
+      "task_id": 195,
+      "source": "live_task",
+      "requested_work": "Yes definitely fix up that thing but your student is super professional really legit way so nothing gets messed up cuz there's other critical warnings and we need to put this in the change log",
+      "current_status": "duplicate",
+      "status_label": "Duplicate",
+      "evidence": [
+        "Live task #195 is done assigned to Codex.",
+        "Latest ledger event: watchdog_status_ok_verified at 2026-06-08T21:05:53+03:00.",
+        "4 changelog entries mention this item."
+      ],
+      "report_paths": [
+        "ops/openai-smokes/2026-06-08T17-59-49-371Z-openai-sidekick-smoke.md",
+        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md",
+        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
+        "ops/agent-fleet-runs/2026-06-08T18-15-05-258Z-task-195.md",
+        "ops/agent-fleet-runs/2026-06-08T18-19-45-740Z-task-195.md",
+        "ops/system-audits/2026-06-08T18-17-03-089Z-watchdog.md"
+      ],
+      "artifact_paths": [
+        "ops/openai-smokes/2026-06-08T17-59-49-371Z-openai-sidekick-smoke.md",
+        "ops/system-audits/2026-06-08T18-05-53-647Z-watchdog.md",
+        "ops/openai-smokes/2026-06-08T18-04-55-514Z-openai-sidekick-smoke.md",
+        "ops/agent-fleet-runs/2026-06-08T18-15-05-258Z-task-195.md",
+        "ops/agent-fleet-runs/2026-06-08T18-19-45-740Z-task-195.md",
+        "ops/system-audits/2026-06-08T18-17-03-089Z-watchdog.md",
+        "tasks-pending/2026-06-14-google-onboarding-helper-crm-workspace-followup.md"
+      ],
+      "next_action": "Keep archived/linked to the canonical item; create a new task only if Shloimie asks.",
+      "safe_to_requeue": false,
+      "do_not_redo": true,
+      "duplicate_of": null,
+      "blocker": null,
+      "needed_from_shloimie": null,
+      "last_seen_at": "2026-06-08T18:05:53.000Z",
+      "started_at": "2026-06-08T18:05:53.000Z",
+      "completed_at": "2026-06-08T15:19:45.000Z",
+      "verified_at": "2026-06-08T15:19:45.742Z",
       "confidence": "high"
     },
     {

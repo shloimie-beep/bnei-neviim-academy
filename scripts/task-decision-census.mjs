@@ -860,7 +860,7 @@ async function loadTasksFromDb(env, limit) {
   });
   try {
     const result = await pool.query(
-      `SELECT t.*, p.project_key, p.name AS project_name, w.key AS workspace_key
+      `SELECT t.*, p.project_key, p.name AS project_name, w.workspace_key AS workspace_key
        FROM bna_tasks t
        LEFT JOIN bna_projects p ON p.id = t.project_id
        LEFT JOIN bna_workspace_settings w ON w.id = t.workspace_id

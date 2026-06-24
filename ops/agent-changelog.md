@@ -26067,3 +26067,19 @@ The final-release run now has terminal statuses: `REQ-20260624-019` through
 `REQ-20260624-027`, `REQ-20260624-029`, `REQ-20260624-030`, and
 `REQ-20260624-031` are Done; `REQ-20260624-028` is Blocked by unsafe class
 backfill evidence.
+
+## 2026-06-24T20:41:31+03:00 - Clean Slate Acceptance Registered
+
+Registered `RAW-20260624-007` and created the clean-slate acceptance run
+`ops/execution-runs/2026-06-24-clean-slate-acceptance/`. Verified release truth
+against Git/GitHub/Railway/live evidence, linked `REQ-20260624-028` to GitHub
+issue #18 as blocked read-only class-intake reconciliation, fixed the live
+task/Decision census workspace query, applied only three safe reversible One
+Time scope reclassifications, proved synthetic ramble intake idempotency
+without production queue pollution, and wrote owner/preservation/handoff
+evidence under `ops/acceptance/2026-06-24-clean-slate/`.
+
+Final validation, PR creation/merge, and post-merge state reporting remain
+under `REQ-20260624-039`. No class backfill, production migration, send,
+charge, upload, DNS write, credential copy/rotation, or manual docs-only
+Railway deployment was performed.

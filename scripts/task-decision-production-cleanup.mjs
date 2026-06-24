@@ -133,7 +133,7 @@ function liveConfig() {
     ...readEnvFile(path.join(repoRoot, '.env')),
     ...process.env
   };
-  const appUrl = env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || '';
+  const appUrl = env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org';
   const username = env.OPS_USERNAME || '';
   const password = env.OPS_PASSWORD || '';
   if (!appUrl || !username || !password) {
