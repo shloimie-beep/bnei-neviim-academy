@@ -91,13 +91,15 @@ test('Vimeo adapter supports auth readiness, parsing, manual fallback, and redac
 
   const noToken = await vimeo.testVimeoAuth({ token: '' });
   assert.equal(noToken.ok, false);
-  assert.equal(noToken.status, 'needs_api_key');
+  assert.equal(noToken.status, 'credential_missing');
+  assert.equal(noToken.legacy_status, 'needs_api_key');
   assert.equal(noToken.external_write_performed, false);
 
   const intent = vimeo.createVimeoUploadIntent({ title: 'Class video' }, { token: '', uploadAccess: false });
   assert.equal(intent.preview_only, true);
   assert.equal(intent.external_write_performed, false);
-  assert.equal(intent.status, 'manual_upload_required');
+  assert.equal(intent.status, 'manual_ready');
+  assert.equal(intent.legacy_status, 'manual_upload_required');
   assert.equal(vimeo.getVideoHostingReadiness({
     config: {
       providerDecision: 'vimeo',
