@@ -45,3 +45,27 @@ Lane integration checks:
   syntax checks, JSON parse, `git diff --check`, `npm run secrets:audit`
 - PASS operator walkthrough: setup suite 7/7, syntax checks, JSON parse,
   `git diff --check`, `npm run secrets:audit`
+
+Route/UI/server authorization wiring checks:
+
+- PASS `node --check server.js`
+- PASS `node --check public/js/integration-setup.js`
+- PASS `node --test tests/class-drive-intake-shared-patch.test.js tests/class-drive-intake-reconcile.test.js`
+  (17/17)
+- PASS `node --test tests/provider-api-usage-readiness.test.js tests/assistant-model-readiness.test.js tests/ramble-routing-pipeline.test.js`
+  (23/23)
+- PASS `node --test tests/stripe-billing-lifecycle.test.js tests/one-time-stripe-local-beta.test.js tests/one-time-resend-vimeo-stripe-safe-smoke.test.js tests/rabbi-checkout-access.test.js`
+  (21/21)
+- PASS `node --test tests/integration-setup-catalog.test.js tests/integration-setup-ui.test.js tests/operator-walkthrough-links.test.js`
+  (7/7)
+- PASS `npm run watchdog:actions` with `finding_count=0`
+- PASS `npm run watchdog:security` with `finding_count=0`
+- PASS `npm run bna:run:validate`
+- PASS `git diff --check` with Windows line-ending warnings only
+- PASS `npm run secrets:audit` with 4581 tracked paths and 0 findings
+- PASS `npm run stripe:sandbox-smoke` with status `live_key_blocked`,
+  `external_write_performed=false`, `no_real_customer_data=true`, and
+  `no_real_funds=true`
+- PASS `node scripts/vimeo-private-smoke.mjs --json` exited safely with
+  status `preview_only`, `external_write_performed=false`, and
+  `public_publish_performed=false`

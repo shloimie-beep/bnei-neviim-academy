@@ -1150,6 +1150,36 @@
         "expected_result": "Server rejects non-dry-run password setup unless confirm is SEND_PARENT_PASSWORD_SETUP."
       },
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-INTEGRATION-SETUP-OPEN",
+      "label": "Open setup page",
+      "surface": "operations_integrations",
+      "route": "/operations?view=integrations&section=owner_setup",
+      "selector_hint": "[data-action-id=\"ACTION-INTEGRATION-SETUP-OPEN\"]",
+      "expected_behavior": "Opens the static credential-safe owner setup center.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Operations owner setup panel links to /integration-setup.html and the route registry marks it credential-safe."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
+      "action_id": "ACTION-INTEGRATION-SETUP-VALIDATE",
+      "label": "Run validation",
+      "surface": "operations_integrations",
+      "route": "/operations?view=integrations&section=owner_setup",
+      "selector_hint": "[data-action-id=\"ACTION-INTEGRATION-SETUP-VALIDATE\"]",
+      "expected_behavior": "Calls the protected owner setup readiness endpoint and displays success or blocker status without secrets.",
+      "permission": "super_admin",
+      "status": "preview_only",
+      "test": {
+        "type": "unit_and_static",
+        "expected_result": "Button calls GET /api/bna/integration-setup/readiness through the Operations API client and performs no external write."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
     }
   ]
 }

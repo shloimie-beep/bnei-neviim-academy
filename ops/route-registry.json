@@ -1400,6 +1400,130 @@
         "GOAL-CORE-010",
         "GOAL-CORE-015"
       ]
+    },
+    {
+      "route": "/integration-setup.html",
+      "surface": "public_owner_setup_center",
+      "access": "public",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "load_static_credential_safe_owner_setup_page",
+      "expected_logged_in_behavior": "load_static_credential_safe_owner_setup_page",
+      "privacy_risk": "normal",
+      "security_expectation": "Static setup page must not expose secrets, private student records, parent data, provider data, or Operations sessions.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integration-setup/readiness",
+      "surface": "operations_api_owner_setup_readiness",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_credential_safe_owner_setup_catalog",
+      "privacy_risk": "critical",
+      "security_expectation": "Endpoint requires admin auth and returns setup status without raw secrets.",
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/status",
+      "surface": "operations_api_stripe_status",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_stripe_readiness_and_safe_billing_preview_without_secrets",
+      "privacy_risk": "critical",
+      "security_expectation": "Readiness payload redacts Stripe secrets and performs no external write.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/checkout-preview",
+      "surface": "operations_api_stripe_checkout_preview",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_checkout_preview_without_customer_or_charge_creation",
+      "privacy_risk": "critical",
+      "security_expectation": "Preview is local only and reports external_write_performed=false.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/checkout-create",
+      "surface": "operations_api_stripe_checkout_create",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_stripe_checkout_session_only_after_explicit_approval_gate",
+      "privacy_risk": "critical",
+      "security_expectation": "Checkout creation remains explicit-approval gated and live mode is blocked without separate final live billing approval.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/integrations/stripe/webhook-preview",
+      "surface": "operations_api_stripe_webhook_preview",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "simulate_stripe_billing_lifecycle_without_accepting_live_webhooks",
+      "privacy_risk": "critical",
+      "security_expectation": "Preview applies synthetic or supplied events in memory only and reports external_write_performed=false.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/assistant/chat",
+      "surface": "assistant_chat_api",
+      "access": "mixed",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "create_anonymous_safe_assistant_chat_thread",
+      "expected_logged_in_behavior": "create_scoped_assistant_chat_thread_and_record_provider_usage_without_prompt_body",
+      "privacy_risk": "critical",
+      "security_expectation": "Anonymous assistant remains public-safe; usage metadata must not store prompt or response bodies.",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

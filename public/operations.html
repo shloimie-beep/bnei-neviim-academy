@@ -8289,6 +8289,7 @@
                 if (filters.workspace) params.set('workspace', filters.workspace);
                 return this.request('GET', '/integrations/status' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getIntegrationSetupReadiness() { return this.request('GET', '/integration-setup/readiness'); },
             getGoogleIntegrationStatus() { return this.request('GET', '/integrations/google/status'); },
             getBufferIntegrationHealth() { return this.request('GET', '/integrations/buffer/health'); },
             getBufferChannels() { return this.request('GET', '/integrations/buffer/channels'); },
@@ -8946,7 +8947,7 @@
         let automationSection = currentView === 'automations' && ['center'].includes(initialSection)
             ? initialSection
             : 'center';
-        let integrationsSection = currentView === 'integrations' && ['readiness', 'google', 'communications', 'connectors', 'drive_social', 'automations', 'external_apps'].includes(initialSection)
+        let integrationsSection = currentView === 'integrations' && ['readiness', 'owner_setup', 'google', 'communications', 'connectors', 'drive_social', 'automations', 'external_apps'].includes(initialSection)
             ? initialSection
             : 'readiness';
         let settingsSection = currentView === 'settings' && ['account', 'workspace_core', 'users_access', 'communications_core', 'learning_portals', 'calendar_classroom', 'bots_ai', 'provider_index_core', 'billing_payments', 'integrations_core', 'advanced', 'profile', 'workspace', 'branding', 'language', 'users_roles', 'email_identities', 'whatsapp', 'social_accounts', 'drive_social_ingestion', 'calendar', 'google_workspace', 'google_calendar', 'google_classroom', 'parent_portal', 'student_portal', 'provider_portal', 'provider_index', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'bot_permissions', 'api_limits', 'communications', 'integrations', 'payment_links', 'external_apps', 'billing', 'automations', 'approval_gates', 'danger'].includes(initialSection)
@@ -9362,6 +9363,7 @@
 
         const INTEGRATIONS_SUBTABS = [
             { id: 'readiness', label: 'Readiness' },
+            { id: 'owner_setup', label: 'Owner Setup' },
             { id: 'google', label: 'Google' },
             { id: 'communications', label: 'Communications' },
             { id: 'connectors', label: 'Connectors' },
@@ -10571,6 +10573,7 @@
             const externalAppCount = serviceProviders.reduce((sum, provider) => sum + (Array.isArray(provider.integrations) ? provider.integrations.length : 0), 0);
             return {
                 readiness: Array.isArray(integrationsReadinessStatus?.cards) ? integrationsReadinessStatus.cards.length : 0,
+                owner_setup: 1,
                 google: googleCount,
                 communications: (communicationsIntegrationState.socialDrafts || []).length + (communicationsIntegrationState.emailDrafts || []).length + (communicationsIntegrationState.dnsTasks || []).length,
                 connectors: connectorCount,
@@ -21538,6 +21541,7 @@
             const sectionLabel = tabs.find(tab => tab.id === section)?.label || 'Integrations';
             let body = '';
             if (section === 'readiness') body = renderIntegrationsReadinessPanel();
+            if (section === 'owner_setup') body = renderIntegrationOwnerSetupPanel();
             if (section === 'google') body = renderGoogleWorkspaceSettings({ canonicalRoute: true });
             if (section === 'communications') body = renderCommunicationsIntegrationPanel();
             if (section === 'connectors') body = renderConnectorSettingsSection(['email_identity', 'whatsapp', 'social', 'google_calendar', 'google_classroom', 'payment', 'video_library'], 'Connector Directory', 'External systems are connectors only; BNA Operations remains the first-party workflow source.');
@@ -21573,6 +21577,22 @@
             if (status === 'configured' || status === 'configured_test_mode') return 'Configured';
             if (status.includes('invalid') || status.includes('insufficient')) return 'Blocked';
             return card.configured ? 'Configured' : 'Missing';
+        }
+
+        function renderIntegrationOwnerSetupPanel() {
+            return `
+                <div class="connector-settings-section" data-owner-setup-center>
+                    <div class="task-section-header">
+                        <h3>Owner Setup Center</h3>
+                        <span>Links, steps, status, validation</span>
+                    </div>
+                    <div class="settings-disabled-note">The setup page is credential-safe. The readiness endpoint is protected and returns setup status without secrets.</div>
+                    <div class="task-actions">
+                        <a class="task-action primary" href="/integration-setup.html" data-action-id="ACTION-INTEGRATION-SETUP-OPEN">Open setup page</a>
+                        <button class="task-action" type="button" data-action-id="ACTION-INTEGRATION-SETUP-VALIDATE" onclick="api.getIntegrationSetupReadiness().then(() => showNotice('Owner setup readiness loaded')).catch(error => showNotice(error.message || 'Owner setup readiness unavailable'))">Run validation</button>
+                    </div>
+                </div>
+            `;
         }
 
         function renderIntegrationsReadinessPanel() {

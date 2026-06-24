@@ -8,8 +8,11 @@ Current status: running.
 - `REQ-20260624-021`: Done. Seven lane branches were integrated with pushed
   checkpoint commits.
 - `REQ-20260624-022`: Done. PR/local history supersession is recorded.
-- `REQ-20260624-023`: In progress. Next action is shared route/UI/server
-  authorization wiring from reviewed patches.
+- `REQ-20260624-023`: Done locally for the release candidate. Shared
+  routes/UI/server authorization wiring is implemented and locally verified;
+  final app-visible proof remains deferred to the deploy/live-smoke requirement.
+- `REQ-20260624-024`: In progress. Next action is migration/database readiness
+  review without production DB mutation.
 - `REQ-20260624-028`: Blocked for class backfill apply under current evidence;
   this does not block code integration.
 

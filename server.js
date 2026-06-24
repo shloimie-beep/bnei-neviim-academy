@@ -118,6 +118,9 @@ const {
   buildBufferAssets,
 } = require('./src/lib/bna/buffer-media-assets');
 const {
+  createProviderApiUsageRecorder,
+} = require('./src/lib/bna/provider-api-usage');
+const {
   buildTelegramRuntimeReadiness,
 } = require('./src/lib/bna/telegram-runtime-status');
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
@@ -127,6 +130,9 @@ const stripeIntegration = require('./src/lib/integrations/stripe');
 const zoomIntegration = require('./src/lib/integrations/zoom');
 const videoHostingIntegration = require('./src/lib/integrations/video-hosting');
 const externalActions = require('./src/lib/integrations/external-actions');
+const {
+  buildOwnerSetupCatalog,
+} = require('./src/lib/integrations/setup-catalog');
 const {
   buildPublicHelperRetrievalContext,
 } = require('./src/lib/bna/public-helper-retrieval');
@@ -41551,6 +41557,17 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/integration-setup/readiness', requireAdmin, async (req, res) => {
+  res.json(buildOwnerSetupCatalog({
+    generatedAt: new Date().toISOString(),
+    env: process.env,
+    validationTimestamps: {},
+    statusOverrides: {
+      githubWorkflow: process.env.BNA_GITHUB_WORKFLOW_SCOPE_READY === 'true' ? 'available' : '',
+    },
+  }));
+});
+
 app.get('/api/bna/assistant/control-plane/readiness', requireAdmin, async (req, res) => {
   try {
     const expectedTables = [...ASSISTANT_DATA_MODEL_TABLES];
@@ -41678,7 +41695,11 @@ app.get('/api/bna/integrations/telegram/status', requireAdmin, async (req, res) 
 });
 
 app.get('/api/bna/integrations/stripe/status', requireAdmin, (req, res) => {
-  res.json({ success: true, card: stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig }) });
+  res.json({
+    success: true,
+    card: stripeIntegration.getStripeReadiness({ config: stripeRuntimeConfig }),
+    billing: stripeIntegration.buildSafeBillingPreview({ config: stripeRuntimeConfig }),
+  });
 });
 
 app.post('/api/bna/integrations/stripe/checkout-preview', requireAdmin, (req, res) => {
@@ -41687,8 +41708,37 @@ app.post('/api/bna/integrations/stripe/checkout-preview', requireAdmin, (req, re
 
 app.post('/api/bna/integrations/stripe/checkout-create', requireAdmin, async (req, res) => {
   try {
-    stripeIntegration.assertCheckoutCreateApproved(req.body || {}, { config: stripeRuntimeConfig });
-    res.status(409).json({ success: false, error: 'Stripe checkout creation is not enabled in this closeout pass.' });
+    const body = req.body || {};
+    stripeIntegration.assertCheckoutCreateApproved(body, { config: stripeRuntimeConfig });
+    const stripeClient = stripeIntegration.getStripeClientWrapper({ secretKey: stripeRuntimeConfig.secretKey });
+    const account = stripeClient?.accounts?.retrieve
+      ? await stripeClient.accounts.retrieve()
+      : null;
+    const configState = stripeIntegration.getStripeBillingRuntimeState({
+      config: stripeRuntimeConfig,
+      sandboxApiVerified: account?.livemode === false,
+      sandboxAccountLivemode: account?.livemode,
+    });
+    const policy = stripeIntegration.resolveBillingPolicy(body);
+    const priceMap = stripeIntegration.buildProductPriceMap({
+      policy,
+      tiers: body.tiers || [],
+      priceIds: body.priceIds || body.price_ids || {},
+    });
+    const checkout = await stripeIntegration.createStripeCheckoutSession({
+      stripeClient,
+      config: configState,
+      request: body,
+      policy,
+      priceMap,
+      idempotencyKey: body.idempotency_key || body.idempotencyKey,
+    });
+    res.json({
+      success: true,
+      preview_only: false,
+      checkout,
+      config_state: stripeIntegration.safeConfigView(configState),
+    });
   } catch (err) {
     await externalActions.recordExternalActionAudit(pool, {
       provider: 'stripe',
@@ -41703,6 +41753,30 @@ app.post('/api/bna/integrations/stripe/checkout-create', requireAdmin, async (re
     const safe = safeIntegrationError(err, 'Stripe checkout create blocked');
     res.status(safe.status || 409).json({ success: false, blocked: true, error: safe.error, blocker: safe.blocker });
   }
+});
+
+app.post('/api/bna/integrations/stripe/webhook-preview', requireAdmin, (req, res) => {
+  const body = req.body || {};
+  const policy = stripeIntegration.resolveBillingPolicy(body);
+  const config = stripeIntegration.getStripeBillingRuntimeState({ config: stripeRuntimeConfig });
+  const initialState = stripeIntegration.createInitialBillingState({ policy, config });
+  const events = Array.isArray(body.events)
+    ? body.events
+    : [stripeIntegration.buildSyntheticStripeEvent({
+      type: body.type || 'checkout.session.completed',
+      object: body.object || {},
+    })];
+  const lifecycle = events.reduce((state, event) => (
+    stripeIntegration.applyStripeBillingEvent(state, event).state
+  ), initialState);
+  res.json({
+    success: true,
+    provider: 'stripe',
+    preview_only: true,
+    external_write_performed: false,
+    lifecycle,
+    final_audit: stripeIntegration.buildLifecycleFinalAudit(lifecycle),
+  });
 });
 
 app.get('/api/bna/integrations/zoom/status', requireAdmin, (req, res) => {
@@ -56383,6 +56457,98 @@ function mixedRecordingCountsFromApply(applied = null, intake = {}) {
   };
 }
 
+function progressOnlyMixedRecordingParsePayload(parsed = {}) {
+  const report = parsed.report && typeof parsed.report === 'object' && !Array.isArray(parsed.report)
+    ? parsed.report
+    : {};
+  return {
+    tasks: [],
+    accountability_events: [],
+    class_notes: [],
+    group_goal_entries: Array.isArray(parsed.group_goal_entries)
+      ? parsed.group_goal_entries.slice(0, 60)
+      : [],
+    daily_torah_updates: Array.isArray(parsed.daily_torah_updates)
+      ? parsed.daily_torah_updates.slice(0, 60)
+      : [],
+    report: {
+      ...report,
+      parser: 'mixed-recording-progress-only',
+      note: 'Canonical tasks, class notes, and direct accountability rows stay in the intake output; progress-only persistence writes only progress/timer rows and avoids duplicate class-session output.',
+    },
+  };
+}
+
+async function contentJobHasProgressOnlyWrites(contentJobId, db = pool) {
+  if (!contentJobId) return false;
+  const groupRows = await db.query(
+    `SELECT id
+     FROM bna_group_goal_entries
+     WHERE source_content_job_id = $1
+     LIMIT 1`,
+    [contentJobId]
+  );
+  if (groupRows.rows[0]) return true;
+
+  const timerEvents = await db.query(
+    `SELECT id
+     FROM bna_accountability_events
+     WHERE source = 'recording'
+       AND source_message_id = $1
+       AND metadata::text ILIKE '%mixed-recording-v1%'
+       AND metadata::text ILIKE '%timer_mapping%'
+     LIMIT 1`,
+    [String(contentJobId)]
+  );
+  return Boolean(timerEvents.rows[0]);
+}
+
+async function persistProgressOnlyMixedRecordingParse({
+  job = {},
+  previousParse = {},
+  projectKey = '',
+  students = [],
+  progressOnlyParsed = null,
+} = {}) {
+  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(job?.transcript_text || '') || DEFAULT_PROJECT_KEY;
+  const effectiveStudents = students.length
+    ? students
+    : await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
+  const parsedPayload = progressOnlyParsed
+    || progressOnlyMixedRecordingParsePayload(await generateMixedRecordingParse({ job, students: effectiveStudents }));
+  const markedApplied = Boolean(previousParse?.mixed_recording_parse?.progress_only?.applied_at);
+  const existingWrites = job.id ? await contentJobHasProgressOnlyWrites(job.id) : false;
+  if (markedApplied || existingWrites) {
+    return {
+      skipped_existing: true,
+      parsed: parsedPayload,
+      counts: {
+        group_goal_entries: 0,
+        daily_torah_updates: 0,
+        torah_learning_entries: 0,
+        accountability_events: 0,
+      },
+      created: {
+        group_goal_entries: [],
+        daily_torah_updates: [],
+        torah_learning_entries: [],
+        accountability_events: [],
+      },
+    };
+  }
+
+  return persistMixedRecordingParse({
+    job,
+    parsed: parsedPayload,
+    students: effectiveStudents,
+    previousParse,
+    dryRun: false,
+    archiveSourceAfterParse: false,
+    contentBacked: false,
+    projectKey: effectiveProjectKey,
+  });
+}
+
 async function parseMixedRecordingSource({
   job = {},
   instruction = '',
@@ -56410,13 +56576,29 @@ async function parseMixedRecordingSource({
     dry_run: Boolean(dryRun),
   });
   const parsed = mixedRecordingParsedFromCanonical(intake.parsed);
+  const effectiveProjectKey = projectKey || inferProjectKeyFromTranscript(rawInput) || DEFAULT_PROJECT_KEY;
+  const students = await activeStudentsForMixedRecordingParse({ projectKey: effectiveProjectKey });
+  const progressOnlyParsed = progressOnlyMixedRecordingParsePayload(
+    await generateMixedRecordingParse({ job, students })
+  );
   if (dryRun) {
+    const progressOnlyDryRun = await persistMixedRecordingParse({
+      job,
+      parsed: progressOnlyParsed,
+      students,
+      previousParse,
+      dryRun: true,
+      archiveSourceAfterParse: false,
+      contentBacked: false,
+      projectKey: effectiveProjectKey,
+    });
     return {
       success: true,
       dry_run: true,
       raw_intake: intake.raw_intake,
       parse_run: intake.parse_run,
       parsed,
+      progress_only_parsed: progressOnlyDryRun.parsed,
       items: intake.items,
       review_items: intake.review_items,
       counts: mixedRecordingCountsFromApply(null, intake),
@@ -56424,7 +56606,7 @@ async function parseMixedRecordingSource({
     };
   }
 
-  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: projectKey || DEFAULT_PROJECT_KEY });
+  const applied = await fileIntakeParseRun(intake.parse_run.id, { projectKey: effectiveProjectKey });
   const counts = mixedRecordingCountsFromApply(applied, intake);
   const nextParse = {
     ...(previousParse || {}),
@@ -56453,6 +56635,39 @@ async function parseMixedRecordingSource({
       [JSON.stringify(nextParse), Boolean(archiveSourceAfterParse), job.id]
     );
   }
+  const progressOnlyResult = await persistProgressOnlyMixedRecordingParse({
+    job,
+    previousParse: nextParse,
+    projectKey: effectiveProjectKey,
+    students,
+    progressOnlyParsed,
+  });
+  const combinedParse = {
+    ...nextParse,
+    canonical_mixed_recording_parse: nextParse.mixed_recording_parse,
+    mixed_recording_parse: {
+      ...nextParse.mixed_recording_parse,
+      progress_only: {
+        parser: 'mixed-recording-progress-only',
+        parsed_at: new Date().toISOString(),
+        applied_at: progressOnlyResult.skipped_existing ? null : new Date().toISOString(),
+        skipped_existing: Boolean(progressOnlyResult.skipped_existing),
+        counts: progressOnlyResult.counts || {},
+        group_goal_entries: progressOnlyParsed.group_goal_entries.length,
+        daily_torah_updates: progressOnlyParsed.daily_torah_updates.length,
+        report: progressOnlyParsed.report,
+      },
+    },
+  };
+  if (contentBacked && job.id) {
+    await pool.query(
+      `UPDATE bna_content_jobs
+       SET parse_json = $1::jsonb,
+           updated_at = NOW()
+       WHERE id = $2`,
+      [JSON.stringify(combinedParse), job.id]
+    );
+  }
   return {
     success: true,
     dry_run: false,
@@ -56464,7 +56679,9 @@ async function parseMixedRecordingSource({
     counts,
     report: parsed.report,
     created: applied.created,
-    parse_json: nextParse,
+    progress_only_created: progressOnlyResult.created,
+    progress_only_counts: progressOnlyResult.counts,
+    parse_json: combinedParse,
   };
 }
 
@@ -68751,6 +68968,7 @@ app.get('/api/bna/assistant/actions/:id', async (req, res) => {
 });
 
 app.post('/api/bna/assistant/chat', async (req, res) => {
+  const startedAtMs = Date.now();
   const body = req.body || {};
   const messageText = limitText(body.message || body.body || body.text || '', 8000);
   if (!messageText) return res.status(400).json({ error: 'message is required' });
@@ -68772,6 +68990,50 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
       db: client,
     });
     const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
+    let usageRecord = { recorded: false, reason: 'assistant_reply_not_hosted_ai' };
+    const replyProvider = reply.provider || reply.metadata?.provider || reply.metadata?.ai_provider || null;
+    const replyModel = reply.model || reply.metadata?.model || reply.metadata?.ai_model || null;
+    if (replyProvider) {
+      const usageRecorder = createProviderApiUsageRecorder({
+        db: client,
+        environment: process.env.NODE_ENV || 'production',
+      });
+      await client.query('SAVEPOINT assistant_usage_record');
+      try {
+        usageRecord = await usageRecorder.record({
+          workspace_key: thread.workspace_key || actor.workspaceKey || body.workspace_key || body.workspace || 'bna',
+          user_id: actor.id || actor.anonymousId || null,
+          user_label: actor.name || actor.email || actor.role || actor.type || null,
+          provider_key: replyProvider,
+          model_provider_key: replyProvider,
+          model: replyModel,
+          feature_key: 'bna_assistant_chat',
+          bot_identifier: actor.canUseCodex ? 'bna_operations_assistant' : 'bna_public_assistant',
+          request_count: 1,
+          input_tokens: 0,
+          output_tokens: 0,
+          cached_tokens: 0,
+          latency_ms: Date.now() - startedAtMs,
+          success: true,
+          request_correlation_id: body.request_id || body.requestId || req.headers['x-request-id'] || null,
+          metadata: {
+            no_prompt_body: true,
+            thread_id: thread.id,
+            actor_type: actor.type,
+            surface: body.surface || null,
+          },
+        });
+      } catch (usageErr) {
+        await client.query('ROLLBACK TO SAVEPOINT assistant_usage_record').catch(() => null);
+        usageRecord = {
+          recorded: false,
+          reason: 'usage_record_failed',
+          error: limitText(usageErr.message || String(usageErr), 240),
+        };
+      } finally {
+        await client.query('RELEASE SAVEPOINT assistant_usage_record').catch(() => null);
+      }
+    }
     const assistantMessage = await insertAssistantMessage({
       threadId: thread.id,
       authorType: 'assistant',
@@ -68788,6 +69050,7 @@ app.post('/api/bna/assistant/chat', async (req, res) => {
       thread: assistantThreadView(refreshedThread),
       messages: [assistantMessageView(userMessage), assistantMessageView(assistantMessage)],
       anonymous_id: actor.anonymousId || null,
+      usage_recorded: Boolean(usageRecord.recorded),
     });
   } catch (err) {
     try { await client.query('ROLLBACK'); } catch {}

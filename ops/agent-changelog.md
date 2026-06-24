@@ -25947,3 +25947,22 @@ Shared patches were reviewed and remain assigned to `REQ-20260624-023` for
 server/UI authorization wiring. No deployment, live smoke, production DB
 mutation, class backfill, Stripe write, Vimeo write, send, charge, DNS change,
 credential change, or secret exposure was performed.
+
+## 2026-06-24T17:58:00+03:00 - Final Release Shared Route/UI Wiring Verified
+
+Completed local release-candidate wiring for `REQ-20260624-023`. The final
+branch now includes protected owner setup readiness, Operations owner setup
+actions, Stripe safe billing status/preview plus approval-gated checkout
+creation and webhook preview, assistant provider-usage metadata without prompt
+body storage, and mixed-recording progress-only persistence. Route and action
+registries cover the new surfaces.
+
+Verification passed: `node --check server.js`, `node --check
+public/js/integration-setup.js`, focused class/assistant/Stripe/setup suites
+68/68, `npm run watchdog:actions`, `npm run watchdog:security`, `npm run
+bna:run:validate`, `git diff --check`, `npm run secrets:audit`, Stripe sandbox
+smoke `live_key_blocked` with no external write/no real funds, and Vimeo
+private smoke preview-only with no public publish. No deploy, live smoke,
+production DB mutation, class backfill, Stripe charge, Vimeo upload/publication,
+real send, DNS change, credential change, or secret exposure was performed.
+`REQ-20260624-024` is now the active migration/database readiness batch.

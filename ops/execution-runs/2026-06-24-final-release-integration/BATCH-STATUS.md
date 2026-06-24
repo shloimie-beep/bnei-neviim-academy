@@ -6,8 +6,8 @@
 | B | REQ-20260624-020 | Done | No merge needed; `origin/master` is contained in the release branch. |
 | C | REQ-20260624-021 | Done | Seven lane branches integrated with pushed checkpoints. |
 | D | REQ-20260624-022 | Done | Supersession matrix recorded. |
-| E | REQ-20260624-023 | In progress | Verify integrated routes, UI, and authorization. |
-| F | REQ-20260624-024 | Not started | Review migrations/readiness. |
+| E | REQ-20260624-023 | Done | Local wiring verified; deploy/live proof remains under batch I. |
+| F | REQ-20260624-024 | In progress | Review migrations/readiness without production DB mutation. |
 | G | REQ-20260624-025 | Not started | Run release gate on exact SHA. |
 | H | REQ-20260624-026 | Not started | Update/merge final PR if policy permits. |
 | I | REQ-20260624-027 | Not started | Deploy and live-smoke merged SHA. |
