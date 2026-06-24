@@ -14,9 +14,9 @@ not authorize active GHL runtime paths.
   and local Rabbi closeout history, run the full release gate, merge the final
   PR, deploy merged `master` to Railway, live-smoke the deployed SHA, and apply
   class backfill only if Prompt 04's exact safe recommendation and all recovery
-  gates pass. Current status: preflight passed, release-base sync is done
-  without a needed master merge, and lane integration is in progress. All seven
-  expected lane branches have terminal pushed RESULT
+  gates pass. Current status: all seven lane branches are merged and pushed
+  through `7e7cae25`; shared route/UI/server authorization wiring is in
+  progress. All seven expected lane branches have terminal pushed RESULT
   evidence: public UI `c9ba17da`, portal/auth/nav `e2aa72e5`, class/Drive
   `b4958dc0`, assistant/ramble/usage `adf4e6d8`, Stripe sandbox `6c161c50`,
   Vimeo media `f6975ab8`, and operator walkthrough `768a2ae0`. Class backfill

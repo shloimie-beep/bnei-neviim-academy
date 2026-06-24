@@ -4,9 +4,9 @@
 |---|---|---|---|
 | A | REQ-20260624-019 | Done | Continue to release base sync. |
 | B | REQ-20260624-020 | Done | No merge needed; `origin/master` is contained in the release branch. |
-| C | REQ-20260624-021 | In progress | Integrate lane branches with checkpoints. |
-| D | REQ-20260624-022 | Not started | Build supersession matrix after lane integration. |
-| E | REQ-20260624-023 | Not started | Verify integrated routes, UI, and authorization. |
+| C | REQ-20260624-021 | Done | Seven lane branches integrated with pushed checkpoints. |
+| D | REQ-20260624-022 | Done | Supersession matrix recorded. |
+| E | REQ-20260624-023 | In progress | Verify integrated routes, UI, and authorization. |
 | F | REQ-20260624-024 | Not started | Review migrations/readiness. |
 | G | REQ-20260624-025 | Not started | Run release gate on exact SHA. |
 | H | REQ-20260624-026 | Not started | Update/merge final PR if policy permits. |

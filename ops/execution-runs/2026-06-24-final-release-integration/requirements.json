@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-24-final-release-integration",
   "title": "Final Release Integration, Deploy, Live Verify, and Guarded Recovery",
-  "updated_at": "2026-06-24T17:26:00+03:00",
+  "updated_at": "2026-06-24T17:51:00+03:00",
   "git_refs": {
     "expected_branch": "codex/clean-slate-integration-20260624",
     "branch": "codex/clean-slate-integration-20260624",
@@ -125,20 +125,26 @@
       "priority": "P0",
       "batch_id": "C",
       "depends_on": ["REQ-20260624-019", "REQ-20260624-020"],
-      "status": "in_progress",
-      "implementation_status": "ready_to_integrate_lane_branches",
+      "status": "done",
+      "implementation_status": "all_lane_branches_integrated_with_checkpoint_commits",
       "can_continue_without_operator": true,
-      "next_action": "Review shared patches, then integrate public-ui, portal-auth-nav, class-drive-intake, assistant-ramble-usage, stripe-sandbox, vimeo-media, and operator-walkthrough with checkpoint commits.",
+      "next_action": "Continue to REQ-20260624-022 and REQ-20260624-023.",
       "acceptance_criteria": [
         "Shared patches are reviewed before use.",
         "No blanket ours/theirs conflict resolution is used.",
         "Focused tests run after each lane or documented equivalent gate."
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/parallel-closeout/2026-06-24-final-release-integration/LANE-INTEGRATION-MATRIX.md"
+      ],
+      "verification": [
+        "PASS seven first-parent merge checkpoints pushed: d71fa58a public-ui, b412ee17 portal-auth-nav, b604e967 class-drive-intake, 4547a696 assistant-ramble-usage, 9377862b stripe-sandbox, f721d435 vimeo-media, 7e7cae25 operator-walkthrough",
+        "PASS focused lane verification rerun after each merge as recorded in LANE-INTEGRATION-MATRIX.md",
+        "PASS no deployment, production mutation, class backfill, send, charge, public media publish, DNS change, credential change, or secret exposure"
+      ],
       "implementation_files": ["server.js", "public/", "src/", "tests/", "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/"],
       "deployment_required": false,
-      "updated_at": "2026-06-24T17:26:00+03:00"
+      "updated_at": "2026-06-24T17:51:00+03:00"
     },
     {
       "id": "REQ-20260624-022",
@@ -154,16 +160,22 @@
       "priority": "P0",
       "batch_id": "D",
       "depends_on": ["REQ-20260624-021"],
-      "status": "not_started",
-      "implementation_status": "waiting_for_lane_integration",
+      "status": "done",
+      "implementation_status": "source_history_supersession_matrix_recorded",
       "can_continue_without_operator": true,
-      "next_action": "Build a supersession matrix after lane integration confirms the final release branch contents.",
+      "next_action": "Continue to REQ-20260624-023 shared route/UI/server authorization wiring.",
       "acceptance_criteria": ["PR #14, PR #15, and preserved closeout histories have explicit dispositions."],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md",
+        "ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md"
+      ],
+      "verification": [
+        "PASS PR #14, PR #15, preserved local Rabbi closeout, and all seven lane branch dispositions recorded",
+        "PASS final PR #16 identified as superseding PR #14 and PR #15 if this final branch proceeds"
+      ],
       "implementation_files": ["ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/"],
       "deployment_required": false,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T17:51:00+03:00"
     },
     {
       "id": "REQ-20260624-023",
@@ -179,8 +191,8 @@
       "priority": "P0",
       "batch_id": "E",
       "depends_on": ["REQ-20260624-021"],
-      "status": "not_started",
-      "implementation_status": "waiting_for_lane_integration",
+      "status": "in_progress",
+      "implementation_status": "shared_patches_reviewed_route_ui_wiring_pending",
       "can_continue_without_operator": true,
       "next_action": "Inspect integrated route and action registries plus changed server/UI files after lane merges.",
       "acceptance_criteria": ["Every new endpoint has server-side authorization.", "Public pages expose no private diagnostics or secrets."],
@@ -188,7 +200,7 @@
       "verification": [],
       "implementation_files": ["server.js", "public/", "ops/action-registry.json", "ops/route-registry.json"],
       "deployment_required": true,
-      "updated_at": "2026-06-24T17:17:00+03:00"
+      "updated_at": "2026-06-24T17:51:00+03:00"
     },
     {
       "id": "REQ-20260624-024",

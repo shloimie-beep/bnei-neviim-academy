@@ -27,3 +27,19 @@ Release base sync evidence:
 - `git rev-list --left-right --count HEAD...origin/master`: `89 0`
 
 Conclusion: no merge from `origin/master` is needed before lane integration.
+
+Lane integration evidence:
+
+- `ops/parallel-closeout/2026-06-24-final-release-integration/LANE-INTEGRATION-MATRIX.md`
+- `public-ui`: `d71fa58a`
+- `portal-auth-nav`: `b412ee17`
+- `class-drive-intake`: `b604e967`
+- `assistant-ramble-usage`: `4547a696`
+- `stripe-sandbox`: `9377862b`
+- `vimeo-media`: `f721d435`
+- `operator-walkthrough`: `7e7cae25`
+
+Supersession evidence:
+
+- `ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md`
+- `ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md`
