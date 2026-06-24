@@ -1,6 +1,6 @@
 # Rabbi Scheller Operations Navigation Local Smoke
 
-Generated: 2026-06-24T12:12:19.559Z
+Generated: 2026-06-24T12:46:52.229Z
 
 - Local fixture-backed smoke only.
 - No database access, credentials, external writes, sends, billing, DNS, deploy, or live smoke.

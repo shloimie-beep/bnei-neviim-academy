@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T12:04:16.489Z",
+  "generated_at": "2026-06-24T12:47:54.473Z",
   "source_files": [
     "server.js",
     "public/operations.html",
@@ -6419,6 +6419,7 @@
         "/css/one-time-shared-review.css",
         "/one-time",
         "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+        "/one-time-email-review.html",
         "/parent.html?review=one-time",
         "/provider",
         "/providers/join?onboard=provider",
@@ -6426,16 +6427,19 @@
         "/student.html?review=one-time"
       ],
       "data_navigation_keys": [
-        "${escapeHtml(id)}",
         "${escapeHtml(section.id)}",
         "access",
         "activity",
         "api_usage",
+        "automations",
+        "badges",
         "class_media",
         "class_setup",
         "comments",
         "commercial",
         "communications",
+        "content",
+        "crm",
         "entitlements",
         "google_business",
         "integrations",
@@ -6445,6 +6449,7 @@
         "services",
         "settings",
         "upgrade",
+        "users",
         "website_import"
       ]
     },

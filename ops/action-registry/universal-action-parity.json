@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T12:01:59.446Z",
+  "generated_at": "2026-06-24T12:48:16.211Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,39 +16,39 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "5486a243d44b9f86c89daa7f0159fc244b4d22e8e9a20a36752e9c429ab79fbc",
+  "content_hash": "17aa82faeecadc9f068c7bb48c71f9f27da486faed14b3aa2c5489957ed7d676",
   "source_hashes": {
-    "ops/action-registry.json": "2bf55cf163171e90a78b7ab8580201c7ffbde56c90dc323accc70fb5b8acdd2b",
+    "ops/action-registry.json": "fadc9b0662137279c0f99db86f5b4310f578a722503ffd2066e882e3112c390a",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "8e3d4cf87449af232ffe7f6eb1937189456f7f90367a1916eaf76c010ebcf8e4",
-    "public/parent.html": "fb3aa254482650d32ae164de215c1daf11138d026eed7466437e523edcadee6a",
-    "public/student.html": "c50ec91e7613e02b8badd8397cfcd8936caa5b784bfb73da1e6d029061e35f99",
-    "public/provider.html": "25b549aa01200a03239667722e2797dd0c1f2c3df220bed8774dc105ade7ddd9",
+    "public/operations.html": "3737a34c4b49dec37d424fb1f2bed26791fb85349d760fefc56b0b9beec5b4da",
+    "public/parent.html": "a7b532eccb128ecb8606cc56b0357a9eea4dc00a99d8baff42aff1041c0c2d08",
+    "public/student.html": "3a6ada46825b42f2b5ddf17f683553c267c9f64680664157b754c624c29475fe",
+    "public/provider.html": "3e6c8cd9c3391cd3db74da93d701806bdfe23c867029aa455ad74509e56d5b6c",
     "src/platform/assistant/control-plane.js": "290094ebc3f9cc89c591487bb355dad630594a3ae0896a9df7844adfcde5b787"
   },
   "summary": {
-    "root_actions": 58,
+    "root_actions": 61,
     "detailed_actions": 80,
-    "total_registry_rows": 138,
-    "visible_controls": 22,
-    "visible_controls_classified": 22,
+    "total_registry_rows": 141,
+    "visible_controls": 26,
+    "visible_controls_classified": 26,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 6,
-    "risky_actions": 73,
+    "risky_actions": 74,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 2,
-      "secure_deep_link_only": 1,
-      "preview_then_approve": 16,
+      "secure_deep_link_only": 2,
+      "preview_then_approve": 19,
       "not_applicable": 2,
       "blocked_connector": 1
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 9,
+      "secure_deep_link_only": 11,
       "executable": 10,
-      "preview_then_approve": 66,
+      "preview_then_approve": 67,
       "read_only": 45,
       "blocked_connector": 6,
       "not_applicable": 2
@@ -56,22 +56,22 @@
   },
   "parity_sources": {
     "ui_button": {
-      "count": 22
+      "count": 26
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 138
+      "count": 141
     },
     "operations_helper_request": {
-      "count": 131
+      "count": 134
     },
     "automation_action": {
       "count": 74
     },
     "agent_work_handoff": {
-      "count": 75
+      "count": 76
     }
   },
   "release_gate": {
@@ -79,7 +79,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "22/22"
+        "value": "26/26"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -109,12 +109,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 138
+        "value": 141
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 75
+        "value": 76
       }
     ]
   },
@@ -426,6 +426,62 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "Sends one short-lived parent portal login link by WhatsApp only after an explicit confirmation prompt and SEND_WHATSAPP server confirmation token."
+    },
+    {
+      "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
+      "file": "public/parent.html",
+      "surface": "parent_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
+    },
+    {
+      "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
+      "file": "public/student.html",
+      "surface": "student_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
+    },
+    {
+      "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-SECTION-NAVIGATION",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Switches between provider-scoped workspace sections using the supported provider section graph, updates the same-origin section query state, preserves browser back/refresh behavior, and must not reveal BNA super-admin sections such as Platform Suite, Team/Admin, Accounting, credentials, deployment controls, or other providers."
     }
   ],
   "action_rows": [
@@ -613,6 +669,99 @@
       ],
       "result_renderer": "Creates a first-party provider classroom/community setup draft only.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",
+      "label": "API Usage",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?api_usage_preview=1&section=api_usage",
+      "permission": "provider_owner/provider_admin with api_usage_preview or api_usage entitlement",
+      "allowed_roles": [
+        "provider_owner/provider_admin with api_usage_preview or api_usage entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Deep-links or switches the provider portal to a feature-flagged API Usage preview with an honest not-instrumented empty state; refresh and browser back must preserve understandable section navigation, and it must not display fabricated requests, token counts, costs, prompts, secrets, or cross-workspace usage.",
+      "status": "preview_feature_flag",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": true,
+      "approval_required": false,
+      "dry_run_supported": true,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "API Usage"
+      ],
+      "result_renderer": "Deep-links or switches the provider portal to a feature-flagged API Usage preview with an honest not-instrumented empty state; refresh and browser back must preserve understandable section navigation, and it must not display fabricated requests, token counts, costs, prompts, secrets, or cross-workspace usage.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-SECTION-NAVIGATION",
+      "label": "Open provider workspace section",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "permission": "authenticated provider workspace member",
+      "allowed_roles": [
+        "authenticated provider workspace member"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Switches between provider-scoped workspace sections using the supported provider section graph, updates the same-origin section query state, preserves browser back/refresh behavior, and must not reveal BNA super-admin sections such as Platform Suite, Team/Admin, Accounting, credentials, deployment controls, or other providers.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open provider workspace section"
+      ],
+      "result_renderer": "Switches between provider-scoped workspace sections using the supported provider section graph, updates the same-origin section query state, preserves browser back/refresh behavior, and must not reveal BNA super-admin sections such as Platform Suite, Team/Admin, Accounting, credentials, deployment controls, or other providers.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION",
+      "label": "Open selected portal",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "portal_login",
+      "route": "/operations-login, /provider, /student, /parent",
+      "permission": "authenticated identity with at least one resolved destination",
+      "allowed_roles": [
+        "authenticated identity with at least one resolved destination"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data.",
+      "status": "server_resolved_navigation",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open selected portal"
+      ],
+      "result_renderer": "After server-backed password authentication returns chooser_required, each visible destination link opens only the server-provided same-origin redirect_to for an authenticated membership; it must not route by client-trusted workspace keys, grant extra permissions, accept unsafe external returnTo values, or expose credentials, prompts, secrets, or private account data.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -6903,6 +7052,7 @@
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-SEND",
         "ACTION-PARENT-ACCESS-LINK-WHATSAPP",
+        "ACTION-PROVIDER-API-USAGE-PREVIEW-NAV",
         "capture_provider_google_business_link",
         "generate_whatsapp_from_newsletter",
         "google_business_list_locations_preview",
@@ -6954,7 +7104,8 @@
       "action_ids": [
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
         "ACTION-ONETIME-MEMBER-LIBRARY-SMOKE",
-        "ACTION-ONETIME-SCOPED-AGENT-STATUS"
+        "ACTION-ONETIME-SCOPED-AGENT-STATUS",
+        "ACTION-PROVIDER-SECTION-NAVIGATION"
       ],
       "reason": ""
     }
