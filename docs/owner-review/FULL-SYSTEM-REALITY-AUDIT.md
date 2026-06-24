@@ -8,9 +8,10 @@ Register: `tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-impl
 
 ## Executive Verdict
 
-Status: `LOCAL VERIFIED` for the public visual/intake repair batch on top of
-the prior pushed PR #14 owner-review candidate. Commit/push of this batch is
-the next step.
+Status: `LOCAL VERIFIED` for the public visual repair, authenticated
+role-flow/navigation proof, and credential-free website-assistant runtime audit
+on top of the PR #14 owner-review candidate. Commit/push of the latest
+assistant-runtime batch is the next step.
 
 PR #14 is not merged, not deployed, and not live-verified. Public production
 still shows the header-to-hero gap and lacks semantic active-state attributes
@@ -54,6 +55,25 @@ homepage issues and records computed screenshot evidence.
 
 Evidence: `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and
 `ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.json`.
+
+## Website Assistant Runtime Audit
+
+- Added `npm run owner-review:assistant-runtime`.
+- Static checks prove the browser widget uses the shared server-side assistant
+  endpoints for chat/history/context and contains no hosted-provider key or
+  direct model-call logic.
+- A local `ONE_TIME_REVIEW_ONLY_NO_DB=1` Express smoke verifies the anonymous
+  public assistant context endpoint returns a scoped anonymous actor.
+- The same smoke verifies database-backed assistant history returns the
+  explicit no-DB blocker, so the packet does not pretend persisted
+  conversations were tested without a database.
+- Optional persisted chat/message smoke is gated behind
+  `BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL`, and only local/test Postgres URLs
+  are accepted. The script intentionally ignores production `DATABASE_URL` and
+  `.secrets`.
+
+Evidence: `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` and
+`ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json`.
 
 ## Visual Defects Found
 
@@ -113,5 +133,7 @@ credential-free evidence is `1214/1214`.
 
 ## Current Overall State
 
-`PARTIAL`: PR #14 has local visual release-acceptance fixes verified, but it is
-not merged, not deployed, and not live-verified.
+`PARTIAL`: PR #14 has local visual release-acceptance, role-flow navigation,
+and credential-free assistant runtime evidence, but it is not merged, not
+deployed, and not live-verified. Persisted assistant chat/message proof still
+requires a local/test database or approved production readback.

@@ -17,6 +17,11 @@
 - Public production still has the homepage header-to-hero gap and missing
   active-filter semantics until PR #14 is merged and deployed. The local PR #14
   branch now fixes both, with computed evidence in `PUBLIC-VISUAL-AUDIT.md`.
+- Website assistant persisted chat/message E2E is not proven in this
+  credential-free pass because the local no-DB review harness intentionally
+  disables database-backed assistant history. `owner-review:assistant-runtime`
+  verifies source contracts and anonymous context locally, then records the
+  explicit blocker for a local/test DB or approved production readback.
 
 ## Product Decision
 
@@ -34,6 +39,9 @@
 - Google Drive, Vimeo, Resend, Stripe, Telegram, Zoom, and related live
   connector checks remain unconfigured/unapproved in this pass.
 - Live parent/student/provider walkthrough credentials were not requested.
+- True website assistant conversation persistence can be smoke-tested with a
+  local/test Postgres URL in `BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL`; the
+  script intentionally ignores production `DATABASE_URL` and `.secrets`.
 
 ## Production Approval Required
 

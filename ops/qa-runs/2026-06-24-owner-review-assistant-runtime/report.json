@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-06-24T06:12:11.875Z",
+  "release_candidate_sha": "2a93ac9432345e8f3b381dcc1ed1caec2699cee0",
+  "guardrails": {
+    "external_credentials": false,
+    "production_state_readback": false,
+    "production_database_mutation": false,
+    "deploy": false,
+    "external_send_publish_upload_charge_dns": false
+  },
+  "static_contract": {
+    "ok": true,
+    "checks": [
+      {
+        "id": "widget_uses_canonical_chat_endpoint",
+        "ok": true,
+        "evidence": "/api/bna/assistant/chat"
+      },
+      {
+        "id": "widget_loads_shared_threads",
+        "ok": true,
+        "evidence": "/api/bna/assistant/threads"
+      },
+      {
+        "id": "widget_keeps_surface_scoped_thread_state",
+        "ok": true,
+        "evidence": "storagePrefix + threadId"
+      },
+      {
+        "id": "widget_exposes_single_global_assistant",
+        "ok": true,
+        "evidence": "window.BNAAssistant"
+      },
+      {
+        "id": "widget_has_no_provider_key_logic",
+        "ok": true,
+        "evidence": "browser widget contains no hosted provider calls or keys"
+      },
+      {
+        "id": "server_exposes_chat_route",
+        "ok": true,
+        "evidence": "app.post('/api/bna/assistant/chat')"
+      },
+      {
+        "id": "server_exposes_universal_message_route",
+        "ok": true,
+        "evidence": "app.post('/api/bna/assistant/message')"
+      },
+      {
+        "id": "server_exposes_context_and_history_routes",
+        "ok": true,
+        "evidence": "context + threads routes"
+      },
+      {
+        "id": "no_db_mode_is_explicit_blocker",
+        "ok": true,
+        "evidence": "explicit no-DB error"
+      }
+    ]
+  },
+  "no_db": {
+    "mode": "ONE_TIME_REVIEW_ONLY_NO_DB",
+    "base_url": "http://127.0.0.1:58915",
+    "context": {
+      "status": 200,
+      "ok": true,
+      "body": {
+        "success": true,
+        "actor": {
+          "type": "anonymous",
+          "role": "anonymous",
+          "name": "Website visitor",
+          "email": null,
+          "can_use_codex": false
+        },
+        "greeting": "Hi, I'm the BNA helper. I can answer basic questions or help you send a message to the office.",
+        "actions": [],
+        "language": "en"
+      }
+    },
+    "threads": {
+      "status": 500,
+      "ok": false,
+      "body": {
+        "error": "Database is disabled in ONE_TIME_REVIEW_ONLY_NO_DB mode"
+      }
+    },
+    "context_ok": true,
+    "database_blocker_observed": true,
+    "expected_blocker": "Database-backed assistant history/chat endpoints require a database; no production DB was read or mutated in this audit.",
+    "server_log_tail": {
+      "stdout": [
+        "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
+        "BNA Server running on 127.0.0.1:58915"
+      ],
+      "stderr": [
+        "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
+        "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled."
+      ]
+    }
+  },
+  "optional_db": {
+    "ran": false,
+    "status": "blocked_missing_nonproduction_database",
+    "blocker": "Set BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL to a local/test Postgres URL to run a true assistant chat/message persistence smoke. The script intentionally ignores production DATABASE_URL and .secrets."
+  },
+  "summary": {
+    "ok": true,
+    "runtime_e2e_status": "blocked_missing_nonproduction_database",
+    "blockers": [
+      "Set BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL to a local/test Postgres URL to run a true assistant chat/message persistence smoke. The script intentionally ignores production DATABASE_URL and .secrets.",
+      "Live hosted-AI response proof requires approved provider credentials and explicit live-smoke approval.",
+      "Production website/portal assistant runtime proof requires read-only production approval and deploy/live-smoke approval."
+    ],
+    "paths": {
+      "markdown": "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.md",
+      "json": "ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json",
+      "owner_review_doc": "docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md"
+    }
+  }
+}

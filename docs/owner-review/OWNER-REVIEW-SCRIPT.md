@@ -9,11 +9,15 @@ Review PR #14 by user journey, not by commit history.
 3. Run `npm run owner-review:routes`.
 4. Run `npm run owner-review:role-flows`.
 5. Run `npm run owner-review:visual`.
-6. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
+6. Run `npm run owner-review:assistant-runtime`.
+7. Open `docs/owner-review/ROLE-FLOW-QA.md` and use the screenshot links for
    authenticated/synthetic journeys.
-7. Open `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and confirm PR #14 local
+8. Open `docs/owner-review/PUBLIC-VISUAL-AUDIT.md` and confirm PR #14 local
    passes while production public remains a recorded stale delta until deploy.
-8. Note that GitHub Actions is not attached yet: the attempted workflow push
+9. Open `docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md` and confirm the
+   credential-free assistant source/no-DB runtime proof and the explicit
+   local/test DB blocker for persisted chat/message E2E.
+10. Note that GitHub Actions is not attached yet: the attempted workflow push
    was rejected because the current OAuth app lacks `workflow` scope.
 
 ## Public Site
@@ -143,6 +147,7 @@ Run:
 npm run owner-review:routes
 npm run owner-review:role-flows
 npm run owner-review:visual
+npm run owner-review:assistant-runtime
 npm run watchdog:links
 npm run watchdog:actions
 npm run watchdog:security
@@ -156,8 +161,11 @@ Expected local result:
 - Role-flow QA: PASS.
 - Public visual audit: PR #14 local PASS; production public deltas remain until
   merge/deploy.
+- Assistant runtime audit: PASS for static shared-assistant contract and local
+  no-DB public context smoke; persisted chat/message E2E remains blocked unless
+  `BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL` points to a local/test database.
 - Link/action/security watchdogs: severity `ok`, findings 0.
-- Full tests: PASS, 1214/1214.
+- Full tests: PASS, 1215/1215.
 - Secret audit: PASS, 4271 tracked paths, 0 tracked secret-risk files.
 - GitHub Actions: not attached yet. Adding the workflow requires GitHub
   `workflow` permission; local gates above are the current credential-free

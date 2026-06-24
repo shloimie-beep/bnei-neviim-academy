@@ -5,10 +5,13 @@ const test = require('node:test');
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const smokeScript = fs.readFileSync('scripts/smoke-owner-review-role-flows-local.mjs', 'utf8');
 const visualScript = fs.readFileSync('scripts/smoke-owner-review-public-visual.mjs', 'utf8');
+const assistantRuntimeScript = fs.readFileSync('scripts/smoke-owner-review-assistant-runtime.mjs', 'utf8');
 const publicIndex = fs.readFileSync('public/index.html', 'utf8');
 const roleFlowDoc = fs.readFileSync('docs/owner-review/ROLE-FLOW-QA.md', 'utf8');
+const assistantRuntimeDoc = fs.readFileSync('docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md', 'utf8');
 const roleFlowReport = JSON.parse(fs.readFileSync('ops/playwright-smokes/2026-06-24-owner-review-role-flows-local/report.json', 'utf8'));
 const visualReport = JSON.parse(fs.readFileSync('ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.json', 'utf8'));
+const assistantRuntimeReport = JSON.parse(fs.readFileSync('ops/qa-runs/2026-06-24-owner-review-assistant-runtime/report.json', 'utf8'));
 const requiredOwnerReviewDocs = [
   'docs/owner-review/APPLIED-NOT-APPLIED-MATRIX.md',
   'docs/owner-review/CANONICAL-SITEMAP.md',
@@ -21,6 +24,7 @@ const requiredOwnerReviewDocs = [
   'docs/owner-review/ROUTE-INVENTORY.csv',
   'docs/owner-review/NAVIGATION-GRAPH.md',
   'docs/owner-review/PUBLIC-VISUAL-AUDIT.md',
+  'docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md',
 ];
 
 test('owner-review role-flow smoke is registered as a credential-free release gate', () => {
@@ -76,6 +80,33 @@ test('public homepage hero and active filters have computed visual gates', () =>
     assert.equal(row.activeTabContrastOk, true, `${row.viewport} active tab contrast should pass`);
     assert.equal(row.activeTabSemanticsOk, true, `${row.viewport} active tab semantics should pass`);
   }
+});
+
+test('website assistant runtime has a credential-free owner-review gate', () => {
+  assert.equal(
+    packageJson.scripts['owner-review:assistant-runtime'],
+    'node scripts/smoke-owner-review-assistant-runtime.mjs',
+  );
+  assert.match(assistantRuntimeScript, /\/api\/bna\/assistant\/chat/);
+  assert.match(assistantRuntimeScript, /\/api\/bna\/assistant\/message/);
+  assert.match(assistantRuntimeScript, /\/api\/bna\/assistant\/context/);
+  assert.match(assistantRuntimeScript, /\/api\/bna\/assistant\/threads/);
+  assert.match(assistantRuntimeScript, /BNA_OWNER_REVIEW_ASSISTANT_DATABASE_URL/);
+  assert.match(assistantRuntimeScript, /production_state_readback: false/);
+  assert.match(assistantRuntimeScript, /production_database_mutation: false/);
+  assert.match(assistantRuntimeScript, /external_send_publish_upload_charge_dns: false/);
+  assert.equal(assistantRuntimeReport.summary.ok, true);
+  assert.equal(assistantRuntimeReport.guardrails.external_credentials, false);
+  assert.equal(assistantRuntimeReport.guardrails.production_state_readback, false);
+  assert.equal(assistantRuntimeReport.guardrails.production_database_mutation, false);
+  assert.equal(assistantRuntimeReport.guardrails.deploy, false);
+  assert.equal(assistantRuntimeReport.no_db.context_ok, true);
+  assert.equal(assistantRuntimeReport.no_db.database_blocker_observed, true);
+  assert.equal(assistantRuntimeReport.optional_db.ran, false);
+  assert.equal(assistantRuntimeReport.summary.runtime_e2e_status, 'blocked_missing_nonproduction_database');
+  assert.match(assistantRuntimeDoc, /Static shared-assistant contract: PASS/);
+  assert.match(assistantRuntimeDoc, /No-DB public assistant context endpoint: PASS/);
+  assert.match(assistantRuntimeDoc, /True chat\/message persistence remains blocked/);
 });
 
 test('latest owner-review role-flow evidence is green for all primary journeys', () => {

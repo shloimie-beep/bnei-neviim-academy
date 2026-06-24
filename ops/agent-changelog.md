@@ -25613,3 +25613,22 @@ Verification passed locally: `npm run owner-review:role-flows`,
 `npm test` 1214/1214, and `npm run secrets:audit` with 4271 tracked paths and 0
 findings. The generated `docs/owner-review/ROLE-FLOW-QA.md` report now shows
 the workspace switch proof for both super-admin viewports.
+
+## 2026-06-24T09:10:00+03:00 - PR #14 Website Assistant Runtime Audit Added
+
+Added `npm run owner-review:assistant-runtime` and the report
+`docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md`. The audit verifies the shared
+website assistant source contract, confirms the public anonymous context
+endpoint in the local no-DB server, and records the explicit expected blocker
+for database-backed assistant history in no-DB mode.
+
+Verification passed locally: `node --check
+scripts\smoke-owner-review-assistant-runtime.mjs`, `npm run
+owner-review:assistant-runtime`, `node --test
+tests\owner-review-role-flow-contract.test.js` 7/7, full `npm test`
+1215/1215, `npm run secrets:audit` with 4271 tracked paths and 0 findings, and
+`git diff --check`. No external credentials, private production readback,
+production database mutation, backfill, deploy, email or Telegram send,
+publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
+Persisted assistant chat/message E2E remains blocked until a local/test
+database is provided or production readback is approved.
