@@ -70,7 +70,16 @@
       "route",
       "severity",
       "related_type",
-      "related_id"
+      "related_id",
+      "source_context",
+      "device_context",
+      "viewport",
+      "files",
+      "existing_tickets",
+      "workspace_key",
+      "project_key",
+      "child_id",
+      "provider_id"
     ],
     "validation": {},
     "dry_run_supported": true,
@@ -3166,7 +3175,11 @@
       "viewport",
       "selected_area",
       "classification",
-      "student_id"
+      "student_id",
+      "source_context",
+      "device_context",
+      "files",
+      "existing_tickets"
     ],
     "validation": {},
     "dry_run_supported": true,
@@ -3995,5 +4008,311 @@
     "audit_log_event": "bug_routed_to_codex",
     "success_message": "Bug routed to Codex.",
     "failure_message": "Bug could not be routed to Codex."
+  },
+  {
+    "required_inputs": [
+      "segment_name"
+    ],
+    "optional_inputs": [
+      "audience_label",
+      "estimated_count",
+      "consent_count",
+      "suppression_counts",
+      "exclusions",
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications",
+      "/operations?view=automations"
+    ],
+    "ui_button_labels": [
+      "Preview Segment",
+      "Audience Preview"
+    ],
+    "telegram_intent_examples": [
+      "Show the opted-in lead segment first",
+      "Preview the audience and suppress unsubscribed contacts"
+    ],
+    "action_id": "preview_campaign_segment",
+    "label": "Preview campaign segment",
+    "description": "Preview a campaign audience segment, consent count, and suppression exclusions before any campaign draft or send.",
+    "category": "communications",
+    "page_contexts": [
+      "communications",
+      "automations",
+      "operations_helper",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "communications.previewCampaignSegment",
+    "audit_log_event": "campaign_segment_previewed",
+    "success_message": "Campaign segment previewed.",
+    "failure_message": "Campaign segment could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "goal"
+    ],
+    "optional_inputs": [
+      "audience",
+      "segment_name",
+      "estimated_count",
+      "consent_count",
+      "suppression_counts",
+      "message",
+      "subject",
+      "body",
+      "sender",
+      "schedule",
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications",
+      "/operations?view=automations"
+    ],
+    "ui_button_labels": [
+      "Draft Campaign",
+      "Email Campaign"
+    ],
+    "telegram_intent_examples": [
+      "Draft an email campaign for opted-in parents",
+      "Create a campaign and show me the final preview before send"
+    ],
+    "action_id": "draft_email_campaign",
+    "label": "Draft email campaign",
+    "description": "Create an approval-gated email campaign draft and preview without sending externally.",
+    "category": "communications",
+    "page_contexts": [
+      "communications",
+      "automations",
+      "operations_helper",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "communications.draftEmailCampaign",
+    "audit_log_event": "email_campaign_draft_previewed",
+    "success_message": "Email campaign draft previewed.",
+    "failure_message": "Email campaign draft could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "goal"
+    ],
+    "optional_inputs": [
+      "audience",
+      "segment_name",
+      "estimated_count",
+      "consent_count",
+      "suppression_counts",
+      "messages",
+      "message_count",
+      "sender",
+      "schedule",
+      "intervals",
+      "rate_limit",
+      "workspace_key",
+      "project_key"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications",
+      "/operations?view=automations"
+    ],
+    "ui_button_labels": [
+      "Draft Sequence",
+      "Drip Sequence"
+    ],
+    "telegram_intent_examples": [
+      "Create a six email drip sequence for 1000 opted-in leads",
+      "Draft a nurture sequence and exclude unsubscribed contacts"
+    ],
+    "action_id": "draft_drip_sequence",
+    "label": "Draft drip sequence",
+    "description": "Create an approval-gated drip/nurture sequence draft with message versions, audience preview, and schedule preview without enabling or sending.",
+    "category": "communications",
+    "page_contexts": [
+      "communications",
+      "automations",
+      "operations_helper",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "communications.draftDripSequence",
+    "audit_log_event": "drip_sequence_draft_previewed",
+    "success_message": "Drip sequence draft previewed.",
+    "failure_message": "Drip sequence draft could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "definition",
+      "sample_event",
+      "workspace_key",
+      "project_key",
+      "conversation_key"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=automations",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Automation",
+      "Automation Builder",
+      "Preview Automation"
+    ],
+    "telegram_intent_examples": [
+      "When a parent signs up, send the welcome email and if payment fails create a follow-up task",
+      "Create an automation and show me the steps before turning it on"
+    ],
+    "action_id": "draft_automation",
+    "label": "Draft automation",
+    "description": "Compile a natural-language automation into typed triggers, conditions, actions, delay steps, preview, simulation, and approval-gated draft without enabling it.",
+    "category": "communications",
+    "page_contexts": [
+      "automations",
+      "communications",
+      "operations_helper",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "communications.draftAutomation",
+    "audit_log_event": "automation_draft_previewed",
+    "success_message": "Automation draft previewed.",
+    "failure_message": "Automation draft could not be previewed."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "timezone",
+      "audience_scope",
+      "delivery_channels",
+      "quiet_hours",
+      "consent_state",
+      "workspace_key",
+      "project_key",
+      "current_time"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=calendar",
+      "/operations?view=communications",
+      "/operations?view=automations",
+      "/parent",
+      "/provider"
+    ],
+    "ui_button_labels": [
+      "Set Reminder",
+      "Schedule Reminder",
+      "Notify Me"
+    ],
+    "telegram_intent_examples": [
+      "Remind me tomorrow to finish the website",
+      "Notify me if attendance drops below 70%",
+      "Remind this parent before every class"
+    ],
+    "action_id": "schedule_assistant_reminder",
+    "label": "Schedule assistant reminder",
+    "description": "Create a shared reminder and notification plan for Telegram, in-app, email, SMS, or WhatsApp with consent, quiet-hours, idempotency, and approval gates; no external delivery is sent from the preview.",
+    "category": "communications",
+    "page_contexts": [
+      "communications",
+      "calendar",
+      "automations",
+      "operations_helper",
+      "telegram",
+      "bot",
+      "parent_helper",
+      "provider_workspace"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "provider_admin",
+      "provider_manager",
+      "parent",
+      "student",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "reminders.scheduleAssistantReminder",
+    "audit_log_event": "assistant_reminder_planned",
+    "success_message": "Reminder plan previewed.",
+    "failure_message": "Reminder could not be planned."
   }
 ]

@@ -11,7 +11,7 @@ test('workspace task UI exposes primary lanes and owner filters', () => {
   assert.match(operationsHtml, /\{ id: 'one_time', label: 'One Time Tasks' \}/);
   assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex \/ Agent Work' \}/);
   assert.match(operationsHtml, /\{ id: 'pending', label: 'Blocked' \}/);
-  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Completed \/ Activity' \}/);
+  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done \/ Activity' \}/);
   assert.match(operationsHtml, /\{ id: 'assigned_shloimie', label: 'Me \/ Shloimie' \}/);
   assert.doesNotMatch(operationsHtml, /\{ id: 'agent_working', label: 'Agent Working' \}/);
   assert.doesNotMatch(operationsHtml, /\{ id: 'stale', label: 'Stale' \}/);

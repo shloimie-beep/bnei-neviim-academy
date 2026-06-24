@@ -849,6 +849,26 @@
       ]
     },
     {
+      "route": "/api/bna/assistant/control-plane/readiness",
+      "surface": "operations_api_assistant_control_plane_readiness",
+      "access": "private",
+      "required_role": "super_admin_or_project_admin",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_read_only_assistant_control_plane_table_and_index_readiness",
+      "privacy_risk": "high",
+      "canonical_target": "/api/bna/assistant/control-plane/readiness",
+      "security_expectation": "Readiness only: no assistant rows, external sends, publish actions, charges, DNS changes, OAuth actions, connector calls, secret values, or row payloads are returned or mutated.",
+      "smoke_expectation": "authenticated_read_only_schema_metadata_no_rows_or_secret_values",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/one-time/trial-referral-config",
       "surface": "operations_api_one_time_trial_referral_config",
       "access": "private",

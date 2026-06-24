@@ -1,4 +1,18 @@
 const { compactText, normalizeWorkspace, WORKSPACES } = require('../types');
+const {
+  createCampaignDraft,
+  createDripSequenceDraft,
+  previewCampaignSegment,
+} = require('../../../platform/assistant/campaign-control');
+const {
+  createAutomationDraft,
+} = require('../../../platform/assistant/automation-builder');
+const {
+  planProblemResolution,
+} = require('../../../platform/assistant/problem-resolution');
+const {
+  buildReminderPlan,
+} = require('../../../platform/assistant/reminder-notifications');
 
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
@@ -35,7 +49,8 @@ function normalizeTaskSource(value) {
 
 function normalizeTicketSource(value) {
   const normalized = String(value || 'dashboard').trim().toLowerCase().replace(/[\s-]+/g, '_');
-  if (normalized === 'ui' || normalized === 'ui_button' || normalized === 'assistant') return 'web_assistant';
+  if (normalized === 'ui' || normalized === 'ui_button' || normalized === 'assistant' || normalized === 'website_assistant' || normalized === 'parent_portal_assistant' || normalized === 'provider_portal_assistant' || normalized === 'student_portal_assistant') return 'web_assistant';
+  if (normalized === 'operations_helper') return 'dashboard';
   return TICKET_SOURCES.has(normalized) ? normalized : 'dashboard';
 }
 
@@ -296,6 +311,82 @@ function draftEmail(inputs = {}, context = {}) {
     sent: false,
     approval_required_before_send: true,
   };
+}
+
+function campaignAudienceInputs(inputs = {}) {
+  const audience = inputs.audience && typeof inputs.audience === 'object' ? inputs.audience : {};
+  return {
+    segment_name: inputs.segment_name || audience.segment_name || inputs.audience_label || audience.audience_label || 'Campaign segment',
+    audience_label: inputs.audience_label || audience.audience_label || inputs.segment_name || audience.segment_name || 'Campaign segment',
+    estimated_count: inputs.estimated_count || audience.estimated_count || audience.count || 0,
+    consent_count: inputs.consent_count || audience.consent_count || 0,
+    suppression_counts: inputs.suppression_counts || audience.suppression_counts || {},
+    exclusions: inputs.exclusions || audience.exclusions || [],
+    workspace_key: inputs.workspace_key || audience.workspace_key,
+    project_key: inputs.project_key || audience.project_key,
+  };
+}
+
+function draftEmailCampaignPreview(inputs = {}, context = {}) {
+  return createCampaignDraft({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    goal: inputs.goal || inputs.message || inputs.title || 'Email campaign draft',
+    audience: campaignAudienceInputs(inputs),
+    message: inputs.message && typeof inputs.message === 'object'
+      ? inputs.message
+      : { subject: inputs.subject || inputs.title, body: inputs.body || inputs.message },
+    sender: inputs.sender || {},
+    schedule: inputs.schedule || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
+}
+
+function draftDripSequencePreview(inputs = {}, context = {}) {
+  return createDripSequenceDraft({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    goal: inputs.goal || inputs.message || inputs.title || 'Drip sequence draft',
+    audience: campaignAudienceInputs(inputs),
+    messages: inputs.messages || [],
+    message_count: inputs.message_count || inputs.messageCount || 6,
+    sender: inputs.sender || {},
+    schedule: inputs.schedule || {},
+    intervals: inputs.intervals || [],
+    rate_limit: inputs.rate_limit || inputs.rateLimit || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
+}
+
+function draftAutomationPreview(inputs = {}, context = {}) {
+  return createAutomationDraft({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    conversation_key: inputs.conversation_key || inputs.conversationKey || '',
+    message: inputs.message || inputs.goal || inputs.title || 'Automation draft',
+    definition: inputs.definition || null,
+    sample_event: inputs.sample_event || inputs.sampleEvent || {},
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
+}
+
+function scheduleAssistantReminderPreview(inputs = {}, context = {}) {
+  return buildReminderPlan({
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'operations_helper',
+    message: inputs.message || inputs.title || inputs.body || 'Assistant reminder',
+    timezone: inputs.timezone || 'Asia/Jerusalem',
+    audience_scope: inputs.audience_scope || inputs.audienceScope || {},
+    delivery_channels: inputs.delivery_channels || inputs.deliveryChannels || [],
+    quiet_hours: inputs.quiet_hours || inputs.quietHours || { start: '21:00', end: '08:00' },
+    consent_state: inputs.consent_state || inputs.consentState || {},
+    current_time: inputs.current_time || inputs.currentTime || new Date(),
+    workspace_key: inputs.workspace_key,
+    project_key: inputs.project_key,
+  });
 }
 
 async function draftEmailFromNewsletter(inputs = {}, context = {}) {
@@ -2573,9 +2664,30 @@ async function createTicket(inputs = {}, context = {}) {
   const description = String(inputs.message || inputs.description || inputs.body || '').trim();
   if (!description) throw new Error('message is required');
   const title = compactText(inputs.title || titleFromBody(description, 'Support ticket'), 220);
-  const severity = normalizeSeverity(inputs.severity);
-  const category = normalizeTicketCategory(inputs.category || inputs.route);
+  const problemResolution = planProblemResolution({
+    message: description,
+    actor: context.actor || {},
+    channel: context.source || inputs.channel || 'website_assistant',
+    context: {
+      ...(inputs.source_context || inputs.sourceContext || {}),
+      title,
+      route: inputs.route || inputs.page_url || inputs.url || null,
+      object_type: inputs.related_type || inputs.relatedType || null,
+      object_id: inputs.related_id || inputs.relatedId || null,
+      device: inputs.device_context || inputs.deviceContext || null,
+      viewport: inputs.viewport || null,
+      workspace_key: inputs.workspace_key || inputs.workspaceKey || context.actor?.workspace_key || context.actor?.workspace_id,
+      project_key: inputs.project_key || inputs.projectKey || context.actor?.project_key,
+      child_id: inputs.child_id || inputs.student_id || inputs.studentId || null,
+      provider_id: inputs.provider_id || inputs.providerId || null,
+    },
+    files: inputs.files || inputs.attachments || [],
+    existing_tickets: inputs.existing_tickets || inputs.existingTickets || [],
+  });
+  const severity = normalizeSeverity(inputs.severity || problemResolution.classification.severity);
+  const category = normalizeTicketCategory(inputs.category || problemResolution.classification.category || inputs.route);
   const preview = {
+    requirement_id: problemResolution.requirement_id,
     ticket_created: false,
     title,
     category,
@@ -2584,9 +2696,24 @@ async function createTicket(inputs = {}, context = {}) {
     related_type: inputs.related_type || null,
     related_id: inputs.related_id || null,
     source: normalizeTicketSource(context.source || inputs.source),
-    no_codex_task_created: category !== 'task_manager',
+    no_codex_task_created: true,
+    agent_work_handoff_required: Boolean(problemResolution.agent_work_package),
+    problem_resolution: problemResolution,
   };
   if (context.dryRun || !context.db) return preview;
+  const sourceContext = {
+    action_registry: true,
+    route: inputs.route || null,
+    related_type: inputs.related_type || null,
+    related_id: inputs.related_id || null,
+    problem_resolution: {
+      requirement_id: problemResolution.requirement_id,
+      dedupe_key: problemResolution.dedupe_key,
+      classification: problemResolution.classification,
+      agent_work_required: Boolean(problemResolution.agent_work_package),
+      private_reply_required: problemResolution.classification.private_reply_required,
+    },
+  };
   const result = await context.db.query(
     `INSERT INTO bna_support_tickets (
        title, description, severity, status, category, reporter_name, reporter_role,
@@ -2605,12 +2732,7 @@ async function createTicket(inputs = {}, context = {}) {
       context.actor?.role || null,
       inputs.assigned_to || null,
       preview.source,
-      JSON.stringify({
-        action_registry: true,
-        route: inputs.route || null,
-        related_type: inputs.related_type || null,
-        related_id: inputs.related_id || null,
-      }),
+      JSON.stringify(sourceContext),
       context.actor?.user_id || 'action_registry',
     ]
   );
@@ -3432,6 +3554,20 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return moveTaskWorkspace(inputs, context);
     case 'tickets.create':
       return createTicket(inputs, context);
+    case 'communications.previewCampaignSegment':
+      return previewCampaignSegment({
+        actor: context.actor || {},
+        channel: context.source || inputs.channel || 'operations_helper',
+        ...campaignAudienceInputs(inputs),
+      });
+    case 'communications.draftEmailCampaign':
+      return draftEmailCampaignPreview(inputs, context);
+    case 'communications.draftDripSequence':
+      return draftDripSequencePreview(inputs, context);
+    case 'communications.draftAutomation':
+      return draftAutomationPreview(inputs, context);
+    case 'reminders.scheduleAssistantReminder':
+      return scheduleAssistantReminderPreview(inputs, context);
     case 'decisions.create':
       return createDecision(inputs, context);
     case 'timeline.addNote':
@@ -3543,6 +3679,20 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
         handler,
         route: inputs.route || null,
         classification: inputs.classification || 'problem_report',
+        problem_resolution: planProblemResolution({
+          message: inputs.message || inputs.body || inputs.description || 'Problem report',
+          actor: context.actor || {},
+          channel: context.source || inputs.channel || 'website_assistant',
+          context: {
+            route: inputs.route || null,
+            viewport: inputs.viewport || null,
+            selected_area: inputs.selected_area || inputs.selectedArea || null,
+            child_id: inputs.student_id || inputs.studentId || null,
+            workspace_key: context.actor?.workspace_key || context.actor?.workspace_id || 'bna',
+          },
+          files: inputs.files || inputs.attachments || [],
+          existing_tickets: inputs.existing_tickets || inputs.existingTickets || [],
+        }),
         note: 'Parent/student reports create review tickets for Shloimie/admin. They do not create Codex code tasks automatically.',
       };
     case 'provider.createQuestionPost':

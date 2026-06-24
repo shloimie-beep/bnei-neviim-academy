@@ -25,7 +25,7 @@ export const TASK_DEFAULT_VIEWS = [
   { id: 'blocked', label: 'Blocked', description: 'Open work blocked by a human or external account/system.' },
   { id: 'due_soon', label: 'Due Soon', description: 'Open work due within seven days.' },
   { id: 'calendar', label: 'Calendar', description: 'Open work with a planned or due date.' },
-  { id: 'completed_activity', label: 'Completed / Activity', description: 'Closed work and recent task activity.' },
+  { id: 'completed_activity', label: 'Done / Activity', description: 'Closed work and recent task activity.' },
   { id: 'archived', label: 'Archived', description: 'Reversible archive, duplicate, or hidden records.' }
 ];
 
@@ -791,7 +791,7 @@ export function buildTaskDecisionCensus({ tasks = [], generated_at = new Date().
       'Blocked: human or external blockers only, with blocker owner and next action.',
       'Due Soon: open work due within seven days.',
       'Calendar: open work with due_date or planned_at.',
-      'Completed / Activity: done/archive/history rows with proof or verification notes.',
+      'Done / Activity: done/archive/history rows with proof or verification notes.',
       'Archived: archived, hidden, or duplicate-archived rows excluded from default active views.'
     ],
     duplicate_groups,
