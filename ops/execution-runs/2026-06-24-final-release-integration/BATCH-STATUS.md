@@ -3,8 +3,8 @@
 | Batch | Requirement | Status | Next action |
 |---|---|---|---|
 | A | REQ-20260624-019 | Done | Continue to release base sync. |
-| B | REQ-20260624-020 | In progress | Inspect and sync `origin/master` if needed. |
-| C | REQ-20260624-021 | Not started | Integrate lane branches with checkpoints after base sync. |
+| B | REQ-20260624-020 | Done | No merge needed; `origin/master` is contained in the release branch. |
+| C | REQ-20260624-021 | In progress | Integrate lane branches with checkpoints. |
 | D | REQ-20260624-022 | Not started | Build supersession matrix after lane integration. |
 | E | REQ-20260624-023 | Not started | Verify integrated routes, UI, and authorization. |
 | F | REQ-20260624-024 | Not started | Review migrations/readiness. |

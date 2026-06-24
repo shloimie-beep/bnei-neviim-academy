@@ -15,3 +15,15 @@ Preflight evidence:
 
 Class backfill evidence: class lane result is
 `complete_no_backfill_apply`; current recommendation is not safe to apply.
+
+Release base sync evidence:
+
+- `HEAD`: `0643db662859ed71c82a942da560f7fb4d0b2941`
+- `origin/codex/clean-slate-integration-20260624`:
+  `0643db662859ed71c82a942da560f7fb4d0b2941`
+- `origin/master`: `a9528b2d9467174d76d4c25bfb028f9308f24b4f`
+- `git merge-base HEAD origin/master`:
+  `a9528b2d9467174d76d4c25bfb028f9308f24b4f`
+- `git rev-list --left-right --count HEAD...origin/master`: `89 0`
+
+Conclusion: no merge from `origin/master` is needed before lane integration.

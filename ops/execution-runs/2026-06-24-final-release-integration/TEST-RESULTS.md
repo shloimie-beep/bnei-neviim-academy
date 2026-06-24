@@ -16,3 +16,12 @@ Preflight commands on 2026-06-24:
 - PASS JSON/JSONL parse for final-release run files and ledger
 - PASS `git diff --check`
 - PASS `npm run secrets:audit`
+
+Release base sync commands:
+
+- PASS `git fetch --all --prune`
+- PASS `git status --short --branch` clean on
+  `codex/clean-slate-integration-20260624`
+- PASS `git merge-base HEAD origin/master` equals `origin/master`
+- PASS `git rev-list --left-right --count HEAD...origin/master` returned
+  `89 0`; no `origin/master` commits are missing from the release branch

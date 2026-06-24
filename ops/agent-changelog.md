@@ -25909,3 +25909,17 @@ current Prompt 04 evidence: `safe_to_apply=false`, zero approved candidate jobs,
 and no row-level write plan. No integration merge, PR merge, deployment, live
 smoke, production database mutation, class backfill, external write, send,
 charge, DNS change, credential change, or secret exposure was performed.
+
+## 2026-06-24T17:26:00+03:00 - Final Release Base Sync Done
+
+Completed `REQ-20260624-020`. After `git fetch --all --prune`, the release
+branch `codex/clean-slate-integration-20260624` is at `0643db66` and
+`origin/master` is `a9528b2d`. The merge-base is `a9528b2d`, and
+`git rev-list --left-right --count HEAD...origin/master` returned `89 0`, so
+`origin/master` has no commits missing from the release branch. No master merge
+was required and no history rewrite was performed.
+
+`REQ-20260624-021` is now the active batch for lane integration with checkpoint
+commits. No integration merge, PR merge, deployment, live smoke, production DB
+mutation, class backfill, external write, send, charge, DNS change, credential
+change, or secret exposure was performed in this base-sync step.
