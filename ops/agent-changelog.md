@@ -25554,3 +25554,29 @@ before Content. No live vendor generation, external send, public publish,
 charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
 external CRM/GHL write, raw private source readback, or secret exposure was
 performed.
+
+## 2026-06-24T09:50:00+03:00 - Rabbi Scheller Workspace Parity Local Verified In Isolated Branch
+
+Continued `RAW-20260623-006` after Shloimie chose Option A and warned that
+another agent was working. Collision check found the shared checkout dirty and
+other worktrees active, so the Rabbi bundle is isolated in
+`C:\Users\User\Documents\Codex\2026-06-24\rabbi-scheller-parity` on branch
+`codex/rabbi-scheller-parity-20260624` from `origin/master` at `a9528b2d`.
+
+Local implementation and audit evidence now covers unified portal login
+resolver/chooser behavior, provider-scoped allowed-view hardening, Operations
+provider navigation/back/deep-link behavior, tenant-scoped task detail child
+links, feature-flagged honest Provider API Usage preview, provider API-usage
+instrumentation foundation, route inventory, action registry coverage, durable
+future provider-bot requirement, and provider/BNA parity documentation.
+
+Verification passed locally: `node --check server.js`, `node --check
+src/lib/bna/provider-api-usage.js`, action-registry JSON parse, regenerated
+route map with 738 Express routes, focused suite 74/74, and four Playwright
+local smokes: Provider API Usage, Provider navigation, Operations navigation,
+and portal-agnostic login chooser at 390x844, 768x1024, and 1440x900.
+
+No external send, charge, access grant, credential rotation, DNS write, Stripe,
+Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI, or production-data mutation
+was performed. Push/deploy/live smoke is authorized next from the isolated
+branch only.

@@ -129,6 +129,32 @@
             line-height: 1.45;
             margin: -4px 0 14px;
         }
+        .chooser {
+            display: none;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 18px;
+        }
+        .chooser.show { display: block; }
+        .chooser p {
+            color: #334155;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .chooser a {
+            display: block;
+            text-decoration: none;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            font-weight: 650;
+            margin-top: 8px;
+            background: #ffffff;
+        }
         @media (max-width: 640px) {
             body {
                 align-items: flex-start;
@@ -153,6 +179,7 @@
         <p class="subtitle">Sign in to BNA Operations</p>
         
         <div id="error" class="error"></div>
+        <div id="chooser" class="chooser"></div>
         
         <form id="loginForm">
             <div class="form-group">
@@ -163,7 +190,7 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
             </div>
-            <p class="login-note">Use the private Operations credentials. Parent, student, and provider portal passwords stay separate.</p>
+            <p class="login-note">Use the same identity password from any legitimate portal. Access still follows your actual role and workspace permissions.</p>
             <button type="submit" id="submitBtn">Sign In</button>
         </form>
     </div>
@@ -180,6 +207,33 @@
             } catch {
                 return fallback;
             }
+        }
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            })[char]);
+        }
+
+        function showChooser(data) {
+            const chooser = document.getElementById('chooser');
+            const destinations = Array.isArray(data?.destinations) ? data.destinations : [];
+            if (!destinations.length) {
+                chooser.classList.remove('show');
+                chooser.innerHTML = '';
+                return;
+            }
+            chooser.innerHTML = `
+                <p>${escapeHtml(data?.message || 'Choose the portal or workspace to open.')}</p>
+                ${destinations.map((destination) => `
+                    <a data-action-id="ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION" href="${escapeHtml(destination.redirect_to || '/')}">${escapeHtml(destination.label || destination.role || destination.portal || 'Open portal')}</a>
+                `).join('')}
+            `;
+            chooser.classList.add('show');
         }
 
         function syncLoginViewport() {
@@ -229,9 +283,12 @@
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const errorEl = document.getElementById('error');
+            const chooserEl = document.getElementById('chooser');
             const submitBtn = document.getElementById('submitBtn');
             
             errorEl.classList.remove('show');
+            chooserEl.classList.remove('show');
+            chooserEl.innerHTML = '';
             submitBtn.disabled = true;
             submitBtn.textContent = 'Signing in...';
 
@@ -241,13 +298,22 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         username: document.getElementById('username').value.trim(),
-                        password: document.getElementById('password').value
+                        password: document.getElementById('password').value,
+                        returnTo: operationsReturnTo()
                     })
                 });
 
                 const data = await response.json();
 
                 if (data.success) {
+                    if (data.chooser_required) {
+                        showChooser(data);
+                        return;
+                    }
+                    if (data.portal_redirect && data.redirect_to) {
+                        window.location.href = data.redirect_to;
+                        return;
+                    }
                     localStorage.setItem('bna_ops_session', data.sessionId || '');
                     window.location.href = operationsReturnTo();
                 } else {

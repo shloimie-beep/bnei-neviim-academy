@@ -8674,6 +8674,7 @@
         const initialView = initialParams.get('view');
         const initialSection = initialParams.get('section');
         const initialWorkspace = initialParams.get('workspace');
+        const initialWorkspaceKey = normalizeWorkspaceKey(initialWorkspace || '');
         const initialProject = initialParams.get('project');
         const initialStudent = initialParams.get('student');
         const initialTask = initialParams.get('task');
@@ -8748,7 +8749,9 @@
         agentRunDeepKey = initialAgentRunMatch ? decodeURIComponent(initialAgentRunMatch[1]) : String(initialParams.get('run') || '');
         let navDrawerOpen = false;
         let sidebarMode = 'modules';
-        let currentWorkspaceId = normalizeWorkspaceKey(initialWorkspace || '');
+        let currentWorkspaceId = initialWorkspaceKey;
+        let operationsUrlInitialized = false;
+        let suppressOperationsHistoryPush = false;
         let workspaceDirectoryFilter = 'all';
         const normalizedInitialDashboardSection = initialSection || 'overview';
         let dashboardSection = ['overview', 'activity', 'alerts', 'today', 'updates'].includes(normalizedInitialDashboardSection)
@@ -8798,7 +8801,9 @@
             : 'tasks';
         let taskUrgencyFilter = 'all';
         let taskDateFilter = 'all';
-        let taskProjectFilter = initialProject ? normalizeProjectKey(initialProject) : 'all';
+        let taskProjectFilter = initialProject
+            ? normalizeProjectKey(initialProject)
+            : (initialWorkspaceKey && initialWorkspaceKey !== 'platform' ? projectKeyForWorkspaceKey(initialWorkspaceKey) : 'all');
         let taskCategoryFilter = 'all';
         let taskSignalFilter = 'all';
         let taskCalendarMode = ['month', 'week', 'day'].includes(String(initialParams.get('calendar_mode') || '').toLowerCase())
@@ -20570,6 +20575,7 @@
                             <div class="page-kicker">Usage</div>
                             <h2>API Usage</h2>
                             <p>Usage is grouped by workspace, role/account, provider, bot, and Studio provider jobs where existing logs support it.</p>
+                            <p class="settings-disabled-note">Token/cost values stay blank until backend tracking is added for provider-bot and general API events. No fake cost is shown until API metering persistence exists.</p>
                         </div>
                     </div>
                     <section class="focus-panel">
@@ -32286,7 +32292,7 @@
             const nav = {
                 platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
                 bna: ['dashboard', 'watchdog', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
-                service_provider: ['dashboard', 'watchdog', 'service_providers', 'agents', 'platform_suite', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
+                service_provider: ['dashboard', 'watchdog', 'service_providers', 'agents', 'contacts', 'community', 'studio', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
                 family: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings'],
                 household: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings']
             };
@@ -32338,7 +32344,6 @@
                     watchdog: { label: 'Watchdog', marker: 'WG' },
                     service_providers: { label: 'Program', marker: 'PG' },
                     agents: { label: 'Agents', marker: 'AG' },
-                    platform_suite: { label: 'Program Suite', marker: 'PS' },
                     contacts: { label: 'Members', marker: 'MB' },
                     community: { label: 'Community', marker: 'CO' },
                     studio: { label: 'Studio', marker: 'ST' },
@@ -32392,6 +32397,10 @@
                 communicationsSection = 'internal';
             }
             if (providerWorkspace) {
+                if (currentView === 'platform_suite' || currentView === 'admin' || currentView === 'accounting') {
+                    currentView = 'dashboard';
+                    dashboardSection = 'overview';
+                }
                 if (currentView === 'students') {
                     currentView = 'contacts';
                     contactSection = 'participants';
@@ -34250,7 +34259,14 @@
             if (currentView === 'content' && selectedContentDetailJobId) url.searchParams.set('content_job', selectedContentDetailJobId);
             if (currentView !== 'studio') url.searchParams.delete('studio_project');
             if (currentView === 'studio' && selectedStudioProjectId) url.searchParams.set('studio_project', selectedStudioProjectId);
-            window.history.replaceState({}, '', url);
+            const nextUrl = `${url.pathname}${url.search}${url.hash}`;
+            const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+            const shouldReplace = !operationsUrlInitialized || suppressOperationsHistoryPush;
+            if (shouldReplace || nextUrl !== currentUrl) {
+                window.history[shouldReplace ? 'replaceState' : 'pushState']({ operationsRoute: true }, '', url);
+            }
+            operationsUrlInitialized = true;
+            suppressOperationsHistoryPush = false;
         }
 
         function setCurrentSection(section) {
@@ -37697,6 +37713,10 @@
         // Init
         normalizeCurrentRouteForWorkspace();
         syncOperationsUrl();
+        window.addEventListener('popstate', () => {
+            suppressOperationsHistoryPush = true;
+            window.location.reload();
+        });
         loadData();
         setInterval(() => {
             if (!backgroundRefreshCanRun()) return;
