@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-06-24-issue-18-class-intake-readonly",
+  "title": "Issue #18 - Read-only class intake reconciliation",
+  "created_at": "2026-06-24T19:02:42.921Z",
+  "updated_at": "2026-06-24T22:25:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260624-008",
+  "workspace_key": "bna_platform",
+  "project_key": "class_drive_intake",
+  "predecessor_runs": [
+    "ops/execution-runs/2026-06-24-clean-slate-acceptance"
+  ],
+  "sequenced_next_source": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/20",
+  "git_refs": {
+    "base_branch": "master",
+    "working_branch": "codex/issue-18-class-intake-readonly-20260624",
+    "origin_master_sha_at_start": "50087ae5d8e120830ae8e1f8dcaab71f61389d7c",
+    "local_head_at_start": "50087ae5d8e120830ae8e1f8dcaab71f61389d7c",
+    "issue_number": 18,
+    "parent_issue_number": 7,
+    "next_issue_number": 20
+  },
+  "current_batch": {
+    "batch_id": "A",
+    "requirement_id": "REQ-20260624-028",
+    "title": "Read-only class intake reconciliation and safe backfill evidence",
+    "status": "needs_verification"
+  }
+}

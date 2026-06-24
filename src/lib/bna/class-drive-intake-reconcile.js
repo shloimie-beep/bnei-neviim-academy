@@ -71,6 +71,10 @@ function redactedRef(value, label = 'ref') {
   return { present: true, redacted: `${label}:${digest.slice(0, 12)}`, sha256: digest };
 }
 
+function redactedLabel(label, value) {
+  return `${label}:${sha256(value || label).slice(0, 12)}`;
+}
+
 function toIsoDate(value) {
   if (!value) return null;
   if (value instanceof Date && !Number.isNaN(value.valueOf())) return value.toISOString().slice(0, 10);
@@ -95,6 +99,14 @@ function jobSourceFingerprint(job = {}) {
     job.original_filename || '',
     transcriptChars(job),
   ].join('|'));
+}
+
+function contentJobLabel(job = {}) {
+  return job.id ? `content_job:${job.id}` : redactedLabel('content_job', jobSourceFingerprint(job));
+}
+
+function driveFileLabel(file = {}) {
+  return redactedLabel('drive_file', file.id || file.name || file.createdTime || '');
 }
 
 function extractStructuredOutput(job = {}) {
@@ -151,14 +163,14 @@ function matchDetailsForName(name, students = []) {
   const matched = findStudentForParsedName(name, students);
   const ambiguous = Boolean(ranked[1] && ranked[1].score === ranked[0].score && ranked[0].score < 100);
   return {
-    input: name || '',
+    input_hash: sha256(normalizeNameForMatch(name) || name || '').slice(0, 12),
     matched_student_id: matched?.id || null,
-    matched_student_name: matched?.name || null,
+    matched_student_ref: matched?.id ? `student:${matched.id}` : null,
     ambiguous,
     best_score: ranked[0]?.score || 0,
     contenders: ranked.slice(0, 3).map((item) => ({
       student_id: item.student?.id || null,
-      student_name: item.student?.name || null,
+      student_ref: item.student?.id ? `student:${item.student.id}` : null,
       score: item.score,
     })),
   };
@@ -257,7 +269,7 @@ function buildPipelineTraceRows({
     rows.push({
       kind: 'content_job',
       job_id: job.id || null,
-      title: redactSensitiveText(job.title || job.original_filename || ''),
+      title: contentJobLabel(job),
       created_at: job.created_at || null,
       updated_at: job.updated_at || null,
       status: job.status || null,
@@ -302,7 +314,7 @@ function buildPipelineTraceRows({
     rows.push({
       kind: 'drive_orphan',
       job_id: null,
-      title: redactSensitiveText(file.name || ''),
+      title: driveFileLabel(file),
       status: 'orphan_drive_file',
       drive_stage: file.folder_label || null,
       transcript_chars: 0,
@@ -367,9 +379,9 @@ function classSessionProposal(job, structured, classSessions) {
       content_job_id: job.id,
       source_content_job_id: job.id,
       class_date: toIsoDate(job.class_date || job.created_at),
-      title: redactSensitiveText(note.title || job.title || 'Class recording'),
-      summary: redactSensitiveText(note.summary || structured.report?.summary || ''),
-      topics: toArray(note.topics).map(redactSensitiveText),
+      title: contentJobLabel(job),
+      summary_hash: note.summary || structured.report?.summary ? sha256(note.summary || structured.report?.summary).slice(0, 12) : undefined,
+      topics_count: toArray(note.topics).length,
     }),
   };
 }
@@ -377,11 +389,11 @@ function classSessionProposal(job, structured, classSessions) {
 function progressProposal({ job, update, students, torahEntries, groupGoalEntries, sourceKind }) {
   const name = update.student_name || update.name || '';
   if (!name || /^all[_\s-]*active$/i.test(name) || update.all_active_students) {
-    return { exclusion: { reason: 'all-active update requires explicit expansion before backfill', source_kind: sourceKind, student_name: name || 'ALL_ACTIVE' } };
+    return { exclusion: { reason: 'all-active update requires explicit expansion before backfill', source_kind: sourceKind, student_name_hash: sha256(name || 'ALL_ACTIVE').slice(0, 12) } };
   }
   const match = matchDetailsForName(name, students);
   if (!match.matched_student_id || match.ambiguous) {
-    return { exclusion: { reason: match.ambiguous ? 'ambiguous student match' : 'no student match', source_kind: sourceKind, student_name: name, match } };
+    return { exclusion: { reason: match.ambiguous ? 'ambiguous student match' : 'no student match', source_kind: sourceKind, student_name_hash: sha256(normalizeNameForMatch(name) || name).slice(0, 12), match } };
   }
   let mapping;
   try {
@@ -393,9 +405,9 @@ function progressProposal({ job, update, students, torahEntries, groupGoalEntrie
       listening_without_following_minutes: update.listening_without_following_minutes ?? update.inside_listening_minutes,
     }, { goalType: update.goal_type || 'INSIDE' });
   } catch (error) {
-    return { exclusion: { reason: 'invalid progress mapping', source_kind: sourceKind, student_name: name, error: error.message } };
+    return { exclusion: { reason: 'invalid progress mapping', source_kind: sourceKind, student_name_hash: sha256(normalizeNameForMatch(name) || name).slice(0, 12), error: error.message } };
   }
-  if (!mapping.hasProgressSignal) return { exclusion: { reason: 'no progress signal', source_kind: sourceKind, student_name: name } };
+  if (!mapping.hasProgressSignal) return { exclusion: { reason: 'no progress signal', source_kind: sourceKind, student_name_hash: sha256(normalizeNameForMatch(name) || name).slice(0, 12) } };
   const date = toIsoDate(update.date || update.recorded_date || job.class_date || job.created_at) || new Date().toISOString().slice(0, 10);
   const existingTorah = existingProgressRow(torahEntries, match.matched_student_id, date);
   const existingGroup = toArray(groupGoalEntries).find((row) => Number(row.source_content_job_id) === Number(job.id) && Number(row.student_id) === Number(match.matched_student_id) && toIsoDate(row.recorded_date || row.date || row.created_at) === date);
@@ -406,7 +418,6 @@ function progressProposal({ job, update, students, torahEntries, groupGoalEntrie
     before: existingTorah ? { id: existingTorah.id, progress_percent: existingTorah.progress_percent || existingTorah.daily_completion_percentage || null } : null,
     after: compactObject({
       student_id: match.matched_student_id,
-      student_name: match.matched_student_name,
       date,
       goal_minutes: mapping.goalMinutes,
       goal_type: mapping.goalType,
@@ -428,7 +439,6 @@ function progressProposal({ job, update, students, torahEntries, groupGoalEntrie
       before: existingGroup ? { id: existingGroup.id, progress_percent: existingGroup.progress_percent } : null,
       after: compactObject({
         student_id: match.matched_student_id,
-        student_name: match.matched_student_name,
         recorded_date: date,
         target_minutes: mapping.goalMinutes,
         inside_following_minutes: mapping.insideEngagedMinutes,
@@ -446,7 +456,6 @@ function progressProposal({ job, update, students, torahEntries, groupGoalEntrie
     before: null,
     after: {
       student_id: match.matched_student_id,
-      student_name: match.matched_student_name,
       event_type: 'learning_note',
       title: 'Daily Torah progress',
       progress_percent: mapping.progressPercent,
@@ -469,7 +478,7 @@ function questionProposals({ job, structured, students, accountabilityEvents }) 
       if (!match?.matched_student_id || match.ambiguous) {
         exclusions.push({
           reason: match?.ambiguous ? 'ambiguous question student match' : 'question has no student match',
-          student_name: question.student_name || '',
+          student_name_hash: sha256(normalizeNameForMatch(question.student_name) || question.student_name || '').slice(0, 12),
           question_text_hash: sha256(question.question_text).slice(0, 12),
           match,
         });
@@ -483,10 +492,9 @@ function questionProposals({ job, structured, students, accountabilityEvents }) 
         before: existing ? { id: existing.id } : null,
         after: {
           student_id: match.matched_student_id,
-          student_name: match.matched_student_name,
           event_type: 'question',
           title: 'Student class question',
-          question_text: redactSensitiveText(question.question_text),
+          question_text_hash: sha256(question.question_text).slice(0, 12),
           source_content_job_id: job.id,
           parent_visible: true,
           student_visible: true,
@@ -535,7 +543,7 @@ function buildGuardedBackfillDryRun({
     candidateJobs.push({
       job_id: job.id || null,
       in_required_repair_range: inRequestedRange,
-      title: redactSensitiveText(job.title || ''),
+      title: contentJobLabel(job),
       fingerprint_sha256: jobSourceFingerprint(job),
     });
     const classRow = classSessionProposal(job, structured, classSessions);
@@ -654,7 +662,7 @@ function renderBackfillMarkdown(plan = {}) {
     '',
     '## Blocking Ambiguities',
     '',
-    ...(toArray(plan.blocking_ambiguities).length ? toArray(plan.blocking_ambiguities).map((item) => `- Job ${item.job_id ?? ''}: ${redactSensitiveText(item.reason || '')} (${redactSensitiveText(item.student_name || '')})`) : ['- None']),
+    ...(toArray(plan.blocking_ambiguities).length ? toArray(plan.blocking_ambiguities).map((item) => `- Job ${item.job_id ?? ''}: ${redactSensitiveText(item.reason || '')} (${item.student_name_hash || item.matched_student_ref || 'redacted-student'})`) : ['- None']),
     '',
     '## Expected Row Counts',
     '',
