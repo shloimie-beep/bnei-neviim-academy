@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-06-24T15:12:32.418Z.
+Generated at 2026-06-25T04:12:28.867Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (143)
-- agent_work_handoff_parity_present: pass (76)
+- website_assistant_request_parity_present: pass (145)
+- agent_work_handoff_parity_present: pass (77)
 
 ## Summary
 
-- Root registry actions: 63
+- Root registry actions: 65
 - Detailed typed actions: 80
 - Visible UI hooks: 28
 - Visible UI hooks classified: 28
@@ -33,10 +33,10 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 28 |
 | telegram_request | 80 |
-| website_assistant_request | 143 |
-| operations_helper_request | 136 |
+| website_assistant_request | 145 |
+| operations_helper_request | 138 |
 | automation_action | 74 |
-| agent_work_handoff | 76 |
+| agent_work_handoff | 77 |
 
 ## Visible Control Classifications
 
@@ -78,7 +78,7 @@ Requirement: REQ-20260623-013
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
 | integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP<br>ACTION-PROVIDER-API-USAGE-PREVIEW-NAV |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
-| agent_work | covered_by_canonical_registry | ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL<br>ACTION-AGENT-RUN-HANDOFF<br>ACTION-AGENT-RUN-PREPARE<br>ACTION-AGENT-RUN-PROGRESS-EVIDENCE<br>ACTION-AGENT-RUN-SUBMIT-SEAL<br>ACTION-HELPER-RUN-WATCHDOG-AUDIT |
+| agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL<br>ACTION-AGENT-RUN-HANDOFF<br>ACTION-AGENT-RUN-PREPARE<br>ACTION-AGENT-RUN-PROGRESS-EVIDENCE<br>ACTION-AGENT-RUN-SUBMIT-SEAL |
 | deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |
 
 ## Guardrails

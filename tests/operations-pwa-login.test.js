@@ -44,8 +44,8 @@ test('public navigation keeps Operations out of prospect-facing menus', () => {
   const siteNav = fs.readFileSync('public/js/bna-site-nav.js', 'utf8');
   assert.doesNotMatch(siteNav, /operationsLogin/);
   assert.doesNotMatch(siteNav, /\/operations-login\.html/);
-  assert.match(siteNav, /Advertise your program for free/);
-  assert.match(publicIndexHtml, /Advertise your program for free/);
+  assert.match(siteNav, /Advertise for free/);
+  assert.match(publicIndexHtml, /Advertise for free/);
 });
 
 test('Operations login preserves only safe Operations return paths', () => {

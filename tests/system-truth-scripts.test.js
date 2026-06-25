@@ -153,7 +153,11 @@ test('return packet report keeps private and redacted packet paths explicit', as
   assert.match(renderedPacket, /VIMEO_ACCESS_TOKEN=(configured|missing)/);
   assert.match(renderedPacket, /RESEND_DOMAIN=(configured|missing)/);
   assert.match(renderedPacket, /RABBI_STRIPE_MODE=(configured|missing)/);
-  assert.match(renderedPacket, /AGENT WORK[\s\S]*branch [0-9a-f]{12} \/ validated [0-9a-f]{12}/);
+  if (report.agent_work.length) {
+    assert.match(renderedPacket, /AGENT WORK[\s\S]*branch [0-9a-f]{12} \/ validated [0-9a-f]{12}/);
+  } else {
+    assert.match(renderedPacket, /AGENT WORK\s+- none/);
+  }
   if (report.agent_work.some((item) => item.package === 'REQ-20260623-210')) {
     assert.equal(report.next_automatic_action.package, 'none');
     assert.match(report.next_automatic_action.command, /No unblocked automatic package/);
