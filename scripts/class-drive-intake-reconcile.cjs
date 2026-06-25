@@ -537,7 +537,7 @@ async function readDriveMetadata(args, auth) {
       skipped: false,
       files,
       files_redacted: files.map((file) => ({
-        name: redactSensitiveText(file.name),
+        name: `drive_file_name:${sha256(file.name || '').slice(0, 12)}`,
         id_ref: redactedRef(file.id, 'drive_file'),
         mimeType: file.mimeType,
         createdTime: file.createdTime,
@@ -604,11 +604,20 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
   const recommendation = {
     generated_at: backfill.generated_at,
     no_production_mutation: true,
+    candidate_jobs: backfill.candidate_jobs,
     approved_candidate_jobs: backfill.approved_candidate_jobs,
     excluded_jobs: backfill.excluded_jobs,
     safe_to_apply: backfill.safe_to_apply,
+    row_level_change_plan: backfill.row_level_change_plan,
     blocking_ambiguities: backfill.blocking_ambiguities,
+    ambiguity_exclusions: backfill.ambiguity_exclusions,
+    duplicate_exclusions: backfill.duplicate_exclusions,
+    duplicate_groups: backfill.duplicate_groups,
     expected_row_counts: backfill.expected_row_counts,
+    transaction_boundaries: backfill.transaction_boundaries,
+    rollback_strategy: backfill.rollback_strategy,
+    snapshot_backup_requirement: backfill.snapshot_backup_requirement,
+    idempotency: backfill.idempotency,
     apply_command: backfill.apply_command,
     rollback_command: backfill.rollback_command,
     required_gate_phrase: backfill.required_gate_phrase,
@@ -618,6 +627,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     census,
     backfill,
     recommendation,
+    evidenceRoot: relativeRepoPath(args.outDir),
   });
   return { census, backfill, recommendation, sourceCoverage };
 }
@@ -626,19 +636,24 @@ function evidenceExists(relativePath) {
   return fs.existsSync(path.join(REPO_ROOT, relativePath));
 }
 
-function buildLaneSourceCoverage() {
+function relativeRepoPath(filePath) {
+  return path.relative(REPO_ROOT, filePath).replace(/\\/g, '/');
+}
+
+function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-06-24-closeout' } = {}) {
+  const evidencePath = (fileName) => `${evidenceRoot}/${fileName}`;
   const statements = [
     ['SRC-20260624-101', 'Create and activate the class/Drive intake goal; preserve raw source and register requirements.', 'REQ-20260624-101', ['raw-input/RAW-20260624-003-class-drive-intake-goal.md', 'tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
     ['SRC-20260624-102', 'Read control manifest and branch from the exact integration base.', 'REQ-20260624-101', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
-    ['SRC-20260624-103', 'Build read-only diagnostics for pipeline census, stage reports, orphan output, ambiguity, proposed changes, duplicates, UI mismatch, and credentials/workers.', 'REQ-20260624-102', ['scripts/class-drive-intake-reconcile.cjs', 'src/lib/bna/class-drive-intake-reconcile.js', 'ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json']],
-    ['SRC-20260624-104', 'Trace every known uploaded class/job through the 20 required stages, explicitly inspecting jobs 64-74 if present.', 'REQ-20260624-102', ['ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json', 'ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md']],
-    ['SRC-20260624-105', 'Verify or disprove the suspected causes including OpenAI 401, Drive config/auth, worker/parser/apply gaps, aliases, duplicates, generic parser, deployment, and stale status.', 'REQ-20260624-103', ['ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.json', 'ops/class-drive-intake/2026-06-24-closeout/PIPELINE-CENSUS.md']],
-    ['SRC-20260624-106', 'Prepare a dry-run-only guarded backfill with row-level plan, exclusions, expected counts, transaction boundaries, rollback, idempotency, and gate phrase.', 'REQ-20260624-104', ['ops/class-drive-intake/2026-06-24-closeout/BACKFILL-DRY-RUN.md', 'ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json']],
-    ['SRC-20260624-107', 'Write BACKFILL-RECOMMENDATION.json for Prompt 09 / final integrator consumption.', 'REQ-20260624-104', ['ops/class-drive-intake/2026-06-24-closeout/BACKFILL-RECOMMENDATION.json']],
-    ['SRC-20260624-108', 'Cover multi-student extraction, scores/progress, student questions, linkage, ambiguity, duplicates, retries, visible failures, idempotency, read models, dry-run, and rollback with tests.', 'REQ-20260624-105', ['tests/class-drive-intake-reconcile.test.js', 'tests/class-drive-intake-shared-patch.test.js', 'ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md']],
-    ['SRC-20260624-109', 'Detect credential readiness without printing secrets or raw Drive IDs.', 'REQ-20260624-106', ['ops/class-drive-intake/2026-06-24-closeout/AUTH-READINESS.md']],
+    ['SRC-20260624-103', 'Build read-only diagnostics for pipeline census, stage reports, orphan output, ambiguity, proposed changes, duplicates, UI mismatch, and credentials/workers.', 'REQ-20260624-102', ['scripts/class-drive-intake-reconcile.cjs', 'src/lib/bna/class-drive-intake-reconcile.js', evidencePath('PIPELINE-CENSUS.json')]],
+    ['SRC-20260624-104', 'Trace every known uploaded class/job through the 20 required stages, explicitly inspecting jobs 64-74 if present.', 'REQ-20260624-102', [evidencePath('PIPELINE-CENSUS.json'), evidencePath('PIPELINE-CENSUS.md')]],
+    ['SRC-20260624-105', 'Verify or disprove the suspected causes including OpenAI 401, Drive config/auth, worker/parser/apply gaps, aliases, duplicates, generic parser, deployment, and stale status.', 'REQ-20260624-103', [evidencePath('PIPELINE-CENSUS.json'), evidencePath('PIPELINE-CENSUS.md')]],
+    ['SRC-20260624-106', 'Prepare a dry-run-only guarded backfill with row-level plan, exclusions, expected counts, transaction boundaries, rollback, idempotency, and gate phrase.', 'REQ-20260624-104', [evidencePath('BACKFILL-DRY-RUN.md'), evidencePath('BACKFILL-RECOMMENDATION.json')]],
+    ['SRC-20260624-107', 'Write BACKFILL-RECOMMENDATION.json for Prompt 09 / final integrator consumption.', 'REQ-20260624-104', [evidencePath('BACKFILL-RECOMMENDATION.json')]],
+    ['SRC-20260624-108', 'Cover multi-student extraction, scores/progress, student questions, linkage, ambiguity, duplicates, retries, visible failures, idempotency, read models, dry-run, and rollback with tests.', 'REQ-20260624-105', ['tests/class-drive-intake-reconcile.test.js', 'tests/class-drive-intake-shared-patch.test.js', evidencePath('VERIFICATION.md')]],
+    ['SRC-20260624-109', 'Detect credential readiness without printing secrets or raw Drive IDs.', 'REQ-20260624-106', [evidencePath('AUTH-READINESS.md')]],
     ['SRC-20260624-110', 'Do not edit server.js; provide SHARED-PATCH.diff when shared wiring is required.', 'REQ-20260624-107', ['ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff', 'tests/class-drive-intake-shared-patch.test.js']],
-    ['SRC-20260624-111', 'Run focused tests, source coverage, JSON checks, secret audit, and git diff --check.', 'REQ-20260624-108', ['ops/class-drive-intake/2026-06-24-closeout/VERIFICATION.md']],
+    ['SRC-20260624-111', 'Run focused tests, source coverage, JSON checks, secret audit, and git diff --check.', 'REQ-20260624-108', [evidencePath('VERIFICATION.md')]],
     ['SRC-20260624-112', 'Commit and push the lane branch.', 'REQ-20260624-109', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
   ].map(([statement_id, source_statement, requirement_id, evidence_paths]) => ({
     statement_id,

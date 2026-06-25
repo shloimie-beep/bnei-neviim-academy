@@ -117,7 +117,8 @@ test('student question extraction links the question to the matched student', ()
     && row.after.event_type === 'question'
   ));
   assert.equal(questionRow.after.student_id, 3);
-  assert.match(questionRow.after.question_text, /pasuk repeat/);
+  assert.equal(typeof questionRow.after.question_text_hash, 'string');
+  assert.equal(questionRow.after.question_text_hash.length, 12);
 });
 
 test('ambiguous names are excluded instead of auto-merged', () => {

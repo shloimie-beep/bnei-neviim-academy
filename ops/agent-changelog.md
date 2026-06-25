@@ -26097,3 +26097,26 @@ The clean-slate acceptance run now has 8 Done requirements and one blocked
 safety requirement, `REQ-20260624-028`. Next unblocked executable batch is
 none. The next real work is a separate read-only class-intake reconciliation
 from GitHub issue #18.
+
+## 2026-06-24T22:40:00+03:00 - Issue #18 Read-Only Class Intake Verdict Posted
+
+Completed `REQ-20260624-028` for GitHub issue #18. The read-only class/Drive
+intake reconciliation evidence was regenerated under
+`ops/class-drive-intake/2026-06-24-issue-18/` with sanitized labels/hashes for
+Drive names, job titles, parsed names, student names, and question text.
+
+Terminal verdict: `NOT SAFE TO APPLY - reasons listed`. The dry-run has
+`safe_to_apply=false`, no approved candidate jobs, no row-level change plan, and
+expected row counts `{}`. The census inspected 150 rows: 75 content jobs and 75
+Drive orphans, with 1 missing canonical write and no student ambiguity/review
+rows.
+
+Verification passed: focused class-intake tests 17/17, execution-run
+validate/source-coverage/stale-evidence, secret audit with 4636 tracked paths
+and 0 findings, `git diff --check`, and privacy scans for raw names,
+transcripts, questions, and title leaks. Draft PR #21 is open and terminal
+evidence was posted to GitHub issue #18 at comment `4792923047`.
+
+No `APPLY_GUARDED_CLASS_BACKFILL`, production DB mutation, Drive write,
+transcription call, worker restart, send, charge, credential change, deploy, or
+live mutation was performed. Next sequenced work is GitHub issue #20.

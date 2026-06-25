@@ -6,7 +6,17 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260624-007` / `REQ-20260624-032` through
+- [x] `RAW-20260624-008` / `REQ-20260624-028`: GitHub issue #18 read-only
+  class intake reconciliation has local terminal evidence in
+  `ops/execution-runs/2026-06-24-issue-18-class-intake-readonly/` on branch
+  `codex/issue-18-class-intake-readonly-20260624`. Verdict:
+  `NOT SAFE TO APPLY - reasons listed`; `safe_to_apply=false`, no approved
+  candidate jobs, no row-level change plan, and expected row counts `{}`.
+  Focused validation, run validation, source coverage, stale-evidence check,
+  secret audit, privacy scans, and diff check passed. Draft PR #21 is open and
+  terminal evidence was posted to Issue #18 at comment `4792923047`. Next:
+  continue Issue #20. No class backfill apply or production write is approved.
+- [x] `RAW-20260624-007` / `REQ-20260624-032` through
   `REQ-20260624-039`: Clean-slate acceptance, queue reconciliation, synthetic
   ramble proof, owner walkthrough, preservation manifest, and GitHub-visible
   handoff. Current status: release truth is consistent; PR #16 is merged,
@@ -18,9 +28,9 @@ not authorize active GHL runtime paths.
   queue pollution. PR #19 merged to master at
   `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772`; Railway auto-deployed the same
   SHA in deployment `f8362b06-06b5-41f2-b4eb-102f67a91b85`; post-merge doctor
-  and live smokes passed. `REQ-20260624-028` remains
-  active blocked read-only class-intake reconciliation linked to GitHub issue
-  #18; no class backfill apply is approved. Handoff:
+  and live smokes passed. `REQ-20260624-028` moved into successor run
+  `ops/execution-runs/2026-06-24-issue-18-class-intake-readonly/`; no class
+  backfill apply is approved. Handoff:
   `ops/acceptance/2026-06-24-clean-slate/final-handoff.md`.
 - [x] `RAW-20260624-005` / `REQ-20260624-019` through
   `REQ-20260624-031`: Final release integration, deployment,
