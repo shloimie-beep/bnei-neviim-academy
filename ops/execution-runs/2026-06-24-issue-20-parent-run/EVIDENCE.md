@@ -28,6 +28,38 @@ Readback summary:
 - Validation: run validate, source coverage, stale-evidence, JSON/JSONL parse,
   diff check, and next-batch selection passed.
 
+## Release And Live Evidence
+
+- Issue #20 PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/22`
+- Merged master SHA: `378cc562a7dd4ffc8f2cc81a7341502df42d0295`
+- Railway deployment ID: `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`
+- Deployed SHA: `378cc562a7dd4ffc8f2cc81a7341502df42d0295`
+- Live app smoke:
+  `ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md`
+- Public privacy smoke:
+  `ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md`
+- Issue #20 live verifier:
+  `ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md`
+- Visual production proof:
+  `ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md`
+- Helper destination proof:
+  `ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md`
+
+Release readback summary:
+
+- Canonical BNA Railway target was verified as `skillful-motivation` /
+  `production` / `skillful-motivation`, custom domain
+  `bneineviimacademy.org`.
+- PR #22 merged through GitHub and triggered the existing Railway `master`
+  auto-deploy path.
+- Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa` succeeded from
+  `378cc562a7dd4ffc8f2cc81a7341502df42d0295`.
+- Required live smokes, public privacy, owner visual, helper destinations,
+  agent-browser health/smoke, agent-fleet readiness, Operations queue/UI
+  readback, and owner walkthrough live verification passed.
+- Issue #18 remains `NOT SAFE TO APPLY`; no class backfill was applied.
+
 ## Visual Quality Evidence
 
 - `ops/execution-runs/2026-06-24-issue-20-parent-run/VISUAL-QUALITY.md`
@@ -46,7 +78,8 @@ Visual readback summary:
 - Final findings: 0.
 - Fixed public nav clipping, One Time review tap-target sizing, and One Time
   landing consent checkbox sizing.
-- App-visible Done remains blocked pending deploy/live proof.
+- App-visible Done is live-verified by PR #22 deployment and the Issue #20
+  live verifier.
 
 ## Agent Browser Harness Evidence
 
@@ -91,7 +124,8 @@ Helper destination readback summary:
 - The watchdog matrix passed 10/10 cases covering owner, parent, student,
   provider, public, wrong-role, wrong-workspace, missing-route, and external
   URL handling.
-- Server-visible Done remains blocked pending deploy/live proof.
+- Server-visible helper behavior is live-verified by PR #22 deployment and
+  post-deploy helper destination watchdog evidence.
 
 ## Agent Result Bridge Evidence
 
@@ -117,7 +151,8 @@ Agent result bridge readback summary:
 - Operations activity rows render saved evidence and GitHub links.
 - GitHub status comments are same-thread, marker-based, redacted, and blocked
   by explicit post approval gates; no GitHub status comment was posted.
-- Server-visible/API/UI Done remains blocked pending deploy/live proof.
+- Server-visible/API/UI agent result bridge behavior is live-verified by
+  PR #22 deployment, live smokes, Operations readback, and focused tests.
 
 ## Agent Fleet Hardening Evidence
 
@@ -166,7 +201,8 @@ Queue hygiene readback summary:
   Agent Work, Due Soon, Calendar, and Archived.
 - Focused queue/UI/reconciler tests passed 23/23 and `watchdog:actions` passed
   with 0 findings.
-- App-visible/API/UI Done remains blocked pending deploy/live proof.
+- App-visible/API/UI queue behavior is live-verified by PR #22 deployment,
+  live smokes, authenticated Operations/API readback, and queue tests.
 
 ## Final Release Blocker Evidence
 
@@ -178,15 +214,15 @@ Queue hygiene readback summary:
 
 Final release readback summary:
 
-- `npm run bna:run:next` reports no unblocked executable batch.
-- Final deploy/live closeout is blocked by the existing Railway targeting
-  blocker and missing approved alternate live-smoke path.
-- Direct live health returned HTTP 200 with database connected, but that does
-  not prove the Issue #20 branch is deployed.
-- No deploy, merge, production mutation, external write, GitHub status comment,
-  send, charge, DNS change, credential/account change, class backfill, Drive
-  write, public publishing, browser private capture, or secret exposure was
-  performed.
+- `npm run bna:run:next` reports no unblocked executable batch after the
+  requirements were moved to Done.
+- The Railway targeting blocker is resolved by canonical target discovery and
+  fail-closed deployment script hardening.
+- PR #22 merge commit `378cc562a7dd4ffc8f2cc81a7341502df42d0295` is deployed
+  and live-smoked.
+- No class backfill, production data mutation, external send, charge, DNS
+  change, credential/account change, Drive write, Buffer publish, browser
+  private capture, public publishing, or secret exposure was performed.
 
 ## Owner Walkthrough Evidence
 
@@ -205,13 +241,14 @@ Owner walkthrough readback summary:
   Decisions/queue/next ramble, and stop/restart/release gates.
 - Every setup card includes exact page, step, expected result, validation
   command, and recovery action.
-- The page states that the deployed SHA is not currently provable through
-  Railway because final deploy/live proof remains blocked under
-  `REQ-20260624-048`.
+- The page states that Issue #20 implementation PR #22 was live-verified on
+  Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`; final closeout
+  deployment IDs are posted back to GitHub Issue #20 after auto-deploy.
 - Focused page/setup/link/route tests passed 8/8 and `watchdog:actions` passed
   with 0 findings.
-- App-visible Done remains blocked pending deploy/live proof.
+- App-visible owner walkthrough Done is live-verified by the Issue #20 live
+  verifier.
 
 ## Pending Evidence
 
-- Final release/deploy/live verification.
+- None for Issue #20.

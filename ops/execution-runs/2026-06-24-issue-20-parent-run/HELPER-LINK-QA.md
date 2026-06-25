@@ -2,8 +2,7 @@
 
 Requirement: `REQ-20260624-043`
 
-Status: local implementation verified; deploy/live proof pending under
-`REQ-20260624-048`.
+Status: Done after merge, deploy, and live verification.
 
 ## Implementation
 
@@ -70,18 +69,21 @@ Covered cases:
 - `node --test tests\universal-control-plane-scope-policy.test.js` passed 10/10.
 - `npm run watchdog:actions` passed with 0 findings.
 - `npm run watchdog:helper-destinations` passed with 10/10 matrix cases.
+- Post-deployment `npm run watchdog:helper-destinations` passed 10/10 cases
+  against the released Issue #20 tree.
+- The live Issue #20 verifier confirmed the Operations helper button was
+  present on the deployed app.
 
 ## Guardrails
 
-- No deploy.
 - No production mutation.
 - No external write.
 - No browser profile screenshot or private page capture.
 - No send, charge, DNS change, credential change, class backfill, Drive write,
   or public publishing.
 
-## Remaining Gate
+## Release Gate
 
-`REQ-20260624-043` changes server-visible helper behavior, so terminal Done
-requires deploy/live smoke proof through `REQ-20260624-048`. Until then it is
-blocked as local verified, deploy/live pending.
+`REQ-20260624-043` changed server-visible helper behavior and is now terminal
+Done because PR #22 deployed successfully and live verification passed on
+Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.

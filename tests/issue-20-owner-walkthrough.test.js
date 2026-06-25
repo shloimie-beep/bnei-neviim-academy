@@ -21,12 +21,12 @@ const requiredCards = [
   'stop-restart-release',
 ];
 
-test('Issue 20 owner walkthrough page exposes exact setup cards without claiming deploy proof', () => {
+test('Issue 20 owner walkthrough page exposes exact setup cards with live release proof', () => {
   assert.match(html, /data-page="issue-20-owner-walkthrough"/);
-  assert.match(html, /50087ae5d8e120830ae8e1f8dcaab71f61389d7c/);
-  assert.match(html, /9b2696b744e094a2bffe2d178124d94719df2644/);
-  assert.match(html, /deployed SHA is not currently provable through Railway/i);
-  assert.match(html, /REQ-20260624-048/);
+  assert.match(html, /378cc562a7dd4ffc8f2cc81a7341502df42d0295/);
+  assert.match(html, /4e4f38c5-73f3-49a4-b399-2dcc647bb7fa/);
+  assert.match(html, /live-verified on Railway deployment/i);
+  assert.match(html, /no class backfill was applied/i);
 
   for (const card of requiredCards) {
     const cardMatch = html.match(new RegExp(`<article[^>]+data-card="${card}"[\\s\\S]*?<\\/article>`));

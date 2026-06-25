@@ -1,6 +1,6 @@
 {
   "run_id": "2026-06-24-issue-20-parent-run",
-  "updated_at": "2026-06-25T01:00:00+03:00",
+  "updated_at": "2026-06-25T07:45:00+03:00",
   "parent_branch": "codex/issue-20-parent-run-20260624",
   "parent_run_path": "ops/execution-runs/2026-06-24-issue-20-parent-run",
   "active_pointer_owner": "parent",
@@ -14,7 +14,7 @@
     {
       "id": "BLOCK-20260624-ISSUE20-RAILWAY-TARGET",
       "severity": "release_blocker",
-      "status": "open",
+      "status": "resolved",
       "summary": "Local Railway CLI context is linked to project one-time-production and cannot find expected service skillful-motivation.",
       "blocks": [
         "REQ-20260624-048 deploy/live closeout",
@@ -24,7 +24,9 @@
         "Tier 0 read/audit/test/report",
         "Tier 1 local implementation and draft PR work"
       ],
-      "next_action": "Repair Railway project/service targeting or document a current approved deploy/live-smoke path before final release."
+      "next_action": "Repair Railway project/service targeting or document a current approved deploy/live-smoke path before final release.",
+      "resolved_at": "2026-06-25T07:45:00+03:00",
+      "resolution": "Canonical BNA Railway target verified and PR #22 auto-deployed to 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa from 378cc562a7dd4ffc8f2cc81a7341502df42d0295."
     }
   ],
   "lanes": [
@@ -33,7 +35,7 @@
       "requirement_ids": [
         "REQ-20260624-041"
       ],
-      "status": "queued",
+      "status": "done",
       "owned_paths": [
         "public/",
         "scripts/",
@@ -41,14 +43,45 @@
         "ops/issue-20/visual-quality/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T07:45:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+        "evidence": [
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
+        ],
+        "verification": [
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
+        ],
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification."
+      }
     },
     {
       "lane_id": "agent-browser",
       "requirement_ids": [
         "REQ-20260624-042"
       ],
-      "status": "queued",
+      "status": "done",
       "owned_paths": [
         "scripts/",
         "tests/",
@@ -56,14 +89,45 @@
         "ops/issue-20/agent-browser/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T07:45:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+        "evidence": [
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
+        ],
+        "verification": [
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
+        ],
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification."
+      }
     },
     {
       "lane_id": "helper-correctness",
       "requirement_ids": [
         "REQ-20260624-043"
       ],
-      "status": "queued",
+      "status": "done",
       "owned_paths": [
         "server.js",
         "public/",
@@ -74,14 +138,45 @@
         "ops/issue-20/helper-correctness/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T07:45:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+        "evidence": [
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
+        ],
+        "verification": [
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
+        ],
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification."
+      }
     },
     {
       "lane_id": "result-bridge",
       "requirement_ids": [
         "REQ-20260624-044"
       ],
-      "status": "queued",
+      "status": "done",
       "owned_paths": [
         "server.js",
         "public/",
@@ -90,14 +185,45 @@
         "ops/issue-20/result-bridge/"
       ],
       "integration_owner": "parent",
-      "heartbeat": null
+      "heartbeat": {
+        "updated_at": "2026-06-25T07:45:00+03:00",
+        "branch": "codex/issue-20-parent-run-20260624",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+        "evidence": [
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
+        ],
+        "verification": [
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
+        ],
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification."
+      }
     },
     {
       "lane_id": "agent-fleet",
       "requirement_ids": [
         "REQ-20260624-045"
       ],
-      "status": "integrated",
+      "status": "done",
       "owned_paths": [
         "scripts/agent-fleet-supervisor.mjs",
         "scripts/start-agent-fleet.ps1",
@@ -107,19 +233,41 @@
       ],
       "integration_owner": "parent",
       "heartbeat": {
-        "updated_at": "2026-06-25T00:29:00+03:00",
+        "updated_at": "2026-06-25T07:45:00+03:00",
         "branch": "codex/issue-20-parent-run-20260624",
-        "commit": "332a445a4239",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
         "evidence": [
           "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-FLEET-HARDENING.md",
-          "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md"
+          "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md",
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
         ],
         "verification": [
           "node --test tests\\agent-fleet-hardening.test.js tests\\watchdog-soft-repair.test.js tests\\workspace-task-no-stale-agent.test.js 25/25",
           "node --test tests\\agent-control-api-readback.test.js tests\\operations-activity-queue-health-ui.test.js 5/5",
-          "npm run watchdog:agent-fleet -- --json ok=true external_write_performed=false"
+          "npm run watchdog:agent-fleet -- --json ok=true external_write_performed=false",
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
         ],
-        "next_action": "Continue REQ-20260624-046 queue hygiene."
+        "next_action": "Closed after merge, deploy, and live verification.",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+        "blocker": null
       }
     },
     {
@@ -127,7 +275,7 @@
       "requirement_ids": [
         "REQ-20260624-046"
       ],
-      "status": "integrated",
+      "status": "done",
       "owned_paths": [
         "server.js",
         "public/operations.html",
@@ -137,21 +285,42 @@
       ],
       "integration_owner": "parent",
       "heartbeat": {
-        "updated_at": "2026-06-25T00:40:00+03:00",
+        "updated_at": "2026-06-25T07:45:00+03:00",
         "branch": "codex/issue-20-parent-run-20260624",
-        "commit": "pending_checkpoint_commit",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
         "evidence": [
           "ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md",
           "tests/operations-task-queue-visibility.test.js",
-          "tests/task-decision-census.test.js"
+          "tests/task-decision-census.test.js",
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
         ],
         "verification": [
           "node --test tests\\operations-activity-queue-health-ui.test.js tests\\operations-task-queue-visibility.test.js tests\\task-decision-census.test.js tests\\ops-queue-reconciler.test.js tests\\task-queue-reconciler.test.js tests\\workspace-task-no-stale-agent.test.js 23/23",
           "npm run watchdog:actions finding_count=0",
-          "node scripts\\task-decision-census.mjs --json --no-live --no-write"
+          "node scripts\\task-decision-census.mjs --json --no-live --no-write",
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
         ],
-        "blocker": "Deploy/live smoke proof remains gated by REQ-20260624-048 Railway targeting blocker.",
-        "next_action": "Continue REQ-20260624-047 owner setup and walkthrough."
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification.",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295"
       }
     },
     {
@@ -159,7 +328,7 @@
       "requirement_ids": [
         "REQ-20260624-047"
       ],
-      "status": "integrated",
+      "status": "done",
       "owned_paths": [
         "public/",
         "docs/",
@@ -167,21 +336,42 @@
       ],
       "integration_owner": "parent",
       "heartbeat": {
-        "updated_at": "2026-06-25T00:55:00+03:00",
+        "updated_at": "2026-06-25T07:45:00+03:00",
         "branch": "codex/issue-20-parent-run-20260624",
-        "commit": "pending_checkpoint_commit",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
         "evidence": [
           "public/issue-20-owner-walkthrough.html",
           "ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md",
-          "tests/issue-20-owner-walkthrough.test.js"
+          "tests/issue-20-owner-walkthrough.test.js",
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
         ],
         "verification": [
           "node --test tests\\issue-20-owner-walkthrough.test.js tests\\operator-walkthrough-links.test.js tests\\integration-setup-ui.test.js tests\\owner-review-route-inventory.test.js 8/8",
           "npm run watchdog:actions finding_count=0",
-          "live health HTTP 200 database connected"
+          "live health HTTP 200 database connected",
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
         ],
-        "blocker": "Deploy/live smoke proof remains gated by REQ-20260624-048 Railway targeting blocker.",
-        "next_action": "Continue REQ-20260624-048 final integration and release gate."
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification.",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295"
       }
     },
     {
@@ -189,7 +379,7 @@
       "requirement_ids": [
         "REQ-20260624-048"
       ],
-      "status": "blocked",
+      "status": "done",
       "owned_paths": [
         "ops/execution-runs/2026-06-24-issue-20-parent-run/",
         "tasks-pending/2026-06-24-issue-20-parent-run.md",
@@ -199,20 +389,41 @@
       ],
       "integration_owner": "parent",
       "heartbeat": {
-        "updated_at": "2026-06-25T01:00:00+03:00",
+        "updated_at": "2026-06-25T07:45:00+03:00",
         "branch": "codex/issue-20-parent-run-20260624",
-        "commit": "pending_checkpoint_commit",
+        "commit": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
         "evidence": [
           "ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md",
-          "ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md"
+          "ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md",
+          "ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md",
+          "ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md",
+          "ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md",
+          "ops/playwright-smokes/2026-06-24-owner-review-public-visual/report.md",
+          "ops/helper-destination-qa/20260625T042604Z/helper-destination-matrix.md"
         ],
         "verification": [
           "npm run bna:run:next reported no unblocked executable batch",
           "baseline Railway doctor blocker remains open",
-          "direct live health HTTP 200 database connected"
+          "direct live health HTTP 200 database connected",
+          "Merged PR #22: https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+          "Merged master SHA deployed and verified: 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "Railway deployment 4e4f38c5-73f3-49a4-b399-2dcc647bb7fa SUCCESS from 378cc562a7dd4ffc8f2cc81a7341502df42d0295",
+          "PASS npm run railway:doctor after deployment",
+          "PASS npm run app:smoke after deployment",
+          "PASS npm run app:smoke:public-privacy after deployment",
+          "PASS Issue #20 live verifier: 7 public viewport checks, 5 role routes, authenticated Operations queue/UI readback, helper button present, Owner Setup Center present, agent fleet running",
+          "PASS npm run owner-review:visual after deployment",
+          "PASS npm run watchdog:helper-destinations after deployment",
+          "PASS npm run agent:browser:health -- --json after deployment",
+          "PASS npm run agent:browser:smoke -- --all --json after deployment",
+          "PASS npm run agent:fleet:readiness -- --json after deployment",
+          "No class backfill applied; Issue #18 result remains NOT SAFE TO APPLY"
         ],
-        "blocker": "Railway target mismatch blocks final deploy/live proof.",
-        "next_action": "Repair Railway targeting or approve alternate live-smoke path."
+        "blocker": null,
+        "next_action": "Closed after merge, deploy, and live verification.",
+        "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/22",
+        "deployment_id": "4e4f38c5-73f3-49a4-b399-2dcc647bb7fa",
+        "deployed_commit": "378cc562a7dd4ffc8f2cc81a7341502df42d0295"
       }
     }
   ]

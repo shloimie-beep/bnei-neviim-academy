@@ -2,8 +2,7 @@
 
 Requirement: `REQ-20260624-046`
 
-Status: blocked: local implementation verified, deploy/live proof pending under
-`REQ-20260624-048`.
+Status: Done after merge, deploy, and live verification.
 
 ## Scope
 
@@ -49,13 +48,15 @@ completed audit rows.
 - `node scripts\task-decision-census.mjs --json --no-live --no-write`
   - Result: emitted the owner default/operational view contract with live reads
     intentionally skipped and no files written.
+- Live Issue #20 verifier after PR #22 deployment:
+  - authenticated `/api/bna/tasks?limit=1000` read returned live task rows;
+  - agent fleet status read back `running`;
+  - Operations queue UI loaded without horizontal overflow;
+  - helper button was present;
+  - no authenticated screenshot was captured.
 
-## Blocker
+## Release Gate
 
-This requirement changes the Operations UI/API owner queue behavior, so it is
-not terminal Done until deploy/live proof exists. Final deployment and live
-smoke remain gated by `REQ-20260624-048`, where the Railway CLI targeting
-blocker is recorded.
-
-Next action: continue `REQ-20260624-047` owner setup and walkthrough while the
-final deploy/live gate remains open.
+This requirement changes the Operations UI/API owner queue behavior and is now
+terminal Done because PR #22 deployed successfully and live verification passed
+on Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.

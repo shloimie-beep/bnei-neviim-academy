@@ -1411,7 +1411,7 @@
       "expected_logged_out_behavior": "load_static_credential_safe_issue_20_owner_walkthrough",
       "expected_logged_in_behavior": "load_static_credential_safe_issue_20_owner_walkthrough",
       "privacy_risk": "normal",
-      "security_expectation": "Static owner walkthrough must not expose secrets, private student records, parent data, provider data, member data, or Operations sessions; it must label deploy/live SHA proof blockers explicitly.",
+      "security_expectation": "Static owner walkthrough must not expose secrets, private student records, parent data, provider data, member data, or Operations sessions; it must label release proof and any future deploy/live blockers explicitly.",
       "related_goal_ids": [
         "GOAL-CORE-003",
         "GOAL-CORE-010",

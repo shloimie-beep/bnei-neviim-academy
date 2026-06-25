@@ -2,42 +2,43 @@
 
 Requirement: `REQ-20260624-048`
 
-Status: blocked.
+Status: resolved.
 
-## Blocker
+## Original Blocker
 
-Final Issue #20 release, deploy, live smoke, and terminal Done status are
-blocked because the local Railway CLI context is linked to project
-`one-time-production`, environment `production`, with no selected service, and
-the expected service `skillful-motivation` was not found during baseline
-doctor readback.
+Final Issue #20 release, deploy, live smoke, and terminal Done status were
+blocked because the local Railway CLI context was linked to project
+`one-time-production`, environment `production`, with no selected service. The
+expected BNA service could not be found from that stale local target.
 
-Direct live health still returned HTTP 200 with database connected, but that is
-not deploy/live proof for the Issue #20 branch.
+Direct live health still returned HTTP 200 with database connected, but that
+was not deploy/live proof for the Issue #20 branch.
+
+## Resolution
+
+- Canonical BNA Railway target was discovered and verified:
+  `skillful-motivation` / `production` / `skillful-motivation`.
+- The service custom domain is `bneineviimacademy.org`.
+- The service is connected to GitHub repo
+  `shloimie-beep/bnei-neviim-academy`, branch `master`.
+- PR #21 auto-deploy proof established the GitHub `master` to Railway path.
+- Issue #20 PR #22 merged to `master` at
+  `378cc562a7dd4ffc8f2cc81a7341502df42d0295`.
+- Railway auto-deployed that commit as deployment
+  `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.
+- Railway doctor, live app smoke, public privacy smoke, and Issue #20 live UI
+  verification passed.
 
 ## Current State
 
-- Done locally: `REQ-20260624-040`, `REQ-20260624-042`,
-  `REQ-20260624-045`.
-- Local verified, deploy/live blocked: `REQ-20260624-041`,
-  `REQ-20260624-043`, `REQ-20260624-044`, `REQ-20260624-046`,
-  `REQ-20260624-047`.
-- Final release blocked: `REQ-20260624-048`.
-- Remote master readback:
-  `50087ae5d8e120830ae8e1f8dcaab71f61389d7c`.
-- Latest pushed Issue #20 checkpoint before this blocker note:
-  `9b2696b744e094a2bffe2d178124d94719df2644`.
-
-## Required Next Action
-
-Repair Railway project/service targeting or record an approved alternate
-deploy/live-smoke path. Then rerun final release gates, deploy/merge only under
-the approved release policy, live-smoke the app-visible changes, and update the
-blocked requirements to Done only with proof.
+- Done: `REQ-20260624-040` through `REQ-20260624-048`.
+- Remaining Issue #20 release blocker: none.
+- Issue #18 class backfill result remains `NOT SAFE TO APPLY`; no production
+  class backfill was applied.
 
 ## Guardrails
 
-No deploy, merge, production mutation, external write, GitHub status comment,
-send, charge, DNS change, credential/account change, class backfill, Drive
-write, browser private capture, public publishing, or secret exposure was
-performed for this blocker closeout.
+No deploy was sent to `one-time-production`. No class backfill, production data
+mutation, external send, charge, DNS change, credential/account change, Drive
+write, Buffer publish, public publishing, browser private capture, or secret
+exposure was performed for this blocker closeout.
