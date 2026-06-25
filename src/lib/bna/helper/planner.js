@@ -556,6 +556,20 @@ function deterministicNavigationPlan(message = '', registry, context = {}) {
   };
 }
 
+function deterministicPriorityPlan(message = '', registry, context = {}) {
+  const navigation = deterministicNavigationPlan(message, registry, context);
+  if (navigation) return navigation;
+  const plan = deterministicPlan(message, registry, context);
+  const priorityTools = new Set([
+    'create_support_ticket',
+    'update_task',
+    'mark_task_done',
+    'add_task_comment',
+  ]);
+  if (plan.actions.length === 1 && priorityTools.has(plan.actions[0].tool)) return plan;
+  return null;
+}
+
 function parsePlannerJson(content = '') {
   const text = String(content || '').trim();
   if (!text) return null;
@@ -648,8 +662,8 @@ async function aiPlan(message = '', registry, context = {}) {
 }
 
 async function buildHelperPlan(message = '', registry, context = {}) {
-  const navigation = deterministicNavigationPlan(message, registry, context);
-  if (navigation) return navigation;
+  const priority = deterministicPriorityPlan(message, registry, context);
+  if (priority) return priority;
   const ai = await aiPlan(message, registry, context);
   if (ai && ai.actions.length) return ai;
   return deterministicPlan(message, registry, context);
