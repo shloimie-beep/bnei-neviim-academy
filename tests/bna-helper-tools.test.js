@@ -310,7 +310,7 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(automationUpdatePlan.actions[0].args.enabled, false);
 });
 
-test('BNA Helper planner resolves explicit navigation before hosted AI', async () => {
+test('BNA Helper planner resolves explicit typed actions before hosted AI', async () => {
   const registry = buildToolRegistry();
   const previousApiKey = process.env.OPENAI_API_KEY;
   const previousFetch = global.fetch;
@@ -325,6 +325,14 @@ test('BNA Helper planner resolves explicit navigation before hosted AI', async (
     assert.equal(fetchCalled, false);
     assert.equal(plan.actions[0].tool, 'open_operations_view');
     assert.deepEqual(plan.actions[0].args, { view: 'tasks', section: 'decisions' });
+
+    const ticketPlan = await buildHelperPlan('report problem the task page button looks wrong', registry, {
+      projectKey: 'bna',
+    });
+    assert.equal(fetchCalled, false);
+    assert.equal(ticketPlan.actions[0].tool, 'create_support_ticket');
+    assert.equal(ticketPlan.actions[0].args.category, 'link');
+    assert.equal(ticketPlan.actions[0].args.severity, 'normal');
   } finally {
     if (previousApiKey === undefined) delete process.env.OPENAI_API_KEY;
     else process.env.OPENAI_API_KEY = previousApiKey;
