@@ -1,0 +1,683 @@
+{
+  "run_id": "2026-06-25-issue-24-agent-review-hub",
+  "title": "Issue #24 - Agent Review Hub, helper audit, navigation IA, and newest Drive recording trace",
+  "updated_at": "2026-06-25T18:05:00+03:00",
+  "git_refs": {
+    "expected_branch": "codex/issue-24-agent-review-hub-20260625",
+    "base_branch": "master",
+    "issue_number": 24,
+    "parent_issue_number": 7,
+    "predecessor_issue_number": 20,
+    "guardrail_issue_number": 18
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260625-024",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "captured_at": "2026-06-25T17:45:00+03:00",
+      "content_fingerprint": "github-issue-24-updated-2026-06-25T12:37:48Z",
+      "privacy_classification": "internal_github_goal_packet",
+      "workspace": "bna_platform",
+      "project": "agent_review_hub",
+      "source_type": "github_issue_goal_packet"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-24",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/24",
+      "captured_at": "2026-06-25T17:45:00+03:00",
+      "content_fingerprint": "github-issue-24-updated-2026-06-25T12:37:48Z",
+      "privacy_classification": "internal_github_issue",
+      "workspace": "bna_platform",
+      "project": "agent_review_hub",
+      "source_type": "github_issue"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-24-KICKOFF",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4799296754",
+      "captured_at": "2026-06-25T17:45:00+03:00",
+      "content_fingerprint": "github-issue-comment-4799296754",
+      "privacy_classification": "internal_github_issue_comment",
+      "workspace": "bna_platform",
+      "project": "agent_review_hub",
+      "source_type": "github_issue_comment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260625-024-S001",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Issue #24 extends the canonical issue #7 ramble-to-execution system and must not create a second task manager, helper architecture, queue, agent fleet, memory system, or active-run pointer.",
+      "requirement_id": "REQ-20260625-024",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S002",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Confirm current master, deployed SHA, Railway deployment, live health, active-run status, worktrees, and queue state before implementation.",
+      "requirement_id": "REQ-20260625-024",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S003",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Register Issue #24 idempotently as one raw source and one parent goal, create one parent execution run, and isolate coordinated lanes for review hub, helpers, prompts, navigation, Drive trace, and release.",
+      "requirement_id": "REQ-20260625-024",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S004",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Perform a read-only production trace of the newest matching Drive recording through discovery, content job, transcription, parsing, class/student linkage, questions, scores/progress/accountability, Operations visibility, parent/student visibility, duplicate/idempotency state, and blockers.",
+      "requirement_id": "REQ-20260625-025",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S005",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Preserve Issue #18's NOT SAFE TO APPLY guardrail; do not apply class backfill, move Drive files, paid retranscribe, retry production workers, or mutate student data.",
+      "requirement_id": "REQ-20260625-025",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S006",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Build an owner-only Agent Review Hub with explicit role/workspace cards and short-lived auditable review sessions that require owner auth, avoid reusable secrets in URLs, show a Reviewing-as banner, and provide Exit.",
+      "requirement_id": "REQ-20260625-026",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S007",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Make the Agent Review Hub practical for ChatGPT Agent on mobile while documenting that external sites and local Playwright profiles remain separate login/cookie contexts.",
+      "requirement_id": "REQ-20260625-026",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S008",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Inventory and test every helper/bot surface, including public, Operations, provider/Rabbi, provider participant, parent, student, One Time member/classroom, and Telegram adapters where applicable.",
+      "requirement_id": "REQ-20260625-027",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S009",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Every internal link returned by a helper must be produced by the canonical route/action resolver and verified for route key, canonical path, role, workspace, project, section, landmark, authorization, and fallback.",
+      "requirement_id": "REQ-20260625-027",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S010",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Create human-like conversation evaluations with realistic paraphrases, follow-ups, wrong-role/wrong-workspace requests, safe actions, unsupported actions, link following, write readback, and PASS/FAIL evidence.",
+      "requirement_id": "REQ-20260625-027",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S011",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Create separate mobile-copyable Agent Mode prompt files and expose them from the owner walkthrough or Agent Review Hub.",
+      "requirement_id": "REQ-20260625-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S012",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Add Submit Agent Review Result in the hub and persist the result through the typed agent-result action/API with role/workspace/source/requirement/evidence/readback/idempotency metadata.",
+      "requirement_id": "REQ-20260625-028",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S013",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Refactor navigation IA so side navigation owns major modules and horizontal tabs only contain children, view modes, status filters, scoped subcategories, or record sections; add watchdog coverage for duplicate same-level targets.",
+      "requirement_id": "REQ-20260625-029",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S014",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Run required focused tests, helper planner/tool/permission tests, route/action/security audits, role-flow tests, navigation watchdog, visual/mobile checks, Agent Mode/manual browser evidence, result drop-off readback, newest Drive trace, tenant/privacy tests, secrets audit, full npm test, and Railway deploy/live smoke.",
+      "requirement_id": "REQ-20260625-030",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260625-024-S015",
+      "source_id": "RAW-20260625-024",
+      "source_statement": "Do not hand off to owner Agent Mode testing until live review hub URL, scoped review sessions, no URL all-access secret, review banner/Exit, Submit Agent Review Result persistence, helper reachability, prompt files, resolver wiring, newest-recording trace status, tests, deployment, and live smokes all pass.",
+      "requirement_id": "REQ-20260625-030",
+      "classification": "mapped"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260625-024",
+      "title": "Issue #24 parent run registration and baseline",
+      "expected_result": "Issue #24 is registered once as RAW-20260625-024 and PARENT-20260625-024, baseline truth is recorded, and one active parent execution run owns coordinated child lanes without duplicate visible Tasks.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S001",
+        "RAW-20260625-024-S002",
+        "RAW-20260625-024-S003"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "registered_parent_run_and_baseline_recorded",
+      "can_continue_without_operator": true,
+      "next_action": "Start REQ-20260625-025 newest Drive recording read-only trace.",
+      "acceptance_criteria": [
+        "Issue #24 raw source and parent ID are recorded once.",
+        "Issue #20 closed/live-verified state and Issue #18 NOT SAFE TO APPLY guardrail are recorded.",
+        "Current master/deploy/live/run/worktree/queue baseline is recorded.",
+        "One active parent run owns latest.json.",
+        "Coordinated child lanes exist without duplicate visible Tasks."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+        "memory/2026-06-25.md",
+        "tasks-pending/2026-06-25-issue-24-agent-review-hub.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/SOURCE.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/BASELINE.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/COORDINATION.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/LANE-MANIFEST.json",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/requirements.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md",
+        "TASKS.md"
+      ],
+      "verification": [
+        "GitHub issues #7, #18, #20, and #24 plus comments inspected.",
+        "origin/master readback: b8fb9e6dceb1b4c995108e3510cb3c2f9867a17b.",
+        "Clean Issue #24 worktree created from origin/master on codex/issue-24-agent-review-hub-20260625.",
+        "Existing configured checkout Railway doctor passed for deployment 4667ac5e-7695-4802-9b3d-5b6e12d07a64 SUCCESS.",
+        "Existing configured checkout app smoke passed; clean worktree public privacy smoke passed.",
+        "Clean worktree bna:run:status found Issue #20 closed with work remains no, but validation reports missing generated ops/live-smokes evidence paths. Carried as baseline defect.",
+        "Issue #24 kickoff baseline posted to GitHub comment 4800529673."
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+        "memory/2026-06-25.md",
+        "tasks-pending/2026-06-25-issue-24-agent-review-hub.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/requirements.json",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/run.json",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/LANE-MANIFEST.json",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/COORDINATION.md",
+        "TASKS.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-25T17:45:00+03:00"
+    },
+    {
+      "id": "REQ-20260625-025",
+      "title": "Newest Drive recording read-only production trace",
+      "expected_result": "The newest matching Drive recording is selected by Drive timestamp/source identifier and traced read-only through discovery, job, transcription, parsing, class/student linkage, questions, scores/progress/accountability, Operations/portal visibility, idempotency, and blocker/next action.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S004",
+        "RAW-20260625-024-S005"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "read_only_trace",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [
+        "REQ-20260625-024"
+      ],
+      "status": "done",
+      "implementation_status": "done_read_only_trace_completed_recording_processing_verdict_partial",
+      "can_continue_without_operator": true,
+      "next_action": "Expose the current newest-recording trace status in the Agent Review Hub; do not claim full student-level processing until the student-name/progress/question parser stages are confirmed.",
+      "acceptance_criteria": [
+        "Newest matching recording is selected by Drive created/modified time and stable redacted source ID.",
+        "Each required pipeline stage has a sanitized verdict.",
+        "Transcript bodies, private student details, secrets, and raw Drive names are not committed.",
+        "No Drive move/write, paid retranscription, worker retry, class backfill, or student-data mutation occurs.",
+        "Trace status is available to the hub or its evidence once app-visible pieces are live."
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.json",
+        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/newest-drive-recording-trace.js",
+        "PASS node --check scripts/trace-newest-drive-recording.cjs",
+        "PASS node --test tests/newest-drive-recording-trace.test.js (4/4)",
+        "PASS npm run drive:trace-newest-recording -- --out-dir ops/class-drive-intake/2026-06-25-issue-24-newest-recording",
+        "PASS read-only production trace selected Drive file drive_file:9f6f75a5d602 and content_job:83.",
+        "PASS guardrail preserved: NOT SAFE TO APPLY; no class backfill, Drive write, paid retranscription, worker retry, or student-data mutation.",
+        "PASS sanitized evidence includes no transcript body or transcript_text field.",
+        "PARTIAL production processing verdict: source/job/transcript/parser/class-session/read-model stages confirmed, but student_name_alias_match, progress/question/profile/accountability proposal stages are UNKNOWN because no parsed student names/progress/questions were found."
+      ],
+      "implementation_files": [
+        "src/lib/bna/newest-drive-recording-trace.js",
+        "scripts/trace-newest-drive-recording.cjs",
+        "tests/newest-drive-recording-trace.test.js",
+        "package.json",
+        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.json",
+        "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-25T18:05:00+03:00"
+    },
+    {
+      "id": "REQ-20260625-026",
+      "title": "Secure Agent Review Hub and short-lived review sessions",
+      "expected_result": "An owner-only Agent Review Hub can open sequential, short-lived, role/workspace-scoped BNA review contexts with no reusable all-access URL secret, a visible review banner, Exit, expiry/revocation, and audit events.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S006",
+        "RAW-20260625-024-S007"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "app_security_ui",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260625-024"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "local_review_hub_session_exchange_and_result_dropoff_implemented_live_deploy_pending",
+      "can_continue_without_operator": true,
+      "next_action": "Run local browser smoke and route/action/security checks, then push, deploy, and live-smoke the owner-only Agent Review Hub before marking Done.",
+      "acceptance_criteria": [
+        "Owner/super-admin auth is required before a review session can be created.",
+        "Review sessions are short-lived, scoped by role/workspace/project, sequential-safe, and auditable.",
+        "No password, role, workspace, or reusable bearer secret appears in the URL.",
+        "Review banner and Exit work in each review context.",
+        "Public/wrong-role/error states are testable without data leakage.",
+        "Hub is usable from ChatGPT Agent after one owner login and documents separate external-site logins."
+      ],
+      "evidence": [
+        "server.js",
+        "src/lib/bna/agent-review-hub.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "tests/agent-review-hub.test.js",
+        "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
+        "ops/route-registry.json",
+        "ops/action-registry.json"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check src/lib/bna/agent-review-hub.js",
+        "PASS node --test tests/agent-review-hub.test.js (6/6)",
+        "PASS review-session unit coverage confirms owner-only context creation, short-lived scoped sessions, one-time exchange URLs, HttpOnly session cookie, review banner text, Exit, result persistence, and readback shape.",
+        "PASS local browser smoke: owner login opened Agent Review Hub, hub rendered 9 contexts and 11 prompt links, trace status PARTIAL / content_job:83, server-side one-time exchange redirected to clean /agent-review/session, clean URL survived reload through HttpOnly cookie, banner and Exit were present, and metadata showed All-access URL no.",
+        "PASS full npm test 1345/1345.",
+        "PASS visual watchdog against local server returned ok true with zero findings.",
+        "PASS 390px Agent Review Hub screenshot captured contexts, prompt links, and result form without visible horizontal overflow.",
+        "PENDING push/deploy/live smoke."
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/agent-review-hub.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "tests/agent-review-hub.test.js",
+        "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
+        "ops/route-registry.json",
+        "ops/action-registry.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-25T19:00:00+03:00"
+    },
+    {
+      "id": "REQ-20260625-027",
+      "title": "Helper backend/action/link audit and repairs",
+      "expected_result": "All live helper surfaces are inventoried and tested; helper internal links are resolved through the canonical route/action resolver; typed actions are permission-checked and audited; realistic conversation evaluations pass or produce explicit repair requirements.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S008",
+        "RAW-20260625-024-S009",
+        "RAW-20260625-024-S010"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "helper_correctness",
+      "owner": "Codex",
+      "category": "helper_actions",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260625-026"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "local_helper_surface_audit_and_resolver_metadata_implemented_live_deploy_pending",
+      "can_continue_without_operator": true,
+      "next_action": "Run broader helper/action/security watchdogs, then deploy and live-smoke helper responses containing internal links before marking Done.",
+      "acceptance_criteria": [
+        "Every listed helper/bot surface has endpoint/model/identity/workspace/planner/tool/permission/action/audit/result status.",
+        "Internal links include route key, canonical path, role, workspace, project, section, landmark, reason, auth result, and fallback.",
+        "Helpers do not invent internal URLs from model prose.",
+        "Claimed writes are verified through typed audit/result records.",
+        "Unsupported actions state the limitation and create/link a support or repair record."
+      ],
+      "evidence": [
+        "src/lib/bna/helper/destination-resolver.js",
+        "src/lib/bna/helper/context.js",
+        "src/lib/bna/issue24-helper-audit.js",
+        "scripts/audit-issue-24-helper-surfaces.cjs",
+        "tests/helper-destination-resolver.test.js",
+        "tests/issue24-helper-audit.test.js",
+        "ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.json",
+        "ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.md"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/helper/destination-resolver.js",
+        "PASS node --check src/lib/bna/helper/context.js",
+        "PASS node --check src/lib/bna/issue24-helper-audit.js",
+        "PASS node --check scripts/audit-issue-24-helper-surfaces.cjs",
+        "PASS node --test tests/helper-destination-resolver.test.js (6/6)",
+        "PASS node --test tests/issue24-helper-audit.test.js (4/4)",
+        "PASS npm run issue24:helper-audit -> 9 helper surfaces, 25 single-turn cases, 10 multi-turn conversations, 8 roles, 280/280 static resolver evaluations passed.",
+        "PASS full npm test 1345/1345.",
+        "PASS watchdog suite for actions, helper destinations, security, content, communications, navigation IA, source coverage, and secrets.",
+        "PENDING live helper response verification after deployment."
+      ],
+      "implementation_files": [
+        "src/lib/bna/helper/destination-resolver.js",
+        "src/lib/bna/helper/context.js",
+        "src/lib/bna/issue24-helper-audit.js",
+        "scripts/audit-issue-24-helper-surfaces.cjs",
+        "tests/helper-destination-resolver.test.js",
+        "tests/issue24-helper-audit.test.js",
+        "package.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-25T18:35:00+03:00"
+    },
+    {
+      "id": "REQ-20260625-028",
+      "title": "Agent Mode prompt pack and typed result drop-off",
+      "expected_result": "Mobile-copyable Agent Mode prompt files are available from the hub or walkthrough, and Submit Agent Review Result persists a scoped idempotent review result through the typed action/API with Operations readback proof.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S011",
+        "RAW-20260625-024-S012"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_mode_review",
+      "owner": "Codex",
+      "category": "agent_result_bridge",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260625-026"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "local_prompt_pack_and_typed_review_result_dropoff_implemented_live_deploy_pending",
+      "can_continue_without_operator": true,
+      "next_action": "Run local/browser result drop-off readback, then deploy and live-smoke prompt availability and typed result persistence before marking Done.",
+      "acceptance_criteria": [
+        "Prompt files cover all 11 requested Agent Mode prompt categories.",
+        "Prompt files are mobile-copyable and reachable from the hub or owner walkthrough.",
+        "Submit Agent Review Result uses the typed agent-result action/API rather than fragile browser clicks.",
+        "Saved result links to raw/source, parent goal, requirement/task, role/workspace, conversation, routes, bot responses, outcomes, evidence, severity, correction, timestamp, and idempotency key.",
+        "UI confirmation and Operations readback link are present."
+      ],
+      "evidence": [
+        "scripts/generate-agent-review-prompts.cjs",
+        "public/agent-review-prompts/index.json",
+        "public/agent-review-prompts/operations-super-admin.md",
+        "public/agent-review-prompts/rabbi-provider-admin.md",
+        "public/agent-review-prompts/provider-participant-staff.md",
+        "public/agent-review-prompts/parent-portal.md",
+        "public/agent-review-prompts/student-portal.md",
+        "public/agent-review-prompts/one-time-member-library-classroom.md",
+        "public/agent-review-prompts/public-login-setup.md",
+        "public/agent-review-prompts/cross-role-wrong-permission.md",
+        "public/agent-review-prompts/helper-natural-language-action-audit.md",
+        "public/agent-review-prompts/navigation-ia-duplicate-control-audit.md",
+        "public/agent-review-prompts/final-regression-pass.md",
+        "server.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
+        "tests/agent-review-hub.test.js"
+      ],
+      "verification": [
+        "PASS node --check scripts/generate-agent-review-prompts.cjs",
+        "PASS prompt pack generated 11 mobile-copyable Agent Mode files plus index.json.",
+        "PASS node --test tests/agent-review-hub.test.js (6/6)",
+        "PASS unit coverage confirms typed agent-review result persistence with role/workspace/source/requirement/evidence/readback/idempotency metadata.",
+        "PASS local browser result drop-off persisted AGR-b9a823fc37acd01b with session_ref, context_key operations_super_admin, target_role super_admin, workspace_key bna_platform, requirement_id REQ-20260625-027, prompt_key operations-super-admin, and status pass.",
+        "PASS full npm test 1345/1345.",
+        "PENDING live deployment readback."
+      ],
+      "implementation_files": [
+        "scripts/generate-agent-review-prompts.cjs",
+        "public/agent-review-prompts/index.json",
+        "public/agent-review-prompts/operations-super-admin.md",
+        "public/agent-review-prompts/rabbi-provider-admin.md",
+        "public/agent-review-prompts/provider-participant-staff.md",
+        "public/agent-review-prompts/parent-portal.md",
+        "public/agent-review-prompts/student-portal.md",
+        "public/agent-review-prompts/one-time-member-library-classroom.md",
+        "public/agent-review-prompts/public-login-setup.md",
+        "public/agent-review-prompts/cross-role-wrong-permission.md",
+        "public/agent-review-prompts/helper-natural-language-action-audit.md",
+        "public/agent-review-prompts/navigation-ia-duplicate-control-audit.md",
+        "public/agent-review-prompts/final-regression-pass.md",
+        "server.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "tests/agent-review-hub.test.js",
+        "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
+        "package.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-25T19:00:00+03:00"
+    },
+    {
+      "id": "REQ-20260625-029",
+      "title": "Navigation IA and duplicate-control cleanup",
+      "expected_result": "Public, Operations, provider, parent, student, One Time member, and classroom navigation obey the permanent IA rule, avoid same-level duplicate controls, and pass static/DOM/live duplicate watchdogs without mobile overflow.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S013"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "navigation_ia",
+      "owner": "Codex",
+      "category": "ui_navigation",
+      "priority": "P1",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260625-026"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "local_navigation_labels_and_duplicate_watchdog_implemented_live_deploy_pending",
+      "can_continue_without_operator": true,
+      "next_action": "Run visual/mobile checks, then deploy and live-smoke navigation IA before marking Done.",
+      "acceptance_criteria": [
+        "Side navigation owns major modules/destinations.",
+        "Horizontal tabs are only children, view modes, status filters, scoped subcategories, or record sections.",
+        "Same-level duplicate target/label controls are removed or reclassified.",
+        "Mobile layouts have no horizontal overflow.",
+        "Navigation duplicate watchdog fails on prohibited duplicates."
+      ],
+      "evidence": [
+        "public/operations.html",
+        "src/lib/bna/issue24-navigation-ia.js",
+        "scripts/watchdog-navigation-ia-duplicates.cjs",
+        "tests/issue24-navigation-ia.test.js",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/one-time-external-user-portal.test.js",
+        "ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.json",
+        "ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.md"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/issue24-navigation-ia.js",
+        "PASS node --check scripts/watchdog-navigation-ia-duplicates.cjs",
+        "PASS node --test tests/issue24-navigation-ia.test.js tests/operations-task-queue-visibility.test.js tests/one-time-external-user-portal.test.js (42/42)",
+        "PASS npm run watchdog:navigation-ia -> ok true, findings 0.",
+        "PASS full npm test 1345/1345.",
+        "PASS node scripts/watchdog-visual-baseline.mjs --base-url=http://127.0.0.1:18824 -> ok true, severity ok, finding_count 0.",
+        "PASS 390px Agent Review Hub screenshot captured no visible horizontal overflow; separate 390px session screenshot attempt timed out after hub capture, so live session/mobile smoke remains pending.",
+        "PENDING live deployment verification."
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "src/lib/bna/issue24-navigation-ia.js",
+        "scripts/watchdog-navigation-ia-duplicates.cjs",
+        "tests/issue24-navigation-ia.test.js",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/one-time-external-user-portal.test.js",
+        "package.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-25T18:35:00+03:00"
+    },
+    {
+      "id": "REQ-20260625-030",
+      "title": "Issue #24 integration, deploy, live verification, and GitHub closeout",
+      "expected_result": "All Issue #24 lanes are integrated, focused/full tests and watchdogs pass, PR is pushed/merged, app-visible changes are deployed and live-verified, final evidence is posted to Issue #24, and the final response uses the required 23-section format.",
+      "source_id": "RAW-20260625-024",
+      "source_statement_ids": [
+        "RAW-20260625-024-S014",
+        "RAW-20260625-024-S015"
+      ],
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md",
+      "workspace_key": "bna_platform",
+      "project_key": "issue_24_release",
+      "owner": "Codex",
+      "category": "release_closeout",
+      "priority": "P0",
+      "batch_id": "Z",
+      "depends_on": [
+        "REQ-20260625-025",
+        "REQ-20260625-026",
+        "REQ-20260625-027",
+        "REQ-20260625-028",
+        "REQ-20260625-029"
+      ],
+      "status": "in_progress",
+      "implementation_status": "local_lanes_integrated_remaining_full_tests_push_merge_deploy_live_smoke",
+      "can_continue_without_operator": true,
+      "next_action": "After lanes are ready, run focused/full tests, watchdogs, secrets audit, execution-run validation, push PR, merge/deploy/live smoke, and post final evidence back to Issue #24.",
+      "acceptance_criteria": [
+        "Issue #24 acceptance gates pass before owner Agent Mode handoff.",
+        "Focused and full tests pass or exact blockers are recorded.",
+        "Route/action/security/raw/content/communications/visual watchdogs pass or exact blockers are recorded.",
+        "Secret audit and JSON/JSONL validation pass.",
+        "Branch is pushed, PR is created/updated, merged under release policy, deployed, and live-smoked.",
+        "Issue #24 receives meaningful progress and final evidence.",
+        "Final response ends with one of the required exact overall states."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/requirements.json",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/STATUS.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/EVIDENCE.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/TEST-RESULTS.md",
+        "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4801879834"
+      ],
+      "verification": [
+        "PASS local browser smoke for Agent Review Hub/session/result drop-off.",
+        "PASS watchdog suite, secrets audit, stale-evidence validation, source coverage, visual watchdog, and npm test 1345/1345.",
+        "PASS bna:run:validate.",
+        "PASS Issue #24 progress checkpoint posted as comment 4801879834.",
+        "PENDING GitHub push/PR/merge, Railway deploy, live smoke, and final Issue #24 closeout."
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/requirements.json",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/STATUS.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/EVIDENCE.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/NEXT-SESSION.md",
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/BATCH-STATUS.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-25T18:35:00+03:00"
+    }
+  ],
+  "tasks": [
+    {
+      "canonical_task_key": "bna_platform|agent_review_hub|GITHUB-ISSUE-24|REQ-20260625-024|parent_run",
+      "title": "Issue #24 parent run and baseline coordination",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-024",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|class_drive_intake|GITHUB-ISSUE-24|REQ-20260625-025|newest_recording_trace",
+      "title": "Issue #24 newest Drive recording read-only trace",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-025",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_review_hub|GITHUB-ISSUE-24|REQ-20260625-026|review_hub_sessions",
+      "title": "Issue #24 secure Agent Review Hub and sessions",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-026",
+      "status": "needs_verification",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|helper_correctness|GITHUB-ISSUE-24|REQ-20260625-027|helper_action_audit",
+      "title": "Issue #24 helper link/action audit and repairs",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-027",
+      "status": "needs_verification",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_mode_review|GITHUB-ISSUE-24|REQ-20260625-028|prompt_result_dropoff",
+      "title": "Issue #24 Agent Mode prompts and result drop-off",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-028",
+      "status": "needs_verification",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|navigation_ia|GITHUB-ISSUE-24|REQ-20260625-029|nav_duplicate_cleanup",
+      "title": "Issue #24 navigation IA duplicate cleanup",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-029",
+      "status": "needs_verification",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|issue_24_release|GITHUB-ISSUE-24|REQ-20260625-030|final_release_gate",
+      "title": "Issue #24 final integration and release gate",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260625-030",
+      "status": "in_progress",
+      "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
+    }
+  ]
+}

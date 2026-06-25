@@ -104,7 +104,7 @@ test('Operations moves resolved decisions to Done or actionable Tasks', () => {
   assert.match(operationsHtml, /\{ id: 'mine', label: 'My Tasks' \}/);
   assert.match(operationsHtml, /\{ id: 'one_time', label: 'One Time Tasks' \}/);
   assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done \/ Activity' \}/);
-  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex \/ Agent Work' \}/);
+  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
   assert.match(operationsHtml, /\{ id: 'tasks', label: 'All Tasks' \}/);
   assert.match(operationsHtml, /done: \[\]/);
   assert.match(operationsHtml, /tasks: \[\]/);

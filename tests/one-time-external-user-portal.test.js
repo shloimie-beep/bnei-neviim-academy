@@ -645,9 +645,9 @@ test('existing BNA record tables gained project ownership for scoped reuse', () 
   assert.match(serverJs, /async function ensureProjectOwnershipBackfill/);
 });
 
-test('Operations UI exposes Team/Admin and task Calendar without a separate Roadmap section', () => {
+test('Operations UI exposes Team/Admin and task Schedule without a separate Roadmap section', () => {
   assert.match(operationsHtml, /\{ id: 'admin', label: 'Team \/ Admin'/);
-  assert.match(operationsHtml, /\{ id: 'schedule', label: 'Calendar'/);
+  assert.match(operationsHtml, /\{ id: 'schedule', label: 'Schedule'/);
   assert.match(operationsHtml, /roadmap: 'tasks'/);
   assert.match(operationsHtml, /roadmap: 'schedule'/);
   assert.match(operationsHtml, /getSupportTickets\(filters = \{\}\)/);

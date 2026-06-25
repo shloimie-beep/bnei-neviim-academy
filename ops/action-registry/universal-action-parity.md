@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-06-25T04:12:28.867Z.
+Generated at 2026-06-25T16:09:16.268Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (145)
-- agent_work_handoff_parity_present: pass (77)
+- website_assistant_request_parity_present: pass (152)
+- agent_work_handoff_parity_present: pass (84)
 
 ## Summary
 
-- Root registry actions: 65
+- Root registry actions: 72
 - Detailed typed actions: 80
 - Visible UI hooks: 28
 - Visible UI hooks classified: 28
@@ -33,10 +33,10 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 28 |
 | telegram_request | 80 |
-| website_assistant_request | 145 |
-| operations_helper_request | 138 |
+| website_assistant_request | 152 |
+| operations_helper_request | 141 |
 | automation_action | 74 |
-| agent_work_handoff | 77 |
+| agent_work_handoff | 84 |
 
 ## Visible Control Classifications
 
@@ -59,7 +59,7 @@ Requirement: REQ-20260623-013
 | landing_page | not_applicable_current_surface | No current visible control in this category; future work must add a typed registry row before exposing UI or assistant execution. |
 | seo | covered_by_canonical_registry | capture_provider_google_business_link<br>google_business_list_locations_preview<br>google_business_place_id_lookup |
 | course | covered_by_canonical_registry | ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-PROVIDER-CLASSROOM-DRAFT<br>classroom_topic_material_preview<br>create_provider_class_session<br>create_provider_classroom_draft<br>create_rabbi_shiur_idea |
-| class | covered_by_canonical_registry | ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS<br>ACTION-PROVIDER-CLASSROOM-DRAFT |
+| class | covered_by_canonical_registry | ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-RETURN-HUB<br>ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED<br>ACTION-ONETIME-CLASS-PACKAGE-PREVIEW<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN |
 | lesson | covered_by_canonical_registry | create_one_time_video_library_item<br>create_rabbi_shiur_idea |
 | video | covered_by_canonical_registry | create_one_time_video_library_item |
 | worksheet | covered_by_canonical_registry | generate_student_worksheet |
@@ -78,7 +78,7 @@ Requirement: REQ-20260623-013
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
 | integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP<br>ACTION-PROVIDER-API-USAGE-PREVIEW-NAV |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
-| agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL<br>ACTION-AGENT-RUN-HANDOFF<br>ACTION-AGENT-RUN-PREPARE<br>ACTION-AGENT-RUN-PROGRESS-EVIDENCE<br>ACTION-AGENT-RUN-SUBMIT-SEAL |
+| agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-OPEN-CONTEXT<br>ACTION-AGENT-REVIEW-OPEN-TARGET<br>ACTION-AGENT-REVIEW-PROMPT-OPEN |
 | deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |
 
 ## Guardrails

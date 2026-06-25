@@ -171,6 +171,13 @@ const {
   buildOneTimeAgentModeAcceptance,
 } = require('./src/platform/agent-control/one-time-acceptance');
 const {
+  AGENT_REVIEW_SESSION_TTL_MINUTES,
+  buildAgentReviewContexts,
+  buildPromptIndex,
+  contextByKey,
+  normalizeAgentReviewResultStatus,
+} = require('./src/lib/bna/agent-review-hub');
+const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
   stableHash: intakeStableHash,
@@ -2898,6 +2905,7 @@ const SOCIAL_POST_PROVIDER = String(
 ).trim().toLowerCase();
 const SESSION_COOKIE_NAME = 'bna_ops_session';
 const ACTIVE_WORKSPACE_COOKIE_NAME = 'bna_active_workspace';
+const AGENT_REVIEW_SESSION_COOKIE_NAME = 'bna_agent_review_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
 const OPS_ACCESS_LINK_TTL_MS = 1000 * 60 * 20;
 const OPERATOR_BOOTSTRAP_TTL_MS = Math.max(60 * 1000, Number(process.env.OPERATOR_BOOTSTRAP_TTL_MS || 1000 * 60 * 10));
@@ -3004,6 +3012,68 @@ CREATE TABLE IF NOT EXISTS bna_secure_downloads (
 
 CREATE INDEX IF NOT EXISTS idx_bna_secure_downloads_expires ON bna_secure_downloads(expires_at);
 CREATE INDEX IF NOT EXISTS idx_bna_secure_downloads_kind ON bna_secure_downloads(kind);
+`;
+
+const createAgentReviewSessionsSQL = `
+CREATE TABLE IF NOT EXISTS bna_agent_review_sessions (
+  id SERIAL PRIMARY KEY,
+  session_ref TEXT NOT NULL UNIQUE,
+  token_hash TEXT NOT NULL UNIQUE,
+  context_key TEXT NOT NULL,
+  target_role TEXT NOT NULL,
+  workspace_key TEXT NOT NULL,
+  project_key TEXT,
+  target_route TEXT NOT NULL,
+  helper_surface TEXT,
+  context_type TEXT NOT NULL,
+  created_by TEXT NOT NULL,
+  requested_ip TEXT,
+  user_agent TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  opened_at TIMESTAMP,
+  last_seen_at TIMESTAMP,
+  exchange_used_at TIMESTAMP,
+  expires_at TIMESTAMP NOT NULL,
+  revoked_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}'
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_review_sessions_token_hash ON bna_agent_review_sessions(token_hash);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_review_sessions_expires ON bna_agent_review_sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_review_sessions_context ON bna_agent_review_sessions(context_key, workspace_key, project_key);
+ALTER TABLE bna_agent_review_sessions ADD COLUMN IF NOT EXISTS exchange_used_at TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS bna_agent_review_results (
+  id SERIAL PRIMARY KEY,
+  result_ref TEXT NOT NULL UNIQUE,
+  session_ref TEXT,
+  context_key TEXT NOT NULL,
+  target_role TEXT NOT NULL,
+  workspace_key TEXT NOT NULL,
+  project_key TEXT,
+  raw_id TEXT NOT NULL DEFAULT 'RAW-20260625-024',
+  parent_goal_id TEXT NOT NULL DEFAULT 'PARENT-20260625-024',
+  requirement_id TEXT NOT NULL,
+  prompt_key TEXT,
+  status TEXT NOT NULL,
+  severity TEXT,
+  conversation_summary TEXT,
+  routes_visited JSONB DEFAULT '[]',
+  helper_responses JSONB DEFAULT '[]',
+  link_action_outcomes JSONB DEFAULT '[]',
+  evidence JSONB DEFAULT '[]',
+  suggested_correction TEXT,
+  idempotency_key TEXT NOT NULL UNIQUE,
+  submitted_by TEXT,
+  submitted_ip TEXT,
+  user_agent TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_review_results_context ON bna_agent_review_results(context_key, workspace_key, project_key);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_review_results_requirement ON bna_agent_review_results(requirement_id);
 `;
 
 function loadGoogleOAuthClient() {
@@ -8766,6 +8836,7 @@ async function cleanupExpiredSessions() {
   await pool.query(`DELETE FROM bna_sessions WHERE expires_at <= NOW()`);
   await pool.query(`DELETE FROM bna_ops_access_links WHERE expires_at <= NOW() OR used_at IS NOT NULL`);
   await pool.query(`DELETE FROM bna_secure_downloads WHERE expires_at <= NOW() OR used_at IS NOT NULL`);
+  await pool.query(`UPDATE bna_agent_review_sessions SET revoked_at = COALESCE(revoked_at, NOW()) WHERE expires_at <= NOW() AND revoked_at IS NULL`);
 }
 
 function responseUsesSecureCookie(res) {
@@ -10174,6 +10245,372 @@ function verifyOneTimeViewAsToken(token = '') {
   return payload;
 }
 
+function agentReviewSigningSecret() {
+  return String(
+    process.env.AGENT_REVIEW_SECRET ||
+    process.env.SESSION_SECRET ||
+    process.env.CRON_SECRET ||
+    DATABASE_URL ||
+    'agent-review-local'
+  );
+}
+
+function safeAgentReviewText(value, max = 2000) {
+  return String(value || '')
+    .replace(/(api[_-]?key|token|secret|password|authorization|cookie)\s*[:=]\s*[^\s,}]+/gi, '$1=[redacted]')
+    .slice(0, max);
+}
+
+function agentReviewCsrfSubject(req) {
+  const cookies = parseCookies(req);
+  return cookies[SESSION_COOKIE_NAME] || req.opsUser || req.opsIdentity?.username || 'anonymous';
+}
+
+function agentReviewCsrfToken(req, dayOffset = 0) {
+  const date = new Date(Date.now() + dayOffset * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  return crypto
+    .createHmac('sha256', agentReviewSigningSecret())
+    .update(`${agentReviewCsrfSubject(req)}:${date}:agent-review-v1`)
+    .digest('base64url');
+}
+
+function timingSafeStringEqual(a = '', b = '') {
+  const left = Buffer.from(String(a || ''));
+  const right = Buffer.from(String(b || ''));
+  return left.length === right.length && crypto.timingSafeEqual(left, right);
+}
+
+function verifyAgentReviewCsrf(req) {
+  const supplied = String(req.headers['x-bna-agent-review-csrf'] || req.body?.csrf_token || req.body?.csrfToken || '');
+  if (!supplied) return false;
+  return timingSafeStringEqual(supplied, agentReviewCsrfToken(req, 0))
+    || timingSafeStringEqual(supplied, agentReviewCsrfToken(req, -1));
+}
+
+function setAgentReviewSessionCookie(res, token = '') {
+  const maxAge = Math.floor(AGENT_REVIEW_SESSION_TTL_MINUTES * 60);
+  const cookie = [
+    `${AGENT_REVIEW_SESSION_COOKIE_NAME}=${encodeURIComponent(token)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${maxAge}`,
+  ];
+  if (responseUsesSecureCookie(res)) cookie.push('Secure');
+  appendResponseCookie(res, cookie.join('; '));
+}
+
+function clearAgentReviewSessionCookie(res) {
+  const secure = responseUsesSecureCookie(res) ? '; Secure' : '';
+  appendResponseCookie(res, `${AGENT_REVIEW_SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`);
+}
+
+function agentReviewSessionTokenFromRequest(req, body = {}) {
+  const cookies = parseCookies(req);
+  return String(
+    cookies[AGENT_REVIEW_SESSION_COOKIE_NAME] ||
+    body?.session ||
+    body?.token ||
+    body?.session_token ||
+    body?.sessionToken ||
+    ''
+  ).trim();
+}
+
+function requireAgentReviewOwner(req, res) {
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+  if (!identity || identity.scope?.type !== 'all') {
+    res.status(403).json({
+      success: false,
+      error: 'Agent Review Hub requires a BNA super-admin owner session.',
+      external_write_performed: false,
+    });
+    return null;
+  }
+  return identity;
+}
+
+function newestRecordingTraceStatus() {
+  const relPath = path.join('ops', 'class-drive-intake', '2026-06-25-issue-24-newest-recording', 'NEWEST-RECORDING-TRACE.json');
+  const fullPath = path.join(__dirname, relPath);
+  if (!fs.existsSync(fullPath)) {
+    return {
+      status: 'MISSING',
+      evidence_path: relPath.replace(/\\/g, '/'),
+      blocker: 'Newest Drive recording trace evidence has not been generated in this checkout.',
+    };
+  }
+  try {
+    const trace = JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+    return {
+      status: trace.verdict?.status || 'UNKNOWN',
+      summary: trace.verdict?.summary || '',
+      blocker: trace.verdict?.blocker || '',
+      next_action: trace.exact_next_action || trace.verdict?.next_action || '',
+      selected_job: trace.selection?.selected_job?.job_ref || null,
+      selected_drive_file: trace.selection?.selected_file?.id_ref?.redacted || null,
+      transcript_chars: trace.selection?.selected_job?.transcript_chars || 0,
+      evidence_path: relPath.replace(/\\/g, '/'),
+      generated_at: trace.generated_at || null,
+      no_production_mutation: trace.no_production_mutation !== false,
+    };
+  } catch (error) {
+    return {
+      status: 'ERROR',
+      evidence_path: relPath.replace(/\\/g, '/'),
+      blocker: safeAgentReviewText(error.message, 400),
+    };
+  }
+}
+
+function agentReviewTargetUrl(context, row, req) {
+  const url = new URL(context.target_route, requestBaseUrl(req));
+  url.searchParams.set('agent_review_session', row.session_ref);
+  return url.toString();
+}
+
+function agentReviewSessionView(row, req, { includeToken = false, token = '' } = {}) {
+  const context = contextByKey(row.context_key) || {};
+  const view = {
+    session_ref: row.session_ref,
+    context_key: row.context_key,
+    label: context.label || row.context_key,
+    role: row.target_role,
+    workspace_key: row.workspace_key,
+    project_key: row.project_key,
+    target_route: row.target_route,
+    target_url: agentReviewTargetUrl(context, row, req),
+    helper_surface: row.helper_surface,
+    context_type: row.context_type,
+    permitted_actions: context.permitted_actions || [],
+    prohibited_actions: context.prohibited_actions || [],
+    review_banner: `Reviewing as ${context.label || row.target_role} / ${row.workspace_key}`,
+    exit_url: '/operations/agent-review',
+    created_at: row.created_at,
+    opened_at: row.opened_at,
+    expires_at: row.expires_at,
+    revoked_at: row.revoked_at,
+    short_lived: true,
+    all_access_secret_in_url: false,
+    token_scope: 'single scoped review session',
+    external_write_performed: false,
+  };
+  if (includeToken) {
+    view.review_url = `${requestBaseUrl(req)}/agent-review/session?exchange=${encodeURIComponent(token)}`;
+    view.exchange_url = view.review_url;
+    view.one_time_exchange = true;
+    view.url_token_reusable = false;
+  }
+  return view;
+}
+
+async function createAgentReviewSession({ contextKey, identity, req } = {}, db = pool) {
+  const context = contextByKey(contextKey);
+  if (!context) {
+    const error = new Error('Unknown Agent Review context.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const token = generateSecureToken(32);
+  const tokenHash = sha256Hex(token);
+  const sessionRef = `ARS-${sha256Hex(`${token}:${context.key}`).slice(0, 16)}`;
+  const expiresAt = new Date(Date.now() + AGENT_REVIEW_SESSION_TTL_MINUTES * 60 * 1000);
+  const client = await db.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query(
+      `UPDATE bna_agent_review_sessions
+       SET revoked_at = COALESCE(revoked_at, NOW())
+       WHERE created_by = $1
+         AND revoked_at IS NULL
+         AND expires_at > NOW()`,
+      [identity.username || req.opsUser || 'owner']
+    );
+    const result = await client.query(
+      `INSERT INTO bna_agent_review_sessions (
+         session_ref, token_hash, context_key, target_role, workspace_key,
+         project_key, target_route, helper_surface, context_type, created_by,
+         requested_ip, user_agent, expires_at, metadata
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+       )
+       RETURNING *`,
+      [
+        sessionRef,
+        tokenHash,
+        context.key,
+        context.role,
+        context.workspace_key,
+        context.project_key || null,
+        context.target_route,
+        context.helper_surface || null,
+        context.context_type,
+        identity.username || req.opsUser || 'owner',
+        getRequestIp(req) || null,
+        req.headers['user-agent'] || null,
+        expiresAt,
+        JSON.stringify({
+          raw_id: 'RAW-20260625-024',
+          parent_goal_id: 'PARENT-20260625-024',
+          issue: 24,
+          sequential_session_model: true,
+          all_access_secret_in_url: false,
+          one_time_exchange_url: true,
+          scoped_session_cookie: AGENT_REVIEW_SESSION_COOKIE_NAME,
+        }),
+      ]
+    );
+    await client.query('COMMIT');
+    return agentReviewSessionView(result.rows[0], req, { includeToken: true, token });
+  } catch (error) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {}
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function getAgentReviewSessionByToken(token = '', { markOpen = false, req = null } = {}, db = pool) {
+  const tokenHash = sha256Hex(token);
+  const result = await db.query(
+    `SELECT *
+     FROM bna_agent_review_sessions
+     WHERE token_hash = $1
+       AND revoked_at IS NULL
+       AND expires_at > NOW()
+     LIMIT 1`,
+    [tokenHash]
+  );
+  const row = result.rows[0] || null;
+  if (!row) return null;
+  if (markOpen) {
+    const opened = await db.query(
+      `UPDATE bna_agent_review_sessions
+       SET opened_at = COALESCE(opened_at, NOW()),
+           last_seen_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [row.id]
+    );
+    return opened.rows[0] || row;
+  }
+  return row;
+}
+
+async function exchangeAgentReviewSessionToken(token = '', { req = null } = {}, db = pool) {
+  const tokenHash = sha256Hex(token);
+  const result = await db.query(
+    `UPDATE bna_agent_review_sessions
+     SET opened_at = COALESCE(opened_at, NOW()),
+         last_seen_at = NOW(),
+         exchange_used_at = COALESCE(exchange_used_at, NOW())
+     WHERE token_hash = $1
+       AND exchange_used_at IS NULL
+       AND revoked_at IS NULL
+       AND expires_at > NOW()
+     RETURNING *`,
+    [tokenHash]
+  );
+  return result.rows[0] || null;
+}
+
+async function endAgentReviewSession(token = '', db = pool) {
+  const tokenHash = sha256Hex(token);
+  const result = await db.query(
+    `UPDATE bna_agent_review_sessions
+     SET revoked_at = COALESCE(revoked_at, NOW()),
+         last_seen_at = NOW()
+     WHERE token_hash = $1
+       AND revoked_at IS NULL
+     RETURNING *`,
+    [tokenHash]
+  );
+  return result.rows[0] || null;
+}
+
+function normalizeReviewJsonArray(value, maxItems = 40) {
+  if (Array.isArray(value)) return value.slice(0, maxItems).map((item) => safeAgentReviewText(typeof item === 'string' ? item : JSON.stringify(item), 800));
+  if (!value) return [];
+  return [safeAgentReviewText(typeof value === 'string' ? value : JSON.stringify(value), 800)];
+}
+
+async function saveAgentReviewResult(body = {}, { req, session = null, identity = null } = {}, db = pool) {
+  const context = session ? contextByKey(session.context_key) : contextByKey(body.context_key || body.contextKey);
+  if (!context) {
+    const error = new Error('Agent review result requires a known context.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const requirementId = safeAgentReviewText(body.requirement_id || body.requirementId || 'REQ-20260625-027', 80);
+  const promptKey = safeAgentReviewText(body.prompt_key || body.promptKey || '', 120) || null;
+  const status = normalizeAgentReviewResultStatus(body.status);
+  const summary = safeAgentReviewText(body.conversation_summary || body.summary || '', 4000);
+  const idempotencyBasis = [
+    session?.session_ref || 'owner',
+    context.key,
+    requirementId,
+    promptKey || '',
+    body.idempotency_key || body.idempotencyKey || summary.slice(0, 120),
+  ].join('|');
+  const idempotencyKey = safeAgentReviewText(body.idempotency_key || body.idempotencyKey || sha256Hex(idempotencyBasis).slice(0, 48), 160);
+  const resultRef = `AGR-${sha256Hex(idempotencyKey).slice(0, 16)}`;
+  const result = await db.query(
+    `INSERT INTO bna_agent_review_results (
+       result_ref, session_ref, context_key, target_role, workspace_key,
+       project_key, requirement_id, prompt_key, status, severity,
+       conversation_summary, routes_visited, helper_responses,
+       link_action_outcomes, evidence, suggested_correction, idempotency_key,
+       submitted_by, submitted_ip, user_agent, metadata
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
+       $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21
+     )
+     ON CONFLICT (idempotency_key) DO UPDATE SET
+       status = EXCLUDED.status,
+       severity = EXCLUDED.severity,
+       conversation_summary = EXCLUDED.conversation_summary,
+       routes_visited = EXCLUDED.routes_visited,
+       helper_responses = EXCLUDED.helper_responses,
+       link_action_outcomes = EXCLUDED.link_action_outcomes,
+       evidence = EXCLUDED.evidence,
+       suggested_correction = EXCLUDED.suggested_correction,
+       metadata = bna_agent_review_results.metadata || EXCLUDED.metadata,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      resultRef,
+      session?.session_ref || null,
+      context.key,
+      context.role,
+      context.workspace_key,
+      context.project_key || null,
+      requirementId,
+      promptKey,
+      status,
+      safeAgentReviewText(body.severity || 'none', 40),
+      summary,
+      JSON.stringify(normalizeReviewJsonArray(body.routes_visited || body.routesVisited)),
+      JSON.stringify(normalizeReviewJsonArray(body.helper_responses || body.helperResponses || body.bot_responses || body.botResponses)),
+      JSON.stringify(normalizeReviewJsonArray(body.link_action_outcomes || body.linkActionOutcomes)),
+      JSON.stringify(normalizeReviewJsonArray(body.evidence)),
+      safeAgentReviewText(body.suggested_correction || body.suggestedCorrection || '', 4000),
+      idempotencyKey,
+      identity?.username || session?.created_by || req.opsUser || 'agent_review_session',
+      getRequestIp(req) || null,
+      req.headers['user-agent'] || null,
+      JSON.stringify({
+        raw_id: body.raw_id || 'RAW-20260625-024',
+        parent_goal_id: body.parent_goal_id || 'PARENT-20260625-024',
+        source: 'agent_review_hub',
+        external_write_performed: false,
+      }),
+    ]
+  );
+  return result.rows[0];
+}
+
 function requireOneTimeViewAsSuperAdmin(req, res) {
   const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
   if (!identity || identity.scope?.type !== 'all') {
@@ -10340,6 +10777,188 @@ app.post('/api/bna/one-time/view-as-rabbi/end', requireAdmin, (req, res) => {
     redirect_to: '/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview',
     external_write_performed: false,
   });
+});
+
+app.get('/api/bna/agent-review/contexts', requireAdmin, (req, res) => {
+  const identity = requireAgentReviewOwner(req, res);
+  if (!identity) return;
+  const trace = newestRecordingTraceStatus();
+  res.json({
+    success: true,
+    csrf_token: agentReviewCsrfToken(req),
+    owner: {
+      username: identity.username,
+      role: identity.role,
+      scope: identity.scope,
+    },
+    hub_path: '/operations/agent-review',
+    session_ttl_minutes: AGENT_REVIEW_SESSION_TTL_MINUTES,
+    sequential_session_model: true,
+    all_access_secret_in_url: false,
+    newest_recording_trace: trace,
+    contexts: buildAgentReviewContexts({
+      baseUrl: requestBaseUrl(req),
+      newestRecordingTrace: trace,
+    }),
+    prompts: buildPromptIndex({ baseUrl: requestBaseUrl(req) }),
+    external_write_performed: false,
+  });
+});
+
+app.post('/api/bna/agent-review/sessions', requireAdmin, async (req, res) => {
+  try {
+    const identity = requireAgentReviewOwner(req, res);
+    if (!identity) return;
+    if (!verifyAgentReviewCsrf(req)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Missing or invalid Agent Review CSRF token.',
+        external_write_performed: false,
+      });
+    }
+    const session = await createAgentReviewSession({
+      contextKey: req.body?.context_key || req.body?.contextKey,
+      identity,
+      req,
+    });
+    res.json({
+      success: true,
+      session,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.get('/api/bna/agent-review/session', async (req, res) => {
+  try {
+    const exchangeToken = String(req.query.exchange || '').trim();
+    let row = null;
+    if (exchangeToken) {
+      row = await exchangeAgentReviewSessionToken(exchangeToken, { req });
+      if (row) setAgentReviewSessionCookie(res, exchangeToken);
+    } else {
+      const token = agentReviewSessionTokenFromRequest(req);
+      row = token ? await getAgentReviewSessionByToken(token, { markOpen: true, req }) : null;
+    }
+    if (!row) {
+      clearAgentReviewSessionCookie(res);
+      return res.status(401).json({
+        success: false,
+        error: 'Review session expired, revoked, or invalid.',
+        redirect_to: '/operations-login.html?returnTo=%2Foperations%2Fagent-review',
+        external_write_performed: false,
+      });
+    }
+    res.json({
+      success: true,
+      session: agentReviewSessionView(row, req),
+      prompts: buildPromptIndex({ baseUrl: requestBaseUrl(req) }),
+      newest_recording_trace: newestRecordingTraceStatus(),
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.post('/api/bna/agent-review/sessions/exit', async (req, res) => {
+  try {
+    const token = agentReviewSessionTokenFromRequest(req, req.body || {});
+    const row = await endAgentReviewSession(token);
+    clearAgentReviewSessionCookie(res);
+    res.json({
+      success: true,
+      ended: Boolean(row),
+      redirect_to: '/operations/agent-review',
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.post('/api/bna/agent-review/results', async (req, res) => {
+  try {
+    const token = agentReviewSessionTokenFromRequest(req, req.body || {});
+    const session = token ? await getAgentReviewSessionByToken(token, { markOpen: false, req }) : null;
+    const identity = session ? null : await identifyAdminRequest(req).catch(() => null);
+    if (!session && (!identity || identity.scope?.type !== 'all')) {
+      return res.status(401).json({
+        success: false,
+        error: 'Submit Agent Review Result requires a valid review session or owner login.',
+        external_write_performed: false,
+      });
+    }
+    const result = await saveAgentReviewResult(req.body || {}, { req, session, identity });
+    res.json({
+      success: true,
+      result_ref: result.result_ref,
+      result: {
+        result_ref: result.result_ref,
+        session_ref: result.session_ref,
+        context_key: result.context_key,
+        role: result.target_role,
+        workspace_key: result.workspace_key,
+        project_key: result.project_key,
+        requirement_id: result.requirement_id,
+        prompt_key: result.prompt_key,
+        status: result.status,
+        severity: result.severity,
+        idempotency_key: result.idempotency_key,
+        created_at: result.created_at,
+        updated_at: result.updated_at,
+      },
+      operations_url: `/operations/agent-review?result=${encodeURIComponent(result.result_ref)}`,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
+
+app.get('/api/bna/agent-review/results/:resultRef', requireAdmin, async (req, res) => {
+  try {
+    const identity = requireAgentReviewOwner(req, res);
+    if (!identity) return;
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_agent_review_results
+       WHERE result_ref = $1
+       LIMIT 1`,
+      [String(req.params.resultRef || '')]
+    );
+    const row = result.rows[0] || null;
+    if (!row) return res.status(404).json({ success: false, error: 'Agent review result not found.' });
+    res.json({
+      success: true,
+      result: row,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
 });
 
 app.get('/api/one-time-review/parent', (req, res) => {
@@ -28857,6 +29476,7 @@ async function initDb() {
     await pool.query(createSessionsSQL);
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
+    await pool.query(createAgentReviewSessionsSQL);
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
     await seedDefaultAutomations();
@@ -80307,6 +80927,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createSessionsSQL);
     await pool.query(createOpsAccessLinksSQL);
     await pool.query(createSecureDownloadsSQL);
+    await pool.query(createAgentReviewSessionsSQL);
     await pool.query(createBnaIndexesSQL);
     await pool.query(createWorkspaceLinkedColumnsSQL);
     await pool.query(createIdentityLinkingCompatibilitySQL);
@@ -80536,6 +81157,23 @@ app.get('/providers/:slug', (req, res) => {
 });
 
 // Operations dashboard - with login redirect
+app.get(['/operations/agent-review', '/agent-review'], requireAdmin, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'agent-review.html'));
+});
+
+app.get('/agent-review/session', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  const exchangeToken = String(req.query.exchange || '').trim();
+  if (exchangeToken) {
+    const row = await exchangeAgentReviewSessionToken(exchangeToken, { req });
+    if (row) setAgentReviewSessionCookie(res, exchangeToken);
+    else clearAgentReviewSessionCookie(res);
+    return res.redirect(303, '/agent-review/session');
+  }
+  res.sendFile(path.join(__dirname, 'public', 'agent-review-session.html'));
+});
+
 app.get(['/operations', '/operations/agents/runs/:runKey'], requireAdmin, (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));

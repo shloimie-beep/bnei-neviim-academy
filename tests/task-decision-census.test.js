@@ -163,7 +163,7 @@ test('task decision census exposes required default views, card contract, and au
   assert.deepEqual(TASK_OPERATIONAL_VIEWS.map((view) => view.label), [
     'My Tasks',
     'One Time Tasks',
-    'Codex / Agent Work',
+    'Codex Queue',
     'Due Soon',
     'Calendar',
     'Archived'
@@ -194,7 +194,7 @@ test('task decision census exposes required default views, card contract, and au
     assert.ok(census.counts[dimension], `${dimension} should be present`);
   }
   assert.ok(census.card_contract.includes('latest meaningful activity'));
-  assert.ok(census.operational_task_views.some((view) => view.label === 'Codex / Agent Work'));
+  assert.ok(census.operational_task_views.some((view) => view.label === 'Codex Queue'));
   assert.equal(census.cleanup_behavior.mode, 'dry_run_only_no_production_mutation');
   assert.equal(census.cleanup_behavior.no_private_parent_student_data_deleted, true);
 });

@@ -1,0 +1,164 @@
+{
+  "generated_at": "2026-06-25T16:00:57.232Z",
+  "prompt_count": 11,
+  "prompts": [
+    {
+      "key": "public-login-setup",
+      "title": "Public/Login/Setup Surfaces",
+      "context_keys": [
+        "public_visitor",
+        "wrong_role_error_states"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "public pages, login paths, setup links, public helper safety, and logged-out behavior",
+      "file": "public-login-setup.md",
+      "path": "/agent-review-prompts/public-login-setup.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/public-login-setup.md"
+    },
+    {
+      "key": "operations-super-admin",
+      "title": "Operations Super-Admin",
+      "context_keys": [
+        "operations_super_admin"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "Operations helper, task/evidence lookup, safe preview actions, route landmarks, and owner-only controls",
+      "file": "operations-super-admin.md",
+      "path": "/agent-review-prompts/operations-super-admin.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/operations-super-admin.md"
+    },
+    {
+      "key": "rabbi-provider-admin",
+      "title": "Rabbi Scheller Provider Admin",
+      "context_keys": [
+        "rabbi_provider_admin"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "One Time provider admin scope, provider helper links, payment/access previews, classroom setup, and no cross-workspace leakage",
+      "file": "rabbi-provider-admin.md",
+      "path": "/agent-review-prompts/rabbi-provider-admin.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/rabbi-provider-admin.md"
+    },
+    {
+      "key": "provider-participant-staff",
+      "title": "Provider Participant/Staff",
+      "context_keys": [
+        "provider_participant_staff"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "provider participant portal, staff-safe helper behavior, support requests, and denied owner-only actions",
+      "file": "provider-participant-staff.md",
+      "path": "/agent-review-prompts/provider-participant-staff.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/provider-participant-staff.md"
+    },
+    {
+      "key": "parent-portal",
+      "title": "Parent Portal",
+      "context_keys": [
+        "parent_qa_identity"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "parent-safe navigation, child-only visibility, parent helper answers, setup flows, and wrong-family denial",
+      "file": "parent-portal.md",
+      "path": "/agent-review-prompts/parent-portal.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/parent-portal.md"
+    },
+    {
+      "key": "student-portal",
+      "title": "Student Portal",
+      "context_keys": [
+        "student_qa_identity"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "student-safe dashboard, no adult/private notes, helper boundaries, assignments, progress, and denied cross-student access",
+      "file": "student-portal.md",
+      "path": "/agent-review-prompts/student-portal.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/student-portal.md"
+    },
+    {
+      "key": "one-time-member-library-classroom",
+      "title": "One Time Member/Library/Classroom",
+      "context_keys": [
+        "one_time_member",
+        "one_time_classroom"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "member library, classroom, question/support flow, fixture-only review data, and no raw recording exposure",
+      "file": "one-time-member-library-classroom.md",
+      "path": "/agent-review-prompts/one-time-member-library-classroom.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/one-time-member-library-classroom.md"
+    },
+    {
+      "key": "cross-role-wrong-permission",
+      "title": "Cross-Role Wrong-Permission/Error States",
+      "context_keys": [
+        "wrong_role_error_states"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "401/403 handling, wrong-role requests, wrong-workspace requests, ambiguous names, and safe fallbacks",
+      "file": "cross-role-wrong-permission.md",
+      "path": "/agent-review-prompts/cross-role-wrong-permission.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/cross-role-wrong-permission.md"
+    },
+    {
+      "key": "helper-natural-language-action-audit",
+      "title": "Helper Natural-Language Action Audit",
+      "context_keys": [
+        "public_visitor",
+        "operations_super_admin",
+        "rabbi_provider_admin",
+        "provider_participant_staff",
+        "parent_qa_identity",
+        "student_qa_identity",
+        "one_time_member",
+        "one_time_classroom",
+        "wrong_role_error_states"
+      ],
+      "requirement_id": "REQ-20260625-027",
+      "focus": "natural-language helper actions, link grounding, typed audits, unsupported actions, and readback proof",
+      "file": "helper-natural-language-action-audit.md",
+      "path": "/agent-review-prompts/helper-natural-language-action-audit.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/helper-natural-language-action-audit.md"
+    },
+    {
+      "key": "navigation-ia-duplicate-control-audit",
+      "title": "Navigation IA/Duplicate-Control Audit",
+      "context_keys": [
+        "public_visitor",
+        "operations_super_admin",
+        "rabbi_provider_admin",
+        "provider_participant_staff",
+        "parent_qa_identity",
+        "student_qa_identity",
+        "one_time_member",
+        "one_time_classroom",
+        "wrong_role_error_states"
+      ],
+      "requirement_id": "REQ-20260625-029",
+      "focus": "side navigation, horizontal tabs, filters, duplicate controls, selected states, and mobile overflow",
+      "file": "navigation-ia-duplicate-control-audit.md",
+      "path": "/agent-review-prompts/navigation-ia-duplicate-control-audit.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/navigation-ia-duplicate-control-audit.md"
+    },
+    {
+      "key": "final-regression-pass",
+      "title": "Final Regression Pass",
+      "context_keys": [
+        "public_visitor",
+        "operations_super_admin",
+        "rabbi_provider_admin",
+        "provider_participant_staff",
+        "parent_qa_identity",
+        "student_qa_identity",
+        "one_time_member",
+        "one_time_classroom",
+        "wrong_role_error_states"
+      ],
+      "requirement_id": "REQ-20260625-030",
+      "focus": "complete Issue #24 acceptance gates, prompt pack links, result drop-off, newest recording trace, helper reachability, and live smoke evidence",
+      "file": "final-regression-pass.md",
+      "path": "/agent-review-prompts/final-regression-pass.md",
+      "url": "https://bneineviimacademy.org/agent-review-prompts/final-regression-pass.md"
+    }
+  ]
+}

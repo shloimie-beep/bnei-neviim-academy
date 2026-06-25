@@ -29,7 +29,7 @@ export const TASK_DEFAULT_VIEWS = [
 export const TASK_OPERATIONAL_VIEWS = [
   { id: 'my_tasks', label: 'My Tasks', description: 'Open work owned by Shloimie/operator roles.' },
   { id: 'one_time_tasks', label: 'One Time Tasks', description: 'Open One Time Mishnah Class work only.' },
-  { id: 'codex_agent_work', label: 'Codex / Agent Work', description: 'Machine work and observable agent jobs.' },
+  { id: 'codex_agent_work', label: 'Codex Queue', description: 'Machine work and observable agent jobs.' },
   { id: 'due_soon', label: 'Due Soon', description: 'Open work due within seven days.' },
   { id: 'calendar', label: 'Calendar', description: 'Open work with a planned or due date.' },
   { id: 'archived', label: 'Archived', description: 'Reversible archive, duplicate, or hidden records.' }
@@ -797,7 +797,7 @@ export function buildTaskDecisionCensus({ tasks = [], generated_at = new Date().
       'Waiting Externally: human or external blockers only, with blocker owner and next action.',
       'Recently Completed: done/activity rows with proof or verification notes.',
       'Full History / Search: archived, hidden, duplicate-linked, completed, and searchable historical records.',
-      'Codex / Agent Work: Codex/agent/system work and agent_job rows, including queued/running/failed machine states, outside the human waiting lane.',
+      'Codex Queue: Codex/agent/system work and agent_job rows, including queued/running/failed machine states, outside the human waiting lane.',
       'One Time Tasks: open rabbi_sheller_provider / one_time_mishnah_class records only.',
       'Calendar: open work with due_date or planned_at.'
     ],

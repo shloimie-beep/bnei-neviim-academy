@@ -9028,10 +9028,10 @@
             { id: 'mine', label: 'My Tasks' },
             { id: 'one_time', label: 'One Time Tasks' },
             { id: 'tasks', label: 'All Tasks' },
-            { id: 'codex_queue', label: 'Codex / Agent Work' },
+            { id: 'codex_queue', label: 'Codex Queue' },
             { id: 'pending', label: 'Blocked' },
             { id: 'due_soon', label: 'Due Soon' },
-            { id: 'schedule', label: 'Calendar' },
+            { id: 'schedule', label: 'Schedule' },
             { id: 'done_activity', label: 'Done / Activity' },
             { id: 'full_history', label: 'Full History / Search' },
             { id: 'archived', label: 'Archived' },
@@ -11613,9 +11613,9 @@
                 decisions: 'Decisions',
                 pending: 'Blocked',
                 tasks: 'All Tasks',
-                codex_queue: 'Codex / Agent Work',
+                codex_queue: 'Codex Queue',
                 due_soon: 'Due Soon',
-                schedule: 'Calendar',
+                schedule: 'Schedule',
                 done_activity: 'Done / Activity',
                 full_history: 'Full History / Search',
                 archived: 'Archived',
@@ -12677,7 +12677,7 @@
                     <div class="page-heading task-heading">
                         <div>
                             <div class="page-kicker">${oneTimeMode ? 'Rabbi / One Time Workspace' : 'Workspace Work'}</div>
-                            <h2>${oneTimeMode ? 'Task Dialogue Board' : 'Decisions, Tasks, Calendar'}</h2>
+                            <h2>${oneTimeMode ? 'Task Dialogue Board' : 'Decisions, Tasks, Schedule'}</h2>
                             <p>${oneTimeMode ? 'Decisions, blockers, task work, and completion history stay separated from provider schedule items.' : 'Human blockers stay in Blocked. Machine work has a Codex Queue. Owner, urgency, workspace, and dates are filters.'}</p>
                         </div>
                     </div>
@@ -13007,7 +13007,7 @@
             };
             return `
                 <section class="focus-panel compact-panel" aria-label="Task stage flow">
-                    <div class="task-section-header"><h3>Status Flow</h3><span>Decisions / Tasks / Codex Queue / Blocked / Calendar / Done Activity</span></div>
+                    <div class="task-section-header"><h3>Status Flow</h3><span>Decisions / Tasks / Codex Queue / Blocked / Schedule / Done Activity</span></div>
                     <div class="task-overview-grid">
                         ${TASK_STAGE_FLOW.map(stage => renderMetricButton(stage.label, countForStage[stage.id] || 0, operationalLaneNote(stage.id), `setTaskFocus('${stage.id}')`)).join('')}
                     </div>
@@ -13492,7 +13492,7 @@
                     ${renderTaskOverviewButton('pending', 'Blocked', state.pendingCount, 'Human or external blockers')}
                     ${renderTaskOverviewButton('tasks', 'All Tasks', state.taskCount, 'Actionable work')}
                     ${renderTaskOverviewButton('due_soon', 'Due Soon', state.dueSoonCount, 'Due within seven days')}
-                    ${renderTaskOverviewButton('schedule', 'Calendar', state.tabCounts?.schedule || 0, 'Planned work')}
+                    ${renderTaskOverviewButton('schedule', 'Schedule', state.tabCounts?.schedule || 0, 'Planned work')}
                     ${renderTaskOverviewButton('done_activity', 'Completed', state.activityCount, 'Closed work')}
                 </div>
             `;
@@ -13599,9 +13599,9 @@
                 decisions: 'No decisions match these filters.',
                 pending: 'No blocked items match these filters.',
                 tasks: 'No actionable tasks match these filters.',
-                codex_queue: 'No Codex / Agent Work items match these filters.',
+                codex_queue: 'No Codex Queue items match these filters.',
                 due_soon: 'No due-soon items match these filters.',
-                schedule: 'No calendar items match these filters.',
+                schedule: 'No scheduled items match these filters.',
                 done_activity: 'No completed or recent activity items match these filters.',
                 full_history: 'No task history records match these filters.',
                 archived: 'No archived records match these filters.',

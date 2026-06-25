@@ -26384,3 +26384,113 @@ shows Issue #20 as active work. No deploy was sent to `one-time-production`.
 No production data mutation, class backfill, external send, charge, DNS
 change, credential/account change, Drive write, Buffer publish, browser
 private screenshot, public publishing, or secret exposure was performed.
+
+## 2026-06-25T17:45:00+03:00 - Issue #24 Registered As Active Goal Mode Run
+
+Registered GitHub issue #24 as `RAW-20260625-024` /
+`PARENT-20260625-024` with active execution run
+`ops/execution-runs/2026-06-25-issue-24-agent-review-hub/` on branch
+`codex/issue-24-agent-review-hub-20260625`.
+
+Created coordinated lanes for newest Drive recording read-only trace, secure
+Agent Review Hub/review sessions, helper backend/action audit, Agent Mode
+prompt pack/result drop-off, navigation IA cleanup, and integration/deploy/live
+closeout. Posted kickoff baseline to GitHub issue #24 as comment `4800529673`.
+
+Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
+production student-data mutation, Drive move/write, paid retranscription,
+worker retry, deploy, send, charge, DNS change, credential/account change,
+Buffer publish, public publishing, or secret exposure was performed.
+
+## 2026-06-25T18:05:00+03:00 - Issue #24 Newest Drive Recording Trace Completed
+
+Completed `REQ-20260625-025` as a read-only trace deliverable. Added a
+sanitized newest-recording trace builder and script, then ran production
+read-only Drive/DB evidence to
+`ops/class-drive-intake/2026-06-25-issue-24-newest-recording/`.
+
+The trace selected newest Drive recording `drive_file:9f6f75a5d602` and matched
+`content_job:83`. Verdict is `PARTIAL`, not processed: source, queue,
+transcript, parser, class-session, canonical/read-model stages are confirmed;
+student-name/progress/question/profile/accountability proposal stages remain
+unknown because no parsed student names/progress/questions were found.
+
+Verification passed: syntax checks for the new lib/script, focused trace tests
+4/4, production read-only trace run, and sanitized evidence check showing no
+transcript body or `transcript_text` field. Guardrails retained: Issue #18
+remains `NOT SAFE TO APPLY`; no class backfill, production student-data
+mutation, Drive write, paid retranscription, worker retry, deploy, send,
+charge, DNS change, credential/account change, public publishing, or secret
+exposure was performed.
+
+## 2026-06-25T18:35:00+03:00 - Issue #24 Local Hub, Helper, Prompt, and Navigation Lanes Implemented
+
+Moved `REQ-20260625-026` through `REQ-20260625-029` to
+`needs_verification` with local implementation evidence. Added the secure Agent
+Review Hub/session APIs and pages with one-time exchange URLs, HttpOnly session
+cookies, review banner, Exit, prompt links, typed result submission, and
+readback. Added 11 mobile-copyable Agent Mode prompt files. Expanded helper
+destination metadata and added the Issue #24 helper audit/evaluation pack.
+Cleaned Operations task IA labels and added the navigation IA duplicate
+watchdog.
+
+Verification passed locally: Agent Review Hub tests 6/6, helper destination
+tests 6/6, helper audit tests 4/4, Issue #24 helper audit 280/280 static
+resolver evaluations, navigation/Operations/One Time tests 42/42, navigation
+watchdog with zero findings, syntax checks for changed server/helper/audit/nav
+scripts, and `npm run bna:run:status`. These lanes are not Done yet because
+app/server-visible acceptance still requires browser checks, full watchdogs,
+push/merge/deploy, and live smokes. Guardrails retained: Issue #18 remains
+`NOT SAFE TO APPLY`; no class backfill, production student-data mutation, Drive
+write, paid retranscription, worker retry, deploy, send, charge, DNS change,
+credential/account change, public publishing, or secret exposure was performed.
+
+## 2026-06-25T19:10:00+03:00 - Issue #24 Local Browser Smoke and Watchdog Checkpoint Passed
+
+Ran the local Agent Review Hub browser/API smoke and fixed two smoke-discovered
+hub/session defects: JSON `Content-Type` headers were being overwritten in page
+API helpers, and review-session exchange now happens server-side with an
+HttpOnly cookie plus clean redirect.
+
+Local verification passed for owner login, owner-only hub protection, 9 review
+contexts, 11 mobile-copyable prompt links, newest-recording status `PARTIAL /
+content_job:83`, clean short-lived scoped session URL, banner, Exit, no
+all-access URL, and typed result readback `AGR-b9a823fc37acd01b`.
+
+Focused tests passed 62/62. Watchdogs passed for actions, helper destinations,
+security routes, content routing, communications alerts, navigation IA, secrets,
+and source coverage. Raw-intake drift watchdog returned `ok true` with two
+medium pre-existing June 17/18 fallback-pointer findings, recorded as separate
+historical cleanup and not Issue #24 intake loss.
+
+App/server-visible lanes remain open until full test, push/merge/deploy, and
+live-smoke evidence exists. Guardrails retained: Issue #18 remains `NOT SAFE TO
+APPLY`; no class backfill, production student-data mutation, Drive write, paid
+retranscription, worker retry, deploy, send, charge, DNS change,
+credential/account change, public publishing, or secret exposure was performed.
+
+## 2026-06-25T19:30:00+03:00 - Issue #24 Full Local Validation Passed
+
+Full local validation passed for Issue #24: `npm test` 1345/1345,
+`npm run bna:run:validate`, stale-evidence detection, source coverage, action
+registry coverage/parity, and visual watchdog against the local server all
+passed.
+
+Fixed full-suite regressions discovered during validation: Agent Review pages
+now load the shared in-app select enhancer, stale tests and the task-decision
+census canonical label now use `Codex Queue`, and action coverage/parity
+artifacts were regenerated after adding Agent Review action rows.
+
+Visual evidence was added for the Agent Review Hub: the broad visual watchdog
+returned zero findings and a 390px hub screenshot shows all 9 context cards,
+the result form, and 11 prompt links without visible horizontal overflow. A
+separate scripted 390px session screenshot attempt timed out after the hub
+capture, so post-deploy live session/mobile smoke remains open.
+
+Posted the local-validation checkpoint to Issue #24 as comment `4801879834`.
+
+App/server-visible lanes remain open until push/merge/deploy and live-smoke
+evidence exists. Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no
+class backfill, production student-data mutation, Drive write, paid
+retranscription, worker retry, deploy, send, charge, DNS change,
+credential/account change, public publishing, or secret exposure was performed.
