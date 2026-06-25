@@ -27,6 +27,7 @@
     "doctor": "node scripts/doctor.mjs",
     "smoke:local": "node scripts/smoke-local.mjs",
     "smoke:demo": "node scripts/smoke-local.mjs --skip-tests",
+    "railway:target:doctor": "node scripts/railway-target-guard.mjs doctor",
     "railway:doctor": "powershell -ExecutionPolicy Bypass -File scripts/railway-doctor.ps1",
     "railway:redeploy": "powershell -ExecutionPolicy Bypass -File scripts/railway-redeploy.ps1",
     "telegram:kimi": "node scripts/telegram-kimi-bridge.mjs",
