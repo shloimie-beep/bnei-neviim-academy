@@ -40,7 +40,7 @@
       parentLogin: 'Parent Login',
       studentLogin: 'Student Login',
       providerLogin: 'Rabbi / Provider Login',
-      providerJoin: 'Advertise your program for free',
+      providerJoin: 'Advertise for free',
       contact: 'Contact Us',
       signup: 'Register',
       backToRegistration: 'Back to registration',

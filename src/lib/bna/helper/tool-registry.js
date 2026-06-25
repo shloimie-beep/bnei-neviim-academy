@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const { confirmationPolicyForTool, inferSideEffectLevel } = require('./confirmation-gates');
+const { resolveHelperDestination } = require('./destination-resolver');
 const { helperPermissionForTool } = require('./permissions');
 const { redactText, redactValue } = require('./redaction');
 const { helperResultCard, helperResultLink } = require('./result-links');
@@ -1464,24 +1465,44 @@ async function convertDecisionTool({ args, context, deps, db, codex = false }) {
 
 async function openOperationsViewTool({ args, context }) {
   const view = OPERATIONS_VIEWS.has(String(args.view || '').trim()) ? String(args.view || '').trim() : 'tasks';
-  const params = new URLSearchParams();
-  params.set('view', view);
-  if (args.section) params.set('section', compactText(args.section, 80));
-  if (args.workspace_key || context.workspaceKey) params.set('workspace', compactText(args.workspace_key || context.workspaceKey, 120));
-  if (args.task_id) params.set('task', String(args.task_id));
-  if (args.student_id) params.set('student', String(args.student_id));
-  if (args.content_job_id) params.set('content_job', String(args.content_job_id));
-  if (args.calendar_mode) params.set('calendar_mode', compactText(args.calendar_mode, 40));
-  if (args.date) params.set('date', compactText(args.date, 40));
   const sectionLabel = args.section ? ` / ${args.section}` : '';
+  const destination = resolveHelperDestination({
+    intent: 'open_operations_view',
+    actor: {
+      role: context.identity?.role || context.userRole || 'admin',
+      scope: context.identity?.scope || {},
+      workspace_key: args.workspace_key || context.workspaceKey || context.workspace_key || 'bna',
+      project_key: context.projectKey || context.project_key || 'bna',
+      user_id: context.userName || context.identity?.username || 'BNA Helper',
+    },
+    context,
+    channel: 'operations_helper',
+    helperTool: 'open_operations_view',
+    actionKey: 'ACTION-HELPER-OPEN-OPERATIONS-VIEW',
+    target: {
+      view,
+      section: args.section ? compactText(args.section, 80) : '',
+      workspace_key: args.workspace_key || context.workspaceKey || context.workspace_key || '',
+      task_id: args.task_id || '',
+      student_id: args.student_id || '',
+      content_job_id: args.content_job_id || '',
+      calendar_mode: args.calendar_mode ? compactText(args.calendar_mode, 40) : '',
+      date: args.date ? compactText(args.date, 40) : '',
+    },
+    reason: 'Operations helper navigation request',
+  });
   return helperResultCard({
+    ok: destination.ok,
     tool: 'open_operations_view',
     recordType: 'operations_route',
     recordId: args.task_id || args.student_id || args.content_job_id || null,
     label: `Open ${view}${sectionLabel}`,
-    summary: `Prepared an Operations link for ${view}${sectionLabel}.`,
-    url: `/operations?${params.toString()}`,
-    data: { view, section: args.section || null },
+    summary: destination.ok
+      ? `Prepared an Operations link for ${view}${sectionLabel}.`
+      : `Could not prepare that Operations link: ${destination.reason}.`,
+    url: destination.ok ? destination.path : destination.fallback?.path || null,
+    status: destination.ok ? 'prepared' : 'blocked',
+    data: { view, section: args.section || null, destination },
   });
 }
 

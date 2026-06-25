@@ -1,0 +1,857 @@
+{
+  "run_id": "2026-06-24-issue-20-parent-run",
+  "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
+  "updated_at": "2026-06-25T01:00:00+03:00",
+  "git_refs": {
+    "base_branch": "codex/issue-18-class-intake-readonly-20260624",
+    "working_branch": "codex/issue-20-parent-run-20260624",
+    "local_head_at_start": "63db04468b1d7695292e922ff6757d1f42aef033",
+    "parent_issue_number": 7,
+    "predecessor_issue_number": 18,
+    "issue_number": 20,
+    "predecessor_pr": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/21",
+    "predecessor_terminal_comment": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260624-009",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "captured_at": "2026-06-24T22:45:00+03:00",
+      "content_fingerprint": "github-issue-20-updated-2026-06-24T18:28:31Z",
+      "privacy_classification": "internal_github_goal_packet",
+      "workspace": "bna_platform",
+      "project": "agentic_quality_system",
+      "source_type": "github_issue_goal_packet"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-20",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/20",
+      "captured_at": "2026-06-24T22:45:00+03:00",
+      "content_fingerprint": "github-issue-20-updated-2026-06-24T18:28:31Z",
+      "privacy_classification": "internal_github_issue",
+      "workspace": "bna_platform",
+      "project": "agentic_quality_system",
+      "source_type": "github_issue"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-18-TERMINAL",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047",
+      "captured_at": "2026-06-24T22:45:00+03:00",
+      "content_fingerprint": "github-issue-comment-4792923047",
+      "privacy_classification": "internal_github_issue_comment",
+      "workspace": "bna_platform",
+      "project": "class_drive_intake",
+      "source_type": "github_issue_comment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260624-009-S001",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Make the clean-slate release ready for the next owner ramble by hardening visual quality, browser QA sessions, helper/bot accuracy, and autonomous ramble execution.",
+      "requirement_id": "REQ-20260624-040",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S002",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Do not create a second intake protocol, task manager, agent fleet, memory system, or active-run pointer; reuse and harden the existing canonical systems.",
+      "requirement_id": "REQ-20260624-040",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S003",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "After Issue #18 reaches a terminal read-only verdict, create one parent execution run for Issue #20 and keep child lanes from rewriting the active-run pointer.",
+      "requirement_id": "REQ-20260624-040",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S004",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Audit and fix global visual quality, measurable design invariants, and permanent visual watchdogs across public, Operations, provider, parent, student, classroom, One Time, and support surfaces.",
+      "requirement_id": "REQ-20260624-041",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S005",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Build a safe local persistent authenticated agent-browser harness with named profiles, secure storage, lifecycle commands, role smokes, and ChatGPT Agent distinction.",
+      "requirement_id": "REQ-20260624-042",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S006",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Implement canonical destination resolution, intent evaluation matrices, and agent-mode role QA so helpers/bots return correct scoped links and registered actions.",
+      "requirement_id": "REQ-20260624-043",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S007",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Implement or verify durable typed agent result drop-off, UI activity visibility, and idempotent GitHub issue/comment ingestion with status posted back to GitHub.",
+      "requirement_id": "REQ-20260624-044",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S008",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Audit and harden the existing agent fleet, permission tiers, Windows startup, parent-run coordination manifest, and end-to-end background proof.",
+      "requirement_id": "REQ-20260624-045",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S009",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Reconcile visible queue records into active, decision, external waiting, completed, duplicate, superseded, or internal-evidence classifications with clear owner lanes and audit-safe cleanup.",
+      "requirement_id": "REQ-20260624-046",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S010",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "Create one owner walkthrough page and repo artifact covering live SHA, agent fleet, active goal/lanes, browser profiles, ChatGPT Agent, role links, bot QA, GitHub bridge, Decisions, stop/restart, and next ramble submission.",
+      "requirement_id": "REQ-20260624-047",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260624-009-S011",
+      "source_id": "RAW-20260624-009",
+      "source_statement": "After all unblocked requirements pass, run focused/full tests, watchdogs, secret/JSON audits, integration, PR/merge, deploy, Railway doctor, live smokes, cleanup, and final response with the required 27 sections and overall state.",
+      "requirement_id": "REQ-20260624-048",
+      "classification": "mapped"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260624-040",
+      "title": "Issue #20 parent run baseline and coordination",
+      "expected_result": "Issue #20 is registered as one parent run after Issue #18 terminal evidence, with baseline truth rechecked, sources mapped, no competing active run, and a child-lane coordination plan.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S001",
+        "RAW-20260624-009-S002",
+        "RAW-20260624-009-S003"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agentic_quality_system",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "parent_run_created_baseline_rechecked_coordination_manifest_written",
+      "can_continue_without_operator": true,
+      "next_action": "Start Requirement Group A visual-quality audit and implementation lane.",
+      "acceptance_criteria": [
+        "Issue #18 terminal evidence is linked.",
+        "Only one active execution run exists.",
+        "Issue #20 source statements are mapped.",
+        "Baseline Git, deploy, active-run, and live app truth are rechecked.",
+        "Parent-run coordination rules for child lanes are recorded before parallel work starts."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/SOURCE.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/BASELINE-READBACK.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/COORDINATION.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/LANE-MANIFEST.json"
+      ],
+      "verification": [
+        "Issue #18 terminal comment verified on GitHub.",
+        "Issue #18 PR #21 verified open/draft at head 63db04468b1d7695292e922ff6757d1f42aef033.",
+        "origin/master readback: 50087ae5d8e120830ae8e1f8dcaab71f61389d7c.",
+        "Direct live health readback passed: https://bneineviimacademy.org/api/health returned HTTP 200 and database connected.",
+        "Railway doctor readback found a local targeting mismatch; recorded as release blocker for REQ-20260624-048."
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/BASELINE-READBACK.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/COORDINATION.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/LANE-MANIFEST.json"
+      ],
+      "deployment_required": false,
+      "pull_request": "pending",
+      "commit": "3e0902f651302ae594e5462f3a88913b40406d8c",
+      "pushed_branch": "origin/codex/issue-20-parent-run-20260624",
+      "pushed_commit": "3e0902f651302ae594e5462f3a88913b40406d8c",
+      "updated_at": "2026-06-24T22:55:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-041",
+      "title": "Global visual quality system and watchdog",
+      "expected_result": "Rendered UI defects are audited and fixed across required surfaces, shared design invariants are implemented in canonical UI code, and visual watchdogs prevent obvious UI regressions.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S004"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "visual_quality",
+      "owner": "Codex",
+      "category": "ui_quality",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue with REQ-20260624-042 while final deploy/live proof remains gated by REQ-20260624-048.",
+      "acceptance_criteria": [
+        "Required surfaces and states are audited with screenshots, selectors, severity, and acceptance tests.",
+        "Canonical CSS/components implement measurable button, footer, spacing, card, form, alert, table, shell, and responsive invariants.",
+        "Computed-style and visual-regression checks cover sizing, contrast, overflow, focus, footer alignment, selected states, and placeholder/dead controls.",
+        "Visual watchdogs fail or create findings for future regressions."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/VISUAL-QUALITY.md",
+        "ops/watchdog-audits/2026-06-24T20-01-watchdog-visual-baseline.md",
+        "ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/visual-baseline-browser-matrix.md",
+        "ops/visual-quality/2026-06-24T20-00-watchdog-visual-baseline/visual-baseline-browser-matrix.json",
+        "docs/owner-review/PUBLIC-VISUAL-AUDIT.md",
+        "ops/watchdog-audits/2026-06-24T20-03-watchdog-visual-baseline.md",
+        "ops/watchdog-audits/2026-06-24T20-03-watchdog-ui-smoke.md",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS node --check scripts/watchdog-visual-baseline.mjs",
+        "PASS node --check public/js/bna-site-nav.js",
+        "PASS npm run watchdog:visual:local with 0 findings across 9 routes and 3 viewports",
+        "PASS npm run owner-review:visual",
+        "PASS focused visual/UI tests 22/22",
+        "PASS npm run watchdog:ui with 0 findings",
+        "PASS npm run watchdog:visual with 0 findings"
+      ],
+      "implementation_files": [
+        "scripts/watchdog-visual-baseline.mjs",
+        "package.json",
+        "public/css/bna-site-nav.css",
+        "public/css/one-time-shared-review.css",
+        "public/js/bna-site-nav.js",
+        "public/index.html",
+        "public/one-time/index.html"
+      ],
+      "deployment_required": true,
+      "blocker": "App-visible visual-quality changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke these app-visible changes.",
+      "pull_request": "pending",
+      "updated_at": "2026-06-24T23:20:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-042",
+      "title": "Persistent authenticated agent-browser harness",
+      "expected_result": "Codex/Playwright QA has secure reusable named profiles, lifecycle commands, health checks, role smokes, and clear documentation separating local profiles from ChatGPT Agent cookies.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S005"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_browser",
+      "owner": "Codex",
+      "category": "qa_harness",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "done",
+      "implementation_status": "secure_local_profile_harness_initialized_verified",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-043 helper/bot canonical destination resolver and role QA.",
+      "acceptance_criteria": [
+        "Named profiles exist for the required roles and external accounts where bootstrap is approved.",
+        "Profiles live outside the repo, have current-user-only ACLs, and are excluded from Git and evidence.",
+        "Commands cover initialize, open, health-check, reauth required, close, reopen, list, clear/revoke, and role smoke.",
+        "Manual login bootstrap is headed and does not bypass MFA/CAPTCHA/security policies.",
+        "Docs distinguish local Playwright profiles, ChatGPT Agent browser cookies, and connector access."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-BROWSER.md",
+        "docs/agent-browser-harness.md",
+        "scripts/agent-browser-profile.mjs",
+        "tests/agent-browser-profile-harness.test.js",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS node --check scripts\\agent-browser-profile.mjs",
+        "PASS node --test tests\\agent-browser-profile-harness.test.js 3/3",
+        "PASS npm run agent:browser:list -- --json",
+        "PASS npm run agent:browser:health -- --json before initialization with root_exists=false",
+        "PASS temporary external-root one_time_review smoke against https://bneineviimacademy.org/provider.html?review=one-time with no screenshot/private data and no horizontal overflow",
+        "PASS npm run agent:browser:init -- --json initialized six named profiles under C:\\Users\\User\\AppData\\Local\\BNA\\agent-browser-profiles",
+        "PASS npm run agent:browser:health -- --json after initialization with metadata present, current-user ACL present, and inheritance disabled",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage",
+        "PASS npm run bna:run:stale-evidence",
+        "PASS npm run secrets:audit with 4709 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-043"
+      ],
+      "implementation_files": [
+        "scripts/agent-browser-profile.mjs",
+        "tests/agent-browser-profile-harness.test.js",
+        "docs/agent-browser-harness.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-BROWSER.md",
+        "package.json"
+      ],
+      "deployment_required": false,
+      "pull_request": "pending",
+      "updated_at": "2026-06-24T23:30:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-043",
+      "title": "Bot/helper link correctness and agent-mode QA",
+      "expected_result": "Helpers and bots use canonical scoped route/action resolution, deterministic intent matrices, and role-based browser QA so links and actions are correct instead of plausible.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S006"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "helper_correctness",
+      "owner": "Codex",
+      "category": "assistant_quality",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-044 while final deploy/live proof remains gated by REQ-20260624-048.",
+      "acceptance_criteria": [
+        "Internal helper links come from route/action registries, identity, workspace, project, role, and current context.",
+        "Each link includes route key, path, required role, scope, reason, and fallback.",
+        "Intent matrix covers owner questions across public, super-admin, provider, parent, student, and One Time scopes.",
+        "Failures occur for nonexistent, unauthorized, wrong-workspace, missing-landmark, private-public leak, unsupported action, or alias misuse.",
+        "Agent-mode synthetic conversations follow suggested links without real private data."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/HELPER-LINK-QA.md",
+        "ops/watchdog-audits/2026-06-24T20-27-watchdog-action-audit.md",
+        "ops/helper-destination-qa/20260624T203546Z/helper-destination-matrix.md",
+        "ops/helper-destination-qa/20260624T203546Z/helper-destination-matrix.json",
+        "tests/helper-destination-resolver.test.js",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS node --check src\\lib\\bna\\helper\\destination-resolver.js",
+        "PASS node --check src\\lib\\bna\\helper\\tool-registry.js",
+        "PASS node --check scripts\\watchdog-helper-destinations.mjs",
+        "PASS node --test tests\\helper-destination-resolver.test.js 5/5",
+        "PASS node --test tests\\bna-helper-tools.test.js tests\\helper-destination-resolver.test.js 15/15",
+        "PASS node --test tests\\action-registry-telegram-ui-bot.test.js 33/33",
+        "PASS node --test tests\\universal-control-plane-scope-policy.test.js 10/10",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS npm run watchdog:helper-destinations with 10/10 matrix cases",
+        "PASS npm run bna:run:source-coverage",
+        "PASS npm run bna:run:stale-evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4713 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-044"
+      ],
+      "implementation_files": [
+        "src/lib/bna/helper/destination-resolver.js",
+        "src/lib/bna/helper/tool-registry.js",
+        "scripts/watchdog-helper-destinations.mjs",
+        "tests/helper-destination-resolver.test.js",
+        "package.json",
+        "ops/action-registry.json"
+      ],
+      "deployment_required": true,
+      "blocker": "Server-visible helper destination resolver changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke helper destination behavior.",
+      "pull_request": "pending",
+      "updated_at": "2026-06-24T23:50:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-044",
+      "title": "Durable agent result drop-off and GitHub bridge",
+      "expected_result": "Agent results can be appended idempotently to tasks/requirements through a typed scoped action/API, surfaced in Operations activity, ingested from trusted GitHub sources, and posted back to GitHub.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S007"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_result_bridge",
+      "owner": "Codex",
+      "category": "workflow",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "blocked",
+      "implementation_status": "blocked_local_verified_deploy_live_pending",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-045 while final deploy/live proof remains gated by REQ-20260624-048.",
+      "acceptance_criteria": [
+        "Result payload includes source/raw ID, task/requirement ID, run ID, branch/worktree, commit/PR, tests, deploy/live state, evidence, blockers, summary, machine payload, and timestamp.",
+        "Writes are idempotent and scoped, and do not overwrite owner text or another workspace.",
+        "Operations activity/conversation shows the saved result with direct evidence and GitHub links.",
+        "Trusted GitHub issue/comment intake is idempotent as one canonical raw source.",
+        "Final status posts back to the same GitHub issue/comment thread with canonical IDs and evidence."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-RESULT-BRIDGE.md",
+        "src/lib/bna/agent-result-packet.js",
+        "src/lib/actions/actions/operations.js",
+        "src/lib/actions/registry.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/intake-github.mjs",
+        "tests/action-registry-telegram-ui-bot.test.js",
+        "tests/system-truth-scripts.test.js",
+        "ops/action-registry.json",
+        "ops/watchdog-audits/2026-06-24T21-01-watchdog-action-audit.md",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS node --check scripts\\intake-github.mjs",
+        "PASS node --check src\\lib\\bna\\agent-result-packet.js",
+        "PASS node --check src\\lib\\actions\\actions\\operations.js",
+        "PASS node --check src\\lib\\actions\\registry.js",
+        "PASS node --check tests\\action-registry-telegram-ui-bot.test.js",
+        "PASS node --check tests\\system-truth-scripts.test.js",
+        "PASS node --test tests\\action-registry-telegram-ui-bot.test.js 35/35",
+        "PASS node --test tests\\agent-control-api-readback.test.js 2/2",
+        "PASS node --test tests\\operations-activity-queue-health-ui.test.js 3/3",
+        "PASS node --test --test-name-pattern \"GitHub intake preview\" tests\\system-truth-scripts.test.js 1/1",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS static marker check for server route, typed action, and Operations UI link functions",
+        "PASS ops/action-registry.json parse",
+        "NOTE full node --test tests\\system-truth-scripts.test.js has an unrelated environment-sensitive return-packet assertion and was not used as the Batch D gate",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4720 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-045"
+      ],
+      "implementation_files": [
+        "src/lib/bna/agent-result-packet.js",
+        "src/lib/actions/actions/operations.js",
+        "src/lib/actions/registry.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/intake-github.mjs",
+        "tests/action-registry-telegram-ui-bot.test.js",
+        "tests/system-truth-scripts.test.js",
+        "ops/action-registry.json"
+      ],
+      "deployment_required": true,
+      "pull_request": "pending",
+      "updated_at": "2026-06-25T00:08:00+03:00",
+      "blocker": "Server-visible/API/UI agent result bridge changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke the agent result API/UI/GitHub bridge."
+    },
+    {
+      "id": "REQ-20260624-045",
+      "title": "Agent fleet hardening, permission tiers, startup, and parallel lanes",
+      "expected_result": "The existing agent fleet is audited and hardened with safe permission tiers, reliable local startup, parent-run coordination, lane heartbeats, and an end-to-end synthetic background proof.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S008"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_fleet",
+      "owner": "Codex",
+      "category": "automation",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "done",
+      "implementation_status": "agent_fleet_hardened_readiness_verified",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-046 queue hygiene and owner-facing lane reconciliation.",
+      "acceptance_criteria": [
+        "Existing fleet scripts and watchdog startup/status scripts are audited and hardened; no second fleet is created.",
+        "Permission tiers 0-3 are explicit, with Tier 3 blocked on explicit Decision/approval.",
+        "Windows startup option uses Shloimie's login context, bounded retries, redacted logs, and start/stop/restart/status/open-log shortcuts.",
+        "Parent-run coordination prevents active-pointer drift, duplicate tasks/decisions/deploys, stale branches, overwritten evidence, and premature parent completion.",
+        "Synthetic GitHub comment proves background intake, claim, worktree, result API, Operations activity, GitHub status comment, and parent closeout without production mutation."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/AGENT-FLEET-HARDENING.md",
+        "src/lib/bna/agent-fleet-hardening.js",
+        "scripts/agent-fleet-supervisor.mjs",
+        "scripts/start-agent-fleet.ps1",
+        "scripts/start-watchdog.ps1",
+        "scripts/agent-fleet-readiness.mjs",
+        "tests/agent-fleet-hardening.test.js",
+        "ops/agent-fleet-hardening/latest-agent-fleet-readiness.md",
+        "ops/agent-fleet-hardening/latest-agent-fleet-readiness.json",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md",
+        "ops/agent-fleet-hardening/2026-06-24T21-28-49-732Z-agent-fleet-readiness.md",
+        "ops/agent-fleet-hardening/2026-06-24T21-28-49-732Z-agent-fleet-readiness.json"
+      ],
+      "verification": [
+        "PASS node --check src\\lib\\bna\\agent-fleet-hardening.js",
+        "PASS node --check scripts\\agent-fleet-readiness.mjs",
+        "PASS node --check scripts\\agent-fleet-supervisor.mjs",
+        "PASS node --check tests\\agent-fleet-hardening.test.js",
+        "PASS PowerShell parse check for scripts\\start-agent-fleet.ps1 and scripts\\start-watchdog.ps1",
+        "PASS node --test tests\\agent-fleet-hardening.test.js 6/6",
+        "PASS node --test tests\\agent-fleet-hardening.test.js tests\\watchdog-soft-repair.test.js tests\\workspace-task-no-stale-agent.test.js 25/25",
+        "PASS node --test tests\\agent-control-api-readback.test.js tests\\operations-activity-queue-health-ui.test.js 5/5",
+        "PASS npm run watchdog:agent-fleet -- --json with ok=true, parent coordination 0 findings, synthetic ID 51db2f8fb2ce22e1, external_write_performed=false",
+        "PASS powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\start-agent-fleet.ps1 -Status",
+        "PASS powershell -NoProfile -ExecutionPolicy Bypass -File scripts\\start-watchdog.ps1 -Status",
+        "PASS package and lane-manifest JSON parse check",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4723 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-046"
+      ],
+      "implementation_files": [
+        "src/lib/bna/agent-fleet-hardening.js",
+        "scripts/agent-fleet-supervisor.mjs",
+        "scripts/start-agent-fleet.ps1",
+        "scripts/start-watchdog.ps1",
+        "scripts/agent-fleet-readiness.mjs",
+        "tests/agent-fleet-hardening.test.js",
+        "package.json",
+        "ops/agent-fleet-hardening/"
+      ],
+      "deployment_required": false,
+      "pull_request": "pending",
+      "updated_at": "2026-06-25T00:29:00+03:00"
+    },
+    {
+      "id": "REQ-20260624-046",
+      "title": "Queue hygiene and owner clarity",
+      "expected_result": "Visible queue records are reconciled into owner-meaningful lanes without erasing history, and internal evidence or stale duplicates no longer surface as current owner work.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S009"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "operations_queue",
+      "owner": "Codex",
+      "category": "queue_hygiene",
+      "priority": "P0",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-047 owner setup and walkthrough while final deploy/live proof remains gated by REQ-20260624-048.",
+      "acceptance_criteria": [
+        "Every visible record is classified as active executable, awaiting owner, externally blocked, completed/history, duplicate, superseded, or internal evidence incorrectly surfaced.",
+        "Default owner experience shows Active now, Needs your decision, Waiting externally, Recently completed, and Full history/search.",
+        "Internal handoff files, duplicate parser fan-out, stale audit rows, and completed machine history are not current owner work.",
+        "Cleanup archives/supersedes/reclassifies with audit trail and does not hard-delete canonical history or Issue #18."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md",
+        "server.js",
+        "public/operations.html",
+        "scripts/task-decision-census.mjs",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/task-decision-census.test.js",
+        "tests/ops-queue-reconciler.test.js",
+        "tests/task-queue-reconciler.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "ops/watchdog-audits/2026-06-24T21-46-watchdog-action-audit.md",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check scripts\\task-decision-census.mjs",
+        "PASS node --check tests\\operations-task-queue-visibility.test.js",
+        "PASS node --check tests\\task-decision-census.test.js",
+        "PASS node --test tests\\operations-activity-queue-health-ui.test.js tests\\operations-task-queue-visibility.test.js tests\\task-decision-census.test.js tests\\ops-queue-reconciler.test.js tests\\task-queue-reconciler.test.js tests\\workspace-task-no-stale-agent.test.js 23/23",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS node scripts\\task-decision-census.mjs --json --no-live --no-write produced owner default view contract and skipped live reads by explicit flag",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4731 tracked paths and 0 tracked secret-risk files",
+        "PASS git diff --check with Windows line-ending warnings only",
+        "PASS npm run bna:run:next selected REQ-20260624-047"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "scripts/task-decision-census.mjs",
+        "tests/operations-task-queue-visibility.test.js",
+        "tests/task-decision-census.test.js",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/QUEUE-HYGIENE.md"
+      ],
+      "deployment_required": true,
+      "pull_request": "pending",
+      "updated_at": "2026-06-25T00:40:00+03:00",
+      "blocker": "App-visible/API/UI queue-lane changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke the Operations queue UI/API owner-lane behavior."
+    },
+    {
+      "id": "REQ-20260624-047",
+      "title": "Owner setup and walkthrough",
+      "expected_result": "One owner walkthrough page and repo artifact explains current live truth, automation status, browser/ChatGPT Agent setup, role links, bot QA, GitHub bridge, Decisions, stop/restart, and next ramble submission.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S010"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "owner_walkthrough",
+      "owner": "Codex",
+      "category": "owner_enablement",
+      "priority": "P1",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260624-040"
+      ],
+      "status": "blocked",
+      "implementation_status": "local_implementation_verified_deploy_live_blocked",
+      "can_continue_without_operator": true,
+      "next_action": "Continue to REQ-20260624-048 final integration and release gating; owner walkthrough Done remains blocked until deploy/live proof exists.",
+      "acceptance_criteria": [
+        "Walkthrough states current master/deployed/live SHA, active goal/lanes, fleet status, browser profiles, ChatGPT Agent steps, exact role links, bot/helper QA, GitHub bridge, Decisions, stop/restart, and next ramble flow.",
+        "Every setup card includes exact page, step, expected result, validation button/command, and recovery action.",
+        "No placeholder or unsupported setup claims remain."
+      ],
+      "evidence": [
+        "public/issue-20-owner-walkthrough.html",
+        "public/integration-setup.html",
+        "public/css/integration-setup.css",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md",
+        "ops/route-registry.json",
+        "tests/issue-20-owner-walkthrough.test.js",
+        "ops/watchdog-audits/2026-06-24T21-54-watchdog-action-audit.md",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS node --check tests\\issue-20-owner-walkthrough.test.js",
+        "PASS node --check tests\\integration-setup-ui.test.js",
+        "PASS node --check tests\\operator-walkthrough-links.test.js",
+        "PASS node --test tests\\issue-20-owner-walkthrough.test.js tests\\operator-walkthrough-links.test.js tests\\integration-setup-ui.test.js tests\\owner-review-route-inventory.test.js 8/8",
+        "PASS npm run watchdog:actions with 0 findings",
+        "PASS route registry JSON parse",
+        "PASS live health readback https://bneineviimacademy.org/api/health returned HTTP 200 database connected",
+        "PASS git ls-remote origin refs/heads/master read back 50087ae5d8e120830ae8e1f8dcaab71f61389d7c"
+      ],
+      "implementation_files": [
+        "public/issue-20-owner-walkthrough.html",
+        "public/integration-setup.html",
+        "public/css/integration-setup.css",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md",
+        "ops/route-registry.json",
+        "tests/issue-20-owner-walkthrough.test.js"
+      ],
+      "deployment_required": true,
+      "pull_request": "pending",
+      "updated_at": "2026-06-25T00:55:00+03:00",
+      "blocker": "App-visible owner walkthrough page/link changes are locally verified but cannot be marked Done until deploy/live smoke proof exists; final release is currently gated by the Railway targeting blocker recorded on REQ-20260624-048.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway targeting or record an approved alternate deploy/live-smoke path under REQ-20260624-048, then deploy and live-smoke /issue-20-owner-walkthrough.html and the linked setup center entry."
+    },
+    {
+      "id": "REQ-20260624-048",
+      "title": "Issue #20 integration, deploy, live verification, and final response",
+      "expected_result": "All unblocked Issue #20 requirements are integrated through one PR, merged/deployed only after gates pass, live verified, cleaned up safely, and reported with the required 27-section final response and overall state.",
+      "source_id": "RAW-20260624-009",
+      "source_statement_ids": [
+        "RAW-20260624-009-S011"
+      ],
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "workspace_key": "bna_platform",
+      "project_key": "issue_20_release",
+      "owner": "Codex",
+      "category": "release_closeout",
+      "priority": "P0",
+      "batch_id": "Z",
+      "depends_on": [
+        "REQ-20260624-041",
+        "REQ-20260624-042",
+        "REQ-20260624-043",
+        "REQ-20260624-044",
+        "REQ-20260624-045",
+        "REQ-20260624-046",
+        "REQ-20260624-047"
+      ],
+      "status": "blocked",
+      "implementation_status": "blocked_by_railway_targeting_and_missing_deploy_live_proof",
+      "can_continue_without_operator": false,
+      "next_action": "Repair Railway project/service targeting or record an approved alternate deploy/live-smoke path, then rerun final release gates and live-smoke the app-visible Issue #20 changes.",
+      "acceptance_criteria": [
+        "Focused and full repository tests pass or precise blockers are recorded.",
+        "Route/action/security/raw/content/communications/visual watchdogs pass.",
+        "Secret audit, JSON/JSONL validation, execution-run validate/source-coverage/stale-evidence pass.",
+        "Child lanes are integrated in declared order and one PR is updated.",
+        "Merge/deploy/live smoke occur only under approved release policy.",
+        "Exact master/deployed/live SHA and evidence are recorded.",
+        "Only owned merged clean worktrees/branches are cleaned; dirty or local-only unknown worktrees are preserved.",
+        "Final response includes the 27 required sections and one allowed overall state."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/BASELINE-READBACK.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/BATCH-STATUS.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/TEST-RESULTS.md",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "verification": [
+        "PASS npm run bna:run:validate with all requirements terminal after blocker closeout",
+        "PASS npm run bna:run:source-coverage with 11 mapped source statements and 0 unmapped executable statements",
+        "PASS npm run bna:run:stale-evidence with no stale evidence",
+        "PASS JSON/JSONL parse",
+        "PASS npm run secrets:audit with 4733 tracked paths and 0 tracked secret-risk files",
+        "PASS npm run bna:run:next reported no unblocked executable batch",
+        "BLOCKED npm run railway:doctor baseline failed because local Railway target cannot find expected service skillful-motivation"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/FINAL-RELEASE-BLOCKER.md",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/requirements.json",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/run.json",
+        "ops/execution-runs/2026-06-24-issue-20-parent-run/LANE-MANIFEST.json",
+        "tasks-pending/2026-06-24-issue-20-parent-run.md"
+      ],
+      "deployment_required": true,
+      "blocker": "Local Railway CLI target is linked to project one-time-production and cannot find expected service skillful-motivation; final deploy/live closeout needs repaired targeting or an approved alternate live-smoke path before app-visible work can be marked Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway project/service targeting or document a current approved deploy/live-smoke path, then run final gates, deploy/live smoke, and update blocked app-visible requirements with proof.",
+      "pull_request": "pending",
+      "updated_at": "2026-06-25T01:00:00+03:00"
+    }
+  ],
+  "tasks": [
+    {
+      "canonical_task_key": "bna_platform|agentic_quality_system|GITHUB-ISSUE-20|REQ-20260624-040|parent_run",
+      "title": "Issue #20 parent run and baseline coordination",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-040",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|visual_quality|GITHUB-ISSUE-20|REQ-20260624-041|visual_watchdog",
+      "title": "Issue #20 visual-quality watchdog and first UI fixes",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-041",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "App-visible changes need deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_browser|GITHUB-ISSUE-20|REQ-20260624-042|persistent_browser_harness",
+      "title": "Issue #20 persistent authenticated agent-browser harness",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-042",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|helper_correctness|GITHUB-ISSUE-20|REQ-20260624-043|helper_destination_resolver",
+      "title": "Issue #20 helper/bot destination resolver and role QA",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-043",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "Server-visible helper behavior needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_result_bridge|GITHUB-ISSUE-20|REQ-20260624-044|agent_result_bridge",
+      "title": "Issue #20 durable agent result drop-off and GitHub bridge",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-044",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "Server-visible/API/UI result bridge behavior needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|agent_fleet|GITHUB-ISSUE-20|REQ-20260624-045|agent_fleet_hardening",
+      "title": "Issue #20 agent fleet hardening and startup proof",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-045",
+      "status": "done",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md"
+    },
+    {
+      "canonical_task_key": "bna_platform|operations_queue|GITHUB-ISSUE-20|REQ-20260624-046|queue_hygiene_owner_clarity",
+      "title": "Issue #20 queue hygiene and owner-facing lane clarity",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-046",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "App-visible/API/UI queue behavior needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|owner_walkthrough|GITHUB-ISSUE-20|REQ-20260624-047|owner_setup_walkthrough",
+      "title": "Issue #20 owner setup and walkthrough page",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-047",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "App-visible owner walkthrough needs deploy/live smoke before Done.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Complete final deploy/live gate under REQ-20260624-048."
+    },
+    {
+      "canonical_task_key": "bna_platform|issue_20_release|GITHUB-ISSUE-20|REQ-20260624-048|final_release_gate",
+      "title": "Issue #20 final release gate and live proof",
+      "owner": "Codex / Railway account owner",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260624-048",
+      "status": "blocked",
+      "source_path": "raw-input/RAW-20260624-009-github-issue-20-goal.md",
+      "blocker": "Railway targeting and deploy/live proof are missing.",
+      "blocker_owner": "Codex / Railway account owner",
+      "blocker_next_action": "Repair Railway target or approve alternate live-smoke path, then complete final release gate."
+    }
+  ],
+  "decisions": []
+}

@@ -26120,3 +26120,239 @@ evidence was posted to GitHub issue #18 at comment `4792923047`.
 No `APPLY_GUARDED_CLASS_BACKFILL`, production DB mutation, Drive write,
 transcription call, worker restart, send, charge, credential change, deploy, or
 live mutation was performed. Next sequenced work is GitHub issue #20.
+
+## 2026-06-24T22:55:00+03:00 - Issue #20 Parent Run Baseline Registered
+
+Registered `RAW-20260624-009` from GitHub issue #20 and created the parent
+execution run `ops/execution-runs/2026-06-24-issue-20-parent-run/` on branch
+`codex/issue-20-parent-run-20260624`, based on the terminal Issue #18 branch.
+The raw source, dated requirement register, source mapping, active-run pointer,
+baseline readback, parent coordination rules, and child lane manifest are now
+recorded.
+
+Issue #18 terminal evidence was rechecked through PR #21 and issue comment
+`4792923047`; direct live health for `https://bneineviimacademy.org/api/health`
+returned HTTP 200 with the database connected. `npm run railway:doctor` found a
+local Railway CLI targeting mismatch to `one-time-production`, which is carried
+as the final deploy/live closeout blocker for `REQ-20260624-048`.
+
+`REQ-20260624-040` is done. The next executable batch is `REQ-20260624-041`,
+the global visual-quality system and watchdog. No child implementation lane,
+Tier 3 action, class backfill, production mutation, deploy, send, charge, DNS
+change, credential change, external write, or live mutation was performed.
+
+Checkpoint commit `3e0902f651302ae594e5462f3a88913b40406d8c` was pushed to
+`origin/codex/issue-20-parent-run-20260624`. Validation passed for
+`npm run bna:run:validate`, `npm run bna:run:source-coverage`, `npm run
+bna:run:stale-evidence`, JSON/JSONL parsing, `git diff --check`, and `npm run
+bna:run:next`.
+
+## 2026-06-24T23:20:00+03:00 - Issue #20 Visual Quality Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-041`. The
+permanent `watchdog:visual` command now supports `--start-local` browser
+auditing and writes screenshot-backed matrix evidence across public,
+Operations, provider, parent/support, student/support, One Time, classroom, and
+email/support review surfaces at 390x844, 768x1024, and 1440x900.
+
+Fixed the public desktop nav clipping by shortening the provider CTA to
+`Advertise for free` and giving the public brand lockup stable width. Fixed One
+Time review-mode topbar/button tap targets and the One Time public landing
+consent checkbox size.
+
+Verification passed: `node --check scripts/watchdog-visual-baseline.mjs`,
+`node --check public/js/bna-site-nav.js`, `npm run watchdog:visual:local` with
+0 findings, `npm run owner-review:visual`, focused visual/UI tests 22/22,
+`npm run watchdog:ui`, and `npm run watchdog:visual`.
+
+`REQ-20260624-041` is blocked from Done only because the changes are
+app-visible and require deploy/live proof. The deploy/live gate remains under
+`REQ-20260624-048` with the Railway targeting blocker already recorded. No
+deploy, production mutation, external write, send, charge, DNS change,
+credential change, class backfill, Drive write, or secret exposure was
+performed.
+
+## 2026-06-24T23:30:00+03:00 - Issue #20 Agent Browser Harness Done
+
+Completed `REQ-20260624-042` for the Issue #20 parent run. Added a secure
+local Codex/Playwright profile harness with named profiles, non-repo root
+enforcement, lifecycle commands, Windows ACL hardening/readback,
+credential-free smoke support, focused tests, and operator documentation that
+distinguishes local browser profiles from ChatGPT Agent cookies and connectors.
+
+The six named profile directories were initialized outside the repo under
+`C:\Users\User\AppData\Local\BNA\agent-browser-profiles`. No credentials,
+cookies, screenshots, private authenticated page content, connector tokens, or
+account exports were copied into tracked files.
+
+Verification passed: `node --check scripts\agent-browser-profile.mjs`,
+`node --test tests\agent-browser-profile-harness.test.js` 3/3,
+`npm run agent:browser:list -- --json`, `npm run agent:browser:health -- --json`
+before and after initialization, a temporary external-root `one_time_review`
+smoke against the live review URL with no screenshot/private data, and default
+profile initialization with ACL/metadata readback.
+
+Post-closeout validation also passed for execution-run validate/source
+coverage/stale-evidence, JSON/JSONL parsing, secret audit with 4709 tracked
+paths and 0 findings, diff check, and next-batch selection for
+`REQ-20260624-043`.
+
+No deploy, production mutation, external write, send, charge, DNS change,
+credential change, class backfill, Drive write, public publishing, or secret
+exposure was performed. Next Issue #20 batch is `REQ-20260624-043`.
+
+## 2026-06-24T23:50:00+03:00 - Issue #20 Helper Destination QA Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-043`. Added
+a registry-backed helper destination resolver, wired helper
+`open_operations_view` through it, registered
+`ACTION-HELPER-OPEN-OPERATIONS-VIEW`, and added a reusable
+`watchdog:helper-destinations` matrix report.
+
+The resolver returns same-origin route paths or safe fallbacks with route key,
+required role, access classification, actor scope, helper action key or typed
+action ID, reason, and checks for route/action registration, role, workspace,
+typed-action permission, and browser-click-substitution policy. The matrix
+passed 10/10 owner, parent, student, provider, public, wrong-role,
+wrong-workspace, missing-route, and external-URL cases.
+
+Verification passed: resolver/tool-registry/watchdog script syntax checks,
+resolver tests 5/5, helper+resolver tests 15/15, action-registry
+Telegram/UI/bot tests 33/33, control-plane scope-policy tests 10/10,
+`npm run watchdog:actions` with 0 findings, and
+`npm run watchdog:helper-destinations` with 10/10 matrix cases.
+
+`REQ-20260624-043` remains blocked from Done only because this is
+server-visible helper behavior and requires deploy/live proof under
+`REQ-20260624-048`. No deploy, production mutation, external write, browser
+profile screenshot, private page capture, send, charge, DNS change, credential
+change, class backfill, Drive write, public publishing, or secret exposure was
+performed. Next Issue #20 batch is `REQ-20260624-044`.
+
+## 2026-06-25T00:05:00+03:00 - Issue #20 Agent Result Bridge Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-044`. Added
+the durable agent result packet normalizer, typed `record_agent_result` action,
+admin result API route, Operations activity evidence/GitHub link rendering, and
+approval-gated same-thread GitHub status preview/post support.
+
+The result action normalizes raw/source IDs, task/job/requirement IDs, run and
+Git state, tests, deployment state, evidence, blockers, summary, machine
+payload, GitHub metadata, timestamp, and a stable idempotency key. Execution
+records scoped job events, task activity, internal comments, and proof links
+without external writes or owner-text overwrite. GitHub status posting remains
+blocked behind explicit environment and approval-phrase gates; no status
+comment was posted.
+
+Verification passed: syntax checks for changed modules and tests, action
+registry result tests 35/35, agent-control API readback 2/2, Operations
+activity queue UI 3/3, focused GitHub intake/status preview 1/1,
+`npm run watchdog:actions` with 0 findings, static marker checks, and
+`ops/action-registry.json` parse. Post-closeout validation also passed for
+execution-run validate/source coverage/stale evidence, JSON/JSONL parsing,
+secret audit with 4720 tracked paths and 0 findings, diff check, and
+next-batch selection for `REQ-20260624-045`.
+
+`REQ-20260624-044` remains blocked from Done only because this is
+server-visible/API/UI behavior and requires deploy/live proof under
+`REQ-20260624-048`. No GitHub status comment, deploy, production mutation,
+external write, send, charge, DNS change, credential change, class backfill,
+Drive write, browser private capture, public publishing, or secret exposure was
+performed. Next Issue #20 batch is `REQ-20260624-045`.
+
+## 2026-06-25T00:25:00+03:00 - Issue #20 Agent Fleet Hardening Done
+
+Completed local implementation and verification for `REQ-20260624-045`.
+Hardened the existing agent fleet in place with explicit permission tiers,
+redacted supervisor output, deploy/Tier 3 permission gates, Windows launcher
+start/stop/restart/status/open-log controls, bounded hidden startup retries,
+current-login startup metadata, parent coordination audit, and a synthetic
+no-write background proof.
+
+The synthetic proof exercised trusted GitHub intake preview, agent claim and
+worktree preview, `record_agent_result` dry-run, Operations activity link
+preview, same-thread GitHub status preview, and parent closeout guardrails. It
+reported synthetic ID `51db2f8fb2ce22e1`, parent coordination 0 findings, and
+`external_write_performed=false`.
+
+Verification passed: changed-module syntax checks, PowerShell parse checks,
+focused fleet tests 6/6, broader fleet/watchdog/workspace tests 25/25,
+agent-control/activity UI tests 5/5, package/lane JSON parse, launcher status
+readbacks, `npm run watchdog:agent-fleet -- --json`, and post-closeout run
+validation/source coverage/stale-evidence/secret/diff gates with
+`npm run bna:run:next` selecting `REQ-20260624-046`.
+
+No second agent fleet, deploy, production mutation, external write, GitHub
+status comment, send, charge, DNS change, credential/account change, class
+backfill, Drive write, browser private capture, public publishing, or secret
+exposure was performed. Next Issue #20 batch is `REQ-20260624-046`.
+
+## 2026-06-25T00:40:00+03:00 - Issue #20 Queue Hygiene Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-046`.
+Operations task queues now separate machine-owned Codex/agent work from
+human/external waiting, and the default owner task experience is Active Now,
+Needs Your Decision, Waiting Externally, Recently Completed, and Full History /
+Search.
+
+The server-side `/api/bna/tasks` status-bucket filter now exposes
+`codex_queue` and classifies `agent_job`, machine-owned rows, and active agent
+lifecycle states into that lane. The Operations UI keeps Codex / Agent Work as
+an operational lane while the owner defaults stay focused on current human
+decisions, external blockers, recent completion, and searchable history.
+
+Verification passed: changed-file syntax checks, focused Operations
+activity/queue/census/reconciler/workspace tests 23/23, `npm run
+watchdog:actions` with 0 findings, and no-live/no-write queue census contract
+readback. Post-closeout run validation/source coverage/stale evidence,
+JSON/JSONL parsing, secret audit, diff check, and next-batch selection also
+passed. No hard-delete, deploy, production mutation, external write, send,
+charge, DNS change, credential/account change, class backfill, Drive write,
+browser private capture, public publishing, or secret exposure was performed.
+
+`REQ-20260624-046` remains blocked from Done only because the queue API/UI
+changes require deploy/live proof under `REQ-20260624-048`. Next Issue #20
+batch is `REQ-20260624-047`.
+
+## 2026-06-25T00:55:00+03:00 - Issue #20 Owner Walkthrough Locally Verified
+
+Completed local implementation and verification for `REQ-20260624-047`. Added
+the credential-safe public page `/issue-20-owner-walkthrough.html`, linked it
+from the Owner Setup Center, registered the route, and created
+`ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md`.
+
+The walkthrough covers current origin master and Issue #20 branch truth, live
+health, the Railway deployed-SHA proof blocker, active goal/lanes, agent fleet
+and watchdog controls, persistent browser profiles versus ChatGPT Agent,
+role-scoped links and helper/bot QA, the GitHub result bridge, Decisions/queue
+hygiene, next ramble submission, and stop/restart/release gates. Every setup
+card includes exact page, step, expected result, validation command, and
+recovery action.
+
+Verification passed: page/test syntax checks, focused owner/setup/link/route
+tests 8/8 with desktop/mobile layout checks, `npm run watchdog:actions` with 0
+findings, route registry JSON parse, live health readback, and remote master
+SHA readback. No deploy, production mutation, external write, GitHub status
+comment, send, charge, DNS change, credential/account change, class backfill,
+Drive write, browser private capture, public publishing, or secret exposure was
+performed.
+
+`REQ-20260624-047` remains blocked from Done only because the new public page
+and setup-center link require deploy/live proof under `REQ-20260624-048`. Next
+Issue #20 batch is `REQ-20260624-048`.
+
+## 2026-06-25T01:00:00+03:00 - Issue #20 Final Release Blocked
+
+Closed the current Issue #20 execution pass by marking `REQ-20260624-048` as
+blocked on the existing Railway targeting / deploy-live proof gate. All
+implementation batches now have terminal local statuses: Batches B and E are
+Done; Batches A, C, D, F, and G are locally verified and blocked only by
+deploy/live proof; Batch Z is blocked because Railway targeting cannot find
+the expected service and no alternate live-smoke path is approved.
+
+Recorded `FINAL-RELEASE-BLOCKER.md` with the exact blocker, current local
+truth, required next action, and guardrails. `npm run bna:run:next` reports no
+unblocked executable batch. No deploy, merge, production mutation, external
+write, GitHub status comment, send, charge, DNS change, credential/account
+change, class backfill, Drive write, browser private capture, public
+publishing, or secret exposure was performed.

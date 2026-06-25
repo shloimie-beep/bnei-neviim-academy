@@ -14,6 +14,13 @@ const {
   buildReminderPlan,
 } = require('../../../platform/assistant/reminder-notifications');
 
+const {
+  agentResultSummary,
+  artifactLinksFromAgentResultPacket,
+  buildAgentResultPacket,
+  githubLinksFromAgentResultPacket,
+  normalizeAgentResultStatus,
+} = require('../../bna/agent-result-packet');
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
 const TASK_SOURCES = new Set(['manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'community_webhook', 'green_invoice']);
@@ -3538,6 +3545,233 @@ async function routeBugToCodex(inputs = {}, context = {}) {
   return { codex_task_created: true, task: result.rows[0] };
 }
 
+async function recordAgentResult(inputs = {}, context = {}) {
+  const packet = buildAgentResultPacket(inputs, {
+    task_id: inputs.task_id || inputs.taskId,
+    agent_job_id: inputs.agent_job_id || inputs.agentJobId,
+  });
+  if (!packet.task_id && !packet.agent_job_id && !packet.requirement_id) {
+    throw new Error('task_id, agent_job_id, or requirement_id is required');
+  }
+  const summary = agentResultSummary(packet);
+  const evidenceLinks = artifactLinksFromAgentResultPacket(packet);
+  const githubLinks = githubLinksFromAgentResultPacket(packet);
+  const proofLinks = [...evidenceLinks, ...githubLinks];
+  const preview = {
+    result_saved: false,
+    idempotency_key: packet.idempotency_key,
+    status: packet.status,
+    task_id: packet.task_id,
+    agent_job_id: packet.agent_job_id,
+    requirement_id: packet.requirement_id,
+    summary,
+    result_packet: packet,
+    evidence_links: evidenceLinks,
+    github_links: githubLinks,
+    local_write_performed: false,
+    external_write_performed: false,
+  };
+  if (context.dryRun || !context.db) return preview;
+
+  const actor = context.actor?.user_id || 'agent_result_action';
+  let job = null;
+  if (packet.agent_job_id) {
+    job = (await context.db.query(
+      `SELECT j.*
+       FROM bna_agent_jobs j
+       WHERE j.id = $1
+       LIMIT 1`,
+      [packet.agent_job_id]
+    )).rows[0] || null;
+  }
+  if (!job && packet.task_id) {
+    job = (await context.db.query(
+      `SELECT j.*
+       FROM bna_agent_jobs j
+       WHERE j.task_id = $1
+       ORDER BY j.created_at DESC
+       LIMIT 1`,
+      [packet.task_id]
+    )).rows[0] || null;
+  }
+  const taskId = packet.task_id || job?.task_id || null;
+  const agentJobId = packet.agent_job_id || job?.id || null;
+  if (!taskId && !agentJobId && packet.requirement_id) {
+    return {
+      ...preview,
+      result_saved: true,
+      requirement_only: true,
+      note: 'Requirement-only result packet is normalized for run/register storage; no database task/job row was targeted.',
+    };
+  }
+
+  const duplicate = agentJobId ? (await context.db.query(
+    `SELECT id
+     FROM bna_agent_job_events
+     WHERE job_id = $1
+       AND event_type = 'agent_result_saved'
+       AND metadata->>'idempotency_key' = $2
+     LIMIT 1`,
+    [agentJobId, packet.idempotency_key]
+  )).rows[0] || null : null;
+  if (duplicate) {
+    return {
+      ...preview,
+      result_saved: true,
+      idempotent_replay: true,
+      duplicate_event_id: duplicate.id,
+      task_id: taskId,
+      agent_job_id: agentJobId,
+    };
+  }
+  if (taskId) {
+    const activityDuplicate = (await context.db.query(
+      `SELECT id
+       FROM bna_task_activity
+       WHERE task_id = $1
+         AND activity_type = 'agent_result_saved'
+         AND metadata->>'idempotency_key' = $2
+       LIMIT 1`,
+      [taskId, packet.idempotency_key]
+    )).rows[0] || null;
+    if (activityDuplicate) {
+      return {
+        ...preview,
+        result_saved: true,
+        idempotent_replay: true,
+        duplicate_activity_id: activityDuplicate.id,
+        task_id: taskId,
+        agent_job_id: agentJobId,
+      };
+    }
+  }
+
+  const jobStatus = normalizeAgentResultStatus(packet.status);
+  let updatedJob = null;
+  if (agentJobId) {
+    updatedJob = (await context.db.query(
+      `UPDATE bna_agent_jobs
+       SET status = $1,
+           result_summary = COALESCE($2, result_summary),
+           result_payload = COALESCE(result_payload, '{}'::jsonb) || $3::jsonb,
+           report_path = COALESCE($4, report_path),
+           ledger_ref = COALESCE($5, ledger_ref),
+           changelog_ref = COALESCE($6, changelog_ref),
+           current_blocker = CASE WHEN $1 IN ('blocked_needs_human_decision', 'failed') THEN COALESCE($7, current_blocker) ELSE current_blocker END,
+           completed_at = CASE WHEN $1 IN ('completed', 'blocked_needs_human_decision', 'failed') THEN COALESCE(completed_at, NOW()) ELSE completed_at END,
+           blocked_at = CASE WHEN $1 = 'blocked_needs_human_decision' THEN COALESCE(blocked_at, NOW()) ELSE blocked_at END,
+           failed_at = CASE WHEN $1 = 'failed' THEN COALESCE(failed_at, NOW()) ELSE failed_at END,
+           updated_at = NOW()
+       WHERE id = $8
+       RETURNING *`,
+      [
+        jobStatus,
+        summary,
+        JSON.stringify({ result_packet: packet, idempotency_key: packet.idempotency_key }),
+        inputs.report_path || inputs.reportPath || evidenceLinks[0]?.repo_path || null,
+        inputs.ledger_ref || inputs.ledgerRef || null,
+        inputs.changelog_ref || inputs.changelogRef || null,
+        packet.blockers?.join('\n') || null,
+        agentJobId,
+      ]
+    )).rows[0] || null;
+  }
+  if (agentJobId) {
+    await context.db.query(
+      `INSERT INTO bna_agent_job_events (job_id, ticket_id, task_id, event_type, actor, status, summary, metadata)
+       VALUES ($1, $2, $3, 'agent_result_saved', $4, $5, $6, $7::jsonb)
+       RETURNING *`,
+      [
+        agentJobId,
+        updatedJob?.ticket_id || job?.ticket_id || null,
+        taskId,
+        actor,
+        jobStatus,
+        summary,
+        JSON.stringify({
+          idempotency_key: packet.idempotency_key,
+          result_packet: packet,
+          evidence_links: evidenceLinks,
+          github_links: githubLinks,
+        }),
+      ]
+    );
+  }
+  let updatedTask = null;
+  if (taskId) {
+    updatedTask = (await context.db.query(
+      `UPDATE bna_tasks
+       SET agent_status = $1,
+           agent_job_id = COALESCE(agent_job_id, $2),
+           proof_links_json = (
+             SELECT COALESCE(jsonb_agg(DISTINCT value), '[]'::jsonb)
+             FROM jsonb_array_elements(COALESCE(proof_links_json, '[]'::jsonb) || $3::jsonb) AS value
+           ),
+           artifact_links = (
+             SELECT COALESCE(jsonb_agg(DISTINCT value), '[]'::jsonb)
+             FROM jsonb_array_elements(COALESCE(artifact_links, '[]'::jsonb) || $3::jsonb) AS value
+           ),
+           last_activity_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $4
+       RETURNING *`,
+      [
+        jobStatus === 'completed' ? 'completed' : jobStatus,
+        agentJobId,
+        JSON.stringify(proofLinks),
+        taskId,
+      ]
+    )).rows[0] || null;
+    await context.db.query(
+      `INSERT INTO bna_task_activity (task_id, actor, activity_type, summary, metadata)
+       VALUES ($1, $2, 'agent_result_saved', $3, $4::jsonb)
+       RETURNING *`,
+      [
+        taskId,
+        actor,
+        summary,
+        JSON.stringify({
+          idempotency_key: packet.idempotency_key,
+          agent_job_id: agentJobId,
+          requirement_id: packet.requirement_id,
+          result_packet: packet,
+          evidence_links: evidenceLinks,
+          github_links: githubLinks,
+        }),
+      ]
+    );
+    await context.db.query(
+      `INSERT INTO bna_task_comments (task_id, author, body, visibility, source, source_context)
+       VALUES ($1, $2, $3, 'internal', $4, $5::jsonb)
+       RETURNING *`,
+      [
+        taskId,
+        actor,
+        summary,
+        context.source || 'agent_result_action',
+        JSON.stringify({
+          idempotency_key: packet.idempotency_key,
+          agent_job_id: agentJobId,
+          requirement_id: packet.requirement_id,
+          evidence_links: evidenceLinks,
+          github_links: githubLinks,
+        }),
+      ]
+    );
+  }
+  return {
+    ...preview,
+    result_saved: true,
+    local_write_performed: Boolean(taskId || agentJobId),
+    task_id: taskId,
+    agent_job_id: agentJobId,
+    job: updatedJob,
+    task: updatedTask,
+    operations_url: taskId ? `/operations?view=tasks&task=${encodeURIComponent(String(taskId))}` : null,
+  };
+}
+
+
 async function runOperationsHandler(handler, inputs = {}, context = {}) {
   switch (handler) {
     case 'tasks.create':
@@ -3717,6 +3951,8 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return queueTelegramReport(inputs, context);
     case 'codex.routeBug':
       return routeBugToCodex(inputs, context);
+    case 'agent.recordResult':
+      return recordAgentResult(inputs, context);
     default:
       return { executed: false, handler, note: 'No dedicated handler is wired yet; action was validated and audited only.' };
   }

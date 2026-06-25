@@ -63,8 +63,8 @@ body > footer:not(.bna-site-footer) {
 }
 
 .bna-site-brand {
-  flex: 0 1 244px;
-  min-width: 224px;
+  flex: 0 0 264px;
+  min-width: 254px;
   display: inline-flex;
   align-items: center;
   gap: 1rem;

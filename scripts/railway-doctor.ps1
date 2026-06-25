@@ -26,6 +26,59 @@ function Invoke-Railway {
   }
 }
 
+function Invoke-RailwayJson {
+  param(
+    [Parameter(ValueFromRemainingArguments = $true)]
+    [string[]] $RailwayArgs
+  )
+
+  $previousErrorActionPreference = $ErrorActionPreference
+  $ErrorActionPreference = "Continue"
+  try {
+    $output = & railway @RailwayArgs 2>&1
+    $exitCode = $LASTEXITCODE
+  } finally {
+    $ErrorActionPreference = $previousErrorActionPreference
+  }
+  if ($exitCode -ne 0) {
+    return $null
+  }
+  return ($output | Out-String)
+}
+
+function Get-RailwayTargetGuard {
+  param(
+    [string] $Mode
+  )
+
+  $statusFile = Join-Path ([System.IO.Path]::GetTempPath()) ("bna-railway-status-" + [System.Guid]::NewGuid().ToString("N") + ".json")
+  $statusJson = Invoke-RailwayJson status --json
+  $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+  if ($statusJson) {
+    [System.IO.File]::WriteAllText($statusFile, $statusJson, $utf8NoBom)
+  } else {
+    [System.IO.File]::WriteAllText($statusFile, "{}", $utf8NoBom)
+  }
+
+  try {
+    $guardOutput = & node (Join-Path $repoRoot "scripts\railway-target-guard.mjs") $Mode --json --status-json-file $statusFile 2>&1
+    $guardExitCode = $LASTEXITCODE
+  } finally {
+    if (Test-Path $statusFile) {
+      Remove-Item -LiteralPath $statusFile -Force
+    }
+  }
+
+  $guardText = ($guardOutput | Out-String)
+  if ($guardText.Trim()) {
+    Write-Host $guardText.Trim()
+  }
+  if ($guardExitCode -ne 0) {
+    throw "Railway target guard blocked this command."
+  }
+  return ($guardText | ConvertFrom-Json)
+}
+
 Write-Host "BNA Railway Doctor" -ForegroundColor Cyan
 
 $tokenFile = Join-Path $repoRoot ".secrets\railway-token.txt"
@@ -71,10 +124,36 @@ if (Test-Path $globalConfig) {
   Write-Host "Created global Railway config placeholder." -ForegroundColor Yellow
 }
 
-$railwayService = $env:RAILWAY_SERVICE_NAME
-if (-not $railwayService) { $railwayService = "skillful-motivation" }
-$railwayEnvironment = $env:RAILWAY_ENVIRONMENT
-if (-not $railwayEnvironment) { $railwayEnvironment = "production" }
+$targetGuard = Get-RailwayTargetGuard -Mode "doctor"
+if ($targetGuard.deployment_mode -eq "github-auto") {
+  Write-Host "Verified GitHub auto-deploy target. No Railway service status command is required." -ForegroundColor Green
+  exit 0
+}
+
+$railwayProjectId = [string]$targetGuard.target.project_id
+$railwayService = [string]$targetGuard.target.service_name
+if (-not $railwayService) { $railwayService = [string]$targetGuard.target.service_id }
+$railwayEnvironment = [string]$targetGuard.target.environment_name
+if (-not $railwayEnvironment) { $railwayEnvironment = [string]$targetGuard.target.environment_id }
+if (-not $railwayProjectId) {
+  throw "Railway doctor requires BNA_RAILWAY_PROJECT_ID or RAILWAY_PROJECT_ID for explicit CLI target linking."
+}
+if (-not $railwayService) {
+  throw "Railway doctor requires BNA_RAILWAY_SERVICE_NAME/BNA_RAILWAY_SERVICE_ID or RAILWAY_SERVICE_NAME/RAILWAY_SERVICE_ID."
+}
+if (-not $railwayEnvironment) {
+  throw "Railway doctor requires BNA_RAILWAY_ENVIRONMENT_NAME/BNA_RAILWAY_ENVIRONMENT_ID or RAILWAY_ENVIRONMENT."
+}
+
+Write-Host "Selected Railway project: $($targetGuard.target.project_name) / $railwayProjectId" -ForegroundColor Cyan
+Write-Host "Selected Railway environment: $railwayEnvironment" -ForegroundColor Cyan
+Write-Host "Selected Railway service: $railwayService" -ForegroundColor Cyan
+
+Invoke-Railway link `
+  --project $railwayProjectId `
+  --environment $railwayEnvironment `
+  --service $railwayService `
+  --json
 
 Write-Host "Checking Railway access..." -ForegroundColor Cyan
 Invoke-Railway status

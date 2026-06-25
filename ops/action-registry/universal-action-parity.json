@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-24T15:12:32.418Z",
+  "generated_at": "2026-06-25T04:12:28.867Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,27 +16,27 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "03a511888d1dbd2c8029a9269bdbb1cd20f799c87d67469daa120e3aa890cc89",
+  "content_hash": "7f504c55b3b0a8f6cea113b0eb0a3a5d53ac10e199f2c42a87c428e686f8ced3",
   "source_hashes": {
-    "ops/action-registry.json": "85aac11402626731ac0309e2765970eebcef8db62ed1a06d1841a30264186992",
+    "ops/action-registry.json": "ad02ba852562c828baca995f1245b4edddbe388be142259d9fdbf6083354ad4a",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "4e9a32bd0028dc6f5b5e9db2cc24d078db52002904c21258d33f2b777376f199",
+    "public/operations.html": "9b5ef9275cff49d2830ee47d90f9ac5b972bdf3b5d28c02ed417db34538a675b",
     "public/parent.html": "a7b532eccb128ecb8606cc56b0357a9eea4dc00a99d8baff42aff1041c0c2d08",
     "public/student.html": "3a6ada46825b42f2b5ddf17f683553c267c9f64680664157b754c624c29475fe",
     "public/provider.html": "3e6c8cd9c3391cd3db74da93d701806bdfe23c867029aa455ad74509e56d5b6c",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 63,
+    "root_actions": 65,
     "detailed_actions": 80,
-    "total_registry_rows": 143,
+    "total_registry_rows": 145,
     "visible_controls": 28,
     "visible_controls_classified": 28,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 7,
-    "risky_actions": 75,
+    "risky_actions": 76,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 3,
@@ -46,9 +46,9 @@
       "blocked_connector": 2
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 11,
+      "secure_deep_link_only": 12,
       "executable": 10,
-      "preview_then_approve": 67,
+      "preview_then_approve": 68,
       "read_only": 46,
       "blocked_connector": 7,
       "not_applicable": 2
@@ -62,16 +62,16 @@
       "count": 80
     },
     "website_assistant_request": {
-      "count": 143
+      "count": 145
     },
     "operations_helper_request": {
-      "count": 136
+      "count": 138
     },
     "automation_action": {
       "count": 74
     },
     "agent_work_handoff": {
-      "count": 76
+      "count": 77
     }
   },
   "release_gate": {
@@ -109,12 +109,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 143
+        "value": 145
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 76
+        "value": 77
       }
     ]
   },
@@ -665,6 +665,68 @@
         "Request watchdog audit"
       ],
       "result_renderer": "Helper creates a Codex-owned local-safe watchdog audit task without external writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-HELPER-OPEN-OPERATIONS-VIEW",
+      "label": "Open Operations view",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_helper",
+      "route": "/operations",
+      "permission": "super_admin/project scoped helper",
+      "allowed_roles": [
+        "super_admin/project scoped helper"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "open_operations_view",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open Operations view"
+      ],
+      "result_renderer": "Returns a canonical scoped Operations route from the route registry with route key, required role, scope, reason, and safe fallback metadata.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-RESULT-RECORD",
+      "label": "Record agent result",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_api",
+      "route": "/api/bna/agent-jobs/:id/result",
+      "permission": "super_admin/technical_agent/system",
+      "allowed_roles": [
+        "super_admin/technical_agent/system"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "record_agent_result",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Record agent result"
+      ],
+      "result_renderer": "Appends an idempotent agent result packet to the scoped task/job activity and internal dialogue with evidence and GitHub links, without external writes or owner-text overwrite.",
       "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
@@ -7174,6 +7236,7 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": false,
       "action_ids": [
+        "ACTION-AGENT-RESULT-RECORD",
         "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
         "ACTION-AGENT-RUN-HANDOFF",
         "ACTION-AGENT-RUN-PREPARE",

@@ -6,6 +6,15 @@ import crypto from 'crypto';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { buildQueueAudit, summarizeQueueHealthForStatus } from './lib/ops-queue-reconciler.mjs';
+import hardening from '../src/lib/bna/agent-fleet-hardening.js';
+
+const {
+  AGENT_FLEET_PERMISSION_TIERS,
+  buildStartupShortcutMatrix,
+  classifyAgentFleetCommand,
+  permissionTierLines,
+  redactAgentFleetText,
+} = hardening;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -633,6 +642,7 @@ function buildTaskPrompt(task, attempt, comments = []) {
     '- Do not start long-lived foreground services; the supervisor owns background loops.',
     '- Run relevant checks yourself; the supervisor will run baseline verification afterward.',
     '- Do not mark the live task done yourself unless you already changed the system state intentionally; the supervisor will normally mark done after verification.',
+    '- Permission tiers: Tier 0 read/audit/test/report; Tier 1 local code/branch/draft PR; Tier 2 merge/deploy/live smoke only through the parent release gate; Tier 3 sends, charges, DNS, credential/account changes, production mutation, Drive writes, public publishing, and class backfill are blocked without an explicit owner Decision.',
     '',
     `Task ID: ${task.id}`,
     `Attempt: ${attempt}`,
@@ -680,10 +690,10 @@ function buildTaskPrompt(task, attempt, comments = []) {
 }
 
 function cleanProcessText(text) {
-  return String(text || '')
+  return redactAgentFleetText(String(text || '')
     .replace(/\r/g, '')
     .replace(/\n*To resume this session:[^\n]*/g, '')
-    .trim();
+    .trim());
 }
 
 function summarizeAgentError(error, maxChars = 900) {
@@ -960,6 +970,10 @@ async function runDeploymentIfNeeded(config, options) {
     deployable_files: deployableFiles,
     inspection_results: changed.inspection_results,
     deployment_results: [],
+    permission_gate: {
+      deploy_command: classifyAgentFleetCommand(config.deployCommand),
+      doctor_command: classifyAgentFleetCommand(config.deployDoctorCommand),
+    },
   };
 
   if (!changed.ok) {
@@ -969,6 +983,12 @@ async function runDeploymentIfNeeded(config, options) {
   }
 
   if (!deployableFiles.length) return result;
+
+  if (result.permission_gate.deploy_command.blocked_by_default || result.permission_gate.doctor_command.blocked_by_default) {
+    result.ok = false;
+    result.skipped_reason = 'permission_tier_3_blocked';
+    return result;
+  }
 
   const fingerprint = deploymentFingerprint(deployableFiles);
   result.fingerprint = fingerprint;
@@ -3002,6 +3022,8 @@ async function status(config) {
     `- Max retries: ${config.maxRetries}`,
     `- Baseline smoke: ${config.openAiSmoke ? 'enabled' : 'disabled'}`,
     `- Auto deploy gate: ${config.autoDeploy ? 'enabled' : 'disabled'}`,
+    `- Permission tiers: ${permissionTierLines().join(' | ')}`,
+    `- Startup shortcuts: ${buildStartupShortcutMatrix().map((item) => item.action).join(', ')}`,
   ];
   if (observableQueue?.error) lines.push(`- Observable queue read: ${observableQueue.error}`);
   if (queueAudit?.warnings?.length) lines.push(`- Queue audit warnings: ${queueAudit.warnings.slice(0, 2).join('; ')}`);
@@ -3209,9 +3231,11 @@ async function main() {
 }
 
 export {
+  AGENT_FLEET_PERMISSION_TIERS,
   buildTaskTitleRepair,
   buildWatchdogRoutingRepair,
   buildWatchdogImprovementDecisionPayload,
+  classifyAgentFleetCommand,
   classifyRailwayDoctorResult,
   collectSecretEvidenceFromText,
   collectWatchdogImprovementFindings,
@@ -3221,6 +3245,7 @@ export {
   isWatchdogImprovementDecision,
   looksRawRambleTitle,
   looksWatchdogWarningRepairRequest,
+  redactAgentFleetText,
   selectWatchdogImprovementFindingsForCreation,
   watchdogIncidentSignature,
   watchdogImprovementShouldRun,

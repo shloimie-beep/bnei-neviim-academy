@@ -90,11 +90,17 @@ body.one-time-review-active .brand-chip {
 body.one-time-review-active .portal-topbar-link,
 body.one-time-review-active header .nav a,
 body.one-time-review-active .top-actions button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   color: var(--one-time-white);
   background: rgba(255, 255, 255, 0.08);
   box-shadow: none;
+  line-height: 1.2;
+  padding: 7px 10px;
 }
 
 body.one-time-review-active .portal-topbar-link:not(.secondary-link) {
@@ -177,12 +183,17 @@ body.one-time-review-active select:focus {
 body.one-time-review-active button,
 body.one-time-review-active .btn,
 body.one-time-review-active .button-link {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(8, 19, 35, 0.14);
   border-radius: 8px !important;
   color: var(--one-time-navy);
   background: var(--one-time-white);
   box-shadow: none;
   letter-spacing: 0;
+  line-height: 1.2;
 }
 
 body.one-time-review-active button:hover,

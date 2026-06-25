@@ -1,0 +1,35 @@
+{
+  "run_id": "2026-06-24-issue-20-parent-run",
+  "title": "Issue #20 - Visual quality, browser harness, bot accuracy, and autonomous ramble execution",
+  "created_at": "2026-06-24T22:43:00+03:00",
+  "updated_at": "2026-06-25T01:00:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260624-009",
+  "workspace_key": "bna_platform",
+  "project_key": "agentic_quality_system",
+  "predecessor_runs": [
+    "ops/execution-runs/2026-06-24-issue-18-class-intake-readonly"
+  ],
+  "predecessor_terminal_evidence": {
+    "issue": 18,
+    "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/21",
+    "comment": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/18#issuecomment-4792923047",
+    "verdict": "NOT SAFE TO APPLY - reasons listed"
+  },
+  "git_refs": {
+    "base_branch": "codex/issue-18-class-intake-readonly-20260624",
+    "working_branch": "codex/issue-20-parent-run-20260624",
+    "local_head_at_start": "63db04468b1d7695292e922ff6757d1f42aef033",
+    "issue_number": 20,
+    "parent_issue_number": 7,
+    "predecessor_issue_number": 18
+  },
+  "current_batch": {
+    "batch_id": "Z",
+    "requirement_id": "REQ-20260624-048",
+    "title": "Issue #20 integration, deploy, live verification, and final response",
+    "status": "blocked"
+  }
+}

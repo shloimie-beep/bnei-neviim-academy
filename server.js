@@ -20282,7 +20282,10 @@ async function addTaskSystemComment(taskId, body, { author = 'system', source = 
 }
 
 const TASK_ARTIFACT_ALLOWED_PREFIXES = [
+  'ops/execution-runs/',
   'ops/agent-fleet-runs/',
+  'ops/watchdog-audits/',
+  'ops/helper-destination-qa/',
   'ops/system-audits/',
   'ops/agent-changelog.md',
   'ops/agent-task-ledger.jsonl',
@@ -62066,6 +62069,36 @@ app.post('/api/bna/agent-jobs/:id/heartbeat', requireAdmin, async (req, res) => 
   }
 });
 
+app.post('/api/bna/agent-jobs/:id/result', requireAdmin, async (req, res) => {
+  try {
+    const job = await fetchObservableAgentJob(req.params.id);
+    if (!job) return res.status(404).json({ error: 'Agent job not found' });
+    assertProjectAccess(req, { project_key: job.project_key });
+    const body = req.body || {};
+    const workspaceKey = assertWorkspaceAccess(req, body.workspace_key || body.workspace || defaultWorkspaceKeyForRequest(req));
+    const result = await runAction({
+      action_id: 'record_agent_result',
+      inputs: {
+        ...body,
+        agent_job_id: req.params.id,
+        task_id: body.task_id || body.taskId || job.task_id || null,
+      },
+      source: body.source || 'agent_result_api',
+      dry_run: Boolean(body.dry_run || body.dryRun),
+      approved: true,
+      actor: {
+        user_id: req.opsUser || body.user_id || 'admin',
+        role: body.actor_role || body.role || req.opsIdentity?.role || 'technical_agent',
+        workspace_id: workspaceKey,
+      },
+    }, actionRunnerContext(req, body.source || 'agent_result_api'));
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+
 app.post('/api/bna/agent-jobs/:id/complete', requireAdmin, async (req, res) => {
   try {
     const job = await fetchObservableAgentJob(req.params.id);
@@ -78447,7 +78480,7 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   }
 
   const normalizedBucket = String(status_bucket || '').trim().toLowerCase();
-  if (['decisions', 'pending', 'tasks', 'done'].includes(normalizedBucket)) {
+  if (['decisions', 'pending', 'tasks', 'codex_queue', 'done'].includes(normalizedBucket)) {
     outerWhere.push(`status_bucket = ${addParam(normalizedBucket)}`);
   }
   if (/^(1|true|yes)$/i.test(String(stale_only || ''))) {
@@ -78463,8 +78496,8 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     my_tasks: `(status_bucket <> 'done' AND ${ownerTextSql} ~ '(shloimie|operator|manager)')`,
     one_time: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
     one_time_tasks: `(status_bucket <> 'done' AND resolved_project_key = 'one_time_mishnah_class')`,
-    codex_queue: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
-    codex_agent_work: `(status_bucket <> 'done' AND (COALESCE(task_kind, '') = 'agent_job' OR ${ownerTextSql} ~ '(codex|agent|automation|system|openai|kimi)' OR COALESCE(effective_agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')))`,
+    codex_queue: `status_bucket = 'codex_queue'`,
+    codex_agent_work: `status_bucket = 'codex_queue'`,
     blocked: `status_bucket = 'pending'`,
     pending: `status_bucket = 'pending'`,
     due_soon: `(status_bucket <> 'done' AND due_date IS NOT NULL AND due_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days')`,
@@ -78599,8 +78632,11 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
         CASE
           WHEN task_base.completed_at IS NOT NULL OR task_base.verified_at IS NOT NULL OR task_base.stage IN ('done', 'archive') OR COALESCE(task_base.task_kind, '') = 'history' THEN 'done'
           WHEN COALESCE(task_base.task_kind, '') = 'decision' THEN 'decisions'
+          WHEN COALESCE(task_base.task_kind, '') = 'agent_job'
+            OR LOWER(COALESCE(task_base.assigned_to, '') || ' ' || COALESCE(latest_jobs.agent_name, '') || ' ' || COALESCE(task_base.agent_status, '')) ~ '(codex|agent|automation|system|openai|kimi)'
+            OR COALESCE(latest_jobs.agent_task_status, task_base.agent_status, 'none') IN ('queued', 'running', 'failed', 'blocked_needs_human_decision')
+            THEN 'codex_queue'
           WHEN COALESCE(task_base.task_kind, '') = 'pending_access' THEN 'pending'
-          WHEN COALESCE(task_base.task_kind, '') = 'agent_job' THEN 'tasks'
           WHEN COALESCE(task_base.item_type, 'task') = 'decision' OR task_base.decision_required OR task_base.stage = 'needs_decision' THEN 'decisions'
           WHEN COALESCE(task_base.waiting_on, '') <> ''
             AND LOWER(COALESCE(task_base.waiting_on, '')) !~ '(codex|kimi|system|agent|automation)' THEN 'pending'
@@ -78670,7 +78706,7 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     FROM enriched
     WHERE ${outerWhere.join(' AND ')}
     ORDER BY
-      CASE status_bucket WHEN 'decisions' THEN 1 WHEN 'pending' THEN 2 WHEN 'tasks' THEN 3 WHEN 'done' THEN 4 ELSE 5 END,
+      CASE status_bucket WHEN 'decisions' THEN 1 WHEN 'pending' THEN 2 WHEN 'tasks' THEN 3 WHEN 'codex_queue' THEN 4 WHEN 'done' THEN 5 ELSE 6 END,
       CASE urgency WHEN 'urgent' THEN 1 WHEN 'today' THEN 2 WHEN 'this_week' THEN 3 ELSE 4 END,
       COALESCE(due_date, created_at::date) ASC,
       created_at DESC

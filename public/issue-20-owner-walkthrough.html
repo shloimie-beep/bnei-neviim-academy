@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BNA Issue 20 Owner Walkthrough</title>
+  <link rel="stylesheet" href="/css/integration-setup.css">
+</head>
+<body data-page="issue-20-owner-walkthrough">
+  <a class="skip-link" href="#walkthroughCards">Skip to walkthrough cards</a>
+  <header class="setup-header">
+    <div>
+      <p class="eyebrow">BNA Operations</p>
+      <h1>Issue 20 Owner Walkthrough</h1>
+      <p class="header-copy">A credential-safe map for the current branch, active goal, agent fleet, browser profiles, role QA, GitHub bridge, Decisions, restart controls, and the next ramble.</p>
+    </div>
+    <div class="header-actions" aria-label="Owner walkthrough actions">
+      <a class="button secondary" href="/integration-setup.html">Setup Center</a>
+      <a class="button secondary" href="/operations?view=tasks&section=codex_queue">Codex Queue</a>
+      <a class="button" href="https://github.com/shloimie-beep/bnei-neviim-academy/issues/20" rel="noopener">Issue 20</a>
+    </div>
+  </header>
+
+  <main class="setup-main walkthrough-main">
+    <section class="status-band walkthrough-truth" aria-label="Current release truth">
+      <div>
+        <strong>Current truth</strong>
+        <span>Origin master is <code>50087ae5d8e120830ae8e1f8dcaab71f61389d7c</code>. This Issue 20 branch is <code>9b2696b744e094a2bffe2d178124d94719df2644</code>. Live health returned HTTP 200 with database connected. The deployed SHA is not currently provable through Railway because the local Railway target is blocked under <code>REQ-20260624-048</code>.</span>
+      </div>
+      <div class="state-counts">
+        <span class="count-chip">Done 3</span>
+        <span class="count-chip">Blocked 4</span>
+        <span class="count-chip">Open 2</span>
+      </div>
+    </section>
+
+    <section class="walkthrough-grid" id="walkthroughCards" aria-label="Issue 20 setup cards">
+      <article class="setup-card walkthrough-card" data-card="live-sha">
+        <div class="card-heading">
+          <div>
+            <h2>Live SHA and Health</h2>
+            <p class="purpose">Know what is live, what is only on the Issue 20 branch, and why deploy proof is still blocked.</p>
+          </div>
+          <span class="status-pill" data-tone="preview">Deploy blocked</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><a href="/api/health">/api/health</a> and <a href="https://github.com/shloimie-beep/bnei-neviim-academy/tree/master" rel="noopener">GitHub master</a></dd></div>
+          <div><dt>Step</dt><dd>Read live health, compare origin master, and keep Issue 20 branch work separate until release.</dd></div>
+          <div><dt>Expected result</dt><dd>Health is OK, origin master is <code>50087ae5d8e120830ae8e1f8dcaab71f61389d7c</code>, and the Issue 20 branch is not live yet.</dd></div>
+          <div><dt>Validation command</dt><dd><code>Invoke-WebRequest -Uri https://bneineviimacademy.org/api/health</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Fix Railway targeting or record an approved alternate live-smoke path under <code>REQ-20260624-048</code>.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="active-goal-lanes">
+        <div class="card-heading">
+          <div>
+            <h2>Active Goal and Lanes</h2>
+            <p class="purpose">See the active parent run, lane status, and the next unblocked batch.</p>
+          </div>
+          <span class="status-pill" data-tone="ready">Active</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><code>ops/execution-runs/2026-06-24-issue-20-parent-run/</code></dd></div>
+          <div><dt>Step</dt><dd>Open <code>run.json</code>, <code>requirements.json</code>, and <code>LANE-MANIFEST.json</code>.</dd></div>
+          <div><dt>Expected result</dt><dd><code>REQ-20260624-047</code> is the next batch; Batches A, C, D, F, and G need deploy/live proof before Done.</dd></div>
+          <div><dt>Validation command</dt><dd><code>npm run bna:run:next</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Run <code>npm run bna:run:validate</code>, fix the named run-field error, then rerun next-batch selection.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="agent-fleet">
+        <div class="card-heading">
+          <div>
+            <h2>Agent Fleet and Watchdog</h2>
+            <p class="purpose">Use the existing fleet safely without creating a second fleet or bypassing permission tiers.</p>
+          </div>
+          <span class="status-pill" data-tone="ready">Hardened</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><a href="/operations?view=agents">Operations Agent Center</a></dd></div>
+          <div><dt>Step</dt><dd>Check fleet status, permission tiers, parent coordination findings, and synthetic no-write proof.</dd></div>
+          <div><dt>Expected result</dt><dd>Tier 3 actions are blocked without explicit Decision/approval; synthetic readiness reports <code>external_write_performed=false</code>.</dd></div>
+          <div><dt>Validation command</dt><dd><code>npm run watchdog:agent-fleet -- --json</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Use <code>npm run agent:fleet:status</code>, <code>npm run agent:fleet:restart</code>, or <code>npm run watchdog:open-log</code> before filing a repair task.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="browser-chatgpt">
+        <div class="card-heading">
+          <div>
+            <h2>Browser Profiles and ChatGPT Agent</h2>
+            <p class="purpose">Use local Playwright profiles without confusing them with ChatGPT Agent cookies or connector auth.</p>
+          </div>
+          <span class="status-pill" data-tone="ready">Local profiles</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><code>docs/agent-browser-harness.md</code></dd></div>
+          <div><dt>Step</dt><dd>Use named profiles for manual-login browser QA; keep profile data under <code>%LOCALAPPDATA%\BNA\agent-browser-profiles</code>.</dd></div>
+          <div><dt>Expected result</dt><dd>Six named profiles exist outside the repo: operations owner, parent, student, provider, One Time review, and GitHub status.</dd></div>
+          <div><dt>Validation command</dt><dd><code>npm run agent:browser:health -- --json</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Run <code>npm run agent:browser:init -- --json</code> or a headed reauth command; do not copy cookies or secrets into the repo.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="role-links-bot-qa">
+        <div class="card-heading">
+          <div>
+            <h2>Role Links and Bot QA</h2>
+            <p class="purpose">Open the right surface for each role and use the helper resolver to avoid plausible-but-wrong links.</p>
+          </div>
+          <span class="status-pill" data-tone="ready">Matrix tested</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><a href="/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class">Rabbi workspace</a>, <a href="/parent/login">Parent login</a>, <a href="/student/login">Student login</a>, and <a href="/provider/login">Provider login</a></dd></div>
+          <div><dt>Step</dt><dd>Resolve owner, provider, parent, student, public, wrong-role, wrong-workspace, missing-route, and external-URL cases through the canonical matrix.</dd></div>
+          <div><dt>Expected result</dt><dd>Every helper link has route key, path, required role, scope, reason, and safe fallback.</dd></div>
+          <div><dt>Validation command</dt><dd><code>npm run watchdog:helper-destinations</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Patch the route/action registry or destination resolver, then rerun the matrix before trusting bot copy.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="github-bridge">
+        <div class="card-heading">
+          <div>
+            <h2>GitHub Bridge and Agent Results</h2>
+            <p class="purpose">Use typed result packets and same-thread GitHub status previews without posting externally by accident.</p>
+          </div>
+          <span class="status-pill" data-tone="preview">Approval gated</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><a href="https://github.com/shloimie-beep/bnei-neviim-academy/issues/20" rel="noopener">GitHub Issue 20</a></dd></div>
+          <div><dt>Step</dt><dd>Record agent result packets with raw/source IDs, requirement IDs, branch, commit, evidence, tests, blockers, and deployment state.</dd></div>
+          <div><dt>Expected result</dt><dd>Operations activity shows evidence and GitHub status previews; no GitHub comment posts without explicit approval gates.</dd></div>
+          <div><dt>Validation command</dt><dd><code>node --test --test-name-pattern "GitHub intake preview" tests\system-truth-scripts.test.js</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Use the idempotency key, same-thread marker, and approval phrase gate; never overwrite owner text or another workspace.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="decisions-next-ramble">
+        <div class="card-heading">
+          <div>
+            <h2>Decisions, Queue, and Next Ramble</h2>
+            <p class="purpose">Keep human blockers, external blockers, Codex work, completed history, and raw rambles in separate lanes.</p>
+          </div>
+          <span class="status-pill" data-tone="ready">Owner lanes</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><a href="/operations?view=tasks&section=needs_my_decision">Needs My Decision</a> and <a href="/operations?view=tasks&section=codex_queue">Codex / Agent Work</a></dd></div>
+          <div><dt>Step</dt><dd>Put real owner choices in Decisions, outside-service waits in Waiting Externally, machine work in Codex Queue, and new rambles in raw intake first.</dd></div>
+          <div><dt>Expected result</dt><dd>The default task experience is Active Now, Needs Your Decision, Waiting Externally, Recently Completed, and Full History / Search.</dd></div>
+          <div><dt>Validation command</dt><dd><code>node scripts\task-decision-census.mjs --json --no-live --no-write</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Create one Decision per external blocker, preserve raw wording under a raw ID, and re-run queue hygiene tests before closing a batch.</dd></div>
+        </dl>
+      </article>
+
+      <article class="setup-card walkthrough-card" data-card="stop-restart-release">
+        <div class="card-heading">
+          <div>
+            <h2>Stop, Restart, and Release Gate</h2>
+            <p class="purpose">Know how to pause local automation and what must happen before app-visible work is Done.</p>
+          </div>
+          <span class="status-pill" data-tone="preview">Release gated</span>
+        </div>
+        <dl class="card-facts walkthrough-facts">
+          <div><dt>Page</dt><dd><code>ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md</code></dd></div>
+          <div><dt>Step</dt><dd>Stop or restart local fleet/watchdog as needed; deploy only through the final release gate after Railway targeting is repaired.</dd></div>
+          <div><dt>Expected result</dt><dd>No deploy, send, charge, DNS, credential, Drive write, production mutation, class backfill, or public publishing runs without the explicit gate.</dd></div>
+          <div><dt>Validation command</dt><dd><code>npm run bna:run:validate && npm run secrets:audit && git diff --check</code></dd></div>
+          <div><dt>Recovery action</dt><dd>Leave the dependent requirement blocked with owner, consequence, and exact next action; continue the next unblocked batch.</dd></div>
+        </dl>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
