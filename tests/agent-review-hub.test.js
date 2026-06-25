@@ -18,6 +18,7 @@ const session = fs.readFileSync(path.join(root, 'public', 'agent-review-session.
 const routeRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'route-registry.json'), 'utf8'));
 const actionRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'action-registry.json'), 'utf8'));
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+const railwayRedeploy = fs.readFileSync(path.join(root, 'scripts', 'railway-redeploy.ps1'), 'utf8');
 
 test('Agent Review context matrix covers Issue #24 role cards', () => {
   const keys = new Set(AGENT_REVIEW_CONTEXTS.map((item) => item.key));
@@ -74,6 +75,14 @@ test('server exposes secure review-session and result APIs', () => {
   assert.match(server, /res\.redirect\(303, '\/agent-review\/session'\)/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-review\/results'/);
   assert.match(server, /ON CONFLICT \(idempotency_key\) DO UPDATE/);
+});
+
+test('Agent Review newest-recording trace is available in the deploy bundle', () => {
+  assert.match(server, /newestRecordingTraceStatus/);
+  assert.match(server, /2026-06-25-issue-24-newest-recording/);
+  assert.match(railwayRedeploy, /2026-06-25-issue-24-newest-recording/);
+  assert.match(railwayRedeploy, /NEWEST-RECORDING-TRACE\.json/);
+  assert.match(railwayRedeploy, /NEWEST-RECORDING-TRACE\.md/);
 });
 
 test('hub and session pages expose banner, Exit, prompt links, and typed result control', () => {

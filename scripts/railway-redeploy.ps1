@@ -287,6 +287,17 @@ if (Test-Path (Join-Path $repoRoot "ops")) {
       Write-Host "Could not parse ops/queue-audits/latest.json for referenced report files: $($_.Exception.Message)" -ForegroundColor Yellow
     }
   }
+  $issue24TraceDir = Join-Path (Join-Path (Join-Path $repoRoot "ops") "class-drive-intake") "2026-06-25-issue-24-newest-recording"
+  if (Test-Path $issue24TraceDir) {
+    $traceDeployDir = Join-Path (Join-Path (Join-Path $opsDeployRoot "class-drive-intake") "2026-06-25-issue-24-newest-recording")
+    New-Item -ItemType Directory -Path $traceDeployDir -Force | Out-Null
+    foreach ($traceFile in @("NEWEST-RECORDING-TRACE.json", "NEWEST-RECORDING-TRACE.md")) {
+      $sourceTrace = Join-Path $issue24TraceDir $traceFile
+      if (Test-Path $sourceTrace) {
+        Copy-Item -LiteralPath $sourceTrace -Destination $traceDeployDir -Force
+      }
+    }
+  }
 }
 if (Test-Path (Join-Path $repoRoot "tasks-pending")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "tasks-pending") -Destination $deployRoot -Recurse
