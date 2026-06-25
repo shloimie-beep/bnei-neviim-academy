@@ -1,0 +1,132 @@
+{
+  "started_at": "2026-06-25T17:02:11.828Z",
+  "app_url": "https://bneineviimacademy.org",
+  "deployment_id": "24c1d191-3f50-4d0a-9da8-687ba2f1a434",
+  "master_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+  "steps": [
+    {
+      "name": "hub HTML and contexts API are owner scoped",
+      "ok": true,
+      "duration_ms": 1550,
+      "details": {
+        "contexts": 9,
+        "prompts": 11,
+        "trace_status": "PARTIAL",
+        "selected_job": "content_job:83"
+      }
+    },
+    {
+      "name": "prompt pack files are mobile-copyable and public",
+      "ok": true,
+      "duration_ms": 2807,
+      "details": {
+        "files_checked": 11,
+        "sample": [
+          "/agent-review-prompts/public-login-setup.md",
+          "/agent-review-prompts/operations-super-admin.md",
+          "/agent-review-prompts/rabbi-provider-admin.md"
+        ]
+      }
+    },
+    {
+      "name": "review target routes are reachable in their intended scope",
+      "ok": true,
+      "duration_ms": 4570,
+      "details": {
+        "checked": [
+          {
+            "key": "public_visitor",
+            "status": 200
+          },
+          {
+            "key": "operations_super_admin",
+            "status": 200
+          },
+          {
+            "key": "rabbi_provider_admin",
+            "status": 200
+          },
+          {
+            "key": "provider_participant_staff",
+            "status": 200
+          },
+          {
+            "key": "parent_qa_identity",
+            "status": 200
+          },
+          {
+            "key": "student_qa_identity",
+            "status": 200
+          },
+          {
+            "key": "one_time_member",
+            "status": 200
+          },
+          {
+            "key": "one_time_classroom",
+            "status": 200
+          },
+          {
+            "key": "wrong_role_error_states",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "name": "sequential scoped sessions revoke prior session and avoid all-access URL secret",
+      "ok": true,
+      "duration_ms": 2966,
+      "details": {
+        "first_session": "ARS-d800afe3265228b5",
+        "second_session": "ARS-e0b08b8a730ed153",
+        "first_revoked_status": 401,
+        "second_url_secret": false,
+        "token_scope": "single scoped review session"
+      }
+    },
+    {
+      "name": "session exchange sets scoped cookie and session page exposes banner and Exit",
+      "ok": true,
+      "duration_ms": 1179,
+      "details": {
+        "session_ref": "ARS-e0b08b8a730ed153",
+        "cookie": "bna_agent_review_session=[redacted]",
+        "banner": true,
+        "exit_control": true
+      }
+    },
+    {
+      "name": "typed agent review result persists and reads back",
+      "ok": true,
+      "duration_ms": 911,
+      "details": {
+        "result_ref": "AGR-96dfac2f8c31163c",
+        "context_key": "parent_qa_identity",
+        "readback_status": "pass"
+      }
+    },
+    {
+      "name": "live helper route/action resolver executes safe internal link action",
+      "ok": true,
+      "duration_ms": 1271,
+      "details": {
+        "plan_id": "helper_plan_1782406944561_d8de260afe03",
+        "result_url": "/operations?view=tasks&section=decisions&workspace=bna",
+        "route_key": "operations",
+        "authorization": "allowed"
+      }
+    },
+    {
+      "name": "Exit revokes scoped review session",
+      "ok": true,
+      "duration_ms": 759,
+      "details": {
+        "exit_redirect": "/operations/agent-review",
+        "after_exit_status": 401
+      }
+    }
+  ],
+  "finished_at": "2026-06-25T17:02:27.841Z",
+  "success": true
+}
