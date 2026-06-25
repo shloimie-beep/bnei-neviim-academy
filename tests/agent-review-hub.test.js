@@ -80,6 +80,8 @@ test('server exposes secure review-session and result APIs', () => {
 test('Agent Review newest-recording trace is available in the deploy bundle', () => {
   assert.match(server, /newestRecordingTraceStatus/);
   assert.match(server, /2026-06-25-issue-24-newest-recording/);
+  assert.match(railwayRedeploy, /action-registry\.json/);
+  assert.match(railwayRedeploy, /route-registry\.json/);
   assert.match(railwayRedeploy, /2026-06-25-issue-24-newest-recording/);
   assert.match(railwayRedeploy, /NEWEST-RECORDING-TRACE\.json/);
   assert.match(railwayRedeploy, /NEWEST-RECORDING-TRACE\.md/);

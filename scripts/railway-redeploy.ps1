@@ -253,7 +253,7 @@ if (Test-Path (Join-Path $repoRoot "scripts")) {
 if (Test-Path (Join-Path $repoRoot "ops")) {
   $opsDeployRoot = Join-Path $deployRoot "ops"
   New-Item -ItemType Directory -Path $opsDeployRoot -Force | Out-Null
-  foreach ($opsFile in @("agent-task-ledger.jsonl", "agent-changelog.md")) {
+  foreach ($opsFile in @("agent-task-ledger.jsonl", "agent-changelog.md", "action-registry.json", "route-registry.json")) {
     $opsFilePath = Join-Path (Join-Path $repoRoot "ops") $opsFile
     if (Test-Path $opsFilePath) {
       Copy-Item -LiteralPath $opsFilePath -Destination $opsDeployRoot
