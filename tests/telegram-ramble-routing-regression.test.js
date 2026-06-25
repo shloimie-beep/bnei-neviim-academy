@@ -56,7 +56,7 @@ test('contact pipeline and source-sheet rambles have separate routing cues', () 
   assert.match(operations, /const RESEARCH_TASK_CATEGORIES = new Set/);
   assert.match(operations, /const TASK_LANE_IDS = TASK_SUBTABS\.map\(tab => tab\.id\)/);
   assert.match(operations, /\{ id: 'one_time', label: 'One Time Tasks' \}/);
-  assert.match(operations, /\{ id: 'codex_queue', label: 'Codex \/ Agent Work' \}/);
+  assert.match(operations, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
   assert.doesNotMatch(operations, /\{ id: 'agent_working', label: 'Agent Working' \}/);
   assert.doesNotMatch(operations, /waiting_shloimie|waiting_sheller|waiting_access|Ready for Codex/);
   assert.match(operations, /\{ id: 'intake', label: 'Signup Review' \}/);

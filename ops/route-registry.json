@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-25T01:05:00+03:00",
+  "updated_at": "2026-06-25T18:45:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -1537,6 +1537,114 @@
       "security_expectation": "Anonymous assistant remains public-safe; usage metadata must not store prompt or response bodies.",
       "related_goal_ids": [
         "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/operations/agent-review",
+      "surface": "agent_review_hub",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login",
+      "expected_logged_in_behavior": "show_owner_agent_review_hub_with_scoped_context_cards",
+      "privacy_risk": "critical",
+      "security_expectation": "Owner session is required; page creates only short-lived role-scoped sessions and exposes no reusable all-access URL secret.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/agent-review/session",
+      "surface": "agent_review_session_shell",
+      "access": "private_token_scoped",
+      "required_role": "scoped_review_session",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "show_expired_or_invalid_session_state_without_private_data",
+      "expected_logged_in_behavior": "show_reviewing_as_banner_exit_and_scoped_target_shell",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires a server-issued short-lived scoped review token; token does not grant all-access Operations APIs.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/contexts",
+      "surface": "agent_review_contexts_api",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_context_cards_prompt_pack_csrf_and_newest_recording_trace_status",
+      "privacy_risk": "critical",
+      "security_expectation": "Returns redacted review metadata only and no secrets.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/sessions",
+      "surface": "agent_review_session_create_api",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "create_one_short_lived_scoped_review_session_after_csrf_check",
+      "privacy_risk": "critical",
+      "security_expectation": "Requires owner auth and CSRF token; revokes prior active owner sessions for sequential isolation.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/session",
+      "surface": "agent_review_session_read_api",
+      "access": "private_token_scoped",
+      "required_role": "scoped_review_session",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_invalid_or_expired_session",
+      "expected_logged_in_behavior": "return_scoped_review_session_context_and_prompt_links",
+      "privacy_risk": "critical",
+      "security_expectation": "Accepts only a hashed server-side scoped token and returns no password/cookie/API secret.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/results",
+      "surface": "agent_review_result_api",
+      "access": "private_or_scoped_session",
+      "required_role": "super_admin_or_scoped_review_session",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_without_owner_login_or_valid_review_session",
+      "expected_logged_in_behavior": "persist_idempotent_typed_agent_review_result_with_readback_reference",
+      "privacy_risk": "critical",
+      "security_expectation": "Stores redacted structured result metadata through a typed API; no external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-010",
         "GOAL-CORE-015"

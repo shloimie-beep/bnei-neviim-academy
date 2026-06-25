@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T04:12:28.867Z",
+  "generated_at": "2026-06-25T16:09:16.268Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,20 +16,20 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "7f504c55b3b0a8f6cea113b0eb0a3a5d53ac10e199f2c42a87c428e686f8ced3",
+  "content_hash": "52eee79509494c3b631515ac45ad1e28d2e4bc395388ac6f5ad581b86ad26399",
   "source_hashes": {
-    "ops/action-registry.json": "ad02ba852562c828baca995f1245b4edddbe388be142259d9fdbf6083354ad4a",
+    "ops/action-registry.json": "c1daae41175f9437d36460a7684ff15926aae82bf3ec7f833fb29baf212b321f",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "9b5ef9275cff49d2830ee47d90f9ac5b972bdf3b5d28c02ed417db34538a675b",
+    "public/operations.html": "e5217497bc67b2aa351e434b73dfc989f0e9d359cfa4b9ff4e8bbb9312287b0f",
     "public/parent.html": "a7b532eccb128ecb8606cc56b0357a9eea4dc00a99d8baff42aff1041c0c2d08",
     "public/student.html": "3a6ada46825b42f2b5ddf17f683553c267c9f64680664157b754c624c29475fe",
     "public/provider.html": "3e6c8cd9c3391cd3db74da93d701806bdfe23c867029aa455ad74509e56d5b6c",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 65,
+    "root_actions": 72,
     "detailed_actions": 80,
-    "total_registry_rows": 145,
+    "total_registry_rows": 152,
     "visible_controls": 28,
     "visible_controls_classified": 28,
     "missing_contract": 0,
@@ -46,8 +46,8 @@
       "blocked_connector": 2
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 12,
-      "executable": 10,
+      "secure_deep_link_only": 15,
+      "executable": 14,
       "preview_then_approve": 68,
       "read_only": 46,
       "blocked_connector": 7,
@@ -62,16 +62,16 @@
       "count": 80
     },
     "website_assistant_request": {
-      "count": 145
+      "count": 152
     },
     "operations_helper_request": {
-      "count": 138
+      "count": 141
     },
     "automation_action": {
       "count": 74
     },
     "agent_work_handoff": {
-      "count": 77
+      "count": 84
     }
   },
   "release_gate": {
@@ -109,12 +109,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 145
+        "value": 152
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 77
+        "value": 84
       }
     ]
   },
@@ -2525,6 +2525,223 @@
         "Run validation"
       ],
       "result_renderer": "Calls the protected owner setup readiness endpoint and displays success or blocker status without secrets.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-OPEN-CONTEXT",
+      "label": "Open review context",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Creates one short-lived server-side role/workspace-scoped review session after owner auth and CSRF validation, then opens the review shell.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open review context"
+      ],
+      "result_renderer": "Creates one short-lived server-side role/workspace-scoped review session after owner auth and CSRF validation, then opens the review shell.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-OPEN-TARGET",
+      "label": "Open scoped route",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/agent-review/session",
+      "permission": "scoped_review_session",
+      "allowed_roles": [
+        "scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the target route for the selected review context with a non-secret session reference, not an all-access token.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open scoped route"
+      ],
+      "result_renderer": "Opens the target route for the selected review context with a non-secret session reference, not an all-access token.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-EXIT",
+      "label": "Exit review context",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_session",
+      "route": "/agent-review/session",
+      "permission": "scoped_review_session",
+      "allowed_roles": [
+        "scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Revokes the current short-lived review session and returns to the owner hub.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Exit review context"
+      ],
+      "result_renderer": "Revokes the current short-lived review session and returns to the owner hub.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-SUBMIT-RESULT",
+      "label": "Submit Agent Review Result",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "permission": "super_admin_or_scoped_review_session",
+      "allowed_roles": [
+        "super_admin_or_scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Persists an idempotent typed Agent Review result linked to raw/source, parent goal, requirement, role/workspace, routes, helper outcomes, evidence, severity, correction, and timestamp.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Submit Agent Review Result"
+      ],
+      "result_renderer": "Persists an idempotent typed Agent Review result linked to raw/source, parent goal, requirement, role/workspace, routes, helper outcomes, evidence, severity, correction, and timestamp.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-PROMPT-OPEN",
+      "label": "Open Agent Mode prompt",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens one mobile-copyable Agent Mode prompt file from the Issue #24 prompt pack.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open Agent Mode prompt"
+      ],
+      "result_renderer": "Opens one mobile-copyable Agent Mode prompt file from the Issue #24 prompt pack.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-RETURN-HUB",
+      "label": "Hub",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_session",
+      "route": "/agent-review/session",
+      "permission": "scoped_review_session",
+      "allowed_roles": [
+        "scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Returns from a review session shell to the owner Agent Review Hub.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Hub"
+      ],
+      "result_renderer": "Returns from a review session shell to the owner Agent Review Hub.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-COPY-SESSION",
+      "label": "Copy session URL",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_session",
+      "route": "/agent-review/session",
+      "permission": "scoped_review_session",
+      "allowed_roles": [
+        "scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Copies the current short-lived scoped review session URL for Agent Mode handoff without exposing owner credentials.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Copy session URL"
+      ],
+      "result_renderer": "Copies the current short-lived scoped review session URL for Agent Mode handoff without exposing owner credentials.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -6969,6 +7186,9 @@
       "state": "covered_by_canonical_registry",
       "visible_currently": true,
       "action_ids": [
+        "ACTION-AGENT-REVIEW-COPY-SESSION",
+        "ACTION-AGENT-REVIEW-EXIT",
+        "ACTION-AGENT-REVIEW-RETURN-HUB",
         "ACTION-ONETIME-CLASS-LINK-REVEAL-DISABLED",
         "ACTION-ONETIME-CLASS-PACKAGE-PREVIEW",
         "ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN",
@@ -7237,6 +7457,13 @@
       "visible_currently": false,
       "action_ids": [
         "ACTION-AGENT-RESULT-RECORD",
+        "ACTION-AGENT-REVIEW-COPY-SESSION",
+        "ACTION-AGENT-REVIEW-EXIT",
+        "ACTION-AGENT-REVIEW-OPEN-CONTEXT",
+        "ACTION-AGENT-REVIEW-OPEN-TARGET",
+        "ACTION-AGENT-REVIEW-PROMPT-OPEN",
+        "ACTION-AGENT-REVIEW-RETURN-HUB",
+        "ACTION-AGENT-REVIEW-SUBMIT-RESULT",
         "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
         "ACTION-AGENT-RUN-HANDOFF",
         "ACTION-AGENT-RUN-PREPARE",

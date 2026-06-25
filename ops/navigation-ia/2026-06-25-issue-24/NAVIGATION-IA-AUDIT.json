@@ -1,0 +1,475 @@
+{
+  "audit_id": "REQ-20260625-029",
+  "generated_at": "2026-06-25T16:01:06.195Z",
+  "source_raw_id": "RAW-20260625-024",
+  "parent_goal_id": "PARENT-20260625-024",
+  "permanent_rule": "Side navigation owns major modules. Horizontal tabs may contain only children, view modes, status filters, scoped subcategories, or record-specific sections.",
+  "inventory": [
+    {
+      "surface": "public",
+      "route": "/",
+      "side_nav": [],
+      "top_nav": [
+        "Explore",
+        "Admissions",
+        "Parents",
+        "Service Providers",
+        "Portal Login"
+      ],
+      "horizontal_tabs": [],
+      "filter_chips": [],
+      "breadcrumbs": [
+        "public page context only"
+      ],
+      "contextual_actions": [
+        "Ask the helper",
+        "Apply",
+        "Portal Login"
+      ],
+      "mobile_menu": [
+        "Explore",
+        "Admissions",
+        "Parents",
+        "Service Providers",
+        "Portal Login"
+      ]
+    },
+    {
+      "surface": "operations",
+      "route": "/operations",
+      "side_nav": "parsed_from_public_operations_html",
+      "top_nav": [
+        "workspace status",
+        "Ask / Search",
+        "primary contextual action"
+      ],
+      "horizontal_tabs": "parsed_from_public_operations_html",
+      "filter_chips": [
+        "urgency",
+        "date",
+        "workspace",
+        "owner",
+        "type"
+      ],
+      "breadcrumbs": [
+        "workspace / module / section"
+      ],
+      "contextual_actions": [
+        "primary action by module",
+        "helper",
+        "settings/logout"
+      ],
+      "mobile_menu": "same module list plus child-section drilldown"
+    },
+    {
+      "surface": "provider",
+      "route": "/provider",
+      "side_nav": [
+        "Dashboard",
+        "Program",
+        "Members",
+        "Content",
+        "Schedule",
+        "Communications",
+        "Tasks",
+        "Settings"
+      ],
+      "top_nav": [
+        "provider workspace identity",
+        "assistant/help"
+      ],
+      "horizontal_tabs": [
+        "children of Program, Schedule, Content, Communications, Settings"
+      ],
+      "filter_chips": [
+        "status filters and scoped subcategories only"
+      ],
+      "breadcrumbs": [
+        "provider workspace / module / section"
+      ],
+      "contextual_actions": [
+        "support request",
+        "classroom draft",
+        "setup preview"
+      ],
+      "mobile_menu": [
+        "same major modules as side nav"
+      ]
+    },
+    {
+      "surface": "parent",
+      "route": "/parent",
+      "side_nav": [
+        "Today",
+        "Goals",
+        "Calendar",
+        "Questions",
+        "Documents",
+        "Help"
+      ],
+      "top_nav": [
+        "family/account switch",
+        "assistant/help"
+      ],
+      "horizontal_tabs": [
+        "child views and status filters only"
+      ],
+      "filter_chips": [
+        "student/date/status filters"
+      ],
+      "breadcrumbs": [
+        "parent portal / current child / section"
+      ],
+      "contextual_actions": [
+        "ask helper",
+        "report problem",
+        "request support"
+      ],
+      "mobile_menu": [
+        "same major modules as side nav"
+      ]
+    },
+    {
+      "surface": "student",
+      "route": "/student",
+      "side_nav": [
+        "Today",
+        "Goals",
+        "Assignments",
+        "Calendar",
+        "Questions",
+        "Documents",
+        "Help"
+      ],
+      "top_nav": [
+        "student identity",
+        "assistant/help"
+      ],
+      "horizontal_tabs": [
+        "student-safe child sections only"
+      ],
+      "filter_chips": [
+        "date/status filters"
+      ],
+      "breadcrumbs": [
+        "student portal / section"
+      ],
+      "contextual_actions": [
+        "ask helper",
+        "submit question",
+        "open assignment"
+      ],
+      "mobile_menu": [
+        "same major modules as side nav"
+      ]
+    },
+    {
+      "surface": "one_time_member",
+      "route": "/rabbi-member",
+      "side_nav": [
+        "Library",
+        "Classroom",
+        "Questions",
+        "Support",
+        "Account"
+      ],
+      "top_nav": [
+        "One Time member identity",
+        "assistant/help"
+      ],
+      "horizontal_tabs": [
+        "library/classroom subcategories only"
+      ],
+      "filter_chips": [
+        "topic/status filters"
+      ],
+      "breadcrumbs": [
+        "One Time / member / section"
+      ],
+      "contextual_actions": [
+        "ask Rabbi",
+        "support ticket"
+      ],
+      "mobile_menu": [
+        "same major modules as side nav"
+      ]
+    },
+    {
+      "surface": "one_time_classroom",
+      "route": "/one-time-classroom",
+      "side_nav": [
+        "Classroom",
+        "Library",
+        "Questions",
+        "Support"
+      ],
+      "top_nav": [
+        "classroom identity",
+        "assistant/help"
+      ],
+      "horizontal_tabs": [
+        "class/session/material subcategories only"
+      ],
+      "filter_chips": [
+        "seder/unit/status filters"
+      ],
+      "breadcrumbs": [
+        "One Time / classroom / section"
+      ],
+      "contextual_actions": [
+        "ask question",
+        "open material"
+      ],
+      "mobile_menu": [
+        "same major modules as side nav"
+      ]
+    }
+  ],
+  "operations": {
+    "main_nav": [
+      {
+        "id": "dashboard",
+        "label": "Dashboard",
+        "normalized_label": "dashboard"
+      },
+      {
+        "id": "watchdog",
+        "label": "Watchdog",
+        "normalized_label": "watchdog"
+      },
+      {
+        "id": "pipelines",
+        "label": "Pipelines",
+        "normalized_label": "pipelines"
+      },
+      {
+        "id": "tasks",
+        "label": "Tasks",
+        "normalized_label": "tasks"
+      },
+      {
+        "id": "agents",
+        "label": "Agents",
+        "normalized_label": "agents"
+      },
+      {
+        "id": "platform_suite",
+        "label": "Platform Suite",
+        "normalized_label": "platform suite"
+      },
+      {
+        "id": "students",
+        "label": "Students",
+        "normalized_label": "students"
+      },
+      {
+        "id": "contacts",
+        "label": "Parents / Contacts",
+        "normalized_label": "parents contacts"
+      },
+      {
+        "id": "community",
+        "label": "Community",
+        "normalized_label": "community"
+      },
+      {
+        "id": "studio",
+        "label": "Studio",
+        "normalized_label": "studio"
+      },
+      {
+        "id": "content",
+        "label": "Content",
+        "normalized_label": "content"
+      },
+      {
+        "id": "live_classes",
+        "label": "Live Classes",
+        "normalized_label": "live classes"
+      },
+      {
+        "id": "calendar",
+        "label": "Calendar",
+        "normalized_label": "calendar"
+      },
+      {
+        "id": "service_providers",
+        "label": "Service Providers",
+        "normalized_label": "service providers"
+      },
+      {
+        "id": "communications",
+        "label": "Communications",
+        "normalized_label": "communications"
+      },
+      {
+        "id": "internal_dialogue",
+        "label": "Internal Dialogue",
+        "normalized_label": "internal dialogue"
+      },
+      {
+        "id": "accounting",
+        "label": "Accounting",
+        "normalized_label": "accounting"
+      },
+      {
+        "id": "automations",
+        "label": "Automations",
+        "normalized_label": "automations"
+      },
+      {
+        "id": "api_usage",
+        "label": "API Usage",
+        "normalized_label": "api usage"
+      },
+      {
+        "id": "admin",
+        "label": "Team / Admin",
+        "normalized_label": "team admin"
+      },
+      {
+        "id": "integrations",
+        "label": "Integrations",
+        "normalized_label": "integrations"
+      },
+      {
+        "id": "settings",
+        "label": "Settings",
+        "normalized_label": "settings"
+      }
+    ],
+    "horizontal_tabs": {
+      "tasks": [
+        {
+          "id": "mine",
+          "label": "My Tasks",
+          "normalized_label": "my tasks"
+        },
+        {
+          "id": "one_time",
+          "label": "One Time Tasks",
+          "normalized_label": "one time tasks"
+        },
+        {
+          "id": "tasks",
+          "label": "All Tasks",
+          "normalized_label": "all tasks"
+        },
+        {
+          "id": "codex_queue",
+          "label": "Codex Queue",
+          "normalized_label": "codex queue"
+        },
+        {
+          "id": "pending",
+          "label": "Blocked",
+          "normalized_label": "blocked"
+        },
+        {
+          "id": "due_soon",
+          "label": "Due Soon",
+          "normalized_label": "due soon"
+        },
+        {
+          "id": "schedule",
+          "label": "Schedule",
+          "normalized_label": "schedule"
+        },
+        {
+          "id": "done_activity",
+          "label": "Done / Activity",
+          "normalized_label": "done activity"
+        },
+        {
+          "id": "full_history",
+          "label": "Full History / Search",
+          "normalized_label": "full history search"
+        },
+        {
+          "id": "archived",
+          "label": "Archived",
+          "normalized_label": "archived"
+        },
+        {
+          "id": "decisions",
+          "label": "Decisions",
+          "normalized_label": "decisions"
+        },
+        {
+          "id": "needs_my_decision",
+          "label": "Needs My Decision",
+          "normalized_label": "needs my decision"
+        },
+        {
+          "id": "needs_rabbi_decision",
+          "label": "Needs Rabbi Scheller",
+          "normalized_label": "needs rabbi scheller"
+        },
+        {
+          "id": "needs_external_decision",
+          "label": "Needs External Owner",
+          "normalized_label": "needs external owner"
+        },
+        {
+          "id": "decided",
+          "label": "Decided",
+          "normalized_label": "decided"
+        },
+        {
+          "id": "superseded_decisions",
+          "label": "Superseded",
+          "normalized_label": "superseded"
+        },
+        {
+          "id": "archived_decisions",
+          "label": "Archived Decisions",
+          "normalized_label": "archived decisions"
+        }
+      ],
+      "agents": [
+        {
+          "id": "ready",
+          "label": "Ready",
+          "normalized_label": "ready"
+        },
+        {
+          "id": "running",
+          "label": "Running",
+          "normalized_label": "running"
+        },
+        {
+          "id": "needs_operator",
+          "label": "Needs Operator",
+          "normalized_label": "needs operator"
+        },
+        {
+          "id": "needs_verification",
+          "label": "Needs Verification",
+          "normalized_label": "needs verification"
+        },
+        {
+          "id": "failed",
+          "label": "Failed",
+          "normalized_label": "failed"
+        },
+        {
+          "id": "completed",
+          "label": "Completed",
+          "normalized_label": "completed"
+        },
+        {
+          "id": "all",
+          "label": "All",
+          "normalized_label": "all"
+        }
+      ]
+    }
+  },
+  "fixes_implemented": [
+    "Operations Tasks child lane label changed from Calendar to Schedule so it no longer repeats the side-nav Calendar module.",
+    "Operations Tasks child lane label changed from Codex / Agent Work to Codex Queue so it no longer competes with the side-nav Agents module.",
+    "Static watchdog added to fail on same-level duplicate labels and major modules repeated as horizontal tabs."
+  ],
+  "findings": [],
+  "ok": true
+}

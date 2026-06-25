@@ -97,6 +97,18 @@ function resultLinksFromActions(actions = []) {
       url: result.url,
       recordType: result.record_type || null,
       recordId: result.record_id || null,
+      destination: result.data?.destination ? {
+        routeKey: result.data.destination.route_key || null,
+        canonicalPath: result.data.destination.canonical_path || result.data.destination.path || null,
+        role: result.data.destination.role || result.data.destination.scope?.role || null,
+        workspace: result.data.destination.workspace_key || result.data.destination.scope?.workspace_key || null,
+        project: result.data.destination.project_key || result.data.destination.scope?.project_key || null,
+        section: result.data.destination.section || null,
+        expectedPageLandmark: result.data.destination.expected_page_landmark || null,
+        whyCorrect: result.data.destination.why_correct || result.data.destination.reason || null,
+        authorizationResult: result.data.destination.authorization_result || (result.data.destination.ok ? 'allowed' : result.data.destination.reason || 'blocked'),
+        safeFallback: result.data.destination.fallback?.path || null,
+      } : null,
     }));
 }
 

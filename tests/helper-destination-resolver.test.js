@@ -9,6 +9,7 @@ const {
   resolveHelperDestination,
 } = require('../src/lib/bna/helper/destination-resolver');
 const { buildToolRegistry } = require('../src/lib/bna/helper/tool-registry');
+const { resultLinksFromActions } = require('../src/lib/bna/helper/context');
 
 test('helper destination resolver builds canonical Operations links from route and action registries', () => {
   const destination = resolveHelperDestination({
@@ -33,8 +34,16 @@ test('helper destination resolver builds canonical Operations links from route a
   assert.equal(buildOperationsPath({ view: 'tasks', section: 'pending', workspace_key: 'bna', task_id: 42 }), '/operations?view=tasks&section=pending&workspace=bna&task=42');
   assert.equal(destination.ok, true);
   assert.equal(destination.path, '/operations?view=tasks&section=pending&workspace=bna&task=42');
+  assert.equal(destination.canonical_path, '/operations');
   assert.equal(destination.route_key, 'operations');
   assert.equal(destination.required_role, 'super_admin');
+  assert.equal(destination.role, 'super_admin');
+  assert.equal(destination.workspace_key, 'bna');
+  assert.equal(destination.project_key, 'bna');
+  assert.equal(destination.section, 'pending');
+  assert.equal(destination.expected_page_landmark, 'authorized_operations_dashboard_only');
+  assert.equal(destination.authorization_result, 'allowed');
+  assert.match(destination.why_correct, /registered route operations|Operations helper navigation request/);
   assert.equal(destination.action_key, 'ACTION-HELPER-OPEN-OPERATIONS-VIEW');
   assert.equal(destination.helper_tool, 'open_operations_view');
   assert.equal(destination.checks.route_registered, true);
@@ -174,7 +183,33 @@ test('open_operations_view tool returns resolver metadata with the direct deep l
   assert.equal(result.ok, true);
   assert.equal(result.url, '/operations?view=settings&section=calendar_classroom&workspace=bna');
   assert.equal(result.data.destination.route_key, 'operations');
+  assert.equal(result.data.destination.canonical_path, '/operations');
+  assert.equal(result.data.destination.section, 'calendar_classroom');
+  assert.equal(result.data.destination.authorization_result, 'allowed');
   assert.equal(result.data.destination.action_key, 'ACTION-HELPER-OPEN-OPERATIONS-VIEW');
   assert.equal(result.data.destination.checks.route_registered, true);
   assert.equal(result.data.destination.checks.action_registered, true);
+});
+
+test('helper result links expose route/action resolver proof for internal links', async () => {
+  const registry = buildToolRegistry();
+  const result = await registry.execute(
+    'open_operations_view',
+    { view: 'tasks', section: 'pending', workspace_key: 'bna' },
+    { userRole: 'admin', projectKey: 'bna', identity: { role: 'admin', scope: { type: 'all' } } }
+  );
+
+  const links = resultLinksFromActions([{ result }]);
+  assert.equal(links.length, 1);
+  assert.equal(links[0].url, '/operations?view=tasks&section=pending&workspace=bna');
+  assert.equal(links[0].destination.routeKey, 'operations');
+  assert.equal(links[0].destination.canonicalPath, '/operations');
+  assert.equal(links[0].destination.role, 'admin');
+  assert.equal(links[0].destination.workspace, 'bna');
+  assert.equal(links[0].destination.project, 'bna');
+  assert.equal(links[0].destination.section, 'pending');
+  assert.equal(links[0].destination.expectedPageLandmark, 'authorized_operations_dashboard_only');
+  assert.equal(links[0].destination.authorizationResult, 'allowed');
+  assert.match(links[0].destination.whyCorrect, /Operations helper navigation request/);
+  assert.equal(links[0].destination.safeFallback, null);
 });

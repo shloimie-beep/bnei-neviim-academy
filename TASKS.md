@@ -6,6 +6,19 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260625-024` / `PARENT-20260625-024` /
+  `REQ-20260625-024` through `REQ-20260625-030`: GitHub issue #24 is the
+  active Goal Mode parent run in
+  `ops/execution-runs/2026-06-25-issue-24-agent-review-hub/` on branch
+  `codex/issue-24-agent-review-hub-20260625`. Scope: secure owner-only Agent
+  Review Hub, short-lived review sessions, full helper/link/action audit,
+  mobile-copyable Agent Mode prompt pack and typed result drop-off, navigation
+  IA duplicate cleanup, newest Drive recording read-only trace, and
+  integration/deploy/live closeout. Do not create duplicate visible Tasks. Do
+  not apply class backfill; Issue #18 remains `NOT SAFE TO APPLY`. Current
+  status: `REQ-20260625-024` and `REQ-20260625-025` are Done; `REQ-20260625-026`
+  through `REQ-20260625-029` are locally implemented and need verification;
+  `REQ-20260625-030` release/deploy/live closeout is in progress.
 - [x] `RAW-20260624-009` / `REQ-20260624-040` through
   `REQ-20260624-048`: GitHub issue #20 parent run is closed in
   `ops/execution-runs/2026-06-24-issue-20-parent-run/` on branch

@@ -217,6 +217,19 @@ function routeExpectedWorkspace(routeRecord = {}, target = {}) {
   return '';
 }
 
+function routeExpectedLandmark(routeRecord = {}, target = {}) {
+  return target.expected_landmark
+    || target.expectedLandmark
+    || routeRecord.expected_page_landmark
+    || routeRecord.expected_logged_in_behavior
+    || routeRecord.expected_logged_out_behavior
+    || '';
+}
+
+function targetSection(target = {}) {
+  return normalizeKey(target.section || target.tab || target.view_mode || target.viewMode || '') || null;
+}
+
 function roleAllows(requiredRole = '', actor = {}) {
   const required = normalizeKey(requiredRole);
   if (!required) return true;
@@ -283,15 +296,29 @@ function resolveHelperDestination({
   if (!roleAllowed) denialReasons.push('role_not_allowed');
   if (!workspaceAllowed) denialReasons.push('workspace_scope_mismatch');
   if (!actionAllowed) denialReasons.push(typedPermission.reason || 'action_not_registered_or_not_allowed');
+  const canonicalPath = routeRecord?.canonical_target || routeRecord?.route || path || null;
+  const authorizationResult = ok
+    ? 'allowed'
+    : denialReasons.join(',') || 'blocked';
 
   return {
     ok,
     path: ok ? path : null,
     attempted_path: path || null,
+    canonical_path: ok ? canonicalPath : null,
     route_key: routeRecord?.surface || null,
     route: routeRecord?.route || null,
     access: routeRecord?.access || null,
     required_role: routeRecord?.required_role || null,
+    role: normalizedActor.role,
+    workspace_key: normalizedActor.workspace_key || null,
+    project_key: normalizedActor.project_key || null,
+    section: targetSection(target),
+    expected_page_landmark: routeExpectedLandmark(routeRecord || {}, target) || null,
+    why_correct: ok
+      ? (reason || `Resolved through registered route ${routeRecord?.surface || routeRecord?.route || path}`)
+      : `Blocked by ${authorizationResult}`,
+    authorization_result: authorizationResult,
     public_allowed: Boolean(routeRecord?.public_allowed),
     scope: {
       role: normalizedActor.role,

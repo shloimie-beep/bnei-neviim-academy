@@ -1,0 +1,36 @@
+{
+  "run_id": "2026-06-25-issue-24-agent-review-hub",
+  "title": "Issue #24 - Agent Review Hub, helper audit, navigation IA, and newest Drive recording trace",
+  "created_at": "2026-06-25T14:38:29.107Z",
+  "updated_at": "2026-06-25T19:30:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260625-024",
+  "parent_id": "PARENT-20260625-024",
+  "workspace_key": "bna_platform",
+  "project_key": "agent_review_hub",
+  "predecessor_runs": [
+    "ops/execution-runs/2026-06-24-issue-20-parent-run",
+    "ops/execution-runs/2026-06-24-issue-18-class-intake-readonly"
+  ],
+  "predecessor_terminal_evidence": {
+    "issue_20": "closed_live_verified",
+    "issue_18": "NOT SAFE TO APPLY - no class backfill authorized or applied"
+  },
+  "git_refs": {
+    "base_branch": "master",
+    "working_branch": "codex/issue-24-agent-review-hub-20260625",
+    "local_head_at_start": "b8fb9e6dceb1b4c995108e3510cb3c2f9867a17b",
+    "issue_number": 24,
+    "parent_issue_number": 7,
+    "predecessor_issue_number": 20,
+    "guardrail_issue_number": 18
+  },
+  "current_batch": {
+    "batch_id": "Z",
+    "requirement_id": "REQ-20260625-030",
+    "title": "Integration, deploy, live verification, and GitHub closeout",
+    "status": "in_progress"
+  }
+}

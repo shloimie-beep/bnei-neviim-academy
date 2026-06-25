@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-24T23:58:00+03:00",
+  "updated_at": "2026-06-25T18:45:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -1307,6 +1307,139 @@
         "GOAL-CORE-002",
         "GOAL-CORE-010",
         "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-OPEN-CONTEXT",
+      "label": "Open review context",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-OPEN-CONTEXT\"]",
+      "expected_behavior": "Creates one short-lived server-side role/workspace-scoped review session after owner auth and CSRF validation, then opens the review shell.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_browser",
+        "expected_result": "POST /api/bna/agent-review/sessions requires CSRF and returns all_access_secret_in_url=false."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-OPEN-TARGET",
+      "label": "Open scoped route",
+      "surface": "agent_review_hub",
+      "route": "/agent-review/session",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-OPEN-TARGET\"]",
+      "expected_behavior": "Opens the target route for the selected review context with a non-secret session reference, not an all-access token.",
+      "permission": "scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "unit_and_browser",
+        "expected_result": "Review session target URL includes agent_review_session=<session_ref> and no owner credential."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-EXIT",
+      "label": "Exit review context",
+      "surface": "agent_review_session",
+      "route": "/agent-review/session",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-EXIT\"]",
+      "expected_behavior": "Revokes the current short-lived review session and returns to the owner hub.",
+      "permission": "scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "POST /api/bna/agent-review/sessions/exit revokes the scoped token."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-SUBMIT-RESULT",
+      "label": "Submit Agent Review Result",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-SUBMIT-RESULT\"]",
+      "expected_behavior": "Persists an idempotent typed Agent Review result linked to raw/source, parent goal, requirement, role/workspace, routes, helper outcomes, evidence, severity, correction, and timestamp.",
+      "permission": "super_admin_or_scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "POST /api/bna/agent-review/results returns result_ref and Operations readback URL."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-PROMPT-OPEN",
+      "label": "Open Agent Mode prompt",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-PROMPT-OPEN\"]",
+      "expected_behavior": "Opens one mobile-copyable Agent Mode prompt file from the Issue #24 prompt pack.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "static",
+        "expected_result": "Prompt index has 11 files and each prompt references the Agent Review Hub and typed result endpoint."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-RETURN-HUB",
+      "label": "Hub",
+      "surface": "agent_review_session",
+      "route": "/agent-review/session",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-RETURN-HUB\"]",
+      "expected_behavior": "Returns from a review session shell to the owner Agent Review Hub.",
+      "permission": "scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "browser",
+        "expected_result": "Hub link targets /operations/agent-review."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-COPY-SESSION",
+      "label": "Copy session URL",
+      "surface": "agent_review_session",
+      "route": "/agent-review/session",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-COPY-SESSION\"]",
+      "expected_behavior": "Copies the current short-lived scoped review session URL for Agent Mode handoff without exposing owner credentials.",
+      "permission": "scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "browser",
+        "expected_result": "Copy action uses the current review-shell URL and does not copy passwords, cookies, or API keys."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
       ]
     }
   ]
