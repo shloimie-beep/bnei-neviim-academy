@@ -14,7 +14,7 @@ const {
 } = require('../src/lib/bna/helper/context');
 const { getIntegrationReadiness } = require('../src/lib/bna/helper/integrations');
 const { helperPermissionForTool } = require('../src/lib/bna/helper/permissions');
-const { deterministicPlan } = require('../src/lib/bna/helper/planner');
+const { buildHelperPlan, deterministicPlan } = require('../src/lib/bna/helper/planner');
 const { redactValue } = require('../src/lib/bna/helper/redaction');
 
 const server = fs.readFileSync('server.js', 'utf8');
@@ -308,6 +308,28 @@ test('BNA Helper planner maps natural language to task, support, and navigation 
   assert.equal(automationUpdatePlan.actions[0].tool, 'update_automation');
   assert.equal(automationUpdatePlan.actions[0].args.automation_id, 42);
   assert.equal(automationUpdatePlan.actions[0].args.enabled, false);
+});
+
+test('BNA Helper planner resolves explicit navigation before hosted AI', async () => {
+  const registry = buildToolRegistry();
+  const previousApiKey = process.env.OPENAI_API_KEY;
+  const previousFetch = global.fetch;
+  let fetchCalled = false;
+  process.env.OPENAI_API_KEY = 'sk-test-helper-navigation';
+  global.fetch = async () => {
+    fetchCalled = true;
+    throw new Error('AI planner should not be called for explicit navigation');
+  };
+  try {
+    const plan = await buildHelperPlan('decisions', registry, { projectKey: 'bna' });
+    assert.equal(fetchCalled, false);
+    assert.equal(plan.actions[0].tool, 'open_operations_view');
+    assert.deepEqual(plan.actions[0].args, { view: 'tasks', section: 'decisions' });
+  } finally {
+    if (previousApiKey === undefined) delete process.env.OPENAI_API_KEY;
+    else process.env.OPENAI_API_KEY = previousApiKey;
+    global.fetch = previousFetch;
+  }
 });
 
 test('BNA Helper open_operations_view returns a direct deep link', async () => {

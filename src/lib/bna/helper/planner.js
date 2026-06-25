@@ -526,6 +526,36 @@ function deterministicPlan(message = '', registry, context = {}) {
   };
 }
 
+function deterministicNavigationPlan(message = '', registry, context = {}) {
+  const text = compactText(redactText(message), 4000);
+  const lower = text.toLowerCase();
+  if (
+    !(
+      /\b(go to|open|show|return|go back|back to|take me to)\b/i.test(text)
+      || /^(tasks?|decisions?|pending|content|calendar|schedule|scheduling|done|activity|students?|contacts?)$/i.test(text.trim())
+      || /\b(?:settings?|setup|configuration)\b.*\b(?:calendar|classroom)\b|\bcalendar[_\s/-]*classroom\b/i.test(text)
+    )
+  ) {
+    return null;
+  }
+  const args = navigationArgs(text, context);
+  if (!args) return null;
+  const action = {
+    tool: 'open_operations_view',
+    label: args.task_id ? `Open task #${args.task_id}` : `Open ${args.view}${args.section ? ` / ${args.section}` : ''}`,
+    args,
+    reason: lower.includes('setting') || lower.includes('classroom')
+      ? 'Operations settings navigation request'
+      : 'Operations navigation request',
+  };
+  if (!registry.get(action.tool)) return null;
+  return {
+    reply: `I can open ${args.view}${args.section ? ` / ${args.section}` : ''}.`,
+    actions: [action],
+    planner: 'deterministic',
+  };
+}
+
 function parsePlannerJson(content = '') {
   const text = String(content || '').trim();
   if (!text) return null;
@@ -618,6 +648,8 @@ async function aiPlan(message = '', registry, context = {}) {
 }
 
 async function buildHelperPlan(message = '', registry, context = {}) {
+  const navigation = deterministicNavigationPlan(message, registry, context);
+  if (navigation) return navigation;
   const ai = await aiPlan(message, registry, context);
   if (ai && ai.actions.length) return ai;
   return deterministicPlan(message, registry, context);
