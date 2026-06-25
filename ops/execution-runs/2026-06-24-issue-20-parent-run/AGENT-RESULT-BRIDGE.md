@@ -2,7 +2,7 @@
 
 Requirement: `REQ-20260624-044`
 
-Status: Blocked: local verified, deploy/live proof pending.
+Status: Done after merge, deploy, and live verification.
 
 ## What Changed
 
@@ -38,6 +38,9 @@ Status: Blocked: local verified, deploy/live proof pending.
 - PASS `npm run watchdog:actions` with 0 findings; report `ops/watchdog-audits/2026-06-24T21-01-watchdog-action-audit.md`
 - PASS static marker check for server route, typed action, and Operations UI link functions
 - PASS JSON parse for `ops/action-registry.json`
+- PASS live Issue #20 verifier after PR #22 deployment: authenticated
+  Operations/API readback succeeded, helper button was present, agent fleet was
+  `running`, and no authenticated screenshot was captured.
 
 ## Non-Blocking Test Note
 
@@ -46,5 +49,8 @@ The full `node --test tests\system-truth-scripts.test.js` file was not used as t
 ## Guardrails
 
 - No GitHub status comment was posted.
-- No production data mutation, deploy, external send, charge, DNS change, credential change, Drive write, class backfill, browser private capture, or secret exposure was performed.
-- Server-visible/API/UI behavior remains blocked from Done until deploy/live proof is completed under `REQ-20260624-048`.
+- No production data mutation, external send, charge, DNS change, credential
+  change, Drive write, class backfill, browser private capture, or secret
+  exposure was performed.
+- Server-visible/API/UI behavior is live-verified by PR #22 deployment
+  `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.

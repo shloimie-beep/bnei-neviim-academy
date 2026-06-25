@@ -12,7 +12,7 @@
     <div>
       <p class="eyebrow">BNA Operations</p>
       <h1>Issue 20 Owner Walkthrough</h1>
-      <p class="header-copy">A credential-safe map for the current branch, active goal, agent fleet, browser profiles, role QA, GitHub bridge, Decisions, restart controls, and the next ramble.</p>
+      <p class="header-copy">A credential-safe map for the verified release, agent fleet, browser profiles, role QA, GitHub bridge, Decisions, restart controls, and the next ramble.</p>
     </div>
     <div class="header-actions" aria-label="Owner walkthrough actions">
       <a class="button secondary" href="/integration-setup.html">Setup Center</a>
@@ -25,12 +25,12 @@
     <section class="status-band walkthrough-truth" aria-label="Current release truth">
       <div>
         <strong>Current truth</strong>
-        <span>Origin master is <code>50087ae5d8e120830ae8e1f8dcaab71f61389d7c</code>. This Issue 20 branch is <code>9b2696b744e094a2bffe2d178124d94719df2644</code>. Live health returned HTTP 200 with database connected. The deployed SHA is not currently provable through Railway because the local Railway target is blocked under <code>REQ-20260624-048</code>.</span>
+        <span>Issue 20 implementation PR #22 merged at <code>378cc562a7dd4ffc8f2cc81a7341502df42d0295</code> and live-verified on Railway deployment <code>4e4f38c5-73f3-49a4-b399-2dcc647bb7fa</code>. Live health returned HTTP 200 with database connected. The final closeout deployment ID is posted on GitHub Issue 20 after the release-evidence docs deploy.</span>
       </div>
       <div class="state-counts">
-        <span class="count-chip">Done 3</span>
-        <span class="count-chip">Blocked 4</span>
-        <span class="count-chip">Open 2</span>
+        <span class="count-chip">Done 9</span>
+        <span class="count-chip">Blocked 0</span>
+        <span class="count-chip">Open 0</span>
       </div>
     </section>
 
@@ -39,16 +39,16 @@
         <div class="card-heading">
           <div>
             <h2>Live SHA and Health</h2>
-            <p class="purpose">Know what is live, what is only on the Issue 20 branch, and why deploy proof is still blocked.</p>
+            <p class="purpose">Know which Issue 20 implementation commit was verified live and where to find final release proof.</p>
           </div>
-          <span class="status-pill" data-tone="preview">Deploy blocked</span>
+          <span class="status-pill" data-tone="ready">Live verified</span>
         </div>
         <dl class="card-facts walkthrough-facts">
           <div><dt>Page</dt><dd><a href="/api/health">/api/health</a> and <a href="https://github.com/shloimie-beep/bnei-neviim-academy/tree/master" rel="noopener">GitHub master</a></dd></div>
-          <div><dt>Step</dt><dd>Read live health, compare origin master, and keep Issue 20 branch work separate until release.</dd></div>
-          <div><dt>Expected result</dt><dd>Health is OK, origin master is <code>50087ae5d8e120830ae8e1f8dcaab71f61389d7c</code>, and the Issue 20 branch is not live yet.</dd></div>
+          <div><dt>Step</dt><dd>Read live health, compare the merged Issue 20 commit, and use Issue 20 for the final deployment comment.</dd></div>
+          <div><dt>Expected result</dt><dd>Health is OK, PR #22 merge commit <code>378cc562a7dd4ffc8f2cc81a7341502df42d0295</code> was live-verified, and no class backfill was applied.</dd></div>
           <div><dt>Validation command</dt><dd><code>Invoke-WebRequest -Uri https://bneineviimacademy.org/api/health</code></dd></div>
-          <div><dt>Recovery action</dt><dd>Fix Railway targeting or record an approved alternate live-smoke path under <code>REQ-20260624-048</code>.</dd></div>
+          <div><dt>Recovery action</dt><dd>Rerun <code>npm run railway:doctor</code>, <code>npm run app:smoke</code>, and <code>npm run app:smoke:public-privacy</code>, then post the exact blocker to Issue 20.</dd></div>
         </dl>
       </article>
 
@@ -56,14 +56,14 @@
         <div class="card-heading">
           <div>
             <h2>Active Goal and Lanes</h2>
-            <p class="purpose">See the active parent run, lane status, and the next unblocked batch.</p>
+            <p class="purpose">See the closed parent run, lane status, and proof that no unblocked batch remains.</p>
           </div>
-          <span class="status-pill" data-tone="ready">Active</span>
+          <span class="status-pill" data-tone="ready">Closed</span>
         </div>
         <dl class="card-facts walkthrough-facts">
           <div><dt>Page</dt><dd><code>ops/execution-runs/2026-06-24-issue-20-parent-run/</code></dd></div>
           <div><dt>Step</dt><dd>Open <code>run.json</code>, <code>requirements.json</code>, and <code>LANE-MANIFEST.json</code>.</dd></div>
-          <div><dt>Expected result</dt><dd><code>REQ-20260624-047</code> is the next batch; Batches A, C, D, F, and G need deploy/live proof before Done.</dd></div>
+          <div><dt>Expected result</dt><dd>All Issue 20 requirements are terminal Done after live verification, and <code>npm run bna:run:next</code> reports no unblocked executable batch.</dd></div>
           <div><dt>Validation command</dt><dd><code>npm run bna:run:next</code></dd></div>
           <div><dt>Recovery action</dt><dd>Run <code>npm run bna:run:validate</code>, fix the named run-field error, then rerun next-batch selection.</dd></div>
         </dl>
@@ -126,7 +126,7 @@
             <h2>GitHub Bridge and Agent Results</h2>
             <p class="purpose">Use typed result packets and same-thread GitHub status previews without posting externally by accident.</p>
           </div>
-          <span class="status-pill" data-tone="preview">Approval gated</span>
+          <span class="status-pill" data-tone="ready">Approval gated</span>
         </div>
         <dl class="card-facts walkthrough-facts">
           <div><dt>Page</dt><dd><a href="https://github.com/shloimie-beep/bnei-neviim-academy/issues/20" rel="noopener">GitHub Issue 20</a></dd></div>
@@ -160,12 +160,12 @@
             <h2>Stop, Restart, and Release Gate</h2>
             <p class="purpose">Know how to pause local automation and what must happen before app-visible work is Done.</p>
           </div>
-          <span class="status-pill" data-tone="preview">Release gated</span>
+          <span class="status-pill" data-tone="ready">Live verified</span>
         </div>
         <dl class="card-facts walkthrough-facts">
-          <div><dt>Page</dt><dd><code>ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md</code></dd></div>
-          <div><dt>Step</dt><dd>Stop or restart local fleet/watchdog as needed; deploy only through the final release gate after Railway targeting is repaired.</dd></div>
-          <div><dt>Expected result</dt><dd>No deploy, send, charge, DNS, credential, Drive write, production mutation, class backfill, or public publishing runs without the explicit gate.</dd></div>
+          <div><dt>Page</dt><dd><code>ops/execution-runs/2026-06-24-issue-20-parent-run/DEPLOYMENT.md</code> and GitHub Issue 20</dd></div>
+          <div><dt>Step</dt><dd>Stop or restart local fleet/watchdog as needed; use the verified GitHub master to Railway auto-deploy path for release work.</dd></div>
+          <div><dt>Expected result</dt><dd>No send, charge, DNS, credential, Drive write, production mutation, class backfill, or public publishing runs without the explicit gate; Issue 20 release proof is posted back to GitHub.</dd></div>
           <div><dt>Validation command</dt><dd><code>npm run bna:run:validate && npm run secrets:audit && git diff --check</code></dd></div>
           <div><dt>Recovery action</dt><dd>Leave the dependent requirement blocked with owner, consequence, and exact next action; continue the next unblocked batch.</dd></div>
         </dl>

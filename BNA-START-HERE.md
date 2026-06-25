@@ -2,26 +2,28 @@
 
 Every new GitHub-connected ChatGPT or Codex session for this repo starts here.
 
-## Current Clean-Slate Handoff
+## Current Handoff
 
-As of 2026-06-24, the current handoff is
-`ops/execution-runs/2026-06-24-clean-slate-acceptance/`.
+As of 2026-06-25, the latest execution run is closed:
+`ops/execution-runs/2026-06-24-issue-20-parent-run/`.
 
 Verified baseline:
 
-- PR #16 is merged to `master` at
-  `c14507ab121daa221689ba285c203605bf2d64bf`.
-- Current deployed Railway SHA is
-  `7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772` in deployment
-  `f8362b06-06b5-41f2-b4eb-102f67a91b85`.
-- Live health and public/privacy smokes passed in the clean-slate acceptance
-  evidence.
-- `REQ-20260624-028` remains active blocked safety work for read-only class
-  intake reconciliation; use GitHub issue #18 and do not apply class backfill.
+- Issue #20 PR #22 merged to `master` at
+  `378cc562a7dd4ffc8f2cc81a7341502df42d0295`.
+- Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa` deployed that
+  commit to the canonical BNA service.
+- Live health, app smoke, public/privacy smoke, visual/UI verification,
+  helper/bot destination verification, agent-browser readiness, agent-fleet
+  readiness, Operations queue readback, and owner walkthrough verification
+  passed for Issue #20.
+- Issue #18 PR #21 was merged as read-only evidence only. Its verdict remains
+  `NOT SAFE TO APPLY`; do not apply class backfill.
 - Owner walkthrough:
-  `ops/acceptance/2026-06-24-clean-slate/owner-walkthrough.md`.
-- Final handoff:
-  `ops/acceptance/2026-06-24-clean-slate/final-handoff.md`.
+  `/issue-20-owner-walkthrough.html` and
+  `ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md`.
+- Next-session truth:
+  `ops/execution-runs/2026-06-24-issue-20-parent-run/NEXT-SESSION.md`.
 
 1. Read `AGENTS.md`, then `docs/BNA-RAMBLE-TO-DONE.md`.
 2. Inspect the active execution run:

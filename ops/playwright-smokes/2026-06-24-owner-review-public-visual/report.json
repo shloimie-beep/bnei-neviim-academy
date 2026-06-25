@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-24T20:02:57.503Z",
-  "release_candidate_sha": "04587f19807d55d657eec6e12b78ff3110f76916",
+  "generated_at": "2026-06-25T04:27:00.155Z",
+  "release_candidate_sha": "729fb7684dd938e99baec37cad8cc2b50794b9d3",
   "production_url": "https://bneineviimacademy.org/",
   "guardrails": {
     "external_credentials": false,
@@ -13,7 +13,7 @@
     {
       "target": "release-local",
       "viewport": "mobile-390",
-      "url": "http://127.0.0.1:63336/",
+      "url": "http://127.0.0.1:52049/",
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-mobile-390.png",
       "headerHeroGapPx": 0,
       "headerHeroGapOk": true,
@@ -135,7 +135,7 @@
     {
       "target": "release-local",
       "viewport": "tablet-768",
-      "url": "http://127.0.0.1:63336/",
+      "url": "http://127.0.0.1:52049/",
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-tablet-768.png",
       "headerHeroGapPx": 0,
       "headerHeroGapOk": true,
@@ -257,7 +257,7 @@
     {
       "target": "release-local",
       "viewport": "desktop-1440",
-      "url": "http://127.0.0.1:63336/",
+      "url": "http://127.0.0.1:52049/",
       "screenshot": "ops/playwright-smokes/2026-06-24-owner-review-public-visual/release-local-desktop-1440.png",
       "headerHeroGapPx": 0,
       "headerHeroGapOk": true,
@@ -418,6 +418,6 @@
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: Operations auth is disabled; use only public One Time review routes.",
     "ONE_TIME_REVIEW_ONLY_NO_DB enabled: database-backed routes are unavailable; static One Time review routes and fixture APIs are enabled.",
     "Skipping database initialization in ONE_TIME_REVIEW_ONLY_NO_DB mode",
-    "BNA Server running on 127.0.0.1:63336"
+    "BNA Server running on 127.0.0.1:52049"
   ]
 }

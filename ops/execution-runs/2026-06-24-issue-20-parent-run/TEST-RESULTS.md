@@ -151,6 +151,42 @@
   `npm run secrets:audit` passed after REQ047 closeout.
 - `npm run bna:run:next` reported no unblocked executable batch once
   deploy/live proof blockers were isolated.
+- PR #21 focused tests passed before merge:
+  `node --check scripts\class-drive-intake-reconcile.cjs`,
+  `node --check src\lib\bna\class-drive-intake-reconcile.js`,
+  `node --test tests\class-drive-intake-reconcile.test.js tests\class-drive-intake-shared-patch.test.js`
+  17/17, `npm run bna:run:validate`, source coverage, stale-evidence,
+  `npm run secrets:audit`, and diff check.
+- Issue #20 branch release gates passed at
+  `729fb7684dd938e99baec37cad8cc2b50794b9d3`: `node --check server.js`,
+  `npm run bna:run:validate`, source coverage, stale-evidence,
+  `npm run watchdog:actions`, `npm run watchdog:links`,
+  `npm run watchdog:security`, `npm run watchdog:raw`,
+  `npm run watchdog:content`, `npm run watchdog:communications`,
+  `npm run watchdog:visual`, `npm run secrets:audit`, full `npm test`
+  1326/1326, `git diff --check`, Railway target guard tests, and Railway
+  target doctor.
+- `npm run railway:doctor` passed after PR #22 deployed and selected
+  deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.
+- `npm run app:smoke` passed after deployment; report:
+  `ops/live-smokes/2026-06-25T04-22-25-680Z-live-app-smoke.md`.
+- `npm run app:smoke:public-privacy` passed after deployment; report:
+  `ops/live-smokes/2026-06-25T04-22-36-357Z-public-route-privacy-smoke.md`.
+- Issue #20 live verifier passed after deployment; report:
+  `ops/live-smokes/2026-06-25T04-33-00-045Z-issue20-live-verification/issue20-live-verification.md`.
+- `npm run owner-review:visual` passed for release-local and production
+  public at 390x844, 768x1024, and 1440x900.
+- `npm run watchdog:helper-destinations` passed 10/10 cases after deployment.
+- `npm run agent:browser:health -- --json` passed after deployment.
+- `npm run agent:browser:smoke -- --all --json` passed for all six profiles
+  after deployment with no screenshots and no private data captured.
+- `npm run agent:fleet:readiness -- --json` passed after deployment with
+  parent coordination `ok=true`, 0 findings, synthetic proof
+  `external_write_performed=false`.
+- `npm run ops:audit-queue -- --json` ran after deployment but could not use
+  live task credentials from that script. Authenticated live Operations/API
+  queue proof is instead recorded by the Issue #20 live verifier, which read
+  1000 live task rows and agent fleet status `running` without screenshots.
 
 ## Known Non-Blocking Test Note
 
@@ -161,7 +197,4 @@
 
 ## Pending
 
-- Final deploy/live closeout remains blocked by Railway targeting or missing
-  approved alternate live-smoke path.
-- Full repository tests and watchdogs before any future final deploy/live
-  closeout.
+- None for Issue #20. Future rambles should create a fresh raw intake/register.

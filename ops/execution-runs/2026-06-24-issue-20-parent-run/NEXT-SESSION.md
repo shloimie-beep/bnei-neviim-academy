@@ -1,33 +1,37 @@
 # Next Session
 
-Resume from:
-`C:\Users\User\Documents\Codex\2026-06-24\issue-20-parent-run`
+Issue #20 is closed.
 
-Active run:
-`ops/execution-runs/2026-06-24-issue-20-parent-run`
+## Closed Run
 
-Current branch:
-`codex/issue-20-parent-run-20260624`
+- Run: `ops/execution-runs/2026-06-24-issue-20-parent-run`
+- Branch: `codex/issue-20-parent-run-20260624`
+- Issue #20 PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/22`
+- Merged master SHA: `378cc562a7dd4ffc8f2cc81a7341502df42d0295`
+- Railway deployment ID: `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`
+- Deployed SHA: `378cc562a7dd4ffc8f2cc81a7341502df42d0295`
 
-Blocked requirement:
+All requirements `REQ-20260624-040` through `REQ-20260624-048` are terminal
+Done in `requirements.json`.
 
-- `REQ-20260624-048` - Issue #20 integration, deploy, live verification, and
-  final response.
+## Issue #18 Guardrail
 
-Next safe step after the Railway/live-smoke blocker is resolved:
+PR #21 was merged as read-only evidence. The class reconciliation verdict
+remains `NOT SAFE TO APPLY`; no class backfill is authorized or applied.
+
+## For The Next Ramble
+
+Start fresh:
 
 ```powershell
+npm run bna:run:status
 npm run bna:run:next
 ```
 
-Then recheck Git/GitHub/Railway/live baseline before attempting any release
-action. Continue Batch Z using the parent coordination rules in
-`COORDINATION.md` and `LANE-MANIFEST.json`.
+If Shloimie gives a new broad ramble or goal-mode packet, create a new raw
+intake record and dated requirement register before implementation.
 
-Batches A, C, D, F, and G are locally verified and blocked from Done only by
-deploy/live proof under `REQ-20260624-048`. Batches B and E are Done. Batch Z
-is blocked because Railway targeting is not currently usable and no alternate
-live-smoke path is approved.
+Do not reopen Issue #20 unless the operator explicitly reports a regression.
 
 Do not run Tier 3 actions without explicit approval:
 

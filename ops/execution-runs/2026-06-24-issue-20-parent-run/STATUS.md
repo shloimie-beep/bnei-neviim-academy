@@ -172,5 +172,34 @@
   approved alternate deploy/live-smoke path.
 - No deploy, merge, production mutation, external write, GitHub status comment,
   send, charge, DNS change, credential/account change, class backfill, Drive
-  write, public publishing, browser private capture, or secret exposure was
+ write, public publishing, browser private capture, or secret exposure was
   performed.
+
+2026-06-25T07:45:00+03:00:
+
+- PR #21 was marked ready and merged first. Its verdict remains
+  `NOT SAFE TO APPLY`; no class backfill is authorized or applied.
+- Canonical BNA Railway target was verified as project
+  `skillful-motivation`, environment `production`, service
+  `skillful-motivation`, custom domain `bneineviimacademy.org`, connected to
+  GitHub `shloimie-beep/bnei-neviim-academy` branch `master`.
+- Issue #20 PR #22 merged to `master` at
+  `378cc562a7dd4ffc8f2cc81a7341502df42d0295`.
+- Railway auto-deployed that merged commit as deployment
+  `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa` with status `SUCCESS`.
+- Required live verification passed:
+  `npm run railway:doctor`, `npm run app:smoke`,
+  `npm run app:smoke:public-privacy`, owner-review public visual, helper
+  destination watchdog, agent-browser health/smoke, agent-fleet readiness, and
+  the Issue #20 live verifier.
+- The Issue #20 live verifier covered public homepage/header/footer/button
+  quality, `/issue-20-owner-walkthrough.html`, Owner Setup Center link,
+  provider/parent/student/One Time navigation, authenticated Operations
+  queue/UI lanes, helper button presence, agent-fleet status, and required
+  390x844, 768x1024, and 1440x900 public viewports.
+- `REQ-20260624-041`, `REQ-20260624-043`, `REQ-20260624-044`,
+  `REQ-20260624-046`, `REQ-20260624-047`, and `REQ-20260624-048` moved from
+  live-blocked to Done.
+- All Issue #20 requirements are now terminal Done in `requirements.json`; the
+  run is marked inactive/closed in `run.json`.
+- Remaining Issue #20 blocker: none.

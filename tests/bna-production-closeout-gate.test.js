@@ -91,8 +91,13 @@ test('production closeout gate passes a clean pushed dry-run without external ac
   assert.equal(report.integration_readiness.secret_values_printed, false);
   assert.equal(report.integration_readiness.external_read_performed, false);
   assert.equal(report.package_scripts.missing.length, 0);
-  assert.ok(report.run.active);
-  assert.ok(report.run.open_requirements.length > 0);
+  assert.equal(typeof report.run.active, 'boolean');
+  if (report.run.active) {
+    assert.ok(report.run.open_requirements.length > 0);
+  } else {
+    assert.equal(report.run.open_requirements.length, 0);
+    assert.ok(Number(report.run.status_counts?.done || 0) > 0);
+  }
   assert.ok(report.run.open_requirements.every((requirement) => /^REQ-\d{8}-\d{3}$/.test(requirement.id)));
   assert.ok(report.next_command_plan.some((command) => /bna:release-gate/.test(command)));
   assert.ok(report.next_command_plan.some((command) => /bna:external-readback-gate/.test(command)));

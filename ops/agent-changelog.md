@@ -26356,3 +26356,31 @@ unblocked executable batch. No deploy, merge, production mutation, external
 write, GitHub status comment, send, charge, DNS change, credential/account
 change, class backfill, Drive write, browser private capture, public
 publishing, or secret exposure was performed.
+
+## 2026-06-25T07:45:00+03:00 - Issue #20 Release Merged, Deployed, Live-Verified, And Closed
+
+Closed the Issue #20 parent run (`REQ-20260624-040` through
+`REQ-20260624-048`) after merging, deploying, and live-verifying the release.
+PR #21 was merged first as read-only Issue #18 evidence; its verdict remains
+`NOT SAFE TO APPLY` and no class backfill was applied.
+
+Issue #20 PR #22 merged to `master` at
+`378cc562a7dd4ffc8f2cc81a7341502df42d0295`. The canonical BNA Railway target
+was verified as project/service `skillful-motivation` in `production` with
+custom domain `bneineviimacademy.org`, and GitHub `master` auto-deployed the
+merge as Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.
+
+Verification passed: `npm run railway:doctor`, `npm run app:smoke`,
+`npm run app:smoke:public-privacy`, owner-review public visual, helper
+destination watchdog, agent-browser health/smoke, agent-fleet readiness, and
+the Issue #20 live verifier covering public viewports, owner walkthrough,
+Owner Setup Center, role routes, authenticated Operations queue/UI readback,
+helper button, and agent fleet status.
+
+The stale Railway blocker is resolved by canonical target discovery and
+fail-closed Railway deploy/doctor script hardening. All Issue #20 requirements
+are terminal Done, the run is closed in `run.json`, and `TASKS.md` no longer
+shows Issue #20 as active work. No deploy was sent to `one-time-production`.
+No production data mutation, class backfill, external send, charge, DNS
+change, credential/account change, Drive write, Buffer publish, browser
+private screenshot, public publishing, or secret exposure was performed.
