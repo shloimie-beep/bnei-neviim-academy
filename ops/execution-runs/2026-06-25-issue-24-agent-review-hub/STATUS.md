@@ -45,10 +45,8 @@
   resolver evidence.
 - Cleaned Operations task IA labels from `Codex / Agent Work` to `Codex Queue`
   and `Calendar` to `Schedule`, then added a navigation IA duplicate watchdog.
-- `REQ-20260625-026` through `REQ-20260625-029` are `needs_verification`
-  because they are app/server-visible and still require browser, full watchdog,
-  push, deploy, and live-smoke evidence.
-- `REQ-20260625-030` is `in_progress`.
+- `REQ-20260625-026` through `REQ-20260625-029` entered the pre-deploy verification state at this historical checkpoint because app/server-visible work still required browser, full watchdog, push, deploy, and live-smoke evidence.
+- `REQ-20260625-030` was opened as the release gate at this checkpoint.
 
 ## 2026-06-25T19:10:00+03:00 - Local Browser Smoke and Watchdog Checkpoint
 
@@ -73,9 +71,7 @@
   coverage. Raw-intake drift watchdog returned `ok true` with two medium
   pre-existing June 17/18 fallback-pointer findings unrelated to
   `RAW-20260625-024`; they remain separate cleanup, not Issue #24 intake loss.
-- `REQ-20260625-026` through `REQ-20260625-029` remain
-  `needs_verification`; `REQ-20260625-030` remains `in_progress` until full
-  test, push, merge, deploy, and live-smoke proof are complete.
+- Historical checkpoint: `REQ-20260625-026` through `REQ-20260625-029` still awaited live verification and `REQ-20260625-030` still awaited full test, push, merge, deploy, and live-smoke proof.
 
 ## 2026-06-25T19:30:00+03:00 - Full Test and Visual Gate
 
@@ -98,3 +94,27 @@
   still required after deployment.
 - Posted this local-validation checkpoint to Issue #24 as comment
   `4801879834`.
+
+## 2026-06-25T20:15:00+03:00 - Issue #24 Live Verified Closeout
+
+All Issue #24 requirements are terminal Done. The app-visible work shipped via
+PRs #25 through #30, with final deployed app merge commit
+`9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942` on Railway deployment `24c1d191-3f50-4d0a-9da8-687ba2f1a434` at
+https://bneineviimacademy.org.
+
+Live verification passed for the owner-only Agent Review Hub, 9 review
+contexts, 11 prompt files, sequential short-lived scoped sessions, redacted
+HttpOnly review cookie flow, banner, Exit, typed result persistence/readback
+`AGR-96dfac2f8c31163c`, helper route/action resolver execution, standard app
+smoke, Operations helper smoke, public privacy smoke, and class upload trace
+smoke.
+
+The newest Drive recording trace is intentionally not called processed:
+`drive_file:9f6f75a5d602` matched `content_job:83`, but production
+student-name/progress/question/profile/accountability proposal stages remain
+unknown, so the recording verdict stays `PARTIAL`. Issue #18 remains
+`NOT SAFE TO APPLY`; no class backfill, Drive write, paid retranscription,
+worker retry, external send, charge, DNS change, credential/account change, or
+secret exposure was performed.
+
+Final Issue #24 evidence comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945

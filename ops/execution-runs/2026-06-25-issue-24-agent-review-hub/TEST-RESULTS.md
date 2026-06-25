@@ -41,7 +41,7 @@
   9 contexts, 11 prompt links, newest-recording trace status `PARTIAL /
   content_job:83`, clean server-side exchange redirect, cookie-backed reload,
   banner, Exit, no all-access URL, and scoped session metadata.
-- PENDING live deployment smoke.
+- SUPERSEDED: final live deployment smoke passed.
 
 ## REQ-20260625-027 Helper Backend/Action/Link Audit
 
@@ -56,7 +56,7 @@
 - PASS `npm run watchdog:helper-destinations`.
 - PASS helper-related coverage in `npm run watchdog:actions` and
   `npm run watchdog:security`.
-- PENDING live helper response verification after deployment.
+- SUPERSEDED: final live helper response verification passed.
 
 ## REQ-20260625-028 Agent Mode Prompt Pack and Result Drop-Off
 
@@ -66,7 +66,7 @@
 - PASS unit readback proves typed review-result persistence shape.
 - PASS local browser result drop-off persisted
   `AGR-b9a823fc37acd01b` through the typed session UI/API and readback.
-- PENDING live readback.
+- SUPERSEDED: final live typed result readback passed.
 
 ## REQ-20260625-029 Navigation IA Duplicate Cleanup
 
@@ -82,12 +82,11 @@
 - PARTIAL separate scripted 390px review-session screenshot attempt timed out
   after the hub capture; session/result behavior remains covered by
   `agent-review-local-smoke.md`.
-- PENDING live deployment verification.
+- SUPERSEDED: final live deployment verification passed.
 
 ## Current Run Validation
 
-- PASS `npm run bna:run:status`: 2 done, 4 needs_verification,
-  1 in_progress, work remains yes.
+- HISTORICAL pre-deploy `npm run bna:run:status`: 2 done, 4 awaiting live verification, 1 release gate open, work remained yes at that checkpoint.
 - PASS focused suite:
   `node --test tests/agent-review-hub.test.js tests/helper-destination-resolver.test.js tests/issue24-helper-audit.test.js tests/issue24-navigation-ia.test.js tests/newest-drive-recording-trace.test.js tests/operations-task-queue-visibility.test.js tests/one-time-external-user-portal.test.js`
   (62/62).
@@ -107,4 +106,28 @@
   detection none.
 - PASS `npm run bna:run:validate`: validation passed.
 - PASS `npm test`: 1345/1345.
-- PENDING push/merge/deploy and live smokes.
+- SUPERSEDED: push/merge/deploy and live smokes passed.
+
+## 2026-06-25T20:15:00+03:00 - Issue #24 Live Verified Closeout
+
+All Issue #24 requirements are terminal Done. The app-visible work shipped via
+PRs #25 through #30, with final deployed app merge commit
+`9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942` on Railway deployment `24c1d191-3f50-4d0a-9da8-687ba2f1a434` at
+https://bneineviimacademy.org.
+
+Live verification passed for the owner-only Agent Review Hub, 9 review
+contexts, 11 prompt files, sequential short-lived scoped sessions, redacted
+HttpOnly review cookie flow, banner, Exit, typed result persistence/readback
+`AGR-96dfac2f8c31163c`, helper route/action resolver execution, standard app
+smoke, Operations helper smoke, public privacy smoke, and class upload trace
+smoke.
+
+The newest Drive recording trace is intentionally not called processed:
+`drive_file:9f6f75a5d602` matched `content_job:83`, but production
+student-name/progress/question/profile/accountability proposal stages remain
+unknown, so the recording verdict stays `PARTIAL`. Issue #18 remains
+`NOT SAFE TO APPLY`; no class backfill, Drive write, paid retranscription,
+worker retry, external send, charge, DNS change, credential/account change, or
+secret exposure was performed.
+
+Final Issue #24 evidence comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945

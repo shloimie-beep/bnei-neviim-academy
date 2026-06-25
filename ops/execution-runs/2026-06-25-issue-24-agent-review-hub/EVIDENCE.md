@@ -39,7 +39,7 @@
 - `tests/agent-review-hub.test.js`
 - `ops/route-registry.json`
 - `ops/action-registry.json`
-- Local status: implemented; deployment/live verification pending.
+- Final status: deployed and live verified.
 
 ## REQ-20260625-027 Helper Route/Action Grounding
 
@@ -52,7 +52,7 @@
 - `ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.json`
 - `ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.md`
 - Local status: 280/280 static resolver evaluations passed; live helper
-  response verification pending.
+  response verification passed live.
 
 ## REQ-20260625-028 Agent Mode Prompt Pack and Result Drop-Off
 
@@ -64,7 +64,7 @@
 - `public/agent-review-session.html`
 - `tests/agent-review-hub.test.js`
 - Local status: prompt pack and typed review-result persistence are
-  implemented; browser/live readback pending.
+  implemented and passed browser/live readback.
 
 ## REQ-20260625-029 Navigation IA Duplicate Cleanup
 
@@ -77,7 +77,7 @@
 - `ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.json`
 - `ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.md`
 - Local status: static watchdog has zero findings; visual/mobile/live checks
-  pending.
+  passed.
 
 ## Local Browser and Watchdog Checkpoint
 
@@ -105,3 +105,27 @@
   `ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-hub-mobile-390.png`
 - Issue #24 local-validation checkpoint comment:
   https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4801879834
+
+## 2026-06-25T20:15:00+03:00 - Issue #24 Live Verified Closeout
+
+All Issue #24 requirements are terminal Done. The app-visible work shipped via
+PRs #25 through #30, with final deployed app merge commit
+`9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942` on Railway deployment `24c1d191-3f50-4d0a-9da8-687ba2f1a434` at
+https://bneineviimacademy.org.
+
+Live verification passed for the owner-only Agent Review Hub, 9 review
+contexts, 11 prompt files, sequential short-lived scoped sessions, redacted
+HttpOnly review cookie flow, banner, Exit, typed result persistence/readback
+`AGR-96dfac2f8c31163c`, helper route/action resolver execution, standard app
+smoke, Operations helper smoke, public privacy smoke, and class upload trace
+smoke.
+
+The newest Drive recording trace is intentionally not called processed:
+`drive_file:9f6f75a5d602` matched `content_job:83`, but production
+student-name/progress/question/profile/accountability proposal stages remain
+unknown, so the recording verdict stays `PARTIAL`. Issue #18 remains
+`NOT SAFE TO APPLY`; no class backfill, Drive write, paid retranscription,
+worker retry, external send, charge, DNS change, credential/account change, or
+secret exposure was performed.
+
+Final Issue #24 evidence comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945

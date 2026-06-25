@@ -1,14 +1,16 @@
 {
   "run_id": "2026-06-25-issue-24-agent-review-hub",
   "title": "Issue #24 - Agent Review Hub, helper audit, navigation IA, and newest Drive recording trace",
-  "updated_at": "2026-06-25T18:05:00+03:00",
+  "updated_at": "2026-06-25T20:22:00+03:00",
   "git_refs": {
-    "expected_branch": "codex/issue-24-agent-review-hub-20260625",
+    "expected_branch": "codex/issue-24-final-evidence-20260625",
     "base_branch": "master",
     "issue_number": 24,
     "parent_issue_number": 7,
     "predecessor_issue_number": 20,
-    "guardrail_issue_number": 18
+    "guardrail_issue_number": 18,
+    "closeout_branch": "codex/issue-24-final-evidence-20260625",
+    "implementation_branch": "codex/issue-24-agent-review-hub-20260625"
   },
   "sources": [
     {
@@ -258,7 +260,9 @@
         "PASS read-only production trace selected Drive file drive_file:9f6f75a5d602 and content_job:83.",
         "PASS guardrail preserved: NOT SAFE TO APPLY; no class backfill, Drive write, paid retranscription, worker retry, or student-data mutation.",
         "PASS sanitized evidence includes no transcript body or transcript_text field.",
-        "PARTIAL production processing verdict: source/job/transcript/parser/class-session/read-model stages confirmed, but student_name_alias_match, progress/question/profile/accountability proposal stages are UNKNOWN because no parsed student names/progress/questions were found."
+        "PARTIAL production processing verdict: source/job/transcript/parser/class-session/read-model stages confirmed, but student_name_alias_match, progress/question/profile/accountability proposal stages are UNKNOWN because no parsed student names/progress/questions were found.",
+        "PASS live Agent Review Hub surfaced newest-recording trace status PARTIAL / content_job:83.",
+        "PASS final class upload trace live smoke passed without class backfill or production student-data mutation."
       ],
       "implementation_files": [
         "src/lib/bna/newest-drive-recording-trace.js",
@@ -269,7 +273,7 @@
         "ops/class-drive-intake/2026-06-25-issue-24-newest-recording/NEWEST-RECORDING-TRACE.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-25T18:05:00+03:00"
+      "updated_at": "2026-06-25T20:15:00+03:00"
     },
     {
       "id": "REQ-20260625-026",
@@ -290,10 +294,10 @@
       "depends_on": [
         "REQ-20260625-024"
       ],
-      "status": "needs_verification",
-      "implementation_status": "local_review_hub_session_exchange_and_result_dropoff_implemented_live_deploy_pending",
+      "status": "done",
+      "implementation_status": "done_live_verified_secure_review_hub_and_scoped_sessions",
       "can_continue_without_operator": true,
-      "next_action": "Run local browser smoke and route/action/security checks, then push, deploy, and live-smoke the owner-only Agent Review Hub before marking Done.",
+      "next_action": "Owner may start the Agent Mode audit from the live Agent Review Hub.",
       "acceptance_criteria": [
         "Owner/super-admin auth is required before a review session can be created.",
         "Review sessions are short-lived, scoped by role/workspace/project, sequential-safe, and auditable.",
@@ -310,7 +314,16 @@
         "tests/agent-review-hub.test.js",
         "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
         "ops/route-registry.json",
-        "ops/action-registry.json"
+        "ops/action-registry.json",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS node --check server.js",
@@ -321,7 +334,14 @@
         "PASS full npm test 1345/1345.",
         "PASS visual watchdog against local server returned ok true with zero findings.",
         "PASS 390px Agent Review Hub screenshot captured contexts, prompt links, and result form without visible horizontal overflow.",
-        "PENDING push/deploy/live smoke."
+        "SUPERSEDED by final live smoke evidence: live Review Hub deployment smoke passed.",
+        "PASS PR #25 implemented Agent Review Hub and PRs #26-#30 fixed live helper/session/deploy bundle findings before final handoff.",
+        "PASS deployed app-visible commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942 through Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434.",
+        "PASS live Review Hub URL exists at https://bneineviimacademy.org/operations/agent-review.",
+        "PASS live owner-scoped hub smoke rendered 9 contexts and 11 prompt links and showed newest-recording trace PARTIAL / content_job:83.",
+        "PASS live sequential short-lived review sessions revoke the prior session, use a scoped one-time exchange, set a redacted HttpOnly review cookie, and expose banner plus Exit.",
+        "PASS live Exit revoked the scoped session; subsequent session read returned 401.",
+        "PASS no reusable all-access secret appears in the live review URL metadata."
       ],
       "implementation_files": [
         "server.js",
@@ -334,7 +354,31 @@
         "ops/action-registry.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-25T19:00:00+03:00"
+      "updated_at": "2026-06-25T20:15:00+03:00",
+      "implementation_commit": "df4c147e7503b92c41c35237dd02d31b0775327b",
+      "pushed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/25, https://github.com/shloimie-beep/bnei-neviim-academy/pull/26, https://github.com/shloimie-beep/bnei-neviim-academy/pull/27, https://github.com/shloimie-beep/bnei-neviim-academy/pull/28, https://github.com/shloimie-beep/bnei-neviim-academy/pull/29, https://github.com/shloimie-beep/bnei-neviim-academy/pull/30",
+      "deployment_id": "24c1d191-3f50-4d0a-9da8-687ba2f1a434",
+      "deployed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "deployment_evidence": [
+        "Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434 reached SUCCESS for deployed commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md live smoke passed for owner-scoped hub, 9 contexts, 11 prompt files, sequential scoped sessions, banner, Exit, typed result readback, and live helper resolver.",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md Operations helper live smoke passed.",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md standard live app smoke passed.",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md class upload trace live smoke passed without class backfill.",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md public route privacy smoke passed."
+      ],
+      "live_smoke": [
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260625-027",
@@ -356,10 +400,10 @@
       "depends_on": [
         "REQ-20260625-026"
       ],
-      "status": "needs_verification",
-      "implementation_status": "local_helper_surface_audit_and_resolver_metadata_implemented_live_deploy_pending",
+      "status": "done",
+      "implementation_status": "done_live_verified_helper_surfaces_resolver_and_typed_actions",
       "can_continue_without_operator": true,
-      "next_action": "Run broader helper/action/security watchdogs, then deploy and live-smoke helper responses containing internal links before marking Done.",
+      "next_action": "Use Agent Mode prompt pack for owner audit; create repair requirements only for new Agent Mode findings.",
       "acceptance_criteria": [
         "Every listed helper/bot surface has endpoint/model/identity/workspace/planner/tool/permission/action/audit/result status.",
         "Internal links include route key, canonical path, role, workspace, project, section, landmark, reason, auth result, and fallback.",
@@ -375,7 +419,16 @@
         "tests/helper-destination-resolver.test.js",
         "tests/issue24-helper-audit.test.js",
         "ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.json",
-        "ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.md"
+        "ops/helper-audits/2026-06-25-issue-24/HELPER-SURFACE-AUDIT.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS node --check src/lib/bna/helper/destination-resolver.js",
@@ -387,7 +440,12 @@
         "PASS npm run issue24:helper-audit -> 9 helper surfaces, 25 single-turn cases, 10 multi-turn conversations, 8 roles, 280/280 static resolver evaluations passed.",
         "PASS full npm test 1345/1345.",
         "PASS watchdog suite for actions, helper destinations, security, content, communications, navigation IA, source coverage, and secrets.",
-        "PENDING live helper response verification after deployment."
+        "SUPERSEDED by final live smoke evidence: helper route/action resolver and Operations helper smoke passed.",
+        "PASS live helper route/action resolver executed safe internal link action with route_key operations, result_url /operations?view=tasks&section=decisions&workspace=bna, and authorization allowed.",
+        "PASS helper registries were added to the deploy bundle before final live smoke; missing registry live crash was repaired by PR #30.",
+        "PASS final Operations helper live smoke passed after deployed bundle included action and route registries.",
+        "PASS focused helper tests passed after final deploy bundle fix: node --test tests/agent-review-hub.test.js tests/helper-destination-resolver.test.js.",
+        "PASS full npm test passed 1347/1347 before final live closeout."
       ],
       "implementation_files": [
         "src/lib/bna/helper/destination-resolver.js",
@@ -399,7 +457,31 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-25T18:35:00+03:00"
+      "updated_at": "2026-06-25T20:15:00+03:00",
+      "implementation_commit": "df4c147e7503b92c41c35237dd02d31b0775327b",
+      "pushed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/25, https://github.com/shloimie-beep/bnei-neviim-academy/pull/26, https://github.com/shloimie-beep/bnei-neviim-academy/pull/27, https://github.com/shloimie-beep/bnei-neviim-academy/pull/28, https://github.com/shloimie-beep/bnei-neviim-academy/pull/29, https://github.com/shloimie-beep/bnei-neviim-academy/pull/30",
+      "deployment_id": "24c1d191-3f50-4d0a-9da8-687ba2f1a434",
+      "deployed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "deployment_evidence": [
+        "Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434 reached SUCCESS for deployed commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md live smoke passed for owner-scoped hub, 9 contexts, 11 prompt files, sequential scoped sessions, banner, Exit, typed result readback, and live helper resolver.",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md Operations helper live smoke passed.",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md standard live app smoke passed.",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md class upload trace live smoke passed without class backfill.",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md public route privacy smoke passed."
+      ],
+      "live_smoke": [
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260625-028",
@@ -420,10 +502,10 @@
       "depends_on": [
         "REQ-20260625-026"
       ],
-      "status": "needs_verification",
-      "implementation_status": "local_prompt_pack_and_typed_review_result_dropoff_implemented_live_deploy_pending",
+      "status": "done",
+      "implementation_status": "done_live_verified_prompt_pack_and_typed_result_dropoff",
       "can_continue_without_operator": true,
-      "next_action": "Run local/browser result drop-off readback, then deploy and live-smoke prompt availability and typed result persistence before marking Done.",
+      "next_action": "Owner can copy the mobile prompt files from the live hub and submit Agent Mode results through Submit Agent Review Result.",
       "acceptance_criteria": [
         "Prompt files cover all 11 requested Agent Mode prompt categories.",
         "Prompt files are mobile-copyable and reachable from the hub or owner walkthrough.",
@@ -449,7 +531,16 @@
         "public/agent-review.html",
         "public/agent-review-session.html",
         "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
-        "tests/agent-review-hub.test.js"
+        "tests/agent-review-hub.test.js",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS node --check scripts/generate-agent-review-prompts.cjs",
@@ -458,7 +549,11 @@
         "PASS unit coverage confirms typed agent-review result persistence with role/workspace/source/requirement/evidence/readback/idempotency metadata.",
         "PASS local browser result drop-off persisted AGR-b9a823fc37acd01b with session_ref, context_key operations_super_admin, target_role super_admin, workspace_key bna_platform, requirement_id REQ-20260625-027, prompt_key operations-super-admin, and status pass.",
         "PASS full npm test 1345/1345.",
-        "PENDING live deployment readback."
+        "SUPERSEDED by final live smoke evidence: typed Agent Review Result readback passed live.",
+        "PASS live prompt pack check read 11 mobile-copyable prompt files from /agent-review-prompts/.",
+        "PASS live Submit Agent Review Result persisted through the typed API and read back result_ref AGR-96dfac2f8c31163c.",
+        "PASS live result readback included context_key parent_qa_identity and status pass.",
+        "PASS live hub exposes result drop-off confirmation path and Operations result links."
       ],
       "implementation_files": [
         "scripts/generate-agent-review-prompts.cjs",
@@ -482,7 +577,31 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-25T19:00:00+03:00"
+      "updated_at": "2026-06-25T20:15:00+03:00",
+      "implementation_commit": "df4c147e7503b92c41c35237dd02d31b0775327b",
+      "pushed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/25, https://github.com/shloimie-beep/bnei-neviim-academy/pull/26, https://github.com/shloimie-beep/bnei-neviim-academy/pull/27, https://github.com/shloimie-beep/bnei-neviim-academy/pull/28, https://github.com/shloimie-beep/bnei-neviim-academy/pull/29, https://github.com/shloimie-beep/bnei-neviim-academy/pull/30",
+      "deployment_id": "24c1d191-3f50-4d0a-9da8-687ba2f1a434",
+      "deployed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "deployment_evidence": [
+        "Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434 reached SUCCESS for deployed commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md live smoke passed for owner-scoped hub, 9 contexts, 11 prompt files, sequential scoped sessions, banner, Exit, typed result readback, and live helper resolver.",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md Operations helper live smoke passed.",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md standard live app smoke passed.",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md class upload trace live smoke passed without class backfill.",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md public route privacy smoke passed."
+      ],
+      "live_smoke": [
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260625-029",
@@ -502,10 +621,10 @@
       "depends_on": [
         "REQ-20260625-026"
       ],
-      "status": "needs_verification",
-      "implementation_status": "local_navigation_labels_and_duplicate_watchdog_implemented_live_deploy_pending",
+      "status": "done",
+      "implementation_status": "done_live_verified_navigation_ia_duplicate_cleanup",
       "can_continue_without_operator": true,
-      "next_action": "Run visual/mobile checks, then deploy and live-smoke navigation IA before marking Done.",
+      "next_action": "Keep the navigation IA watchdog in the standard regression suite for future portal changes.",
       "acceptance_criteria": [
         "Side navigation owns major modules/destinations.",
         "Horizontal tabs are only children, view modes, status filters, scoped subcategories, or record sections.",
@@ -521,7 +640,16 @@
         "tests/operations-task-queue-visibility.test.js",
         "tests/one-time-external-user-portal.test.js",
         "ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.json",
-        "ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.md"
+        "ops/navigation-ia/2026-06-25-issue-24/NAVIGATION-IA-AUDIT.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
       ],
       "verification": [
         "PASS node --check src/lib/bna/issue24-navigation-ia.js",
@@ -530,8 +658,12 @@
         "PASS npm run watchdog:navigation-ia -> ok true, findings 0.",
         "PASS full npm test 1345/1345.",
         "PASS node scripts/watchdog-visual-baseline.mjs --base-url=http://127.0.0.1:18824 -> ok true, severity ok, finding_count 0.",
-        "PASS 390px Agent Review Hub screenshot captured no visible horizontal overflow; separate 390px session screenshot attempt timed out after hub capture, so live session/mobile smoke remains pending.",
-        "PENDING live deployment verification."
+        "PASS 390px Agent Review Hub screenshot captured no visible horizontal overflow; separate 390px session screenshot attempt timed out after hub capture, and final live session smoke later passed.",
+        "SUPERSEDED by final live smoke evidence: deployment verification passed.",
+        "PASS navigation IA watchdog found zero duplicate-control findings after cleanup.",
+        "PASS live review target routes were reachable for public, Operations, Rabbi/provider admin, provider participant, parent, student, One Time member, One Time classroom, and wrong-role/error contexts.",
+        "PASS public privacy smoke passed after final deployment.",
+        "PASS standard live app smoke passed after final deployment."
       ],
       "implementation_files": [
         "public/operations.html",
@@ -543,7 +675,31 @@
         "package.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-25T18:35:00+03:00"
+      "updated_at": "2026-06-25T20:15:00+03:00",
+      "implementation_commit": "df4c147e7503b92c41c35237dd02d31b0775327b",
+      "pushed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/25, https://github.com/shloimie-beep/bnei-neviim-academy/pull/26, https://github.com/shloimie-beep/bnei-neviim-academy/pull/27, https://github.com/shloimie-beep/bnei-neviim-academy/pull/28, https://github.com/shloimie-beep/bnei-neviim-academy/pull/29, https://github.com/shloimie-beep/bnei-neviim-academy/pull/30",
+      "deployment_id": "24c1d191-3f50-4d0a-9da8-687ba2f1a434",
+      "deployed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "deployment_evidence": [
+        "Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434 reached SUCCESS for deployed commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md live smoke passed for owner-scoped hub, 9 contexts, 11 prompt files, sequential scoped sessions, banner, Exit, typed result readback, and live helper resolver.",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md Operations helper live smoke passed.",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md standard live app smoke passed.",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md class upload trace live smoke passed without class backfill.",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md public route privacy smoke passed."
+      ],
+      "live_smoke": [
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260625-030",
@@ -568,10 +724,10 @@
         "REQ-20260625-028",
         "REQ-20260625-029"
       ],
-      "status": "in_progress",
-      "implementation_status": "local_lanes_integrated_remaining_full_tests_push_merge_deploy_live_smoke",
+      "status": "done",
+      "implementation_status": "done_prs_merged_deployed_live_verified_issue_comment_posted",
       "can_continue_without_operator": true,
-      "next_action": "After lanes are ready, run focused/full tests, watchdogs, secrets audit, execution-run validation, push PR, merge/deploy/live smoke, and post final evidence back to Issue #24.",
+      "next_action": "Owner can begin Agent Mode audit from the live Agent Review Hub and submit findings through the typed result drop-off.",
       "acceptance_criteria": [
         "Issue #24 acceptance gates pass before owner Agent Mode handoff.",
         "Focused and full tests pass or exact blockers are recorded.",
@@ -587,14 +743,47 @@
         "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/EVIDENCE.md",
         "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/TEST-RESULTS.md",
         "ops/playwright-smokes/2026-06-25-issue-24-agent-review-local/agent-review-local-smoke.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4801879834"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4801879834",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/25",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/26",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/27",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/28",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/29",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/30",
+        "https://bneineviimacademy.org/operations/agent-review",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945"
       ],
       "verification": [
         "PASS local browser smoke for Agent Review Hub/session/result drop-off.",
         "PASS watchdog suite, secrets audit, stale-evidence validation, source coverage, visual watchdog, and npm test 1345/1345.",
         "PASS bna:run:validate.",
         "PASS Issue #24 progress checkpoint posted as comment 4801879834.",
-        "PENDING GitHub push/PR/merge, Railway deploy, live smoke, and final Issue #24 closeout."
+        "PASS GitHub push/PR/merge, Railway deploy, live smoke, and final Issue #24 closeout completed.",
+        "PASS PR #25 merged: initial Issue #24 Agent Review Hub/helper/prompt/navigation/trace implementation.",
+        "PASS PR #26 merged: deterministic helper navigation live fix.",
+        "PASS PR #27 merged: deterministic helper typed-actions live fix.",
+        "PASS PR #28 merged: Issue #24 trace evidence deploy bundle fix.",
+        "PASS PR #29 merged: Issue #24 trace deploy path fix.",
+        "PASS PR #30 merged: helper registries included in deploy bundle.",
+        "PASS origin/master app-visible merge commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "PASS Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434 reached SUCCESS for 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "PASS Issue #24 live Review Hub smoke persisted result_ref AGR-96dfac2f8c31163c and verified helper resolver, sessions, banner, Exit, prompt files, and trace status.",
+        "PASS npm run app:smoke:operations-helper.",
+        "PASS npm run app:smoke.",
+        "PASS npm run app:smoke:public-privacy.",
+        "PASS npm run app:smoke:class-upload-trace.",
+        "PASS npm run secrets:audit after final deploy bundle fix: 4843 tracked paths checked, 0 secret-risk files.",
+        "PASS Issue #18 guardrail retained: NOT SAFE TO APPLY; no class backfill was applied.",
+        "PASS final evidence posted to Issue #24: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/requirements.json",
@@ -602,10 +791,48 @@
         "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/EVIDENCE.md",
         "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/TEST-RESULTS.md",
         "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/NEXT-SESSION.md",
-        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/BATCH-STATUS.md"
+        "ops/execution-runs/2026-06-25-issue-24-agent-review-hub/BATCH-STATUS.md",
+        "server.js",
+        "src/lib/bna/agent-review-hub.js",
+        "src/lib/bna/helper/destination-resolver.js",
+        "src/lib/bna/helper/context.js",
+        "src/lib/bna/issue24-helper-audit.js",
+        "src/lib/bna/issue24-navigation-ia.js",
+        "src/lib/bna/newest-drive-recording-trace.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "public/agent-review-prompts/index.json",
+        "scripts/railway-redeploy.ps1",
+        "scripts/smoke-issue24-agent-review-hub-live.mjs",
+        "tests/agent-review-hub.test.js",
+        "tests/helper-destination-resolver.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-25T18:35:00+03:00"
+      "updated_at": "2026-06-25T20:22:00+03:00",
+      "implementation_commit": "df4c147e7503b92c41c35237dd02d31b0775327b",
+      "pushed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/25, https://github.com/shloimie-beep/bnei-neviim-academy/pull/26, https://github.com/shloimie-beep/bnei-neviim-academy/pull/27, https://github.com/shloimie-beep/bnei-neviim-academy/pull/28, https://github.com/shloimie-beep/bnei-neviim-academy/pull/29, https://github.com/shloimie-beep/bnei-neviim-academy/pull/30",
+      "deployment_id": "24c1d191-3f50-4d0a-9da8-687ba2f1a434",
+      "deployed_commit": "9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942",
+      "deployment_evidence": [
+        "Railway deployment 24c1d191-3f50-4d0a-9da8-687ba2f1a434 reached SUCCESS for deployed commit 9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942.",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md live smoke passed for owner-scoped hub, 9 contexts, 11 prompt files, sequential scoped sessions, banner, Exit, typed result readback, and live helper resolver.",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md Operations helper live smoke passed.",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md standard live app smoke passed.",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md class upload trace live smoke passed without class backfill.",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md public route privacy smoke passed."
+      ],
+      "live_smoke": [
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.json",
+        "ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md"
+      ]
     }
   ],
   "tasks": [
@@ -636,7 +863,7 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260625-026",
-      "status": "needs_verification",
+      "status": "done",
       "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
     },
     {
@@ -646,7 +873,7 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260625-027",
-      "status": "needs_verification",
+      "status": "done",
       "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
     },
     {
@@ -656,7 +883,7 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260625-028",
-      "status": "needs_verification",
+      "status": "done",
       "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
     },
     {
@@ -666,7 +893,7 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260625-029",
-      "status": "needs_verification",
+      "status": "done",
       "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
     },
     {
@@ -676,7 +903,7 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260625-030",
-      "status": "in_progress",
+      "status": "done",
       "source_path": "raw-input/RAW-20260625-024-github-issue-24-agent-review-hub.md"
     }
   ]
