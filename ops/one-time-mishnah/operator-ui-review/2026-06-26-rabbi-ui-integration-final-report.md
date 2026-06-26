@@ -76,7 +76,31 @@ of reviving old route assumptions.
 
 ## Launch / Push Decision
 
-This branch is ready for PR. Because the branch contains app-visible UI changes,
-production completion still requires merge, deploy, and live smoke proof after
-PR review. Until then, the integration is locally verified and PR-ready, not
-live-complete.
+PR #40 was opened, marked ready, merged, deployed, and live-smoked.
+
+- PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/40
+- Merge commit: `460b1b44970c85e3e58f4eb15330bf2ce99cf091`
+- Railway deployment:
+  `8394199e-7b61-40b7-8bc5-08b6b0087493`
+- Railway readback: deployment status `SUCCESS`, repo
+  `shloimie-beep/bnei-neviim-academy`, branch `master`, commit hash matched
+  the PR #40 merge commit.
+- `npm run railway:doctor` passed for service `skillful-motivation` /
+  environment `production`.
+
+Live verification passed:
+
+- `npm run app:smoke`:
+  `ops/live-smokes/2026-06-26T09-58-11-313Z-live-app-smoke.md`
+- `npm run app:smoke:rabbi-onetime-landing`:
+  `ops/live-smokes/2026-06-26T09-58-30-275Z-rabbi-onetime-landing-smoke.md`
+- `npm run app:smoke:one-time-shared-review`:
+  `ops/live-smokes/2026-06-26T09-59-09-482Z-one-time-shared-review-live-smoke.md`
+- `node scripts/smoke-rabbi-scheller-workspace-live.mjs`:
+  `ops/live-smokes/2026-06-26T10-01-04-149Z-rabbi-scheller-workspace-live-smoke.md`
+
+Closeout note: the Rabbi workspace live smoke originally had an over-broad
+assertion that treated explicit boundary copy such as "No cross-account
+super-admin access" as a leak. The smoke was narrowed to continue forbidding
+actual super-admin module labels while allowing denial/boundary language, then
+the live smoke passed.

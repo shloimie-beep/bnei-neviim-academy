@@ -26684,3 +26684,33 @@ Remaining:
 
 - App-visible work is PR-ready, but not production-complete until PR merge,
   deployment, and live smoke verification.
+
+## 2026-06-26T13:02:00+03:00 - One Time Rabbi UI Prompt F Live Closeout
+
+Completed the Prompt F / final-integration sequence through PR, merge, Railway
+deployment, and live smoke verification.
+
+Changed:
+
+- Marked PR #40 ready and merged it to `master`.
+- Verified Railway deployment
+  `8394199e-7b61-40b7-8bc5-08b6b0087493` reached `SUCCESS` for merge commit
+  `460b1b44970c85e3e58f4eb15330bf2ce99cf091`.
+- Narrowed the Rabbi workspace live smoke so explicit boundary denial copy
+  such as "No cross-account super-admin access" does not falsely fail while
+  actual super-admin module labels remain forbidden.
+
+Verification:
+
+- `npm run railway:doctor` passed for production service
+  `skillful-motivation`.
+- `npm run app:smoke` passed:
+  `ops/live-smokes/2026-06-26T09-58-11-313Z-live-app-smoke.md`.
+- `npm run app:smoke:rabbi-onetime-landing` passed:
+  `ops/live-smokes/2026-06-26T09-58-30-275Z-rabbi-onetime-landing-smoke.md`.
+- `npm run app:smoke:one-time-shared-review` passed:
+  `ops/live-smokes/2026-06-26T09-59-09-482Z-one-time-shared-review-live-smoke.md`.
+- `node scripts/smoke-rabbi-scheller-workspace-live.mjs` passed:
+  `ops/live-smokes/2026-06-26T10-01-04-149Z-rabbi-scheller-workspace-live-smoke.md`.
+
+Remaining: none for the Rabbi Scheller / One Time UI sequence.
