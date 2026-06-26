@@ -26758,3 +26758,47 @@ Remaining:
 
 - App-visible work is draft-PR-ready, but not production-complete until PR
   merge, deployment, and live Operations/provider smoke verification.
+
+## 2026-06-26T14:15:00+03:00 - Service Provider Scopes and First-Party CRM Live Closeout
+
+Completed the service-provider role/scope package through merge, deployment,
+debugging, and live verification.
+
+Changed:
+
+- Marked PR #43 ready and merged it to `master`.
+- Verified Railway production target before deployment; the first deploy command
+  was blocked because the local Railway link pointed at the One Time project,
+  then reran the doctor with explicit BNA production target values.
+- Confirmed Railway deployment
+  `112ef3b5-0ce7-45e3-9c55-368f783ccd1d` reached `SUCCESS` for merge commit
+  `5bea5891853d7e22eff2ce8f72aeac33a151ec1f`.
+- Added final live-smoke evidence for the new service-provider scope APIs,
+  provider bundle surfaces, Operations/Rabbi workspace, public privacy, and
+  Operations helper/workspace taxonomy.
+
+Verification:
+
+- Clean-head local checks passed before merge: syntax checks, package/route
+  tests 24/24, `npm test` 1414/1414, watchdog action/security checks, and
+  `npm run secrets:audit` with 4957 tracked paths checked and 0 findings.
+- `npm run railway:doctor` passed for BNA production service
+  `skillful-motivation`.
+- `npm run app:smoke` passed:
+  `ops/live-smokes/2026-06-26T11-07-20-392Z-live-app-smoke.md`.
+- `npm run app:smoke:rabbi-onetime-landing` passed:
+  `ops/live-smokes/2026-06-26T11-07-17-297Z-rabbi-onetime-landing-smoke.md`.
+- `npm run app:smoke:one-time-shared-review` passed:
+  `ops/live-smokes/2026-06-26T11-07-17-573Z-one-time-shared-review-live-smoke.md`.
+- `node scripts/smoke-rabbi-scheller-workspace-live.mjs` passed:
+  `ops/live-smokes/2026-06-26T11-08-48-617Z-rabbi-scheller-workspace-live-smoke.md`.
+- Targeted service-provider scopes live smoke passed:
+  `ops/live-smokes/2026-06-26T11-12-12-747Z-service-provider-scopes-live-smoke.md`.
+- `npm run app:smoke:public-privacy` passed:
+  `ops/live-smokes/2026-06-26T11-13-01-422Z-public-route-privacy-smoke.md`.
+- `npm run app:smoke:operations-workspace-taxonomy` passed:
+  `ops/live-smokes/2026-06-26T11-13-18-505Z-operations-workspace-taxonomy-live-smoke.md`.
+- `npm run app:smoke:operations-helper` passed:
+  `ops/live-smokes/2026-06-26T11-13-18-510Z-operations-helper-live-smoke.md`.
+
+Remaining: none.
