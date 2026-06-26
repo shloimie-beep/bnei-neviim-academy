@@ -3,7 +3,8 @@
 Source: `RAW-20260626-005`
 Package: `C:\Users\User\Downloads\bna-service-provider-scopes-implementation-2026-06-26.zip`
 Branch: `codex/service-provider-scopes-merge-20260626`
-Status: `local verified; pending PR, merge, deploy, and live smoke`
+Pull request: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/43`
+Status: `draft PR opened; pending review/merge, deploy, and live smoke`
 
 ## Scope Decisions
 
@@ -45,4 +46,4 @@ Status: `local verified; pending PR, merge, deploy, and live smoke`
 
 No deployment or live smoke has been run for this package branch yet. The package itself says not to deploy without explicit approval for the final integrated branch.
 
-Next step: open/merge the PR, deploy the merged branch, and run live Operations/provider smoke checks before marking app-visible requirements fully done.
+Next step: review/merge PR #43, deploy the merged branch, and run live Operations/provider smoke checks before marking app-visible requirements fully done.

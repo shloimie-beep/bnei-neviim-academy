@@ -26750,7 +26750,11 @@ Verification:
 - `npm run secrets:audit` passed with 4944 tracked paths checked and 0
   findings.
 
+PR:
+
+- Draft PR #43: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/43`.
+
 Remaining:
 
-- App-visible work is local verified and PR-ready, but not production-complete
-  until PR merge, deployment, and live Operations/provider smoke verification.
+- App-visible work is draft-PR-ready, but not production-complete until PR
+  merge, deployment, and live Operations/provider smoke verification.
