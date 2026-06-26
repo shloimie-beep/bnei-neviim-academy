@@ -545,6 +545,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     await page.evaluate(() => window.switchView('agents'));
     await page.waitForSelector('[data-scoped-agent-status]', { timeout: 10000 });
+    await page.waitForFunction(() => /Complete One Time Operations UI/.test(document.querySelector('[data-scoped-agent-status]')?.textContent || ''), null, { timeout: 10000 });
     const agentText = await page.locator('[data-scoped-agent-status]').evaluate((node) => node.textContent.replace(/\s+/g, ' ').trim());
     assert.match(agentText, /One Time Agent Status/);
     assert.match(agentText, /Complete One Time Operations UI/);

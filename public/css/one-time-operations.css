@@ -1,0 +1,291 @@
+body.one-time-operations-active,
+[data-one-time-rabbi-dashboard],
+[data-one-time-rabbi-module] {
+  --ot-ops-background: #080910;
+  --ot-ops-panel: #10131a;
+  --ot-ops-card: #081323;
+  --ot-ops-card-strong: #102634;
+  --ot-ops-border: rgba(174, 185, 198, 0.24);
+  --ot-ops-border-strong: rgba(237, 229, 24, 0.36);
+  --ot-ops-text: #ffffff;
+  --ot-ops-muted-text: #aeb9c6;
+  --ot-ops-accent: #0b9fc9;
+  --ot-ops-accent-deep: #08779c;
+  --ot-ops-warning-gated: #ede518;
+  --ot-ops-warning-soft: rgba(237, 229, 24, 0.14);
+  --ot-ops-success-ready: #08779c;
+  --ot-ops-success-soft: rgba(8, 119, 156, 0.18);
+  --ot-ops-preview-no-write: #faf9f4;
+  --ot-ops-preview-soft: rgba(250, 249, 244, 0.12);
+  --ot-ops-logo: url("/images/one-time/brand/onetimelogo.webp");
+  --ot-ops-hero-portrait: url("/images/one-time/brand/onetime-hero-vertical.webp");
+  --ot-ops-radius: 8px;
+  --ot-ops-shadow: 0 20px 56px rgba(8, 9, 16, 0.24);
+  color: var(--ot-ops-text);
+}
+
+body.one-time-operations-active .ops-main,
+[data-one-time-rabbi-dashboard],
+[data-one-time-rabbi-module] {
+  background:
+    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95) 42%, rgba(16, 38, 52, 0.92)),
+    var(--ot-ops-background);
+}
+
+body.one-time-operations-active .one-time-ops-dashboard-hero,
+body.one-time-operations-active [data-one-time-rabbi-dashboard],
+[data-one-time-rabbi-dashboard].one-time-ops-dashboard-hero,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero {
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(150px, 240px);
+  gap: 18px;
+  align-items: center;
+  border: 1px solid var(--ot-ops-border-strong);
+  border-radius: var(--ot-ops-radius);
+  background:
+    linear-gradient(90deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.9) 54%, rgba(16, 38, 52, 0.68)),
+    var(--ot-ops-hero-portrait) right center / auto 122% no-repeat,
+    var(--ot-ops-background);
+  box-shadow: var(--ot-ops-shadow);
+  padding: clamp(18px, 3vw, 28px);
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-ops-dashboard-hero h1,
+body.one-time-operations-active .one-time-ops-dashboard-hero h2,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero h1,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero h2 {
+  color: var(--ot-ops-text);
+  letter-spacing: 0;
+}
+
+body.one-time-operations-active .one-time-ops-dashboard-hero p,
+body.one-time-operations-active .one-time-ops-dashboard-hero .small,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero p,
+[data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero .small {
+  color: var(--ot-ops-muted-text);
+}
+
+body.one-time-operations-active .one-time-ops-logo,
+[data-one-time-rabbi-dashboard] .one-time-ops-logo {
+  width: 52px;
+  height: 52px;
+  border: 1px solid rgba(237, 229, 24, 0.48);
+  border-radius: var(--ot-ops-radius);
+  background: var(--ot-ops-warning-gated) var(--ot-ops-logo) center / contain no-repeat;
+}
+
+body.one-time-operations-active .one-time-ops-package-status,
+body.one-time-operations-active .one-time-approval-packet,
+[data-one-time-rabbi-module] .one-time-ops-package-status,
+[data-one-time-rabbi-module] .one-time-approval-packet {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border: 1px solid var(--ot-ops-border);
+  border-radius: var(--ot-ops-radius);
+  background: linear-gradient(180deg, rgba(16, 38, 52, 0.94), rgba(8, 19, 35, 0.94));
+  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18);
+  padding: 14px;
+}
+
+body.one-time-operations-active .one-time-ops-module-grid,
+body.one-time-operations-active .one-time-lane-grid,
+body.one-time-operations-active .one-time-output-grid,
+[data-one-time-rabbi-module] .one-time-ops-module-grid,
+[data-one-time-rabbi-module] .one-time-lane-grid,
+[data-one-time-rabbi-module] .one-time-output-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-ops-content-card,
+body.one-time-operations-active .one-time-report-card,
+body.one-time-operations-active .one-time-lane-card,
+body.one-time-operations-active .one-time-output-state,
+[data-one-time-rabbi-module] .one-time-ops-content-card,
+[data-one-time-rabbi-module] .one-time-report-card,
+[data-one-time-rabbi-module] .one-time-lane-card,
+[data-one-time-rabbi-module] .one-time-output-state {
+  min-width: 0;
+  border: 1px solid var(--ot-ops-border);
+  border-radius: var(--ot-ops-radius);
+  background: rgba(250, 249, 244, 0.08);
+  color: var(--ot-ops-text);
+  padding: 12px;
+}
+
+body.one-time-operations-active .one-time-ops-content-card strong,
+body.one-time-operations-active .one-time-report-card strong,
+body.one-time-operations-active .one-time-lane-card strong,
+body.one-time-operations-active .one-time-output-state strong,
+[data-one-time-rabbi-module] .one-time-ops-content-card strong,
+[data-one-time-rabbi-module] .one-time-report-card strong,
+[data-one-time-rabbi-module] .one-time-lane-card strong,
+[data-one-time-rabbi-module] .one-time-output-state strong {
+  color: var(--ot-ops-text);
+  overflow-wrap: anywhere;
+}
+
+body.one-time-operations-active .one-time-ops-content-card span,
+body.one-time-operations-active .one-time-report-card span,
+body.one-time-operations-active .one-time-lane-card span,
+body.one-time-operations-active .one-time-output-state span,
+body.one-time-operations-active .one-time-ops-muted,
+[data-one-time-rabbi-module] .one-time-ops-content-card span,
+[data-one-time-rabbi-module] .one-time-report-card span,
+[data-one-time-rabbi-module] .one-time-lane-card span,
+[data-one-time-rabbi-module] .one-time-output-state span,
+[data-one-time-rabbi-module] .one-time-ops-muted {
+  color: var(--ot-ops-muted-text);
+}
+
+body.one-time-operations-active .one-time-output-state.needs_approval,
+body.one-time-operations-active .one-time-ops-chip[data-state="gated"],
+[data-one-time-rabbi-module] .one-time-output-state.needs_approval,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="gated"] {
+  border-color: rgba(237, 229, 24, 0.5);
+  background: var(--ot-ops-warning-soft);
+  color: var(--ot-ops-warning-gated);
+}
+
+body.one-time-operations-active .one-time-output-state.approved,
+body.one-time-operations-active .one-time-ops-chip[data-state="ready"],
+[data-one-time-rabbi-module] .one-time-output-state.approved,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="ready"] {
+  border-color: rgba(8, 119, 156, 0.62);
+  background: var(--ot-ops-success-soft);
+  color: #ffffff;
+}
+
+body.one-time-operations-active .one-time-ops-chip[data-state="preview"],
+body.one-time-operations-active [data-one-time-drive-brief-preview] .example-chip,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="preview"],
+[data-one-time-rabbi-module] [data-one-time-drive-brief-preview] .example-chip {
+  border-color: rgba(250, 249, 244, 0.34);
+  background: var(--ot-ops-preview-soft);
+  color: var(--ot-ops-preview-no-write);
+}
+
+body.one-time-operations-active .one-time-ops-setup-blockers,
+body.one-time-operations-active .one-time-blocker-list,
+[data-one-time-rabbi-module] .one-time-ops-setup-blockers,
+[data-one-time-rabbi-module] .one-time-blocker-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-blocker-chip,
+body.one-time-operations-active .one-time-ops-chip[data-state="blocked"],
+[data-one-time-rabbi-module] .one-time-blocker-chip,
+[data-one-time-rabbi-module] .one-time-ops-chip[data-state="blocked"] {
+  border: 1px solid rgba(237, 229, 24, 0.46);
+  border-radius: 999px;
+  background: rgba(237, 229, 24, 0.12);
+  color: var(--ot-ops-warning-gated);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 6px 9px;
+  overflow-wrap: anywhere;
+}
+
+body.one-time-operations-active .one-time-ops-chip,
+[data-one-time-rabbi-module] .one-time-ops-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 30px;
+  border: 1px solid var(--ot-ops-border);
+  border-radius: 999px;
+  background: rgba(11, 159, 201, 0.12);
+  color: var(--ot-ops-text);
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1.15;
+  padding: 6px 10px;
+  text-align: center;
+  white-space: normal;
+}
+
+body.one-time-operations-active .one-time-ops-mobile-button-row,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.one-time-operations-active .one-time-ops-mobile-button-row .task-action,
+body.one-time-operations-active .one-time-ops-mobile-button-row button,
+body.one-time-operations-active .one-time-ops-mobile-button-row a,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row .task-action,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row button,
+[data-one-time-rabbi-module] .one-time-ops-mobile-button-row a {
+  min-height: 38px;
+  border-radius: var(--ot-ops-radius);
+}
+
+@media (max-width: 640px) {
+  body.one-time-operations-active .one-time-ops-dashboard-hero,
+  body.one-time-operations-active [data-one-time-rabbi-dashboard],
+  [data-one-time-rabbi-dashboard].one-time-ops-dashboard-hero,
+  [data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero {
+    grid-template-columns: 1fr;
+    background:
+      linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.9)),
+      var(--ot-ops-hero-portrait) right bottom / auto 96% no-repeat,
+      var(--ot-ops-background);
+    padding: 16px;
+  }
+
+  body.one-time-operations-active .one-time-ops-module-grid,
+  body.one-time-operations-active .one-time-lane-grid,
+  body.one-time-operations-active .one-time-output-grid,
+  [data-one-time-rabbi-module] .one-time-ops-module-grid,
+  [data-one-time-rabbi-module] .one-time-lane-grid,
+  [data-one-time-rabbi-module] .one-time-output-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.one-time-operations-active .one-time-ops-mobile-button-row .task-action,
+  body.one-time-operations-active .one-time-ops-mobile-button-row button,
+  body.one-time-operations-active .one-time-ops-mobile-button-row a,
+  [data-one-time-rabbi-module] .one-time-ops-mobile-button-row .task-action,
+  [data-one-time-rabbi-module] .one-time-ops-mobile-button-row button,
+  [data-one-time-rabbi-module] .one-time-ops-mobile-button-row a {
+    flex: 1 1 160px;
+    min-width: min(100%, 160px);
+  }
+}
+
+@media (max-width: 390px) {
+  body.one-time-operations-active .one-time-ops-package-status,
+  body.one-time-operations-active .one-time-approval-packet,
+  body.one-time-operations-active .one-time-ops-content-card,
+  body.one-time-operations-active .one-time-report-card,
+  body.one-time-operations-active .one-time-lane-card,
+  body.one-time-operations-active .one-time-output-state,
+  [data-one-time-rabbi-module] .one-time-ops-package-status,
+  [data-one-time-rabbi-module] .one-time-approval-packet,
+  [data-one-time-rabbi-module] .one-time-ops-content-card,
+  [data-one-time-rabbi-module] .one-time-report-card,
+  [data-one-time-rabbi-module] .one-time-lane-card,
+  [data-one-time-rabbi-module] .one-time-output-state {
+    padding: 11px;
+  }
+
+  body.one-time-operations-active .one-time-ops-chip,
+  body.one-time-operations-active .one-time-blocker-chip,
+  [data-one-time-rabbi-module] .one-time-ops-chip,
+  [data-one-time-rabbi-module] .one-time-blocker-chip {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}

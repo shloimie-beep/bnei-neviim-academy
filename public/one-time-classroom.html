@@ -280,7 +280,7 @@
   </style>
   <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
-<body class="one-time-review-active">
+<body class="one-time-review-active" data-one-time-rabbi-dashboard="classroom-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
   <div class="shell">
     <header>
       <div class="topbar">
@@ -292,14 +292,14 @@
           </div>
         </div>
         <div class="top-actions">
-          <a href="/one-time"><button type="button">One Time home</button></a>
-          <a href="/rabbi-member"><button type="button">Member home</button></a>
-          <a href="/member-library"><button type="button">Library</button></a>
-          <a href="/one-time-classroom" aria-current="page"><button type="button">Classroom</button></a>
-          <button type="button" data-bna-assistant-open aria-controls="bnaBotPanel">Assistant/help</button>
-          <a href="/rabbi-member#support"><button type="button">Questions/support</button></a>
-          <a href="/rabbi-member?logout=1" id="memberLogoutLink"><button type="button">Account/logout</button></a>
-          <a href="/"><button type="button">Return to public site</button></a>
+          <a href="/one-time"><button type="button" data-one-time-action-state="navigate" data-button-state="working">One Time home</button></a>
+          <a href="/rabbi-member"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Member home</button></a>
+          <a href="/member-library"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Library</button></a>
+          <a href="/one-time-classroom" aria-current="page"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Classroom</button></a>
+          <button type="button" data-bna-assistant-open aria-controls="bnaBotPanel" data-one-time-action-state="preview" data-button-state="preview">Assistant/help</button>
+          <a href="/rabbi-member#support"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Questions/support</button></a>
+          <a href="/rabbi-member?logout=1" id="memberLogoutLink"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Account/logout</button></a>
+          <a href="/"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Return to public site</button></a>
         </div>
       </div>
     </header>
@@ -319,7 +319,7 @@
         <form class="access-panel" id="accessForm">
           <h2>Access Code</h2>
           <input id="accessCode" autocomplete="one-time-code" placeholder="Enter your One Time access code">
-          <button class="primary" type="submit">Open Classroom</button>
+          <button class="primary" type="submit" data-one-time-action-state="working" data-button-state="working">Open Classroom</button>
           <div class="status" id="statusText">Your code unlocks only your member-visible classroom records.</div>
         </form>
       </div>
@@ -468,7 +468,7 @@
             <span>${escapeHtml(item.package_status || 'published')}</span>
             <span>Captions/transcript: ${escapeHtml(item.transcript_status || 'pending review')}</span>
           </div>
-          ${media ? `<p><a href="${escapeHtml(media)}" target="_blank" rel="noopener"><button type="button">Fallback Vimeo Link</button></a></p>` : ''}
+          ${media ? `<p><a href="${escapeHtml(media)}" target="_blank" rel="noopener"><button type="button" data-one-time-action-state="navigate" data-button-state="working">Fallback Vimeo Link</button></a></p>` : ''}
         </div>
       `;
     }
@@ -546,7 +546,7 @@
           `).join('')}
           <form class="response-form" data-thread-id="${Number(thread.id)}">
             <label>Respond to Rabbi/admin thread<textarea name="body" placeholder="Your response is private until reviewed."></textarea></label>
-            <button type="submit">Submit For Review</button>
+            <button type="submit" data-one-time-action-state="preview" data-button-state="preview">Submit For Review</button>
             <div class="status"></div>
           </form>
         </article>

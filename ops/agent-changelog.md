@@ -26613,3 +26613,74 @@ jobs returned; Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
 unauthorized production data mutation, Drive/Vimeo write, external
 send/publish/charge/refund, DNS change, credential/account secret change, or
 secret exposure was performed.
+
+## 2026-06-26T13:05:00+03:00 - Rabbi Scheller / One Time UI Truth Pass
+
+Verified the older Rabbi Scheller workspace/auth/navigation sequence and
+classified the remaining local worktrees.
+
+Findings:
+
+- PR #15 is merged; commits `8f8b0b4` and `1ab57eac` are reachable from current
+  `origin/master`.
+- The `service-provider-studio-integration` preservation commit `487a660b` is
+  reachable from current `origin/master`.
+- Issue #20 is closed; PR #22 and PR #23 are merged, and the issue closeout
+  records Railway deployment `4667ac5e-7695-4802-9b3d-5b6e12d07a64` for
+  deployed commit `b8fb9e6dceb1b4c995108e3510cb3c2f9867a17b`.
+- The only remaining Rabbi/One Time UI material found was newer local-only
+  2026-06-26 contract work, separate from the old PR #15 / Issue #20 sequence.
+
+Changed:
+
+- Preserved the missing One Time / Rabbi UI contract modules and scoped
+  Operations CSS on a clean current-master branch.
+- Added
+  `ops/worktree-reconciliation/2026-06-26-rabbi-ui-truth-pass.md` with the
+  old-sequence verdict and local-only worktree classification.
+
+Verification:
+
+- Focused contract preservation tests passed 29/29:
+  `node --test tests/one-time-action-state-contract.test.js tests/one-time-content-command-center.test.js tests/one-time-operations-brand-css.test.js tests/one-time-rabbi-dashboard-ia.test.js tests/one-time-task-view-model.test.js`.
+- One Time action coverage regenerated successfully for 40 controls.
+- Shared review/action-registry tests passed 10/10.
+- Full `npm test` passed 1392/1392 after installing this clean worktree's
+  dependencies from `package-lock.json`.
+- `npm run watchdog:actions` passed with 0 findings.
+- `npm run secrets:audit` passed with 4906 tracked paths checked and 0
+  findings.
+
+## 2026-06-26T13:45:00+03:00 - One Time Rabbi UI Prompt F Integration
+
+Identified the operator-supplied Prompt F / final-integration packet as the
+newer local-only Rabbi/One Time UI sequence, separate from the older merged PR
+#15 / Issue #20 sequence.
+
+Changed:
+
+- Integrated the parallel One Time/Rabbi contract modules, scoped Operations
+  CSS, local QA harness, and handoff docs on a clean current-master branch.
+- Added One Time route/scope markers and button-state metadata across
+  Operations, public One Time, provider, parent, student, classroom, and email
+  review routes.
+- Adapted the final local route smoke to the current
+  `/api/one-time-review/*` endpoints instead of stale local QA endpoint
+  assumptions.
+- Regenerated One Time action coverage and universal action parity artifacts.
+
+Verification:
+
+- Contract tests passed 29/29.
+- Final route/shared/registry focused tests passed 12/12.
+- `npm run watchdog:actions`, `npm run watchdog:security`,
+  `npm run watchdog:links`, `npm run watchdog:navigation-ia`, and
+  `npm run watchdog:content` passed.
+- `npm run secrets:audit` passed with 4917 tracked paths checked and 0
+  findings.
+- `npm test` passed 1393/1393.
+
+Remaining:
+
+- App-visible work is PR-ready, but not production-complete until PR merge,
+  deployment, and live smoke verification.
