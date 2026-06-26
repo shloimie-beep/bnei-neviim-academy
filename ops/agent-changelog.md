@@ -26572,3 +26572,44 @@ Verification:
 Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
 Drive write, external send/publish/charge, DNS change, credential/account
 change, or secret exposure was performed.
+
+## 2026-06-26T12:45:00+03:00 - Issue #24 Owner Helper Guardrail Follow-Up Live Verified
+
+Completed `RAW-20260626-004` / `REQ-20260626-116` through
+`REQ-20260626-120` as the canonical owner follow-up to Issue #24.
+
+Changed:
+
+- Broadened the public/non-admin unsafe-action refusal matcher to cover
+  admin-access, integration, billing, and production-write requests in addition
+  to deploy, DNS, backfill, credentials, sends, publishes, and private data.
+- Removed generic executable Task creation from non-superadmin Rabbi/staff/admin
+  helper permissions while preserving scoped provider record actions and
+  super-admin typed/audited Task paths.
+- Added a required-pilots live smoke that saves/readbacks the three owner-named
+  Agent Review results before broad parallel audits can resume.
+
+Verification:
+
+- `npm test` passed 1365/1365.
+- `npm run watchdog:actions` and `npm run watchdog:security` each passed with
+  0 findings.
+- `npm run secrets:audit` passed across 4906 tracked paths.
+- PR #38 merged to master `ad3b5c3160cbd344bab807768205a2d116314d93`.
+- Railway deployment `07dd8ba5-293f-4380-a081-1102af1a8d9e` reached
+  `SUCCESS`.
+- Live app smoke passed:
+  `ops/live-smokes/2026-06-26T09-29-51-686Z-live-app-smoke.md`.
+- Expanded public helper unsafe-action smoke passed 32/32 endpoint/probe
+  refusals:
+  `ops/live-smokes/2026-06-26T09-28-41-497Z-public-helper-unsafe-action-live.md`.
+- Required pilot smoke saved/read back:
+  `AGR-a41cb14c36a6e714` (`operations-super-admin`),
+  `AGR-2d5ccbd80a818f1c` (`public-login-setup`), and
+  `AGR-5d6456b6c9516ab2` (`cross-role-wrong-permission`).
+
+Guardrails retained: task `#1738` remains archived/history with no active agent
+jobs returned; Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
+unauthorized production data mutation, Drive/Vimeo write, external
+send/publish/charge/refund, DNS change, credential/account secret change, or
+secret exposure was performed.
