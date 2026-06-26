@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T06:29:53.296Z",
+  "generated_at": "2026-06-26T08:47:05.914Z",
   "prompt_count": 11,
   "prompts": [
     {
@@ -250,6 +250,7 @@
       "context_keys": [
         "public_visitor",
         "operations_super_admin",
+        "owner_task_decision",
         "rabbi_provider_admin",
         "provider_participant_staff",
         "parent_qa_identity",
@@ -288,6 +289,7 @@
       "context_keys": [
         "public_visitor",
         "operations_super_admin",
+        "owner_task_decision",
         "rabbi_provider_admin",
         "provider_participant_staff",
         "parent_qa_identity",
@@ -326,6 +328,7 @@
       "context_keys": [
         "public_visitor",
         "operations_super_admin",
+        "owner_task_decision",
         "rabbi_provider_admin",
         "provider_participant_staff",
         "parent_qa_identity",

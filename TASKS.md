@@ -6,6 +6,14 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260626-003` / `REQ-20260626-109` through
+  `REQ-20260626-115`: Agent Mode self-save/drop-off contract and public helper
+  Tier-3 unsafe-action guardrails. Current status: implementation and focused
+  tests pass on branch
+  `codex/agent-review-public-helper-guardrail-20260626`; live task `#1738`
+  was neutralized as archived history with audit comment `#12439`. Full
+  verification, deploy, live smokes, exact owner pilot AGR, and closeout are
+  still pending.
 - [x] `RAW-20260626-001`, `RAW-20260626-002` /
   `PARENT-20260626-001` / `REQ-20260626-001` through
   `REQ-20260626-008`: Agent Review drop-off,

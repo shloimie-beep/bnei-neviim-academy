@@ -131,7 +131,7 @@
 <body>
   <header>
     <h1>Agent Review Drop-Off</h1>
-    <p>Paste an Agent Mode result here when the API-only path is inconvenient. Save keeps the same prompt key and idempotency metadata.</p>
+    <p>Use this page as the self-save target for Agent Mode. The paste box is the emergency fallback after the normal hub save path and exact drop-off URL fail.</p>
   </header>
   <main>
     <section class="panel">
@@ -157,10 +157,10 @@
           <label>Idempotency key<input name="idempotency_key" id="idempotencyKey"></label>
           <label class="wide">Blocker<input name="blocker" id="blocker" placeholder="Required when status is BLOCKED"></label>
           <label class="wide">Suggested correction<input name="suggested_correction" id="suggestedCorrection" placeholder="Correction or rerun note when FAIL/BLOCKED"></label>
-          <label class="wide">JSON or plain result paste<textarea name="report_text" id="reportText" placeholder="Paste the Agent Mode report. JSON is parsed when possible; plain text is saved as a redacted summary."></textarea></label>
+          <label class="wide">Emergency paste JSON and save<textarea name="report_text" id="reportText" placeholder="Paste the Agent Mode JSON only if the normal self-save path failed. JSON is parsed when possible; plain text is saved as a redacted summary."></textarea></label>
         </div>
         <div class="actions" style="margin-top:10px">
-          <button class="primary" type="submit" data-action-id="ACTION-AGENT-REVIEW-SUBMIT-RESULT">Save Agent Review Result</button>
+          <button class="primary" type="submit" data-action-id="ACTION-AGENT-REVIEW-SUBMIT-RESULT">Emergency paste JSON and save</button>
           <button type="button" onclick="markBlocked()" data-action-id="ACTION-AGENT-REVIEW-MARK-BLOCKED">Mark blocked</button>
           <span class="status" id="saveStatus"></span>
         </div>

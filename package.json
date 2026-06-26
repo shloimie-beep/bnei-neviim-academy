@@ -76,6 +76,7 @@
     "openai:smoke": "node scripts/smoke-openai-sidekick.mjs",
     "email:smoke": "node scripts/smoke-email.mjs",
     "app:smoke": "node scripts/smoke-live-app.mjs",
+    "app:smoke:public-helper-unsafe-action": "node scripts/smoke-public-helper-unsafe-action-live.mjs",
     "app:smoke:public-privacy": "node scripts/smoke-public-route-privacy.mjs",
     "app:smoke:student-auth": "node scripts/smoke-student-portal-auth-policy-live.mjs",
     "app:smoke:operator-setup": "node scripts/smoke-operator-setup-live.mjs",
