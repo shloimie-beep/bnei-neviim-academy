@@ -26714,3 +26714,43 @@ Verification:
   `ops/live-smokes/2026-06-26T10-01-04-149Z-rabbi-scheller-workspace-live-smoke.md`.
 
 Remaining: none for the Rabbi Scheller / One Time UI sequence.
+
+## 2026-06-26T13:42:00+03:00 - Service Provider Scopes and First-Party CRM Package Merge
+
+Merged the Downloads service-provider role/scope implementation package into a
+clean current-master worktree.
+
+Changed:
+
+- Added service-provider entitlement, first-party CRM contact, and assistant
+  scope-policy modules with package tests.
+- Added the service-provider scopes/CRM migration in PostgreSQL-safe form and
+  wired it into startup migrations.
+- Added scoped Operations APIs for account-scope summary, first-party CRM
+  contacts/timelines, and assistant scope planning.
+- Added provider portal APIs/UI for free-vs-Plus sections, inquiry inbox,
+  draft-only inquiry responses, calendar readback, portal upgrade states, and
+  assistant scope planning.
+- Updated Operations/provider UI surfaces, action registry, route registry,
+  generated action coverage, durable memory, and product documentation.
+
+Verification:
+
+- `npm test` passed 1414/1414.
+- Package-focused and route-focused tests passed:
+  `tests/account-scope-entitlements.test.js`,
+  `tests/crm-contact-model.test.js`,
+  `tests/assistant-scope-policy.test.js`,
+  `tests/service-provider-scope-routes.test.js`, and
+  `tests/watchdog-action-registry.test.js`.
+- `npm run watchdog:actions` passed with 0 findings:
+  `ops/watchdog-audits/2026-06-26T10-41-watchdog-action-audit.md`.
+- `npm run watchdog:security` passed with 0 findings:
+  `ops/watchdog-audits/2026-06-26T10-41-watchdog-security-routes.md`.
+- `npm run secrets:audit` passed with 4944 tracked paths checked and 0
+  findings.
+
+Remaining:
+
+- App-visible work is local verified and PR-ready, but not production-complete
+  until PR merge, deployment, and live Operations/provider smoke verification.

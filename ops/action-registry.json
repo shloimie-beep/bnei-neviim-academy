@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-action-registry-v1",
-  "updated_at": "2026-06-25T18:45:00+03:00",
+  "updated_at": "2026-06-26T18:00:00+03:00",
   "policy": {
     "visible_action_rule": "Every visible enabled action must have a working handler, working route, registered helper command, or an explicit disabled/coming-soon reason.",
     "external_write_rule": "External sends, publishes, charges, syncs, DNS writes, uploads, credential copies, and access grants require explicit approval and audit evidence.",
@@ -1671,6 +1671,139 @@
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-SETUP-HELP",
+      "label": "Provider setup help",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "selector_hint": "[data-provider-classroom-setup], /api/provider-portal/assistant/scope-plan action=provider_setup_help",
+      "expected_behavior": "Allows a provider-scoped assistant/setup flow to coach account/listing setup only; no Codex CLI, shell, deploy, migration, secret copy, external send, payment, or access grant is available.",
+      "permission": "authenticated provider account with account_setup_bot entitlement",
+      "status": "active",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/assistant-scope-policy.test.js allows provider_setup_help for free providers and blocks Codex CLI routing."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
+      "label": "Save inquiry draft",
+      "surface": "provider_portal",
+      "route": "/provider?section=inquiries",
+      "selector_hint": "[data-provider-inquiry-reply] [data-action-id=\"ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT\"]",
+      "expected_behavior": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata.",
+      "permission": "authenticated provider account with parent_contact_reply_bot entitlement",
+      "status": "active",
+      "test": {
+        "type": "api_and_node_test",
+        "expected_result": "POST /api/provider-portal/inquiries/:id/response-draft is provider-scoped and draft-only; tests/crm-contact-model.test.js verifies free provider inquiry inbox access."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-CALENDAR-MANAGE",
+      "label": "Provider calendar",
+      "surface": "provider_portal",
+      "route": "/provider?section=calendar",
+      "selector_hint": "[data-provider-section=\"calendar\"]",
+      "expected_behavior": "Shows provider-scoped calendar readback. External calendar writes are disabled from the provider portal until a separate approval-gated manage flow exists.",
+      "permission": "authenticated provider account with provider_calendar entitlement",
+      "status": "disabled_readback_only",
+      "disabled_reason": "Current package merge exposes readback only; no external calendar mutation control is rendered.",
+      "test": {
+        "type": "api",
+        "expected_result": "GET /api/provider-portal/calendar-events returns scoped local events with no_external_calendar_write=true."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-PROVIDER-PORTAL-UPGRADE",
+      "label": "Request Provider Plus",
+      "surface": "provider_portal",
+      "route": "/provider?section=upgrade",
+      "selector_hint": "#upgradeButton, [data-action-id=\"ACTION-PROVIDER-PORTAL-UPGRADE\"]",
+      "expected_behavior": "Shows upgrade CTA for paid provider portals/CRM/reporting without granting access, charging, or changing entitlement rows.",
+      "permission": "authenticated provider account",
+      "status": "active_no_charge",
+      "test": {
+        "type": "ui",
+        "expected_result": "Free provider parent/student portal cards show upgrade-required state and do not enable paid portals."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACTS-FILTER",
+      "label": "Filter CRM contacts",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CONTACTS-FILTER\"]",
+      "expected_behavior": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes.",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "status": "active",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/crm-contact-model.test.js verifies entitlement-gated filtering and no-send model."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "label": "Open CRM contact",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "selector_hint": "[data-action-id=\"ACTION-CRM-CONTACT-CARD-EXPAND\"]",
+      "expected_behavior": "Expands a local first-party CRM contact and timeline readback only; no message is sent.",
+      "permission": "super_admin or scoped provider workspace role with contact_timeline entitlement",
+      "status": "active_readonly",
+      "test": {
+        "type": "api_and_node_test",
+        "expected_result": "GET /api/bna/crm/contacts/:id/timeline returns no_send/external_write_performed=false; tests/crm-contact-model.test.js verifies timeline no-send fields."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED",
+      "label": "Codex CLI routing disabled",
+      "surface": "provider_and_operations_assistants",
+      "route": "/api/provider-portal/assistant/scope-plan, /api/bna/assistant/scope-plan",
+      "selector_hint": "assistant action planner policy",
+      "expected_behavior": "Deny Codex CLI, shell, deploy, migration, Railway mutation, secret-copy, external send, payment, access-grant, and DNS actions from web/portal assistants.",
+      "permission": "all portal assistant users",
+      "status": "policy_enforced",
+      "test": {
+        "type": "node_test",
+        "expected_result": "tests/assistant-scope-policy.test.js blocks Codex CLI and shell actions for every role."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
         "GOAL-CORE-015"
       ]
     }
