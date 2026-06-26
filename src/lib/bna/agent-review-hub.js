@@ -11,6 +11,7 @@ const AGENT_REVIEW_RUN = {
     'REQ-20260626-005',
     'REQ-20260626-006',
     'REQ-20260626-007',
+    'REQ-20260626-008',
   ],
   issue_url: 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/24',
   hub_path: '/operations/agent-review',
@@ -19,6 +20,19 @@ const AGENT_REVIEW_RUN = {
 };
 
 const AGENT_REVIEW_SESSION_TTL_MINUTES = 12;
+const TASK_AGENT_MODE_RESULT_TIMEOUT_MS = 1000 * 60 * 45;
+const TASK_AGENT_MODE_STATUSES = new Set([
+  'not_started',
+  'prompt_copied',
+  'agent_running_or_pending',
+  'agent_result_overdue',
+  'result_saved',
+  'blocked',
+  'failed',
+  'repair_created',
+  'rerun_required',
+  'completed',
+]);
 
 const AGENT_REVIEW_CONTEXTS = [
   {
@@ -44,6 +58,18 @@ const AGENT_REVIEW_CONTEXTS = [
     context_type: 'owner_authenticated_live_read_only',
     permitted_actions: ['review tasks and evidence', 'test helper previews', 'submit review result'],
     prohibited_actions: ['deploy', 'send messages', 'charge cards', 'change credentials'],
+  },
+  {
+    key: 'owner_task_decision',
+    label: 'Owner Task / Decision',
+    role: 'operator_with_agent_mode_assist',
+    workspace_key: 'bna_platform',
+    project_key: 'task_decision_queue',
+    target_route: '/operations?view=tasks',
+    helper_surface: 'Operations task or Decision card',
+    context_type: 'owner_authenticated_task_decision',
+    permitted_actions: ['read the visible card', 'verify UI state', 'prepare a recommendation', 'submit a redacted Agent Review result'],
+    prohibited_actions: ['make final owner decisions', 'send messages', 'publish', 'charge cards', 'change credentials', 'apply class backfill'],
   },
   {
     key: 'rabbi_provider_admin',
@@ -255,6 +281,287 @@ function promptIdempotencyKey(prompt, { contextKey = '' } = {}) {
   ].join(':');
 }
 
+function parseObjectMaybe(value) {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(String(value || ''));
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function normalizeTaskAgentModeStatus(value = '') {
+  const normalized = String(value || '').trim().toLowerCase();
+  return TASK_AGENT_MODE_STATUSES.has(normalized) ? normalized : 'not_started';
+}
+
+function taskAgentModeMetadata(task = {}) {
+  const parsed = parseObjectMaybe(task.ai_parsed);
+  const review = parsed.agent_mode_review && typeof parsed.agent_mode_review === 'object'
+    ? parsed.agent_mode_review
+    : {};
+  return { parsed, review };
+}
+
+function taskIsDecision(task = {}) {
+  return String(task.item_type || '').toLowerCase() === 'decision'
+    || String(task.task_kind || '').toLowerCase() === 'decision'
+    || Boolean(task.decision_required)
+    || String(task.stage || '').toLowerCase() === 'needs_decision'
+    || Boolean(task.decision_status);
+}
+
+function taskText(task = {}) {
+  return [
+    task.display_title,
+    task.title,
+    task.summary,
+    task.cleaned_summary,
+    task.notes,
+    task.next_action,
+    task.why_exists,
+    task.blocked_reason,
+    task.waiting_on,
+    task.assigned_to,
+    task.decision_owner,
+  ].filter(Boolean).join('\n');
+}
+
+function taskNeedsAgentModeWorkflow(task = {}) {
+  if (!task?.id) return false;
+  const kind = String(task.task_kind || '').toLowerCase();
+  const bucket = String(task.status_bucket || '').toLowerCase();
+  const stage = String(task.stage || '').toLowerCase();
+  if (['history', 'agent_job'].includes(kind)) return false;
+  if (['done', 'archive', 'archived'].includes(stage) || task.completed_at || task.verified_at) return false;
+  if (bucket === 'codex_queue') return false;
+  if (/tasks-pending|internal handoff|implementation brief/i.test(taskText(task))) return false;
+  const actionText = [task.waiting_on, task.assigned_to, task.decision_owner].filter(Boolean).join(' ');
+  return taskIsDecision(task)
+    || ['decisions', 'pending', 'tasks'].includes(bucket)
+    || Boolean(task.needs_review)
+    || Boolean(task.blocked_reason)
+    || /\b(shloimie|operator|manager|owner|rabbi|external|account|setup|verify|audit|review)\b/i.test(actionText);
+}
+
+function taskOwnerClarity(task = {}) {
+  const text = taskText(task);
+  const waiting = String(task.waiting_on || '').toLowerCase();
+  const assigned = String(task.assigned_to || '').toLowerCase();
+  if (/\b(send|publish|charge|billing|dns|domain|credential|secret|token|delete|backfill|production write|apply)\b/i.test(text)) {
+    return {
+      key: 'dangerous_live_action_blocked',
+      label: 'Dangerous/live action is blocked',
+      explanation: 'Agent Mode may inspect and prepare evidence, but it must not perform live sends, publishes, charges, credential, DNS, delete, or backfill actions.',
+    };
+  }
+  if (/\b(external|account|stripe|vimeo|zoom|resend|godaddy|domain|dns|drive|legal|billing|payment|registrar)\b/.test(waiting)) {
+    return {
+      key: 'external_account_owner_required',
+      label: 'External account owner required',
+      explanation: 'Agent Mode can gather evidence and prepare the checklist, but the outside account owner or operator must complete the external action.',
+    };
+  }
+  if (taskIsDecision(task)) {
+    return {
+      key: 'owner_must_decide',
+      label: 'Shloimie must personally decide',
+      explanation: 'Agent Mode can research, verify screens, and submit a recommendation; it cannot make the final owner decision.',
+    };
+  }
+  if (/\b(codex|agent|automation|system)\b/.test(assigned)) {
+    return {
+      key: 'codex_can_do_alone',
+      label: 'Codex can do it alone',
+      explanation: 'This is machine work; Agent Mode is optional and should be used only for human browser verification.',
+    };
+  }
+  return {
+    key: 'agent_mode_can_help_owner',
+    label: 'Agent Mode can help Shloimie do it',
+    explanation: 'Agent Mode can open the exact card, verify the requested UI/account state, and submit a PASS/FAIL/BLOCKED result for owner review.',
+  };
+}
+
+function taskAgentModeId(task = {}) {
+  const type = taskIsDecision(task) ? 'decision' : 'task';
+  return `${type}-${Number(task.id || 0)}`;
+}
+
+function taskAgentModeRequirementId(task = {}) {
+  return `${taskIsDecision(task) ? 'DECISION' : 'TASK'}-${Number(task.id || 0)}`;
+}
+
+function taskAgentModeReturnPath(task = {}) {
+  const params = new URLSearchParams();
+  params.set('view', 'tasks');
+  params.set('task', String(Number(task.id || 0)));
+  const projectKey = task.project_key || task.resolved_project_key || '';
+  if (projectKey) params.set('project', projectKey);
+  return `/operations?${params.toString()}`;
+}
+
+function taskAgentModeIdempotencyKey(task = {}) {
+  return [
+    AGENT_REVIEW_RUN.agent_review_run_id,
+    taskAgentModeId(task),
+    taskAgentModeRequirementId(task),
+  ].join(':');
+}
+
+function taskAgentModeStatus(task = {}, now = new Date()) {
+  const { review } = taskAgentModeMetadata(task);
+  const status = normalizeTaskAgentModeStatus(review.status);
+  const resultStatus = String(review.result_status || '').toLowerCase();
+  if (review.result_ref && resultStatus === 'pass') return 'completed';
+  if (review.result_ref && resultStatus === 'fail') return review.repair_requirement_id || review.repair_task_id ? 'repair_created' : 'failed';
+  if (review.result_ref && resultStatus === 'blocked') return review.rerun_prompt ? 'rerun_required' : 'blocked';
+  if (['prompt_copied', 'agent_running_or_pending'].includes(status) && review.prompt_copied_at) {
+    const copiedAt = Date.parse(review.prompt_copied_at);
+    if (Number.isFinite(copiedAt) && now.getTime() - copiedAt > TASK_AGENT_MODE_RESULT_TIMEOUT_MS) return 'agent_result_overdue';
+  }
+  return status;
+}
+
+function taskAgentModeDropoffPath(task = {}) {
+  const params = new URLSearchParams();
+  params.set('agent_review_run_id', AGENT_REVIEW_RUN.agent_review_run_id);
+  params.set('prompt_key', taskAgentModeId(task));
+  params.set('context_key', 'owner_task_decision');
+  params.set('requirement_id', taskAgentModeRequirementId(task));
+  params.set('task_id', String(Number(task.id || 0)));
+  params.set('return_url', taskAgentModeReturnPath(task));
+  params.set('idempotency_key', taskAgentModeIdempotencyKey(task));
+  return `${AGENT_REVIEW_RUN.dropoff_path}?${params.toString()}`;
+}
+
+function taskAgentModeAllowedActions(task = {}) {
+  const clarity = taskOwnerClarity(task);
+  const base = [
+    'open the exact task or Decision card',
+    'read visible context and links',
+    'verify UI/browser state',
+    'write a redacted PASS/FAIL/BLOCKED report',
+  ];
+  if (clarity.key === 'owner_must_decide') base.push('summarize options and recommend next owner action');
+  if (clarity.key === 'external_account_owner_required') base.push('prepare external-account checklist without logging in as the owner');
+  return base;
+}
+
+function taskAgentModeProhibitedActions(task = {}) {
+  const blocked = [
+    'make final owner decisions',
+    'create duplicate visible Tasks or Decisions',
+    'paste secrets, passwords, cookies, access tokens, or private student transcripts',
+    'send email/WhatsApp/SMS',
+    'publish public content',
+    'charge cards or change billing',
+    'change DNS, credentials, integrations, or production data',
+    'apply class backfill',
+  ];
+  if (taskOwnerClarity(task).key === 'external_account_owner_required') blocked.push('complete external account setup without the account owner');
+  return blocked;
+}
+
+function buildTaskAgentModeReview(task = {}, { baseUrl = '', now = new Date() } = {}) {
+  if (!taskNeedsAgentModeWorkflow(task)) return null;
+  const promptKey = taskAgentModeId(task);
+  const returnPath = taskAgentModeReturnPath(task);
+  const dropoffPath = taskAgentModeDropoffPath(task);
+  const requirementId = taskAgentModeRequirementId(task);
+  const { review } = taskAgentModeMetadata(task);
+  const clarity = taskOwnerClarity(task);
+  const context = contextByKey('owner_task_decision');
+  const title = String(task.display_title || task.title || `${taskIsDecision(task) ? 'Decision' : 'Task'} #${task.id}`).slice(0, 180);
+  const expectedResult = String(task.next_action || task.recommended_next_action || task.decision_prompt || task.summary || task.cleaned_summary || 'Verify the card and save a redacted Agent Mode result.').slice(0, 800);
+  const packet = {
+    enabled: true,
+    status: taskAgentModeStatus(task, now),
+    prompt_key: promptKey,
+    requirement_id: requirementId,
+    task_id: Number(task.id || 0),
+    item_type: taskIsDecision(task) ? 'decision' : 'task',
+    role: context.role,
+    workspace_key: task.project_key || task.resolved_project_key || context.workspace_key,
+    context_key: context.key,
+    context_label: context.label,
+    exact_starting_url: absoluteUrl(baseUrl, returnPath),
+    exact_return_url: absoluteUrl(baseUrl, returnPath),
+    exact_dropoff_url: absoluteUrl(baseUrl, dropoffPath),
+    idempotency_key: taskAgentModeIdempotencyKey(task),
+    allowed_actions: taskAgentModeAllowedActions(task),
+    prohibited_actions: taskAgentModeProhibitedActions(task),
+    expected_result: expectedResult,
+    save_instructions: 'Save PASS/FAIL/BLOCKED through the drop-off URL. If saving fails, return the full redacted report in chat so the owner can paste it later with the same prompt key and idempotency key.',
+    owner_clarity: clarity,
+    prompt_copied_at: review.prompt_copied_at || null,
+    result_ref: review.result_ref || null,
+    result_url: review.result_ref ? absoluteUrl(baseUrl, `/api/bna/agent-review/results/${encodeURIComponent(review.result_ref)}`) : null,
+    result_status: review.result_status || null,
+    result_saved_at: review.result_saved_at || null,
+    repair_task_id: review.repair_task_id || null,
+    repair_requirement_id: review.repair_requirement_id || null,
+    repair_url: review.repair_url || null,
+    rerun_prompt: review.rerun_prompt || null,
+    copy_metadata: {
+      agent_review_run_id: AGENT_REVIEW_RUN.agent_review_run_id,
+      prompt_key: promptKey,
+      task_id: Number(task.id || 0),
+      item_type: taskIsDecision(task) ? 'decision' : 'task',
+      requirement_id: requirementId,
+      role: context.role,
+      workspace_key: task.project_key || task.resolved_project_key || context.workspace_key,
+      context_key: context.key,
+      starting_url: absoluteUrl(baseUrl, returnPath),
+      return_url: absoluteUrl(baseUrl, returnPath),
+      dropoff_url: absoluteUrl(baseUrl, dropoffPath),
+      idempotency_key: taskAgentModeIdempotencyKey(task),
+    },
+  };
+  packet.prompt_text = renderTaskAgentModePrompt(task, packet, { title });
+  return packet;
+}
+
+function renderTaskAgentModePrompt(task = {}, review = null, { title = '' } = {}) {
+  const packet = review || buildTaskAgentModeReview(task) || {};
+  return [
+    `# Agent Mode Prompt - ${title || task.display_title || task.title || `Task #${task.id || ''}`}`,
+    '',
+    `Agent review run ID: ${AGENT_REVIEW_RUN.agent_review_run_id}`,
+    `Prompt key: ${packet.prompt_key || taskAgentModeId(task)}`,
+    `Requirement/task/decision ID: ${packet.requirement_id || taskAgentModeRequirementId(task)}`,
+    `Role/workspace/context: ${packet.role || 'operator'} / ${packet.workspace_key || 'bna_platform'} / ${packet.context_key || 'owner_task_decision'}`,
+    `Exact starting URL: ${packet.exact_starting_url || taskAgentModeReturnPath(task)}`,
+    `Exact return/drop-off URL: ${packet.exact_dropoff_url || taskAgentModeDropoffPath(task)}`,
+    `Idempotency key: ${packet.idempotency_key || taskAgentModeIdempotencyKey(task)}`,
+    '',
+    '## Owner Clarity',
+    '',
+    `${packet.owner_clarity?.label || taskOwnerClarity(task).label}: ${packet.owner_clarity?.explanation || taskOwnerClarity(task).explanation}`,
+    '',
+    '## Allowed Actions',
+    '',
+    ...(packet.allowed_actions || taskAgentModeAllowedActions(task)).map((item) => `- ${item}`),
+    '',
+    '## Prohibited Actions',
+    '',
+    ...(packet.prohibited_actions || taskAgentModeProhibitedActions(task)).map((item) => `- ${item}`),
+    '',
+    '## Expected Result',
+    '',
+    packet.expected_result || task.next_action || 'Verify the task and save the result.',
+    '',
+    '## Save Instructions',
+    '',
+    packet.save_instructions || 'Save PASS/FAIL/BLOCKED through the drop-off URL.',
+    '',
+    'Return only redacted evidence. Do not create duplicate visible Tasks or Decisions.',
+    '',
+  ].join('\n');
+}
+
 function promptCopyMetadata(prompt, { baseUrl = '', contextKey = '' } = {}) {
   const returnUrl = promptReturnPath(prompt);
   const dropoffUrl = promptDropoffPath(prompt, { contextKey });
@@ -456,12 +763,15 @@ module.exports = {
   AGENT_REVIEW_CONTEXTS,
   AGENT_REVIEW_RUN,
   AGENT_REVIEW_SESSION_TTL_MINUTES,
+  TASK_AGENT_MODE_RESULT_TIMEOUT_MS,
   buildAgentReviewRepairItem,
   buildAgentReviewContexts,
   buildPromptIndex,
+  buildTaskAgentModeReview,
   contextByKey,
   normalizeAgentReviewResultStatus,
   normalizePromptStatus,
+  normalizeTaskAgentModeStatus,
   promptCopyMetadata,
   promptDropoffPath,
   promptFileName,
@@ -470,4 +780,12 @@ module.exports = {
   promptReturnPath,
   renderRerunPrompt,
   renderAgentModePrompt,
+  renderTaskAgentModePrompt,
+  taskAgentModeDropoffPath,
+  taskAgentModeId,
+  taskAgentModeIdempotencyKey,
+  taskAgentModeRequirementId,
+  taskAgentModeStatus,
+  taskNeedsAgentModeWorkflow,
+  taskOwnerClarity,
 };

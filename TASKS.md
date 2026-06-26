@@ -6,18 +6,20 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260626-001` / `PARENT-20260626-001` /
-  `REQ-20260626-001` through `REQ-20260626-007`: Agent Review drop-off,
+- [ ] `RAW-20260626-001`, `RAW-20260626-002` /
+  `PARENT-20260626-001` / `REQ-20260626-001` through
+  `REQ-20260626-008`: Agent Review drop-off,
   scoped context access, and helper false-success repair. Active run:
   `ops/execution-runs/2026-06-26-agent-review-dropoff-repair/` on branch
-  `codex/agent-review-dropoff-repair-20260626`. Scope: dashboard prompt
+  `codex/agent-mode-task-decision-dropoff-20260626`. Scope: dashboard prompt
   statuses/copy metadata, Agent-friendly drop-off form, login return/takeover
   guidance, scoped BLOCKED behavior, helper no-false-write-proof behavior,
-  public private-data safe route guidance, tests, merge/deploy/live smoke, and
+  public private-data safe route guidance, hybrid Agent Mode prompt/drop-off on
+  visible owner Tasks/Decisions, tests, merge/deploy/live smoke, and
   Issue #24-linked closeout. Current status: `REQ-20260626-002` through
-  `REQ-20260626-005` are implemented and locally verified but remain open
-  until production proof; `REQ-20260626-006` has full tests/watchdogs/secret
-  audit passing and remains open only because its dependencies need live proof;
+  `REQ-20260626-005` have prior deploy/live proof from the first repair PR;
+  `REQ-20260626-008` is implemented and locally focused-tested but remains open
+  until full tests, deploy, and live sample Task/Decision smokes pass;
   `REQ-20260626-007` is the release gate for push, merge, Railway deploy, live
   smoke, and Issue #24 final evidence.
 - [x] `RAW-20260625-024` / `PARENT-20260625-024` /

@@ -13,6 +13,8 @@
 | Execution run | ops/execution-runs/2026-06-26-agent-review-dropoff-repair/ |
 | Parse status | registered |
 
+Additional clarification source: `RAW-20260626-002` at `raw-input/RAW-20260626-002-agent-mode-task-decision-dropoff.md`. It adds `REQ-20260626-008` for hybrid Agent Mode prompt/drop-off workflow on visible owner Tasks and Decisions, extending the existing Issue #7 task/Decision system without a second queue.
+
 ## Parsed requirements
 
 | ID | Requirement | Source IDs | Workspace/project | Owner | Category | Priority | Batch | Dependencies | Deploy/live required | Status |
@@ -23,7 +25,8 @@
 | REQ-20260626-004 | Review-context login return and scoped access blocking | RAW-20260626-001-S005 | bna_platform / agent_review_hub | Codex | auth_security | P0 | C | REQ-20260626-002, REQ-20260626-003 | yes | not_started |
 | REQ-20260626-005 | Helper false-success and public private-data behavior repair | RAW-20260626-001-S006 | bna_platform / helper_correctness | Codex | helper_actions | P0 | D | REQ-20260626-001 | yes | not_started |
 | REQ-20260626-006 | Repair tests and watchdog coverage | RAW-20260626-001-S007 | bna_platform / agent_review_hub | Codex | test_coverage | P0 | E | REQ-20260626-002, REQ-20260626-003, REQ-20260626-004, REQ-20260626-005 | no | not_started |
-| REQ-20260626-007 | Merge, deploy, live verification, and final closeout | RAW-20260626-001-S008 | bna_platform / agent_review_hub | Codex | release_closeout | P0 | Z | REQ-20260626-002, REQ-20260626-003, REQ-20260626-004, REQ-20260626-005, REQ-20260626-006 | yes | not_started |
+| REQ-20260626-008 | Hybrid Agent Mode prompt/drop-off on owner Tasks and Decisions | RAW-20260626-002-S001 through RAW-20260626-002-S005 | bna_platform / agent_review_hub | Codex | app_security_ui | P0 | F | REQ-20260626-002, REQ-20260626-003 | yes | in_progress |
+| REQ-20260626-007 | Merge, deploy, live verification, and final closeout | RAW-20260626-001-S008 | bna_platform / agent_review_hub | Codex | release_closeout | P0 | Z | REQ-20260626-002, REQ-20260626-003, REQ-20260626-004, REQ-20260626-005, REQ-20260626-006, REQ-20260626-008 | yes | not_started |
 
 ## Final audit
 
@@ -35,4 +38,5 @@
 | REQ-20260626-004 | Not started | pending | pending | auth/context repair |
 | REQ-20260626-005 | Not started | pending | pending | helper repair |
 | REQ-20260626-006 | Not started | pending | pending | tests |
+| REQ-20260626-008 | In progress | `src/lib/bna/agent-review-hub.js`, `server.js`, `public/operations.html`, `public/agent-review-dropoff.html`, registries, `tests/agent-mode-task-dropoff.test.js` | focused tests pass locally; deploy/live proof pending | app-visible Task/Decision Agent Mode workflow must be deployed/live-smoked before Done |
 | REQ-20260626-007 | Not started | pending | pending | deploy/live closeout |

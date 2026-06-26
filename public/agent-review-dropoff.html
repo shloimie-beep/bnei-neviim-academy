@@ -148,12 +148,15 @@
           <label>Prompt key<input name="prompt_key" id="promptKey" readonly></label>
           <label>Context<select name="context_key" id="contextKey"></select></label>
           <label>Requirement<input name="requirement_id" id="requirementId"></label>
+          <label>Task / Decision ID<input name="task_id" id="taskId" readonly></label>
           <label>Status<select name="status" id="status"><option value="pass">PASS</option><option value="fail">FAIL</option><option value="blocked">BLOCKED</option></select></label>
           <label>Severity<select name="severity" id="severity"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select></label>
           <label>Current route<input name="current_route" id="currentRoute" placeholder="/operations?view=..."></label>
           <label>Last route<input name="last_completed_route" id="lastCompletedRoute" placeholder="/student?review=agent"></label>
+          <label>Last role/context<input name="last_completed_role_context" id="lastCompletedRoleContext" placeholder="owner_task_decision / Operations task card"></label>
           <label>Idempotency key<input name="idempotency_key" id="idempotencyKey"></label>
           <label class="wide">Blocker<input name="blocker" id="blocker" placeholder="Required when status is BLOCKED"></label>
+          <label class="wide">Suggested correction<input name="suggested_correction" id="suggestedCorrection" placeholder="Correction or rerun note when FAIL/BLOCKED"></label>
           <label class="wide">JSON or plain result paste<textarea name="report_text" id="reportText" placeholder="Paste the Agent Mode report. JSON is parsed when possible; plain text is saved as a redacted summary."></textarea></label>
         </div>
         <div class="actions" style="margin-top:10px">
@@ -217,6 +220,7 @@
       document.getElementById('metaGrid').innerHTML = [
         ['Run', data.agent_review_run_id],
         ['Prompt', state.prompt?.key || params.get('prompt_key') || 'unknown'],
+        ['Task/Decision', data.task?.id ? `#${data.task.id} ${data.task.item_type || ''}` : 'none'],
         ['Role', state.context?.role || state.session?.role || 'owner'],
         ['Workspace', state.context?.workspace_key || state.session?.workspace_key || 'bna'],
         ['Requirement', state.prompt?.requirement_id || params.get('requirement_id') || 'unknown'],
@@ -226,7 +230,9 @@
       ].map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
       document.getElementById('promptKey').value = state.prompt?.key || params.get('prompt_key') || '';
       document.getElementById('requirementId').value = state.prompt?.requirement_id || params.get('requirement_id') || '';
+      document.getElementById('taskId').value = data.task?.id || params.get('task_id') || '';
       document.getElementById('idempotencyKey').value = params.get('idempotency_key') || state.prompt?.idempotency_key || '';
+      document.getElementById('lastCompletedRoleContext').value = state.context?.key || state.prompt?.copy_metadata?.context_key || '';
       const contexts = state.prompt?.context_keys || (state.context?.key ? [state.context.key] : []);
       document.getElementById('contextKey').innerHTML = contexts.map((key) => `<option value="${esc(key)}">${esc(key)}</option>`).join('');
       if (state.context?.key) document.getElementById('contextKey').value = state.context.key;
@@ -248,6 +254,7 @@
       const payload = Object.fromEntries(form.entries());
       Object.assign(payload, parseReport(payload.report_text));
       payload.agent_review_run_id = params.get('agent_review_run_id') || state.prompt?.copy_metadata?.agent_review_run_id || '';
+      payload.task_id = payload.task_id || params.get('task_id') || state.prompt?.copy_metadata?.task_id || '';
       payload.return_url = params.get('return_url') || state.prompt?.return_url || '/operations/agent-review';
       payload.dropoff_url = window.location.pathname + window.location.search;
       return payload;
@@ -260,9 +267,9 @@
       document.getElementById('readbackPanel').hidden = false;
       document.getElementById('resultRef').textContent = `Saved ${data.result_ref}`;
       document.getElementById('readbackLink').href = data.readback_url || data.operations_url || '#';
-      if (data.repair_url) {
+      if (data.repair_url || data.task_url) {
         document.getElementById('repairLink').hidden = false;
-        document.getElementById('repairLink').href = data.repair_url;
+        document.getElementById('repairLink').href = data.repair_url || data.task_url;
       }
       document.getElementById('rerunPrompt').textContent = data.rerun_prompt || 'No rerun prompt required for PASS.';
       return data;

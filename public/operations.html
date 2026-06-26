@@ -3734,6 +3734,29 @@
             border-color: #c9a227;
         }
 
+        .task-agent-mode-panel input,
+        .task-agent-mode-panel select {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-family: inherit;
+            font-size: 13px;
+            padding: 9px 10px;
+        }
+
+        .task-agent-mode-panel textarea {
+            min-height: 170px;
+        }
+
+        .task-agent-mode-prompt {
+            max-height: 280px;
+            overflow: auto;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
         .task-inline-comment-form .task-action {
             justify-self: start;
         }
@@ -7968,6 +7991,8 @@
             addTaskComment(id, comment) { return this.request('POST', '/tasks/' + id + '/comments', comment); },
             taskAction(id, action, payload = {}) { return this.request('POST', '/tasks/' + id + '/actions/' + action, payload); },
             decisionAction(id, payload = {}) { return this.request('POST', '/tasks/' + id + '/decision-action', payload); },
+            copyTaskAgentModePrompt(id) { return this.request('POST', '/tasks/' + encodeURIComponent(id) + '/agent-mode/copy-prompt', {}); },
+            submitAgentReviewResult(payload = {}) { return this.request('POST', '/agent-review/results', payload); },
             chooseTaskDecision(id, payload = {}) { return this.taskAction(id, 'choose-decision', payload); },
             convertTaskToWork(id, payload = {}) { return this.taskAction(id, 'convert-to-task', payload); },
             markTaskPending(id, payload = {}) { return this.taskAction(id, 'mark-pending', payload); },
@@ -13959,6 +13984,7 @@
                                     <button class="task-action" onclick="closeTaskDetail()">Back to ${escapeHtml(state.title || 'Tasks')}</button>
                                 </div>
                             </section>
+                            ${renderTaskAgentModePanel(task)}
                             ${renderTaskAgentVerificationPanel(task, latestJob)}
                             <section class="detail-section">
                                 <h3>Summary</h3>
@@ -14100,6 +14126,7 @@
             return `
                 <div class="task-inline-detail" onclick="event.stopPropagation()">
                     ${renderTaskInlineDecisionPanel(task, columnId)}
+                    ${renderTaskAgentModePanel(task)}
                     <div class="task-inline-grid">
                         ${contextRows.map(([label, value]) => `
                             <div class="task-inline-item">
@@ -14149,6 +14176,148 @@
                         <button class="task-action" onclick="editTask(${Number(task.id)})">Edit full card</button>
                     </div>
                 </div>
+            `;
+        }
+
+        function taskAgentModeStatusLabel(status = '') {
+            return ({
+                not_started: 'not started',
+                prompt_copied: 'prompt copied',
+                agent_running_or_pending: 'agent running or pending',
+                agent_result_overdue: 'result overdue',
+                result_saved: 'result saved',
+                blocked: 'blocked',
+                failed: 'failed',
+                repair_created: 'repair created',
+                rerun_required: 'rerun required',
+                completed: 'completed'
+            })[String(status || '').toLowerCase()] || String(status || 'not started').replace(/_/g, ' ');
+        }
+
+        function renderTaskAgentModeList(label, items = []) {
+            const values = Array.isArray(items) ? items.filter(Boolean) : [];
+            if (!values.length) return '';
+            return `
+                <div class="task-inline-item">
+                    <div class="task-inline-label">${escapeHtml(label)}</div>
+                    <ul class="task-inline-list">
+                        ${values.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function renderTaskAgentModePanel(task = {}) {
+            const review = task.agent_mode_review || {};
+            const id = Number(task.id || review.task_id || 0);
+            if (!id || !review.enabled) return '';
+            const resultUrl = review.result_url || (review.result_ref ? `/api/bna/agent-review/results/${encodeURIComponent(review.result_ref)}` : '');
+            const repairUrl = review.repair_url || (review.repair_task_id ? `/operations?view=tasks&task=${encodeURIComponent(review.repair_task_id)}` : '');
+            const dropoffUrl = review.exact_dropoff_url || '';
+            const startUrl = review.exact_starting_url || review.exact_return_url || '';
+            const resultStatus = review.result_status ? `AGR ${review.result_status}` : 'No AGR result saved yet';
+            const metaRows = [
+                ['Prompt key', review.prompt_key],
+                ['Requirement ID', review.requirement_id],
+                ['Role / workspace / context', [review.role, review.workspace_key, review.context_key].filter(Boolean).join(' / ')],
+                ['Starting URL', startUrl],
+                ['Return URL', review.exact_return_url],
+                ['Drop-off URL', dropoffUrl],
+                ['Idempotency key', review.idempotency_key],
+                ['Expected result', review.expected_result],
+                ['Save instructions', review.save_instructions],
+            ].filter(([, value]) => value);
+            return `
+                <section class="detail-section task-agent-mode-panel" data-action-id="ACTION-TASK-AGENT-MODE-PANEL">
+                    <h3>Agent Mode Prompt / Drop-Off</h3>
+                    <div class="task-row-meta">
+                        <span class="badge badge-decision">${escapeHtml(taskAgentModeStatusLabel(review.status))}</span>
+                        <span class="badge">${escapeHtml(review.owner_clarity?.label || 'Agent Mode can help')}</span>
+                        <span class="badge">${escapeHtml(resultStatus)}</span>
+                        ${review.prompt_copied_at ? `<span class="badge">Copied ${escapeHtml(formatDateTime(review.prompt_copied_at) || review.prompt_copied_at)}</span>` : ''}
+                    </div>
+                    <div class="task-inline-item">
+                        <div class="task-inline-label">Owner clarity</div>
+                        <div class="task-inline-text">${escapeHtml(review.owner_clarity?.explanation || 'Agent Mode can verify browser context and return evidence, but owner-only or dangerous actions stay blocked.')}</div>
+                    </div>
+                    <div class="task-inline-grid">
+                        ${metaRows.map(([label, value]) => `
+                            <div class="task-inline-item">
+                                <div class="task-inline-label">${escapeHtml(label)}</div>
+                                <div class="task-inline-text">${escapeHtml(value)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="task-inline-grid">
+                        ${renderTaskAgentModeList('Allowed actions', review.allowed_actions)}
+                        ${renderTaskAgentModeList('Prohibited actions', review.prohibited_actions)}
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action primary" type="button" data-action-id="ACTION-TASK-AGENT-MODE-COPY-PROMPT" onclick="copyTaskAgentModePrompt(event, ${id})">Copy prompt</button>
+                        ${startUrl ? `<a class="task-action" data-action-id="ACTION-TASK-AGENT-MODE-OPEN-START" href="${escapeHtml(startUrl)}" target="_blank" rel="noopener">Open start</a>` : ''}
+                        ${dropoffUrl ? `<a class="task-action" data-action-id="ACTION-TASK-AGENT-MODE-OPEN-DROPOFF" href="${escapeHtml(dropoffUrl)}" target="_blank" rel="noopener">Open drop-off</a>` : ''}
+                        ${resultUrl ? `<a class="task-action" data-action-id="ACTION-TASK-AGENT-MODE-VIEW-RESULT" href="${escapeHtml(resultUrl)}" target="_blank" rel="noopener">View saved result</a>` : ''}
+                        ${repairUrl ? `<a class="task-action" data-action-id="ACTION-TASK-AGENT-MODE-OPEN-REPAIR" href="${escapeHtml(repairUrl)}" target="_blank" rel="noopener">Open repair</a>` : ''}
+                    </div>
+                    <div class="task-inline-item">
+                        <div class="task-inline-label">Agent Mode prompt</div>
+                        <pre class="task-inline-text task-agent-mode-prompt">${escapeHtml(review.prompt_text || 'Copy prompt to generate the current Agent Mode handoff.')}</pre>
+                    </div>
+                    <form class="task-inline-comment-form" onsubmit="saveTaskAgentModeDropoff(event, ${id})">
+                        <input type="hidden" name="prompt_key" value="${escapeHtml(review.prompt_key || '')}">
+                        <input type="hidden" name="context_key" value="${escapeHtml(review.context_key || 'owner_task_decision')}">
+                        <input type="hidden" name="requirement_id" value="${escapeHtml(review.requirement_id || '')}">
+                        <input type="hidden" name="task_id" value="${id}">
+                        <input type="hidden" name="idempotency_key" value="${escapeHtml(review.idempotency_key || '')}">
+                        <div class="task-inline-grid">
+                            <label class="task-inline-item">
+                                <span class="task-inline-label">Result</span>
+                                <select name="status">
+                                    <option value="pass">PASS</option>
+                                    <option value="fail">FAIL</option>
+                                    <option value="blocked">BLOCKED</option>
+                                </select>
+                            </label>
+                            <label class="task-inline-item">
+                                <span class="task-inline-label">Last completed route</span>
+                                <input name="last_completed_route" value="${escapeHtml(review.exact_return_url || '')}">
+                            </label>
+                            <label class="task-inline-item">
+                                <span class="task-inline-label">Last role/context</span>
+                                <input name="last_completed_role_context" value="${escapeHtml([review.role, review.context_key].filter(Boolean).join(' / '))}">
+                            </label>
+                            <label class="task-inline-item">
+                                <span class="task-inline-label">Blocker</span>
+                                <input name="blocker" placeholder="Required for BLOCKED">
+                            </label>
+                        </div>
+                        <label class="task-inline-item">
+                            <span class="task-inline-label">Suggested correction</span>
+                            <input name="suggested_correction" placeholder="Correction or rerun note for FAIL/BLOCKED">
+                        </label>
+                        <label class="task-inline-item">
+                            <span class="task-inline-label">Report</span>
+                            <textarea name="report_text" id="taskAgentReport-${id}" rows="9" placeholder="Paste the Agent Mode result. PASS, FAIL, or BLOCKED will save AGR evidence back to this card."></textarea>
+                        </label>
+                        <div class="task-actions">
+                            <button class="task-action primary" type="submit" data-action-id="ACTION-TASK-AGENT-MODE-SAVE-DROPOFF">Save Agent Review Result</button>
+                            <span class="task-inline-text" id="taskAgentModeSaveStatus-${id}">${review.result_ref ? `Saved ${escapeHtml(review.result_ref)}` : ''}</span>
+                        </div>
+                    </form>
+                    ${review.result_ref ? `
+                        <div class="task-inline-item">
+                            <div class="task-inline-label">Visible AGR result ID</div>
+                            <div class="task-inline-value">${escapeHtml(review.result_ref)}</div>
+                            ${resultUrl ? `<div class="task-proof-links"><a class="task-proof-link" href="${escapeHtml(resultUrl)}" target="_blank" rel="noopener">View saved result</a></div>` : ''}
+                        </div>
+                    ` : ''}
+                    ${review.rerun_prompt ? `
+                        <div class="task-inline-item">
+                            <div class="task-inline-label">Rerun prompt</div>
+                            <pre class="task-inline-text task-agent-mode-prompt">${escapeHtml(review.rerun_prompt)}</pre>
+                        </div>
+                    ` : ''}
+                </section>
             `;
         }
 
@@ -36392,6 +36561,75 @@
             event.stopPropagation();
             await api.updateTask(taskId, updates);
             await loadData();
+        }
+
+        async function copyTaskAgentModePrompt(event, taskId) {
+            event?.preventDefault?.();
+            event?.stopPropagation?.();
+            const id = Number(taskId || 0);
+            if (!id) return;
+            const button = event?.currentTarget;
+            if (button) button.disabled = true;
+            try {
+                const result = await api.copyTaskAgentModePrompt(id);
+                const promptText = result?.prompt_text || result?.agent_mode_review?.prompt_text || '';
+                if (promptText) {
+                    try {
+                        await navigator.clipboard?.writeText(promptText);
+                    } catch {
+                        alert(promptText);
+                    }
+                }
+                if (result?.task) {
+                    tasks = tasks.map(task => Number(task.id) === id ? { ...task, ...result.task } : task);
+                }
+                taskWorkflowNotice = `Task #${id}: Agent Mode prompt copied.`;
+                render();
+            } catch (error) {
+                alert(error.message || 'Could not copy Agent Mode prompt.');
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
+        async function saveTaskAgentModeDropoff(event, taskId) {
+            event?.preventDefault?.();
+            event?.stopPropagation?.();
+            const id = Number(taskId || 0);
+            const form = event?.currentTarget;
+            if (!id || !form) return;
+            const task = tasks.find(item => Number(item.id) === id) || {};
+            const review = task.agent_mode_review || {};
+            const payload = Object.fromEntries(new FormData(form).entries());
+            payload.task_id = id;
+            payload.agent_review_run_id = review.copy_metadata?.agent_review_run_id || payload.agent_review_run_id || '';
+            payload.return_url = review.exact_return_url || payload.return_url || `/operations?view=tasks&task=${id}`;
+            payload.dropoff_url = review.exact_dropoff_url || payload.dropoff_url || `/operations/agent-review/dropoff?task_id=${id}`;
+            payload.current_route = window.location.pathname + window.location.search;
+            payload.summary = payload.summary || String(payload.report_text || '').slice(0, 4000);
+            const statusEl = document.getElementById(`taskAgentModeSaveStatus-${id}`);
+            const button = event?.submitter || form.querySelector('button[type="submit"]');
+            if (button) button.disabled = true;
+            if (statusEl) statusEl.textContent = 'Saving...';
+            try {
+                const result = await api.submitAgentReviewResult(payload);
+                if (result?.task) {
+                    tasks = tasks.map(item => Number(item.id) === id ? { ...item, ...result.task } : item);
+                } else if (result?.task_agent_mode_review) {
+                    tasks = tasks.map(item => Number(item.id) === id ? { ...item, agent_mode_review: result.task_agent_mode_review } : item);
+                }
+                if (statusEl) {
+                    const viewLink = result?.readback_url ? ` <a href="${escapeHtml(result.readback_url)}" target="_blank" rel="noopener">View saved result</a>` : '';
+                    statusEl.innerHTML = `Saved ${escapeHtml(result?.result_ref || 'AGR result')}.${viewLink}`;
+                }
+                taskWorkflowNotice = `Task #${id}: Agent Review result ${result?.result_ref || ''} saved.`;
+                render();
+            } catch (error) {
+                if (statusEl) statusEl.textContent = error.message || 'Could not save Agent Review result.';
+                alert(error.message || 'Could not save Agent Review result.');
+            } finally {
+                if (button) button.disabled = false;
+            }
         }
 
         async function taskEndpointAction(event, taskId, action, payload = {}) {
