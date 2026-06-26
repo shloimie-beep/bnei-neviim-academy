@@ -6,22 +6,20 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260626-001`, `RAW-20260626-002` /
+- [x] `RAW-20260626-001`, `RAW-20260626-002` /
   `PARENT-20260626-001` / `REQ-20260626-001` through
   `REQ-20260626-008`: Agent Review drop-off,
-  scoped context access, and helper false-success repair. Active run:
+  scoped context access, helper false-success repair, and hybrid Agent Mode
+  prompt/drop-off on owner Tasks/Decisions. Run:
   `ops/execution-runs/2026-06-26-agent-review-dropoff-repair/` on branch
-  `codex/agent-mode-task-decision-dropoff-20260626`. Scope: dashboard prompt
-  statuses/copy metadata, Agent-friendly drop-off form, login return/takeover
-  guidance, scoped BLOCKED behavior, helper no-false-write-proof behavior,
-  public private-data safe route guidance, hybrid Agent Mode prompt/drop-off on
-  visible owner Tasks/Decisions, tests, merge/deploy/live smoke, and
-  Issue #24-linked closeout. Current status: `REQ-20260626-002` through
-  `REQ-20260626-005` have prior deploy/live proof from the first repair PR;
-  `REQ-20260626-008` is implemented and locally focused-tested but remains open
-  until full tests, deploy, and live sample Task/Decision smokes pass;
-  `REQ-20260626-007` is the release gate for push, merge, Railway deploy, live
-  smoke, and Issue #24 final evidence.
+  `codex/agent-mode-task-decision-dropoff-20260626`. PR #32 and PR #33 merged;
+  app-visible implementation deployed from master SHA
+  `d072466511af64cf4f413be7c42f79c18a00848e` to Railway build
+  `d734fc78-2c71-411b-80f4-61c88fe0ba55` and live smokes passed. Live Task/
+  Decision proof: owner task `#1734` saved PASS result
+  `AGR-e571d939e011d301`; Decision `#1735` saved BLOCKED result
+  `AGR-19cfa47542407167` and linked repair task `#1736`. Issue #18 remains
+  `NOT SAFE TO APPLY`; no class backfill was applied.
 - [x] `RAW-20260625-024` / `PARENT-20260625-024` /
   `REQ-20260625-024` through `REQ-20260625-030`: GitHub issue #24 is
   live verified and terminal Done. Scope completed: secure owner-only Agent
