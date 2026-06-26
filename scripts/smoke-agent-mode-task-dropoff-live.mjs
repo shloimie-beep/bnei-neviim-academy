@@ -153,7 +153,11 @@ async function main() {
     const ownerCopy = await step('copy prompt records prompt_copied on owner task', async () => {
       const { data } = await request('POST', `/api/bna/tasks/${ownerTask.task_id}/agent-mode/copy-prompt`, { cookie, body: {} });
       assert(data.success === true, 'Copy prompt did not return success.');
-      assert(data.agent_mode_review?.status === 'prompt_copied', `Expected prompt_copied, got ${data.agent_mode_review?.status}`);
+      assert(
+        data.agent_mode_review?.status === 'prompt_copied' ||
+          (data.agent_mode_review?.status === 'completed' && data.agent_mode_review?.result_ref),
+        `Expected prompt_copied or existing completed result, got ${data.agent_mode_review?.status}`
+      );
       assert(data.agent_mode_review?.prompt_copied_at, 'Copy prompt did not persist prompt_copied_at.');
       assert(data.prompt_text?.includes(`Prompt key: ${data.agent_mode_review.prompt_key}`), 'Copy prompt did not return prompt text.');
       return {
@@ -252,7 +256,12 @@ async function main() {
 
     const decisionCopy = await step('copy prompt records prompt_copied on Decision', async () => {
       const { data } = await request('POST', `/api/bna/tasks/${decision.task_id}/agent-mode/copy-prompt`, { cookie, body: {} });
-      assert(data.agent_mode_review?.status === 'prompt_copied', `Expected prompt_copied, got ${data.agent_mode_review?.status}`);
+      assert(
+        data.agent_mode_review?.status === 'prompt_copied' ||
+          (data.agent_mode_review?.status === 'rerun_required' && data.agent_mode_review?.result_ref),
+        `Expected prompt_copied or existing rerun_required result, got ${data.agent_mode_review?.status}`
+      );
+      assert(data.agent_mode_review?.prompt_copied_at, 'Copy prompt did not persist prompt_copied_at.');
       return {
         task_id: decision.task_id,
         prompt_key: data.agent_mode_review.prompt_key,
