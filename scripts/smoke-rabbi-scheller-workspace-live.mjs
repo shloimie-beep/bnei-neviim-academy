@@ -134,7 +134,13 @@ async function main() {
         'This page is intentionally empty until the backend recorder and aggregation endpoint are enabled',
       ];
       expectIncludes(text, markers, 'Provider portal bundle');
-      assert(!/Platform Suite|Team\/Admin|Accounting|super-admin/i.test(text), 'Provider bundle exposes super-admin labels');
+      for (const forbiddenLabel of ['Platform Suite', 'Team/Admin', 'Accounting']) {
+        assert(!text.includes(forbiddenLabel), `Provider bundle exposes super-admin label: ${forbiddenLabel}`);
+      }
+      const textWithoutBoundaryDenials = text
+        .replace(/No cross-account super-admin access/gi, '')
+        .replace(/does not receive super-admin access/gi, '');
+      assert(!/\bsuper[-\s]?admin\b/i.test(textWithoutBoundaryDenials), 'Provider bundle exposes super-admin labels outside boundary denial copy');
       report.summary.provider_markers_checked = markers.length;
       return { markers: markers.length };
     });

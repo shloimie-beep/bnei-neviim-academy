@@ -81,6 +81,17 @@ clean worktree:
 
 ## Deploy Status
 
-This branch now includes app-visible UI integration work. It is locally
-verified and ready for PR. It is not production-complete until the branch is
-merged, deployed, and live-smoked.
+The newer Prompt F / final-integration work was completed through PR, merge,
+deployment, and live smoke verification.
+
+- PR #40 merged to master at
+  `460b1b44970c85e3e58f4eb15330bf2ce99cf091`.
+- Railway deployment `8394199e-7b61-40b7-8bc5-08b6b0087493` reached
+  `SUCCESS` for the PR #40 merge commit.
+- `npm run railway:doctor` passed for BNA production service
+  `skillful-motivation`.
+- Live app, Rabbi landing, One Time shared review, and Rabbi workspace smokes
+  passed with reports under `ops/live-smokes/2026-06-26T09-58*` through
+  `ops/live-smokes/2026-06-26T10-01*`.
+
+Remaining Rabbi/One Time UI sequence work: none found.
