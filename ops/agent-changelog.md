@@ -26504,3 +26504,29 @@ Live proof: Agent Review Hub at https://bneineviimacademy.org/operations/agent-r
 Guardrails retained: newest recording verdict is `PARTIAL / content_job:83`, not fully processed; Issue #18 remains `NOT SAFE TO APPLY`; no class backfill, Drive write, paid retranscription, worker retry, external send, charge, DNS change, credential/account change, Buffer publish, public publishing, or secret exposure was performed.
 
 Final Issue #24 evidence comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945
+
+## 2026-06-26T11:15:00+03:00 - Issue #24 Agent Review Drop-Off Repair Live Verified
+
+Completed the linked June 26 Issue #24 repair run
+`2026-06-26-agent-review-dropoff-repair` through terminal Done statuses for
+`REQ-20260626-001` through `REQ-20260626-008`. PR #32 repaired the Agent
+Review dashboard/drop-off/login/helper behavior, and PR #33 extended the
+hybrid Agent Mode prompt/drop-off workflow to visible owner Tasks and
+Decisions.
+
+Live proof: deployed master SHA `d072466511af64cf4f413be7c42f79c18a00848e`
+to Railway build `d734fc78-2c71-411b-80f4-61c88fe0ba55`; Railway doctor
+reported `SUCCESS`; live health returned ok/database connected; standard live
+app smoke passed; Task/Decision Agent Mode smoke passed with owner task `#1734`
+PASS result `AGR-e571d939e011d301`, Decision `#1735` BLOCKED result
+`AGR-19cfa47542407167`, and repair task `#1736`.
+
+Tracked evidence:
+`ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md`,
+`ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md`,
+and
+`ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md`.
+Guardrails retained: newest recording trace is `PARTIAL`, Issue #18 remains
+`NOT SAFE TO APPLY`, and no class backfill, Drive write, paid retranscription,
+worker retry, student-data mutation, external send/publish/charge, DNS change,
+credential/account change, or secret exposure was performed.

@@ -1,13 +1,17 @@
 {
   "run_id": "2026-06-26-agent-review-dropoff-repair",
   "title": "Agent Review drop-off, scoped context access, and helper repair",
-  "updated_at": "2026-06-26T10:48:00+03:00",
+  "updated_at": "2026-06-26T11:15:00+03:00",
   "git_refs": {
     "expected_branch": "codex/agent-mode-task-decision-dropoff-20260626",
     "base_branch": "master",
     "local_head_at_start": "0500ce74cad7a1299a6d0fd487b1deef24ab9fb8",
     "issue_number": 24,
-    "predecessor_run": "2026-06-25-issue-24-agent-review-hub"
+    "predecessor_run": "2026-06-25-issue-24-agent-review-hub",
+    "implementation_pr": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/33",
+    "implementation_merge_sha": "d072466511af64cf4f413be7c42f79c18a00848e",
+    "repair_pr": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/32",
+    "repair_merge_sha": "772848d674794bf9211a91d641d56cbfbb091888"
   },
   "sources": [
     {
@@ -209,10 +213,10 @@
       "depends_on": [
         "REQ-20260626-001"
       ],
-      "status": "in_progress",
-      "implementation_status": "dashboard_prompt_cards_and_copy_metadata_implemented_local_verified_pending_deployment_live_evidence",
-      "can_continue_without_operator": true,
-      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "status": "done",
+      "implementation_status": "done_live_verified_dashboard_prompt_cards_copy_metadata",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "All prompt cards expose required actions.",
         "Prompt status can be computed and shown.",
@@ -228,12 +232,25 @@
         "public/agent-review-prompts/*.md",
         "ops/action-registry.json",
         "ops/route-registry.json",
-        "tests/agent-review-hub.test.js"
+        "tests/agent-review-hub.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS npm run agent-review:prompts regenerated prompt pack with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, idempotency_key, and copy metadata.",
         "PASS node --test tests/agent-review-hub.test.js covered prompt metadata, prompt statuses, dashboard controls, registry rows, and rerun/repair prompt generation.",
-        "PASS npm test full suite: 1351 pass, 0 fail; evidence log ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/npm-test.log."
+        "PASS npm test full suite: 1351 pass, 0 fail; evidence log ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/npm-test.log.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "src/lib/bna/agent-review-hub.js",
@@ -254,7 +271,20 @@
         "tests/agent-review-hub.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T06:43:06.619Z"
+      "updated_at": "2026-06-26T11:15:00+03:00",
+      "deployment_status": "live_verified",
+      "deployment_id": "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 SUCCESS",
+      "deployed_commit": "d072466511af64cf4f413be7c42f79c18a00848e",
+      "deployment_evidence": [
+        "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 reached SUCCESS for deployed commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "Live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "Live smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "Live Agent Mode Task/Decision smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md."
+      ],
+      "live_smoke": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-003",
@@ -274,10 +304,10 @@
       "depends_on": [
         "REQ-20260626-002"
       ],
-      "status": "in_progress",
-      "implementation_status": "dropoff_form_save_readback_repair_rerun_implemented_local_verified_pending_deployment_live_evidence",
-      "can_continue_without_operator": true,
-      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "status": "done",
+      "implementation_status": "done_live_verified_dropoff_save_readback_repair_rerun",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "Drop-off page requires owner or review-session auth.",
         "Plain text reports save.",
@@ -294,13 +324,26 @@
         "src/lib/bna/agent-review-hub.js",
         "ops/route-registry.json",
         "ops/action-registry.json",
-        "tests/agent-review-hub.test.js"
+        "tests/agent-review-hub.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS node --check server.js.",
         "PASS inline script parse for public/agent-review-dropoff.html.",
         "PASS node --test tests/agent-review-hub.test.js covered drop-off route, context API, plain-text/JSON save behavior, readback URL, FAIL/BLOCKED repair metadata, and rerun prompts.",
-        "PASS npm test full suite: 1351 pass, 0 fail."
+        "PASS npm test full suite: 1351 pass, 0 fail.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "server.js",
@@ -309,7 +352,20 @@
         "tests/agent-review-hub.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T06:43:06.619Z"
+      "updated_at": "2026-06-26T11:15:00+03:00",
+      "deployment_status": "live_verified",
+      "deployment_id": "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 SUCCESS",
+      "deployed_commit": "d072466511af64cf4f413be7c42f79c18a00848e",
+      "deployment_evidence": [
+        "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 reached SUCCESS for deployed commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "Live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "Live smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "Live Agent Mode Task/Decision smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md."
+      ],
+      "live_smoke": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-004",
@@ -330,10 +386,10 @@
         "REQ-20260626-002",
         "REQ-20260626-003"
       ],
-      "status": "in_progress",
-      "implementation_status": "review_context_return_and_scoped_blocking_implemented_local_verified_pending_deployment_live_evidence",
-      "can_continue_without_operator": true,
-      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "status": "done",
+      "implementation_status": "done_live_verified_login_return_scoped_blocking",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "Unauthenticated hub redirects to Operations login with exact returnTo.",
         "After login returns to hub/prompt/drop-off page.",
@@ -348,13 +404,26 @@
         "public/agent-review-dropoff.html",
         "tests/operations-pwa-login.test.js",
         "tests/rabbi-scheller-auth-navigation-contract.test.js",
-        "tests/agent-review-hub.test.js"
+        "tests/agent-review-hub.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS operations login allow-list includes /operations/agent-review and /operations/agent-review/dropoff.",
         "PASS scoped context failure messaging instructs Agent Mode to save BLOCKED instead of auditing public helper.",
         "PASS node --test tests/operations-pwa-login.test.js tests/portal-agnostic-auth-contract.test.js.",
-        "PASS node --test tests/app-select-dropdown.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/watchdog-action-registry.test.js."
+        "PASS node --test tests/app-select-dropdown.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/watchdog-action-registry.test.js.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "server.js",
@@ -365,7 +434,20 @@
         "tests/rabbi-scheller-auth-navigation-contract.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T06:43:06.619Z"
+      "updated_at": "2026-06-26T11:15:00+03:00",
+      "deployment_status": "live_verified",
+      "deployment_id": "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 SUCCESS",
+      "deployed_commit": "d072466511af64cf4f413be7c42f79c18a00848e",
+      "deployment_evidence": [
+        "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 reached SUCCESS for deployed commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "Live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "Live smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "Live Agent Mode Task/Decision smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md."
+      ],
+      "live_smoke": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-005",
@@ -385,10 +467,10 @@
       "depends_on": [
         "REQ-20260626-001"
       ],
-      "status": "in_progress",
-      "implementation_status": "helper_false_success_and_public_private_data_repaired_local_verified_pending_deployment_live_evidence",
-      "can_continue_without_operator": true,
-      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "status": "done",
+      "implementation_status": "done_live_verified_helper_false_success_public_private_data_guardrails",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "Support-ticket false-success pattern is impossible or fails tests.",
         "Public helper private next class/worksheet/progress/question requests return correct login/support routes.",
@@ -400,19 +482,45 @@
         "server.js",
         "tests/public-helper-agent-review-guardrails.test.js",
         "tests/helper-destination-resolver.test.js",
-        "tests/bna-helper-tools.test.js"
+        "tests/bna-helper-tools.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS anonymous public private-data requests return safe login/support routes without collecting personal details publicly.",
         "PASS create_ticket helper response cannot claim a ticket unless typed action execution returns success, executed=true, ticketId, and auditId.",
-        "PASS node --test tests/public-helper-agent-review-guardrails.test.js tests/helper-destination-resolver.test.js tests/bna-helper-tools.test.js."
+        "PASS node --test tests/public-helper-agent-review-guardrails.test.js tests/helper-destination-resolver.test.js tests/bna-helper-tools.test.js.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "server.js",
         "tests/public-helper-agent-review-guardrails.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T06:43:06.619Z"
+      "updated_at": "2026-06-26T11:15:00+03:00",
+      "deployment_status": "live_verified",
+      "deployment_id": "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 SUCCESS",
+      "deployed_commit": "d072466511af64cf4f413be7c42f79c18a00848e",
+      "deployment_evidence": [
+        "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 reached SUCCESS for deployed commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "Live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "Live smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "Live Agent Mode Task/Decision smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md."
+      ],
+      "live_smoke": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-006",
@@ -436,10 +544,10 @@
         "REQ-20260626-005",
         "REQ-20260626-008"
       ],
-      "status": "in_progress",
-      "implementation_status": "tests_watchdogs_secret_audit_full_suite_passed_pending_dependency_live_closeout",
-      "can_continue_without_operator": true,
-      "next_action": "Close after REQ-20260626-002 through REQ-20260626-005 receive live deployment evidence.",
+      "status": "done",
+      "implementation_status": "done_tests_watchdogs_full_suite_secret_audit_passed",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "Tests cover unauth redirect returnTo.",
         "Tests cover prompt copy metadata.",
@@ -461,7 +569,13 @@
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/TEST-RESULTS-REQ008.md",
         "ops/watchdog-audits/2026-06-26T07-48-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-26T07-48-watchdog-link-audit.md",
-        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS npm test: 1351 pass, 0 fail.",
@@ -472,7 +586,14 @@
         "PASS node --test tests/agent-mode-task-dropoff.test.js tests/agent-review-hub.test.js covered Task/Decision Agent Mode idempotency, timeout, blocked rerun, saved result, and no duplicate owner task conversion.",
         "PASS npm test full suite after REQ-20260626-008: 1361 pass, 0 fail.",
         "PASS action/link/security watchdogs after REQ-20260626-008: finding_count 0.",
-        "PASS secrets audit after REQ-20260626-008: 4880 tracked paths checked, 0 tracked secret-risk files found."
+        "PASS secrets audit after REQ-20260626-008: 4880 tracked paths checked, 0 tracked secret-risk files found.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "tests/agent-review-hub.test.js",
@@ -483,7 +604,7 @@
         "tests/agent-mode-task-dropoff.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-26T10:48:00+03:00"
+      "updated_at": "2026-06-26T11:15:00+03:00"
     },
     {
       "id": "REQ-20260626-008",
@@ -508,10 +629,10 @@
         "REQ-20260626-002",
         "REQ-20260626-003"
       ],
-      "status": "in_progress",
-      "implementation_status": "task_decision_agent_mode_prompt_dropoff_full_local_verified_pending_push_merge_deploy_live_smoke",
-      "can_continue_without_operator": true,
-      "next_action": "Commit, push, merge, deploy Railway, and live-smoke sample Decision/task copy/save PASS/BLOCKED/readback/repair behavior before marking terminal Done.",
+      "status": "done",
+      "implementation_status": "done_live_verified_task_decision_agent_mode_prompt_dropoff",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "A sample Decision card shows an Agent Mode prompt and drop-off flow.",
         "A sample owner task shows an Agent Mode prompt and drop-off flow.",
@@ -538,7 +659,13 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-26T07-48-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-26T07-48-watchdog-link-audit.md",
-        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS node --check server.js and node --check src/lib/bna/agent-review-hub.js.",
@@ -549,7 +676,14 @@
         "PASS npm run watchdog:links: finding_count 0.",
         "PASS npm run watchdog:security: finding_count 0.",
         "PASS npm run secrets:audit: 4880 tracked paths checked, 0 tracked secret-risk files found.",
-        "PASS npm run bna:run:validate: validation passed, work remains yes."
+        "PASS npm run bna:run:validate: validation passed, work remains yes.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "src/lib/bna/agent-review-hub.js",
@@ -562,7 +696,20 @@
         "raw-input/RAW-20260626-002-agent-mode-task-decision-dropoff.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T10:48:00+03:00"
+      "updated_at": "2026-06-26T11:15:00+03:00",
+      "deployment_status": "live_verified",
+      "deployment_id": "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 SUCCESS",
+      "deployed_commit": "d072466511af64cf4f413be7c42f79c18a00848e",
+      "deployment_evidence": [
+        "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 reached SUCCESS for deployed commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "Live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "Live smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "Live Agent Mode Task/Decision smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md."
+      ],
+      "live_smoke": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-007",
@@ -587,10 +734,10 @@
         "REQ-20260626-006",
         "REQ-20260626-008"
       ],
-      "status": "in_progress",
-      "implementation_status": "local_release_gate_passed_pending_push_merge_deploy_live_smoke_for_task_decision_extension",
-      "can_continue_without_operator": true,
-      "next_action": "Commit, push, merge to master, deploy Railway, run live Agent Review/drop-off/helper plus Task/Decision Agent Mode smokes, post Issue #24 evidence, and mark run terminal.",
+      "status": "done",
+      "implementation_status": "done_merge_deploy_live_smoke_issue_evidence_ready",
+      "can_continue_without_operator": false,
+      "next_action": "No remaining implementation action for this repair run; owner may run Agent Mode audit from the live hub/task cards.",
       "acceptance_criteria": [
         "Focused and relevant broad tests pass.",
         "PR is pushed and merged.",
@@ -610,11 +757,24 @@
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/TEST-RESULTS-REQ008.md",
         "ops/watchdog-audits/2026-06-26T07-48-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-26T07-48-watchdog-link-audit.md",
-        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.json",
+        "scripts/smoke-agent-mode-task-dropoff-live.mjs",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md"
       ],
       "verification": [
         "PASS local release gate for REQ-20260626-008: node --check, focused tests, full npm test 1361/1361, action/link/security watchdogs, secrets audit, and run validation passed.",
-        "PENDING push/merge/deploy/live Task/Decision Agent Mode smoke."
+        "PENDING push/merge/deploy/live Task/Decision Agent Mode smoke.",
+        "PASS PR #32 merged: Repair Agent Review drop-off flow, merge commit 772848d674794bf9211a91d641d56cbfbb091888.",
+        "PASS PR #33 merged: Extend Agent Mode drop-off to task and decision cards, merge commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "PASS Railway deploy from clean origin/master uploaded build d734fc78-2c71-411b-80f4-61c88fe0ba55; Railway doctor reported SUCCESS.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected after deploy.",
+        "PASS standard live app smoke: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "PASS live Task/Decision Agent Mode smoke: owner task #1734 PASS result AGR-e571d939e011d301; Decision #1735 BLOCKED result AGR-19cfa47542407167; repair task #1736; newest recording trace shown as PARTIAL.",
+        "PASS Issue #18 guardrail preserved: no class backfill, Drive write/move, paid retranscription, worker retry, or student-data mutation was performed."
       ],
       "implementation_files": [
         "server.js",
@@ -631,7 +791,20 @@
         "tests/agent-mode-task-dropoff.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T10:48:00+03:00"
+      "updated_at": "2026-06-26T11:15:00+03:00",
+      "deployment_status": "live_verified",
+      "deployment_id": "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 SUCCESS",
+      "deployed_commit": "d072466511af64cf4f413be7c42f79c18a00848e",
+      "deployment_evidence": [
+        "Railway deployment d734fc78-2c71-411b-80f4-61c88fe0ba55 reached SUCCESS for deployed commit d072466511af64cf4f413be7c42f79c18a00848e.",
+        "Live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "Live smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md.",
+        "Live Agent Mode Task/Decision smoke passed: ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md."
+      ],
+      "live_smoke": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md"
+      ]
     }
   ],
   "tasks": [
@@ -642,9 +815,9 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260626-001",
-      "status": "running_task_decision_agent_mode_extension",
+      "status": "completed_live_verified",
       "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
-      "updated_at": "2026-06-26T10:42:00+03:00"
+      "updated_at": "2026-06-26T11:15:00+03:00"
     }
   ]
 }

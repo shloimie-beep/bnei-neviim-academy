@@ -1,0 +1,158 @@
+{
+  "started_at": "2026-06-26T08:03:36.758Z",
+  "app_url": "https://bneineviimacademy.org",
+  "auth_source": "railway",
+  "steps": [
+    {
+      "name": "operations owner login",
+      "ok": true,
+      "duration_ms": 1599,
+      "details": {
+        "user": "SHLOIMIE",
+        "role": "super_admin",
+        "scoped": "all"
+      }
+    },
+    {
+      "name": "owner session readback",
+      "ok": true,
+      "duration_ms": 1375,
+      "details": {
+        "user": "SHLOIMIE",
+        "role": "super_admin",
+        "views": [
+          "dashboard",
+          "watchdog",
+          "pipelines",
+          "tasks",
+          "agents",
+          "platform_suite",
+          "students",
+          "contacts",
+          "intake",
+          "community",
+          "studio",
+          "content",
+          "live_classes",
+          "calendar",
+          "service_providers",
+          "communications",
+          "internal_dialogue",
+          "accounting",
+          "automations",
+          "api_usage",
+          "admin",
+          "integrations",
+          "settings"
+        ]
+      }
+    },
+    {
+      "name": "sample owner task has Agent Mode panel data",
+      "ok": true,
+      "duration_ms": 3130,
+      "details": {
+        "task_id": 1734,
+        "prompt_key": "task-1734",
+        "status": "not_started",
+        "owner_clarity": "agent_mode_can_help_owner"
+      }
+    },
+    {
+      "name": "copy prompt records prompt_copied on owner task",
+      "ok": true,
+      "duration_ms": 1281,
+      "details": {
+        "task_id": 1734,
+        "prompt_key": "task-1734",
+        "status": "prompt_copied",
+        "copied_at": "2026-06-26T08:03:38.527Z",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:task-1734:TASK-1734"
+      }
+    },
+    {
+      "name": "saving PASS attaches AGR evidence to owner task",
+      "ok": true,
+      "duration_ms": 1352,
+      "details": {
+        "result_ref": "AGR-e571d939e011d301",
+        "task_id": 1734,
+        "status": "completed",
+        "readback_url": "/api/bna/agent-review/results/AGR-e571d939e011d301"
+      }
+    },
+    {
+      "name": "owner task result is visible from original task and readback API",
+      "ok": true,
+      "duration_ms": 1061,
+      "details": {
+        "task_id": 1734,
+        "result_ref": "AGR-e571d939e011d301",
+        "result_url": "https://bneineviimacademy.org/api/bna/agent-review/results/AGR-e571d939e011d301"
+      }
+    },
+    {
+      "name": "sample Decision has Agent Mode panel data",
+      "ok": true,
+      "duration_ms": 1205,
+      "details": {
+        "task_id": 1735,
+        "prompt_key": "decision-1735",
+        "status": "not_started",
+        "owner_clarity": "owner_must_decide"
+      }
+    },
+    {
+      "name": "copy prompt records prompt_copied on Decision",
+      "ok": true,
+      "duration_ms": 1206,
+      "details": {
+        "task_id": 1735,
+        "prompt_key": "decision-1735",
+        "status": "prompt_copied",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:decision-1735:DECISION-1735"
+      }
+    },
+    {
+      "name": "saving BLOCKED creates repair and rerun prompt for Decision",
+      "ok": true,
+      "duration_ms": 3616,
+      "details": {
+        "result_ref": "AGR-19cfa47542407167",
+        "repair_url": "/operations?view=tasks&task=1736",
+        "repair_task_id": 1736,
+        "rerun_prompt_present": true,
+        "readback_url": "/api/bna/agent-review/results/AGR-19cfa47542407167"
+      }
+    },
+    {
+      "name": "Decision result is visible from original card and readback API",
+      "ok": true,
+      "duration_ms": 1207,
+      "details": {
+        "decision_id": 1735,
+        "result_ref": "AGR-19cfa47542407167",
+        "repair_task_id": 1736,
+        "rerun_prompt_visible": true
+      }
+    },
+    {
+      "name": "task-specific drop-off context returns exact URLs and trace status",
+      "ok": true,
+      "duration_ms": 503,
+      "details": {
+        "task_id": 1734,
+        "prompt_key": "task-1734",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=task-1734&context_key=owner_task_decision&requirement_id=TASK-1734&task_id=1734&return_url=%2Foperations%3Fview%3Dtasks%26task%3D1734%26project%3Dbna&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Atask-1734%3ATASK-1734",
+        "newest_recording_trace_status": "PARTIAL"
+      }
+    }
+  ],
+  "samples": {
+    "owner_task_id": 1734,
+    "owner_task_result_ref": "AGR-e571d939e011d301",
+    "decision_id": 1735,
+    "decision_result_ref": "AGR-19cfa47542407167",
+    "repair_task_id": 1736
+  }
+}
