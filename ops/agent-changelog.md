@@ -26530,3 +26530,45 @@ Guardrails retained: newest recording trace is `PARTIAL`, Issue #18 remains
 `NOT SAFE TO APPLY`, and no class backfill, Drive write, paid retranscription,
 worker retry, student-data mutation, external send/publish/charge, DNS change,
 credential/account change, or secret exposure was performed.
+
+## 2026-06-26T12:05:00+03:00 - Agent Review Drop-Off And Public Helper Guardrails Live Verified
+
+Completed `RAW-20260626-003` / `REQ-20260626-109` through
+`REQ-20260626-115`.
+
+Changed:
+
+- Hardened Agent Mode prompt generation so success requires self-save and a
+  final answer beginning `SAVED AGR-...`; the only manual payload recovery path
+  is `DROP-OFF FAILED`.
+- Updated the drop-off page to label manual JSON paste as
+  `Emergency paste JSON and save`.
+- Added public/non-admin Tier-3 unsafe-action refusal handling to both public
+  assistant paths, with no normal task, Codex queue item, deployment request,
+  support ticket, or external write.
+- Added strict prompt/public-helper tests and a live public unsafe-action smoke
+  script.
+- Neutralized live task `#1738` as archived history; audit comment `#12439`
+  records that no Codex/deploy work was authorized, and agent job `#346` is
+  completed.
+
+Verification:
+
+- `npm test` passed 1363/1363.
+- `npm run watchdog:actions`, `npm run watchdog:links`, and
+  `npm run watchdog:security` each passed with 0 findings.
+- `npm run secrets:audit` passed across 4892 tracked paths.
+- PR #36 merged to master `469486b9928ceb16cbea97bd7b6815a15504a2a3`.
+- Railway deployment `b7b1b5b6-ede8-42a9-9a3a-c1b22684cdee` reached
+  `SUCCESS`.
+- Live app smoke passed.
+- Live Agent Mode Task/Decision drop-off smoke passed.
+- Live public helper unsafe-action smoke passed 18/18 endpoint/probe checks.
+- Live Agent Review Hub and deployed `operations-super-admin` prompt readback
+  passed.
+- Exact owner pilot saved/read back `AGR-3785159b6650d1fa` with idempotency
+  `operations-super-admin:first-agent-pilot`; repeat save returned the same AGR.
+
+Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
+Drive write, external send/publish/charge, DNS change, credential/account
+change, or secret exposure was performed.

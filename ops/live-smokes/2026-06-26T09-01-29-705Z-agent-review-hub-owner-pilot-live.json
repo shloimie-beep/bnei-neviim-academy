@@ -1,0 +1,67 @@
+{
+  "started_at": "2026-06-26T09:01:29.705Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "live Agent Review Hub HTML loads",
+      "ok": true,
+      "duration_ms": 677,
+      "details": {
+        "html_bytes": 17456
+      }
+    },
+    {
+      "name": "live hardened operations-super-admin prompt is deployed",
+      "ok": true,
+      "duration_ms": 231,
+      "details": {
+        "prompt_bytes": 6615
+      }
+    },
+    {
+      "name": "live Agent Review contexts API exposes owner prompt",
+      "ok": true,
+      "duration_ms": 383,
+      "details": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "operations-super-admin",
+        "requirement_id": "REQ-20260626-004",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=operations-super-admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Doperations-super-admin&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aoperations-super-admin%3Aall-contexts",
+        "previous_result_ref": null
+      }
+    },
+    {
+      "name": "exact owner pilot saves AGR through result API",
+      "ok": true,
+      "duration_ms": 247,
+      "details": {
+        "result_ref": "AGR-3785159b6650d1fa",
+        "status": "pass",
+        "readback_url": "/api/bna/agent-review/results/AGR-3785159b6650d1fa"
+      }
+    },
+    {
+      "name": "exact owner pilot readback returns same AGR",
+      "ok": true,
+      "duration_ms": 232,
+      "details": {
+        "result_ref": "AGR-3785159b6650d1fa",
+        "prompt_key": "operations-super-admin",
+        "idempotency_key": "operations-super-admin:first-agent-pilot"
+      }
+    },
+    {
+      "name": "owner pilot idempotency returns same AGR on repeat save",
+      "ok": true,
+      "duration_ms": 250,
+      "details": {
+        "result_ref": "AGR-3785159b6650d1fa"
+      }
+    }
+  ],
+  "samples": {
+    "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+    "result_ref": "AGR-3785159b6650d1fa",
+    "readback_url": "/api/bna/agent-review/results/AGR-3785159b6650d1fa"
+  }
+}
