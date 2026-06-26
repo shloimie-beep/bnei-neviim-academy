@@ -9,6 +9,9 @@ test('Content Library exposes topic and source filters above the library', () =>
   assert.match(operationsHtml, /let contentSourceFilter = 'all';/);
   assert.match(operationsHtml, /const CONTENT_TOPIC_FILTERS = \[/);
   assert.match(operationsHtml, /\{ id: 'torah', label: 'Torah' \}/);
+  assert.match(operationsHtml, /\{ id: 'class_notes', label: 'Class Notes' \}/);
+  assert.match(operationsHtml, /\{ id: 'drive_workflow_issue', label: 'Drive Workflow' \}/);
+  assert.match(operationsHtml, /\{ id: 'uncategorized', label: 'Uncategorized' \}/);
   assert.match(operationsHtml, /\{ id: 'psychology', label: 'Psychology' \}/);
   assert.match(operationsHtml, /\{ id: 'health', label: 'Health' \}/);
   assert.match(operationsHtml, /const CONTENT_SOURCE_FILTERS = \[/);
@@ -33,9 +36,15 @@ test('Transcript-only content jobs are shown as needing output, with source cont
 
 test('Content Library taxonomy helpers classify topic and source from job data', () => {
   assert.match(operationsHtml, /function contentTopicKey/);
+  assert.match(operationsHtml, /function contentTopicKeys/);
+  assert.match(operationsHtml, /function contentCardModel/);
+  assert.match(operationsHtml, /contentTopicKeys\(job\)\.includes\(contentTopicFilter\)/);
+  assert.match(operationsHtml, /countByContentTopicKeys\(visibleJobs\)/);
   assert.match(operationsHtml, /function contentSourceKey/);
   assert.match(operationsHtml, /function contentTopicHaystack/);
   assert.match(operationsHtml, /function inferredContentTopics/);
   assert.match(operationsHtml, /youtube\\.com\|youtu\\.be/);
   assert.match(operationsHtml, /sourceType\.includes\('google_drive'\)/);
+  assert.doesNotMatch(operationsHtml, /addContentSearchValue\(parts,\s*job\.transcript_text/);
+  assert.doesNotMatch(operationsHtml, /String\(job\.transcript_text \|\| ''\)\.slice\(0,\s*16000\)/);
 });

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-26-transcript-drive-digest-rebuild",
   "title": "Transcript Drive Digest Rebuild",
-  "updated_at": "2026-06-26T13:40:00+03:00",
+  "updated_at": "2026-06-26T14:55:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260626-004",
@@ -33,6 +33,17 @@
       "workspace": "bna",
       "project": "drive_content_library",
       "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260626-008",
+      "source_path": "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+      "captured_at": "2026-06-26T14:50:00+03:00",
+      "content_fingerprint": "sha256:420badbf86b7081243e964da918d27fbff9d191f0e074b28ae111e0b2ce7d442",
+      "privacy_classification": "internal_operations_ui_digest_repair",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "github_pr_comment",
+      "source_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45#issuecomment-4809202212"
     }
   ],
   "source_statements": [
@@ -168,6 +179,48 @@
       "source_statement": "Everything outside job #83 remains forbidden, including production DB mutation, class backfill, Drive source move/delete, paid retranscription, AI calls, raw transcript export to GitHub, stale deletion, sends, charges/access grants, credential/account/DNS changes, and broad Drive sync.",
       "requirement_id": "REQ-20260626-126",
       "classification": "guardrail"
+    },
+    {
+      "statement_id": "RAW-20260626-008-S001",
+      "source_id": "RAW-20260626-008",
+      "source_statement": "Register PR #45 content-card/topic-filter addendum and keep Issue #41 open.",
+      "requirement_id": "REQ-20260626-129",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260626-008-S002",
+      "source_id": "RAW-20260626-008",
+      "source_statement": "Audit all 29 digest recordings for title, parse, digest, routing, topic, category, and next-action readiness.",
+      "requirement_id": "REQ-20260626-130",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260626-008-S003",
+      "source_id": "RAW-20260626-008",
+      "source_statement": "Fix bad, gibberish, or missing Operations Content card titles and show clean generated title, main points, summary, categories, parse status, digest status, routing status, and next action.",
+      "requirement_id": "REQ-20260626-131",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260626-008-S004",
+      "source_id": "RAW-20260626-008",
+      "source_statement": "Fix the top topic filter so it uses normalized topic/category data from digest and classification output, including multi-topic cards and All reset behavior.",
+      "requirement_id": "REQ-20260626-132",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260626-008-S005",
+      "source_id": "RAW-20260626-008",
+      "source_statement": "Make uncategorized or incomplete items show clear Needs title, Needs parse, Needs digest, Needs routing, and Needs topic classification states.",
+      "requirement_id": "REQ-20260626-131",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260626-008-S006",
+      "source_id": "RAW-20260626-008",
+      "source_statement": "Add tests and perform no Drive writes, production mutations, class backfill, AI call, or raw transcript export.",
+      "requirement_id": "REQ-20260626-133",
+      "classification": "guardrail"
     }
   ],
   "canonical_tasks": [
@@ -190,7 +243,9 @@
       "title": "Create canonical goal-mode source, register, and active execution run",
       "expected_result": "Repo-visible raw source, register, and active execution run exist for the transcript digest rebuild.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S001"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S001"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -203,13 +258,19 @@
       "implementation_status": "registered active Codex goal, raw source, register, and execution run",
       "can_continue_without_operator": true,
       "next_action": "Continue implementation requirements in the active digest rebuild run.",
-      "acceptance_criteria": ["Raw packet is preserved", "Register exists", "Execution run points at this work"],
+      "acceptance_criteria": [
+        "Raw packet is preserved",
+        "Register exists",
+        "Execution run points at this work"
+      ],
       "evidence": [
         "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md",
         "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
         "ops/execution-runs/latest.json"
       ],
-      "verification": ["PASS npm run bna:run:init -- --id 2026-06-26-transcript-drive-digest-rebuild --title \"Transcript Drive Digest Rebuild\""],
+      "verification": [
+        "PASS npm run bna:run:init -- --id 2026-06-26-transcript-drive-digest-rebuild --title \"Transcript Drive Digest Rebuild\""
+      ],
       "implementation_files": [
         "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md",
         "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
@@ -224,7 +285,9 @@
       "title": "Audit current transcript/class intake evidence and baseline counts",
       "expected_result": "Prior two-week audit evidence is inspected and baseline counts are recorded before new work is claimed.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S002"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S002"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -232,19 +295,29 @@
       "category": "audit",
       "priority": "high",
       "batch_id": "A",
-      "depends_on": ["REQ-20260626-116"],
+      "depends_on": [
+        "REQ-20260626-116"
+      ],
       "status": "done",
       "implementation_status": "inspected prior two-week audit artifacts and confirmed PARTIAL baseline counts",
       "can_continue_without_operator": true,
       "next_action": "Use sanitized audit artifacts as source for digest generation.",
-      "acceptance_criteria": ["Current audit folder exists", "Counts are recorded", "No blind trust of older export"],
+      "acceptance_criteria": [
+        "Current audit folder exists",
+        "Counts are recorded",
+        "No blind trust of older export"
+      ],
       "evidence": [
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-VERDICT.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/AUDIT-SUMMARY.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/JOB-PIPELINE-TRACE.json"
       ],
-      "verification": ["PASS artifact readback: 18 Drive recordings, 29 content jobs, 13 question rows, 24 raw export gaps, 10 repair candidates"],
-      "implementation_files": ["ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/AUDIT-SUMMARY.json"],
+      "verification": [
+        "PASS artifact readback: 18 Drive recordings, 29 content jobs, 13 question rows, 24 raw export gaps, 10 repair candidates"
+      ],
+      "implementation_files": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/AUDIT-SUMMARY.json"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -253,7 +326,9 @@
       "title": "Document Drive-first raw storage and GitHub digest policy",
       "expected_result": "Docs state that full raw transcript bodies stay private while GitHub receives structured digest memory.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S003"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S003"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -261,15 +336,29 @@
       "category": "protocol",
       "priority": "high",
       "batch_id": "B",
-      "depends_on": ["REQ-20260626-116"],
+      "depends_on": [
+        "REQ-20260626-116"
+      ],
       "status": "done",
       "implementation_status": "policy docs now distinguish private raw transcript vaults from repo digest memory",
       "can_continue_without_operator": true,
       "next_action": "Use policy for exporter and future Drive write approvals.",
-      "acceptance_criteria": ["Policy defines private raw storage", "Policy defines repo-safe digest memory", "Processed definition exists"],
-      "evidence": ["docs/content-transcript-digest-policy.md", "content-memory/README.md"],
-      "verification": ["PASS manual policy readback"],
-      "implementation_files": ["docs/content-transcript-digest-policy.md", "content-memory/README.md"],
+      "acceptance_criteria": [
+        "Policy defines private raw storage",
+        "Policy defines repo-safe digest memory",
+        "Processed definition exists"
+      ],
+      "evidence": [
+        "docs/content-transcript-digest-policy.md",
+        "content-memory/README.md"
+      ],
+      "verification": [
+        "PASS manual policy readback"
+      ],
+      "implementation_files": [
+        "docs/content-transcript-digest-policy.md",
+        "content-memory/README.md"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -278,7 +367,9 @@
       "title": "Build privacy-safe digest exporter and block unsafe default transcript export",
       "expected_result": "Default export path writes only repo-safe digests and the legacy raw exporter refuses default raw-body export.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S004"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S004"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -286,12 +377,18 @@
       "category": "implementation",
       "priority": "high",
       "batch_id": "B",
-      "depends_on": ["REQ-20260626-118"],
+      "depends_on": [
+        "REQ-20260626-118"
+      ],
       "status": "done",
       "implementation_status": "added repo-safe digest exporter, npm commands, privacy scan, and raw exporter default refusal",
       "can_continue_without_operator": true,
       "next_action": "Use npm run content:export-digests -- --privacy-scan for repo-safe refreshes.",
-      "acceptance_criteria": ["Default digest export excludes raw bodies", "Default old raw exporter is blocked", "Stale deletion is explicit only"],
+      "acceptance_criteria": [
+        "Default digest export excludes raw bodies",
+        "Default old raw exporter is blocked",
+        "Stale deletion is explicit only"
+      ],
       "evidence": [
         "src/lib/bna/transcript-digest-export.js",
         "scripts/export-content-digests.cjs",
@@ -319,7 +416,9 @@
       "title": "Build section classifier and router for mixed recordings",
       "expected_result": "Mixed recording sections can route into multiple lanes with private sections marked review-only.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S005"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S005"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -327,15 +426,29 @@
       "category": "implementation",
       "priority": "high",
       "batch_id": "B",
-      "depends_on": ["REQ-20260626-119"],
+      "depends_on": [
+        "REQ-20260626-119"
+      ],
       "status": "done",
       "implementation_status": "classifier routes metadata/transcript sections to multiple lanes and marks private review sections raw-text-free",
       "can_continue_without_operator": true,
       "next_action": "Use classifier in digest exporter and future private raw transcript in-memory runs.",
-      "acceptance_criteria": ["Mixed sections can map to multiple lanes", "Private sections do not export raw text", "Ambiguous student matches do not auto-merge"],
-      "evidence": ["src/lib/bna/transcript-digest-export.js", "tests/transcript-digest-export.test.js"],
-      "verification": ["PASS node --test tests/transcript-digest-export.test.js"],
-      "implementation_files": ["src/lib/bna/transcript-digest-export.js", "tests/transcript-digest-export.test.js"],
+      "acceptance_criteria": [
+        "Mixed sections can map to multiple lanes",
+        "Private sections do not export raw text",
+        "Ambiguous student matches do not auto-merge"
+      ],
+      "evidence": [
+        "src/lib/bna/transcript-digest-export.js",
+        "tests/transcript-digest-export.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/transcript-digest-export.test.js"
+      ],
+      "implementation_files": [
+        "src/lib/bna/transcript-digest-export.js",
+        "tests/transcript-digest-export.test.js"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -344,7 +457,9 @@
       "title": "Generate privacy-safe transcript digest memory",
       "expected_result": "Digest index, manifest, and per-recording digest/category/routing artifacts exist without raw transcript bodies.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S006"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S006"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -352,15 +467,30 @@
       "category": "evidence",
       "priority": "high",
       "batch_id": "C",
-      "depends_on": ["REQ-20260626-119", "REQ-20260626-120"],
+      "depends_on": [
+        "REQ-20260626-119",
+        "REQ-20260626-120"
+      ],
       "status": "done",
       "implementation_status": "generated content-memory/transcript-digests with 29 recording manifests and no raw transcript bodies",
       "can_continue_without_operator": true,
       "next_action": "Review digest index and per-recording manifests before approving any private Drive write.",
-      "acceptance_criteria": ["Index exists", "Per-recording manifests exist", "Raw body included flag is false"],
-      "evidence": ["content-memory/transcript-digests/index.md", "content-memory/transcript-digests/manifest.json"],
-      "verification": ["PASS npm run content:export-digests -- --privacy-scan: 29 recordings, 0 privacy findings"],
-      "implementation_files": ["content-memory/transcript-digests/manifest.json", "content-memory/transcript-digests/index.md"],
+      "acceptance_criteria": [
+        "Index exists",
+        "Per-recording manifests exist",
+        "Raw body included flag is false"
+      ],
+      "evidence": [
+        "content-memory/transcript-digests/index.md",
+        "content-memory/transcript-digests/manifest.json"
+      ],
+      "verification": [
+        "PASS npm run content:export-digests -- --privacy-scan: 29 recordings, 0 privacy findings"
+      ],
+      "implementation_files": [
+        "content-memory/transcript-digests/manifest.json",
+        "content-memory/transcript-digests/index.md"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -369,7 +499,9 @@
       "title": "Produce sanitized transcript gap manifest",
       "expected_result": "Transcript gap markdown and JSON manifests list safe gap status without transcript bodies.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S007"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S007"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -377,18 +509,26 @@
       "category": "evidence",
       "priority": "high",
       "batch_id": "C",
-      "depends_on": ["REQ-20260626-121"],
+      "depends_on": [
+        "REQ-20260626-121"
+      ],
       "status": "done",
       "implementation_status": "wrote TRANSCRIPT-GAPS.md/json with required safe fields and no transcript bodies",
       "can_continue_without_operator": true,
       "next_action": "Use gap manifest to guide owner review and future private repair work.",
-      "acceptance_criteria": ["Gap rows contain job ID, source hash, transcript chars, repo digest status, routing status, next action, and blocker"],
+      "acceptance_criteria": [
+        "Gap rows contain job ID, source hash, transcript chars, repo digest status, routing status, next action, and blocker"
+      ],
       "evidence": [
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.json"
       ],
-      "verification": ["PASS npm run content:export-digests -- --privacy-scan"],
-      "implementation_files": ["ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.json"],
+      "verification": [
+        "PASS npm run content:export-digests -- --privacy-scan"
+      ],
+      "implementation_files": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.json"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -397,7 +537,9 @@
       "title": "Produce dry-run repair candidates manifest",
       "expected_result": "Repair candidate markdown and JSON manifests list dry-run-only repair rows with blockers and rollback notes.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S008"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S008"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -405,18 +547,26 @@
       "category": "evidence",
       "priority": "high",
       "batch_id": "C",
-      "depends_on": ["REQ-20260626-121"],
+      "depends_on": [
+        "REQ-20260626-121"
+      ],
       "status": "done",
       "implementation_status": "wrote REPAIR-CANDIDATES.md/json with dry-run-only candidate IDs and blockers",
       "can_continue_without_operator": true,
       "next_action": "Do not mutate production; use manifest only after owner approval.",
-      "acceptance_criteria": ["Repair rows include candidate ID, target, operation, before/after hashes, reason, confidence, idempotency key, rollback, privacy, approval, blocker"],
+      "acceptance_criteria": [
+        "Repair rows include candidate ID, target, operation, before/after hashes, reason, confidence, idempotency key, rollback, privacy, approval, blocker"
+      ],
       "evidence": [
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.json"
       ],
-      "verification": ["PASS deterministic repair manifest test in tests/transcript-digest-export.test.js"],
-      "implementation_files": ["ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.json"],
+      "verification": [
+        "PASS deterministic repair manifest test in tests/transcript-digest-export.test.js"
+      ],
+      "implementation_files": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.json"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -425,7 +575,10 @@
       "title": "Produce Drive raw transcript library dry-run plan",
       "expected_result": "Drive transcript library plan shows intended doc actions and restrictions without performing Drive writes.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S009", "RAW-20260626-006-S003"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S009",
+        "RAW-20260626-006-S003"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "drive_content_library",
@@ -433,19 +586,26 @@
       "category": "evidence",
       "priority": "high",
       "batch_id": "C",
-      "depends_on": ["REQ-20260626-121"],
+      "depends_on": [
+        "REQ-20260626-121"
+      ],
       "status": "done",
       "implementation_status": "wrote Drive transcript library dry-run plan and verified issue #41 addendum with no Drive writes, AI calls, source moves, worker retries, or paid retranscription",
       "can_continue_without_operator": true,
       "next_action": "Owner must approve any private Drive doc write run.",
-      "acceptance_criteria": ["Plan lists would-create/update docs, missing transcript/title/parser states, private tags, marketing safety, and class/private restrictions"],
+      "acceptance_criteria": [
+        "Plan lists would-create/update docs, missing transcript/title/parser states, private tags, marketing safety, and class/private restrictions"
+      ],
       "evidence": [
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-DRY-RUN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-DRY-RUN.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.json"
       ],
-      "verification": ["PASS npm run content:export-digests -- --privacy-scan", "PASS npm run content:sync-drive-library -- --dry-run --no-ai"],
+      "verification": [
+        "PASS npm run content:export-digests -- --privacy-scan",
+        "PASS npm run content:sync-drive-library -- --dry-run --no-ai"
+      ],
       "implementation_files": [
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-DRY-RUN.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.json"
@@ -458,7 +618,9 @@
       "title": "Verify digest export privacy and determinism",
       "expected_result": "Focused checks prove raw export is blocked by default, digest output is body-free, and scan/tests pass.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S010"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S010"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -466,13 +628,29 @@
       "category": "verification",
       "priority": "high",
       "batch_id": "D",
-      "depends_on": ["REQ-20260626-119", "REQ-20260626-120", "REQ-20260626-121", "REQ-20260626-122", "REQ-20260626-123", "REQ-20260626-124"],
+      "depends_on": [
+        "REQ-20260626-119",
+        "REQ-20260626-120",
+        "REQ-20260626-121",
+        "REQ-20260626-122",
+        "REQ-20260626-123",
+        "REQ-20260626-124"
+      ],
       "status": "done",
       "implementation_status": "focused syntax checks, tests, and privacy scan passed; full suite not run for this scoped batch",
       "can_continue_without_operator": true,
       "next_action": "Run broader suites only if future app-visible or server-visible changes are added.",
-      "acceptance_criteria": ["Focused tests pass", "Privacy scan passes", "Raw exporter default block is tested", "JSON artifacts are generated"],
-      "evidence": ["tests/transcript-digest-export.test.js", "tests/two-week-class-intake-audit.test.js", "content-memory/transcript-digests/manifest.json"],
+      "acceptance_criteria": [
+        "Focused tests pass",
+        "Privacy scan passes",
+        "Raw exporter default block is tested",
+        "JSON artifacts are generated"
+      ],
+      "evidence": [
+        "tests/transcript-digest-export.test.js",
+        "tests/two-week-class-intake-audit.test.js",
+        "content-memory/transcript-digests/manifest.json"
+      ],
       "verification": [
         "PASS node --check src/lib/bna/transcript-digest-export.js",
         "PASS node --check scripts/export-content-digests.cjs",
@@ -481,7 +659,10 @@
         "PASS node --test tests/two-week-class-intake-audit.test.js 7/7",
         "PASS npm run content:export-digests -- --privacy-scan: 0 findings"
       ],
-      "implementation_files": ["tests/transcript-digest-export.test.js", "src/lib/bna/transcript-digest-export.js"],
+      "implementation_files": [
+        "tests/transcript-digest-export.test.js",
+        "src/lib/bna/transcript-digest-export.js"
+      ],
       "deployment_required": false,
       "updated_at": "2026-06-26T13:20:00+03:00"
     },
@@ -490,7 +671,10 @@
       "title": "Verify issue 41 Drive transcript-library addendum",
       "expected_result": "The new GitHub issue #41 addendum is captured as raw source and verified with read-only Drive evidence plus dry-run sync proof.",
       "source_id": "RAW-20260626-006",
-      "source_statement_ids": ["RAW-20260626-006-S001", "RAW-20260626-006-S002"],
+      "source_statement_ids": [
+        "RAW-20260626-006-S001",
+        "RAW-20260626-006-S002"
+      ],
       "source_path": "raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md",
       "workspace_key": "bna",
       "project_key": "drive_content_library",
@@ -498,7 +682,10 @@
       "category": "source_addendum_verification",
       "priority": "high",
       "batch_id": "D",
-      "depends_on": ["REQ-20260626-124", "REQ-20260626-125"],
+      "depends_on": [
+        "REQ-20260626-124",
+        "REQ-20260626-125"
+      ],
       "status": "done",
       "implementation_status": "captured issue #41 Drive addendum and verified 01 Transcript Library state with read-only listing plus dry-run sync",
       "can_continue_without_operator": true,
@@ -534,7 +721,11 @@
       "title": "Run approved private Drive transcript sync for content job #83 only",
       "expected_result": "The private Drive transcript-library Google Doc for content job #83 is created or updated, read back successfully, and repo evidence is updated without raw transcript bodies or broad Drive sync.",
       "source_id": "RAW-20260626-007",
-      "source_statement_ids": ["RAW-20260626-007-S001", "RAW-20260626-007-S002", "RAW-20260626-007-S003"],
+      "source_statement_ids": [
+        "RAW-20260626-007-S001",
+        "RAW-20260626-007-S002",
+        "RAW-20260626-007-S003"
+      ],
       "source_path": "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md",
       "workspace_key": "bna",
       "project_key": "drive_content_library",
@@ -542,7 +733,9 @@
       "category": "approved_private_drive_write",
       "priority": "high",
       "batch_id": "F",
-      "depends_on": ["REQ-20260626-127"],
+      "depends_on": [
+        "REQ-20260626-127"
+      ],
       "status": "done",
       "implementation_status": "ran the exact approved job #83 Drive transcript-library sync, created the private Google Doc, verified readback, and refreshed safe repo evidence",
       "can_continue_without_operator": true,
@@ -582,9 +775,14 @@
     {
       "id": "REQ-20260626-126",
       "title": "Keep unsafe raw export, Drive writes, reparse/backfill, and production mutation behind owner approval",
-      "expected_result": "Unsafe or external write paths remain blocked until Shloimie approves a specific next action.",
+      "expected_result": "One concise decision remains for any unsafe/raw/external write path beyond the completed #83 sync and local content-card/topic-filter repair.",
       "source_id": "RAW-20260626-004",
-      "source_statement_ids": ["RAW-20260626-004-S011", "RAW-20260626-006-S004", "RAW-20260626-007-S004"],
+      "source_statement_ids": [
+        "RAW-20260626-004-S011",
+        "RAW-20260626-006-S004",
+        "RAW-20260626-007-S004",
+        "RAW-20260626-008-S006"
+      ],
       "source_path": "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild-source.txt",
       "workspace_key": "bna",
       "project_key": "class_drive_intake",
@@ -592,7 +790,16 @@
       "category": "blocker",
       "priority": "high",
       "batch_id": "E",
-      "depends_on": ["REQ-20260626-121", "REQ-20260626-122", "REQ-20260626-123", "REQ-20260626-124", "REQ-20260626-125", "REQ-20260626-127", "REQ-20260626-128"],
+      "depends_on": [
+        "REQ-20260626-121",
+        "REQ-20260626-122",
+        "REQ-20260626-123",
+        "REQ-20260626-124",
+        "REQ-20260626-125",
+        "REQ-20260626-127",
+        "REQ-20260626-128",
+        "REQ-20260626-133"
+      ],
       "status": "needs_operator_decision",
       "implementation_status": "targeted job #83 Drive sync was approved and completed under REQ-20260626-128; all broader unsafe or external write paths remain unauthorized",
       "can_continue_without_operator": false,
@@ -600,7 +807,10 @@
       "blocker_owner": "Shloimie",
       "blocker_next_action": "For any additional non-dry-run Drive sync or production action, provide a new exact approval after a dry-run plan is recorded.",
       "next_action": "Await owner approval for any remaining unsafe/raw/external write path; otherwise treat the job #83 sync and digest plan as complete.",
-      "acceptance_criteria": ["Decision is concise", "Dependent write/apply/export paths remain blocked"],
+      "acceptance_criteria": [
+        "Decision is concise",
+        "Dependent write/apply/export paths remain blocked"
+      ],
       "evidence": [
         "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
         "raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md",
@@ -608,14 +818,252 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md"
       ],
-      "verification": ["PASS blocker documented as DEC-20260626-101", "PASS issue #41 addendum reinforced the no-write owner approval gate", "PASS targeted #83 approval was consumed only by REQ-20260626-128"],
+      "verification": [
+        "PASS blocker documented as DEC-20260626-101",
+        "PASS issue #41 addendum reinforced the no-write owner approval gate",
+        "PASS targeted #83 approval was consumed only by REQ-20260626-128"
+      ],
       "implementation_files": [
         "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
         "raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md",
         "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-26T13:40:00+03:00"
+      "updated_at": "2026-06-26T14:55:00+03:00"
+    },
+    {
+      "id": "REQ-20260626-129",
+      "title": "Register PR #45 content-card/topic-filter addendum",
+      "expected_result": "PR #45 comment 4809202212 is preserved as raw input, linked to the active run, and Issue #41 remains open.",
+      "source_id": "RAW-20260626-008",
+      "source_statement_ids": [
+        "RAW-20260626-008-S001"
+      ],
+      "source_path": "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "source_addendum_registration",
+      "priority": "high",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260626-128"
+      ],
+      "status": "done",
+      "implementation_status": "registered PR #45 content-card/topic-filter addendum as RAW-20260626-008",
+      "can_continue_without_operator": true,
+      "next_action": "Continue content-card/topic-filter repair requirements.",
+      "acceptance_criteria": [
+        "Raw addendum is preserved",
+        "Active run references the source",
+        "Issue #41 remains open"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md"
+      ],
+      "verification": [
+        "PASS register readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-26T14:55:00+03:00"
+    },
+    {
+      "id": "REQ-20260626-130",
+      "title": "Audit all 29 digest recordings for content-card and topic-filter readiness",
+      "expected_result": "Audit covers every digest recording and reports title, parse, digest, routing, topic, category, next-action, and guardrail states without raw transcript bodies.",
+      "source_id": "RAW-20260626-008",
+      "source_statement_ids": [
+        "RAW-20260626-008-S002"
+      ],
+      "source_path": "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "high",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260626-129"
+      ],
+      "status": "done",
+      "implementation_status": "content card topic filter audit generated for 29 digest recordings",
+      "can_continue_without_operator": true,
+      "next_action": "Use audit findings to drive card and topic filter display.",
+      "acceptance_criteria": [
+        "29 digest recordings audited",
+        "No raw transcript bodies included",
+        "Topic/category counts are normalized"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.json"
+      ],
+      "verification": [
+        "PASS npm run content:card-topic-audit"
+      ],
+      "implementation_files": [
+        "src/lib/bna/content-card-view-model.js",
+        "scripts/audit-content-card-topic-filter.cjs",
+        "package.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-26T14:55:00+03:00"
+    },
+    {
+      "id": "REQ-20260626-131",
+      "title": "Repair Operations Content card digest display",
+      "expected_result": "Content cards show clean generated title, summary, main points, categories, parse status, digest status, routing status, topic status, and next action with clear Needs states.",
+      "source_id": "RAW-20260626-008",
+      "source_statement_ids": [
+        "RAW-20260626-008-S003",
+        "RAW-20260626-008-S005"
+      ],
+      "source_path": "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+      "workspace_key": "bna",
+      "project_key": "operations-content-ui",
+      "owner": "Codex",
+      "category": "implementation",
+      "priority": "high",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260626-130"
+      ],
+      "status": "blocked",
+      "implementation_status": "server attaches digest_card and Operations content cards render digest-derived safe fields and Needs states; local PR implementation complete, blocked only on deploy/live-smoke proof after PR review/merge",
+      "can_continue_without_operator": true,
+      "next_action": "After PR review/merge approval, deploy the branch and run an Operations Content live smoke before marking this requirement done.",
+      "acceptance_criteria": [
+        "Clean generated title displayed",
+        "Main points and summary displayed",
+        "Parse/digest/routing/topic statuses displayed",
+        "Next action displayed",
+        "Raw transcript body is not rendered"
+      ],
+      "evidence": [
+        "src/lib/bna/content-card-view-model.js",
+        "server.js",
+        "public/operations.html",
+        "tests/content-card-view-model.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js",
+        "PASS node --check server.js"
+      ],
+      "implementation_files": [
+        "src/lib/bna/content-card-view-model.js",
+        "server.js",
+        "public/operations.html",
+        "tests/content-card-view-model.test.js"
+      ],
+      "deployment_required": true,
+      "deployment_status": "not_deployed_in_local_pr_batch",
+      "updated_at": "2026-06-26T15:00:00+03:00",
+      "blocker": "App-visible Operations UI change is implemented locally and tested, but BNA done-state requires deployment/live-smoke evidence after PR review/merge.",
+      "blocker_owner": "Codex after PR review/merge approval",
+      "blocker_next_action": "Deploy the reviewed branch and run an Operations Content live smoke; then update deployment/live evidence and mark Done."
+    },
+    {
+      "id": "REQ-20260626-132",
+      "title": "Repair top topic filter using normalized digest/classification categories",
+      "expected_result": "Top topic filter counts and filters normalized multi-topic category keys from digest/classification output, with All reset and explicit uncategorized states.",
+      "source_id": "RAW-20260626-008",
+      "source_statement_ids": [
+        "RAW-20260626-008-S004"
+      ],
+      "source_path": "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+      "workspace_key": "bna",
+      "project_key": "operations-content-ui",
+      "owner": "Codex",
+      "category": "implementation",
+      "priority": "high",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260626-130"
+      ],
+      "status": "blocked",
+      "implementation_status": "topic filter now counts and matches contentTopicKeys arrays from digest_card and no longer uses raw transcript topic search; local PR implementation complete, blocked only on deploy/live-smoke proof after PR review/merge",
+      "can_continue_without_operator": true,
+      "next_action": "After PR review/merge approval, deploy the branch and run an Operations Content live smoke before marking this requirement done.",
+      "acceptance_criteria": [
+        "Filter uses normalized category keys",
+        "Multi-topic cards count under each topic",
+        "All reset includes all visible content jobs",
+        "Search/topic interaction uses safe card fields"
+      ],
+      "evidence": [
+        "public/operations.html",
+        "tests/operations-content-library-taxonomy.test.js",
+        "tests/content-card-view-model.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "tests/operations-content-library-taxonomy.test.js",
+        "tests/content-card-view-model.test.js"
+      ],
+      "deployment_required": true,
+      "deployment_status": "not_deployed_in_local_pr_batch",
+      "updated_at": "2026-06-26T15:00:00+03:00",
+      "blocker": "App-visible Operations UI change is implemented locally and tested, but BNA done-state requires deployment/live-smoke evidence after PR review/merge.",
+      "blocker_owner": "Codex after PR review/merge approval",
+      "blocker_next_action": "Deploy the reviewed branch and run an Operations Content live smoke; then update deployment/live evidence and mark Done."
+    },
+    {
+      "id": "REQ-20260626-133",
+      "title": "Verify content-card/topic-filter repair with no external writes",
+      "expected_result": "Focused tests, audit, privacy-safe digest export, run validation, and secrets audit pass; no Drive write, production mutation, class backfill, AI call, or raw transcript export is performed.",
+      "source_id": "RAW-20260626-008",
+      "source_statement_ids": [
+        "RAW-20260626-008-S006"
+      ],
+      "source_path": "raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "verification",
+      "priority": "high",
+      "batch_id": "G",
+      "depends_on": [
+        "REQ-20260626-131",
+        "REQ-20260626-132"
+      ],
+      "status": "blocked",
+      "implementation_status": "focused local tests, audit, and no-write checks passed; final app-visible verification is blocked on deploy/live-smoke proof for REQ-20260626-131 and REQ-20260626-132",
+      "can_continue_without_operator": true,
+      "next_action": "Keep local verification evidence attached; wait for deploy/live-smoke proof after PR review/merge.",
+      "acceptance_criteria": [
+        "Focused tests pass",
+        "Audit covers 29 recordings",
+        "Privacy scan passes",
+        "Run validator passes",
+        "No forbidden write/export commands are run"
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/TEST-RESULTS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md"
+      ],
+      "verification": [
+        "PASS npm run content:card-topic-audit",
+        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js"
+      ],
+      "implementation_files": [
+        "tests/content-card-view-model.test.js",
+        "tests/operations-content-library-taxonomy.test.js",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/TEST-RESULTS.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-26T15:03:00+03:00",
+      "blocker": "Final verification cannot close until the app-visible Operations Content card/filter changes have deploy/live-smoke evidence.",
+      "blocker_owner": "Codex after PR review/merge approval",
+      "blocker_next_action": "After deploy/live smoke, rerun the focused tests/audits as needed and mark REQ-20260626-131 through REQ-20260626-133 Done."
     }
   ]
 }

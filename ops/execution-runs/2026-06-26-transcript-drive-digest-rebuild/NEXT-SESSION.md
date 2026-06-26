@@ -21,10 +21,26 @@ Completed targeted approval:
 - Sanitized proof:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md`
 
+Completed content-card/topic-filter repair:
+
+- `REQ-20260626-129` and `REQ-20260626-130` are Done for `RAW-20260626-008`.
+- `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are locally
+  implemented/tested but blocked on PR review/merge plus deploy/live-smoke
+  proof before Done.
+- Audit covers all 29 digest recordings.
+- Operations Content cards show clean generated titles, summary, main points,
+  categories, parse status, digest status, routing status, topic status, and
+  next action.
+- The topic filter uses normalized multi-topic digest/category keys and no raw
+  transcript-body topic search.
+- Issue #41 remains open.
+- Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+
 Exact next safe command:
 
 ```powershell
-npm run content:export-digests -- --privacy-scan
+npm run bna:run:next
 ```
 
 Owner approval required before any of these commands/actions:

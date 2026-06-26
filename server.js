@@ -145,6 +145,9 @@ const {
   normalizeTranscriptReviewState,
 } = require('./src/lib/bna/transcript-privacy');
 const {
+  loadTranscriptDigestCards,
+} = require('./src/lib/bna/content-card-view-model');
+const {
   buildCommunityModerationReadiness,
   buildModerationHistoryEvent,
 } = require('./src/lib/bna/community-moderation');
@@ -56862,7 +56865,13 @@ app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
        LIMIT 100`,
       params
     );
-    res.json({ jobs: result.rows });
+    const digestCards = loadTranscriptDigestCards({ repoRoot: __dirname }).cards;
+    res.json({
+      jobs: result.rows.map((job) => ({
+        ...job,
+        digest_card: digestCards.get(Number(job.id)) || null,
+      })),
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

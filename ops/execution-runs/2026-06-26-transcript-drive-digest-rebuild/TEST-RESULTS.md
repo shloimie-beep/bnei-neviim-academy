@@ -21,8 +21,14 @@ Passed:
   docs, #83 exists, raw ID/link not tracked
 - `npm run content:drive-intake-audit` - read-only audit, 18 Drive recordings,
   29 content jobs, 13 student question rows, final status PARTIAL
-- `npm run bna:run:validate` - passed after #83 sync, 12 done and 1
-  needs-operator-decision
+- `npm run content:card-topic-audit` - 29 digest recordings audited, 29
+  generated clean titles, 10 Needs parse, 0 Needs routing, 0 Needs topic
+  classification, 0 raw transcript bodies
+- `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js` - 8/8
+- `node --check server.js` - passed
+- `node --check scripts/audit-content-card-topic-filter.cjs` - passed
+- `npm run bna:run:validate` - passed after content-card/topic-filter repair,
+  14 done, 3 blocked on deploy/live proof, and 1 needs-operator-decision
 - `npm run bna:run:next` - passed, no unblocked executable batch
 - JSON parse checks for package/run/digest/gap/repair/Drive-plan artifacts and
   `ops/agent-task-ledger.jsonl` - passed

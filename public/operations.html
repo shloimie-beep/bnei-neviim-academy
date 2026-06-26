@@ -9667,6 +9667,31 @@
 
         const CONTENT_TOPIC_FILTERS = [
             { id: 'all', label: 'All topics' },
+            { id: 'class_session', label: 'Class Sessions' },
+            { id: 'class_notes', label: 'Class Notes' },
+            { id: 'student_question', label: 'Student Questions' },
+            { id: 'student_answer_or_discussion', label: 'Student Discussion' },
+            { id: 'student_progress', label: 'Student Progress' },
+            { id: 'student_score', label: 'Student Scores' },
+            { id: 'accountability_event', label: 'Accountability' },
+            { id: 'profile_note', label: 'Profile Notes' },
+            { id: 'parent_update_candidate', label: 'Parent Updates' },
+            { id: 'task', label: 'Tasks' },
+            { id: 'decision', label: 'Decisions' },
+            { id: 'open_question', label: 'Open Questions' },
+            { id: 'content_idea', label: 'Content Ideas' },
+            { id: 'article_angle', label: 'Article Angles' },
+            { id: 'marketing_clip', label: 'Marketing Clips' },
+            { id: 'source_sheet_candidate', label: 'Source Sheets' },
+            { id: 'private_meeting', label: 'Private Review' },
+            { id: 'private_student_detail', label: 'Private Student Detail' },
+            { id: 'operations_note', label: 'Operations Notes' },
+            { id: 'billing_admin', label: 'Billing / Admin' },
+            { id: 'support_ticket', label: 'Support Tickets' },
+            { id: 'integration_issue', label: 'Integration Issues' },
+            { id: 'drive_workflow_issue', label: 'Drive Workflow' },
+            { id: 'parser_error', label: 'Parser Errors' },
+            { id: 'unknown_needs_review', label: 'Needs Review' },
             { id: 'torah', label: 'Torah' },
             { id: 'psychology', label: 'Psychology' },
             { id: 'health', label: 'Health' },
@@ -9675,7 +9700,7 @@
             { id: 'content_marketing', label: 'Content / Marketing' },
             { id: 'operations', label: 'Operations' },
             { id: 'one_time', label: 'One Time' },
-            { id: 'other', label: 'Other' }
+            { id: 'uncategorized', label: 'Uncategorized' }
         ];
 
         const CONTENT_SOURCE_FILTERS = [
@@ -25940,7 +25965,7 @@
                 .filter(job => contentTypeFilter === 'all' || contentMediaType(job) === contentTypeFilter)
                 .filter(job => contentProjectFilter === 'all' || contentProject(job) === contentProjectFilter)
                 .filter(job => contentMatchesStatusFilter(job, contentStatusFilter))
-                .filter(job => contentTopicFilter === 'all' || contentTopicKey(job) === contentTopicFilter)
+                .filter(job => contentTopicFilter === 'all' || contentTopicKeys(job).includes(contentTopicFilter))
                 .filter(job => contentSourceFilter === 'all' || contentSourceKey(job) === contentSourceFilter)
                 .filter(job => contentMatchesDateFilter(job, contentDateFilter))
                 .filter(job => contentMatchesSearch(job, contentSearchQuery))
@@ -25964,7 +25989,7 @@
                 file: visibleJobs.filter(job => contentMediaType(job) === 'file').length
             };
             const statusCounts = contentStatusCounts(visibleJobs);
-            const topicCounts = countByValue(visibleJobs, contentTopicKey);
+            const topicCounts = countByContentTopicKeys(visibleJobs);
             const sourceCounts = countByValue(visibleJobs, contentSourceKey);
             const projectCounts = {
                 all: visibleJobs.length,
@@ -26007,11 +26032,15 @@
                 value: filter.id,
                 label: `${filter.label}${filter.id === 'all' ? ` (${statusCounts.all})` : ` (${statusCounts[filter.id] || 0})`}`
             }));
-            const topicFilterOptions = CONTENT_TOPIC_FILTERS
-                .filter(filter => filter.id === 'all' || topicCounts[filter.id])
+            const topicFilterIds = ['all', ...new Set([
+                ...CONTENT_TOPIC_FILTERS.map(filter => filter.id).filter(id => id !== 'all'),
+                ...Object.keys(topicCounts)
+            ])];
+            const topicFilterOptions = topicFilterIds
+                .filter(id => id === 'all' || topicCounts[id])
                 .map(filter => ({
-                    value: filter.id,
-                    label: `${filter.label}${filter.id === 'all' ? ` (${visibleJobs.length})` : ` (${topicCounts[filter.id] || 0})`}`
+                    value: filter,
+                    label: `${contentTopicLabelForKey(filter)}${filter === 'all' ? ` (${visibleJobs.length})` : ` (${topicCounts[filter] || 0})`}`
                 }));
             const sourceFilterOptions = CONTENT_SOURCE_FILTERS
                 .filter(filter => filter.id === 'all' || sourceCounts[filter.id])
@@ -26041,7 +26070,7 @@
                             <div class="filter-details-body content-toolbar">
                                 <div class="filter-row">
                                     <span class="filter-label">Search</span>
-                                    <input class="filter-text-input content-search-input" type="search" value="${escapeHtml(contentSearchQuery)}" placeholder="Search title, transcript, source, output, or metadata" oninput="setContentSearch(this.value)">
+                                    <input class="filter-text-input content-search-input" type="search" value="${escapeHtml(contentSearchQuery)}" placeholder="Search title, summary, topic, source, output, or metadata" oninput="setContentSearch(this.value)">
                                 </div>
                                 <div class="filter-row">
                                     <span class="filter-label">Topic</span>
@@ -28386,8 +28415,9 @@
         function renderContentCard(job) {
             const parsed = parseJsonField(job.parse_json) || {};
             const sections = contentParsedSections(job, parsed);
-            const displayTitle = contentDisplayTitle(job, parsed, sections);
-            const summary = contentDisplaySummary(job, parsed);
+            const card = contentCardModel(job, parsed, sections);
+            const displayTitle = card.display_title || contentDisplayTitle(job, parsed, sections);
+            const summary = card.summary || contentDisplaySummary(job, parsed);
             const classSession = contentClassSessionForJob(job);
             const researchSections = contentResearchSectionsForJob(job, sections, classSession);
             const topicLabel = contentTopicLabel(job);
@@ -28425,18 +28455,24 @@
                                 <div class="content-source-meta">
                                     <span>Uploaded ${formatDateTime(contentUploadedAt(job))}</span>
                                     <span>${activeOutputs.length} output${activeOutputs.length === 1 ? '' : 's'}</span>
+                                    <span>Parse: ${escapeHtml(card.parse_status?.label || 'Needs parse')}</span>
+                                    <span>Digest: ${escapeHtml(card.digest_status?.label || 'Needs digest')}</span>
+                                    <span>Routing: ${escapeHtml(card.routing_status?.label || 'Needs routing')}</span>
+                                    <span>Topic: ${escapeHtml(card.topic_status?.label || 'Needs topic classification')}</span>
                                     <span>${compactTopicCount || 0} brief topic${compactTopicCount === 1 ? '' : 's'}</span>
                                     ${researchSections.studentQuestions.length ? `<span>${researchSections.studentQuestions.length} student question${researchSections.studentQuestions.length === 1 ? '' : 's'}</span>` : ''}
                                     ${transcriptLength ? `<span>${transcriptLength.toLocaleString()} transcript chars</span>` : ''}
                                 </div>
-                                ${renderCompactTopicChips(compactTopics)}
+                                ${summary ? `<p class="content-card-summary">${escapeHtml(limitTextClient(summary, 320))}</p>` : ''}
+                                ${renderContentCardDigestChips(card)}
+                                ${renderContentBulletSummary(card.main_points || compactTopics, 'Needs parse')}
                             </div>
                             <div class="content-card-tools" onclick="event.stopPropagation()">
                                 <label class="content-select" title="Select this item for a combined output">
                                     <input class="content-select-large" type="checkbox" ${selected ? 'checked' : ''} onchange="toggleContentSelection(event, ${Number(job.id)})">
                                     Select
                                 </label>
-                                <span class="content-next-action">${escapeHtml(contentPrimaryActionLabel(job))}</span>
+                                <span class="content-next-action">${escapeHtml(card.next_action || contentPrimaryActionLabel(job))}</span>
                                 <div>
                                     ${job.drive_stage ? `<div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">${escapeHtml(job.drive_stage)}</div>` : ''}
                                     ${sourceHref ? `<a href="${escapeHtml(sourceHref)}" target="_blank" rel="noopener" style="color:#93c5fd; font-size:12px;">Open source</a>` : ''}
@@ -31501,6 +31537,15 @@
             }, {});
         }
 
+        function countByContentTopicKeys(items = []) {
+            return (items || []).reduce((counts, item) => {
+                contentTopicKeys(item).forEach((key) => {
+                    counts[key] = (counts[key] || 0) + 1;
+                });
+                return counts;
+            }, {});
+        }
+
         function formatDate(date) {
             if (!date) return '';
             return new Date(date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
@@ -31801,8 +31846,130 @@
             }, { all: 0 });
         }
 
+        function normalizeContentTopicKey(value = '') {
+            const raw = String(value || '')
+                .trim()
+                .toLowerCase()
+                .replace(/&/g, ' and ')
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            const aliases = {
+                'billing_admin': 'billing_admin',
+                'billing': 'billing_admin',
+                'admin': 'billing_admin',
+                'billing_admin_': 'billing_admin',
+                'billing/admin': 'billing_admin',
+                'operations': 'operations_note',
+                'ops': 'operations_note',
+                'support': 'support_ticket',
+                'integration': 'integration_issue',
+                'drive': 'drive_workflow_issue',
+                'drive_workflow': 'drive_workflow_issue',
+                'parser': 'parser_error',
+                'parse_error': 'parser_error',
+                'question': 'student_question',
+                'questions': 'student_question',
+                'tasks': 'task',
+                'profile': 'profile_note',
+                'private_review': 'private_meeting',
+                'other': 'uncategorized',
+                'unknown': 'uncategorized',
+                'class_sessions': 'class_session',
+                'class_note': 'class_notes',
+                'profile_notes': 'profile_note',
+                'parser_errors': 'parser_error',
+                'student_questions': 'student_question',
+                'open_questions': 'open_question',
+                'content_ideas': 'content_idea',
+                'article_angles': 'article_angle',
+                'marketing_clips': 'marketing_clip',
+                'source_sheets': 'source_sheet_candidate',
+                'drive_workflows': 'drive_workflow_issue'
+            };
+            return aliases[raw] || raw;
+        }
+
+        function contentTopicLabelForKey(key = 'uncategorized') {
+            const normalized = normalizeContentTopicKey(key) || 'uncategorized';
+            const configured = CONTENT_TOPIC_FILTERS.find(filter => filter.id === normalized);
+            if (configured) return configured.label;
+            return normalized.split('_').map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(' ');
+        }
+
+        function contentDigestCard(job = {}) {
+            const card = parseJsonField(job.digest_card) || job.digest_card;
+            return card && typeof card === 'object' ? card : null;
+        }
+
+        function contentDigestCategories(card = {}) {
+            const values = [
+                ...(Array.isArray(card.categories) ? card.categories : []),
+                ...(Array.isArray(card.category_labels) ? card.category_labels : []),
+                ...(Array.isArray(card.topic_keys) ? card.topic_keys : [])
+            ];
+            const seen = new Set();
+            return values.map((value) => {
+                const raw = typeof value === 'object'
+                    ? (value.key || value.lane || value.category || value.id || value.label)
+                    : value;
+                const key = normalizeContentTopicKey(raw);
+                if (!key || seen.has(key)) return null;
+                seen.add(key);
+                return { key, label: contentTopicLabelForKey(key) };
+            }).filter(Boolean);
+        }
+
+        function statusObject(label, key) {
+            return { label, key };
+        }
+
+        function contentCardModel(job = {}, parsed = {}, sections = {}) {
+            const card = contentDigestCard(job);
+            if (card) return card;
+            const categories = contentDigestCategories({
+                categories: parsed.category_list || parsed.categories || parsed.routing?.categories || sections?.topics || []
+            });
+            const topicKeys = categories.length ? categories.map(category => category.key) : ['uncategorized'];
+            const hasTranscript = Boolean(String(job.transcript_text || '').trim());
+            const hasParse = Boolean(Object.keys(parsed || {}).length);
+            const displayTitle = contentDisplayTitle(job, parsed, sections);
+            const needsTitle = !displayTitle || /^(untitled|unknown|class recording|voice|audio|video)\b/i.test(displayTitle);
+            const parseStatus = hasParse ? statusObject('Parsed', 'parsed') : statusObject(hasTranscript ? 'Needs parse' : 'Needs transcript', hasTranscript ? 'needs_parse' : 'needs_transcript');
+            const digestStatus = statusObject('Needs digest', 'needs_digest');
+            const routingStatus = categories.length ? statusObject('Routing ready', 'routing_ready') : statusObject('Needs routing', 'needs_routing');
+            const topicStatus = topicKeys.includes('uncategorized') ? statusObject('Needs topic classification', 'needs_topic_classification') : statusObject('Classified', 'classified');
+            const stateBadges = [
+                needsTitle ? 'Needs title' : '',
+                parseStatus.label.startsWith('Needs') ? parseStatus.label : '',
+                digestStatus.label,
+                routingStatus.label.startsWith('Needs') ? routingStatus.label : '',
+                topicStatus.label.startsWith('Needs') ? topicStatus.label : ''
+            ].filter(Boolean);
+            return {
+                display_title: needsTitle ? `Needs title - content job #${Number(job.id) || ''}`.trim() : displayTitle,
+                summary: contentDisplaySummary(job, parsed),
+                main_points: [
+                    ...asList(sections?.topics),
+                    ...asList(sections?.discussions),
+                    ...asList(sections?.highlights),
+                    ...asList(sections?.outputBullets)
+                ],
+                categories,
+                category_labels: categories.map(category => category.label),
+                topic_keys: topicKeys,
+                topic_labels: topicKeys.map(contentTopicLabelForKey),
+                parse_status: parseStatus,
+                digest_status: digestStatus,
+                routing_status: routingStatus,
+                topic_status: topicStatus,
+                next_action: stateBadges.length ? `Resolve: ${stateBadges.join(', ')}.` : contentPrimaryActionLabel(job),
+                state_badges: stateBadges
+            };
+        }
+
         function contentSearchHaystack(job = {}) {
             const parsed = parseJsonField(job.parse_json) || {};
+            const card = contentCardModel(job, parsed, contentParsedSections(job, parsed));
             const parts = [
                 job.id,
                 job.title,
@@ -31814,9 +31981,14 @@
                 job.drive_file_id,
                 job.drive_folder_id,
                 job.drive_stage,
-                job.transcript_text,
             ];
-            addContentSearchValue(parts, parsed);
+            addContentSearchValue(parts, card.display_title);
+            addContentSearchValue(parts, card.summary);
+            addContentSearchValue(parts, card.main_points);
+            addContentSearchValue(parts, card.category_labels);
+            addContentSearchValue(parts, card.topic_labels);
+            addContentSearchValue(parts, card.state_badges);
+            addContentSearchValue(parts, card.next_action);
             (job.outputs || []).forEach((output) => {
                 addContentSearchValue(parts, output.output_type);
                 addContentSearchValue(parts, output.platform);
@@ -31849,6 +32021,7 @@
 
         function contentTopicHaystack(job = {}) {
             const parsed = parseJsonField(job.parse_json) || {};
+            const card = contentDigestCard(job);
             const parts = [];
             [
                 job.title,
@@ -31860,12 +32033,18 @@
                 job.local_path,
                 job.drive_stage,
             ].forEach(value => addContentSearchValue(parts, value));
-            addContentSearchValue(parts, parsed);
+            if (card) {
+                addContentSearchValue(parts, card.display_title);
+                addContentSearchValue(parts, card.summary);
+                addContentSearchValue(parts, card.category_labels);
+                addContentSearchValue(parts, card.topic_labels);
+                addContentSearchValue(parts, card.state_badges);
+                addContentSearchValue(parts, card.next_action);
+            }
             (job.outputs || []).slice(0, 8).forEach((output) => {
                 addContentSearchValue(parts, output.title);
                 addContentSearchValue(parts, String(output.body || '').slice(0, 5000));
             });
-            addContentSearchValue(parts, String(job.transcript_text || '').slice(0, 16000));
             return parts.join(' ').replace(/\s+/g, ' ').toLowerCase();
         }
 
@@ -31883,7 +32062,7 @@
             return (text.match(pattern) || []).length;
         }
 
-        function contentTopicKey(job = {}) {
+        function contentFallbackTopicKey(job = {}) {
             const haystack = contentTopicHaystack(job);
             const scores = {
                 one_time: contentProject(job) === 'mishna' ? 100 : contentRegexCount(haystack, /\b(one time|one-time|mishnah?|mishnayos|mishna|rabbi elie|scheller|sheller|vimeo|zoom)\b/g),
@@ -31908,16 +32087,31 @@
             return bestScore > 0 ? best : 'other';
         }
 
+        function contentTopicKeys(job = {}) {
+            const card = contentCardModel(job, parseJsonField(job.parse_json) || {}, contentParsedSections(job, parseJsonField(job.parse_json) || {}));
+            const digestKeys = [
+                ...(Array.isArray(card.topic_keys) ? card.topic_keys : []),
+                ...contentDigestCategories(card).map(category => category.key)
+            ].map(normalizeContentTopicKey).filter(Boolean);
+            const uniqueDigestKeys = [...new Set(digestKeys)];
+            if (uniqueDigestKeys.length && !uniqueDigestKeys.every(key => key === 'uncategorized')) return uniqueDigestKeys;
+            const fallback = contentFallbackTopicKey(job);
+            return fallback && fallback !== 'other' ? [fallback] : ['uncategorized'];
+        }
+
+        function contentTopicKey(job = {}) {
+            return contentTopicKeys(job)[0] || 'uncategorized';
+        }
+
         function contentTopicLabel(job = {}) {
-            const key = contentTopicKey(job);
-            return CONTENT_TOPIC_FILTERS.find(filter => filter.id === key)?.label || 'Other';
+            const labels = contentTopicKeys(job).map(contentTopicLabelForKey);
+            return labels.length ? labels.join(', ') : 'Uncategorized';
         }
 
         function inferredContentTopics(job = {}) {
-            const key = contentTopicKey(job);
-            if (key === 'other') return [];
-            const label = CONTENT_TOPIC_FILTERS.find(filter => filter.id === key)?.label || 'Content';
-            return [`${label} material`];
+            return contentTopicKeys(job)
+                .filter(key => key !== 'uncategorized')
+                .map(key => `${contentTopicLabelForKey(key)} material`);
         }
 
         function contentSourceKey(job = {}) {
@@ -32351,6 +32545,30 @@
             return `
                 <div class="content-topic-chips">
                     ${topics.map(topic => `<span class="content-topic-chip">${escapeHtml(topic)}</span>`).join('')}
+                </div>
+            `;
+        }
+
+        function renderContentCardDigestChips(card = {}) {
+            const chips = [
+                ...asList(card.category_labels),
+                ...asList(card.state_badges)
+            ];
+            const unique = [];
+            const seen = new Set();
+            chips.forEach((chip) => {
+                const text = String(chip || '').trim();
+                const key = text.toLowerCase();
+                if (!text || seen.has(key)) return;
+                seen.add(key);
+                unique.push(text);
+            });
+            if (!unique.length) {
+                unique.push('Needs topic classification');
+            }
+            return `
+                <div class="content-topic-chips">
+                    ${unique.slice(0, 10).map(chip => `<span class="content-topic-chip">${escapeHtml(chip)}</span>`).join('')}
                 </div>
             `;
         }

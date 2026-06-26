@@ -26820,3 +26820,52 @@ Remaining: `DEC-20260626-101` remains open for any future raw export, further
 Drive write beyond #83, production repair/reparse/canonical write, worker retry,
 paid retranscription, class backfill, broad Drive sync, or other
 unsafe/external write path.
+
+## 2026-06-26T15:05:00+03:00 - Issue 41 Content Card Topic Filter Repair Local PR Ready
+
+Processed `RAW-20260626-008` from PR #45 comment `4809202212` and linked it
+into the active transcript/Drive digest rebuild run as `REQ-20260626-129`
+through `REQ-20260626-133`.
+
+Implemented the local Operations Content repair batch:
+
+- Added a shared digest-card view model and `npm run content:card-topic-audit`.
+- Audited all 29 privacy-safe digest recordings.
+- Decorated `/api/bna/content-jobs` rows with repo-safe `digest_card` metadata.
+- Updated Content cards to show clean generated title, summary, main points,
+  categories, parse status, digest status, routing status, topic status, and
+  next action.
+- Updated the top topic filter to count and match normalized multi-topic digest/
+  classification categories instead of raw transcript-body topic inference.
+- Added focused tests.
+
+Evidence:
+
+- `raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.json`
+- `src/lib/bna/content-card-view-model.js`
+- `tests/content-card-view-model.test.js`
+- `tests/operations-content-library-taxonomy.test.js`
+
+Verification:
+
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated clean titles,
+  10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic classification`, raw
+  transcript bodies false.
+- `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  8/8 passed.
+- `node --check server.js`: passed.
+- `node --check scripts/audit-content-card-topic-filter.cjs`: passed.
+- `npm run bna:run:validate`: 14 done, 3 blocked, 1 needs operator decision,
+  validation passed.
+
+Guardrails held: no Drive write, no production DB mutation, no class backfill,
+no paid retranscription, no AI call, no raw transcript export, no stale
+deletion, no send/publish/charge/access grant, no credential/account/DNS change,
+and Issue #41 was not marked done.
+
+Remaining: `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are
+blocked only on PR review/merge plus deployment/live-smoke proof before
+app-visible Done status. `DEC-20260626-101` remains open for any future unsafe/
+raw/external write path beyond the completed #83 sync.

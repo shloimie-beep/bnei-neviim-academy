@@ -46,6 +46,7 @@
     "whapi:sync": "node scripts/sync-whapi-history.mjs",
     "content:export-transcripts": "node scripts/export-content-transcripts.mjs",
     "content:export-digests": "node scripts/export-content-digests.cjs",
+    "content:card-topic-audit": "node scripts/audit-content-card-topic-filter.cjs",
     "content:transcript-gap-audit": "node scripts/export-content-digests.cjs --manifest-only",
     "content:recording-classify": "node scripts/export-content-digests.cjs --dry-run",
     "content:sync-drive-library": "node scripts/sync-drive-content-library.mjs",

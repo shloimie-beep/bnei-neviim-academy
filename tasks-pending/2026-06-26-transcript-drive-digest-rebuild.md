@@ -8,6 +8,8 @@ The issue #41 Drive addendum is preserved at
 `raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md`.
 The targeted owner approval for job #83 is preserved at
 `raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md`.
+The PR #45 content-card/topic-filter addendum is preserved at
+`raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`.
 
 Shloimie wants the class/transcript/Drive intake workflow rebuilt so raw
 transcript bodies stay in private Drive/app storage while GitHub receives
@@ -20,7 +22,8 @@ structured, useful, privacy-safe digests and categorized outputs.
 | Raw ID | RAW-20260626-004 |
 | Addendum raw ID | RAW-20260626-006 |
 | Approval raw ID | RAW-20260626-007 |
-| Source | Codex chat attachment; GitHub issue #41 comment `4808518537`; Codex chat owner approval |
+| Content-card addendum raw ID | RAW-20260626-008 |
+| Source | Codex chat attachment; GitHub issue #41 comment `4808518537`; Codex chat owner approval; GitHub PR #45 comment `4809202212` |
 | Parse status | implemented |
 | Requirement register | `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md` |
 | Execution run | `ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild` |
@@ -75,6 +78,37 @@ Evidence:
 `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md`
 and `.json`.
 
+## PR #45 content-card/topic-filter addendum
+
+GitHub PR #45 comment `4809202212` added the next Issue #41 batch after the
+#83 Drive evidence push. Issue #41 must remain open. The batch requires safe
+Operations Content card and topic-filter repair with no Drive write, no
+production mutation, no class backfill, and no raw transcript export.
+
+Local implementation completed:
+
+- Audited all 29 repo-safe digest recordings.
+- Added a shared digest card view model and audit script.
+- `/api/bna/content-jobs` now decorates rows with `digest_card` from tracked
+  privacy-safe digest manifests.
+- Operations Content cards now show clean generated title, summary, main
+  points, categories, parse status, digest status, routing status, topic status,
+  and next action.
+- The topic filter now counts and matches normalized multi-topic digest/
+  classification categories instead of a single inferred transcript-text bucket.
+- Unparsed or incomplete records show explicit `Needs title`, `Needs parse`,
+  `Needs digest`, `Needs routing`, and `Needs topic classification` states when
+  applicable.
+
+Evidence:
+`ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+and `.json`.
+
+Audit result:
+29 recordings audited; 29 generated clean titles; 10 `Needs parse`; 0 `Needs
+routing`; 0 `Needs topic classification`; 29 multi-topic cards; raw transcript
+bodies false.
+
 ## Goal-mode execution
 
 | Field | Value |
@@ -86,7 +120,7 @@ and `.json`.
 | Execution directive | Register first, then work requirements in batches until terminal statuses. |
 | Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
 | Deploy/live-smoke required for app-visible work | no app-visible deployment in this dry-run/digest batch |
-| Next requirement IDs to work | Owner approval only: `DEC-20260626-101` |
+| Next requirement IDs to work | None currently unblocked; `DEC-20260626-101` remains open for any future write beyond #83 |
 
 ## Parsed requirements
 
@@ -104,6 +138,11 @@ and `.json`.
 | REQ-20260626-125 | Verify digest/export privacy and determinism | RAW-20260626-004 | bna/class-drive-intake | Codex | verification | High | D | REQ-20260626-119..REQ-20260626-124 | Focused syntax/tests pass; digest privacy scan reports zero findings; raw exporter default is blocked | `tests/transcript-digest-export.test.js`; `tests/two-week-class-intake-audit.test.js` | no | Done |
 | REQ-20260626-127 | Verify issue #41 Drive transcript-library addendum | RAW-20260626-006 | bna/drive-content-library | Codex | source_addendum_verification | High | D | REQ-20260626-124, REQ-20260626-125 | Addendum source preserved; read-only Drive folder listing verifies `01 Transcript Library`, older #65-#70 docs, no docs since `2026-06-25T00:00:00Z`, and missing #83 doc; no Drive write | `raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.*` | no | Done |
 | REQ-20260626-128 | Run approved private Drive transcript sync for content job #83 only | RAW-20260626-007 | bna/drive-content-library | Codex | approved_private_drive_write | High | F | REQ-20260626-127 | Exact approved command creates #83 private Drive transcript doc, verifies readback, records sanitized pointer, reruns digest export and read-only audit, and keeps all broader writes blocked | `raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.*` | no | Done |
+| REQ-20260626-129 | Register PR #45 content-card/topic-filter addendum | RAW-20260626-008 | bna/class-drive-intake | Codex | source_addendum_registration | High | G | REQ-20260626-128 | PR #45 comment `4809202212` is preserved as raw input, linked to the active run, and Issue #41 remains open | `raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`; this register | no | Done |
+| REQ-20260626-130 | Audit all 29 digest recordings for card/filter readiness | RAW-20260626-008 | bna/class-drive-intake | Codex | audit | High | G | REQ-20260626-129 | Audit covers every digest recording and reports clean-title, parse, digest, routing, topic, category, next-action, and guardrail states without raw bodies | `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.*`; `scripts/audit-content-card-topic-filter.cjs` | no | Done |
+| REQ-20260626-131 | Repair Operations Content card digest display | RAW-20260626-008 | bna/operations-content-ui | Codex | implementation | High | G | REQ-20260626-130 | Cards show clean generated title, summary, main points, categories, parse status, digest status, routing status, topic status, and next action, and show Needs states for incomplete records | `src/lib/bna/content-card-view-model.js`; `server.js`; `public/operations.html` | required after PR review/merge | Blocked: local implementation complete; deploy/live smoke proof pending |
+| REQ-20260626-132 | Repair top topic filter using normalized digest/classification categories | RAW-20260626-008 | bna/operations-content-ui | Codex | implementation | High | G | REQ-20260626-130 | Top topic filter counts and filters multi-topic digest/category keys, has an All reset, includes Uncategorized/Needs Review states, and no longer depends on raw transcript-body topic search | `src/lib/bna/content-card-view-model.js`; `public/operations.html`; `tests/operations-content-library-taxonomy.test.js` | required after PR review/merge | Blocked: local implementation complete; deploy/live smoke proof pending |
+| REQ-20260626-133 | Verify content-card/topic-filter repair with no external writes | RAW-20260626-008 | bna/class-drive-intake | Codex | verification | High | G | REQ-20260626-131, REQ-20260626-132 | Focused local tests pass; audit passes; privacy-safe digest export passes; no Drive write, production mutation, class backfill, AI call, or raw transcript export is performed; final app-visible verification waits for deploy/live smoke | `tests/content-card-view-model.test.js`; `tests/operations-content-library-taxonomy.test.js`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.*` | required after PR review/merge | Blocked: local verification passed; deploy/live smoke proof pending |
 | REQ-20260626-126 | Owner approval gate for raw export, Drive writes, reparse/backfill, or production mutation | RAW-20260626-004, RAW-20260626-006, RAW-20260626-007 | bna/class-drive-intake | Shloimie | blocker | High | E | REQ-20260626-121..REQ-20260626-125, REQ-20260626-127, REQ-20260626-128 | One concise decision remains for any unsafe/raw/external write path beyond the completed #83 sync | `DEC-20260626-101` in this file and prior register | no | Needs operator decision |
 
 ## Parsed tasks
@@ -141,6 +180,7 @@ No new visible human task cards were created. This is agent lifecycle work.
 | REQ-20260626-119..125 | Digest exporter, classifier, artifacts, tests | Add safe exporter, block old default raw exporter, generate digest/gap/repair/Drive-plan artifacts | Syntax checks; focused tests; `npm run content:export-digests -- --privacy-scan` | none | none | not app-visible |
 | REQ-20260626-127 | Issue #41 Drive addendum | Preserve addendum and run read-only Drive transcript-library verification | `npm run content:sync-drive-library -- --dry-run --no-ai`; read-only folder listing; JSON parse | none | none | not app-visible |
 | REQ-20260626-128 | Approved #83 Drive transcript doc sync | Run exact approved command for job #83 only; record sanitized Drive pointer; rerun digest export and read-only audit | `npm run content:sync-drive-library -- --no-ai --verify --job-id 83`; `npm run content:export-digests -- --privacy-scan`; `npm run content:drive-intake-audit` | none | none | not app-visible |
+| REQ-20260626-129..133 | PR #45 content card/topic filter addendum | Preserve addendum, audit 29 digest recordings, attach digest card models to content jobs, repair card display and normalized multi-topic filters, and verify no raw transcript dependency | `npm run content:card-topic-audit`; `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`; `node --check server.js` | pending | pending | app-visible code path changed; deploy/live smoke not performed in this local PR batch |
 | REQ-20260626-126 | Decision gate | Leave unsafe/export/write/apply actions blocked | Register and final answer | none | none | not app-visible |
 
 ## Final audit
@@ -159,4 +199,9 @@ No new visible human task cards were created. This is agent lifecycle work.
 | REQ-20260626-125 | Done | Focused tests pass; privacy scan 0 findings | Tests and generated artifacts | Syntax checks; `node --test tests/transcript-digest-export.test.js`; `node --test tests/two-week-class-intake-audit.test.js`; `npm run content:export-digests -- --privacy-scan` | broader full suite not run |
 | REQ-20260626-127 | Done | `RAW-20260626-006`; read-only Drive proof confirms folder exists, #65-#70 exist, no docs after `2026-06-25T00:00:00Z`, and #83 is absent | Raw/evidence files | `npm run content:sync-drive-library -- --dry-run --no-ai`; read-only Drive listing; JSON parse | none |
 | REQ-20260626-128 | Done | `RAW-20260626-007`; #83 Drive doc created and read back; sanitized hash pointer recorded | Raw/evidence files | Approved sync command; read-only post-sync listing; digest privacy scan; read-only intake audit | broader sync still blocked |
+| REQ-20260626-129 | Done | `RAW-20260626-008` preserves PR #45 comment `4809202212` | Raw/register files | Register readback | Issue #41 intentionally remains open |
+| REQ-20260626-130 | Done | `CONTENT-CARD-TOPIC-FILTER-AUDIT.md/json` covers 29 recordings | Audit output | `npm run content:card-topic-audit` | none |
+| REQ-20260626-131 | Blocked | Digest card view model and Operations card display show title, summary, main points, statuses, categories, and next action locally | `src/lib/bna/content-card-view-model.js`; `server.js`; `public/operations.html` | Focused content-card tests; syntax check | deploy/live smoke proof required after PR review/merge before Done |
+| REQ-20260626-132 | Blocked | Topic filter uses normalized multi-topic digest/category keys and no raw transcript topic search locally | `public/operations.html`; taxonomy tests | Focused taxonomy tests | deploy/live smoke proof required after PR review/merge before Done |
+| REQ-20260626-133 | Blocked | Focused local tests pass and audit guardrails report no Drive write, production mutation, class backfill, or raw body export | Tests/evidence files | `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`; `npm run content:card-topic-audit` | final app-visible verification needs deploy/live smoke after PR review/merge |
 | REQ-20260626-126 | Needs operator decision | `DEC-20260626-101` | Register only | Blocker documented | Owner must approve any unsafe/raw/external write path |
