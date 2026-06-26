@@ -1,0 +1,79 @@
+'use strict';
+
+const test = require('node:test');
+const assert = require('node:assert/strict');
+
+const {
+  normalizeEmail,
+  normalizePhone,
+  toContactCard,
+  filterCrmContacts,
+  filterProviderContactInbox,
+  buildTimeline,
+} = require('../src/lib/bna/crm-contact-model');
+
+test('normalizes email and Israel-style phone fallback', () => {
+  assert.equal(normalizeEmail(' Test@Example.COM '), 'test@example.com');
+  assert.equal(normalizePhone('052-123-4567'), '+972521234567');
+  assert.equal(normalizePhone('+1 (555) 100-2000'), '+15551002000');
+});
+
+test('maps mixed source row into contact card', () => {
+  const card = toContactCard({
+    id: 7,
+    display_name: 'Mrs. Cohen',
+    email: 'COHEN@example.com',
+    phone: '0521112222',
+    lead_type: 'school_interest',
+    tags: 'hot, phonebook',
+    lead_status: 'new',
+    notes: 'Asked about school',
+  }, { source: 'bna_parent_leads', workspace_key: 'bna_school' });
+
+  assert.equal(card.display_name, 'Mrs. Cohen');
+  assert.equal(card.email, 'cohen@example.com');
+  assert.equal(card.phone, '+972521112222');
+  assert.equal(card.contact_type, 'school_interest');
+  assert.deepEqual(card.tags, ['hot', 'phonebook']);
+});
+
+test('free provider cannot access full CRM filters', () => {
+  const scope = { tenant_type: 'service_provider', entitlement_plan: 'free_provider' };
+  assert.throws(() => filterCrmContacts([], {}, scope), /Entitlement denied: crm_contacts/);
+});
+
+test('provider plus can filter CRM contacts', () => {
+  const rows = [
+    { id: 1, display_name: 'Parent A', contact_type: 'parent', status: 'new', tags: ['hot'], updated_at: '2026-06-25T10:00:00Z' },
+    { id: 2, display_name: 'Provider B', contact_type: 'provider', status: 'active', tags: ['vendor'], updated_at: '2026-06-24T10:00:00Z' },
+  ];
+  const scope = { tenant_type: 'service_provider', entitlement_plan: 'service_provider_plus', workspace_key: 'provider_plus' };
+  const result = filterCrmContacts(rows, { contact_type: 'parent', tag: 'hot' }, scope);
+
+  assert.equal(result.total, 2);
+  assert.equal(result.filtered_total, 1);
+  assert.equal(result.cards[0].display_name, 'Parent A');
+  assert.ok(result.filters.contact_types.includes('parent'));
+});
+
+test('free provider can access limited contact inquiry inbox', () => {
+  const rows = [
+    { id: 1, parent_display_name: 'Parent A', parent_phone: '0521234567', body: 'Can my son join?', inquiry_status: 'new' },
+  ];
+  const scope = { tenant_type: 'service_provider', entitlement_plan: 'free_provider', workspace_key: 'provider_free' };
+  const result = filterProviderContactInbox(rows, {}, scope);
+
+  assert.equal(result.cards.length, 1);
+  assert.equal(result.cards[0].contact_type, 'provider_inquiry');
+  assert.equal(result.cards[0].phone, '+972521234567');
+});
+
+test('timeline is read-only/no-send', () => {
+  const timeline = buildTimeline([
+    { id: 1, source: 'whatsapp', body: 'Question about class', created_at: '2026-06-25T09:00:00Z' },
+  ]);
+
+  assert.equal(timeline.length, 1);
+  assert.equal(timeline[0].no_send, true);
+  assert.equal(timeline[0].external_write_performed, false);
+});

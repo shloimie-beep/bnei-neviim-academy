@@ -1,6 +1,6 @@
 {
   "registry_version": "bna-route-registry-v1",
-  "updated_at": "2026-06-25T18:45:00+03:00",
+  "updated_at": "2026-06-26T18:00:00+03:00",
   "policy": {
     "public_route_rule": "Public routes must be anonymous-safe and must not expose private parent, student, provider, member, or Operations data.",
     "private_route_rule": "Private routes must reject logged-out and wrong-scope access.",
@@ -1719,6 +1719,163 @@
         "GOAL-CORE-002",
         "GOAL-CORE-006",
         "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/account-scope/summary",
+      "surface": "operations_api_account_scope_summary",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_ops_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_entitlements_for_requested_workspace_without_codex_cli_routing",
+      "privacy_risk": "normal",
+      "security_expectation": "Requires Operations auth and scoped workspace access; returns plan/entitlements only, not secrets or private records.",
+      "smoke_expectation": "node --test tests/account-scope-entitlements.test.js and focused route smoke verify Rabbi workspace resolves to provider partner scope.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts",
+      "surface": "operations_api_first_party_crm_contacts",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_workspace_scoped_first_party_crm_contacts_readonly",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires CRM entitlements and workspace access; uses first-party BNA tables only; no GHL/external CRM and no sends.",
+      "smoke_expectation": "tests/crm-contact-model.test.js verifies entitlement-gated filter behavior.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/crm/contacts/:id/timeline",
+      "surface": "operations_api_first_party_crm_timeline",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_crm_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_workspace_scoped_contact_timeline_readonly",
+      "privacy_risk": "high_private_contacts",
+      "security_expectation": "Requires contact_timeline entitlement and workspace access; returns no_send/external_write_performed=false.",
+      "smoke_expectation": "tests/crm-contact-model.test.js verifies timeline no-send flags.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/assistant/scope-plan",
+      "surface": "operations_api_assistant_scope_plan",
+      "access": "private",
+      "required_role": "super_admin_or_scoped_ops_user",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_scope_planner_mode_and_deny_codex_cli_routing",
+      "privacy_risk": "normal",
+      "security_expectation": "No action execution; planning endpoint denies Codex CLI/shell/deploy/migration/secret-copy and external writes.",
+      "smoke_expectation": "tests/assistant-scope-policy.test.js verifies blocked assistant actions.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/scope-session",
+      "surface": "provider_portal_api_scope_session",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_provider_scope_sections_and_assistant_capabilities_for_own_provider_only",
+      "privacy_risk": "normal",
+      "security_expectation": "Requires provider session and resolves only that provider record; Codex CLI routing false.",
+      "smoke_expectation": "node --test tests/account-scope-entitlements.test.js tests/assistant-scope-policy.test.js",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/inquiries",
+      "surface": "provider_portal_api_inquiries",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_own_provider_listing_inquiries_readonly",
+      "privacy_risk": "provider_parent_contact_private",
+      "security_expectation": "Requires provider_contact_inbox entitlement and provider session; limited inquiry inbox, not full CRM.",
+      "smoke_expectation": "tests/crm-contact-model.test.js verifies free provider inquiry inbox access.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/inquiries/:id/response-draft",
+      "surface": "provider_portal_api_inquiry_response_draft",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "save_own_provider_inquiry_response_draft_only",
+      "privacy_risk": "provider_parent_contact_private",
+      "security_expectation": "Requires parent_contact_reply_bot entitlement; saves draft only and returns no_send/external_write_performed=false.",
+      "smoke_expectation": "tests/assistant-scope-policy.test.js verifies draft_only response mode.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/calendar-events",
+      "surface": "provider_portal_api_calendar_events",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_own_provider_calendar_readback_only",
+      "privacy_risk": "normal",
+      "security_expectation": "Requires provider_calendar entitlement; no external calendar write.",
+      "smoke_expectation": "API response includes no_external_calendar_write=true.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/provider-portal/assistant/scope-plan",
+      "surface": "provider_portal_api_assistant_scope_plan",
+      "access": "private_provider",
+      "required_role": "provider",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_provider_session_required",
+      "expected_logged_in_behavior": "return_provider_assistant_plan_and_deny_dangerous_actions",
+      "privacy_risk": "normal",
+      "security_expectation": "No action execution; denies Codex CLI/shell/deploy/migration/secret-copy/external send/payment/access/DNS actions.",
+      "smoke_expectation": "tests/assistant-scope-policy.test.js verifies blocked dangerous assistant actions.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
         "GOAL-CORE-015"
       ]
     }

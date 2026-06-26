@@ -8062,6 +8062,20 @@
                 if (filters.contact_type) params.set('contact_type', filters.contact_type);
                 return this.request('GET', '/contact-communications?' + params.toString());
             },
+            getCrmContacts(filters = {}) {
+                const params = new URLSearchParams();
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') params.set(key, value);
+                });
+                return this.request('GET', '/crm/contacts' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            getCrmContactTimeline(id, filters = {}) {
+                const params = new URLSearchParams();
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== undefined && value !== null && value !== '') params.set(key, value);
+                });
+                return this.request('GET', '/crm/contacts/' + encodeURIComponent(id) + '/timeline' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
             previewContactImport(payload = {}) { return this.request('POST', '/contact-imports/preview', payload); },
             getParentAnnouncements(filters = {}) {
@@ -8928,6 +8942,19 @@
         let selectedContactKey = null;
         let selectedLeadId = null;
         let selectedPersonKey = null;
+        let firstPartyCrmContactsPayload = null;
+        let firstPartyCrmTimelinePayload = null;
+        let selectedFirstPartyCrmContactId = null;
+        let firstPartyCrmLoading = false;
+        let firstPartyCrmError = '';
+        let firstPartyCrmFilters = {
+            contact_type: 'all',
+            status: 'all',
+            source: 'all',
+            tag: 'all',
+            sort_key: 'last_contact_desc',
+            search: ''
+        };
         let contactDetailSection = 'overview';
         let leadDetailSection = 'overview';
         let personDetailSection = 'overview';
@@ -9939,6 +9966,10 @@
 
         function switchWorkspace(workspaceId) {
             currentWorkspaceId = normalizeWorkspaceKey(workspaceId) || 'platform';
+            firstPartyCrmContactsPayload = null;
+            firstPartyCrmTimelinePayload = null;
+            selectedFirstPartyCrmContactId = null;
+            firstPartyCrmError = '';
             const nextProjectFilter = projectKeyForWorkspaceKey(currentWorkspaceId);
             taskProjectFilter = nextProjectFilter === 'all' ? 'all' : nextProjectFilter;
             normalizeCurrentRouteForWorkspace();
@@ -14580,6 +14611,157 @@
             `;
         }
 
+        function firstPartyCrmQueryFilters() {
+            const workspace = currentWorkspaceKey();
+            return {
+                ...firstPartyCrmFilters,
+                workspace,
+                project: projectKeyForWorkspaceKey(workspace)
+            };
+        }
+
+        function firstPartyCrmOptionList(values = [], current = 'all') {
+            const normalized = values.length ? values : ['all'];
+            return normalized.map(value => `<option value="${escapeHtml(value)}" ${value === current ? 'selected' : ''}>${escapeHtml(contactStatusLabel(value))}</option>`).join('');
+        }
+
+        function renderFirstPartyCrmFilterControls(payload = {}) {
+            const filters = payload.filters || {};
+            return `
+                <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACTS-FILTER">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>First-party CRM Contacts</h3>
+                            <p class="notification-lock-note">Workspace-scoped local CRM records only. This view reads BNA contacts, parent leads, and local timelines; it does not send or write to external CRM.</p>
+                        </div>
+                        <button class="task-action primary" type="button" onclick="loadFirstPartyCrmContacts(event)" data-action-id="ACTION-CRM-CONTACTS-FILTER">Refresh</button>
+                    </div>
+                    <div class="settings-control-grid compact" style="margin-top:12px;">
+                        <label>Search<input value="${escapeHtml(firstPartyCrmFilters.search || '')}" onchange="setFirstPartyCrmFilter('search', this.value)" placeholder="Name, email, phone, tag"></label>
+                        <label>Type<select onchange="setFirstPartyCrmFilter('contact_type', this.value)">${firstPartyCrmOptionList(filters.contact_types, firstPartyCrmFilters.contact_type)}</select></label>
+                        <label>Status<select onchange="setFirstPartyCrmFilter('status', this.value)">${firstPartyCrmOptionList(filters.statuses, firstPartyCrmFilters.status)}</select></label>
+                        <label>Source<select onchange="setFirstPartyCrmFilter('source', this.value)">${firstPartyCrmOptionList(filters.sources, firstPartyCrmFilters.source)}</select></label>
+                        <label>Tag<select onchange="setFirstPartyCrmFilter('tag', this.value)">${firstPartyCrmOptionList(filters.tags, firstPartyCrmFilters.tag)}</select></label>
+                        <label>Sort<select onchange="setFirstPartyCrmFilter('sort_key', this.value)">
+                            <option value="last_contact_desc" ${firstPartyCrmFilters.sort_key === 'last_contact_desc' ? 'selected' : ''}>Last contact</option>
+                            <option value="next_follow_up_asc" ${firstPartyCrmFilters.sort_key === 'next_follow_up_asc' ? 'selected' : ''}>Next follow-up</option>
+                            <option value="name_asc" ${firstPartyCrmFilters.sort_key === 'name_asc' ? 'selected' : ''}>Name A-Z</option>
+                        </select></label>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderFirstPartyCrmContactsPanel() {
+            if (!firstPartyCrmContactsPayload && !firstPartyCrmLoading && !firstPartyCrmError) {
+                setTimeout(() => loadFirstPartyCrmContacts(), 0);
+            }
+            const payload = firstPartyCrmContactsPayload || { cards: [], filters: {}, total: 0, filtered_total: 0 };
+            const cards = Array.isArray(payload.cards) ? payload.cards : [];
+            const selectedTimeline = selectedFirstPartyCrmContactId && firstPartyCrmTimelinePayload
+                ? renderFirstPartyCrmTimeline()
+                : '';
+            return `
+                ${renderFirstPartyCrmFilterControls(payload)}
+                ${firstPartyCrmError ? `<div class="error-banner">${escapeHtml(firstPartyCrmError)}</div>` : ''}
+                <div class="contact-empty-card">
+                    ${firstPartyCrmLoading ? 'Loading CRM contacts...' : `${Number(payload.filtered_total || cards.length).toLocaleString()} of ${Number(payload.total || cards.length).toLocaleString()} contacts shown. Read-only / no-send.`}
+                </div>
+                ${cards.length ? `
+                    <div class="contact-layout">
+                        <div class="contact-list">
+                            ${cards.map(renderFirstPartyCrmCard).join('')}
+                        </div>
+                    </div>
+                    ${selectedTimeline}
+                ` : !firstPartyCrmLoading ? '<div class="contact-empty-card">No CRM contacts match this workspace/filter.</div>' : ''}
+            `;
+        }
+
+        function renderFirstPartyCrmCard(card = {}) {
+            const isActive = selectedFirstPartyCrmContactId === card.id;
+            return `
+                <article class="contact-card ${isActive ? 'active' : ''}">
+                    <button class="contact-card-summary" type="button" onclick="openFirstPartyCrmContact(${attrJson(card.id)})" aria-expanded="${isActive ? 'true' : 'false'}" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
+                        <div class="contact-card-top">
+                            <div class="contact-card-copy">
+                                <div class="contact-card-title">${escapeHtml(card.display_name || 'CRM contact')}</div>
+                                <div class="contact-card-subtitle">${escapeHtml([contactStatusLabel(card.contact_type), contactStatusLabel(card.source_label || card.source)].filter(Boolean).join(' - '))}</div>
+                            </div>
+                            <span class="page-status-pill">${escapeHtml(contactStatusLabel(card.status || 'new'))}</span>
+                        </div>
+                        <div class="contact-card-contact">
+                            ${card.phone ? escapeHtml(card.phone) : 'No phone yet'}
+                            ${card.email ? ` - ${escapeHtml(card.email)}` : ' - No email yet'}
+                        </div>
+                        <div class="contact-card-meta">
+                            <div class="tag-list">
+                                ${(card.tags || []).slice(0, 4).map(tag => `<span class="tag ${escapeHtml(cssToken(tag))}">${escapeHtml(tag)}</span>`).join('') || '<span class="tag">No tags</span>'}
+                            </div>
+                            <span class="contact-detail-note">${card.last_contact_at ? `Updated ${escapeHtml(formatDate(card.last_contact_at))}` : 'No local timeline yet'}</span>
+                        </div>
+                    </button>
+                </article>
+            `;
+        }
+
+        function renderFirstPartyCrmTimeline() {
+            const items = Array.isArray(firstPartyCrmTimelinePayload?.timeline) ? firstPartyCrmTimelinePayload.timeline : [];
+            return `
+                <section class="focus-panel compact-panel" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>Contact Timeline</h3>
+                            <p class="notification-lock-note">Read-only local timeline. No message is sent from this view.</p>
+                        </div>
+                        <span>${items.length} timeline items</span>
+                    </div>
+                    ${items.length ? items.map(item => `
+                        <article class="content-card">
+                            <div class="content-card-title">${escapeHtml([item.channel, item.type].filter(Boolean).join(' / ') || 'Timeline item')}</div>
+                            <div class="content-card-meta">${escapeHtml([item.direction, item.occurred_at ? formatDateTime(item.occurred_at) : ''].filter(Boolean).join(' - '))}</div>
+                            <p class="event-meta">${escapeHtml(item.body || '')}</p>
+                        </article>
+                    `).join('') : '<div class="contact-empty-card">No timeline records found.</div>'}
+                </section>
+            `;
+        }
+
+        async function loadFirstPartyCrmContacts(event) {
+            if (event) event.preventDefault();
+            firstPartyCrmLoading = true;
+            firstPartyCrmError = '';
+            render();
+            try {
+                firstPartyCrmContactsPayload = await api.getCrmContacts(firstPartyCrmQueryFilters());
+            } catch (error) {
+                firstPartyCrmError = error.message || 'Could not load CRM contacts.';
+                firstPartyCrmContactsPayload = null;
+            } finally {
+                firstPartyCrmLoading = false;
+                render();
+            }
+        }
+
+        async function openFirstPartyCrmContact(contactId) {
+            selectedFirstPartyCrmContactId = contactId;
+            firstPartyCrmTimelinePayload = null;
+            render();
+            try {
+                firstPartyCrmTimelinePayload = await api.getCrmContactTimeline(contactId, firstPartyCrmQueryFilters());
+            } catch (error) {
+                firstPartyCrmTimelinePayload = { timeline: [{ channel: 'error', type: 'readback_error', body: error.message || 'Could not load timeline.' }] };
+            }
+            render();
+        }
+
+        function setFirstPartyCrmFilter(key, value) {
+            firstPartyCrmFilters = { ...firstPartyCrmFilters, [key]: value };
+            selectedFirstPartyCrmContactId = null;
+            firstPartyCrmTimelinePayload = null;
+            loadFirstPartyCrmContacts();
+        }
+
         function renderContacts() {
             if (isProviderWorkspace()) return renderProviderParticipantsPage();
             const contactMeta = contactSectionMeta(contactSection);
@@ -14592,6 +14774,8 @@
                     counts[tab.id] = serviceProviders.reduce((sum, provider) => sum + (Array.isArray(provider.services) ? provider.services.length : 0), 0);
                 } else if (tab.id === 'communications') {
                     counts[tab.id] = contactCommunications.length;
+                } else if (tab.id === 'crm_contacts') {
+                    counts[tab.id] = Number(firstPartyCrmContactsPayload?.filtered_total || firstPartyCrmContactsPayload?.cards?.length || 0);
                 } else {
                     counts[tab.id] = signups.filter(signup => contactMatchesSection(signup, tab.id)).length;
                 }
@@ -14606,6 +14790,8 @@
                 sectionHtml = renderServiceProviderDirectory();
             } else if (contactSection === 'communications') {
                 sectionHtml = renderCommunicationsSection();
+            } else if (contactSection === 'crm_contacts') {
+                sectionHtml = renderFirstPartyCrmContactsPanel();
             } else {
                 const sectionSignups = signups.filter(signup => contactMatchesSection(signup, contactSection));
                 const visibleSignups = sectionSignups.filter(contactMatchesFilters);
@@ -14765,7 +14951,7 @@
                                 </thead>
                                 <tbody>
                                     ${rows.map(row => `
-                                        <tr data-one-time-crm-contact-row>
+                                        <tr data-one-time-crm-contact-row data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
                                             <td>
                                                 <strong>${escapeHtml(row.name)}</strong>
                                                 <div class="event-meta">${escapeHtml(row.contact)}</div>
@@ -15035,7 +15221,7 @@
             ];
 
             return `
-                <details class="filter-details collapsible-details" open>
+                <details class="filter-details collapsible-details" open data-action-id="ACTION-CRM-CONTACTS-FILTER">
                     <summary>Filters</summary>
                     <div class="filter-details-body">
                         <div class="filter-row">
@@ -16290,7 +16476,7 @@
 
             return `
                 <article class="contact-card ${isActive ? 'active' : ''}">
-                    <button class="contact-card-summary" type="button" onclick="selectLead(${leadId})" aria-expanded="${isActive ? 'true' : 'false'}">
+                    <button class="contact-card-summary" type="button" onclick="selectLead(${leadId})" aria-expanded="${isActive ? 'true' : 'false'}" data-action-id="ACTION-CRM-CONTACT-CARD-EXPAND">
                         <div class="contact-card-top">
                             <div class="contact-card-copy">
                                 <div class="contact-card-title">${escapeHtml(lead.parent_name || 'Unknown parent')}</div>

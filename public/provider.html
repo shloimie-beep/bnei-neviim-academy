@@ -569,6 +569,28 @@
                 </section>
             </div>
 
+            <section class="panel provider-section" data-provider-section="inquiries">
+                <h2>Parent Inquiries</h2>
+                <div class="notice">Limited listing inbox. Drafts saved here do not send email, WhatsApp, SMS, Telegram, payment, or external CRM messages.</div>
+                <div id="providerInquiries" class="service-list" style="margin-top:12px;"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="calendar">
+                <h2>Calendar</h2>
+                <div class="notice">Provider calendar readback is scoped to this workspace. External calendar writes stay disabled from this portal.</div>
+                <div id="providerCalendarEvents" class="service-list" style="margin-top:12px;"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="parent_portal">
+                <h2>Parent Portal</h2>
+                <div id="providerParentPortal" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="student_portal">
+                <h2>Student Portal</h2>
+                <div id="providerStudentPortal" class="service-list"></div>
+            </section>
+
             <section class="panel provider-section" data-provider-section="class_setup" data-provider-classroom-setup>
                 <h2>Classroom / Community Setup</h2>
                 <div class="notice">Describe the classroom in natural language. This creates an internal BNA setup draft only; it does not create Google Classroom courses, publish a public community, send messages, charge anyone, or grant access.</div>
@@ -758,6 +780,11 @@
             <section class="panel provider-section" data-provider-section="activity">
                 <h2>Activity</h2>
                 <div id="providerActivity" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="reporting">
+                <h2>Reporting</h2>
+                <div id="providerReporting" class="service-list"></div>
             </section>
 
             <section class="panel provider-section" data-provider-section="api_usage">
@@ -963,9 +990,18 @@
         }
 
         function portalEntitlementEnabled(key) {
+            const scopeEntitlements = Array.isArray(portalState?.scope?.entitlements) ? portalState.scope.entitlements : [];
+            if (scopeEntitlements.includes(key)) return true;
             const rows = Array.isArray(portalState?.entitlements) ? portalState.entitlements : [];
             const found = rows.find(item => item.entitlement_key === key);
             return Boolean(found && found.enabled);
+        }
+
+        function providerIsPlusPlan() {
+            const provider = portalState?.provider || {};
+            const planKey = String(portalState?.scope?.plan_key || provider.entitlement_plan || provider.commercial_model || '').toLowerCase();
+            return ['service_provider_plus', 'managed_provider', 'managed_setup', 'paid_setup', 'revenue_share_partner', 'revenue_share', 'rabbi_scheller_partner', 'rabbi_sheller_provider'].includes(planKey)
+                || portalEntitlementEnabled('crm_contacts');
         }
 
         function providerApiUsagePreviewEnabled() {
@@ -990,32 +1026,47 @@
                     { id: 'activity', label: 'Support', group: 'Configuration' },
                 ];
             }
-            const sections = [
-                { id: 'overview', label: 'Overview' },
-                { id: 'profile', label: 'Profile / Listing' },
-                { id: 'services', label: 'Services' },
-                { id: 'class_setup', label: 'Classrooms' },
-                ...(portalState?.one_time_class_media_enabled ? [{ id: 'class_media', label: 'Class Media' }] : []),
-                { id: 'media', label: 'Media' },
-                { id: 'comments', label: 'Comments' },
-                { id: 'commercial', label: 'Commercial Model' },
-                { id: 'entitlements', label: 'Entitlements' },
-                { id: 'google_business', label: 'Google Business' },
-                { id: 'upgrade', label: 'Upgrade' },
-            ];
+            const sections = providerIsPlusPlan()
+                ? [
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'crm', label: 'CRM' },
+                    { id: 'calendar', label: 'Calendar' },
+                    { id: 'parent_portal', label: 'Parent Portal' },
+                    { id: 'student_portal', label: 'Student Portal' },
+                    { id: 'content', label: 'Content' },
+                    { id: 'communications', label: 'Communications' },
+                    { id: 'automations', label: 'Automations' },
+                    { id: 'integrations', label: 'Integrations' },
+                    { id: 'reporting', label: 'Reporting' },
+                    { id: 'settings', label: 'Settings' },
+                    { id: 'activity', label: 'Support' },
+                ]
+                : [
+                    { id: 'overview', label: 'Overview' },
+                    { id: 'profile', label: 'Profile / Listing' },
+                    { id: 'services', label: 'Services' },
+                    { id: 'inquiries', label: 'Inquiries' },
+                    { id: 'calendar', label: 'Calendar' },
+                    { id: 'comments', label: 'Comments' },
+                    { id: 'media', label: 'Media' },
+                    { id: 'activity', label: 'Support' },
+                    { id: 'upgrade', label: 'Upgrade' },
+                ];
+            if (portalState?.one_time_class_media_enabled) {
+                sections.splice(Math.min(6, sections.length), 0, { id: 'class_media', label: 'Class Media' });
+            }
             if (portalEntitlementEnabled('landing_page_funnel') || portalEntitlementEnabled('content_video_workflow')) {
                 sections.push({ id: 'website_import', label: 'Website Import' });
             }
-            sections.push({ id: 'communications', label: 'Communications' });
+            if (!sections.some(section => section.id === 'communications')) sections.push({ id: 'communications', label: 'Communications' });
             if (portalEntitlementEnabled('provider_admin') || portalEntitlementEnabled('custom_partnership_terms')) {
-                sections.push({ id: 'integrations', label: 'External Apps' });
+                if (!sections.some(section => section.id === 'integrations')) sections.push({ id: 'integrations', label: 'External Apps' });
                 sections.push({ id: 'access', label: 'Access Checklist' });
             }
-            sections.push({ id: 'activity', label: 'Activity' });
             if (providerApiUsagePreviewEnabled()) {
                 sections.push({ id: 'api_usage', label: 'API Usage' });
             }
-            sections.push({ id: 'settings', label: 'Settings' });
+            if (!sections.some(section => section.id === 'settings')) sections.push({ id: 'settings', label: 'Settings' });
             return sections;
         }
 
@@ -1077,6 +1128,113 @@
                 revenue_share: 'Partner',
             };
             return labels[normalized] || String(value || fallback).replace(/_/g, ' ');
+        }
+
+        function paidPortalUpgradeCard(kind) {
+            const label = kind === 'student' ? 'Student Portal' : 'Parent Portal';
+            return `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(label)} is Provider Plus</h3>
+                            <p class="small">Free provider listings can manage profile, services, inquiries, comments, calendar, and support. Full ${escapeHtml(label.toLowerCase())} access requires Provider Plus.</p>
+                        </div>
+                        <span class="status-pill">Upgrade required</span>
+                    </div>
+                    <button class="btn" type="button" data-action-id="ACTION-PROVIDER-PORTAL-UPGRADE">Request upgrade</button>
+                </article>
+            `;
+        }
+
+        function renderProviderInquiryInbox(items = []) {
+            if (!items.length) return '<p class="small">No parent inquiries yet.</p>';
+            return items.map(item => `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(item.display_name || item.parent_display_name || 'Parent inquiry')}</h3>
+                            <p class="small">${escapeHtml(item.summary || item.body || '')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(item.status || item.inquiry_status || 'new')}</span>
+                    </div>
+                    <div class="service-meta">
+                        ${item.email ? `<span class="status-pill">${escapeHtml(item.email)}</span>` : ''}
+                        ${item.phone ? `<span class="status-pill">${escapeHtml(item.phone)}</span>` : ''}
+                        ${item.preferred_contact_method ? `<span class="status-pill">${escapeHtml(item.preferred_contact_method)}</span>` : ''}
+                    </div>
+                    <form class="chat-form" data-provider-inquiry-reply="${escapeHtml(item.id)}">
+                        <label>Draft response
+                            <textarea name="draft" required maxlength="3000">${escapeHtml(item.last_response_draft || '')}</textarea>
+                        </label>
+                        <div class="button-row">
+                            <button class="btn primary" type="submit" data-action-id="ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT">Save Draft Only</button>
+                        </div>
+                    </form>
+                </article>
+            `).join('');
+        }
+
+        function renderProviderCalendarEvents(items = []) {
+            if (!items.length) return '<p class="small">No provider calendar events yet.</p>';
+            return items.map(item => `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(item.title || 'Calendar event')}</h3>
+                            <p class="small">${escapeHtml([item.start_at ? new Date(item.start_at).toLocaleString('en-GB') : '', item.location || '', item.status || 'scheduled'].filter(Boolean).join(' / '))}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(item.visibility || 'provider')}</span>
+                    </div>
+                    ${item.description ? `<p class="small">${escapeHtml(item.description)}</p>` : ''}
+                </article>
+            `).join('');
+        }
+
+        function renderProviderScopePanels(data) {
+            const parentPortal = document.getElementById('providerParentPortal');
+            const studentPortal = document.getElementById('providerStudentPortal');
+            const reporting = document.getElementById('providerReporting');
+            if (parentPortal) {
+                parentPortal.innerHTML = portalEntitlementEnabled('parent_portal')
+                    ? reviewCard('Parent Portal', 'Provider parent portal is enabled for this workspace. Management stays scoped to this provider account.', 'Enabled')
+                    : paidPortalUpgradeCard('parent');
+            }
+            if (studentPortal) {
+                studentPortal.innerHTML = portalEntitlementEnabled('student_portal')
+                    ? reviewCard('Student Portal', 'Provider student portal is enabled for this workspace. Student records stay scoped to this provider account.', 'Enabled')
+                    : paidPortalUpgradeCard('student');
+            }
+            if (reporting) {
+                reporting.innerHTML = portalEntitlementEnabled('reporting')
+                    ? reviewCard('Workspace reporting', 'Provider Plus reporting is enabled. No cross-workspace data is included.', 'Enabled')
+                    : reviewCard('Limited analytics', 'Free provider accounts receive basic listing/support signals only. Full reporting requires Provider Plus.', 'Limited');
+            }
+            loadProviderInquiries();
+            loadProviderCalendarEvents();
+        }
+
+        async function loadProviderInquiries() {
+            const target = document.getElementById('providerInquiries');
+            if (!target) return;
+            target.innerHTML = '<p class="small">Loading inquiries...</p>';
+            try {
+                const data = await api('/api/provider-portal/inquiries');
+                target.innerHTML = renderProviderInquiryInbox(data.cards || []);
+            } catch (error) {
+                target.innerHTML = `<p class="small">${escapeHtml(error.message || 'Could not load provider inquiries.')}</p>`;
+            }
+        }
+
+        async function loadProviderCalendarEvents() {
+            const target = document.getElementById('providerCalendarEvents');
+            if (!target) return;
+            target.innerHTML = '<p class="small">Loading calendar...</p>';
+            try {
+                const data = await api('/api/provider-portal/calendar-events');
+                target.innerHTML = renderProviderCalendarEvents(data.events || []);
+            } catch (error) {
+                target.innerHTML = `<p class="small">${escapeHtml(error.message || 'Could not load provider calendar.')}</p>`;
+            }
         }
 
         function renderPortal(data) {
@@ -1293,6 +1451,7 @@
             document.getElementById('classMediaList').innerHTML = data.one_time_class_media_enabled
                 ? renderClassMediaList(classMedia)
                 : '<p class="small">Class Media is available only in the Rabbi Sheller / One Time provider workspace.</p>';
+            renderProviderScopePanels(data);
             renderProviderNav();
             setProviderSection(activeProviderSection);
         }
@@ -1881,6 +2040,24 @@
         });
 
         document.getElementById('portalPanel').addEventListener('submit', async (event) => {
+            const inquiryForm = event.target.closest('[data-provider-inquiry-reply]');
+            if (inquiryForm) {
+                event.preventDefault();
+                const button = event.submitter;
+                button.disabled = true;
+                try {
+                    const result = await api(`/api/provider-portal/inquiries/${encodeURIComponent(inquiryForm.dataset.providerInquiryReply)}/response-draft`, {
+                        method: 'POST',
+                        body: JSON.stringify(formObject(inquiryForm))
+                    });
+                    await loadProviderInquiries();
+                    alert(result.message || 'Draft saved. No message was sent.');
+                } finally {
+                    button.disabled = false;
+                }
+                return;
+            }
+
             const form = event.target.closest('[data-provider-reply-form]');
             if (!form) return;
             event.preventDefault();

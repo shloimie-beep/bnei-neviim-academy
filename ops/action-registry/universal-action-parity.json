@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T09:47:24.935Z",
+  "generated_at": "2026-06-26T10:37:17.451Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,39 +16,40 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "d458a8775463541c678e0d2bfd2500f3afc966cfbcaee14b404fbfaa82e41ac3",
+  "content_hash": "17bcc3206225dc4396ebba87b778f38d4012ce84ca266404ecd18cea40e86213",
   "source_hashes": {
-    "ops/action-registry.json": "84a56fd81009c107dcf80189635aabc02904fd344d1a9967b0a6f051d36c9766",
+    "ops/action-registry.json": "8c316b7857274fdb0bcf6a6c9f67f1ee72491b991ed3898cee3ef24609b6196d",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "bb5dd62cc8512d1c668ae3751426fd967e96a4c831f0139014c0976c66ff4215",
+    "public/operations.html": "66ab0d5937392ed7c5c0342f6a6db13a531aa7c8461182e1d0001e9472ec3eaf",
     "public/parent.html": "ebed41f8db8ab749a4a0690f2e859292df33328f2cbe10ecae947f040a394d49",
     "public/student.html": "aa0d8350eb82dae766a90b3e12ced2a298464c7b2cc4b04ff796704fcf910f01",
-    "public/provider.html": "b927bc5e8120ffdc9a5c3423e8f20ba728063787f4d38d3edd28e447c9f35fbd",
+    "public/provider.html": "aab743b33833b4ff5cf2d9eb2fea482f4c813769eab7e22219ea3942bd6347f8",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 84,
+    "root_actions": 91,
     "detailed_actions": 80,
-    "total_registry_rows": 164,
-    "visible_controls": 35,
-    "visible_controls_classified": 35,
+    "total_registry_rows": 171,
+    "visible_controls": 39,
+    "visible_controls_classified": 39,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
     "blocked_connector": 11,
-    "risky_actions": 76,
+    "risky_actions": 80,
     "risky_without_approval": 0,
     "visible_by_classification": {
       "read_only": 6,
-      "secure_deep_link_only": 4,
-      "preview_then_approve": 19,
+      "secure_deep_link_only": 5,
+      "preview_then_approve": 20,
       "blocked_connector": 4,
-      "not_applicable": 2
+      "not_applicable": 2,
+      "executable": 2
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 18,
-      "executable": 15,
-      "preview_then_approve": 68,
+      "secure_deep_link_only": 19,
+      "executable": 17,
+      "preview_then_approve": 72,
       "read_only": 50,
       "blocked_connector": 11,
       "not_applicable": 2
@@ -56,22 +57,22 @@
   },
   "parity_sources": {
     "ui_button": {
-      "count": 35
+      "count": 39
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 164
+      "count": 171
     },
     "operations_helper_request": {
-      "count": 153
+      "count": 158
     },
     "automation_action": {
-      "count": 74
+      "count": 76
     },
     "agent_work_handoff": {
-      "count": 96
+      "count": 98
     }
   },
   "release_gate": {
@@ -79,7 +80,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "35/35"
+        "value": "39/39"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -109,12 +110,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 164
+        "value": 171
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 96
+        "value": 98
       }
     ]
   },
@@ -258,6 +259,34 @@
       "risk": "low",
       "registry_layer": "root",
       "result_renderer": "Saves PASS/FAIL/BLOCKED through the typed Agent Review result API, attaches the AGR evidence to the original task, and creates or links repair/rerun metadata for FAIL/BLOCKED."
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACTS-FILTER",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "preview_then_approve",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": true,
+      "risk": "high",
+      "registry_layer": "root",
+      "result_renderer": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes."
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Expands a local first-party CRM contact and timeline readback only; no message is sent."
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
@@ -608,6 +637,34 @@
       "risk": "low",
       "registry_layer": "root",
       "result_renderer": "Switches between provider-scoped workspace sections using the supported provider section graph, updates the same-origin section query state, preserves browser back/refresh behavior, and must not reveal BNA super-admin sections such as Platform Suite, Team/Admin, Accounting, credentials, deployment controls, or other providers."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-PORTAL-UPGRADE",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "executable",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "medium",
+      "registry_layer": "root",
+      "result_renderer": "Shows upgrade CTA for paid provider portals/CRM/reporting without granting access, charging, or changing entitlement rows."
+    },
+    {
+      "action_id": "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
+      "file": "public/provider.html",
+      "surface": "provider_portal",
+      "classification": "executable",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "medium",
+      "registry_layer": "root",
+      "result_renderer": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata."
     }
   ],
   "action_rows": [
@@ -3213,6 +3270,223 @@
       ],
       "result_renderer": "Opens the repair task created or linked after a FAIL/BLOCKED task Agent Review result.",
       "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-SETUP-HELP",
+      "label": "Provider setup help",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider",
+      "permission": "authenticated provider account with account_setup_bot entitlement",
+      "allowed_roles": [
+        "authenticated provider account with account_setup_bot entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Allows a provider-scoped assistant/setup flow to coach account/listing setup only; no Codex CLI, shell, deploy, migration, secret copy, external send, payment, or access grant is available.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Provider setup help"
+      ],
+      "result_renderer": "Allows a provider-scoped assistant/setup flow to coach account/listing setup only; no Codex CLI, shell, deploy, migration, secret copy, external send, payment, or access grant is available.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
+      "label": "Save inquiry draft",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=inquiries",
+      "permission": "authenticated provider account with parent_contact_reply_bot entitlement",
+      "allowed_roles": [
+        "authenticated provider account with parent_contact_reply_bot entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save inquiry draft"
+      ],
+      "result_renderer": "Saves a provider inquiry response draft only and returns explicit no_send/external_write_performed=false metadata.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-CALENDAR-MANAGE",
+      "label": "Provider calendar",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=calendar",
+      "permission": "authenticated provider account with provider_calendar entitlement",
+      "allowed_roles": [
+        "authenticated provider account with provider_calendar entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Shows provider-scoped calendar readback. External calendar writes are disabled from the provider portal until a separate approval-gated manage flow exists.",
+      "status": "disabled_readback_only",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Provider calendar"
+      ],
+      "result_renderer": "Shows provider-scoped calendar readback. External calendar writes are disabled from the provider portal until a separate approval-gated manage flow exists.",
+      "rollback_or_correction_path": "Current package merge exposes readback only; no external calendar mutation control is rendered.",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-PROVIDER-PORTAL-UPGRADE",
+      "label": "Request Provider Plus",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_portal",
+      "route": "/provider?section=upgrade",
+      "permission": "authenticated provider account",
+      "allowed_roles": [
+        "authenticated provider account"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Shows upgrade CTA for paid provider portals/CRM/reporting without granting access, charging, or changing entitlement rows.",
+      "status": "active_no_charge",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Request Provider Plus"
+      ],
+      "result_renderer": "Shows upgrade CTA for paid provider portals/CRM/reporting without granting access, charging, or changing entitlement rows.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACTS-FILTER",
+      "label": "Filter CRM contacts",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with CRM entitlements",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with CRM entitlements"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes.",
+      "status": "active",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Filter CRM contacts"
+      ],
+      "result_renderer": "Filters first-party BNA CRM contacts inside the selected workspace/project; performs no email, WhatsApp, social, payment, access, or external CRM writes.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-CRM-CONTACT-CARD-EXPAND",
+      "label": "Open CRM contact",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_contacts",
+      "route": "/operations?view=contacts&section=crm_contacts",
+      "permission": "super_admin or scoped provider workspace role with contact_timeline entitlement",
+      "allowed_roles": [
+        "super_admin or scoped provider workspace role with contact_timeline entitlement"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Expands a local first-party CRM contact and timeline readback only; no message is sent.",
+      "status": "active_readonly",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open CRM contact"
+      ],
+      "result_renderer": "Expands a local first-party CRM contact and timeline readback only; no message is sent.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED",
+      "label": "Codex CLI routing disabled",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "provider_and_operations_assistants",
+      "route": "/api/provider-portal/assistant/scope-plan, /api/bna/assistant/scope-plan",
+      "permission": "all portal assistant users",
+      "allowed_roles": [
+        "all portal assistant users"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Deny Codex CLI, shell, deploy, migration, Railway mutation, secret-copy, external send, payment, access-grant, and DNS actions from web/portal assistants.",
+      "status": "policy_enforced",
+      "classification": "preview_then_approve",
+      "risk": "high",
+      "preview_required": true,
+      "approval_required": true,
+      "dry_run_supported": false,
+      "external_write_possible": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Codex CLI routing disabled"
+      ],
+      "result_renderer": "Deny Codex CLI, shell, deploy, migration, Railway mutation, secret-copy, external send, payment, access-grant, and DNS actions from web/portal assistants.",
+      "rollback_or_correction_path": "approval_cancel_or_operator_review",
       "audit_event": ""
     },
     {
@@ -7783,6 +8057,7 @@
       "action_ids": [
         "ACTION-ONETIME-MEMBER-LIBRARY-APPROVE",
         "ACTION-PROVIDER-CLASSROOM-DRAFT",
+        "ACTION-PROVIDER-INQUIRY-RESPONSE-DRAFT",
         "approve_email",
         "approve_newsletter",
         "create_provider_classroom_draft",
@@ -7817,8 +8092,10 @@
     {
       "category": "segment",
       "state": "covered_by_canonical_registry",
-      "visible_currently": false,
+      "visible_currently": true,
       "action_ids": [
+        "ACTION-CRM-CONTACT-CARD-EXPAND",
+        "ACTION-CRM-CONTACTS-FILTER",
         "create_referral_ledger_entry",
         "move_lead_stage",
         "preview_campaign_segment",
@@ -7944,6 +8221,7 @@
         "ACTION-AGENT-RUN-PREPARE",
         "ACTION-AGENT-RUN-PROGRESS-EVIDENCE",
         "ACTION-AGENT-RUN-SUBMIT-SEAL",
+        "ACTION-ASSISTANT-CODEX-CLI-ROUTING-DISABLED",
         "ACTION-HELPER-RUN-WATCHDOG-AUDIT",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-RUN-LIVE",
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-EVIDENCE",

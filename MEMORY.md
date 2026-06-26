@@ -1807,3 +1807,19 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Provider Plans, Provider Entitlements, Provider Onboarding, and Commercial
   Models; launch copy should keep `Free for now` visible until Shloimie changes
   the provider commercial policy.
+
+## Service Provider Scope Model
+
+- Service-provider scope uses tenant types `school`, `service_provider`, and
+  `family`; `super_admin` is a role/context, not a tenant type.
+- Free service providers may manage listing/profile, services, listing
+  comments/inquiries, setup help, provider calendar/readback, support/help, and
+  limited analytics. Provider Plus/partner scope is required for full CRM,
+  parent/student portals, content/social workflows, integrations readiness,
+  automation previews, and reporting.
+- Rabbi Scheller / One Time remains a service-provider Plus/partner workspace
+  under `rabbi_sheller_provider` and `one_time_mishnah_class`.
+- Web and portal assistants must not expose or route to Codex CLI, shell,
+  deployment, migrations, Railway mutation, secret-copy, external sends,
+  payment/access grants, or DNS changes. CRM means first-party BNA Operations
+  CRM only, not GHL/GoHighLevel/LeadConnector runtime.

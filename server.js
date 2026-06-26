@@ -84,6 +84,9 @@ const {
   parseJsonMaybe: parseAgentJsonMaybe,
 } = require('./src/lib/bna/agent-control');
 const studio = require('./src/lib/bna/service-provider-studio');
+const accountScope = require('./src/lib/bna/account-scope-entitlements');
+const crmContactModel = require('./src/lib/bna/crm-contact-model');
+const assistantScopePolicy = require('./src/lib/bna/assistant-scope-policy');
 const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
   assertOneTimeScopedPreview,
@@ -8630,6 +8633,10 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/service-providers' && ['GET', 'POST'].includes(method)) return true;
   if (/^\/api\/bna\/service-providers\/\d+$/.test(routePath) && method === 'PATCH') return true;
   if (/^\/api\/bna\/service-providers\/\d+\/setup-email$/.test(routePath) && method === 'POST') return true;
+  if (routePath === '/api/bna/account-scope/summary' && method === 'GET') return true;
+  if (routePath === '/api/bna/crm/contacts' && method === 'GET') return true;
+  if (/^\/api\/bna\/crm\/contacts\/[^/]+\/timeline$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/assistant/scope-plan' && method === 'POST') return true;
   if (routePath === '/api/bna/provider-onboarding-intakes' && method === 'GET') return true;
   if (routePath === '/api/bna/provider-messages' && method === 'GET') return true;
   if (routePath === '/api/bna/contact-communications' && ['GET', 'POST'].includes(method)) return true;
@@ -15251,6 +15258,19 @@ CREATE INDEX IF NOT EXISTS idx_bna_provider_intake_records_provider ON bna_provi
 CREATE INDEX IF NOT EXISTS idx_bna_provider_messages_provider ON bna_provider_messages(provider_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_provider_messages_parent ON bna_provider_messages(lower(parent_email), created_at DESC);
 `;
+
+function readOptionalSqlFile(filename) {
+  try {
+    return fs.readFileSync(path.join(__dirname, filename), 'utf8');
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.warn(`Could not read optional SQL file ${filename}:`, err.message);
+    }
+    return '';
+  }
+}
+
+const createServiceProviderScopesSQL = readOptionalSqlFile('railway-migration-2026-06-26-service-provider-scopes-crm.sql');
 
 const createGoalBoardCheckinsSQL = `
 CREATE TABLE IF NOT EXISTS bna_goal_board_checkins (
@@ -27213,6 +27233,272 @@ async function getOneTimeClassMediaForProvider(providerId, db = pool) {
   }));
 }
 
+function providerWorkspaceKeyForProvider(provider = {}) {
+  const projectKey = normalizeProjectKey(provider.project_key);
+  if (projectKey === ONE_TIME_PROJECT_KEY || isOneTimeClassMediaProvider(provider)) return 'rabbi_sheller_provider';
+  const metadata = parseJsonMaybe(provider.metadata) || {};
+  return normalizeWorkspaceKey(
+    provider.workspace_key ||
+    metadata.workspace_key ||
+    metadata.provider_workspace_key ||
+    (provider.id ? `provider_${provider.id}` : '')
+  ) || 'provider';
+}
+
+function serviceProviderScopeFromProvider(provider = {}, options = {}) {
+  const projectKey = normalizeProjectKey(provider.project_key || options.project_key);
+  const workspaceKey = providerWorkspaceKeyForProvider({ ...provider, project_key: projectKey || provider.project_key });
+  return {
+    role: options.role || 'provider_owner',
+    tenant_type: 'service_provider',
+    workspace_key: workspaceKey,
+    project_key: projectKey || workspaceProjectKey(workspaceKey) || '',
+    entitlement_plan: provider.entitlement_plan || provider.plan_key,
+    commercial_model: provider.commercial_model,
+    provider_status: provider.provider_status || provider.status,
+    feature_overrides: options.feature_overrides || {},
+  };
+}
+
+function scopeFromOpsRequest(req, body = {}) {
+  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME) || {};
+  const requestedWorkspace = normalizeWorkspaceKey(
+    body.workspace_key ||
+    body.workspace ||
+    req.query?.workspace_key ||
+    req.query?.workspace ||
+    (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : '')
+  );
+  const requestedProject = normalizeProjectKey(
+    body.project_key ||
+    body.project ||
+    req.query?.project_key ||
+    req.query?.project ||
+    opsScopeProjectKey(req) ||
+    workspaceProjectKey(requestedWorkspace)
+  );
+  const workspaceKey = requestedWorkspace || workspaceKeyForProject(requestedProject) || '';
+  let tenantType = 'school';
+  if (workspaceKey === 'rabbi_sheller_provider' || requestedProject === ONE_TIME_PROJECT_KEY) tenantType = 'service_provider';
+  else if (workspaceKey === 'dratler_family') tenantType = 'family';
+
+  return {
+    role: identity.role,
+    is_super_admin: identity.scope?.type === 'all' || identity.role === 'super_admin',
+    tenant_type: tenantType,
+    workspace_key: workspaceKey || null,
+    project_key: requestedProject || workspaceProjectKey(workspaceKey) || null,
+    plan_key: identity.role === 'super_admin' && !workspaceKey ? accountScope.PLAN_KEYS.SUPER_ADMIN : undefined,
+    feature_overrides: {},
+  };
+}
+
+async function featureOverridesForScope(scope = {}, db = pool) {
+  if (!scope.workspace_key) return {};
+  const result = await db.query(
+    `SELECT feature_key, enabled
+     FROM bna_workspace_feature_overrides
+     WHERE workspace_key = $1
+       AND (project_key = '' OR project_key = COALESCE($2, ''))`,
+    [scope.workspace_key, scope.project_key || '']
+  ).catch(() => ({ rows: [] }));
+  return Object.fromEntries(result.rows.map((row) => [row.feature_key, Boolean(row.enabled)]));
+}
+
+async function scopedProviderSummaryForProvider(provider = {}, db = pool) {
+  const baseScope = serviceProviderScopeFromProvider(provider);
+  const feature_overrides = await featureOverridesForScope(baseScope, db);
+  const scope = { ...baseScope, feature_overrides };
+  return {
+    scope,
+    summary: accountScope.summarizeScope(scope),
+    assistant: assistantScopePolicy.assistantCapabilitiesForScope(scope),
+  };
+}
+
+async function serviceProviderWithProject(providerId, db = pool) {
+  const result = await db.query(
+    `SELECT sp.*, p.project_key
+     FROM bna_service_providers sp
+     LEFT JOIN bna_projects p ON p.id = sp.project_id
+     WHERE sp.id = $1
+     LIMIT 1`,
+    [providerId]
+  );
+  return result.rows[0] || null;
+}
+
+function parseCrmContactRef(value = '') {
+  const raw = String(value || '').trim();
+  const [source, id] = raw.includes(':') ? raw.split(':', 2) : ['bna_contacts', raw];
+  return {
+    source: ['bna_contacts', 'bna_parent_leads'].includes(source) ? source : 'bna_contacts',
+    id: Number(id),
+  };
+}
+
+async function operationsCrmContactRows(scope = {}, db = pool) {
+  const workspaceKey = normalizeWorkspaceKey(scope.workspace_key);
+  const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(workspaceKey));
+  const rows = [];
+
+  const contactParams = [];
+  const contactConditions = [`COALESCE(c.status, '') <> 'archived'`];
+  if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
+    contactParams.push(workspaceKey);
+    contactConditions.push(`ws.workspace_key = $${contactParams.length}`);
+  }
+
+  const contacts = await db.query(
+    `SELECT
+       ('bna_contacts:' || c.id::text) AS id,
+       'bna_contacts' AS source_table,
+       ws.workspace_key,
+       c.full_name AS display_name,
+       c.primary_email AS email,
+       c.primary_phone AS phone,
+       COALESCE(NULLIF(c.metadata->>'contact_type', ''), 'general_contact') AS contact_type,
+       c.status,
+       c.source,
+       c.tags,
+       COALESCE(NULLIF(c.metadata->>'summary', ''), NULLIF(c.metadata->>'notes', '')) AS summary,
+       c.updated_at AS last_contact_at,
+       c.created_at
+     FROM bna_contacts c
+     LEFT JOIN bna_workspace_settings ws ON ws.id = c.workspace_id
+     WHERE ${contactConditions.join(' AND ')}
+     ORDER BY c.updated_at DESC NULLS LAST, c.id DESC
+     LIMIT 500`,
+    contactParams
+  ).catch(() => ({ rows: [] }));
+
+  rows.push(...contacts.rows.map((row) => ({
+    ...row,
+    workspace_key: normalizeWorkspaceKey(row.workspace_key) || workspaceKey || null,
+    project_key: workspaceProjectKey(row.workspace_key) || projectKey || null,
+  })));
+
+  const leadParams = [];
+  const leadConditions = [`COALESCE(l.status, '') <> 'archived'`];
+  if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
+    leadParams.push(projectKey);
+    leadConditions.push(`p.project_key = $${leadParams.length}`);
+  }
+
+  const leads = await db.query(
+    `SELECT
+       ('bna_parent_leads:' || l.id::text) AS id,
+       'bna_parent_leads' AS source_table,
+       p.project_key,
+       l.parent_name AS display_name,
+       l.parent_email AS email,
+       l.parent_phone AS phone,
+       l.lead_type AS contact_type,
+       l.status,
+       l.interest_level,
+       l.source,
+       l.tags,
+       l.notes AS summary,
+       COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) AS last_contact_at,
+       l.next_follow_up_date AS next_follow_up_at,
+       l.created_at
+     FROM bna_parent_leads l
+     LEFT JOIN bna_projects p ON p.id = l.project_id
+     WHERE ${leadConditions.join(' AND ')}
+     ORDER BY COALESCE(l.last_inbound_at, l.last_outbound_at, l.updated_at, l.created_at) DESC NULLS LAST, l.id DESC
+     LIMIT 500`,
+    leadParams
+  ).catch(() => ({ rows: [] }));
+
+  rows.push(...leads.rows.map((row) => ({
+    ...row,
+    workspace_key: workspaceKeyForProject(row.project_key) || workspaceKey || null,
+    project_key: normalizeProjectKey(row.project_key) || projectKey || null,
+  })));
+
+  return rows;
+}
+
+async function operationsCrmTimelineRows(contactRef, scope = {}, db = pool) {
+  if (!Number.isFinite(contactRef.id) || contactRef.id <= 0) return [];
+  const workspaceKey = normalizeWorkspaceKey(scope.workspace_key);
+  const projectKey = normalizeProjectKey(scope.project_key || workspaceProjectKey(workspaceKey));
+
+  if (contactRef.source === 'bna_parent_leads') {
+    const params = [contactRef.id];
+    const conditions = [`c.lead_id = $1`];
+    if (projectKey && !['platform', 'super_admin'].includes(projectKey)) {
+      params.push(projectKey);
+      conditions.push(`p.project_key = $${params.length}`);
+    }
+    const result = await db.query(
+      `SELECT
+         c.id,
+         c.channel,
+         c.direction,
+         c.summary AS body,
+         c.body AS notes,
+         c.source,
+         c.source_context,
+         c.occurred_at,
+         c.created_at,
+         'contact_note' AS communication_type
+       FROM bna_contact_communications c
+       LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
+       LEFT JOIN bna_projects p ON p.id = l.project_id
+       WHERE ${conditions.join(' AND ')}
+       ORDER BY c.occurred_at DESC NULLS LAST, c.created_at DESC
+       LIMIT 200`,
+      params
+    );
+    return result.rows;
+  }
+
+  const params = [contactRef.id];
+  const communicationConditions = [`contact_id = $1`];
+  const pipelineConditions = [`contact_id = $1`];
+  if (workspaceKey && !['platform', 'super_admin'].includes(workspaceKey)) {
+    params.push(workspaceKey);
+    communicationConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+    pipelineConditions.push(`workspace_id IN (SELECT id FROM bna_workspace_settings WHERE workspace_key = $${params.length})`);
+  }
+
+  const result = await db.query(
+    `SELECT *
+     FROM (
+       SELECT
+         id,
+         channel,
+         direction,
+         COALESCE(NULLIF(body_text, ''), subject, communication_type, 'Communication') AS body,
+         provider AS source,
+         metadata AS source_context,
+         occurred_at,
+         created_at,
+         COALESCE(communication_type, 'communication') AS communication_type
+       FROM bna_communications
+       WHERE ${communicationConditions.join(' AND ')}
+       UNION ALL
+       SELECT
+         id,
+         'internal_note' AS channel,
+         'internal' AS direction,
+         summary AS body,
+         source,
+         metadata AS source_context,
+         created_at AS occurred_at,
+         created_at,
+         event_type AS communication_type
+       FROM bna_contact_pipeline_events
+       WHERE ${pipelineConditions.join(' AND ')}
+     ) timeline
+     ORDER BY occurred_at DESC NULLS LAST, created_at DESC
+     LIMIT 200`,
+    params
+  );
+  return result.rows;
+}
+
 async function getProviderPortalPayload(providerId, db = pool) {
   const provider = (await db.query(
     `SELECT sp.id, sp.project_id, sp.display_name, sp.provider_name, sp.category, sp.short_description, sp.full_description,
@@ -27234,6 +27520,7 @@ async function getProviderPortalPayload(providerId, db = pool) {
   )).rows[0] || null;
   if (!provider) return null;
   const oneTimeClassMediaEnabled = isOneTimeClassMediaProvider(provider);
+  const scopedProvider = await scopedProviderSummaryForProvider(provider, db);
 
   const services = (await db.query(
     `SELECT
@@ -27257,6 +27544,9 @@ async function getProviderPortalPayload(providerId, db = pool) {
 
   return {
     provider: providerAccountView(provider),
+    scope: scopedProvider.summary,
+    provider_sections: scopedProvider.summary.provider_sections,
+    assistant: scopedProvider.assistant,
     profile: await ensureProviderProfileForServiceProvider(provider, db).catch(() => null),
     media: await getProviderMediaForLegacyProvider(providerId, db).catch(() => []),
     comments: await getProviderCommentsForLegacyProvider(providerId, { include_hidden: true }, db).catch(() => []),
@@ -29885,6 +30175,7 @@ async function initDb() {
     await pool.query(createPlatformCommunicationsSQL);
     await pool.query(createInAppNotificationsSQL);
     await pool.query(createServiceProvidersSQL);
+    if (createServiceProviderScopesSQL) await pool.query(createServiceProviderScopesSQL);
     await pool.query(createProviderIndexMvpSQL);
     await pool.query(createGoalBoardCheckinsSQL);
     await pool.query(createParentMagicLinksSQL);
@@ -46741,6 +47032,86 @@ app.get('/api/bna/provider-messages', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/account-scope/summary', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req);
+    if (scope.workspace_key) assertWorkspaceAccess(req, scope.workspace_key);
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    res.json({
+      success: true,
+      ...accountScope.summarizeScope(scope),
+      assistant: assistantScopePolicy.assistantCapabilitiesForScope(scope),
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/bna/crm/contacts', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req);
+    const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req));
+    scope.workspace_key = workspaceKey;
+    scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CRM_CONTACTS);
+    const rows = await operationsCrmContactRows(scope);
+    const payload = crmContactModel.filterCrmContacts(rows, {
+      contact_type: req.query.contact_type || 'all',
+      status: req.query.status || 'all',
+      source: req.query.source || 'all',
+      tag: req.query.tag || 'all',
+      search: req.query.search || '',
+      sort_key: req.query.sort_key || 'last_contact_desc',
+    }, scope);
+    res.json({
+      success: true,
+      ...payload,
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/bna/crm/contacts/:id/timeline', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req);
+    const workspaceKey = assertWorkspaceAccess(req, scope.workspace_key || defaultWorkspaceKeyForRequest(req));
+    scope.workspace_key = workspaceKey;
+    scope.project_key = scope.project_key || workspaceProjectKey(workspaceKey) || opsScopeProjectKey(req) || null;
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    accountScope.assertEntitlement(scope, accountScope.ENTITLEMENTS.CONTACT_TIMELINE);
+    const rows = await operationsCrmTimelineRows(parseCrmContactRef(req.params.id), scope);
+    res.json({
+      success: true,
+      timeline: crmContactModel.buildTimeline(rows),
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.post('/api/bna/assistant/scope-plan', requireAdmin, async (req, res) => {
+  try {
+    const scope = scopeFromOpsRequest(req, req.body || {});
+    if (scope.workspace_key) assertWorkspaceAccess(req, scope.workspace_key);
+    scope.feature_overrides = await featureOverridesForScope(scope);
+    const plan = assistantScopePolicy.planAssistantResponseMode(scope, req.body || {});
+    res.json({
+      success: true,
+      plan,
+      scope: accountScope.summarizeScope(scope),
+      no_codex_cli_routing: true,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
 app.get('/api/provider-portal/setup-token', async (req, res) => {
   try {
     const setup = await getProviderPasswordSetupTokenInfo(req.query?.token);
@@ -46834,6 +47205,137 @@ app.get('/api/provider-portal/session', requireProviderSession, async (req, res)
     res.json({ success: true, ...payload });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/provider-portal/scope-session', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await serviceProviderWithProject(req.providerSession.providerId);
+    if (!provider) return res.status(404).json({ error: 'Provider was not found' });
+    const scoped = await scopedProviderSummaryForProvider(provider);
+    res.json({
+      success: true,
+      ...scoped.summary,
+      assistant: scoped.assistant,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/provider-portal/inquiries', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await serviceProviderWithProject(req.providerSession.providerId);
+    if (!provider) return res.status(404).json({ error: 'Provider was not found' });
+    const scoped = await scopedProviderSummaryForProvider(provider);
+    accountScope.assertEntitlement(scoped.scope, accountScope.ENTITLEMENTS.PROVIDER_CONTACT_INBOX);
+    const profile = await ensureProviderProfileForServiceProvider(provider).catch(() => null);
+    const { rows } = await pool.query(
+      `SELECT *
+       FROM bna_provider_contact_inquiries
+       WHERE (provider_profile_id = $1 OR workspace_key = $2)
+         AND ($3 = '' OR project_key = $3 OR project_key = '')
+       ORDER BY created_at DESC, id DESC
+       LIMIT 200`,
+      [profile?.id || null, scoped.scope.workspace_key, scoped.scope.project_key || '']
+    );
+    res.json({
+      success: true,
+      ...crmContactModel.filterProviderContactInbox(rows, {
+        status: req.query.status || 'all',
+        search: req.query.search || '',
+        sort_key: req.query.sort_key || 'created_desc',
+      }, scoped.scope),
+      no_send: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.post('/api/provider-portal/inquiries/:id/response-draft', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await serviceProviderWithProject(req.providerSession.providerId);
+    if (!provider) return res.status(404).json({ error: 'Provider was not found' });
+    const scoped = await scopedProviderSummaryForProvider(provider);
+    accountScope.assertActionAllowed(scoped.scope, 'provider_inquiry_response_draft');
+    const draft = limitText(req.body?.draft || req.body?.body || '', 3000);
+    if (!draft) return res.status(400).json({ error: 'Response draft is required' });
+    const profile = await ensureProviderProfileForServiceProvider(provider).catch(() => null);
+    const { rows } = await pool.query(
+      `UPDATE bna_provider_contact_inquiries
+       SET last_response_draft = $1,
+           last_response_drafted_by = $2,
+           last_response_drafted_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $3
+         AND (provider_profile_id = $4 OR workspace_key = $5)
+         AND ($6 = '' OR project_key = $6 OR project_key = '')
+       RETURNING *`,
+      [
+        draft,
+        provider.login_username || req.providerSession.providerName || `provider:${provider.id}`,
+        req.params.id,
+        profile?.id || null,
+        scoped.scope.workspace_key,
+        scoped.scope.project_key || '',
+      ]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Inquiry was not found for this provider workspace' });
+    res.json({
+      success: true,
+      inquiry: rows[0],
+      no_send: true,
+      external_write_performed: false,
+      message: 'Draft saved. No message was sent.',
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.get('/api/provider-portal/calendar-events', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await serviceProviderWithProject(req.providerSession.providerId);
+    if (!provider) return res.status(404).json({ error: 'Provider was not found' });
+    const scoped = await scopedProviderSummaryForProvider(provider);
+    accountScope.assertEntitlement(scoped.scope, accountScope.ENTITLEMENTS.PROVIDER_CALENDAR);
+    const { rows } = await pool.query(
+      `SELECT *
+       FROM bna_calendar_events
+       WHERE workspace_key = $1
+         AND status <> 'archived'
+       ORDER BY start_at ASC NULLS LAST, created_at DESC
+       LIMIT 200`,
+      [scoped.scope.workspace_key]
+    );
+    res.json({
+      success: true,
+      events: rows.map(calendarEventView),
+      no_external_calendar_write: true,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
+  }
+});
+
+app.post('/api/provider-portal/assistant/scope-plan', requireProviderSession, async (req, res) => {
+  try {
+    const provider = await serviceProviderWithProject(req.providerSession.providerId);
+    if (!provider) return res.status(404).json({ error: 'Provider was not found' });
+    const scoped = await scopedProviderSummaryForProvider(provider);
+    const plan = assistantScopePolicy.planAssistantResponseMode(scoped.scope, req.body || {});
+    if (plan.allowed && req.body?.action) assistantScopePolicy.assertAssistantActionAllowed(scoped.scope, req.body.action);
+    res.json({
+      success: true,
+      plan,
+      scope: scoped.summary,
+      no_codex_cli_routing: true,
+    });
+  } catch (err) {
+    res.status(err.status || err.statusCode || 500).json({ error: err.message, reason: err.reason });
   }
 });
 
@@ -81601,6 +82103,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createOneTimeTrialReferralConfigSQL);
     await pool.query(createServiceProviderStudioSQL);
     await pool.query(createServiceProvidersSQL);
+    if (createServiceProviderScopesSQL) await pool.query(createServiceProviderScopesSQL);
     await pool.query(createProviderIndexMvpSQL);
     await pool.query(createCommunicationsIntegrationsSQL);
     await pool.query(createAssignmentPromptsSQL);
