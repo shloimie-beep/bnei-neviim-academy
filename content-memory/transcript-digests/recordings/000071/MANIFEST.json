@@ -1,0 +1,57 @@
+{
+  "job_id": 71,
+  "job_ref": "content_job:71",
+  "generated_title": "Class Recording 2026-06-17 - Job 071 (needs parser review)",
+  "original_title_policy": "not_exported_from_audit_artifact; use generated title in repo",
+  "source_type": "content_job_from_class_drive_intake_audit",
+  "raw_intake_id": null,
+  "drive_file_ref": "drive_file:0bca79c4ebf3cec8",
+  "drive_file_hash": "0bca79c4ebf3cec8",
+  "transcript_chars": 751,
+  "transcript_hash": {
+    "available_in_repo": false,
+    "status": "private_app_or_drive_raw_body_required_to_compute",
+    "hash": null
+  },
+  "parser_used": null,
+  "parse_run_id": null,
+  "class_session_linkage": "MISSING",
+  "category_list": [
+    "class_notes",
+    "class_session",
+    "drive_workflow_issue",
+    "parser_error",
+    "profile_note",
+    "task"
+  ],
+  "short_summary": "Privacy-safe digest for Class Recording 2026-06-17 - Job 071 (needs parser review). Raw transcript body remains in private app database or Drive.",
+  "subject_breakdown_status": "MISSING",
+  "tasks_extracted": 2,
+  "questions_extracted_count": 0,
+  "student_matching_status": "no_student_question_candidates",
+  "accountability_profile_progress_status": {
+    "accountability_event": "MISSING",
+    "profile_note": "MISSING",
+    "student_progress": "MISSING"
+  },
+  "private_meeting_flag": false,
+  "private_review_flag": true,
+  "content_marketing_flag": false,
+  "confidence": 0.62,
+  "blockers": [
+    "accountability_proposal:MISSING",
+    "ambiguity_review:MISSING",
+    "class_session_match:MISSING",
+    "download:NEEDS_REVIEW",
+    "intake_record:MISSING",
+    "parent_student_visibility:NEEDS_REVIEW",
+    "profile_note_proposal:MISSING",
+    "question_proposal:MISSING",
+    "repo_digest_export:MISSING",
+    "score_progress_proposal:MISSING",
+    "structured_output:MISSING",
+    "student_name_alias_match:MISSING"
+  ],
+  "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+  "raw_transcript_body_included": false
+}

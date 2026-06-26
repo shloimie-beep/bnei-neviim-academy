@@ -1,0 +1,59 @@
+{
+  "job_id": 72,
+  "categories": [
+    {
+      "lane": "class_notes",
+      "section_count": 2
+    },
+    {
+      "lane": "class_session",
+      "section_count": 2
+    },
+    {
+      "lane": "drive_workflow_issue",
+      "section_count": 1
+    },
+    {
+      "lane": "profile_note",
+      "section_count": 1
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "job-72-source",
+      "title": "Source discovery and transcript status",
+      "lanes": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue"
+      ],
+      "summary_hash": "926be2bb81cb2c06",
+      "raw_text_included": false
+    },
+    {
+      "section_id": "job-72-parser",
+      "title": "Parser and class routing status",
+      "lanes": [
+        "class_notes",
+        "class_session",
+        "profile_note"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "class_notes",
+        "class_session",
+        "profile_note"
+      ],
+      "summary_hash": "dd8d0a2ce0974045",
+      "raw_text_included": false
+    }
+  ]
+}

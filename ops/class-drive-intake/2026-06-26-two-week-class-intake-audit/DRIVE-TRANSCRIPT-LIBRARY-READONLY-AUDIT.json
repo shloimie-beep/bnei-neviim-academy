@@ -1,0 +1,130 @@
+{
+  "raw_id": "RAW-20260626-006",
+  "github_issue": 41,
+  "github_comment_id": "4808518537",
+  "github_comment_url": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4808518537",
+  "checked_at": "2026-06-26T13:21:00+03:00",
+  "mode": "read_only_drive_listing_and_sync_dry_run",
+  "folder_readback": {
+    "checked_at_utc": "2026-06-26T10:20:58.567Z",
+    "content_library_name": "40 Content Library - Marketing",
+    "content_library_id_hash": "f92e764c7e8d59e4",
+    "folder_name": "01 Transcript Library",
+    "folder_exists": true,
+    "folder_id_hash": "b94d06a117fcc5cd",
+    "doc_count": 46,
+    "newest_created_time": "2026-06-17T17:41:06.110Z",
+    "docs_created_since_2026_06_25_count": 0,
+    "docs_created_since_2026_06_25_sample": [],
+    "min_job_number": 2,
+    "max_job_number": 70,
+    "sample_jobs": [
+      {
+        "job": 65,
+        "exists": true,
+        "created_time": "2026-06-17T16:46:34.261Z",
+        "modified_time": "2026-06-17T16:46:39.607Z",
+        "id_hash": "f5d281557b8e8096"
+      },
+      {
+        "job": 66,
+        "exists": true,
+        "created_time": "2026-06-17T16:56:32.120Z",
+        "modified_time": "2026-06-17T16:56:37.291Z",
+        "id_hash": "8d4eed513c6efa5d"
+      },
+      {
+        "job": 67,
+        "exists": true,
+        "created_time": "2026-06-17T17:20:15.492Z",
+        "modified_time": "2026-06-17T17:20:20.082Z",
+        "id_hash": "b2f0237dcc8c32be"
+      },
+      {
+        "job": 68,
+        "exists": true,
+        "created_time": "2026-06-17T17:31:24.951Z",
+        "modified_time": "2026-06-17T17:31:30.287Z",
+        "id_hash": "92694d34632cd105"
+      },
+      {
+        "job": 69,
+        "exists": true,
+        "created_time": "2026-06-17T17:35:50.799Z",
+        "modified_time": "2026-06-17T17:35:54.526Z",
+        "id_hash": "46c9398a470f8d15"
+      },
+      {
+        "job": 70,
+        "exists": true,
+        "created_time": "2026-06-17T17:41:06.110Z",
+        "modified_time": "2026-06-17T17:41:09.924Z",
+        "id_hash": "da7c68354c5ec463"
+      },
+      {
+        "job": 83,
+        "exists": false,
+        "created_time": null,
+        "modified_time": null,
+        "id_hash": null
+      }
+    ]
+  },
+  "sync_dry_run": {
+    "command": "npm run content:sync-drive-library -- --dry-run --no-ai",
+    "exit_code": 0,
+    "live_transcript_jobs_with_text": 75,
+    "real_transcript_jobs_selected": 59,
+    "website_articles_selected": 24,
+    "created_docs": 0,
+    "updated_docs": 0,
+    "skipped_unchanged_docs": 0,
+    "ai_breakdowns_generated": 0,
+    "ai_breakdowns_planned": 0,
+    "content_library_url_printed_to_terminal": true,
+    "content_library_url_recorded_in_tracked_file": false,
+    "sample_planned_transcript_actions": [
+      {
+        "job": 83,
+        "action": "would-create"
+      },
+      {
+        "job": 70,
+        "action": "would-update"
+      },
+      {
+        "job": 69,
+        "action": "would-update"
+      },
+      {
+        "job": 68,
+        "action": "would-update"
+      },
+      {
+        "job": 67,
+        "action": "would-update"
+      },
+      {
+        "job": 66,
+        "action": "would-update"
+      },
+      {
+        "job": 65,
+        "action": "would-update"
+      }
+    ]
+  },
+  "guardrails": {
+    "drive_create_update_delete_performed": false,
+    "docs_batch_update_performed": false,
+    "drive_move_performed": false,
+    "production_db_mutation_performed": false,
+    "paid_retranscription_performed": false,
+    "worker_retry_performed": false,
+    "class_backfill_performed": false,
+    "raw_transcript_body_export_performed": false,
+    "stale_deletion_performed": false,
+    "send_or_publish_performed": false,
+    "deploy_performed": false
+  }
+}

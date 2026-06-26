@@ -1,0 +1,480 @@
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+Repo:
+https://github.com/shloimie-beep/bnei-neviim-academy
+
+Objective:
+Rebuild the class/transcript/Drive intake workflow around the correct policy:
+
+Raw transcript bodies stay in private Drive/app database.
+GitHub stores only structured, useful, privacy-safe digests and categorized outputs.
+
+Shloimie’s actual expectation:
+I dropped every recording into Drive expecting the system to do the work for me. I do not reliably save or manually title those files elsewhere. When a raw recording/transcript with no useful title lands in Drive, the system must:
+- discover it;
+- preserve source provenance;
+- title it intelligently;
+- transcribe or use the existing transcript if already available;
+- break it into useful sections;
+- label the sections;
+- classify what each section is;
+- route each section to the right lane;
+- create tasks/questions/class notes/student/accountability/content/private-meeting outputs where appropriate;
+- keep private/raw material out of public GitHub;
+- make the repo useful to agents by saving digests, manifests, indexes, and sanitized structured outputs.
+
+This can start over from scratch if needed. It is acceptable to re-audit all recordings/jobs again. Do not assume the prior export is complete merely because artifacts exist.
+
+Important repo facts to re-check:
+- Read AGENTS.md first.
+- Read BNA-START-HERE.md.
+- Read docs/BNA-RAMBLE-TO-DONE.md.
+- Read TASKS.md.
+- Read ops/execution-runs/latest.json.
+- Read scripts/export-content-transcripts.mjs.
+- Read scripts/sync-drive-content-library.mjs.
+- Read content-memory/README.md.
+- Inspect the current class-drive-intake evidence folders, including:
+  - ops/class-drive-intake/
+  - ops/class-drive-intake/2026-06-24-issue-18/
+  - ops/class-drive-intake/2026-06-25-issue-24-newest-recording/
+  - ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/ if it exists locally or in repo.
+
+Known blocker:
+The current `npm run content:export-transcripts` command must not be run as-is because it writes full transcript bodies into tracked `content-memory/transcripts` markdown files and deletes stale transcript files. Treat this as decision/blocker `DEC-20260626-101`.
+
+Selected policy:
+OPTION B — Drive-first raw transcript storage, repo-side structured digest memory.
+
+Policy details:
+1. Full/raw transcript text may live in:
+   - private app database;
+   - private Google Drive transcript library;
+   - local untracked audit workspaces.
+2. Full/raw transcript text must not be committed to the public GitHub repo by default.
+3. GitHub should receive:
+   - sanitized source envelopes;
+   - per-recording manifests;
+   - content hashes;
+   - transcript character counts;
+   - generated title;
+   - category breakdown;
+   - structured digest;
+   - class/session summaries;
+   - extracted task candidates;
+   - extracted student-question candidates with private identifiers redacted or stable-labeled;
+   - student matching status, not raw private details;
+   - private-meeting classification and review pointer, not private body text;
+   - repair candidates;
+   - parse gaps;
+   - Drive/app links or stable redacted identifiers;
+   - indexes that agents can use.
+4. The repo should become useful without exposing private transcript bodies.
+
+Hard rule:
+Do not treat “raw transcript hidden somewhere” as success. The point is not only storage. The point is structured routing.
+
+Main work:
+Create a new canonical run/register for this work, or continue the existing one if already created.
+
+Suggested raw/register IDs:
+- RAW-20260626-### — two-week transcript/Drive/class intake rebuild
+- REQ-20260626-### — Drive-first transcript storage and repo digest export policy
+- DEC-20260626-101 — full transcript-body GitHub export blocked pending safe digest/export design
+
+Required phases:
+
+PHASE 1 — Current-state and source audit
+
+1. Confirm Git branch, HEAD, remote HEAD, active run pointer, and local dirty state.
+2. Find whether the 2026-06-26 two-week audit artifacts exist:
+   - C:/Users/User/BNA v2.0/ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/
+   - repo path ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/
+3. If the folder exists, inspect:
+   - FINAL-VERDICT.md
+   - all JSON artifacts
+   - verification artifacts
+   - repair candidate artifacts
+   - transcript gap artifacts
+4. Do not blindly stage the whole folder. Stage only sanitized artifacts.
+5. If the folder does not exist, regenerate the audit in read-only mode.
+
+Audit scope:
+- all relevant Drive recordings, not just jobs 64–74;
+- all relevant content jobs;
+- all transcript-bearing jobs;
+- all Drive files that should have become jobs;
+- all jobs with transcript but no parse;
+- all jobs with parse but no applied structured outputs;
+- all jobs with class/session row but missing questions/progress/accountability;
+- all jobs with title/filename gaps;
+- all jobs that look like private meetings;
+- all jobs that look like mixed recordings.
+
+Known previous reported result to verify, not blindly trust:
+- 18 Drive recordings
+- 29 content jobs
+- 13 deduped student-question rows
+- 24 GitHub transcript export gaps
+- 10 dry-run repair candidates
+- status PARTIAL
+- no backfill, no production mutation, no Drive write/move, no send, no paid retranscription, no transcript-body export.
+
+PHASE 2 — Define the new transcript/digest architecture
+
+Create or update docs explaining this policy:
+
+Drive/app DB:
+- raw transcript vault;
+- full transcript body;
+- source media;
+- human-readable private docs;
+- private review material.
+
+GitHub:
+- digest memory;
+- manifests;
+- indexes;
+- categorized extracted outputs;
+- source hashes;
+- stable redacted source labels;
+- evidence;
+- tests;
+- parser logic;
+- repair plans.
+
+Add a clear rule:
+A recording is “processed” only when it has:
+- source discovered;
+- stable source ID;
+- generated title;
+- transcript status;
+- parser status;
+- category classification;
+- digest;
+- class/task/question/student/private/content routing;
+- privacy classification;
+- repo digest/index export if safe;
+- Drive raw transcript pointer if available;
+- repair/blocker status if incomplete.
+
+PHASE 3 — Build privacy-safe repo digest export
+
+Do not run `npm run content:export-transcripts` as-is.
+
+Either modify that script safely or create a new script. Prefer a new script unless modifying the old one is clearly safer.
+
+Suggested command names:
+- `npm run content:export-digests`
+- `npm run content:transcript-gap-audit`
+- `npm run content:recording-classify`
+- `npm run content:drive-intake-audit`
+
+Required safe export behavior:
+- default mode exports no raw transcript bodies;
+- default mode does not delete stale files;
+- deletion requires explicit `--delete-stale` and must not be used in this run;
+- full transcript body export requires explicit `--include-raw-transcript` and must not be used in this run;
+- manifest-only mode supported;
+- dry-run mode supported;
+- per-job mode supported;
+- deterministic output supported;
+- privacy scan supported.
+
+Output structure proposal:
+
+content-memory/transcript-digests/
+  index.md
+  manifest.json
+  recordings/
+    000083/
+      MANIFEST.json
+      DIGEST.md
+      CATEGORIES.json
+      ROUTING.md
+      CLASS-NOTES.md
+      TASK-CANDIDATES.md
+      STUDENT-QUESTION-CANDIDATES.md
+      CONTENT-IDEAS.md
+      PRIVATE-REVIEW.md
+      PARSE-GAPS.json
+
+Do not create files that include raw transcript bodies.
+
+Each recording digest should include:
+- generated title;
+- original title/file label only if privacy-safe, otherwise stable redacted label;
+- source type;
+- job ID;
+- raw intake ID if available;
+- Drive file redacted ID/hash;
+- transcript chars;
+- transcript hash;
+- parser used;
+- parse run ID;
+- class/session linkage;
+- category list;
+- short summary;
+- subject breakdown;
+- tasks extracted;
+- questions extracted count;
+- student matching status;
+- accountability/profile/progress status;
+- private-meeting flag;
+- content/marketing flag;
+- confidence;
+- blockers;
+- next action.
+
+PHASE 4 — Build section classifier and router
+
+For every transcript/job, classify each meaningful section into one or more of these lanes:
+
+- class_session
+- class_notes
+- student_question
+- student_answer_or_discussion
+- student_progress
+- student_score
+- accountability_event
+- profile_note
+- parent_update_candidate
+- task
+- decision
+- open_question
+- content_idea
+- article_angle
+- marketing_clip
+- source_sheet_candidate
+- private_meeting
+- private_student_detail
+- operations_note
+- billing/admin
+- support_ticket
+- integration_issue
+- drive_workflow_issue
+- parser_error
+- unknown_needs_review
+
+For mixed recordings, do not force the whole recording into one lane. Break it into sections and route each section separately.
+
+Private rules:
+- If private_meeting or private_student_detail is detected, do not put raw body text in GitHub.
+- Use stable labels/hashes.
+- Store only summary, category, owner, next action, and private Drive/app pointer.
+- Create a review item if the system cannot safely classify.
+
+Student matching rules:
+- Do not auto-merge ambiguous student names.
+- Do not create or suggest cross-student writes without confidence evidence.
+- Record:
+  - matched stable student label;
+  - confidence;
+  - alias evidence summary;
+  - ambiguity reason;
+  - next action.
+
+Task extraction rules:
+- Create task candidates, not live production tasks, unless the active run explicitly authorizes task creation.
+- Every task candidate must include:
+  - title;
+  - owner;
+  - category;
+  - priority;
+  - depends_on;
+  - related source/job;
+  - notes;
+  - privacy classification;
+  - confidence.
+
+Question extraction rules:
+- Preserve the question meaning.
+- Do not commit private student identity or raw private phrasing if sensitive.
+- Deduplicate repeated question echoes.
+- Link each question candidate to recording/job/section.
+- Record whether it is:
+  - classroom question;
+  - content question;
+  - parent-facing FAQ;
+  - private student support;
+  - needs Rabbi review.
+
+PHASE 5 — Drive transcript library plan
+
+Keep raw transcripts in Drive, but do not write Drive docs until a dry-run plan is produced.
+
+First run:
+- Drive/content library dry-run only.
+- No AI provider calls unless explicitly needed and approved.
+- No Drive create/update/delete.
+- No moving source files.
+- No paid retranscription.
+- No production worker retry.
+
+Dry-run should output:
+- which transcript docs would be created;
+- which docs would be updated;
+- which source recordings lack transcripts;
+- which source recordings lack titles;
+- which source recordings lack parser outputs;
+- which docs already exist;
+- which docs need private-review tags;
+- which docs are safe for marketing/content library;
+- which docs are class/private and should stay restricted.
+
+If Drive write is later approved, the Drive doc layout should be:
+- private raw transcript;
+- generated title;
+- metadata;
+- clean subject breakdown;
+- structured category breakdown;
+- action/task/question candidates;
+- private review warnings;
+- raw transcript at bottom or in linked private section, depending on Drive permissions.
+
+But for this run, produce the plan first.
+
+PHASE 6 — Repair the transcript export gaps
+
+For the 24 GitHub transcript export gaps, produce a sanitized gap manifest:
+
+ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.json
+ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.md
+
+Each gap row:
+- job ID;
+- source label/hash;
+- transcript chars;
+- has raw transcript in app DB: yes/no;
+- has Drive raw transcript doc: yes/no/unknown;
+- has repo digest: yes/no;
+- has generated title: yes/no;
+- has category classification: yes/no;
+- has class/session parse: yes/no/not applicable;
+- has student/question parse: yes/no/not applicable/private;
+- reason for gap;
+- safe next action;
+- blocker if any.
+
+Do not include transcript bodies.
+
+PHASE 7 — Repair candidates
+
+For the 10 dry-run repair candidates, create:
+
+ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.md
+ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.json
+
+Each repair candidate must show:
+- candidate ID;
+- job ID;
+- source hash/redacted label;
+- target lane/table/model;
+- proposed operation: insert/update/no-op/review-only;
+- before-state hash/summary;
+- proposed after-state hash/summary;
+- reason;
+- confidence;
+- duplicate/idempotency key;
+- rollback method;
+- privacy classification;
+- owner approval needed: yes/no;
+- exact blocker.
+
+This is dry-run only.
+Do not mutate production.
+
+PHASE 8 — Parser/tooling tests
+
+Add or update tests proving:
+- safe digest export does not include raw transcript body;
+- old transcript export remains blocked or requires explicit unsafe flag;
+- default digest export does not delete stale files;
+- section classifier routes mixed recordings into multiple lanes;
+- private meeting sections do not export raw text to GitHub;
+- student questions are deduped;
+- ambiguous student names never auto-merge;
+- task candidates include owner/category/priority/dependency/related file/notes;
+- transcript gap manifest is deterministic;
+- repair candidate manifest is deterministic;
+- no secrets/raw Drive IDs/private transcript bodies leak into tracked artifacts.
+
+Run focused tests first:
+- package tests touched by this work;
+- class-drive-intake parser/privacy tests;
+- JSON parse checks;
+- secrets audit;
+- privacy scan;
+- git diff --check.
+
+Do not run full expensive suites unless required by the current run closeout.
+
+PHASE 9 — Repo durability
+
+Create/update:
+- raw input record for this ramble/audit;
+- dated requirement register;
+- ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/NEXT-SESSION.md;
+- TASKS.md;
+- ops/agent-task-ledger.jsonl;
+- ops/agent-changelog.md.
+
+The register must include terminal statuses:
+- Done
+- Already satisfied
+- Blocked
+- Needs operator decision
+- Failed
+- Archived
+
+Do not mark the overall work Done if:
+- raw transcript bodies are still the only usable source;
+- digests are missing;
+- categories are missing;
+- parser gaps remain unexplained;
+- Drive raw transcript plan has not been dry-run;
+- repo has no sanitized manifest;
+- tests/privacy scan did not pass.
+
+Expected final answer format:
+
+1. Executive verdict
+2. Git/branch/run truth
+3. Source/audit artifacts found
+4. Drive recordings inspected
+5. Content jobs inspected
+6. Transcript storage policy implemented
+7. GitHub digest/export policy implemented
+8. Generated title coverage
+9. Category/classification coverage
+10. Class/session outputs
+11. Task candidates
+12. Student-question candidates
+13. Student/private review findings
+14. Private meeting findings
+15. Transcript gaps
+16. Repair candidates
+17. Drive raw transcript library dry-run result
+18. Tests/privacy scans run
+19. Files changed
+20. Remaining blockers/Decisions
+21. Exact next safe command
+
+End with exactly one:
+- READY FOR OWNER APPROVAL — digest/export plan only, no production writes
+- PARTIAL — exact transcript/class intake blockers listed
+- BLOCKED — exact owner/privacy/Drive decision required
+
+Forbidden actions:
+- Do not run `npm run content:export-transcripts` as-is.
+- Do not export full transcript bodies into tracked GitHub files.
+- Do not delete stale transcript files.
+- Do not run `APPLY_GUARDED_CLASS_BACKFILL`.
+- Do not mutate production DB.
+- Do not move/upload/write Drive files.
+- Do not run paid retranscription.
+- Do not restart workers.
+- Do not send email/Telegram/WhatsApp/social messages.
+- Do not charge/refund/grant access.
+- Do not rotate credentials.
+- Do not deploy unless an app-visible code change explicitly requires it and the active run authorizes deploy/live smoke.

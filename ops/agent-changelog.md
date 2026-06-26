@@ -26758,3 +26758,65 @@ Remaining:
 
 - App-visible work is draft-PR-ready, but not production-complete until PR
   merge, deployment, and live Operations/provider smoke verification.
+
+## 2026-06-26T13:21:00+03:00 - Issue 41 Drive Transcript Library Addendum Verified
+
+Processed `RAW-20260626-006` from GitHub issue #41 comment `4808518537` and
+linked it into the active transcript/Drive digest rebuild run as
+`REQ-20260626-127`.
+
+Read-only Drive verification confirmed `01 Transcript Library` exists under
+`40 Content Library - Marketing`, has 46 transcript docs, has 0 docs created
+since `2026-06-25T00:00:00Z`, includes jobs #65-#70, and does not include job
+#83. `npm run content:sync-drive-library -- --dry-run --no-ai` planned #83 as
+create and #65-#70 as updates while performing 0 creates, 0 updates, and 0 AI
+calls. No Drive write, production mutation, class backfill, raw export, paid
+retranscription, AI call, send, charge, credential/account/DNS change, or deploy
+was performed.
+
+Evidence:
+
+- `raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.json`
+- `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`
+
+Remaining: owner approval was required before any non-dry-run Drive sync beyond
+read-only verification. `DEC-20260626-101` stayed open for unsafe/raw/external
+write paths.
+
+## 2026-06-26T13:40:00+03:00 - Approved Job 83 Drive Transcript Sync Completed
+
+Processed `RAW-20260626-007` as a targeted owner approval for content job #83
+only and closed `REQ-20260626-128`.
+
+Ran the exact approved command:
+`npm run content:sync-drive-library -- --no-ai --verify --job-id 83`. The sync
+selected 1 real transcript job, created 1 private Drive transcript-library
+Google Doc, updated 0 docs, made 0 AI calls, and verified Drive readback for
+#83 with 9683 chars / ok.
+
+Recorded sanitized proof under
+`ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md`
+and `.json`. The tracked repo stores only hashed Drive pointers, not the raw
+Drive doc ID, raw Drive link, or transcript body.
+
+Post-sync verification:
+
+- Read-only library listing: `01 Transcript Library` now has 47 docs and #83
+  exists.
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings,
+  `raw_transcript_bodies_included=false`, 0 findings.
+- `npm run content:drive-intake-audit`: read-only audit refreshed with final
+  status `PARTIAL`.
+- `node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js`:
+  15/15 passed.
+- `npm run bna:run:validate`: 12 done, 1 needs operator decision, validation
+  passed.
+- `npm run bna:run:next`: no unblocked executable batch.
+- `npm run secrets:audit`: 0 tracked secret-risk files found.
+
+Remaining: `DEC-20260626-101` remains open for any future raw export, further
+Drive write beyond #83, production repair/reparse/canonical write, worker retry,
+paid retranscription, class backfill, broad Drive sync, or other
+unsafe/external write path.

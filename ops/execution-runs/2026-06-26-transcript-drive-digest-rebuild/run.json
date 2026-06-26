@@ -1,0 +1,23 @@
+{
+  "run_id": "2026-06-26-transcript-drive-digest-rebuild",
+  "title": "Transcript Drive Digest Rebuild",
+  "created_at": "2026-06-26T09:05:07.783Z",
+  "updated_at": "2026-06-26T13:40:00+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260626-004",
+  "workspace_key": "bna",
+  "project_key": "class_drive_intake",
+  "related_decisions": ["DEC-20260626-101"],
+  "guardrails": [
+    "No raw transcript-body GitHub export by default",
+    "No stale transcript deletion without explicit flag",
+    "No production DB mutation",
+    "No Drive write/move/delete",
+    "No paid retranscription",
+    "No worker retry",
+    "No class backfill apply",
+    "No send/publish/charge/DNS/credential/deploy action"
+  ]
+}

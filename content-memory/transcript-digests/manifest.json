@@ -1,0 +1,411 @@
+{
+  "generated_from": "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit",
+  "generated_at": "2026-06-26T10:39:17.130Z",
+  "raw_transcript_bodies_included": false,
+  "stale_deletion_performed": false,
+  "recording_count": 29,
+  "recordings": [
+    {
+      "job_id": 83,
+      "path": "recordings/000083/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-25 - Job 083 (parsed)",
+      "transcript_chars": 9025,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 82,
+      "path": "recordings/000082/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-25 - Job 082 (parsed)",
+      "transcript_chars": 5309,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 81,
+      "path": "recordings/000081/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-24 - Job 081 (parsed)",
+      "transcript_chars": 79807,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 80,
+      "path": "recordings/000080/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-23 - Job 080 (parsed)",
+      "transcript_chars": 56556,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 79,
+      "path": "recordings/000079/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-22 - Job 079 (parsed)",
+      "transcript_chars": 70420,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 78,
+      "path": "recordings/000078/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-21 - Job 078 (parsed)",
+      "transcript_chars": 77315,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 77,
+      "path": "recordings/000077/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-20 - Job 077 (parsed)",
+      "transcript_chars": 19941,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 76,
+      "path": "recordings/000076/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-19 - Job 076 (parsed)",
+      "transcript_chars": 5456,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 75,
+      "path": "recordings/000075/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-18 - Job 075 (parsed)",
+      "transcript_chars": 41580,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 74,
+      "path": "recordings/000074/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-18 - Job 074 (parsed)",
+      "transcript_chars": 33459,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 73,
+      "path": "recordings/000073/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-18 - Job 073 (parsed)",
+      "transcript_chars": 32048,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 72,
+      "path": "recordings/000072/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-18 - Job 072 (parsed)",
+      "transcript_chars": 5505,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 71,
+      "path": "recordings/000071/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 071 (needs parser review)",
+      "transcript_chars": 751,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 70,
+      "path": "recordings/000070/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 070 (parsed)",
+      "transcript_chars": 24519,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 69,
+      "path": "recordings/000069/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 069 (parsed)",
+      "transcript_chars": 23859,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 68,
+      "path": "recordings/000068/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 068 (parsed)",
+      "transcript_chars": 64715,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 67,
+      "path": "recordings/000067/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 067 (parsed)",
+      "transcript_chars": 55731,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 66,
+      "path": "recordings/000066/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 066 (parsed)",
+      "transcript_chars": 40257,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 65,
+      "path": "recordings/000065/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 065 (parsed)",
+      "transcript_chars": 77245,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 64,
+      "path": "recordings/000064/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-17 - Job 064 (parsed)",
+      "transcript_chars": 63148,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "profile_note"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 59,
+      "path": "recordings/000059/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-11 - Job 059 (needs parser review)",
+      "transcript_chars": 5481,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 58,
+      "path": "recordings/000058/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-11 - Job 058 (needs parser review)",
+      "transcript_chars": 55809,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 57,
+      "path": "recordings/000057/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-10 - Job 057 (needs parser review)",
+      "transcript_chars": 35521,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 56,
+      "path": "recordings/000056/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-10 - Job 056 (needs parser review)",
+      "transcript_chars": 105867,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 31,
+      "path": "recordings/000031/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-09 - Job 031 (needs parser review)",
+      "transcript_chars": 52560,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 30,
+      "path": "recordings/000030/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-09 - Job 030 (needs parser review)",
+      "transcript_chars": 29040,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 26,
+      "path": "recordings/000026/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-08 - Job 026 (needs parser review)",
+      "transcript_chars": 71944,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 25,
+      "path": "recordings/000025/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-08 - Job 025 (needs parser review)",
+      "transcript_chars": 58244,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "student_question",
+        "task"
+      ],
+      "private_review": true
+    },
+    {
+      "job_id": 21,
+      "path": "recordings/000021/MANIFEST.json",
+      "generated_title": "Class Recording 2026-06-04 - Job 021 (needs parser review)",
+      "transcript_chars": 8568,
+      "categories": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue",
+        "parser_error",
+        "profile_note",
+        "task"
+      ],
+      "private_review": true
+    }
+  ]
+}

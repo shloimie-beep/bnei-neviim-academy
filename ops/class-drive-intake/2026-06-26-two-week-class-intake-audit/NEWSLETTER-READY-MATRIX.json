@@ -1,0 +1,376 @@
+[
+  {
+    "job_ref": "content_job:83",
+    "job_id": 83,
+    "class_date": "2026-06-25",
+    "transcript_chars": 9025,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:82",
+    "job_id": 82,
+    "class_date": "2026-06-25",
+    "transcript_chars": 5309,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:81",
+    "job_id": 81,
+    "class_date": "2026-06-24",
+    "transcript_chars": 79807,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:80",
+    "job_id": 80,
+    "class_date": "2026-06-23",
+    "transcript_chars": 56556,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:79",
+    "job_id": 79,
+    "class_date": "2026-06-22",
+    "transcript_chars": 70420,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:78",
+    "job_id": 78,
+    "class_date": "2026-06-21",
+    "transcript_chars": 77315,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:77",
+    "job_id": 77,
+    "class_date": "2026-06-20",
+    "transcript_chars": 19941,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:76",
+    "job_id": 76,
+    "class_date": "2026-06-19",
+    "transcript_chars": 5456,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:75",
+    "job_id": 75,
+    "class_date": "2026-06-18",
+    "transcript_chars": 41580,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:74",
+    "job_id": 74,
+    "class_date": "2026-06-18",
+    "transcript_chars": 33459,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:73",
+    "job_id": 73,
+    "class_date": "2026-06-18",
+    "transcript_chars": 32048,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:72",
+    "job_id": 72,
+    "class_date": "2026-06-18",
+    "transcript_chars": 5505,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:71",
+    "job_id": 71,
+    "class_date": "2026-06-17",
+    "transcript_chars": 751,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "structured_output_not_confirmed",
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:70",
+    "job_id": 70,
+    "class_date": "2026-06-17",
+    "transcript_chars": 24519,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:69",
+    "job_id": 69,
+    "class_date": "2026-06-17",
+    "transcript_chars": 23859,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:68",
+    "job_id": 68,
+    "class_date": "2026-06-17",
+    "transcript_chars": 64715,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:67",
+    "job_id": 67,
+    "class_date": "2026-06-17",
+    "transcript_chars": 55731,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:66",
+    "job_id": 66,
+    "class_date": "2026-06-17",
+    "transcript_chars": 40257,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:65",
+    "job_id": 65,
+    "class_date": "2026-06-17",
+    "transcript_chars": 77245,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:64",
+    "job_id": 64,
+    "class_date": "2026-06-17",
+    "transcript_chars": 63148,
+    "parser": "canonical-intake-parser",
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:59",
+    "job_id": 59,
+    "class_date": "2026-06-11",
+    "transcript_chars": 5481,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:58",
+    "job_id": 58,
+    "class_date": "2026-06-11",
+    "transcript_chars": 55809,
+    "parser": null,
+    "question_count": 3,
+    "matched_question_count": 1,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "student_match_review_needed"
+    ]
+  },
+  {
+    "job_ref": "content_job:57",
+    "job_id": 57,
+    "class_date": "2026-06-10",
+    "transcript_chars": 35521,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:56",
+    "job_id": 56,
+    "class_date": "2026-06-10",
+    "transcript_chars": 105867,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  },
+  {
+    "job_ref": "content_job:31",
+    "job_id": 31,
+    "class_date": "2026-06-09",
+    "transcript_chars": 52560,
+    "parser": null,
+    "question_count": 1,
+    "matched_question_count": 1,
+    "newsletter_status": "ready_for_draft_review",
+    "blockers": []
+  },
+  {
+    "job_ref": "content_job:30",
+    "job_id": 30,
+    "class_date": "2026-06-09",
+    "transcript_chars": 29040,
+    "parser": null,
+    "question_count": 1,
+    "matched_question_count": 1,
+    "newsletter_status": "ready_for_draft_review",
+    "blockers": []
+  },
+  {
+    "job_ref": "content_job:26",
+    "job_id": 26,
+    "class_date": "2026-06-08",
+    "transcript_chars": 71944,
+    "parser": null,
+    "question_count": 5,
+    "matched_question_count": 2,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "student_match_review_needed"
+    ]
+  },
+  {
+    "job_ref": "content_job:25",
+    "job_id": 25,
+    "class_date": "2026-06-08",
+    "transcript_chars": 58244,
+    "parser": null,
+    "question_count": 3,
+    "matched_question_count": 2,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "student_match_review_needed"
+    ]
+  },
+  {
+    "job_ref": "content_job:21",
+    "job_id": 21,
+    "class_date": "2026-06-04",
+    "transcript_chars": 8568,
+    "parser": null,
+    "question_count": 0,
+    "matched_question_count": 0,
+    "newsletter_status": "not_ready",
+    "blockers": [
+      "no_student_questions_found"
+    ]
+  }
+]

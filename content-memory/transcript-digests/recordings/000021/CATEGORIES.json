@@ -1,0 +1,83 @@
+{
+  "job_id": 21,
+  "categories": [
+    {
+      "lane": "class_notes",
+      "section_count": 2
+    },
+    {
+      "lane": "class_session",
+      "section_count": 2
+    },
+    {
+      "lane": "drive_workflow_issue",
+      "section_count": 1
+    },
+    {
+      "lane": "parser_error",
+      "section_count": 1
+    },
+    {
+      "lane": "profile_note",
+      "section_count": 1
+    },
+    {
+      "lane": "task",
+      "section_count": 1
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "job-21-source",
+      "title": "Source discovery and transcript status",
+      "lanes": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "class_notes",
+        "class_session",
+        "drive_workflow_issue"
+      ],
+      "summary_hash": "c0f784d2d2da835a",
+      "raw_text_included": false
+    },
+    {
+      "section_id": "job-21-parser",
+      "title": "Parser and class routing status",
+      "lanes": [
+        "class_notes",
+        "class_session",
+        "parser_error",
+        "profile_note"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "class_notes",
+        "class_session",
+        "parser_error",
+        "profile_note"
+      ],
+      "summary_hash": "8f76e41ba50e5fc3",
+      "raw_text_included": false
+    },
+    {
+      "section_id": "job-21-repairs",
+      "title": "Dry-run repair candidates",
+      "lanes": [
+        "task"
+      ],
+      "privacy": "repo_safe_digest",
+      "confidence": 0.74,
+      "evidence_terms": [
+        "task"
+      ],
+      "summary_hash": "e092e94085cfcd99",
+      "raw_text_included": false
+    }
+  ]
+}

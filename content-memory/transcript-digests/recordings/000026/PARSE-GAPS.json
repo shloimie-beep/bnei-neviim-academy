@@ -1,0 +1,50 @@
+[
+  {
+    "stage": "accountability_proposal",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "ambiguity_review",
+    "status": "NEEDS_REVIEW",
+    "evidence": "question candidates need review before publishing",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "download",
+    "status": "NEEDS_REVIEW",
+    "evidence": "drive id linked to job",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "intake_record",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Link or create raw intake provenance without committing raw transcript bodies."
+  },
+  {
+    "stage": "parent_student_visibility",
+    "status": "NEEDS_REVIEW",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "parser_request",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "score_progress_proposal",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "student_name_alias_match",
+    "status": "NEEDS_REVIEW",
+    "evidence": "6 question candidate(s)",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "stage": "accountability_proposal",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "ambiguity_review",
+    "status": "MISSING",
+    "evidence": "no ambiguity candidates",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "intake_record",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Link or create raw intake provenance without committing raw transcript bodies."
+  },
+  {
+    "stage": "parent_student_visibility",
+    "status": "NEEDS_REVIEW",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "question_proposal",
+    "status": "MISSING",
+    "evidence": "no question candidates",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "repo_digest_export",
+    "status": "MISSING",
+    "evidence": "068-*.md",
+    "safe_next_action": "Export privacy-safe digest only; do not run raw transcript exporter by default."
+  },
+  {
+    "stage": "score_progress_proposal",
+    "status": "MISSING",
+    "evidence": "",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  },
+  {
+    "stage": "student_name_alias_match",
+    "status": "MISSING",
+    "evidence": "no student question candidates",
+    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
+  }
+]

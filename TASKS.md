@@ -6,6 +6,27 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
+  `REQ-20260626-116` through `REQ-20260626-128`: Transcript/Drive/class
+  intake digest rebuild plus issue #41 Drive addendum and approved #83 sync.
+  Current status: #83 private Drive doc sync done; remaining state is owner
+  approval required for any additional unsafe/raw/external write path. Done:
+  active execution run created, Drive-first raw storage and GitHub digest
+  policy documented, repo-safe digest exporter added, default raw transcript
+  export blocked, 29 body-free recording digests generated, and sanitized
+  Drive/library evidence recorded. Issue #41 read-only proof confirmed the
+  `01 Transcript Library` folder existed with jobs #65-#70 and without #83; Shloimie then
+  approved the exact #83-only command, which created the private Drive doc and
+  verified readback. Sanitized proof stores only hashed Drive pointers.
+  Verification passed: focused syntax checks, digest tests 8/8, two-week audit
+  tests 7/7, digest privacy scan 0 findings, Drive sync dry-run/no-AI,
+  approved #83 sync/readback, read-only Drive listing, read-only intake audit,
+  and active run validation. Remaining decision: `DEC-20260626-101` keeps raw
+  transcript-body export, any further Drive writes beyond #83, production
+  reparse/canonical writes, worker retry, paid retranscription, class backfill,
+  broad Drive sync, and other production mutations blocked until Shloimie
+  explicitly approves an exact next action. Register:
+  `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`.
 - [x] `RAW-20260626-004` / `REQ-20260626-116` through
   `REQ-20260626-120`: Canonical Issue #24 owner follow-up for helper/task
   guardrails and required Agent Mode pilot reruns. Broad parallel Agent Mode
