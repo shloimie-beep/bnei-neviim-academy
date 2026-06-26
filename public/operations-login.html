@@ -202,7 +202,8 @@
             if (!candidate) return fallback;
             try {
                 const url = new URL(candidate, window.location.origin);
-                if (url.origin !== window.location.origin || url.pathname !== '/operations') return fallback;
+                const allowedPaths = new Set(['/operations', '/operations/agent-review', '/operations/agent-review/dropoff']);
+                if (url.origin !== window.location.origin || !allowedPaths.has(url.pathname)) return fallback;
                 return url.pathname + url.search + url.hash;
             } catch {
                 return fallback;

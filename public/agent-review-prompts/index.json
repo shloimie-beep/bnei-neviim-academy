@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T16:00:57.232Z",
+  "generated_at": "2026-06-26T06:29:53.296Z",
   "prompt_count": 11,
   "prompts": [
     {
@@ -9,11 +9,29 @@
         "public_visitor",
         "wrong_role_error_states"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-005",
       "focus": "public pages, login paths, setup links, public helper safety, and logged-out behavior",
       "file": "public-login-setup.md",
       "path": "/agent-review-prompts/public-login-setup.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/public-login-setup.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/public-login-setup.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=public-login-setup",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=public-login-setup&requirement_id=REQ-20260626-005&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dpublic-login-setup&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Apublic-login-setup%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:public-login-setup:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "public-login-setup",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=public-login-setup",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=public-login-setup&requirement_id=REQ-20260626-005&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dpublic-login-setup&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Apublic-login-setup%3Aall-contexts",
+        "requirement_id": "REQ-20260626-005",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:public-login-setup:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "operations-super-admin",
@@ -21,11 +39,29 @@
       "context_keys": [
         "operations_super_admin"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "Operations helper, task/evidence lookup, safe preview actions, route landmarks, and owner-only controls",
       "file": "operations-super-admin.md",
       "path": "/agent-review-prompts/operations-super-admin.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/operations-super-admin.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/operations-super-admin.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=operations-super-admin",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=operations-super-admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Doperations-super-admin&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aoperations-super-admin%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:operations-super-admin:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "operations-super-admin",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=operations-super-admin",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=operations-super-admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Doperations-super-admin&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aoperations-super-admin%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:operations-super-admin:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "rabbi-provider-admin",
@@ -33,11 +69,29 @@
       "context_keys": [
         "rabbi_provider_admin"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "One Time provider admin scope, provider helper links, payment/access previews, classroom setup, and no cross-workspace leakage",
       "file": "rabbi-provider-admin.md",
       "path": "/agent-review-prompts/rabbi-provider-admin.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/rabbi-provider-admin.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/rabbi-provider-admin.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=rabbi-provider-admin",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-provider-admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-provider-admin&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-provider-admin%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:rabbi-provider-admin:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "rabbi-provider-admin",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=rabbi-provider-admin",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=rabbi-provider-admin&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Drabbi-provider-admin&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Arabbi-provider-admin%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:rabbi-provider-admin:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "provider-participant-staff",
@@ -45,11 +99,29 @@
       "context_keys": [
         "provider_participant_staff"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "provider participant portal, staff-safe helper behavior, support requests, and denied owner-only actions",
       "file": "provider-participant-staff.md",
       "path": "/agent-review-prompts/provider-participant-staff.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/provider-participant-staff.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/provider-participant-staff.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=provider-participant-staff",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=provider-participant-staff&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dprovider-participant-staff&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aprovider-participant-staff%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:provider-participant-staff:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "provider-participant-staff",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=provider-participant-staff",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=provider-participant-staff&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dprovider-participant-staff&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aprovider-participant-staff%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:provider-participant-staff:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "parent-portal",
@@ -57,11 +129,29 @@
       "context_keys": [
         "parent_qa_identity"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "parent-safe navigation, child-only visibility, parent helper answers, setup flows, and wrong-family denial",
       "file": "parent-portal.md",
       "path": "/agent-review-prompts/parent-portal.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/parent-portal.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/parent-portal.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=parent-portal",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=parent-portal&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dparent-portal&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aparent-portal%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:parent-portal:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "parent-portal",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=parent-portal",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=parent-portal&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dparent-portal&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aparent-portal%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:parent-portal:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "student-portal",
@@ -69,11 +159,29 @@
       "context_keys": [
         "student_qa_identity"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "student-safe dashboard, no adult/private notes, helper boundaries, assignments, progress, and denied cross-student access",
       "file": "student-portal.md",
       "path": "/agent-review-prompts/student-portal.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/student-portal.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/student-portal.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=student-portal",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=student-portal&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dstudent-portal&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Astudent-portal%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:student-portal:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "student-portal",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=student-portal",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=student-portal&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dstudent-portal&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Astudent-portal%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:student-portal:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "one-time-member-library-classroom",
@@ -82,11 +190,29 @@
         "one_time_member",
         "one_time_classroom"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "member library, classroom, question/support flow, fixture-only review data, and no raw recording exposure",
       "file": "one-time-member-library-classroom.md",
       "path": "/agent-review-prompts/one-time-member-library-classroom.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/one-time-member-library-classroom.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/one-time-member-library-classroom.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-member-library-classroom",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-member-library-classroom&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-member-library-classroom&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-member-library-classroom%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-member-library-classroom:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "one-time-member-library-classroom",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-member-library-classroom",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-member-library-classroom&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-member-library-classroom&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-member-library-classroom%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-member-library-classroom:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "cross-role-wrong-permission",
@@ -94,11 +220,29 @@
       "context_keys": [
         "wrong_role_error_states"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-004",
       "focus": "401/403 handling, wrong-role requests, wrong-workspace requests, ambiguous names, and safe fallbacks",
       "file": "cross-role-wrong-permission.md",
       "path": "/agent-review-prompts/cross-role-wrong-permission.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/cross-role-wrong-permission.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/cross-role-wrong-permission.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=cross-role-wrong-permission",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=cross-role-wrong-permission&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dcross-role-wrong-permission&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Across-role-wrong-permission%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:cross-role-wrong-permission:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "cross-role-wrong-permission",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=cross-role-wrong-permission",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=cross-role-wrong-permission&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dcross-role-wrong-permission&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Across-role-wrong-permission%3Aall-contexts",
+        "requirement_id": "REQ-20260626-004",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:cross-role-wrong-permission:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "helper-natural-language-action-audit",
@@ -114,11 +258,29 @@
         "one_time_classroom",
         "wrong_role_error_states"
       ],
-      "requirement_id": "REQ-20260625-027",
+      "requirement_id": "REQ-20260626-005",
       "focus": "natural-language helper actions, link grounding, typed audits, unsupported actions, and readback proof",
       "file": "helper-natural-language-action-audit.md",
       "path": "/agent-review-prompts/helper-natural-language-action-audit.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/helper-natural-language-action-audit.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/helper-natural-language-action-audit.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=helper-natural-language-action-audit",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=helper-natural-language-action-audit&requirement_id=REQ-20260626-005&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dhelper-natural-language-action-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Ahelper-natural-language-action-audit%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:helper-natural-language-action-audit:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "helper-natural-language-action-audit",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=helper-natural-language-action-audit",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=helper-natural-language-action-audit&requirement_id=REQ-20260626-005&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dhelper-natural-language-action-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Ahelper-natural-language-action-audit%3Aall-contexts",
+        "requirement_id": "REQ-20260626-005",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:helper-natural-language-action-audit:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "navigation-ia-duplicate-control-audit",
@@ -134,11 +296,29 @@
         "one_time_classroom",
         "wrong_role_error_states"
       ],
-      "requirement_id": "REQ-20260625-029",
+      "requirement_id": "REQ-20260626-002",
       "focus": "side navigation, horizontal tabs, filters, duplicate controls, selected states, and mobile overflow",
       "file": "navigation-ia-duplicate-control-audit.md",
       "path": "/agent-review-prompts/navigation-ia-duplicate-control-audit.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/navigation-ia-duplicate-control-audit.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/navigation-ia-duplicate-control-audit.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=navigation-ia-duplicate-control-audit",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=navigation-ia-duplicate-control-audit&requirement_id=REQ-20260626-002&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dnavigation-ia-duplicate-control-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Anavigation-ia-duplicate-control-audit%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:navigation-ia-duplicate-control-audit:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "navigation-ia-duplicate-control-audit",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=navigation-ia-duplicate-control-audit",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=navigation-ia-duplicate-control-audit&requirement_id=REQ-20260626-002&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dnavigation-ia-duplicate-control-audit&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Anavigation-ia-duplicate-control-audit%3Aall-contexts",
+        "requirement_id": "REQ-20260626-002",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:navigation-ia-duplicate-control-audit:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     },
     {
       "key": "final-regression-pass",
@@ -154,11 +334,29 @@
         "one_time_classroom",
         "wrong_role_error_states"
       ],
-      "requirement_id": "REQ-20260625-030",
+      "requirement_id": "REQ-20260626-007",
       "focus": "complete Issue #24 acceptance gates, prompt pack links, result drop-off, newest recording trace, helper reachability, and live smoke evidence",
       "file": "final-regression-pass.md",
       "path": "/agent-review-prompts/final-regression-pass.md",
-      "url": "https://bneineviimacademy.org/agent-review-prompts/final-regression-pass.md"
+      "url": "https://bneineviimacademy.org/agent-review-prompts/final-regression-pass.md",
+      "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=final-regression-pass",
+      "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts",
+      "idempotency_key": "2026-06-26-agent-review-dropoff-repair:final-regression-pass:all-contexts",
+      "copy_metadata": {
+        "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+        "prompt_key": "final-regression-pass",
+        "context_key": null,
+        "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=final-regression-pass",
+        "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=final-regression-pass&requirement_id=REQ-20260626-007&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dfinal-regression-pass&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Afinal-regression-pass%3Aall-contexts",
+        "requirement_id": "REQ-20260626-007",
+        "idempotency_key": "2026-06-26-agent-review-dropoff-repair:final-regression-pass:all-contexts"
+      },
+      "status": "not_started",
+      "last_result_ref": null,
+      "last_result_url": null,
+      "repair_requirement_id": null,
+      "repair_url": null,
+      "rerun_required": false
     }
   ]
 }

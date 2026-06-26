@@ -1,10 +1,29 @@
 # Agent Mode Prompt - One Time Member/Library/Classroom
 
-Generated: 2026-06-25T16:00:57.232Z
+Generated: 2026-06-26T06:29:53.296Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
-Raw/source ID: RAW-20260625-024
-Parent goal: PARENT-20260625-024
-Primary requirement: REQ-20260625-027
+Raw/source ID: RAW-20260626-001
+Parent goal: PARENT-20260626-001
+Primary requirement: REQ-20260626-004
+Agent review run ID: 2026-06-26-agent-review-dropoff-repair
+Return URL: https://bneineviimacademy.org/operations/agent-review?prompt=one-time-member-library-classroom
+Drop-off URL: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-member-library-classroom&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-member-library-classroom&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-member-library-classroom%3Aall-contexts
+Prompt key: one-time-member-library-classroom
+Idempotency key: 2026-06-26-agent-review-dropoff-repair:one-time-member-library-classroom:all-contexts
+
+## Copy Metadata
+
+```json
+{
+  "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+  "prompt_key": "one-time-member-library-classroom",
+  "context_key": null,
+  "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-member-library-classroom",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-member-library-classroom&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-member-library-classroom&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-member-library-classroom%3Aall-contexts",
+  "requirement_id": "REQ-20260626-004",
+  "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-member-library-classroom:all-contexts"
+}
+```
 
 ## Start
 
@@ -28,18 +47,23 @@ Focus: member library, classroom, question/support flow, fixture-only review dat
 5. Test safe preview actions only. Do not send, publish, charge, deploy, change DNS, rotate credentials, move Drive files, retry production workers, or mutate student data.
 6. For any claimed write, verify the typed action/audit/result record. If no record exists, mark the claim failed.
 7. Include the newest Drive recording trace status from the hub; do not claim the recording processed beyond the trace evidence.
-8. Submit the structured result through the hub control or typed result API.
+8. Submit the structured result through the drop-off URL. If Agent Mode cannot save, return the full redacted report in chat so the owner can paste it later under the same prompt key.
+9. If a scoped context redirects to public/sign-in content and cannot open after owner takeover login, stop that context, save BLOCKED in the drop-off form, and do not audit the public helper as the scoped helper.
 
 ## Result Shape
 
-Submit to: https://bneineviimacademy.org/api/bna/agent-review/results
+Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-member-library-classroom&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-member-library-classroom&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-member-library-classroom%3Aall-contexts
+API fallback: https://bneineviimacademy.org/api/bna/agent-review/results
 
 ```json
 {
-  "raw_id": "RAW-20260625-024",
-  "parent_goal_id": "PARENT-20260625-024",
-  "requirement_id": "REQ-20260625-027",
+  "raw_id": "RAW-20260626-001",
+  "parent_goal_id": "PARENT-20260626-001",
+  "agent_review_run_id": "2026-06-26-agent-review-dropoff-repair",
+  "requirement_id": "REQ-20260626-004",
   "prompt_key": "one-time-member-library-classroom",
+  "return_url": "https://bneineviimacademy.org/operations/agent-review?prompt=one-time-member-library-classroom",
+  "dropoff_url": "https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=one-time-member-library-classroom&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Done-time-member-library-classroom&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aone-time-member-library-classroom%3Aall-contexts",
   "status": "pass|fail|blocked",
   "role_workspace": "role/workspace tested",
   "conversation_summary": "brief summary, no private transcript body",
@@ -56,8 +80,9 @@ Submit to: https://bneineviimacademy.org/api/bna/agent-review/results
     "screenshot path or DOM/readback evidence, redacted"
   ],
   "severity": "none|low|medium|high|critical",
+  "blocker": "required when status is blocked",
   "suggested_correction": "exact repair or none",
-  "idempotency_key": "one-time-member-library-classroom:<agent-run-id-or-timestamp>"
+  "idempotency_key": "2026-06-26-agent-review-dropoff-repair:one-time-member-library-classroom:all-contexts:<attempt-id>"
 }
 ```
 

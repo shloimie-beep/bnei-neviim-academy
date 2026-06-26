@@ -50,7 +50,8 @@ test('public navigation keeps Operations out of prospect-facing menus', () => {
 
 test('Operations login preserves only safe Operations return paths', () => {
   assert.match(loginHtml, /function operationsReturnTo\(\)/);
-  assert.match(loginHtml, /url\.origin !== window\.location\.origin \|\| url\.pathname !== '\/operations'/);
+  assert.match(loginHtml, /allowedPaths = new Set\(\['\/operations', '\/operations\/agent-review', '\/operations\/agent-review\/dropoff'\]\)/);
+  assert.match(loginHtml, /url\.origin !== window\.location\.origin \|\| !allowedPaths\.has\(url\.pathname\)/);
   assert.match(loginHtml, /window\.location\.href = operationsReturnTo\(\)/);
   assert.match(loginHtml, /window\.location\.replace\(operationsReturnTo\(\)\)/);
   assert.match(loginHtml, /data\.authenticated === true \|\| data\.success === true/);
@@ -154,7 +155,8 @@ test('Operations Settings exposes read-only owner approval gateboard', () => {
 
 test('Operations auth redirect sends browser users back to the requested Operations route', () => {
   assert.match(serverJs, /function safeOperationsReturnPath\(value\)/);
-  assert.match(serverJs, /url\.pathname !== '\/operations'/);
+  assert.match(serverJs, /allowedPaths = new Set\(\[\s*'\/operations',\s*'\/operations\/agent-review',\s*'\/operations\/agent-review\/dropoff'/);
+  assert.match(serverJs, /url\.origin !== 'https:\/\/bna\.local' \|\| !allowedPaths\.has\(url\.pathname\)/);
   assert.match(serverJs, /function operationsLoginUrlForRequest\(req\)/);
   assert.match(serverJs, /return `\/operations-login\.html\?returnTo=\$\{encodeURIComponent\(returnTo\)\}`;/);
   assert.match(serverJs, /return res\.redirect\(operationsLoginUrlForRequest\(req\)\);/);

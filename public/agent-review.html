@@ -151,19 +151,17 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
     }
-    .prompt-link {
-      display: flex;
-      justify-content: space-between;
+    .prompt-card {
+      display: grid;
       gap: 10px;
-      padding: 11px;
+      padding: 12px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      color: var(--ink);
       background: #fff;
-      text-decoration: none;
       min-width: 0;
     }
-    .prompt-link span { color: var(--muted); }
+    .prompt-card h3 { margin: 0; font-size: 0.98rem; letter-spacing: 0; }
+    .prompt-card small { color: var(--muted); overflow-wrap: anywhere; }
     @media (max-width: 960px) {
       .band, .grid, .prompt-grid { grid-template-columns: 1fr 1fr; }
       .form-grid { grid-template-columns: 1fr 1fr; }
@@ -189,7 +187,7 @@
       <form id="resultForm">
         <div class="form-grid">
           <label>Context<select name="context_key" id="resultContext"></select></label>
-          <label>Requirement<input name="requirement_id" value="REQ-20260625-027"></label>
+          <label>Requirement<input name="requirement_id" value="REQ-20260626-003"></label>
           <label>Status<select name="status"><option value="pass">pass</option><option value="fail">fail</option><option value="blocked">blocked</option><option value="needs_review">needs_review</option></select></label>
           <label>Severity<select name="severity"><option value="none">none</option><option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="critical">critical</option></select></label>
           <label class="wide">Summary<textarea name="summary" placeholder="Redacted Agent Mode result summary"></textarea></label>
@@ -263,10 +261,24 @@
 
     function renderPrompts() {
       document.getElementById('promptGrid').innerHTML = state.prompts.map((prompt) => `
-        <a class="prompt-link" href="${esc(prompt.path)}" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-PROMPT-OPEN">
-          <strong>${esc(prompt.title)}</strong>
-          <span>${esc(prompt.requirement_id)}</span>
-        </a>
+        <article class="prompt-card" data-prompt-key="${esc(prompt.key)}">
+          <div class="actions" style="justify-content:space-between">
+            <h3>${esc(prompt.title)}</h3>
+            <span class="pill ${pillTone(prompt.status)}" id="prompt-status-${esc(prompt.key)}">${esc((prompt.status || 'not_started').replace(/_/g, ' '))}</span>
+          </div>
+          <small>${esc(prompt.requirement_id)} / ${esc(prompt.key)}</small>
+          <small>Drop-off: ${esc(prompt.dropoff_url)}</small>
+          <div class="actions">
+            <button type="button" onclick="copyPrompt('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-COPY-PROMPT">Copy prompt</button>
+            <button type="button" onclick="openPromptContext('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-OPEN-CONTEXT">Open context</button>
+            <a class="button primary" href="${esc(prompt.dropoff_url)}" data-action-id="ACTION-AGENT-REVIEW-OPEN-DROPOFF">Open drop-off</a>
+            <button type="button" onclick="markPromptBlocked('${esc(prompt.key)}')" data-action-id="ACTION-AGENT-REVIEW-MARK-BLOCKED">Mark blocked</button>
+            <a class="button" href="${esc(prompt.path)}" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-PROMPT-OPEN">Prompt file</a>
+            ${prompt.last_result_url ? `<a class="button" href="${esc(prompt.last_result_url)}" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-VIEW-RESULT">View saved result</a>` : ''}
+            ${prompt.rerun_required ? `<a class="button" href="${esc(prompt.dropoff_url)}&rerun=1" data-action-id="ACTION-AGENT-REVIEW-RERUN-PROMPT">Rerun after repair</a>` : ''}
+          </div>
+          <div class="status" id="prompt-action-${esc(prompt.key)}">${prompt.last_result_ref ? `Last saved ${esc(prompt.last_result_ref)}` : 'Result pending.'}</div>
+        </article>
       `).join('');
     }
 
@@ -283,6 +295,64 @@
         window.open(data.session.review_url, '_blank', 'noopener');
       } catch (error) {
         status.textContent = error.message || 'Could not create session.';
+      }
+    }
+
+    function promptByKey(promptKey) {
+      return state.prompts.find((prompt) => prompt.key === promptKey) || null;
+    }
+
+    async function copyPrompt(promptKey) {
+      const prompt = promptByKey(promptKey);
+      const status = document.getElementById(`prompt-action-${promptKey}`);
+      if (!prompt) return;
+      status.textContent = 'Copying prompt...';
+      try {
+        const response = await fetch(prompt.path, { credentials: 'same-origin' });
+        const text = await response.text();
+        await navigator.clipboard?.writeText(text);
+        document.getElementById(`prompt-status-${promptKey}`).textContent = 'copied';
+        status.textContent = `Copied with idempotency key ${prompt.idempotency_key}.`;
+      } catch (error) {
+        status.textContent = error.message || 'Could not copy prompt.';
+      }
+    }
+
+    function openPromptContext(promptKey) {
+      const prompt = promptByKey(promptKey);
+      const contextKey = prompt?.context_keys?.[0];
+      if (!contextKey) return;
+      openContext(contextKey);
+    }
+
+    async function markPromptBlocked(promptKey) {
+      const prompt = promptByKey(promptKey);
+      const status = document.getElementById(`prompt-action-${promptKey}`);
+      if (!prompt) return;
+      status.textContent = 'Saving blocked result...';
+      try {
+        const contextKey = prompt.context_keys?.[0] || state.contexts[0]?.key;
+        const data = await api('/api/bna/agent-review/results', {
+          method: 'POST',
+          body: JSON.stringify({
+            agent_review_run_id: prompt.copy_metadata?.agent_review_run_id,
+            prompt_key: prompt.key,
+            context_key: contextKey,
+            requirement_id: prompt.requirement_id,
+            status: 'blocked',
+            severity: 'high',
+            blocker: 'Marked blocked from Agent Review Hub prompt card.',
+            summary: 'Scoped review prompt was marked blocked before completion.',
+            evidence: ['Hub prompt card Mark blocked action'],
+            return_url: prompt.return_url,
+            dropoff_url: prompt.dropoff_url,
+            idempotency_key: `${prompt.idempotency_key}:hub-blocked`,
+          }),
+        });
+        document.getElementById(`prompt-status-${promptKey}`).textContent = 'blocked';
+        status.innerHTML = `Saved ${esc(data.result_ref)}. <a href="${esc(data.readback_url || data.operations_url)}" target="_blank" rel="noopener">Readback</a>`;
+      } catch (error) {
+        status.textContent = error.message || 'Could not mark blocked.';
       }
     }
 

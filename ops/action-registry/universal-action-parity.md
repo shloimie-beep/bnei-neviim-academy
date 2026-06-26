@@ -1,6 +1,6 @@
 # Universal Action Parity
 
-Generated at 2026-06-25T16:09:16.268Z.
+Generated at 2026-06-26T06:32:48.686Z.
 
 Requirement: REQ-20260623-013
 
@@ -13,12 +13,12 @@ Requirement: REQ-20260623-013
 - zero_missing_tests: pass (0)
 - zero_risky_actions_without_approval: pass (0)
 - telegram_request_parity_present: pass (80)
-- website_assistant_request_parity_present: pass (152)
-- agent_work_handoff_parity_present: pass (84)
+- website_assistant_request_parity_present: pass (157)
+- agent_work_handoff_parity_present: pass (89)
 
 ## Summary
 
-- Root registry actions: 72
+- Root registry actions: 77
 - Detailed typed actions: 80
 - Visible UI hooks: 28
 - Visible UI hooks classified: 28
@@ -33,10 +33,10 @@ Requirement: REQ-20260623-013
 | --- | ---: |
 | ui_button | 28 |
 | telegram_request | 80 |
-| website_assistant_request | 152 |
-| operations_helper_request | 141 |
+| website_assistant_request | 157 |
+| operations_helper_request | 146 |
 | automation_action | 74 |
-| agent_work_handoff | 84 |
+| agent_work_handoff | 89 |
 
 ## Visible Control Classifications
 
@@ -78,7 +78,7 @@ Requirement: REQ-20260623-013
 | file_intake | covered_by_canonical_registry | ACTION-HELPER-CAPTURE-RAW-INTAKE<br>ACTION-ONETIME-DRIVE-BRIEF-PREVIEW<br>google_drive_create_doc_preview<br>google_drive_create_folder_preview<br>google_drive_find_file_preview<br>google_drive_move_file_preview |
 | integration | covered_by_canonical_registry | ACTION-INTEGRATION-SETUP-OPEN<br>ACTION-INTEGRATION-SETUP-VALIDATE<br>ACTION-ONETIME-LIVE-ZOOM-LINK-DRY-RUN<br>ACTION-ONETIME-LIVE-ZOOM-LINK-SEND<br>ACTION-PARENT-ACCESS-LINK-WHATSAPP<br>ACTION-PROVIDER-API-USAGE-PREVIEW-NAV |
 | billing | covered_by_canonical_registry | ACTION-ONETIME-PAYMENT-ACCESS-GRANT-DISABLED<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS<br>ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CLASS-LINKS |
-| agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-OPEN-CONTEXT<br>ACTION-AGENT-REVIEW-OPEN-TARGET<br>ACTION-AGENT-REVIEW-PROMPT-OPEN |
+| agent_work | covered_by_canonical_registry | ACTION-AGENT-RESULT-RECORD<br>ACTION-AGENT-REVIEW-COPY-PROMPT<br>ACTION-AGENT-REVIEW-COPY-SESSION<br>ACTION-AGENT-REVIEW-EXIT<br>ACTION-AGENT-REVIEW-MARK-BLOCKED<br>ACTION-AGENT-REVIEW-OPEN-CONTEXT |
 | deployment_status | covered_by_canonical_registry | ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS<br>ACTION-ONETIME-MEMBER-LIBRARY-SMOKE<br>ACTION-ONETIME-SCOPED-AGENT-STATUS<br>ACTION-PROVIDER-SECTION-NAVIGATION |
 
 ## Guardrails

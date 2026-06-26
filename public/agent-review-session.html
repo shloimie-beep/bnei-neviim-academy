@@ -125,6 +125,7 @@
       <div class="actions">
         <a class="button primary" id="targetLink" href="#" target="_blank" rel="noopener" data-action-id="ACTION-AGENT-REVIEW-OPEN-TARGET">Open scoped route</a>
         <button type="button" onclick="copySessionLink()" data-action-id="ACTION-AGENT-REVIEW-COPY-SESSION">Copy session URL</button>
+        <a class="button" id="dropoffLink" href="/operations/agent-review/dropoff?prompt_key=final-regression-pass" data-action-id="ACTION-AGENT-REVIEW-OPEN-DROPOFF">Open drop-off form</a>
       </div>
       <p class="status" id="sessionStatus"></p>
     </section>
@@ -135,7 +136,7 @@
       <h2>Submit Agent Review Result</h2>
       <form id="resultForm">
         <div class="form-grid">
-          <label>Requirement<input name="requirement_id" value="REQ-20260625-027"></label>
+          <label>Requirement<input name="requirement_id" value="REQ-20260626-004"></label>
           <label>Prompt key<input name="prompt_key" id="promptKey" placeholder="prompt key"></label>
           <label>Status<select name="status"><option value="pass">pass</option><option value="fail">fail</option><option value="blocked">blocked</option><option value="needs_review">needs_review</option></select></label>
           <label class="wide">Summary<textarea name="summary" placeholder="Redacted result summary"></textarea></label>
@@ -182,6 +183,13 @@
       ].map(([label, value]) => `<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`).join('');
       document.getElementById('targetLink').href = session.target_url;
       document.getElementById('reviewFrame').src = session.target_url;
+      const dropoff = new URL('/operations/agent-review/dropoff', window.location.origin);
+      dropoff.searchParams.set('prompt_key', params.get('prompt_key') || 'final-regression-pass');
+      dropoff.searchParams.set('context_key', session.context_key);
+      dropoff.searchParams.set('requirement_id', 'REQ-20260626-004');
+      dropoff.searchParams.set('return_url', '/agent-review/session');
+      dropoff.searchParams.set('idempotency_key', `2026-06-26-agent-review-dropoff-repair:${params.get('prompt_key') || 'final-regression-pass'}:${session.context_key}`);
+      document.getElementById('dropoffLink').href = dropoff.pathname + dropoff.search;
       document.getElementById('sessionStatus').textContent = 'Scoped session is held in an HttpOnly cookie after one-time exchange.';
     }
     async function boot() {
@@ -194,7 +202,7 @@
       } catch (error) {
         document.getElementById('bannerTitle').textContent = 'Review session blocked';
         document.getElementById('bannerMeta').textContent = error.message || 'Session unavailable';
-        document.getElementById('sessionStatus').textContent = 'Return to the hub and create a fresh scoped session.';
+        document.getElementById('sessionStatus').innerHTML = 'Return to the hub and create a fresh scoped session, or save BLOCKED from the drop-off form before continuing.';
       }
     }
     async function exitSession() {

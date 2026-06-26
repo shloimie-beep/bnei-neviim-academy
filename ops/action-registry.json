@@ -1441,6 +1441,105 @@
         "GOAL-CORE-006",
         "GOAL-CORE-010"
       ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-COPY-PROMPT",
+      "label": "Copy prompt",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-COPY-PROMPT\"]",
+      "expected_behavior": "Copies the mobile-friendly Agent Mode prompt with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key metadata.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_browser",
+        "expected_result": "Copied prompt file includes the required drop-off metadata and no reusable all-access secret."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-OPEN-DROPOFF",
+      "label": "Open drop-off",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review/dropoff",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-OPEN-DROPOFF\"]",
+      "expected_behavior": "Opens the owner or scoped-session Agent Review result drop-off form for the selected prompt and context.",
+      "permission": "super_admin_or_scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "browser_and_api",
+        "expected_result": "Drop-off page loads prompt context, accepts plain text or JSON, and saves through POST /api/bna/agent-review/results."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-MARK-BLOCKED",
+      "label": "Mark blocked",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-MARK-BLOCKED\"]",
+      "expected_behavior": "Saves a BLOCKED Agent Review result through the typed result API when a scoped context cannot be safely opened.",
+      "permission": "super_admin_or_scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "BLOCKED save returns AGR result_ref, repair item, and rerun prompt."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-VIEW-RESULT",
+      "label": "View saved result",
+      "surface": "agent_review_hub",
+      "route": "/api/bna/agent-review/results/:resultRef",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-VIEW-RESULT\"]",
+      "expected_behavior": "Opens the owner-only readback for a saved AGR result.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "Readback requires owner auth and returns the saved result_ref without secrets."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-RERUN-PROMPT",
+      "label": "Rerun after repair",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review/dropoff",
+      "selector_hint": "[data-action-id=\"ACTION-AGENT-REVIEW-RERUN-PROMPT\"]",
+      "expected_behavior": "Opens a rerun/drop-off path linked to the repair item created for a FAIL or BLOCKED Agent Review result.",
+      "permission": "super_admin_or_scoped_review_session",
+      "status": "active",
+      "test": {
+        "type": "api_and_browser",
+        "expected_result": "FAIL/BLOCKED result exposes a repair requirement link and rerun prompt."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }

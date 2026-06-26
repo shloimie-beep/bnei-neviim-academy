@@ -1,0 +1,506 @@
+{
+  "run_id": "2026-06-26-agent-review-dropoff-repair",
+  "title": "Agent Review drop-off, scoped context access, and helper repair",
+  "updated_at": "2026-06-26T06:43:53.740Z",
+  "git_refs": {
+    "expected_branch": "codex/agent-review-dropoff-repair-20260626",
+    "base_branch": "master",
+    "local_head_at_start": "0500ce74cad7a1299a6d0fd487b1deef24ab9fb8",
+    "issue_number": 24,
+    "predecessor_run": "2026-06-25-issue-24-agent-review-hub"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260626-001",
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "captured_at": "2026-06-26T00:30:00+03:00",
+      "content_fingerprint": "attachment-735800a6-cb75-4b5b-bc3c-3b6815f4b7ca-pasted-text",
+      "privacy_classification": "internal_goal_packet",
+      "workspace": "bna_platform",
+      "project": "agent_review_hub",
+      "source_type": "codex_chat_attachment"
+    },
+    {
+      "source_id": "GITHUB-ISSUE-24",
+      "connector_id": "github:shloimie-beep/bnei-neviim-academy/issues/24",
+      "captured_at": "2026-06-26T00:30:00+03:00",
+      "content_fingerprint": "issue-24-linked-repair-source",
+      "privacy_classification": "internal_github_issue",
+      "workspace": "bna_platform",
+      "project": "agent_review_hub",
+      "source_type": "github_issue_link"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260626-001-S001",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Register this repair request as canonical source, link it to Issue #24, and avoid duplicate tasks or a second protocol.",
+      "requirement_id": "REQ-20260626-001",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S002",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Repair the Agent Review Hub dashboard so prompt cards show statuses, saved AGR results, repair links, and controls for copy/open/drop-off/block/view/rerun.",
+      "requirement_id": "REQ-20260626-002",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S003",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Copied prompts must include agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key.",
+      "requirement_id": "REQ-20260626-002",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S004",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Create an Agent-friendly drop-off form that accepts plain text or JSON reports, saves PASS/FAIL/BLOCKED results, returns AGR IDs, links results, creates or links repair items for FAIL/BLOCKED, and generates rerun prompts.",
+      "requirement_id": "REQ-20260626-003",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S005",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Fix review-context access so unauthenticated hub/dropoff starts return to exact target after Operations login, show takeover-mode guidance, and blocked scoped contexts do not silently audit public helper.",
+      "requirement_id": "REQ-20260626-004",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S006",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Repair helper behavior so it never claims tickets/tasks/writes/actions executed without typed action/audit proof, routes private public-helper requests to safe login/support paths, avoids soliciting personal info publicly, and uses canonical resolver links.",
+      "requirement_id": "REQ-20260626-005",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S007",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "Add required tests for redirect/returnTo, prompt metadata copy, plain-text and JSON drop-off, FAIL/BLOCKED repair/rerun, public helper private-data routing, false-success prevention, public-context prompt blocking, idempotency, secrets, and private-data safety.",
+      "requirement_id": "REQ-20260626-006",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-001-S008",
+      "source_id": "RAW-20260626-001",
+      "source_statement": "App-visible work requires merge, deploy, live smoke, and final response in the requested 15-section format with one exact terminal verdict.",
+      "requirement_id": "REQ-20260626-007",
+      "classification": "mapped"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260626-001",
+      "title": "Register Agent Review repair run and baseline",
+      "expected_result": "The June 26 Agent Review repair packet is preserved as one raw source, distilled into one parent execution run linked to Issue #24, and baseline Git/Railway/live truth is recorded without duplicate visible Tasks.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S001"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "0",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "registered_parent_run_and_baseline_recorded",
+      "can_continue_without_operator": true,
+      "next_action": "Start REQ-20260626-002 Agent Review dashboard and prompt-card repair.",
+      "acceptance_criteria": [
+        "Raw source file exists.",
+        "Requirement register exists.",
+        "Execution run latest pointer is moved to the new run.",
+        "Issue #24 predecessor closeout is linked.",
+        "No duplicate visible Tasks are created."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+        "tasks-pending/2026-06-26-agent-review-dropoff-repair.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/requirements.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/BASELINE.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/SOURCE.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/PLAN.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "TASKS.md"
+      ],
+      "verification": [
+        "PASS clean worktree created from origin/master 0500ce74cad7a1299a6d0fd487b1deef24ab9fb8.",
+        "PASS live health https://bneineviimacademy.org/api/health returned ok/database connected.",
+        "PASS Railway doctor for BNA target: deployment ef3df8ef-1381-4762-8c34-1f7d49167027 SUCCESS.",
+        "Linked predecessor Issue #24 final evidence comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945."
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+        "tasks-pending/2026-06-26-agent-review-dropoff-repair.md",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/requirements.json",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/run.json",
+        "ops/execution-runs/latest.json",
+        "TASKS.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-26T00:30:00+03:00"
+    },
+    {
+      "id": "REQ-20260626-002",
+      "title": "Agent Review dashboard prompt cards and copy metadata",
+      "expected_result": "The Agent Review Dashboard shows prompt/context cards with per-prompt status, saved AGR result links, repair links, and controls for Copy prompt, Open context, Open drop-off form, Mark blocked, View saved result, and Rerun after repair. Copied prompts include run/dropoff/return/idempotency metadata.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S002",
+        "RAW-20260626-001-S003"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "app_security_ui",
+      "priority": "P0",
+      "batch_id": "A",
+      "depends_on": [
+        "REQ-20260626-001"
+      ],
+      "status": "in_progress",
+      "implementation_status": "dashboard_prompt_cards_and_copy_metadata_implemented_local_verified_pending_deployment_live_evidence",
+      "can_continue_without_operator": true,
+      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "acceptance_criteria": [
+        "All prompt cards expose required actions.",
+        "Prompt status can be computed and shown.",
+        "Copy prompt includes agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, idempotency_key.",
+        "Saved result and repair requirement links render when available.",
+        "Route/action registries cover new controls."
+      ],
+      "evidence": [
+        "src/lib/bna/agent-review-hub.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "public/agent-review-prompts/index.json",
+        "public/agent-review-prompts/*.md",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/agent-review-hub.test.js"
+      ],
+      "verification": [
+        "PASS npm run agent-review:prompts regenerated prompt pack with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, idempotency_key, and copy metadata.",
+        "PASS node --test tests/agent-review-hub.test.js covered prompt metadata, prompt statuses, dashboard controls, registry rows, and rerun/repair prompt generation.",
+        "PASS npm test full suite: 1351 pass, 0 fail; evidence log ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/npm-test.log."
+      ],
+      "implementation_files": [
+        "src/lib/bna/agent-review-hub.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "public/agent-review-prompts/index.json",
+        "public/agent-review-prompts/cross-role-wrong-permission.md",
+        "public/agent-review-prompts/final-regression-pass.md",
+        "public/agent-review-prompts/helper-natural-language-action-audit.md",
+        "public/agent-review-prompts/navigation-ia-duplicate-control-audit.md",
+        "public/agent-review-prompts/one-time-member-library-classroom.md",
+        "public/agent-review-prompts/operations-super-admin.md",
+        "public/agent-review-prompts/parent-portal.md",
+        "public/agent-review-prompts/provider-participant-staff.md",
+        "public/agent-review-prompts/public-login-setup.md",
+        "public/agent-review-prompts/rabbi-provider-admin.md",
+        "public/agent-review-prompts/student-portal.md",
+        "tests/agent-review-hub.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-26T06:43:06.619Z"
+    },
+    {
+      "id": "REQ-20260626-003",
+      "title": "Agent Review drop-off form and repair/rerun flow",
+      "expected_result": "A human/Agent-friendly drop-off page accepts JSON or plain text reports, saves PASS/FAIL/BLOCKED results idempotently, returns visible AGR IDs/readback links, creates or links repair items for FAIL/BLOCKED, and generates rerun prompts.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S004"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "agent_result_bridge",
+      "priority": "P0",
+      "batch_id": "B",
+      "depends_on": [
+        "REQ-20260626-002"
+      ],
+      "status": "in_progress",
+      "implementation_status": "dropoff_form_save_readback_repair_rerun_implemented_local_verified_pending_deployment_live_evidence",
+      "can_continue_without_operator": true,
+      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "acceptance_criteria": [
+        "Drop-off page requires owner or review-session auth.",
+        "Plain text reports save.",
+        "JSON reports save.",
+        "PASS/FAIL/BLOCKED and severity are captured.",
+        "Blocked reason/current route/last route are captured.",
+        "FAIL/BLOCKED create or link repair item.",
+        "Rerun prompt generated.",
+        "Idempotency key prevents duplicate results."
+      ],
+      "evidence": [
+        "server.js",
+        "public/agent-review-dropoff.html",
+        "src/lib/bna/agent-review-hub.js",
+        "ops/route-registry.json",
+        "ops/action-registry.json",
+        "tests/agent-review-hub.test.js"
+      ],
+      "verification": [
+        "PASS node --check server.js.",
+        "PASS inline script parse for public/agent-review-dropoff.html.",
+        "PASS node --test tests/agent-review-hub.test.js covered drop-off route, context API, plain-text/JSON save behavior, readback URL, FAIL/BLOCKED repair metadata, and rerun prompts.",
+        "PASS npm test full suite: 1351 pass, 0 fail."
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/agent-review-dropoff.html",
+        "src/lib/bna/agent-review-hub.js",
+        "tests/agent-review-hub.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-26T06:43:06.619Z"
+    },
+    {
+      "id": "REQ-20260626-004",
+      "title": "Review-context login return and scoped access blocking",
+      "expected_result": "Unauthenticated hub/drop-off/context attempts redirect through Operations login with exact returnTo and clear takeover guidance; scoped contexts stop with BLOCKED instead of letting Agent Mode audit public helper as the target role.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S005"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "auth_security",
+      "priority": "P0",
+      "batch_id": "C",
+      "depends_on": [
+        "REQ-20260626-002",
+        "REQ-20260626-003"
+      ],
+      "status": "in_progress",
+      "implementation_status": "review_context_return_and_scoped_blocking_implemented_local_verified_pending_deployment_live_evidence",
+      "can_continue_without_operator": true,
+      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "acceptance_criteria": [
+        "Unauthenticated hub redirects to Operations login with exact returnTo.",
+        "After login returns to hub/prompt/drop-off page.",
+        "Login page explains takeover mode for Agent Mode.",
+        "Scoped context failures return/save BLOCKED guidance.",
+        "Student/provider prompt cannot be completed from public context."
+      ],
+      "evidence": [
+        "server.js",
+        "public/operations-login.html",
+        "public/agent-review-session.html",
+        "public/agent-review-dropoff.html",
+        "tests/operations-pwa-login.test.js",
+        "tests/rabbi-scheller-auth-navigation-contract.test.js",
+        "tests/agent-review-hub.test.js"
+      ],
+      "verification": [
+        "PASS operations login allow-list includes /operations/agent-review and /operations/agent-review/dropoff.",
+        "PASS scoped context failure messaging instructs Agent Mode to save BLOCKED instead of auditing public helper.",
+        "PASS node --test tests/operations-pwa-login.test.js tests/portal-agnostic-auth-contract.test.js.",
+        "PASS node --test tests/app-select-dropdown.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/watchdog-action-registry.test.js."
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations-login.html",
+        "public/agent-review-session.html",
+        "public/agent-review-dropoff.html",
+        "tests/operations-pwa-login.test.js",
+        "tests/rabbi-scheller-auth-navigation-contract.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-26T06:43:06.619Z"
+    },
+    {
+      "id": "REQ-20260626-005",
+      "title": "Helper false-success and public private-data behavior repair",
+      "expected_result": "Helpers never claim a ticket/task/write/action was created without typed action/audit proof, and public private-data requests return safe login/support routes without soliciting personal information in public chat.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S006"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "helper_correctness",
+      "owner": "Codex",
+      "category": "helper_actions",
+      "priority": "P0",
+      "batch_id": "D",
+      "depends_on": [
+        "REQ-20260626-001"
+      ],
+      "status": "in_progress",
+      "implementation_status": "helper_false_success_and_public_private_data_repaired_local_verified_pending_deployment_live_evidence",
+      "can_continue_without_operator": true,
+      "next_action": "Close after REQ-20260626-007 provides deployment and live-smoke proof for this app-visible requirement.",
+      "acceptance_criteria": [
+        "Support-ticket false-success pattern is impossible or fails tests.",
+        "Public helper private next class/worksheet/progress/question requests return correct login/support routes.",
+        "Public helper avoids asking for personal info outside approved support/contact flow.",
+        "Responses include reason, safe fallback, and result type.",
+        "Internal links use canonical route/action resolver."
+      ],
+      "evidence": [
+        "server.js",
+        "tests/public-helper-agent-review-guardrails.test.js",
+        "tests/helper-destination-resolver.test.js",
+        "tests/bna-helper-tools.test.js"
+      ],
+      "verification": [
+        "PASS anonymous public private-data requests return safe login/support routes without collecting personal details publicly.",
+        "PASS create_ticket helper response cannot claim a ticket unless typed action execution returns success, executed=true, ticketId, and auditId.",
+        "PASS node --test tests/public-helper-agent-review-guardrails.test.js tests/helper-destination-resolver.test.js tests/bna-helper-tools.test.js."
+      ],
+      "implementation_files": [
+        "server.js",
+        "tests/public-helper-agent-review-guardrails.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-26T06:43:06.619Z"
+    },
+    {
+      "id": "REQ-20260626-006",
+      "title": "Repair tests and watchdog coverage",
+      "expected_result": "Focused regression tests cover the Agent Review drop-off/dashboard/context and helper behavior requirements, plus secrets and private-data safety checks.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S007"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "test_coverage",
+      "priority": "P0",
+      "batch_id": "E",
+      "depends_on": [
+        "REQ-20260626-002",
+        "REQ-20260626-003",
+        "REQ-20260626-004",
+        "REQ-20260626-005"
+      ],
+      "status": "in_progress",
+      "implementation_status": "tests_watchdogs_and_secret_audit_passed_pending_dependency_live_closeout",
+      "can_continue_without_operator": true,
+      "next_action": "Close after REQ-20260626-002 through REQ-20260626-005 receive live deployment evidence.",
+      "acceptance_criteria": [
+        "Tests cover unauth redirect returnTo.",
+        "Tests cover prompt copy metadata.",
+        "Tests cover plain text and JSON drop-off.",
+        "Tests cover FAIL/BLOCKED repair/rerun.",
+        "Tests cover public helper false-success prevention and private-data routing.",
+        "Tests cover idempotency and no private transcript/student data in output."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/npm-test.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-actions.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-links.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-security.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/secrets-audit.log",
+        "ops/watchdog-audits/2026-06-26T06-38-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-26T06-38-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-26T06-38-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "PASS npm test: 1351 pass, 0 fail.",
+        "PASS npm run watchdog:actions: ok, finding_count 0.",
+        "PASS npm run watchdog:links: ok, finding_count 0.",
+        "PASS npm run watchdog:security: ok, finding_count 0.",
+        "PASS npm run secrets:audit: 4852 tracked paths checked, 0 tracked secret-risk files found."
+      ],
+      "implementation_files": [
+        "tests/agent-review-hub.test.js",
+        "tests/public-helper-agent-review-guardrails.test.js",
+        "tests/app-select-dropdown.test.js",
+        "tests/operations-pwa-login.test.js",
+        "tests/rabbi-scheller-auth-navigation-contract.test.js"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-26T06:43:53.740Z"
+    },
+    {
+      "id": "REQ-20260626-007",
+      "title": "Merge, deploy, live verification, and final closeout",
+      "expected_result": "All app-visible repairs are merged, deployed, live-smoked, linked to Issue #24, and reported in the requested final response format.",
+      "source_id": "RAW-20260626-001",
+      "source_statement_ids": [
+        "RAW-20260626-001-S008"
+      ],
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "release_closeout",
+      "priority": "P0",
+      "batch_id": "Z",
+      "depends_on": [
+        "REQ-20260626-002",
+        "REQ-20260626-003",
+        "REQ-20260626-004",
+        "REQ-20260626-005",
+        "REQ-20260626-006"
+      ],
+      "status": "in_progress",
+      "implementation_status": "local_release_gate_passed_pending_push_merge_deploy_live_smoke",
+      "can_continue_without_operator": true,
+      "next_action": "Commit, push, merge to master, deploy Railway, run live Agent Review/drop-off/helper smokes, post Issue #24 evidence, and mark run terminal.",
+      "acceptance_criteria": [
+        "Focused and relevant broad tests pass.",
+        "PR is pushed and merged.",
+        "Railway deployment succeeds.",
+        "Live checks cover hub, copy prompt, open context, drop-off, save/readback, FAIL/BLOCKED repair generation, and public helper false-success repair.",
+        "Issue #24 receives progress/final evidence.",
+        "Final response uses requested 15-section format and exact terminal verdict."
+      ],
+      "evidence": [
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/npm-test.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-actions.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-links.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-security.log",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/secrets-audit.log"
+      ],
+      "verification": [
+        "PASS local release gate pre-merge: npm test, action/link/security watchdogs, and secrets audit passed.",
+        "PENDING push/merge/deploy/live smoke."
+      ],
+      "implementation_files": [
+        "server.js",
+        "src/lib/bna/agent-review-hub.js",
+        "public/agent-review.html",
+        "public/agent-review-session.html",
+        "public/agent-review-dropoff.html",
+        "public/operations-login.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/agent-review-hub.test.js",
+        "tests/public-helper-agent-review-guardrails.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-26T06:41:25.383Z"
+    }
+  ],
+  "tasks": [
+    {
+      "canonical_task_key": "bna_platform|agent_review_hub|RAW-20260626-001|parent_run",
+      "title": "Agent Review drop-off and helper repair run",
+      "owner": "Codex",
+      "lane": "agent_work",
+      "visible": false,
+      "requirement_id": "REQ-20260626-001",
+      "status": "running_release_gate",
+      "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
+      "updated_at": "2026-06-26T06:41:25.383Z"
+    }
+  ]
+}

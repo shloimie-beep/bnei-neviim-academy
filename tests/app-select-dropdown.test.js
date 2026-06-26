@@ -21,6 +21,7 @@ test('every public page with native select controls loads the in-app select enha
   assert.deepEqual(
     pagesWithSelects.map(({ file }) => file.replace(/\\/g, '/')).sort(),
     [
+      'public/agent-review-dropoff.html',
       'public/agent-review-session.html',
       'public/agent-review.html',
       'public/assistant-setup.html',

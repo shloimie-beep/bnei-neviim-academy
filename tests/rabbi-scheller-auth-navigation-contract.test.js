@@ -28,7 +28,8 @@ test('provider-scoped Operations identities do not receive BNA super-admin navig
 
 test('Operations portal fallback preserves server-backed auth and safe returnTo behavior', () => {
   assert.match(server, /function safeOperationsReturnPath\(value\)/);
-  assert.match(server, /if \(url\.origin !== 'https:\/\/bna\.local' \|\| url\.pathname !== '\/operations'\)/);
+  assert.match(server, /allowedPaths = new Set\(\[\s*'\/operations',\s*'\/operations\/agent-review',\s*'\/operations\/agent-review\/dropoff'/);
+  assert.match(server, /if \(url\.origin !== 'https:\/\/bna\.local' \|\| !allowedPaths\.has\(url\.pathname\)\)/);
   assert.match(server, /return fallback/);
   assert.match(server, /async function collectPortalLoginDestinations/);
   assert.match(server, /async function issuePortalDestinationSession/);

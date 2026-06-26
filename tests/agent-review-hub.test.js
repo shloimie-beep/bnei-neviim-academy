@@ -5,16 +5,20 @@ const test = require('node:test');
 const vm = require('node:vm');
 
 const {
+  AGENT_REVIEW_RUN,
   AGENT_MODE_PROMPTS,
   AGENT_REVIEW_CONTEXTS,
   AGENT_REVIEW_SESSION_TTL_MINUTES,
+  buildAgentReviewRepairItem,
   buildPromptIndex,
+  renderRerunPrompt,
 } = require('../src/lib/bna/agent-review-hub');
 
 const root = path.resolve(__dirname, '..');
 const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
 const hub = fs.readFileSync(path.join(root, 'public', 'agent-review.html'), 'utf8');
 const session = fs.readFileSync(path.join(root, 'public', 'agent-review-session.html'), 'utf8');
+const dropoff = fs.readFileSync(path.join(root, 'public', 'agent-review-dropoff.html'), 'utf8');
 const routeRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'route-registry.json'), 'utf8'));
 const actionRegistry = JSON.parse(fs.readFileSync(path.join(root, 'ops', 'action-registry.json'), 'utf8'));
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
@@ -50,8 +54,16 @@ test('Agent Mode prompt pack has exactly 11 generated mobile-copyable files', ()
     assert.equal(fs.existsSync(filePath), true, prompt.file);
     const text = fs.readFileSync(filePath, 'utf8');
     assert.match(text, /Agent Review Hub/);
-    assert.match(text, /Submit to: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
+    assert.match(text, /agent_review_run_id/);
+    assert.match(text, /prompt_key/);
+    assert.match(text, /return_url/);
+    assert.match(text, /dropoff_url/);
+    assert.match(text, /requirement_id/);
+    assert.match(text, /idempotency_key/);
+    assert.match(text, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
+    assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
     assert.match(text, /Do not ask for or store passwords/);
+    assert.match(text, /save BLOCKED/);
     assert.doesNotMatch(text, /OPS_PASSWORD|API_KEY=|COOKIE=/);
   }
 });
@@ -60,6 +72,8 @@ test('server exposes secure review-session and result APIs', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_agent_review_sessions/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_agent_review_results/);
   assert.match(server, /app\.get\('\/api\/bna\/agent-review\/contexts', requireAdmin/);
+  assert.match(server, /latestAgentReviewResultsByPrompt/);
+  assert.match(server, /app\.get\('\/api\/bna\/agent-review\/dropoff-context'/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-review\/sessions', requireAdmin/);
   assert.match(server, /verifyAgentReviewCsrf\(req\)/);
   assert.match(server, /revoked_at = COALESCE\(revoked_at, NOW\(\)\)/);
@@ -72,9 +86,38 @@ test('server exposes secure review-session and result APIs', () => {
   assert.match(server, /HttpOnly/);
   assert.match(server, /review_url = `\$\{requestBaseUrl\(req\)\}\/agent-review\/session\?exchange=/);
   assert.match(server, /app\.get\('\/agent-review\/session', async \(req, res\) =>/);
+  assert.match(server, /app\.get\('\/operations\/agent-review\/dropoff'/);
   assert.match(server, /res\.redirect\(303, '\/agent-review\/session'\)/);
   assert.match(server, /app\.post\('\/api\/bna\/agent-review\/results'/);
+  assert.match(server, /parseAgentReviewDropoffBody/);
+  assert.match(server, /buildAgentReviewRepairItem/);
+  assert.match(server, /renderRerunPrompt/);
   assert.match(server, /ON CONFLICT \(idempotency_key\) DO UPDATE/);
+});
+
+test('Agent Review login returnTo preserves hub and drop-off pages only', () => {
+  assert.match(server, /allowedPaths = new Set\(\[\s*'\/operations',\s*'\/operations\/agent-review',\s*'\/operations\/agent-review\/dropoff'/);
+  assert.match(server, /agentReviewExactLoginUrl/);
+  assert.match(server, /takeover_hint: 'Use takeover mode to log in once, then return here\.'/);
+  assert.match(fs.readFileSync(path.join(root, 'public', 'operations-login.html'), 'utf8'), /allowedPaths = new Set\(\['\/operations', '\/operations\/agent-review', '\/operations\/agent-review\/dropoff'\]\)/);
+});
+
+test('FAIL and BLOCKED Agent Review results create repair and rerun metadata', () => {
+  const repair = buildAgentReviewRepairItem({
+    resultRef: 'AGR-static',
+    promptKey: 'student-portal',
+    requirementId: 'REQ-20260626-004',
+    status: 'blocked',
+    severity: 'high',
+    blocker: 'Scoped session opened public helper.',
+  });
+  assert.ok(repair);
+  assert.match(repair.repair_ref, /^AGR-REPAIR-/);
+  assert.match(repair.requirement_id, /^REQ-REPAIR-/);
+  assert.match(repair.operations_url, /\/operations\/agent-review\?repair=AGR-REPAIR-/);
+  const rerun = renderRerunPrompt({ resultRef: 'AGR-static', repair, baseUrl: 'https://bneineviimacademy.org' });
+  assert.match(rerun, /Rerun/);
+  assert.match(rerun, /Drop-off URL|Return\/drop-off URL/);
 });
 
 test('Agent Review newest-recording trace is available in the deploy bundle', () => {
@@ -92,6 +135,13 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(hub, /ACTION-AGENT-REVIEW-OPEN-CONTEXT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-SUBMIT-RESULT/);
   assert.match(hub, /ACTION-AGENT-REVIEW-PROMPT-OPEN/);
+  assert.match(hub, /ACTION-AGENT-REVIEW-COPY-PROMPT/);
+  assert.match(hub, /ACTION-AGENT-REVIEW-OPEN-DROPOFF/);
+  assert.match(hub, /ACTION-AGENT-REVIEW-MARK-BLOCKED/);
+  assert.match(hub, /ACTION-AGENT-REVIEW-VIEW-RESULT/);
+  assert.match(hub, /ACTION-AGENT-REVIEW-RERUN-PROMPT/);
+  assert.match(hub, /copyPrompt/);
+  assert.match(hub, /markPromptBlocked/);
   assert.match(hub, /newest_recording_trace/);
   assert.match(hub, /\.\.\.options,\s*credentials: 'same-origin',\s*headers: \{ 'Content-Type': 'application\/json', \.\.\.\(options\.headers \|\| \{\}\) \}/);
 
@@ -102,12 +152,23 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(session, /ACTION-AGENT-REVIEW-EXIT/);
   assert.match(session, /ACTION-AGENT-REVIEW-OPEN-TARGET/);
   assert.match(session, /ACTION-AGENT-REVIEW-COPY-SESSION/);
+  assert.match(session, /ACTION-AGENT-REVIEW-OPEN-DROPOFF/);
+  assert.match(session, /save BLOCKED/);
   assert.match(session, /\/api\/bna\/agent-review\/results/);
   assert.match(session, /\.\.\.options,\s*credentials: 'same-origin',\s*headers: \{ 'Content-Type': 'application\/json', \.\.\.\(options\.headers \|\| \{\}\) \}/);
+
+  assert.match(dropoff, /Agent Review Drop-Off/);
+  assert.match(dropoff, /ACTION-AGENT-REVIEW-SUBMIT-RESULT/);
+  assert.match(dropoff, /ACTION-AGENT-REVIEW-MARK-BLOCKED/);
+  assert.match(dropoff, /ACTION-AGENT-REVIEW-VIEW-RESULT/);
+  assert.match(dropoff, /ACTION-AGENT-REVIEW-RERUN-PROMPT/);
+  assert.match(dropoff, /\/api\/bna\/agent-review\/dropoff-context/);
+  assert.match(dropoff, /\/api\/bna\/agent-review\/results/);
+  assert.match(dropoff, /parseReport/);
 });
 
 test('Agent Review pages inline scripts parse', () => {
-  for (const [label, html] of [['hub', hub], ['session', session]]) {
+  for (const [label, html] of [['hub', hub], ['session', session], ['dropoff', dropoff]]) {
     const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)]
       .map((match) => match[1].trim())
       .filter(Boolean);
@@ -123,10 +184,13 @@ test('route and action registries cover Agent Review Hub surface', () => {
   [
     '/operations/agent-review',
     '/agent-review/session',
+    '/operations/agent-review/dropoff',
     '/api/bna/agent-review/contexts',
+    '/api/bna/agent-review/dropoff-context',
     '/api/bna/agent-review/sessions',
     '/api/bna/agent-review/session',
     '/api/bna/agent-review/results',
+    '/api/bna/agent-review/results/:resultRef',
   ].forEach((route) => assert.ok(routes.has(route), route));
 
   const actions = new Set(actionRegistry.actions.map((item) => item.action_id));
@@ -138,5 +202,10 @@ test('route and action registries cover Agent Review Hub surface', () => {
     'ACTION-AGENT-REVIEW-PROMPT-OPEN',
     'ACTION-AGENT-REVIEW-RETURN-HUB',
     'ACTION-AGENT-REVIEW-COPY-SESSION',
+    'ACTION-AGENT-REVIEW-COPY-PROMPT',
+    'ACTION-AGENT-REVIEW-OPEN-DROPOFF',
+    'ACTION-AGENT-REVIEW-MARK-BLOCKED',
+    'ACTION-AGENT-REVIEW-VIEW-RESULT',
+    'ACTION-AGENT-REVIEW-RERUN-PROMPT',
   ].forEach((action) => assert.ok(actions.has(action), action));
 });
