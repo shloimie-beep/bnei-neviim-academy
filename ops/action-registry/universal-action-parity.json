@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T06:32:48.686Z",
+  "generated_at": "2026-06-26T07:46:50.375Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,62 +16,62 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "c3b0a00bf4de1f7e91b7dc7a758bfc1662083810f95e951c1bfeccee75470aec",
+  "content_hash": "619fc02165d3bd5b9e96f0d7329805df851ede3bcd33d53e1c9eb7d3205c7654",
   "source_hashes": {
-    "ops/action-registry.json": "4bf13302714a903ce458104ec7a6a4a979768853489a973573886b6f78a89628",
+    "ops/action-registry.json": "592323e75d18827eb954bdb0415f4e0704534f52c5f7214e512f1c19ca919a5f",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "3a168e241d089a79a44357451d08afb08fc5f81ded2ff243551f2578e0d5ad69",
+    "public/operations.html": "d25becbec3eb03c171817248eda83efd307c3aff175a209cdb84f19667b2883d",
     "public/parent.html": "a7b532eccb128ecb8606cc56b0357a9eea4dc00a99d8baff42aff1041c0c2d08",
     "public/student.html": "3a6ada46825b42f2b5ddf17f683553c267c9f64680664157b754c624c29475fe",
     "public/provider.html": "3e6c8cd9c3391cd3db74da93d701806bdfe23c867029aa455ad74509e56d5b6c",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 77,
+    "root_actions": 84,
     "detailed_actions": 80,
-    "total_registry_rows": 157,
-    "visible_controls": 28,
-    "visible_controls_classified": 28,
+    "total_registry_rows": 164,
+    "visible_controls": 35,
+    "visible_controls_classified": 35,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
-    "blocked_connector": 9,
+    "blocked_connector": 11,
     "risky_actions": 76,
     "risky_without_approval": 0,
     "visible_by_classification": {
-      "read_only": 3,
-      "secure_deep_link_only": 2,
+      "read_only": 6,
+      "secure_deep_link_only": 4,
       "preview_then_approve": 19,
-      "not_applicable": 2,
-      "blocked_connector": 2
+      "blocked_connector": 4,
+      "not_applicable": 2
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 16,
+      "secure_deep_link_only": 18,
       "executable": 15,
       "preview_then_approve": 68,
-      "read_only": 47,
-      "blocked_connector": 9,
+      "read_only": 50,
+      "blocked_connector": 11,
       "not_applicable": 2
     }
   },
   "parity_sources": {
     "ui_button": {
-      "count": 28
+      "count": 35
     },
     "telegram_request": {
       "count": 80
     },
     "website_assistant_request": {
-      "count": 157
+      "count": 164
     },
     "operations_helper_request": {
-      "count": 146
+      "count": 153
     },
     "automation_action": {
       "count": 74
     },
     "agent_work_handoff": {
-      "count": 89
+      "count": 96
     }
   },
   "release_gate": {
@@ -79,7 +79,7 @@
       {
         "name": "all_visible_controls_classified",
         "passed": true,
-        "value": "28/28"
+        "value": "35/35"
       },
       {
         "name": "zero_visible_missing_contracts",
@@ -109,12 +109,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 157
+        "value": 164
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 89
+        "value": 96
       }
     ]
   },
@@ -160,6 +160,104 @@
       "risk": "high",
       "registry_layer": "root",
       "result_renderer": "Creates local automation metadata draft only after confirmation."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-PANEL",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Shows the Agent Mode prompt, status, owner-clarity, drop-off form, AGR result readback, and rerun prompt for visible owner Tasks or Decisions that need human/browser action."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-COPY-PROMPT",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Copies the task/Decision Agent Mode prompt and records prompt_copied_at/status on the original card through POST /api/bna/tasks/:id/agent-mode/copy-prompt."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-START",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Opens the exact task or Decision card starting URL included in the Agent Mode prompt."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-DROPOFF",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "secure_deep_link_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Opens the task/Decision-specific Agent Review drop-off URL with task_id, prompt_key, requirement_id, and idempotency_key."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-VIEW-RESULT",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "read_only",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Opens the owner-only AGR result readback linked from the original task card."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-REPAIR",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "blocked_connector",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Opens the repair task created or linked after a FAIL/BLOCKED task Agent Review result."
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-SAVE-DROPOFF",
+      "file": "public/operations.html",
+      "surface": "operations",
+      "classification": "blocked_connector",
+      "registered": true,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "approval_required": false,
+      "risk": "low",
+      "registry_layer": "root",
+      "result_renderer": "Saves PASS/FAIL/BLOCKED through the typed Agent Review result API, attaches the AGR evidence to the original task, and creates or links repair/rerun metadata for FAIL/BLOCKED."
     },
     {
       "action_id": "ACTION-ONETIME-PAYMENT-ACCESS-REVIEW-CHECKOUTS",
@@ -2897,6 +2995,223 @@
         "Rerun after repair"
       ],
       "result_renderer": "Opens a rerun/drop-off path linked to the repair item created for a FAIL or BLOCKED Agent Review result.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-PANEL",
+      "label": "Task Agent Mode workflow",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Shows the Agent Mode prompt, status, owner-clarity, drop-off form, AGR result readback, and rerun prompt for visible owner Tasks or Decisions that need human/browser action.",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Task Agent Mode workflow"
+      ],
+      "result_renderer": "Shows the Agent Mode prompt, status, owner-clarity, drop-off form, AGR result readback, and rerun prompt for visible owner Tasks or Decisions that need human/browser action.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-COPY-PROMPT",
+      "label": "Copy Agent Mode prompt",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Copies the task/Decision Agent Mode prompt and records prompt_copied_at/status on the original card through POST /api/bna/tasks/:id/agent-mode/copy-prompt.",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Copy Agent Mode prompt"
+      ],
+      "result_renderer": "Copies the task/Decision Agent Mode prompt and records prompt_copied_at/status on the original card through POST /api/bna/tasks/:id/agent-mode/copy-prompt.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-START",
+      "label": "Open task start URL",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the exact task or Decision card starting URL included in the Agent Mode prompt.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open task start URL"
+      ],
+      "result_renderer": "Opens the exact task or Decision card starting URL included in the Agent Mode prompt.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-DROPOFF",
+      "label": "Open task drop-off",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the task/Decision-specific Agent Review drop-off URL with task_id, prompt_key, requirement_id, and idempotency_key.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open task drop-off"
+      ],
+      "result_renderer": "Opens the task/Decision-specific Agent Review drop-off URL with task_id, prompt_key, requirement_id, and idempotency_key.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-SAVE-DROPOFF",
+      "label": "Save task Agent Review result",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves PASS/FAIL/BLOCKED through the typed Agent Review result API, attaches the AGR evidence to the original task, and creates or links repair/rerun metadata for FAIL/BLOCKED.",
+      "status": "active",
+      "classification": "blocked_connector",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Save task Agent Review result"
+      ],
+      "result_renderer": "Saves PASS/FAIL/BLOCKED through the typed Agent Review result API, attaches the AGR evidence to the original task, and creates or links repair/rerun metadata for FAIL/BLOCKED.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-VIEW-RESULT",
+      "label": "View task AGR result",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the owner-only AGR result readback linked from the original task card.",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "View task AGR result"
+      ],
+      "result_renderer": "Opens the owner-only AGR result readback linked from the original task card.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-REPAIR",
+      "label": "Open Agent Mode repair",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the repair task created or linked after a FAIL/BLOCKED task Agent Review result.",
+      "status": "active",
+      "classification": "blocked_connector",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open Agent Mode repair"
+      ],
+      "result_renderer": "Opens the repair task created or linked after a FAIL/BLOCKED task Agent Review result.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -7609,7 +7924,7 @@
     {
       "category": "agent_work",
       "state": "covered_by_canonical_registry",
-      "visible_currently": false,
+      "visible_currently": true,
       "action_ids": [
         "ACTION-AGENT-RESULT-RECORD",
         "ACTION-AGENT-REVIEW-COPY-PROMPT",
@@ -7635,6 +7950,13 @@
         "ACTION-ONETIME-AGENT-ACCEPTANCE-VIEW-STATUS",
         "ACTION-ONETIME-SCOPED-AGENT-STATUS",
         "ACTION-STUDIO-HANDOFF-CONTENT",
+        "ACTION-TASK-AGENT-MODE-COPY-PROMPT",
+        "ACTION-TASK-AGENT-MODE-OPEN-DROPOFF",
+        "ACTION-TASK-AGENT-MODE-OPEN-REPAIR",
+        "ACTION-TASK-AGENT-MODE-OPEN-START",
+        "ACTION-TASK-AGENT-MODE-PANEL",
+        "ACTION-TASK-AGENT-MODE-SAVE-DROPOFF",
+        "ACTION-TASK-AGENT-MODE-VIEW-RESULT",
         "route_bug_to_codex"
       ],
       "reason": ""

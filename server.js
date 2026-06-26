@@ -176,10 +176,12 @@ const {
   buildAgentReviewRepairItem,
   buildAgentReviewContexts,
   buildPromptIndex,
+  buildTaskAgentModeReview,
   contextByKey,
   normalizeAgentReviewResultStatus,
   promptDropoffPath,
   renderRerunPrompt,
+  renderTaskAgentModePrompt,
 } = require('./src/lib/bna/agent-review-hub');
 const {
   parseIntakeText,
@@ -4143,10 +4145,14 @@ function isKnownTestDuplicateName(value) {
 }
 
 function requestBaseUrl(req) {
-  const configured = String(process.env.PUBLIC_BASE_URL || process.env.APP_BASE_URL || '').trim().replace(/\/+$/, '');
+  const configured = configuredPublicBaseUrl();
   if (configured) return configured;
   const protocol = req.headers['x-forwarded-proto'] || req.protocol || 'https';
   return `${protocol}://${req.get('host')}`;
+}
+
+function configuredPublicBaseUrl() {
+  return String(process.env.PUBLIC_BASE_URL || process.env.APP_BASE_URL || process.env.BNA_APP_URL || 'https://bneineviimacademy.org').trim().replace(/\/+$/, '');
 }
 
 function parentPortalUrl(req, token) {
@@ -10627,7 +10633,20 @@ function normalizeReviewJsonArray(value, maxItems = 40) {
 
 async function saveAgentReviewResult(body = {}, { req, session = null, identity = null } = {}, db = pool) {
   body = parseAgentReviewDropoffBody(body);
-  const requestedContextKey = body.context_key || body.contextKey;
+  const taskId = Number(body.task_id || body.taskId || body.decision_id || body.decisionId || 0);
+  const parentTask = taskId ? await fetchTaskWithProject(taskId, db) : null;
+  if (taskId && !parentTask) {
+    const error = new Error('Agent Mode task or Decision target was not found.');
+    error.statusCode = 404;
+    throw error;
+  }
+  if (parentTask && !identity) {
+    const error = new Error('Task and Decision Agent Mode drop-off requires owner login.');
+    error.statusCode = 403;
+    throw error;
+  }
+  if (parentTask && req) assertProjectAccess(req, parentTask);
+  const requestedContextKey = body.context_key || body.contextKey || (parentTask ? 'owner_task_decision' : '');
   if (session && requestedContextKey && requestedContextKey !== session.context_key) {
     const error = new Error('Scoped review session cannot submit a different context.');
     error.statusCode = 403;
@@ -10639,8 +10658,20 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
     error.statusCode = 400;
     throw error;
   }
-  const requirementId = safeAgentReviewResultText(body.requirement_id || body.requirementId || 'REQ-20260626-003', 80);
-  const promptKey = safeAgentReviewText(body.prompt_key || body.promptKey || '', 120) || null;
+  if (parentTask && context.key !== 'owner_task_decision') {
+    const error = new Error('Task and Decision Agent Mode results must use owner_task_decision context.');
+    error.statusCode = 400;
+    throw error;
+  }
+  const baseUrl = requestBaseUrl(req);
+  const taskReview = parentTask ? buildTaskAgentModeReview(parentTask, { baseUrl }) : null;
+  if (parentTask && !taskReview) {
+    const error = new Error('This task or Decision does not need an Agent Mode drop-off workflow.');
+    error.statusCode = 422;
+    throw error;
+  }
+  const requirementId = safeAgentReviewResultText(body.requirement_id || body.requirementId || taskReview?.requirement_id || 'REQ-20260626-003', 80);
+  const promptKey = safeAgentReviewText(body.prompt_key || body.promptKey || taskReview?.prompt_key || '', 120) || null;
   const status = normalizeAgentReviewResultStatus(body.status);
   const summary = safeAgentReviewResultText(body.conversation_summary || body.summary || '', 4000);
   const idempotencyBasis = [
@@ -10649,11 +10680,11 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
     context.key,
     requirementId,
     promptKey || '',
-    body.idempotency_key || body.idempotencyKey || summary.slice(0, 120),
+    body.idempotency_key || body.idempotencyKey || taskReview?.idempotency_key || summary.slice(0, 120),
   ].join('|');
-  const idempotencyKey = safeAgentReviewText(body.idempotency_key || body.idempotencyKey || sha256Hex(idempotencyBasis).slice(0, 48), 160);
+  const idempotencyKey = safeAgentReviewText(body.idempotency_key || body.idempotencyKey || taskReview?.idempotency_key || sha256Hex(idempotencyBasis).slice(0, 48), 160);
   const resultRef = `AGR-${sha256Hex(idempotencyKey).slice(0, 16)}`;
-  const repairItem = buildAgentReviewRepairItem({
+  let repairItem = buildAgentReviewRepairItem({
     resultRef,
     promptKey: promptKey || 'unknown-prompt',
     requirementId,
@@ -10661,8 +10692,60 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
     severity: body.severity || '',
     blocker: body.blocker || body.blocked_reason || body.blockedReason || '',
   });
-  const prompt = promptKey ? buildPromptIndex({ baseUrl: requestBaseUrl(req) }).find((item) => item.key === promptKey) : null;
-  const rerunPrompt = repairItem ? renderRerunPrompt({ prompt, resultRef, repair: repairItem, baseUrl: requestBaseUrl(req) }) : '';
+  const prompt = !parentTask && promptKey ? buildPromptIndex({ baseUrl }).find((item) => item.key === promptKey) : null;
+  let repairTask = null;
+  let rerunPrompt = '';
+  if (parentTask && ['fail', 'blocked'].includes(status)) {
+    rerunPrompt = [
+      `Rerun ${taskReview.item_type} ${taskReview.prompt_key} after repair is applied.`,
+      `Source result: ${resultRef}`,
+      repairItem?.requirement_id ? `Repair requirement: ${repairItem.requirement_id}` : '',
+      '',
+      renderTaskAgentModePrompt(parentTask, {
+        ...taskReview,
+        status: 'rerun_required',
+        result_ref: resultRef,
+        expected_result: `Rerun the same task/Decision after the repair is applied. Original blocker: ${safeAgentReviewResultText(body.blocker || body.blocked_reason || body.blockedReason || body.suggested_correction || body.suggestedCorrection || '', 800) || 'See saved Agent Review result.'}`,
+      }, { title: `Rerun ${taskReview.item_type} #${parentTask.id}` }),
+    ].filter(Boolean).join('\n');
+    repairTask = await ensureAgentModeRepairTask({
+      parentTask,
+      resultRef,
+      promptKey: promptKey || taskReview.prompt_key,
+      requirementId,
+      blocker: body.blocker || body.blocked_reason || body.blockedReason || body.suggested_correction || body.suggestedCorrection || '',
+      severity: body.severity || '',
+      rerunPrompt,
+    }, db);
+    if (repairItem) {
+      repairItem = {
+        ...repairItem,
+        title: `Repair Agent Mode result for ${taskReview.item_type} #${parentTask.id}`,
+        task_id: parentTask.id,
+        repair_task_id: repairTask?.id || null,
+        operations_url: repairTask?.id ? `/operations?view=tasks&task=${encodeURIComponent(repairTask.id)}` : taskReview.exact_return_url,
+      };
+    }
+    if (repairTask?.id) {
+      rerunPrompt = [
+        `Rerun ${taskReview.item_type} ${taskReview.prompt_key} after repair task #${repairTask.id} is applied.`,
+        `Source result: ${resultRef}`,
+        `Repair task: #${repairTask.id}`,
+        '',
+        renderTaskAgentModePrompt(parentTask, {
+          ...taskReview,
+          status: 'rerun_required',
+          result_ref: resultRef,
+          repair_task_id: repairTask.id,
+          repair_requirement_id: repairItem?.requirement_id || null,
+          repair_url: `/operations?view=tasks&task=${encodeURIComponent(repairTask.id)}`,
+          expected_result: `Rerun the same task/Decision after repair task #${repairTask.id} is applied.`,
+        }, { title: `Rerun ${taskReview.item_type} #${parentTask.id}` }),
+      ].join('\n');
+    }
+  } else {
+    rerunPrompt = repairItem ? renderRerunPrompt({ prompt, resultRef, repair: repairItem, baseUrl }) : '';
+  }
   const result = await db.query(
     `INSERT INTO bna_agent_review_results (
        result_ref, session_ref, context_key, target_role, workspace_key,
@@ -10713,21 +10796,61 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
         linked_issue_raw_id: AGENT_REVIEW_RUN.linked_issue_raw_id,
         linked_issue_parent_goal_id: AGENT_REVIEW_RUN.linked_issue_parent_goal_id,
         agent_review_run_id: body.agent_review_run_id || body.agentReviewRunId || AGENT_REVIEW_RUN.agent_review_run_id,
-        source: 'agent_review_hub',
-        return_url: safeAgentReviewResultText(body.return_url || body.returnUrl || AGENT_REVIEW_RUN.hub_path, 500),
-        dropoff_url: safeAgentReviewResultText(body.dropoff_url || body.dropoffUrl || (prompt ? promptDropoffPath(prompt) : AGENT_REVIEW_RUN.dropoff_path), 500),
+        source: parentTask ? 'task_agent_mode_dropoff' : 'agent_review_hub',
+        task_id: parentTask?.id || null,
+        item_type: taskReview?.item_type || null,
+        task_requirement_id: taskReview?.requirement_id || null,
+        owner_clarity: taskReview?.owner_clarity || null,
+        return_url: safeAgentReviewResultText(body.return_url || body.returnUrl || taskReview?.exact_return_url || AGENT_REVIEW_RUN.hub_path, 500),
+        dropoff_url: safeAgentReviewResultText(body.dropoff_url || body.dropoffUrl || taskReview?.exact_dropoff_url || (prompt ? promptDropoffPath(prompt) : AGENT_REVIEW_RUN.dropoff_path), 500),
         current_route: safeAgentReviewResultText(body.current_route || body.currentRoute || '', 500),
         last_completed_route: safeAgentReviewResultText(body.last_completed_route || body.lastCompletedRoute || '', 500),
+        last_completed_role_context: safeAgentReviewResultText(body.last_completed_role_context || body.lastCompletedRoleContext || '', 500),
         blocker: safeAgentReviewResultText(body.blocker || body.blocked_reason || body.blockedReason || '', 1000),
         repair_item: repairItem,
         repair_requirement_id: repairItem?.requirement_id || null,
-        repair_url: repairItem?.operations_url || null,
+        repair_task_id: repairTask?.id || null,
+        repair_url: repairTask?.id ? `/operations?view=tasks&task=${encodeURIComponent(repairTask.id)}` : repairItem?.operations_url || null,
         rerun_prompt: rerunPrompt,
         external_write_performed: false,
       }),
     ]
   );
-  return result.rows[0];
+  const saved = result.rows[0];
+  if (parentTask) {
+    const proofLink = agentModeTaskResultLink(saved);
+    const updatedTask = await updateTaskAgentModeReview(parentTask, {
+      status: status === 'pass' ? 'completed' : (status === 'blocked' ? 'rerun_required' : 'repair_created'),
+      result_ref: saved.result_ref,
+      result_status: status,
+      result_saved_at: new Date().toISOString(),
+      prompt_key: promptKey || taskReview.prompt_key,
+      requirement_id: requirementId,
+      idempotency_key: idempotencyKey,
+      exact_starting_url: taskReview.exact_starting_url,
+      exact_dropoff_url: taskReview.exact_dropoff_url,
+      exact_return_url: taskReview.exact_return_url,
+      owner_clarity: taskReview.owner_clarity,
+      repair_task_id: repairTask?.id || null,
+      repair_requirement_id: repairItem?.requirement_id || null,
+      repair_url: repairTask?.id ? `/operations?view=tasks&task=${encodeURIComponent(repairTask.id)}` : repairItem?.operations_url || null,
+      rerun_prompt: rerunPrompt || null,
+    }, { proofLink, db });
+    await recordTaskActivity(parentTask.id, 'agent_mode_result_saved', {
+      actor: identity?.username || req?.opsUser || 'agent_review_dropoff',
+      summary: `Agent Mode ${status.toUpperCase()} result ${saved.result_ref} saved for ${taskReview.item_type} #${parentTask.id}.`,
+      metadata: {
+        result_ref: saved.result_ref,
+        status,
+        prompt_key: promptKey || taskReview.prompt_key,
+        repair_task_id: repairTask?.id || null,
+      },
+    }, db);
+    const taskWithProject = await fetchTaskWithProject(parentTask.id, db) || updatedTask || parentTask;
+    saved.task_agent_mode_review = buildTaskAgentModeReview(taskWithProject, { baseUrl });
+    saved.task = taskApiView(taskWithProject);
+  }
+  return saved;
 }
 
 function requireOneTimeViewAsSuperAdmin(req, res) {
@@ -10931,6 +11054,60 @@ app.get('/api/bna/agent-review/dropoff-context', async (req, res) => {
   try {
     const access = await agentReviewDropoffAccess(req, { markOpen: false });
     if (!access.session && !access.identity) return sendAgentReviewAccessRequired(req, res);
+    const taskId = Number(req.query.task_id || req.query.taskId || req.query.decision_id || req.query.decisionId || 0);
+    if (taskId) {
+      if (!access.identity) {
+        return res.status(403).json({
+          success: false,
+          error: 'Task and Decision Agent Mode drop-off requires owner login.',
+          redirect_to: agentReviewExactLoginUrl(req),
+          takeover_hint: 'Use takeover mode to log in once, then return here.',
+          external_write_performed: false,
+        });
+      }
+      await assertTaskAccess(req, taskId);
+      const task = await fetchTaskWithProject(taskId);
+      if (!task) return res.status(404).json({ success: false, error: 'Task or Decision not found.', external_write_performed: false });
+      const context = contextByKey('owner_task_decision');
+      const review = buildTaskAgentModeReview(task, { baseUrl: requestBaseUrl(req) });
+      if (!review) {
+        return res.status(422).json({
+          success: false,
+          error: 'This task or Decision does not need an Agent Mode prompt/drop-off workflow.',
+          external_write_performed: false,
+        });
+      }
+      return res.json({
+        success: true,
+        owner_authenticated: true,
+        session_authenticated: false,
+        agent_review_run_id: AGENT_REVIEW_RUN.agent_review_run_id,
+        prompt: {
+          key: review.prompt_key,
+          title: `${review.item_type === 'decision' ? 'Decision' : 'Task'} #${task.id}`,
+          requirement_id: review.requirement_id,
+          context_keys: [context.key],
+          return_url: review.exact_return_url,
+          dropoff_url: review.exact_dropoff_url,
+          idempotency_key: review.idempotency_key,
+          copy_metadata: review.copy_metadata,
+          prompt_text: review.prompt_text,
+          status: review.status,
+        },
+        context,
+        task: {
+          id: task.id,
+          title: task.display_title || task.title,
+          item_type: review.item_type,
+          owner_clarity: review.owner_clarity,
+          agent_mode_review: review,
+        },
+        session: null,
+        newest_recording_trace: newestRecordingTraceStatus(),
+        takeover_hint: 'Owner login is active. Save the result here or return to the original card.',
+        external_write_performed: false,
+      });
+    }
     const promptKey = safeAgentReviewText(req.query.prompt_key || req.query.promptKey || '', 120);
     const contextKey = safeAgentReviewText(req.query.context_key || req.query.contextKey || access.session?.context_key || '', 120);
     const prompts = buildPromptIndex({ baseUrl: requestBaseUrl(req) });
@@ -11090,6 +11267,10 @@ app.post('/api/bna/agent-review/results', async (req, res) => {
       repair: metadata.repair_item || null,
       repair_url: metadata.repair_item?.operations_url || metadata.repair_url || null,
       rerun_prompt: metadata.rerun_prompt || null,
+      task_id: metadata.task_id || null,
+      task_url: metadata.task_id ? `/operations?view=tasks&task=${encodeURIComponent(metadata.task_id)}` : null,
+      task_agent_mode_review: result.task_agent_mode_review || null,
+      task: result.task || null,
       external_write_performed: false,
     });
   } catch (err) {
@@ -21212,6 +21393,11 @@ function taskApiView(row = {}) {
   });
   return {
     ...row,
+    agent_mode_review: buildTaskAgentModeReview({
+      ...row,
+      artifact_links: proofLinks,
+      proof_links_json: proofLinks,
+    }, { baseUrl: configuredPublicBaseUrl() }),
     workflow_status: row.workflow_status || statusDetail,
     status_detail: statusDetail,
     artifact_links: proofLinks,
@@ -21224,6 +21410,117 @@ function taskApiView(row = {}) {
       ? row.proof_status
       : (row.completed_at || row.verified_at || row.stage === 'done' ? proofState.proofStatus : row.proof_status || 'unchecked'),
   };
+}
+
+function mergeTaskAgentModeParsed(task = {}, patch = {}) {
+  const parsed = parseJsonMaybe(task.ai_parsed) || {};
+  const current = parsed.agent_mode_review && typeof parsed.agent_mode_review === 'object'
+    ? parsed.agent_mode_review
+    : {};
+  return {
+    ...parsed,
+    agent_mode_review: {
+      ...current,
+      ...Object.fromEntries(Object.entries(patch).filter(([, value]) => value !== undefined)),
+    },
+  };
+}
+
+function agentModeTaskResultLink(result = {}) {
+  const ref = result.result_ref || result.resultRef || '';
+  if (!ref) return null;
+  return {
+    label: `Agent Review ${ref}`,
+    kind: 'agent_review_result',
+    url: `/api/bna/agent-review/results/${encodeURIComponent(ref)}`,
+    status: String(result.status || 'saved').toLowerCase(),
+    source: 'agent_mode_task_dropoff',
+  };
+}
+
+async function updateTaskAgentModeReview(task = {}, patch = {}, { proofLink = null, db = pool } = {}) {
+  if (!task?.id) return null;
+  const nextParsed = mergeTaskAgentModeParsed(task, patch);
+  const links = proofLink
+    ? mergeArtifactLinks(task.artifact_links, task.proof_links_json, proofLink)
+    : taskProofLinksView(task);
+  const result = await db.query(
+    `UPDATE bna_tasks
+     SET ai_parsed = $2::jsonb,
+         artifact_links = $3::jsonb,
+         proof_links_json = $3::jsonb,
+         proof_status = CASE WHEN $4::boolean THEN 'valid' ELSE proof_status END,
+         done_link_status = CASE WHEN $4::boolean THEN 'done_with_report' ELSE done_link_status END,
+         last_activity_at = NOW(),
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      task.id,
+      JSON.stringify(nextParsed),
+      JSON.stringify(links),
+      Boolean(proofLink),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function ensureAgentModeRepairTask({ parentTask, resultRef = '', promptKey = '', requirementId = '', blocker = '', severity = '', rerunPrompt = '' } = {}, db = pool) {
+  if (!parentTask?.id || !resultRef) return null;
+  const sourceRef = `agent-mode-repair:${resultRef}`;
+  const existing = await findActiveTaskByDedupeKey(sha256Hex([
+    'task',
+    normalizeDedupeText(`Repair Agent Mode result ${resultRef}`),
+    normalizeDedupeProject(parentTask.project_key || parentTask.resolved_project_key || 'bna_platform'),
+    normalizeDedupeOwner('Codex'),
+    normalizeDedupeOwner(''),
+    normalizeDedupeText(sourceRef),
+  ].join('|')).slice(0, 48), db);
+  if (existing) return existing;
+  const repair = await createTaskFromText({
+    title: `Repair Agent Mode result ${resultRef}`,
+    raw_text: [
+      `Repair source: ${resultRef}`,
+      `Prompt key: ${promptKey}`,
+      `Parent task/Decision: #${parentTask.id}`,
+      `Requirement: ${requirementId}`,
+      blocker ? `Blocker: ${blocker}` : '',
+      rerunPrompt ? `Rerun prompt:\n${rerunPrompt}` : '',
+    ].filter(Boolean).join('\n'),
+    notes: blocker || `Repair failed or blocked Agent Mode result ${resultRef}.`,
+    source: 'agent_review',
+    created_by: 'agent_review_dropoff',
+    assigned_to: 'Codex',
+    category: 'technology',
+    urgency: /critical|high/i.test(severity) ? 'urgent' : 'today',
+    project_key: parentTask.project_key || parentTask.resolved_project_key || undefined,
+    source_ref: sourceRef,
+    dedupe: true,
+    ai_parsed: {
+      parser: 'agent-mode-task-dropoff-v1',
+      source_result_ref: resultRef,
+      parent_task_id: parentTask.id,
+      prompt_key: promptKey,
+      requirement_id: requirementId,
+      rerun_prompt: rerunPrompt || null,
+    },
+  }, {}, db);
+  const linked = await db.query(
+    `UPDATE bna_tasks
+     SET parent_task_id = $2,
+         dedupe_key_raw = COALESCE(dedupe_key_raw, $3),
+         last_activity_at = NOW(),
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [repair.id, parentTask.id, sourceRef]
+  );
+  await recordTaskActivity(parentTask.id, 'agent_mode_repair_created', {
+    actor: 'agent_review_dropoff',
+    summary: `Repair task #${repair.id} linked from Agent Review result ${resultRef}.`,
+    metadata: { result_ref: resultRef, repair_task_id: repair.id, prompt_key: promptKey },
+  }, db);
+  return linked.rows[0] || repair;
 }
 
 function sefariaSearchUrl(query) {
@@ -79688,6 +79985,63 @@ async function createTaskFromTextRoute(req, res) {
 
 app.post('/api/bna/tasks/create-from-text', requireAdmin, createTaskFromTextRoute);
 app.post('/api/bna/create_task_from_text', requireAdmin, createTaskFromTextRoute);
+
+app.post('/api/bna/tasks/:id/agent-mode/copy-prompt', requireAdmin, async (req, res) => {
+  try {
+    const taskId = Number(req.params.id || 0);
+    if (!taskId) return res.status(400).json({ success: false, error: 'Task ID is required.' });
+    await assertTaskAccess(req, taskId);
+    const task = await fetchTaskWithProject(taskId);
+    if (!task) return res.status(404).json({ success: false, error: 'Task or Decision not found.' });
+    const baseUrl = requestBaseUrl(req);
+    const review = buildTaskAgentModeReview(task, { baseUrl });
+    if (!review) {
+      return res.status(422).json({
+        success: false,
+        error: 'This task or Decision does not need an Agent Mode prompt/drop-off workflow.',
+      });
+    }
+    const copiedAt = new Date().toISOString();
+    await updateTaskAgentModeReview(task, {
+      status: 'prompt_copied',
+      prompt_copied_at: copiedAt,
+      prompt_key: review.prompt_key,
+      requirement_id: review.requirement_id,
+      idempotency_key: review.idempotency_key,
+      exact_starting_url: review.exact_starting_url,
+      exact_return_url: review.exact_return_url,
+      exact_dropoff_url: review.exact_dropoff_url,
+      owner_clarity: review.owner_clarity,
+      prompt_text_hash: sha256Hex(review.prompt_text || '').slice(0, 16),
+    });
+    await recordTaskActivity(taskId, 'agent_mode_prompt_copied', {
+      actor: req.opsUser || 'dashboard',
+      summary: `Agent Mode prompt ${review.prompt_key} copied for ${review.item_type} #${taskId}.`,
+      metadata: {
+        prompt_key: review.prompt_key,
+        requirement_id: review.requirement_id,
+        idempotency_key: review.idempotency_key,
+        copied_at: copiedAt,
+      },
+    });
+    const updatedTask = await fetchTaskWithProject(taskId) || task;
+    const updatedView = taskApiView(updatedTask);
+    res.json({
+      success: true,
+      copied_at: copiedAt,
+      prompt_text: review.prompt_text,
+      agent_mode_review: updatedView.agent_mode_review,
+      task: updatedView,
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
+});
 
 async function captureIncomingBotMessageRoute(req, res) {
   try {

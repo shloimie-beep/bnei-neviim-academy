@@ -1,9 +1,9 @@
 {
   "run_id": "2026-06-26-agent-review-dropoff-repair",
   "title": "Agent Review drop-off, scoped context access, and helper repair",
-  "updated_at": "2026-06-26T06:43:53.740Z",
+  "updated_at": "2026-06-26T10:48:00+03:00",
   "git_refs": {
-    "expected_branch": "codex/agent-review-dropoff-repair-20260626",
+    "expected_branch": "codex/agent-mode-task-decision-dropoff-20260626",
     "base_branch": "master",
     "local_head_at_start": "0500ce74cad7a1299a6d0fd487b1deef24ab9fb8",
     "issue_number": 24,
@@ -29,6 +29,16 @@
       "workspace": "bna_platform",
       "project": "agent_review_hub",
       "source_type": "github_issue_link"
+    },
+    {
+      "source_id": "RAW-20260626-002",
+      "source_path": "raw-input/RAW-20260626-002-agent-mode-task-decision-dropoff.md",
+      "captured_at": "2026-06-26T10:42:00+03:00",
+      "content_fingerprint": "codex-chat-agent-mode-task-decision-dropoff-clarification",
+      "privacy_classification": "internal_goal_packet",
+      "workspace": "bna_platform",
+      "project": "agent_review_hub",
+      "source_type": "codex_chat_clarification"
     }
   ],
   "source_statements": [
@@ -86,6 +96,41 @@
       "source_id": "RAW-20260626-001",
       "source_statement": "App-visible work requires merge, deploy, live smoke, and final response in the requested 15-section format with one exact terminal verdict.",
       "requirement_id": "REQ-20260626-007",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-002-S001",
+      "source_id": "RAW-20260626-002",
+      "source_statement": "Every visible Task or Decision that needs owner action, external account review, setup, UI audit, or human browser verification should be convertible into a hybrid Agent Mode task.",
+      "requirement_id": "REQ-20260626-008",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-002-S002",
+      "source_id": "RAW-20260626-002",
+      "source_statement": "Expanded cards must include an Agent Mode prompt with copy button, prompt key, item ID, role/workspace/context, exact start and return/drop-off URLs, idempotency key, allowed/prohibited actions, expected result, and save instructions.",
+      "requirement_id": "REQ-20260626-008",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-002-S003",
+      "source_id": "RAW-20260626-002",
+      "source_statement": "Cards must show Agent status, large PASS/FAIL/BLOCKED drop-off fields, visible AGR result ID, result link, prompt_copied_at, overdue timeout, PASS evidence attachment, and FAIL/BLOCKED repair/rerun behavior.",
+      "requirement_id": "REQ-20260626-008",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-002-S004",
+      "source_id": "RAW-20260626-002",
+      "source_statement": "Task cards must clearly say whether Codex can do it alone, Agent Mode can help Shloimie, Shloimie must decide, an external account owner is required, or a dangerous/live action is blocked.",
+      "requirement_id": "REQ-20260626-008",
+      "classification": "mapped"
+    },
+    {
+      "statement_id": "RAW-20260626-002-S005",
+      "source_id": "RAW-20260626-002",
+      "source_statement": "This must extend Issue #7 / ramble-to-execution without a second queue, duplicate task manager, memory layer, or agent loop, and tests must cover idempotency, timeout, blocked rerun, saved result, and no duplicate task creation.",
+      "requirement_id": "REQ-20260626-008",
       "classification": "mapped"
     }
   ],
@@ -388,10 +433,11 @@
         "REQ-20260626-002",
         "REQ-20260626-003",
         "REQ-20260626-004",
-        "REQ-20260626-005"
+        "REQ-20260626-005",
+        "REQ-20260626-008"
       ],
       "status": "in_progress",
-      "implementation_status": "tests_watchdogs_and_secret_audit_passed_pending_dependency_live_closeout",
+      "implementation_status": "tests_watchdogs_secret_audit_full_suite_passed_pending_dependency_live_closeout",
       "can_continue_without_operator": true,
       "next_action": "Close after REQ-20260626-002 through REQ-20260626-005 receive live deployment evidence.",
       "acceptance_criteria": [
@@ -410,24 +456,113 @@
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/secrets-audit.log",
         "ops/watchdog-audits/2026-06-26T06-38-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-26T06-38-watchdog-link-audit.md",
-        "ops/watchdog-audits/2026-06-26T06-38-watchdog-security-routes.md"
+        "ops/watchdog-audits/2026-06-26T06-38-watchdog-security-routes.md",
+        "tests/agent-mode-task-dropoff.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/TEST-RESULTS-REQ008.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md"
       ],
       "verification": [
         "PASS npm test: 1351 pass, 0 fail.",
         "PASS npm run watchdog:actions: ok, finding_count 0.",
         "PASS npm run watchdog:links: ok, finding_count 0.",
         "PASS npm run watchdog:security: ok, finding_count 0.",
-        "PASS npm run secrets:audit: 4852 tracked paths checked, 0 tracked secret-risk files found."
+        "PASS npm run secrets:audit: 4852 tracked paths checked, 0 tracked secret-risk files found.",
+        "PASS node --test tests/agent-mode-task-dropoff.test.js tests/agent-review-hub.test.js covered Task/Decision Agent Mode idempotency, timeout, blocked rerun, saved result, and no duplicate owner task conversion.",
+        "PASS npm test full suite after REQ-20260626-008: 1361 pass, 0 fail.",
+        "PASS action/link/security watchdogs after REQ-20260626-008: finding_count 0.",
+        "PASS secrets audit after REQ-20260626-008: 4880 tracked paths checked, 0 tracked secret-risk files found."
       ],
       "implementation_files": [
         "tests/agent-review-hub.test.js",
         "tests/public-helper-agent-review-guardrails.test.js",
         "tests/app-select-dropdown.test.js",
         "tests/operations-pwa-login.test.js",
-        "tests/rabbi-scheller-auth-navigation-contract.test.js"
+        "tests/rabbi-scheller-auth-navigation-contract.test.js",
+        "tests/agent-mode-task-dropoff.test.js"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-26T06:43:53.740Z"
+      "updated_at": "2026-06-26T10:48:00+03:00"
+    },
+    {
+      "id": "REQ-20260626-008",
+      "title": "Hybrid Agent Mode prompt/drop-off on owner Tasks and Decisions",
+      "expected_result": "Every visible owner-facing Task or Decision that needs human/operator/external account/setup/UI/browser verification can expose a hybrid Agent Mode prompt and PASS/FAIL/BLOCKED drop-off flow from the original card, with result readback and repair/rerun behavior stored in the existing task and Agent Review systems.",
+      "source_id": "RAW-20260626-002",
+      "source_statement_ids": [
+        "RAW-20260626-002-S001",
+        "RAW-20260626-002-S002",
+        "RAW-20260626-002-S003",
+        "RAW-20260626-002-S004",
+        "RAW-20260626-002-S005"
+      ],
+      "source_path": "raw-input/RAW-20260626-002-agent-mode-task-decision-dropoff.md",
+      "workspace_key": "bna_platform",
+      "project_key": "agent_review_hub",
+      "owner": "Codex",
+      "category": "app_security_ui",
+      "priority": "P0",
+      "batch_id": "F",
+      "depends_on": [
+        "REQ-20260626-002",
+        "REQ-20260626-003"
+      ],
+      "status": "in_progress",
+      "implementation_status": "task_decision_agent_mode_prompt_dropoff_full_local_verified_pending_push_merge_deploy_live_smoke",
+      "can_continue_without_operator": true,
+      "next_action": "Commit, push, merge, deploy Railway, and live-smoke sample Decision/task copy/save PASS/BLOCKED/readback/repair behavior before marking terminal Done.",
+      "acceptance_criteria": [
+        "A sample Decision card shows an Agent Mode prompt and drop-off flow.",
+        "A sample owner task shows an Agent Mode prompt and drop-off flow.",
+        "Copying the prompt records prompt_copied_at and changes status to prompt_copied.",
+        "If no result is saved after timeout, status becomes agent_result_overdue.",
+        "Saving PASS attaches AGR evidence to the original task/Decision.",
+        "Saving BLOCKED or FAIL creates or links a repair requirement and regenerates a rerun prompt.",
+        "Owner can see the result and AGR result ID from the original card without checking GitHub.",
+        "Future GitHub-connected ChatGPT/Codex sessions can read saved result through repo evidence or Operations readback.",
+        "Internal handoff/evidence rows are not converted into visible owner Tasks.",
+        "No duplicate visible Tasks or Decisions are created for repeat saves or repair creation."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260626-002-agent-mode-task-decision-dropoff.md",
+        "src/lib/bna/agent-review-hub.js",
+        "server.js",
+        "public/operations.html",
+        "public/agent-review-dropoff.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/agent-mode-task-dropoff.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/TEST-RESULTS-REQ008.md",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md"
+      ],
+      "verification": [
+        "PASS node --check server.js and node --check src/lib/bna/agent-review-hub.js.",
+        "PASS focused suite: node --test tests/agent-mode-task-dropoff.test.js tests/agent-review-hub.test.js tests/public-helper-agent-review-guardrails.test.js tests/helper-destination-resolver.test.js tests/bna-helper-tools.test.js tests/app-select-dropdown.test.js: 41 pass, 0 fail.",
+        "PASS action registry gate: node --test tests/watchdog-action-registry.test.js tests/agent-mode-task-dropoff.test.js: 15 pass, 0 fail.",
+        "PASS npm test full suite: 1361 pass, 0 fail.",
+        "PASS npm run watchdog:actions: finding_count 0.",
+        "PASS npm run watchdog:links: finding_count 0.",
+        "PASS npm run watchdog:security: finding_count 0.",
+        "PASS npm run secrets:audit: 4880 tracked paths checked, 0 tracked secret-risk files found.",
+        "PASS npm run bna:run:validate: validation passed, work remains yes."
+      ],
+      "implementation_files": [
+        "src/lib/bna/agent-review-hub.js",
+        "server.js",
+        "public/operations.html",
+        "public/agent-review-dropoff.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json",
+        "tests/agent-mode-task-dropoff.test.js",
+        "raw-input/RAW-20260626-002-agent-mode-task-decision-dropoff.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-26T10:48:00+03:00"
     },
     {
       "id": "REQ-20260626-007",
@@ -449,30 +584,37 @@
         "REQ-20260626-003",
         "REQ-20260626-004",
         "REQ-20260626-005",
-        "REQ-20260626-006"
+        "REQ-20260626-006",
+        "REQ-20260626-008"
       ],
       "status": "in_progress",
-      "implementation_status": "local_release_gate_passed_pending_push_merge_deploy_live_smoke",
+      "implementation_status": "local_release_gate_passed_pending_push_merge_deploy_live_smoke_for_task_decision_extension",
       "can_continue_without_operator": true,
-      "next_action": "Commit, push, merge to master, deploy Railway, run live Agent Review/drop-off/helper smokes, post Issue #24 evidence, and mark run terminal.",
+      "next_action": "Commit, push, merge to master, deploy Railway, run live Agent Review/drop-off/helper plus Task/Decision Agent Mode smokes, post Issue #24 evidence, and mark run terminal.",
       "acceptance_criteria": [
         "Focused and relevant broad tests pass.",
         "PR is pushed and merged.",
         "Railway deployment succeeds.",
         "Live checks cover hub, copy prompt, open context, drop-off, save/readback, FAIL/BLOCKED repair generation, and public helper false-success repair.",
         "Issue #24 receives progress/final evidence.",
-        "Final response uses requested 15-section format and exact terminal verdict."
+        "Final response uses requested 15-section format and exact terminal verdict.",
+        "Live checks cover sample owner Task and Decision Agent Mode copy/save PASS/BLOCKED/readback/repair-rerun behavior."
       ],
       "evidence": [
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/npm-test.log",
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-actions.log",
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-links.log",
         "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/watchdog-security.log",
-        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/secrets-audit.log"
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/secrets-audit.log",
+        "tests/agent-mode-task-dropoff.test.js",
+        "ops/execution-runs/2026-06-26-agent-review-dropoff-repair/TEST-RESULTS-REQ008.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-link-audit.md",
+        "ops/watchdog-audits/2026-06-26T07-48-watchdog-security-routes.md"
       ],
       "verification": [
-        "PASS local release gate pre-merge: npm test, action/link/security watchdogs, and secrets audit passed.",
-        "PENDING push/merge/deploy/live smoke."
+        "PASS local release gate for REQ-20260626-008: node --check, focused tests, full npm test 1361/1361, action/link/security watchdogs, secrets audit, and run validation passed.",
+        "PENDING push/merge/deploy/live Task/Decision Agent Mode smoke."
       ],
       "implementation_files": [
         "server.js",
@@ -484,10 +626,12 @@
         "ops/action-registry.json",
         "ops/route-registry.json",
         "tests/agent-review-hub.test.js",
-        "tests/public-helper-agent-review-guardrails.test.js"
+        "tests/public-helper-agent-review-guardrails.test.js",
+        "public/operations.html",
+        "tests/agent-mode-task-dropoff.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-26T06:41:25.383Z"
+      "updated_at": "2026-06-26T10:48:00+03:00"
     }
   ],
   "tasks": [
@@ -498,9 +642,9 @@
       "lane": "agent_work",
       "visible": false,
       "requirement_id": "REQ-20260626-001",
-      "status": "running_release_gate",
+      "status": "running_task_decision_agent_mode_extension",
       "source_path": "raw-input/RAW-20260626-001-agent-review-dropoff-repair.md",
-      "updated_at": "2026-06-26T06:41:25.383Z"
+      "updated_at": "2026-06-26T10:42:00+03:00"
     }
   ]
 }

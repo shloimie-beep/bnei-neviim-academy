@@ -1540,6 +1540,139 @@
         "GOAL-CORE-010",
         "GOAL-CORE-015"
       ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-PANEL",
+      "label": "Task Agent Mode workflow",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-PANEL\"]",
+      "expected_behavior": "Shows the Agent Mode prompt, status, owner-clarity, drop-off form, AGR result readback, and rerun prompt for visible owner Tasks or Decisions that need human/browser action.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "unit_and_browser",
+        "expected_result": "Sample owner Task and Decision cards expose prompt metadata and a PASS/FAIL/BLOCKED drop-off flow without creating duplicate visible Tasks."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-COPY-PROMPT",
+      "label": "Copy Agent Mode prompt",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-COPY-PROMPT\"]",
+      "expected_behavior": "Copies the task/Decision Agent Mode prompt and records prompt_copied_at/status on the original card through POST /api/bna/tasks/:id/agent-mode/copy-prompt.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_browser",
+        "expected_result": "Copying changes the card status to prompt_copied and keeps the same idempotency key."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-START",
+      "label": "Open task start URL",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-OPEN-START\"]",
+      "expected_behavior": "Opens the exact task or Decision card starting URL included in the Agent Mode prompt.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "browser",
+        "expected_result": "Starting URL returns to /operations?view=tasks&task=<id> without exposing a reusable all-access secret."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-DROPOFF",
+      "label": "Open task drop-off",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-OPEN-DROPOFF\"]",
+      "expected_behavior": "Opens the task/Decision-specific Agent Review drop-off URL with task_id, prompt_key, requirement_id, and idempotency_key.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "browser_and_api",
+        "expected_result": "Drop-off context resolves the original task and returns owner_task_decision prompt metadata."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-SAVE-DROPOFF",
+      "label": "Save task Agent Review result",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-SAVE-DROPOFF\"]",
+      "expected_behavior": "Saves PASS/FAIL/BLOCKED through the typed Agent Review result API, attaches the AGR evidence to the original task, and creates or links repair/rerun metadata for FAIL/BLOCKED.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_browser",
+        "expected_result": "PASS attaches an AGR proof link; BLOCKED creates a repair task and rerun prompt."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-VIEW-RESULT",
+      "label": "View task AGR result",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-VIEW-RESULT\"]",
+      "expected_behavior": "Opens the owner-only AGR result readback linked from the original task card.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api",
+        "expected_result": "Future GitHub-connected Codex sessions can read the saved result through Operations readback and repo evidence."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010"
+      ]
+    },
+    {
+      "action_id": "ACTION-TASK-AGENT-MODE-OPEN-REPAIR",
+      "label": "Open Agent Mode repair",
+      "surface": "operations_task_detail",
+      "route": "/operations?view=tasks",
+      "selector_hint": "[data-action-id=\"ACTION-TASK-AGENT-MODE-OPEN-REPAIR\"]",
+      "expected_behavior": "Opens the repair task created or linked after a FAIL/BLOCKED task Agent Review result.",
+      "permission": "super_admin",
+      "status": "active",
+      "test": {
+        "type": "api_and_browser",
+        "expected_result": "FAIL/BLOCKED result links a repair task and exposes a rerun prompt on the original card."
+      },
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
     }
   ]
 }
