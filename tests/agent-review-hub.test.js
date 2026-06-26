@@ -62,9 +62,22 @@ test('Agent Mode prompt pack has exactly 11 generated mobile-copyable files', ()
     assert.match(text, /idempotency_key/);
     assert.match(text, /Preferred drop-off: https:\/\/bneineviimacademy\.org\/operations\/agent-review\/dropoff/);
     assert.match(text, /API fallback: https:\/\/bneineviimacademy\.org\/api\/bna\/agent-review\/results/);
+    assert.match(text, /You must submit the structured result yourself/);
+    assert.match(text, /SAVED AGR-\.\.\./);
+    assert.match(text, /DROP-OFF FAILED/);
+    assert.match(text, /Emergency fallback: open the drop-off page and use "Emergency paste JSON and save"/);
+    assert.match(text, /readback API shows the AGR result/);
     assert.match(text, /Do not ask for or store passwords/);
     assert.match(text, /save BLOCKED/);
     assert.doesNotMatch(text, /OPS_PASSWORD|API_KEY=|COOKIE=/);
+    assert.doesNotMatch(text, /If Agent Mode cannot save, return the full redacted report in chat/i);
+    [
+      'download this report',
+      'upload it yourself',
+      'I compiled the JSON',
+      'here is the file',
+      'manual upload required',
+    ].forEach((phrase) => assert.doesNotMatch(text, new RegExp(phrase, 'i'), `${prompt.file} must not contain ${phrase}`));
   }
 });
 
@@ -158,6 +171,7 @@ test('hub and session pages expose banner, Exit, prompt links, and typed result 
   assert.match(session, /\.\.\.options,\s*credentials: 'same-origin',\s*headers: \{ 'Content-Type': 'application\/json', \.\.\.\(options\.headers \|\| \{\}\) \}/);
 
   assert.match(dropoff, /Agent Review Drop-Off/);
+  assert.match(dropoff, /Emergency paste JSON and save/);
   assert.match(dropoff, /ACTION-AGENT-REVIEW-SUBMIT-RESULT/);
   assert.match(dropoff, /ACTION-AGENT-REVIEW-MARK-BLOCKED/);
   assert.match(dropoff, /ACTION-AGENT-REVIEW-VIEW-RESULT/);

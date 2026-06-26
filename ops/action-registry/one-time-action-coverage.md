@@ -1,6 +1,6 @@
 # One Time Action Coverage
 
-Generated at 2026-06-26T07:46:50.310Z.
+Generated at 2026-06-26T08:53:05.083Z.
 
 Scope: `rabbi_sheller_provider` / `one_time_mishnah_class`
 

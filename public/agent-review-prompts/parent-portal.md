@@ -1,6 +1,6 @@
 # Agent Mode Prompt - Parent Portal
 
-Generated: 2026-06-26T06:29:53.296Z
+Generated: 2026-06-26T08:47:05.914Z
 Source issue: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24
 Raw/source ID: RAW-20260626-001
 Parent goal: PARENT-20260626-001
@@ -46,13 +46,17 @@ Focus: parent-safe navigation, child-only visibility, parent helper answers, set
 5. Test safe preview actions only. Do not send, publish, charge, deploy, change DNS, rotate credentials, move Drive files, retry production workers, or mutate student data.
 6. For any claimed write, verify the typed action/audit/result record. If no record exists, mark the claim failed.
 7. Include the newest Drive recording trace status from the hub; do not claim the recording processed beyond the trace evidence.
-8. Submit the structured result through the drop-off URL. If Agent Mode cannot save, return the full redacted report in chat so the owner can paste it later under the same prompt key.
-9. If a scoped context redirects to public/sign-in content and cannot open after owner takeover login, stop that context, save BLOCKED in the drop-off form, and do not audit the public helper as the scoped helper.
+8. You must submit the structured result yourself before your final answer. Normal save path: use the Agent Review Hub/drop-off page. If that form fails, use the exact drop-off URL below. If that still fails, use the Emergency paste JSON and save control on the drop-off page. If the browser cannot submit any page, POST the same JSON to the API fallback.
+9. A successful final answer must start with SAVED AGR-... and include the saved readback URL. Do not finish with downloadable artifacts, owner-upload instructions, claims that a JSON handoff is prepared, file handoff language, or manual-upload wording.
+10. If every save path fails, the final answer must start with DROP-OFF FAILED and include the complete redacted JSON payload so the owner can recover it. This is the only allowed manual payload handoff.
+11. The window is safe to close only after the Agent Review Hub or readback API shows the AGR result for this prompt key and idempotency key.
+12. If a scoped context redirects to public/sign-in content and cannot open after owner takeover login, stop that context, save BLOCKED through the self-save path, and do not audit the public helper as the scoped helper.
 
 ## Result Shape
 
 Preferred drop-off: https://bneineviimacademy.org/operations/agent-review/dropoff?agent_review_run_id=2026-06-26-agent-review-dropoff-repair&prompt_key=parent-portal&requirement_id=REQ-20260626-004&return_url=%2Foperations%2Fagent-review%3Fprompt%3Dparent-portal&idempotency_key=2026-06-26-agent-review-dropoff-repair%3Aparent-portal%3Aall-contexts
 API fallback: https://bneineviimacademy.org/api/bna/agent-review/results
+Emergency fallback: open the drop-off page and use "Emergency paste JSON and save" only after the normal save path and exact drop-off URL fail.
 
 ```json
 {
@@ -85,4 +89,4 @@ API fallback: https://bneineviimacademy.org/api/bna/agent-review/results
 }
 ```
 
-End with PASS, FAIL, or BLOCKED and the exact remaining issue.
+End with SAVED AGR-... and the readback URL after a successful save. End with DROP-OFF FAILED and the redacted JSON payload only if all save paths failed.

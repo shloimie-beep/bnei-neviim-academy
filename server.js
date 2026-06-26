@@ -67043,6 +67043,49 @@ function publicAssistantPrivateDataRequest(message = '') {
   return privateTopic && dataVerb;
 }
 
+function publicAssistantTier3UnsafeActionRequest(message = '') {
+  const text = String(message || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!text) return false;
+  const patterns = [
+    /\bdeploy(?:\s+(?:new\s+)?code)?\b/,
+    /\bproduction\s+(?:release|deploy|deployment|database|db|mutation)\b/,
+    /\bpush\s+(?:to\s+)?railway\b|\brailway\s+(?:deploy|deployment|release)\b/,
+    /\bapply\s+(?:the\s+)?class\s+backfill\b|\bclass\s+backfill\b/,
+    /\b(?:show|give|send|export|list|display|open|view|share)\b[^.?!\n]{0,80}\b(?:student|parent|family)\b[^.?!\n]{0,80}\b(?:contact|phone|email|info|details|address)\b/,
+    /\bstudent\s+contact\s+info\b/,
+    /\bchange\s+dns\b|\bdns\b[^.?!\n]{0,60}\b(?:change|update|point|switch|edit)\b/,
+    /\b(?:charge|refund)\b[^.?!\n]{0,90}\b(?:card|payment|tuition|invoice|customer|parent)\b/,
+    /\b(?:add|update|change|delete|remove)\b[^.?!\n]{0,90}\b(?:payment method|card on file|credit card)\b/,
+    /\bsend\b[^.?!\n]{0,130}\b(?:whatsapp|email|telegram|sms|message)\b[^.?!\n]{0,130}\b(?:all parents|parents|students|families|everyone)\b/,
+    /\bwhatsapp\b[^.?!\n]{0,90}\b(?:all parents|parents|students|families|everyone)\b/,
+    /\bupload\b[^.?!\n]{0,110}\b(?:vimeo|drive|google drive|class|recording)\b/,
+    /\b(?:move|write|upload)\b[^.?!\n]{0,90}\b(?:drive|google drive)\b/,
+    /\b(?:retry|restart|rerun)\b[^.?!\n]{0,90}\bproduction\s+worker\b/,
+    /\b(?:rotate|reveal|share|paste|set)\b[^.?!\n]{0,90}\b(?:credential|credentials|api key|api keys|password|passwords|token|tokens)\b/,
+    /\b(?:grant|change|add|remove)\b[^.?!\n]{0,90}\b(?:account permission|admin access|credentials|user permission)\b/,
+    /\bpublic(?:ly)?\s+publish\b|\bpublish\b[^.?!\n]{0,90}\b(?:public|live|website|production)\b/,
+  ];
+  return patterns.some((pattern) => pattern.test(text));
+}
+
+function publicAssistantTier3UnsafeActionReply(body = {}, actor = {}) {
+  return 'I cannot accept deployment, production mutation, private-data, payment, DNS, credential, public-publish, Drive/Vimeo write, broadcast-send, or production-worker commands from this public or unscoped chat. I did not create a task, Codex queue item, deployment request, support ticket, or external write. Please sign in with the correct Operations role or contact Shloimie through the approved support path.';
+}
+
+function publicAssistantTier3UnsafeActionMetadata(body = {}) {
+  return {
+    tier: 'tier3_unsafe_action',
+    normal_task_created: false,
+    codex_queue_created: false,
+    deployment_request_created: false,
+    support_ticket_created: false,
+    external_write_performed: false,
+    redacted_audit_only: true,
+    page_path: body.page_path || body.path || body.context?.page_path || body.context?.path || null,
+    surface: normalizeAssistantSurface(body.surface || body.page || body.context?.surface),
+  };
+}
+
 function publicAssistantPrivateBoundaryReply(body = {}, actor = {}) {
   return assistantResponseIsHebrew(body, actor)
     ? 'לא אוכל להציג או לאסוף פרטי תלמיד, משפחה, תשלום, קוד גישה או חשבון בצאט ציבורי. השתמשו בנתיב המתאים: /parent/login, /student, /provider, או בטופס התמיכה הציבורי /signup.html#contact.'
@@ -67607,6 +67650,9 @@ function assistantAdaptiveIntent({ actor = {}, message = '', body = {}, mode = '
   if (!actor.canUseCodex && safeAssistantActorType(actor.type) === 'anonymous' && publicAssistantPrivateDataRequest(text)) {
     return { kind: 'public_private_boundary' };
   }
+  if (!actor.canUseCodex && publicAssistantTier3UnsafeActionRequest(text)) {
+    return { kind: 'public_tier3_action_refused' };
+  }
   if (assistantExplicitTicketRequest(text)) return { kind: 'action', action_id: 'create_ticket' };
   if (assistantOnboardingCaptureIntent({ actor, message: text, body })) {
     return { kind: 'onboarding_intake_capture', topic: assistantOnboardingCaptureTopic({ actor, message: text }) };
@@ -68056,6 +68102,28 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
         support_ticket_created: false,
         external_write_performed: false,
         routes: ['/parent/login', '/student', '/provider', '/signup.html#contact'],
+      },
+    };
+  }
+
+  if (intent.kind === 'public_tier3_action_refused') {
+    const metadata = publicAssistantTier3UnsafeActionMetadata(body);
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'public_tier3_action_refused',
+      actor,
+      allowed: false,
+      status: 'denied',
+      resultSummary: 'Public or unscoped Tier-3 mutation request refused without creating executable work',
+      metadata,
+      db,
+    });
+    return {
+      body: publicAssistantTier3UnsafeActionReply(body, actor),
+      metadata: {
+        intent: 'public_tier3_action_refused',
+        hosted_ai: false,
+        ...metadata,
       },
     };
   }
@@ -69763,6 +69831,36 @@ async function showUniversalAgentStatus({ req, actor, thread, userMessage, db = 
   return universalAssistantToolResult('show_agent_status', { action, agent_status: result });
 }
 
+async function refuseUniversalPublicTier3Action({ actor, body, message, thread, userMessage, db = pool }) {
+  const reply = publicAssistantTier3UnsafeActionReply(body, actor);
+  const metadata = publicAssistantTier3UnsafeActionMetadata(body);
+  const action = await recordUniversalAssistantAction({
+    thread,
+    message: userMessage,
+    actor,
+    actionType: 'public_tier3_action_refused',
+    status: 'denied',
+    payload: {
+      tier: metadata.tier,
+      page_path: metadata.page_path,
+      surface: metadata.surface,
+      message_length: String(message || '').length,
+    },
+    result: {
+      ...metadata,
+      reply,
+    },
+    db,
+  });
+  return universalAssistantToolResult('public_tier3_action_refused', {
+    ok: false,
+    status: 'denied',
+    action,
+    reply,
+    ...metadata,
+  });
+}
+
 function universalAssistantArgsWithAlias(args = {}, actionAlias = '') {
   return {
     ...args,
@@ -69802,6 +69900,7 @@ async function showUniversalPaymentStatus(args) {
 }
 
 const UNIVERSAL_ASSISTANT_TOOLS = {
+  public_tier3_action_refused: refuseUniversalPublicTier3Action,
   create_ticket: createUniversalAssistantTicket,
   create_task: createUniversalAssistantTask,
   create_codex_job: createUniversalAssistantCodexJob,
@@ -69826,6 +69925,9 @@ const UNIVERSAL_ASSISTANT_TOOLS = {
 };
 
 function planUniversalAssistantActions(message = '', actor = {}, body = {}, context = {}) {
+  if (!assistantRoleCanUseCodex(actor) && publicAssistantTier3UnsafeActionRequest(message)) {
+    return ['public_tier3_action_refused'];
+  }
   const explicitTool = String(body.tool || body.action || body.action_type || body.actionType || '').trim();
   if (explicitTool && UNIVERSAL_ASSISTANT_TOOLS[explicitTool]) return [explicitTool];
   const text = String(message || '').toLowerCase();
