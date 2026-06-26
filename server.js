@@ -171,11 +171,15 @@ const {
   buildOneTimeAgentModeAcceptance,
 } = require('./src/platform/agent-control/one-time-acceptance');
 const {
+  AGENT_REVIEW_RUN,
   AGENT_REVIEW_SESSION_TTL_MINUTES,
+  buildAgentReviewRepairItem,
   buildAgentReviewContexts,
   buildPromptIndex,
   contextByKey,
   normalizeAgentReviewResultStatus,
+  promptDropoffPath,
+  renderRerunPrompt,
 } = require('./src/lib/bna/agent-review-hub');
 const {
   parseIntakeText,
@@ -8894,7 +8898,12 @@ function safeOperationsReturnPath(value) {
 
   try {
     const url = new URL(raw, 'https://bna.local');
-    if (url.origin !== 'https://bna.local' || url.pathname !== '/operations') {
+    const allowedPaths = new Set([
+      '/operations',
+      '/operations/agent-review',
+      '/operations/agent-review/dropoff',
+    ]);
+    if (url.origin !== 'https://bna.local' || !allowedPaths.has(url.pathname)) {
       return fallback;
     }
     return `${url.pathname}${url.search}${url.hash}`;
@@ -10261,6 +10270,13 @@ function safeAgentReviewText(value, max = 2000) {
     .slice(0, max);
 }
 
+function safeAgentReviewResultText(value, max = 2000) {
+  return safeAgentReviewText(value, max)
+    .replace(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi, '[email-redacted]')
+    .replace(/\+?\d[\d\s().-]{7,}\d/g, '[phone-redacted]')
+    .replace(/\b(access[_ -]?code|login[_ -]?code|student[_ -]?name|child[_ -]?name)\s*[:=]\s*[^,\n}]+/gi, '$1=[redacted]');
+}
+
 function agentReviewCsrfSubject(req) {
   const cookies = parseCookies(req);
   return cookies[SESSION_COOKIE_NAME] || req.opsUser || req.opsIdentity?.username || 'anonymous';
@@ -10450,8 +10466,11 @@ async function createAgentReviewSession({ contextKey, identity, req } = {}, db =
         req.headers['user-agent'] || null,
         expiresAt,
         JSON.stringify({
-          raw_id: 'RAW-20260625-024',
-          parent_goal_id: 'PARENT-20260625-024',
+          raw_id: AGENT_REVIEW_RUN.raw_id,
+          parent_goal_id: AGENT_REVIEW_RUN.parent_goal_id,
+          linked_issue_raw_id: AGENT_REVIEW_RUN.linked_issue_raw_id,
+          linked_issue_parent_goal_id: AGENT_REVIEW_RUN.linked_issue_parent_goal_id,
+          agent_review_run_id: AGENT_REVIEW_RUN.agent_review_run_id,
           issue: 24,
           sequential_session_model: true,
           all_access_secret_in_url: false,
@@ -10530,24 +10549,102 @@ async function endAgentReviewSession(token = '', db = pool) {
   return result.rows[0] || null;
 }
 
+async function agentReviewSessionFromRequest(req, { markOpen = false } = {}, db = pool) {
+  const token = agentReviewSessionTokenFromRequest(req);
+  return token ? await getAgentReviewSessionByToken(token, { markOpen, req }, db) : null;
+}
+
+function agentReviewExactLoginUrl(req) {
+  const returnTo = safeOperationsReturnPath(req?.originalUrl || req?.url || AGENT_REVIEW_RUN.hub_path);
+  return `/operations-login.html?returnTo=${encodeURIComponent(returnTo)}&agentReview=takeover`;
+}
+
+async function agentReviewDropoffAccess(req, { markOpen = false } = {}, db = pool) {
+  const session = await agentReviewSessionFromRequest(req, { markOpen }, db);
+  if (session) return { session, identity: null };
+  const identity = await identifyAdminRequest(req).catch(() => null);
+  if (identity?.scope?.type === 'all') return { session: null, identity };
+  return { session: null, identity: null };
+}
+
+function sendAgentReviewAccessRequired(req, res) {
+  return res.status(401).json({
+    success: false,
+    error: 'Agent Review drop-off requires owner login or a valid scoped review session.',
+    redirect_to: agentReviewExactLoginUrl(req),
+    takeover_hint: 'Use takeover mode to log in once, then return here.',
+    external_write_performed: false,
+  });
+}
+
+async function latestAgentReviewResultsByPrompt(db = pool) {
+  try {
+    const result = await db.query(
+      `SELECT DISTINCT ON (prompt_key)
+          result_ref, prompt_key, status, severity, requirement_id, metadata, updated_at, created_at
+       FROM bna_agent_review_results
+       WHERE COALESCE(prompt_key, '') <> ''
+       ORDER BY prompt_key, updated_at DESC, created_at DESC`
+    );
+    return Object.fromEntries(result.rows.map((row) => {
+      const metadata = row.metadata && typeof row.metadata === 'object' ? row.metadata : parseJsonMaybe(row.metadata) || {};
+      const repair = metadata.repair_item || null;
+      return [row.prompt_key, {
+        result_ref: row.result_ref,
+        prompt_key: row.prompt_key,
+        status: row.status,
+        severity: row.severity,
+        requirement_id: row.requirement_id,
+        repair_requirement_id: repair?.requirement_id || metadata.repair_requirement_id || null,
+        repair_url: repair?.operations_url || metadata.repair_url || null,
+        updated_at: row.updated_at,
+      }];
+    }));
+  } catch {
+    return {};
+  }
+}
+
+function parseAgentReviewDropoffBody(body = {}) {
+  const parsed = { ...(body || {}) };
+  const jsonCandidate = body.result_json || body.resultJson || body.json || '';
+  if (typeof jsonCandidate === 'string' && jsonCandidate.trim()) {
+    const decoded = parseJsonMaybe(jsonCandidate);
+    if (decoded && typeof decoded === 'object' && !Array.isArray(decoded)) Object.assign(parsed, decoded, body);
+  }
+  const reportCandidate = body.report_text || body.reportText || body.plain_text_report || body.plainTextReport || body.report || '';
+  if (reportCandidate && !parsed.summary && !parsed.conversation_summary) {
+    parsed.summary = safeAgentReviewResultText(reportCandidate, 4000);
+  }
+  return parsed;
+}
+
 function normalizeReviewJsonArray(value, maxItems = 40) {
-  if (Array.isArray(value)) return value.slice(0, maxItems).map((item) => safeAgentReviewText(typeof item === 'string' ? item : JSON.stringify(item), 800));
+  if (Array.isArray(value)) return value.slice(0, maxItems).map((item) => safeAgentReviewResultText(typeof item === 'string' ? item : JSON.stringify(item), 800));
   if (!value) return [];
-  return [safeAgentReviewText(typeof value === 'string' ? value : JSON.stringify(value), 800)];
+  return [safeAgentReviewResultText(typeof value === 'string' ? value : JSON.stringify(value), 800)];
 }
 
 async function saveAgentReviewResult(body = {}, { req, session = null, identity = null } = {}, db = pool) {
-  const context = session ? contextByKey(session.context_key) : contextByKey(body.context_key || body.contextKey);
+  body = parseAgentReviewDropoffBody(body);
+  const requestedContextKey = body.context_key || body.contextKey;
+  if (session && requestedContextKey && requestedContextKey !== session.context_key) {
+    const error = new Error('Scoped review session cannot submit a different context.');
+    error.statusCode = 403;
+    throw error;
+  }
+  const context = session ? contextByKey(session.context_key) : contextByKey(requestedContextKey);
   if (!context) {
     const error = new Error('Agent review result requires a known context.');
     error.statusCode = 400;
     throw error;
   }
-  const requirementId = safeAgentReviewText(body.requirement_id || body.requirementId || 'REQ-20260625-027', 80);
+  const requirementId = safeAgentReviewResultText(body.requirement_id || body.requirementId || 'REQ-20260626-003', 80);
   const promptKey = safeAgentReviewText(body.prompt_key || body.promptKey || '', 120) || null;
   const status = normalizeAgentReviewResultStatus(body.status);
-  const summary = safeAgentReviewText(body.conversation_summary || body.summary || '', 4000);
+  const summary = safeAgentReviewResultText(body.conversation_summary || body.summary || '', 4000);
   const idempotencyBasis = [
+    body.agent_review_run_id || body.agentReviewRunId || AGENT_REVIEW_RUN.agent_review_run_id,
     session?.session_ref || 'owner',
     context.key,
     requirementId,
@@ -10556,6 +10653,16 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
   ].join('|');
   const idempotencyKey = safeAgentReviewText(body.idempotency_key || body.idempotencyKey || sha256Hex(idempotencyBasis).slice(0, 48), 160);
   const resultRef = `AGR-${sha256Hex(idempotencyKey).slice(0, 16)}`;
+  const repairItem = buildAgentReviewRepairItem({
+    resultRef,
+    promptKey: promptKey || 'unknown-prompt',
+    requirementId,
+    status,
+    severity: body.severity || '',
+    blocker: body.blocker || body.blocked_reason || body.blockedReason || '',
+  });
+  const prompt = promptKey ? buildPromptIndex({ baseUrl: requestBaseUrl(req) }).find((item) => item.key === promptKey) : null;
+  const rerunPrompt = repairItem ? renderRerunPrompt({ prompt, resultRef, repair: repairItem, baseUrl: requestBaseUrl(req) }) : '';
   const result = await db.query(
     `INSERT INTO bna_agent_review_results (
        result_ref, session_ref, context_key, target_role, workspace_key,
@@ -10589,21 +10696,33 @@ async function saveAgentReviewResult(body = {}, { req, session = null, identity 
       requirementId,
       promptKey,
       status,
-      safeAgentReviewText(body.severity || 'none', 40),
+      safeAgentReviewResultText(body.severity || 'none', 40),
       summary,
       JSON.stringify(normalizeReviewJsonArray(body.routes_visited || body.routesVisited)),
       JSON.stringify(normalizeReviewJsonArray(body.helper_responses || body.helperResponses || body.bot_responses || body.botResponses)),
       JSON.stringify(normalizeReviewJsonArray(body.link_action_outcomes || body.linkActionOutcomes)),
       JSON.stringify(normalizeReviewJsonArray(body.evidence)),
-      safeAgentReviewText(body.suggested_correction || body.suggestedCorrection || '', 4000),
+      safeAgentReviewResultText(body.suggested_correction || body.suggestedCorrection || '', 4000),
       idempotencyKey,
       identity?.username || session?.created_by || req.opsUser || 'agent_review_session',
       getRequestIp(req) || null,
       req.headers['user-agent'] || null,
       JSON.stringify({
-        raw_id: body.raw_id || 'RAW-20260625-024',
-        parent_goal_id: body.parent_goal_id || 'PARENT-20260625-024',
+        raw_id: body.raw_id || AGENT_REVIEW_RUN.raw_id,
+        parent_goal_id: body.parent_goal_id || AGENT_REVIEW_RUN.parent_goal_id,
+        linked_issue_raw_id: AGENT_REVIEW_RUN.linked_issue_raw_id,
+        linked_issue_parent_goal_id: AGENT_REVIEW_RUN.linked_issue_parent_goal_id,
+        agent_review_run_id: body.agent_review_run_id || body.agentReviewRunId || AGENT_REVIEW_RUN.agent_review_run_id,
         source: 'agent_review_hub',
+        return_url: safeAgentReviewResultText(body.return_url || body.returnUrl || AGENT_REVIEW_RUN.hub_path, 500),
+        dropoff_url: safeAgentReviewResultText(body.dropoff_url || body.dropoffUrl || (prompt ? promptDropoffPath(prompt) : AGENT_REVIEW_RUN.dropoff_path), 500),
+        current_route: safeAgentReviewResultText(body.current_route || body.currentRoute || '', 500),
+        last_completed_route: safeAgentReviewResultText(body.last_completed_route || body.lastCompletedRoute || '', 500),
+        blocker: safeAgentReviewResultText(body.blocker || body.blocked_reason || body.blockedReason || '', 1000),
+        repair_item: repairItem,
+        repair_requirement_id: repairItem?.requirement_id || null,
+        repair_url: repairItem?.operations_url || null,
+        rerun_prompt: rerunPrompt,
         external_write_performed: false,
       }),
     ]
@@ -10779,10 +10898,11 @@ app.post('/api/bna/one-time/view-as-rabbi/end', requireAdmin, (req, res) => {
   });
 });
 
-app.get('/api/bna/agent-review/contexts', requireAdmin, (req, res) => {
+app.get('/api/bna/agent-review/contexts', requireAdmin, async (req, res) => {
   const identity = requireAgentReviewOwner(req, res);
   if (!identity) return;
   const trace = newestRecordingTraceStatus();
+  const resultsByPrompt = await latestAgentReviewResultsByPrompt();
   res.json({
     success: true,
     csrf_token: agentReviewCsrfToken(req),
@@ -10795,14 +10915,54 @@ app.get('/api/bna/agent-review/contexts', requireAdmin, (req, res) => {
     session_ttl_minutes: AGENT_REVIEW_SESSION_TTL_MINUTES,
     sequential_session_model: true,
     all_access_secret_in_url: false,
+    agent_review_run_id: AGENT_REVIEW_RUN.agent_review_run_id,
+    dropoff_path: AGENT_REVIEW_RUN.dropoff_path,
     newest_recording_trace: trace,
     contexts: buildAgentReviewContexts({
       baseUrl: requestBaseUrl(req),
       newestRecordingTrace: trace,
     }),
-    prompts: buildPromptIndex({ baseUrl: requestBaseUrl(req) }),
+    prompts: buildPromptIndex({ baseUrl: requestBaseUrl(req), resultsByPrompt }),
     external_write_performed: false,
   });
+});
+
+app.get('/api/bna/agent-review/dropoff-context', async (req, res) => {
+  try {
+    const access = await agentReviewDropoffAccess(req, { markOpen: false });
+    if (!access.session && !access.identity) return sendAgentReviewAccessRequired(req, res);
+    const promptKey = safeAgentReviewText(req.query.prompt_key || req.query.promptKey || '', 120);
+    const contextKey = safeAgentReviewText(req.query.context_key || req.query.contextKey || access.session?.context_key || '', 120);
+    const prompts = buildPromptIndex({ baseUrl: requestBaseUrl(req) });
+    const prompt = prompts.find((item) => item.key === promptKey) || null;
+    const context = contextKey ? contextByKey(contextKey) : null;
+    if (!prompt) return res.status(404).json({ success: false, error: 'Unknown Agent Review prompt.', external_write_performed: false });
+    if (access.session && contextKey && contextKey !== access.session.context_key) {
+      return res.status(403).json({
+        success: false,
+        error: 'This scoped review session can only submit its assigned context.',
+        external_write_performed: false,
+      });
+    }
+    res.json({
+      success: true,
+      owner_authenticated: Boolean(access.identity),
+      session_authenticated: Boolean(access.session),
+      agent_review_run_id: AGENT_REVIEW_RUN.agent_review_run_id,
+      prompt,
+      context,
+      session: access.session ? agentReviewSessionView(access.session, req) : null,
+      newest_recording_trace: newestRecordingTraceStatus(),
+      takeover_hint: 'Use takeover mode to log in once, then return here.',
+      external_write_performed: false,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({
+      success: false,
+      error: safeAgentReviewResultText(err.message, 500),
+      external_write_performed: false,
+    });
+  }
 });
 
 app.post('/api/bna/agent-review/sessions', requireAdmin, async (req, res) => {
@@ -10900,10 +11060,13 @@ app.post('/api/bna/agent-review/results', async (req, res) => {
       return res.status(401).json({
         success: false,
         error: 'Submit Agent Review Result requires a valid review session or owner login.',
+        redirect_to: agentReviewExactLoginUrl(req),
+        takeover_hint: 'Use takeover mode to log in once, then return here.',
         external_write_performed: false,
       });
     }
     const result = await saveAgentReviewResult(req.body || {}, { req, session, identity });
+    const metadata = result.metadata && typeof result.metadata === 'object' ? result.metadata : parseJsonMaybe(result.metadata) || {};
     res.json({
       success: true,
       result_ref: result.result_ref,
@@ -10923,6 +11086,10 @@ app.post('/api/bna/agent-review/results', async (req, res) => {
         updated_at: result.updated_at,
       },
       operations_url: `/operations/agent-review?result=${encodeURIComponent(result.result_ref)}`,
+      readback_url: `/api/bna/agent-review/results/${encodeURIComponent(result.result_ref)}`,
+      repair: metadata.repair_item || null,
+      repair_url: metadata.repair_item?.operations_url || metadata.repair_url || null,
+      rerun_prompt: metadata.rerun_prompt || null,
       external_write_performed: false,
     });
   } catch (err) {
@@ -66572,6 +66739,19 @@ function publicAssistantPolicyBoundaryReply(body = {}, actor = {}) {
     : 'I do not have a verified BNA policy for that in the current public content. I can pass the question to Shloimie, or I can help with the 10-1 program, self-governance, fit for your child, or how to start a conversation.';
 }
 
+function publicAssistantPrivateDataRequest(message = '') {
+  const text = String(message || '').toLowerCase();
+  const privateTopic = /\b(my child|my son|my daughter|my student|student progress|attendance|grades?|assignment|schedule|parent portal|student portal|payment status|invoice|tuition|access code|login code|password|private note|household|family record|phone number|email address)\b/.test(text);
+  const dataVerb = /\b(show|tell|give|what is|what's|send|open|see|view|check|look up|find|change|update|reset|share)\b/.test(text);
+  return privateTopic && dataVerb;
+}
+
+function publicAssistantPrivateBoundaryReply(body = {}, actor = {}) {
+  return assistantResponseIsHebrew(body, actor)
+    ? 'לא אוכל להציג או לאסוף פרטי תלמיד, משפחה, תשלום, קוד גישה או חשבון בצאט ציבורי. השתמשו בנתיב המתאים: /parent/login, /student, /provider, או בטופס התמיכה הציבורי /signup.html#contact.'
+    : 'I cannot show or collect private student, family, billing, access-code, or account details in this public chat. Use the right scoped path instead: /parent/login, /student, /provider, or the public support/contact form at /signup.html#contact.';
+}
+
 function publicAssistantActionReply(body = {}, actor = {}, result = {}, kind = 'lead') {
   const he = assistantResponseIsHebrew(body, actor);
   const ticketId = result.ticket?.id || null;
@@ -66587,8 +66767,8 @@ function publicAssistantActionReply(body = {}, actor = {}, result = {}, kind = '
       : `I captured that suggestion as a Shloimie decision${taskId ? ` #${taskId}` : ''}, so it does not disappear inside the chat.`;
   }
   return he
-    ? `תודה. העברתי את ההודעה לשלוימי${ticketId ? ` בכרטיס #${ticketId}` : ''}. אם תרצו, כתבו שם, טלפון או אימייל כדי שיהיה קל לחזור אליכם.`
-    : `Thank you. I sent this to Shloimie${ticketId ? ` as ticket #${ticketId}` : ''}. If you want a follow-up, share a name, phone, or email so he can reach you.`;
+    ? `תודה. העברתי את ההודעה לשלוימי${ticketId ? ` בכרטיס #${ticketId}` : ''}. לפרטי קשר נוספים, השתמשו בטופס יצירת הקשר המאושר.`
+    : `Thank you. I saved this for Shloimie${ticketId ? ` as ticket #${ticketId}` : ''}. For follow-up details, use the approved contact/support form at /signup.html#contact instead of posting personal details in public chat.`;
 }
 
 function readPublicHelperKnowledgeBundle() {
@@ -67127,6 +67307,9 @@ function assistantShouldUseHostedReply(actor = {}, message = '') {
 
 function assistantAdaptiveIntent({ actor = {}, message = '', body = {}, mode = 'safe' }) {
   const text = String(message || '');
+  if (!actor.canUseCodex && safeAssistantActorType(actor.type) === 'anonymous' && publicAssistantPrivateDataRequest(text)) {
+    return { kind: 'public_private_boundary' };
+  }
   if (assistantExplicitTicketRequest(text)) return { kind: 'action', action_id: 'create_ticket' };
   if (assistantOnboardingCaptureIntent({ actor, message: text, body })) {
     return { kind: 'onboarding_intake_capture', topic: assistantOnboardingCaptureTopic({ actor, message: text }) };
@@ -67567,6 +67750,19 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
     };
   }
 
+  if (intent.kind === 'public_private_boundary') {
+    return {
+      body: publicAssistantPrivateBoundaryReply(body, actor),
+      metadata: {
+        intent: 'public_private_boundary',
+        hosted_ai: false,
+        support_ticket_created: false,
+        external_write_performed: false,
+        routes: ['/parent/login', '/student', '/provider', '/signup.html#contact'],
+      },
+    };
+  }
+
   if (intent.kind === 'public_feedback') {
     const result = await createAssistantPublicFeedback({
       actor,
@@ -67833,10 +68029,39 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
 
   if (intent.kind === 'action') {
     if (intent.action_id === 'create_ticket' && actor.type === 'anonymous') {
-      const ticket = await createAssistantSupportTicket({ actor, message, thread, project, body, db });
+      const actionResult = await assistantRunActionTool({
+        actor,
+        message,
+        thread,
+        body,
+        actionId: intent.action_id,
+        db,
+      });
+      const ticketId = actionResult.result?.ticket?.id || null;
+      const auditId = actionResult.audit_log?.id || actionResult.auditLog?.id || null;
+      if (!actionResult.success || !actionResult.executed || !ticketId || !auditId) {
+        return {
+          body: 'I prepared the support request, but I did not receive typed action audit proof, so I will not claim a ticket was created. Use the approved support/contact form at /signup.html#contact or try again after signing in.',
+          metadata: {
+            intent: 'open_ticket_without_audit_proof_blocked',
+            action_id: intent.action_id,
+            success: Boolean(actionResult.success),
+            executed: Boolean(actionResult.executed),
+            audit_log_id: auditId,
+            ticket_id: ticketId,
+            external_write_performed: false,
+          },
+        };
+      }
       return {
-        body: `I sent this to the office as ticket #${ticket.id}.`,
-        metadata: { intent: 'open_ticket', ticket_id: ticket.id, action_id: intent.action_id },
+        body: `Created support ticket #${ticketId}. Audit #${auditId} confirms the typed action result; this chat did not receive any extra access.`,
+        metadata: {
+          intent: 'open_ticket',
+          ticket_id: ticketId,
+          action_id: intent.action_id,
+          executed: true,
+          audit_log_id: auditId,
+        },
       };
     }
     const actionResult = await assistantRunActionTool({
@@ -81160,6 +81385,20 @@ app.get('/providers/:slug', (req, res) => {
 app.get(['/operations/agent-review', '/agent-review'], requireAdmin, (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'agent-review.html'));
+});
+
+app.get('/agent-review/dropoff', (req, res) => {
+  const target = `/operations/agent-review/dropoff${req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : ''}`;
+  res.redirect(302, target);
+});
+
+app.get('/operations/agent-review/dropoff', async (req, res) => {
+  const access = await agentReviewDropoffAccess(req, { markOpen: false }).catch(() => ({ session: null, identity: null }));
+  if (!access.session && !access.identity) {
+    return res.redirect(operationsLoginUrlForRequest(req));
+  }
+  res.setHeader('Cache-Control', 'no-store');
+  return res.sendFile(path.join(__dirname, 'public', 'agent-review-dropoff.html'));
 });
 
 app.get('/agent-review/session', async (req, res) => {

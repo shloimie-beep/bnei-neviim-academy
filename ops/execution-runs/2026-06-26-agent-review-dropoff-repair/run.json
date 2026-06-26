@@ -1,0 +1,31 @@
+{
+  "run_id": "2026-06-26-agent-review-dropoff-repair",
+  "title": "Agent Review drop-off, scoped context access, and helper repair",
+  "created_at": "2026-06-26T00:30:00+03:00",
+  "updated_at": "2026-06-26T06:43:06.619Z",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260626-001",
+  "parent_id": "PARENT-20260626-001",
+  "workspace_key": "bna_platform",
+  "project_key": "agent_review_hub",
+  "predecessor_runs": [
+    "ops/execution-runs/2026-06-25-issue-24-agent-review-hub"
+  ],
+  "predecessor_terminal_evidence": {
+    "issue_24": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945"
+  },
+  "git_refs": {
+    "base_branch": "master",
+    "working_branch": "codex/agent-review-dropoff-repair-20260626",
+    "local_head_at_start": "0500ce74cad7a1299a6d0fd487b1deef24ab9fb8",
+    "issue_number": 24
+  },
+  "current_batch": {
+    "batch_id": "Z",
+    "requirement_id": "REQ-20260626-007",
+    "title": "Merge, deploy, live verification, and final closeout",
+    "status": "in_progress"
+  }
+}

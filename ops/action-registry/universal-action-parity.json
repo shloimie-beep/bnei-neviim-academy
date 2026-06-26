@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-25T16:09:16.268Z",
+  "generated_at": "2026-06-26T06:32:48.686Z",
   "requirement_id": "REQ-20260623-013",
   "source_id": "RAW-20260623-005",
   "registry_policy": "The root action registry and detailed typed action registry are the single parity source for UI buttons, Telegram requests, website assistant requests, Operations helper requests, automation actions, and Agent Work handoffs.",
@@ -16,26 +16,26 @@
   ],
   "browser_click_substitution_allowed": false,
   "ok": true,
-  "content_hash": "52eee79509494c3b631515ac45ad1e28d2e4bc395388ac6f5ad581b86ad26399",
+  "content_hash": "c3b0a00bf4de1f7e91b7dc7a758bfc1662083810f95e951c1bfeccee75470aec",
   "source_hashes": {
-    "ops/action-registry.json": "c1daae41175f9437d36460a7684ff15926aae82bf3ec7f833fb29baf212b321f",
+    "ops/action-registry.json": "4bf13302714a903ce458104ec7a6a4a979768853489a973573886b6f78a89628",
     "ops/action-registry/actions.json": "71eb9f135d8e056d37fb5d52d0f8a3fe0751ab1579dee845fdb7df6d097ea8d5",
-    "public/operations.html": "e5217497bc67b2aa351e434b73dfc989f0e9d359cfa4b9ff4e8bbb9312287b0f",
+    "public/operations.html": "3a168e241d089a79a44357451d08afb08fc5f81ded2ff243551f2578e0d5ad69",
     "public/parent.html": "a7b532eccb128ecb8606cc56b0357a9eea4dc00a99d8baff42aff1041c0c2d08",
     "public/student.html": "3a6ada46825b42f2b5ddf17f683553c267c9f64680664157b754c624c29475fe",
     "public/provider.html": "3e6c8cd9c3391cd3db74da93d701806bdfe23c867029aa455ad74509e56d5b6c",
     "src/platform/assistant/control-plane.js": "7eaf0dff452382e9694aa9dae32df76c29f1e0b912cfa69d59dc88eee9721592"
   },
   "summary": {
-    "root_actions": 72,
+    "root_actions": 77,
     "detailed_actions": 80,
-    "total_registry_rows": 152,
+    "total_registry_rows": 157,
     "visible_controls": 28,
     "visible_controls_classified": 28,
     "missing_contract": 0,
     "missing_handler": 0,
     "missing_test": 0,
-    "blocked_connector": 7,
+    "blocked_connector": 9,
     "risky_actions": 76,
     "risky_without_approval": 0,
     "visible_by_classification": {
@@ -46,11 +46,11 @@
       "blocked_connector": 2
     },
     "registry_by_classification": {
-      "secure_deep_link_only": 15,
-      "executable": 14,
+      "secure_deep_link_only": 16,
+      "executable": 15,
       "preview_then_approve": 68,
-      "read_only": 46,
-      "blocked_connector": 7,
+      "read_only": 47,
+      "blocked_connector": 9,
       "not_applicable": 2
     }
   },
@@ -62,16 +62,16 @@
       "count": 80
     },
     "website_assistant_request": {
-      "count": 152
+      "count": 157
     },
     "operations_helper_request": {
-      "count": 141
+      "count": 146
     },
     "automation_action": {
       "count": 74
     },
     "agent_work_handoff": {
-      "count": 84
+      "count": 89
     }
   },
   "release_gate": {
@@ -109,12 +109,12 @@
       {
         "name": "website_assistant_request_parity_present",
         "passed": true,
-        "value": 152
+        "value": 157
       },
       {
         "name": "agent_work_handoff_parity_present",
         "passed": true,
-        "value": 84
+        "value": 89
       }
     ]
   },
@@ -2742,6 +2742,161 @@
         "Copy session URL"
       ],
       "result_renderer": "Copies the current short-lived scoped review session URL for Agent Mode handoff without exposing owner credentials.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-COPY-PROMPT",
+      "label": "Copy prompt",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Copies the mobile-friendly Agent Mode prompt with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key metadata.",
+      "status": "active",
+      "classification": "executable",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Copy prompt"
+      ],
+      "result_renderer": "Copies the mobile-friendly Agent Mode prompt with agent_review_run_id, prompt_key, return_url, dropoff_url, requirement_id, and idempotency_key metadata.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-OPEN-DROPOFF",
+      "label": "Open drop-off",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review/dropoff",
+      "permission": "super_admin_or_scoped_review_session",
+      "allowed_roles": [
+        "super_admin_or_scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the owner or scoped-session Agent Review result drop-off form for the selected prompt and context.",
+      "status": "active",
+      "classification": "secure_deep_link_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Open drop-off"
+      ],
+      "result_renderer": "Opens the owner or scoped-session Agent Review result drop-off form for the selected prompt and context.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-MARK-BLOCKED",
+      "label": "Mark blocked",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review",
+      "permission": "super_admin_or_scoped_review_session",
+      "allowed_roles": [
+        "super_admin_or_scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Saves a BLOCKED Agent Review result through the typed result API when a scoped context cannot be safely opened.",
+      "status": "active",
+      "classification": "blocked_connector",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Mark blocked"
+      ],
+      "result_renderer": "Saves a BLOCKED Agent Review result through the typed result API when a scoped context cannot be safely opened.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-VIEW-RESULT",
+      "label": "View saved result",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/api/bna/agent-review/results/:resultRef",
+      "permission": "super_admin",
+      "allowed_roles": [
+        "super_admin"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens the owner-only readback for a saved AGR result.",
+      "status": "active",
+      "classification": "read_only",
+      "risk": "low",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "View saved result"
+      ],
+      "result_renderer": "Opens the owner-only readback for a saved AGR result.",
+      "rollback_or_correction_path": "standard_error_state",
+      "audit_event": ""
+    },
+    {
+      "action_id": "ACTION-AGENT-REVIEW-RERUN-PROMPT",
+      "label": "Rerun after repair",
+      "registry_layer": "root",
+      "category": "",
+      "surface": "agent_review_hub",
+      "route": "/operations/agent-review/dropoff",
+      "permission": "super_admin_or_scoped_review_session",
+      "allowed_roles": [
+        "super_admin_or_scoped_review_session"
+      ],
+      "allowed_workspaces": [],
+      "execution_handler": "Opens a rerun/drop-off path linked to the repair item created for a FAIL or BLOCKED Agent Review result.",
+      "status": "active",
+      "classification": "blocked_connector",
+      "risk": "medium",
+      "preview_required": false,
+      "approval_required": false,
+      "dry_run_supported": false,
+      "external_write_possible": false,
+      "handler_present": true,
+      "permission_present": true,
+      "test_present": true,
+      "telegram_examples": [],
+      "website_examples": [
+        "Rerun after repair"
+      ],
+      "result_renderer": "Opens a rerun/drop-off path linked to the repair item created for a FAIL or BLOCKED Agent Review result.",
       "rollback_or_correction_path": "standard_error_state",
       "audit_event": ""
     },
@@ -7457,13 +7612,18 @@
       "visible_currently": false,
       "action_ids": [
         "ACTION-AGENT-RESULT-RECORD",
+        "ACTION-AGENT-REVIEW-COPY-PROMPT",
         "ACTION-AGENT-REVIEW-COPY-SESSION",
         "ACTION-AGENT-REVIEW-EXIT",
+        "ACTION-AGENT-REVIEW-MARK-BLOCKED",
         "ACTION-AGENT-REVIEW-OPEN-CONTEXT",
+        "ACTION-AGENT-REVIEW-OPEN-DROPOFF",
         "ACTION-AGENT-REVIEW-OPEN-TARGET",
         "ACTION-AGENT-REVIEW-PROMPT-OPEN",
+        "ACTION-AGENT-REVIEW-RERUN-PROMPT",
         "ACTION-AGENT-REVIEW-RETURN-HUB",
         "ACTION-AGENT-REVIEW-SUBMIT-RESULT",
+        "ACTION-AGENT-REVIEW-VIEW-RESULT",
         "ACTION-AGENT-RUN-BLOCK-RESUME-CANCEL",
         "ACTION-AGENT-RUN-HANDOFF",
         "ACTION-AGENT-RUN-PREPARE",

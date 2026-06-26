@@ -1579,6 +1579,24 @@
       ]
     },
     {
+      "route": "/operations/agent-review/dropoff",
+      "surface": "agent_review_dropoff_form",
+      "access": "private_or_scoped_session",
+      "required_role": "super_admin_or_scoped_review_session",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "redirect_to_operations_login_with_exact_returnTo",
+      "expected_logged_in_behavior": "show_prompt_context_result_paste_form_and_typed_save_readback",
+      "privacy_risk": "critical",
+      "security_expectation": "Accepts owner login or a short-lived scoped review session only; stores redacted result summaries and no reusable all-access URL secret.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/agent-review/contexts",
       "surface": "agent_review_contexts_api",
       "access": "private",
@@ -1589,6 +1607,24 @@
       "expected_logged_in_behavior": "return_context_cards_prompt_pack_csrf_and_newest_recording_trace_status",
       "privacy_risk": "critical",
       "security_expectation": "Returns redacted review metadata only and no secrets.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/dropoff-context",
+      "surface": "agent_review_dropoff_context_api",
+      "access": "private_or_scoped_session",
+      "required_role": "super_admin_or_scoped_review_session",
+      "workspace_scope_required": true,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_with_login_returnTo_and_takeover_hint",
+      "expected_logged_in_behavior": "return_prompt_context_session_trace_and_idempotency_metadata",
+      "privacy_risk": "critical",
+      "security_expectation": "Returns only prompt/session metadata needed for drop-off and never exposes cookies, passwords, access codes, or private transcript bodies.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",
@@ -1643,6 +1679,24 @@
       "expected_logged_in_behavior": "persist_idempotent_typed_agent_review_result_with_readback_reference",
       "privacy_risk": "critical",
       "security_expectation": "Stores redacted structured result metadata through a typed API; no external write is performed.",
+      "related_goal_ids": [
+        "GOAL-CORE-002",
+        "GOAL-CORE-006",
+        "GOAL-CORE-010",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
+      "route": "/api/bna/agent-review/results/:resultRef",
+      "surface": "agent_review_result_readback_api",
+      "access": "private",
+      "required_role": "super_admin",
+      "workspace_scope_required": false,
+      "public_allowed": false,
+      "expected_logged_out_behavior": "reject_unauthorized",
+      "expected_logged_in_behavior": "return_saved_agent_review_result_for_owner_readback",
+      "privacy_risk": "critical",
+      "security_expectation": "Owner-only readback returns redacted structured review result evidence and no private transcript bodies.",
       "related_goal_ids": [
         "GOAL-CORE-002",
         "GOAL-CORE-006",
