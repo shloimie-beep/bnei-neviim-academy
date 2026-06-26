@@ -1,0 +1,54 @@
+{
+  "ok": true,
+  "baseUrl": "http://127.0.0.1:61056",
+  "routes": [
+    {
+      "route": "/one-time",
+      "status": "basic-shell-pass"
+    },
+    {
+      "route": "/operations?workspace=rabbi_sheller_provider&project=one_time_mishnah_class&view=service_providers&section=overview",
+      "status": "basic-shell-pass"
+    },
+    {
+      "route": "/provider.html?review=one-time",
+      "status": "basic-shell-pass"
+    },
+    {
+      "route": "/parent.html?review=one-time",
+      "status": "basic-shell-pass"
+    },
+    {
+      "route": "/student.html?review=one-time",
+      "status": "basic-shell-pass"
+    },
+    {
+      "route": "/one-time-classroom.html?review=one-time&code=TEST-ONETIME-REVIEW-ACCESS",
+      "status": "basic-shell-pass"
+    },
+    {
+      "route": "/one-time-email-review.html",
+      "status": "basic-shell-pass"
+    }
+  ],
+  "previewRequests": [
+    {
+      "method": "POST",
+      "redacted": true,
+      "body": {
+        "source": {
+          "title": "2026-06-18-rabbi-elie-scheller.md",
+          "drive_file_id": "redacted",
+          "url": "redacted",
+          "mime_type": "text/markdown"
+        }
+      }
+    }
+  ],
+  "guardrails": {
+    "mockedApiOnly": true,
+    "productionWrites": false,
+    "externalWrites": false,
+    "deploy": false
+  }
+}

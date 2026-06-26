@@ -378,7 +378,7 @@
     <link rel="stylesheet" href="/css/bna-app-shell.css">
     <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
-<body class="bna-shell bna-portal-page bna-provider-page">
+<body class="bna-shell bna-portal-page bna-provider-page" data-one-time-rabbi-dashboard="provider-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
     <header class="brand-topbar">
         <div class="brand-lockup">
             <span class="brand-mark" aria-hidden="true">BNA</span>
@@ -1367,7 +1367,7 @@
                     <div class="one-time-sidebar-group">
                         <span class="one-time-sidebar-group-label">${escapeHtml(group.label)}</span>
                         ${group.sections.map(section => `
-                            <button type="button" data-provider-nav="${escapeHtml(section.id)}" class="${section.id === activeProviderSection ? 'active' : ''}">
+                            <button type="button" data-action-id="ACTION-PROVIDER-SECTION-NAVIGATION" data-one-time-action-state="navigate" data-button-state="working" data-provider-nav="${escapeHtml(section.id)}" class="${section.id === activeProviderSection ? 'active' : ''}">
                                 <span>${escapeHtml(section.label)}</span>
                             </button>
                         `).join('')}
@@ -1381,12 +1381,19 @@
             portal.classList.add('one-time-provider-workspace');
             const hero = portal.querySelector('.hero');
             const logout = document.getElementById('logoutButton');
-            if (logout) logout.textContent = viewAsSession ? 'Exit Rabbi View' : 'Close Preview';
+            if (logout) {
+                logout.textContent = viewAsSession ? 'Exit Rabbi View' : 'Close Preview';
+                logout.setAttribute('data-action-id', viewAsSession ? 'ACTION-ONETIME-VIEW-AS-RABBI-EXIT' : 'ACTION-PROVIDER-SECTION-NAVIGATION');
+                logout.setAttribute('data-one-time-action-state', 'navigate');
+                logout.setAttribute('data-button-state', 'working');
+            }
             if (hero && !hero.querySelector('[data-one-time-provider-menu]')) {
                 const button = document.createElement('button');
                 button.type = 'button';
                 button.className = 'btn one-time-provider-menu-trigger';
                 button.dataset.oneTimeProviderMenu = 'true';
+                button.dataset.oneTimeActionState = 'navigate';
+                button.dataset.buttonState = 'working';
                 button.innerHTML = '<span class="one-time-provider-menu-icon" aria-hidden="true"></span><span>Workspace Menu</span>';
                 hero.appendChild(button);
             }
@@ -1395,9 +1402,28 @@
                 backdrop.type = 'button';
                 backdrop.className = 'one-time-sidebar-backdrop';
                 backdrop.dataset.oneTimeProviderMenuClose = 'true';
+                backdrop.dataset.oneTimeActionState = 'navigate';
+                backdrop.dataset.buttonState = 'working';
                 backdrop.setAttribute('aria-label', 'Close workspace menu');
                 portal.prepend(backdrop);
             }
+        }
+
+        function instrumentOneTimeProviderButtons() {
+            if (!document.body.classList.contains('one-time-review-active')) return;
+            document.querySelectorAll('button').forEach(button => {
+                if (!button.hasAttribute('data-action-id')
+                    && !button.hasAttribute('data-one-time-action-state')
+                    && !button.hasAttribute('data-button-state')) {
+                    button.setAttribute('data-one-time-action-state', button.disabled ? 'blocked' : 'working');
+                }
+                if (!button.hasAttribute('data-button-state')) {
+                    button.setAttribute('data-button-state', button.disabled ? 'blocked' : 'working');
+                }
+                if (button.disabled && !button.title) {
+                    button.title = 'Review-only or gated until setup is complete.';
+                }
+            });
         }
 
         function applyOneTimeReviewBrand(viewAsSession = null) {
@@ -1630,6 +1656,7 @@
                 ].join('');
             }
             setProviderSection('overview');
+            instrumentOneTimeProviderButtons();
         }
 
         async function loadSession() {

@@ -7791,6 +7791,7 @@
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
     <link rel="stylesheet" href="/css/platform-ui/platform-ui.css">
+    <link rel="stylesheet" href="/css/one-time-operations.css">
 </head>
 <body class="bna-shell bna-ops-shell-page">
     <div id="app">
@@ -11294,7 +11295,7 @@
                 return map;
             }, {});
             return `
-                <section class="focus-panel" aria-label="Rabbi One Time task dialogue board">
+                <section class="focus-panel" data-one-time-rabbi-module="tasks_decisions" data-one-time-task-lane="board" aria-label="Rabbi One Time task dialogue board">
                     <div class="task-section-header">
                         <div>
                             <h3>Rabbi / One Time Dialogue</h3>
@@ -11303,7 +11304,7 @@
                     </div>
                     <div class="rabbi-dialogue-board">
                         ${RABBI_DIALOGUE_COLUMNS.map(column => `
-                            <section class="rabbi-dialogue-column" aria-label="${escapeHtml(column.label)}">
+                            <section class="rabbi-dialogue-column" data-one-time-task-lane="${escapeHtml(column.id)}" aria-label="${escapeHtml(column.label)}">
                                 <div class="task-section-header">
                                     <div>
                                         <h3>${escapeHtml(column.label)}</h3>
@@ -13141,8 +13142,11 @@
         }
 
         function renderMetricButton(label, value, note, onclick) {
+            const oneTimeState = currentWorkspaceIsOneTime()
+                ? ' data-one-time-action-state="navigate" data-button-state="working"'
+                : '';
             return `
-                <button class="metric-button" onclick="${onclick}" title="${escapeHtml(note)}">
+                <button class="metric-button" onclick="${onclick}" title="${escapeHtml(note)}"${oneTimeState}>
                     <span class="metric-label">${escapeHtml(label)}</span>
                     <span class="metric-value">${Number(value || 0)}</span>
                     <span class="metric-note">${escapeHtml(note)}</span>
@@ -17552,7 +17556,7 @@
             const schedules = productSystem.schedules || [];
             const primarySchedule = schedules[0] || {};
             return `
-                <div class="container">
+                <div class="container" data-one-time-rabbi-dashboard="operations" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Provider Workspace</div>
@@ -17561,7 +17565,7 @@
                         </div>
                     </div>
                     ${section === 'overview' ? `
-                        <section class="focus-panel">
+                        <section class="focus-panel" data-one-time-rabbi-module="overview">
                             <div class="task-overview-grid">
                                 ${renderMetricButton('Launch', rabbiLaunch.checkouts.length + rabbiLaunch.members.length, 'Checkout, access grants, member login, and preview page.', "setCurrentSection('launch')")}
                                 ${renderMetricButton('Program', 1, 'Mishnayos Membership and Rabbi Scheller 7:00 PM Israel class.', "setCurrentSection('program')")}
@@ -17572,7 +17576,7 @@
                         </section>
                     ` : ''}
                     ${['overview', 'program'].includes(section) ? `
-                        <section class="focus-panel">
+                        <section class="focus-panel" data-one-time-rabbi-module="program">
                             <div class="task-section-header"><h3>Mishnayos Membership</h3><span>Revenue-share partner</span></div>
                             <div class="contact-detail-grid">
                                 ${renderContactDetailItem('Provider', provider.provider_name || 'Rabbi Sheller')}
@@ -27760,7 +27764,7 @@
                 .sort((a, b) => Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0));
             const latestCandidate = candidates[0] || null;
             return `
-                <div class="meeting-drop-panel">
+                <div class="meeting-drop-panel" data-one-time-rabbi-module="classes_content">
                     <div class="meeting-drop-hero">
                         <div>
                             <div class="event-type">Rabbi Meeting Intake</div>
@@ -27825,7 +27829,7 @@
                 </div>
             `).join('');
             return `
-                <div class="content-bulk-actions" data-one-time-drive-brief-preview>
+                <div class="content-bulk-actions" data-one-time-drive-brief-preview data-one-time-content-command-center data-one-time-no-write-preview>
                     <div class="content-bulk-header">
                         <div>
                             <div class="event-type">No-write Drive Brief Preview</div>
@@ -34716,6 +34720,82 @@
             document.title = 'BNA Operations';
         }
 
+        function instrumentOneTimeOperationsUi() {
+            const active = currentWorkspaceIsOneTime();
+            document.body.classList.toggle('one-time-operations-active', active);
+            const app = document.getElementById('app');
+            if (!active || !app) return;
+
+            const dashboard = app.querySelector('[data-one-time-rabbi-dashboard]')
+                || app.querySelector('.container')
+                || app;
+            dashboard.setAttribute('data-one-time-rabbi-dashboard', dashboard.getAttribute('data-one-time-rabbi-dashboard') || 'operations');
+            dashboard.setAttribute('data-one-time-workspace', 'rabbi_sheller_provider');
+            dashboard.setAttribute('data-one-time-project', 'one_time_mishnah_class');
+
+            app.querySelectorAll('.focus-panel, .page-heading, .content-card, [data-top-filter-rail]').forEach((node) => {
+                if (!node.hasAttribute('data-one-time-rabbi-module')) {
+                    node.setAttribute('data-one-time-rabbi-module', currentView || 'overview');
+                }
+            });
+
+            if (currentView === 'content') {
+                app.querySelectorAll('[data-one-time-drive-brief-preview]').forEach((node) => {
+                    node.setAttribute('data-one-time-content-command-center', '');
+                    node.setAttribute('data-one-time-rabbi-module', 'classes_content');
+                });
+            }
+
+            if (currentView === 'tasks') {
+                app.querySelectorAll('.rabbi-dialogue-board, .rabbi-dialogue-column').forEach((node) => {
+                    if (!node.hasAttribute('data-one-time-task-lane')) {
+                        node.setAttribute('data-one-time-task-lane', 'tasks_decisions');
+                    }
+                });
+            }
+
+            if (currentView === 'agents') {
+                app.querySelectorAll('[data-scoped-agent-status]').forEach((node) => {
+                    node.setAttribute('data-one-time-task-lane', 'agent_status');
+                    node.setAttribute('data-one-time-rabbi-module', 'tasks_decisions');
+                });
+            }
+
+            app.querySelectorAll('.settings-disabled-note, .error-banner, [data-one-time-product-readiness], [data-one-time-payment-access-class-links]').forEach((node) => {
+                const text = (node.textContent || '').toLowerCase();
+                if (/blocked|gated|approval|required|no-write|preview|external|credential|dns|zoom|vimeo|resend|stripe/.test(text)) {
+                    node.setAttribute('data-one-time-setup-blocker', '');
+                    node.setAttribute('data-one-time-no-write-preview', '');
+                }
+            });
+
+            app.querySelectorAll('button').forEach((button) => {
+                const hasMarker = button.hasAttribute('data-action-id')
+                    || button.hasAttribute('data-one-time-action-state')
+                    || button.hasAttribute('data-button-state');
+                const text = `${button.textContent || ''} ${button.title || ''} ${button.getAttribute('aria-label') || ''}`.toLowerCase();
+                const disabled = button.disabled || button.getAttribute('aria-disabled') === 'true';
+                const externalRisk = /send|publish|charge|checkout|stripe|zoom|vimeo|upload|grant|dns|external/.test(text);
+                const preview = /preview|dry-run|no-write|review/.test(text);
+                const state = disabled
+                    ? 'blocked'
+                    : externalRisk
+                        ? 'gated'
+                        : preview
+                            ? 'preview'
+                            : 'working';
+                if (!hasMarker) button.setAttribute('data-one-time-action-state', state);
+                if (!button.hasAttribute('data-button-state')) button.setAttribute('data-button-state', state);
+                if ((disabled || externalRisk) && !button.title) {
+                    button.title = 'Preview or gated control. External writes require approval and setup.';
+                }
+                if (disabled || externalRisk || preview) {
+                    const scope = button.closest('.focus-panel, .content-bulk-actions, .settings-disabled-note, .task-actions');
+                    if (scope) scope.setAttribute(externalRisk ? 'data-one-time-setup-blocker' : 'data-one-time-no-write-preview', '');
+                }
+            });
+        }
+
         function render(errors = [], options = {}) {
             if (!options.force && renderShouldWaitForTextEntry()) {
                 deferRenderUntilTextEntrySettles(errors);
@@ -34761,6 +34841,7 @@
             app.innerHTML = renderAppShell(errorBanner + content + renderTaskModal() + renderSupportTicketModal());
             if (currentView === 'platform_suite') mountPlatformSuite();
             resetTaskDetailViewportAfterRender();
+            instrumentOneTimeOperationsUi();
         }
 
         function switchView(view) {

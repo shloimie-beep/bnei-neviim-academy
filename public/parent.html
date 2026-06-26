@@ -1177,7 +1177,7 @@
     <link rel="stylesheet" href="/css/bna-app-shell.css">
     <link rel="stylesheet" href="/css/one-time-shared-review.css">
 </head>
-<body class="bna-shell bna-portal-page bna-parent-page">
+<body class="bna-shell bna-portal-page bna-parent-page" data-one-time-rabbi-dashboard="parent-review" data-one-time-workspace="rabbi_sheller_provider" data-one-time-project="one_time_mishnah_class">
     <header class="brand-topbar">
         <div class="brand-lockup">
             <span class="brand-mark" aria-hidden="true">BNA</span>
@@ -1270,7 +1270,7 @@
             <div class="status" id="parentOnboardingStatus"></div>
         </section>
 
-        <button class="portal-menu-toggle hidden" id="portalMenuToggle" type="button" aria-controls="parentPortalSidebar" aria-expanded="false">
+        <button class="portal-menu-toggle hidden" id="portalMenuToggle" type="button" aria-controls="parentPortalSidebar" aria-expanded="false" data-one-time-action-state="navigate" data-button-state="working">
             <span aria-hidden="true">&#9776;</span>
             <span data-menu-label>Menu</span>
         </button>
@@ -4686,7 +4686,7 @@
                         <span class="status-pill">${escapeHtml(data.support_ticket?.status || '')}</span>
                         <form data-one-time-parent-review-form>
                             <label>Ask support / Rabbi<textarea name="body" placeholder="Type a review-only parent question"></textarea></label>
-                            <div class="button-row"><button type="submit">Submit preview</button></div>
+                            <div class="button-row"><button type="submit" data-one-time-action-state="preview" data-button-state="preview">Submit preview</button></div>
                             <div class="status"></div>
                         </form>
                     </article>
