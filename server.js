@@ -67049,6 +67049,8 @@ function publicAssistantTier3UnsafeActionRequest(message = '') {
   const patterns = [
     /\bdeploy(?:\s+(?:new\s+)?code)?\b/,
     /\bproduction\s+(?:release|deploy|deployment|database|db|mutation)\b/,
+    /\b(?:write|update|change|mutate|delete|remove|backfill|migrate|seed|import|export)\b[^.?!\n]{0,110}\b(?:production|prod|live)\b/,
+    /\b(?:run|apply|execute)\b[^.?!\n]{0,90}\b(?:migration|sql|backfill|database\s+change|production\s+write)\b/,
     /\bpush\s+(?:to\s+)?railway\b|\brailway\s+(?:deploy|deployment|release)\b/,
     /\bapply\s+(?:the\s+)?class\s+backfill\b|\bclass\s+backfill\b/,
     /\b(?:show|give|send|export|list|display|open|view|share)\b[^.?!\n]{0,80}\b(?:student|parent|family)\b[^.?!\n]{0,80}\b(?:contact|phone|email|info|details|address)\b/,
@@ -67056,20 +67058,22 @@ function publicAssistantTier3UnsafeActionRequest(message = '') {
     /\bchange\s+dns\b|\bdns\b[^.?!\n]{0,60}\b(?:change|update|point|switch|edit)\b/,
     /\b(?:charge|refund)\b[^.?!\n]{0,90}\b(?:card|payment|tuition|invoice|customer|parent)\b/,
     /\b(?:add|update|change|delete|remove)\b[^.?!\n]{0,90}\b(?:payment method|card on file|credit card)\b/,
+    /\b(?:change|update|create|send|issue|void|refund|charge|mark|run|set)\b[^.?!\n]{0,90}\b(?:billing|invoice|tuition|payment|checkout|subscription|receipt)\b/,
     /\bsend\b[^.?!\n]{0,130}\b(?:whatsapp|email|telegram|sms|message)\b[^.?!\n]{0,130}\b(?:all parents|parents|students|families|everyone)\b/,
     /\bwhatsapp\b[^.?!\n]{0,90}\b(?:all parents|parents|students|families|everyone)\b/,
     /\bupload\b[^.?!\n]{0,110}\b(?:vimeo|drive|google drive|class|recording)\b/,
     /\b(?:move|write|upload)\b[^.?!\n]{0,90}\b(?:drive|google drive)\b/,
+    /\b(?:connect|enable|configure|set\s+up|reconnect|sync|resync|run|trigger|restart|disable|change|update)\b[^.?!\n]{0,120}\b(?:integration|stripe|buffer|railway|github|google\s+drive|drive|whatsapp|wapi|vimeo|resend|openai|kimi|webhook|api)\b/,
     /\b(?:retry|restart|rerun)\b[^.?!\n]{0,90}\bproduction\s+worker\b/,
     /\b(?:rotate|reveal|share|paste|set)\b[^.?!\n]{0,90}\b(?:credential|credentials|api key|api keys|password|passwords|token|tokens)\b/,
-    /\b(?:grant|change|add|remove)\b[^.?!\n]{0,90}\b(?:account permission|admin access|credentials|user permission)\b/,
+    /\b(?:grant|change|add|remove|make|promote|create|enable|give|set)\b[^.?!\n]{0,90}\b(?:account permission|admin access|operations admin|admin|super[-\s]?admin|operations access|owner access|staff access|role|credentials|user permission|user role)\b/,
     /\bpublic(?:ly)?\s+publish\b|\bpublish\b[^.?!\n]{0,90}\b(?:public|live|website|production)\b/,
   ];
   return patterns.some((pattern) => pattern.test(text));
 }
 
 function publicAssistantTier3UnsafeActionReply(body = {}, actor = {}) {
-  return 'I cannot accept deployment, production mutation, private-data, payment, DNS, credential, public-publish, Drive/Vimeo write, broadcast-send, or production-worker commands from this public or unscoped chat. I did not create a task, Codex queue item, deployment request, support ticket, or external write. Please sign in with the correct Operations role or contact Shloimie through the approved support path.';
+  return 'I cannot accept deployment, production mutation/write, admin-access, integration, private-data, billing/payment, DNS, credential, public-publish, Drive/Vimeo write, broadcast-send, or production-worker commands from this public or unscoped chat. I did not create a task, Codex queue item, deployment request, support ticket, or external write. Please sign in with the correct Operations role or contact Shloimie through the approved support path.';
 }
 
 function publicAssistantTier3UnsafeActionMetadata(body = {}) {
@@ -68866,9 +68870,9 @@ function assertAssistantPermission(actor = {}, actionType = '', target = {}) {
     parent: ['create_ticket', 'ask_provider_question', 'create_or_update_student_goal', 'log_check_in_progress'],
     student: ['create_ticket', 'create_or_update_student_goal', 'log_check_in_progress'],
     service_provider: ['create_ticket', 'create_provider_profile_item', 'upload_or_link_content', 'create_class_session', 'add_class_material_url', 'ask_provider_question'],
-    rabbi: ['create_ticket', 'create_task', 'create_or_update_student_goal', 'log_check_in_progress', 'create_class_session', 'add_class_material_url'],
-    staff: ['create_ticket', 'create_task', 'create_or_update_student_goal', 'log_check_in_progress'],
-    admin: ['create_ticket', 'create_task', 'create_or_update_student_goal', 'log_check_in_progress', 'ask_provider_question'],
+    rabbi: ['create_ticket', 'create_or_update_student_goal', 'log_check_in_progress', 'create_class_session', 'add_class_material_url'],
+    staff: ['create_ticket', 'create_or_update_student_goal', 'log_check_in_progress'],
+    admin: ['create_ticket', 'create_or_update_student_goal', 'log_check_in_progress', 'ask_provider_question'],
   };
   const allowed = roleActions[role] || roleActions.anonymous;
   if (!allowed.includes(action)) {

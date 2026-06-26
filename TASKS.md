@@ -6,6 +6,13 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] `RAW-20260626-004` / `REQ-20260626-116` through
+  `REQ-20260626-120`: Canonical Issue #24 owner follow-up for helper/task
+  guardrails and required Agent Mode pilot reruns. Broad parallel Agent Mode
+  audits are paused until `operations-super-admin`, `public-login-setup`, and
+  `cross-role-wrong-permission` each have visible AGR or exact BLOCKED
+  evidence. Local patch and tests are complete; remaining gate is merge/deploy
+  plus expanded public-helper smoke and the three saved/readback AGR pilots.
 - [x] `RAW-20260626-003` / `REQ-20260626-109` through
   `REQ-20260626-115`: Agent Mode self-save/drop-off contract and public helper
   Tier-3 unsafe-action guardrails. PR #36 merged to master
