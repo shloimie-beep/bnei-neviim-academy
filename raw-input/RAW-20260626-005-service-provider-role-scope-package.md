@@ -2,7 +2,7 @@
 
 Source channel: `codex_chat`
 Captured at: `2026-06-26T18:00:00+03:00`
-Parse status: `implemented`
+Parse status: `implemented, deployed, live-verified`
 Workspace/project: `bna_platform`, `rabbi_sheller_provider`, `one_time_mishnah_class`
 
 ## Raw Operator Request
@@ -26,4 +26,7 @@ Workspace/project: `bna_platform`, `rabbi_sheller_provider`, `one_time_mishnah_c
 ## Implementation Status
 
 Local verification passed on branch `codex/service-provider-scopes-merge-20260626`.
-Production completion still requires PR merge, deployment, and live Operations/provider smoke checks.
+PR #43 was merged to `master`, Railway deployment
+`112ef3b5-0ce7-45e3-9c55-368f783ccd1d` reached `SUCCESS`, and live
+Operations/provider scope smoke checks passed. See
+`tasks-pending/2026-06-26-service-provider-scopes-crm.md` for final evidence.
