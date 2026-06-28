@@ -104,3 +104,11 @@ test('operations UI uses digest-card topic arrays instead of transcript-body top
   assert.doesNotMatch(operationsHtml, /addContentSearchValue\(parts,\s*job\.transcript_text/);
   assert.doesNotMatch(operationsHtml, /String\(job\.transcript_text \|\| ''\)\.slice\(0,\s*16000\)/);
 });
+
+test('Railway deploy bundle includes transcript digest cards for live content API', () => {
+  const redeployScript = fs.readFileSync(path.join(repoRoot, 'scripts', 'railway-redeploy.ps1'), 'utf8');
+
+  assert.match(redeployScript, /content-memory/);
+  assert.match(redeployScript, /transcript-digests/);
+  assert.match(redeployScript, /Copy-Item[\s\S]+transcript-digests/);
+});

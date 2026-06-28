@@ -250,6 +250,14 @@ if (Test-Path (Join-Path $repoRoot "src")) {
 if (Test-Path (Join-Path $repoRoot "scripts")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "scripts") -Destination $deployRoot -Recurse
 }
+if (Test-Path (Join-Path (Join-Path $repoRoot "content-memory") "transcript-digests")) {
+  $contentMemoryDeployRoot = Join-Path $deployRoot "content-memory"
+  New-Item -ItemType Directory -Path $contentMemoryDeployRoot -Force | Out-Null
+  Copy-Item `
+    -LiteralPath (Join-Path (Join-Path $repoRoot "content-memory") "transcript-digests") `
+    -Destination $contentMemoryDeployRoot `
+    -Recurse
+}
 if (Test-Path (Join-Path $repoRoot "ops")) {
   $opsDeployRoot = Join-Path $deployRoot "ops"
   New-Item -ItemType Directory -Path $opsDeployRoot -Force | Out-Null
