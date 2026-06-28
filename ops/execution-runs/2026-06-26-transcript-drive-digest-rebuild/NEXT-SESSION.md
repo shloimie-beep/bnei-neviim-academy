@@ -61,6 +61,30 @@ Student question/score apply status:
   class-question dry-run evidence:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md`.
 
+PR #49 catch-up package closeout:
+
+- `REQ-20260628-144` through `REQ-20260628-151` are Done for the safe
+  no-write catch-up package.
+- Branch:
+  `codex/issue41-class-question-fallback-20260628`
+- Commit:
+  `2a86311f87d3a6d8ffa20fbd7397d25d16a33442`
+- PR:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49`
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011`
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041`
+- Added evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md`,
+  `SCORE-PROGRESS-CATCHUP-PLAN.md`, `TASK-ACTION-CATCHUP-PLAN.md`,
+  `RESEARCH-CONTENT-CATCHUP-PLAN.md`, and `APPLY-LANE-DESIGN.md`.
+- Verification passed: privacy-safe digest export, content-card topic audit,
+  46 focused tests, active run validation/next/status, secrets audit,
+  JSON/JSONL parse, added-line privacy scan, and `git diff --check`.
+- Issue #41 remains open. Production parser/question/task/score/progress
+  writes remain blocked by `DEC-20260626-101`.
+
 ChatGPT/repo transcript access status:
 
 - Repo-safe digest memory is available at

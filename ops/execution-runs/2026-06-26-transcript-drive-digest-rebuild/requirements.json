@@ -1805,7 +1805,7 @@
       "priority": "high",
       "can_continue_without_operator": true,
       "deployment_required": false,
-      "updated_at": "2026-06-28T14:45:00+03:00",
+      "updated_at": "2026-06-28T15:25:00+03:00",
       "id": "REQ-20260628-144",
       "title": "Register Issue #41 catch-up package continuation",
       "expected_result": "The June 28 catch-up packet is preserved as raw input and mapped to active Issue #41 requirements without creating a duplicate run.",
@@ -2114,9 +2114,9 @@
         "REQ-20260628-149",
         "REQ-20260628-150"
       ],
-      "status": "needs_verification",
-      "implementation_status": "needs_verification; code and evidence are generated locally but full verification, commit, push, PR update, and Issue #41 comment are still pending",
-      "next_action": "Run the required verification suite, update PR #49 and Issue #41, then mark this requirement done with links.",
+      "status": "done",
+      "implementation_status": "done; code and evidence were verified, committed, pushed to PR #49, and documented in PR #49 plus Issue #41 comments without closing Issue #41",
+      "next_action": "Keep Issue #41 open; run npm run bna:run:next for the next safe batch, or wait for exact owner approval before any production apply/write path.",
       "acceptance_criteria": [
         "Focused tests pass",
         "Privacy scans pass",
@@ -2129,10 +2129,23 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041"
       ],
       "verification": [
-        "PENDING full suite and GitHub update"
+        "PASS npm run content:export-digests -- --privacy-scan: 29 recordings, raw bodies false, 0 privacy findings",
+        "PASS npm run content:card-topic-audit: 29 recordings, 29 generated titles, 10 Needs parse, 0 Needs routing, 0 Needs topic classification",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js: 46/46",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 0 tracked secret-risk files",
+        "PASS JSON/JSONL parse: 2200 payloads, BOM-tolerant",
+        "PASS added-line privacy scan: no raw Drive URLs/IDs, secret literals, or raw transcript bodies",
+        "PASS git diff --check: Windows CRLF warnings only",
+        "PASS git push origin codex/issue41-class-question-fallback-20260628",
+        "PASS PR #49 updated and Issue #41 comment posted; Issue #41 remains open"
       ],
       "implementation_files": [
         "src/lib/bna/class-drive-intake-reconcile.js",

@@ -27109,13 +27109,34 @@ digest rebuild run.
   rollback, row-level evidence, dedupe keys, small batches, dry-run default,
   and refusal conditions documented; production apply remains disabled.
 
-Verification so far:
+Verification:
 
 - `node --test tests/class-drive-intake-reconcile.test.js`: 20/20 passed.
 - `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: repo evidence refreshed, no production mutation.
+- `npm run content:export-digests -- --privacy-scan`: passed, 29 recordings,
+  raw bodies false, 0 privacy findings.
+- `npm run content:card-topic-audit`: passed, 29 recordings, 29 generated
+  titles, 10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic
+  classification`.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  passed, 46/46.
+- `npm run bna:run:validate`, `npm run bna:run:next`,
+  `npm run bna:run:status`, and `npm run secrets:audit`: passed.
+- JSON/JSONL parse passed: 2200 payloads, BOM-tolerant.
+- Added-line privacy scan passed: no raw Drive URLs/IDs, secret literals, or
+  raw transcript bodies.
+- `git diff --check`: passed with Windows CRLF warnings only.
+- Commit `2a86311f87d3a6d8ffa20fbd7397d25d16a33442` pushed to PR #49.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011`
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041`
 
-Remaining: `REQ-20260628-151` still needs the full verification suite, commit,
-push, PR #49 update, and Issue #41 comment. No `--apply`, production DB
+Remaining: Issue #41 remains open. `DEC-20260626-101` still blocks any
+production parser/question/task/score/progress write, further Drive write
+beyond #83, raw transcript export, broad sync, class backfill, paid
+retranscription, worker retry, or other unsafe/external mutation. No `--apply`,
+production DB
 mutation, student portal write, score/progress write, production task write,
 Drive write, broad Drive sync, class backfill, raw transcript export, AI call,
 paid retranscription, send/publish/charge/access grant, or credential/account/

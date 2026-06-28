@@ -254,8 +254,9 @@ Execution result so far:
 - `REQ-20260628-150` Done: `APPLY-LANE-DESIGN` documents the owner gate,
   snapshot/rollback, row-level evidence, dedupe, small-batch, dry-run-default,
   and refusal conditions while leaving production apply disabled.
-- `REQ-20260628-151` Needs verification until the full check suite, commit,
-  push, PR #49 update, and Issue #41 comment are complete.
+- `REQ-20260628-151` Done: full verification passed, commit
+  `2a86311f87d3a6d8ffa20fbd7397d25d16a33442` was pushed to PR #49, PR #49
+  was updated, and Issue #41 was commented without marking it done.
 
 Key evidence:
 
@@ -264,6 +265,26 @@ Key evidence:
 - `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md`
 - `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md`
 - `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md`
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011`
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041`
+
+Verification:
+
+- `npm run content:export-digests -- --privacy-scan`: passed, 29 recordings,
+  raw bodies false, 0 privacy findings.
+- `npm run content:card-topic-audit`: passed, 29 recordings, 29 generated
+  titles, 10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic
+  classification`.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  passed, 46/46.
+- `npm run bna:run:validate`, `npm run bna:run:next`,
+  `npm run bna:run:status`, and `npm run secrets:audit`: passed.
+- JSON/JSONL parse passed: 2200 payloads, BOM-tolerant.
+- Added-line privacy scan passed: no raw Drive URLs/IDs, secret literals, or
+  raw transcript bodies.
+- `git diff --check`: passed with Windows CRLF warnings only.
 
 Guardrails held: no `--apply`, no production DB mutation, no student portal
 write, no score/progress write, no production task write, no Drive write, no
