@@ -18,10 +18,15 @@ not authorize active GHL runtime paths.
   Live readback now returns all 29 digest cards with job #83's clean generated
   title, 10 explicit `Needs parse` jobs, normalized topic/status data, and no
   raw transcript text inside `digest_card` payloads. Fresh read-only backlog
-  audit remains `PARTIAL` with 10 jobs needing parse/reparse review, 13
-  student-question rows, 6 question rows needing student-match review, and 0
-  safe score/progress apply rows. No production apply command is currently
-  safe; the no-write owner decision packet is
+  audit remains `PARTIAL` with 10 jobs needing parse/reparse review. The
+  class-question dry-run now resolves the old human-match question blocker by
+  routing unmatched/ambiguous question candidates as class questions for all
+  active students: 917 future `bna_accountability_events` writes are planned if
+  a separate production apply path is approved, including 912 class-question
+  broadcast inserts, 5 matched student-question inserts, and 2 existing rows
+  skipped. Score/progress still has 0 safe row-level apply rows. No production
+  apply command has been approved or implemented; the no-write owner decision
+  packet is
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
   Owner approval is still required for any production parser/question/task/
   score/progress write or other unsafe/raw/external path. Done:
@@ -40,8 +45,9 @@ not authorize active GHL runtime paths.
   tests, content-card/topic-filter tests, digest privacy scan 0 findings,
   content-card topic audit, Drive sync dry-run/no-AI, approved #83
   sync/readback, read-only Drive listing, fresh read-only intake audit, deploy,
-  Railway doctor, live app/content/taxonomy smokes, live content-card readback, and
-  active run validation. Remaining decision: `DEC-20260626-101` keeps raw
+  Railway doctor, live app/content/taxonomy smokes, live content-card readback,
+  class-question broadcast dry-run evidence, and active run validation.
+  Remaining decision: `DEC-20260626-101` keeps raw
   transcript-body export, any further Drive writes beyond #83, production
   reparse/canonical writes, worker retry, paid retranscription, class backfill,
   broad Drive sync, and other production mutations blocked until Shloimie

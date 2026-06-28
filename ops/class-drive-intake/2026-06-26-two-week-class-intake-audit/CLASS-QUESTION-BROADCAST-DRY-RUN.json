@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-06-28T12:30:00+03:00",
+  "raw_id": "RAW-20260628-003",
+  "github_issue": 41,
+  "mode": "dry_run_evidence_no_writes",
+  "owner_rule": "Unmatched or ambiguous student-question matches should be routed as class questions for every active student portal, not as personal questions.",
+  "commands_run": [
+    "node --test tests/class-drive-intake-reconcile.test.js",
+    "node scripts/class-drive-intake-reconcile.cjs backfill --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit",
+    "node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit"
+  ],
+  "guardrails": {
+    "drive_write_performed": false,
+    "production_db_mutation_performed": false,
+    "class_backfill_performed": false,
+    "raw_transcript_export_performed": false,
+    "ai_call_performed": false,
+    "paid_retranscription_performed": false,
+    "send_publish_charge_or_access_grant_performed": false,
+    "credential_account_dns_change_performed": false,
+    "broad_drive_sync_performed": false,
+    "apply_performed": false
+  },
+  "dry_run_result": {
+    "safe_to_apply_if_separately_approved": true,
+    "no_production_mutation": true,
+    "expected_row_counts": {
+      "bna_accountability_events": 917
+    },
+    "row_level_change_plan_rows": 919,
+    "skip_existing_question_rows": 2,
+    "matched_student_question_inserts": 5,
+    "class_question_broadcast_inserts": 912,
+    "blocking_ambiguities": 0,
+    "class_question_fallback_count": 114,
+    "class_question_fallback_jobs": [
+      25,
+      26,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      58
+    ]
+  },
+  "evidence": [
+    "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md",
+    "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json",
+    "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PIPELINE-CENSUS.md",
+    "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SOURCE-COVERAGE.md"
+  ],
+  "remaining_blocker": "Production application is still blocked by DEC-20260626-101 and requires a separately approved exact apply path. The script's apply lane remains read-only and refuses mutation by design."
+}

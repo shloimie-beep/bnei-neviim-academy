@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T10:10:00+03:00",
+  "generated_at": "2026-06-28T12:32:00+03:00",
   "mode": "read_only_repair_plan_refresh_no_writes",
   "github_issue": 41,
   "raw_ids": [
@@ -84,7 +84,14 @@
   "student_questions": {
     "total_rows": 13,
     "matched_rows": 7,
-    "needs_review_rows": 6,
+    "needs_review_rows": 0,
+    "formerly_needs_review_rows": 6,
+    "class_question_fallback_candidates": 114,
+    "class_question_broadcast_inserts": 912,
+    "matched_student_question_inserts": 5,
+    "skip_existing_question_rows": 2,
+    "expected_bna_accountability_event_writes": 917,
+    "blocking_ambiguities": 0,
     "jobs_with_questions": [
       25,
       26,
@@ -92,48 +99,48 @@
       31,
       58
     ],
-    "needs_review": [
+    "formerly_needs_review": [
       {
         "job_id": 58,
         "question_ref": "question:c516d14ee4e5d49f",
         "match_status": "no_student_name",
         "source_kind": "class_notes.discussions_question",
-        "next_action": "Human student-match review before any student/question write."
+        "next_action": "Dry-run routes this as a class_question_broadcast."
       },
       {
         "job_id": 58,
         "question_ref": "question:1a8cf5034c4c839f",
         "match_status": "no_student_name",
         "source_kind": "class_notes.discussions_question",
-        "next_action": "Human student-match review before any student/question write."
+        "next_action": "Dry-run routes this as a class_question_broadcast."
       },
       {
         "job_id": 26,
         "question_ref": "question:51aa618b95a7d29d",
         "match_status": "unmatched",
         "source_kind": "class_notes.student_questions",
-        "next_action": "Human student-match review before any student/question write."
+        "next_action": "Dry-run routes this as a class_question_broadcast."
       },
       {
         "job_id": 26,
         "question_ref": "question:2158d47f6c0c2923",
         "match_status": "no_student_name",
         "source_kind": "class_notes.discussions_question",
-        "next_action": "Human student-match review before any student/question write."
+        "next_action": "Dry-run routes this as a class_question_broadcast."
       },
       {
         "job_id": 26,
         "question_ref": "question:8f9c41ec6da4ca8c",
         "match_status": "no_student_name",
         "source_kind": "class_notes.discussions_question",
-        "next_action": "Human student-match review before any student/question write."
+        "next_action": "Dry-run routes this as a class_question_broadcast."
       },
       {
         "job_id": 25,
         "question_ref": "question:e1d44fb96cef6915",
         "match_status": "no_student_name",
         "source_kind": "class_notes.discussions_question",
-        "next_action": "Human student-match review before any student/question write."
+        "next_action": "Dry-run routes this as a class_question_broadcast."
       }
     ]
   },
@@ -150,15 +157,15 @@
     "student_question_category_cards": 5,
     "source_sheet_status": "not_verified_by_this_audit",
     "production_tasks_created": 0,
-    "next_action": "Show digest/task/question states in Operations cards; do not create production tasks or research cards until parser candidates are approved or reviewed."
+    "next_action": "Show digest/task/question states in Operations cards; do not create production tasks or research cards until an exact production apply path is reviewed and approved."
   },
   "remaining_blockers": [
     "10 content jobs need parser/reparse review before downstream writes.",
-    "6 student question rows need human student-match review.",
+    "The old human student-match blocker is resolved in dry-run by class-question broadcast routing, but the resulting plan is large and needs owner review before any production apply path.",
     "Student score/progress updates have no safe row-level apply plan yet.",
     "DEC-20260626-101 remains open for any production write, class backfill, broad Drive sync, raw export, AI call, or paid retranscription."
   ],
-  "production_apply_verdict": "not_approved_not_safe_to_apply",
+  "production_apply_verdict": "dry_run_question_matching_unblocked_production_apply_not_approved",
   "exact_next_safe_command_without_new_approval": "npm run bna:run:next",
   "approval_packet": "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md"
 }

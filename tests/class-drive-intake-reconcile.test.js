@@ -17,6 +17,7 @@ const students = [
   { id: 2, name: 'Moshe Levy', status: 'active' },
   { id: 3, name: 'Amitai Kosovsky', status: 'active', notes: 'Amitai Kosovsky' },
   { id: 4, name: 'Eitan Chaim Golambo', status: 'active', notes: 'Golambo' },
+  { id: 5, name: 'Inactive Student', status: 'inactive' },
 ];
 
 function jobFixture(overrides = {}) {
@@ -119,6 +120,105 @@ test('student question extraction links the question to the matched student', ()
   assert.equal(questionRow.after.student_id, 3);
   assert.equal(typeof questionRow.after.question_text_hash, 'string');
   assert.equal(questionRow.after.question_text_hash.length, 12);
+  assert.equal(questionRow.after.metadata.question_scope, 'student_question');
+  assert.equal(questionRow.after.metadata.class_question_broadcast, false);
+});
+
+test('unmatched questions are planned as class questions for every active student', () => {
+  const job = jobFixture({
+    id: 65,
+    parse_json: {
+      mixed_recording_parse: {
+        parser: 'class-progress-parser',
+        parsed: {
+          daily_torah_updates: [],
+          class_notes: [{
+            title: 'Torah class',
+            summary: 'The class raised a question without a named student.',
+            student_questions: ['Why does the pasuk repeat itself?'],
+          }],
+        },
+      },
+    },
+  });
+  const plan = buildGuardedBackfillDryRun({ jobs: [job], students, jobRange: [64, 74] });
+  const questionRows = plan.row_level_change_plan.filter((row) => (
+    row.table === 'bna_accountability_events'
+    && row.after.event_type === 'question'
+  ));
+  assert.deepEqual(questionRows.map((row) => row.after.student_id), [1, 2, 3, 4]);
+  assert.equal(questionRows.some((row) => row.after.student_id === 5), false);
+  assert.equal(questionRows.every((row) => row.after.title === 'Class question'), true);
+  assert.equal(questionRows.every((row) => row.after.metadata.question_scope === 'class_question'), true);
+  assert.equal(questionRows.every((row) => row.after.metadata.class_question_broadcast === true), true);
+  assert.equal(questionRows.every((row) => row.after.metadata.not_personal_student_question === true), true);
+  assert.equal(plan.class_question_fallbacks.length, 1);
+  assert.equal(plan.class_question_fallbacks[0].target_student_count, 4);
+  assert.equal(plan.blocking_ambiguities.length, 0);
+  assert.equal(plan.safe_to_apply, true);
+});
+
+test('ambiguous question names are class-question fallbacks instead of blocking student matching', () => {
+  const job = jobFixture({
+    id: 66,
+    parse_json: {
+      mixed_recording_parse: {
+        parser: 'class-progress-parser',
+        parsed: {
+          daily_torah_updates: [],
+          class_notes: [{
+            title: 'Torah class',
+            summary: 'The class raised a question from an ambiguous first name.',
+            student_questions: ['Moshe: Why does this become a class question?'],
+          }],
+        },
+      },
+    },
+  });
+  const plan = buildGuardedBackfillDryRun({ jobs: [job], students, jobRange: [64, 74] });
+  const questionRows = plan.row_level_change_plan.filter((row) => (
+    row.table === 'bna_accountability_events'
+    && row.after.event_type === 'question'
+  ));
+  assert.equal(questionRows.length, 4);
+  assert.equal(plan.class_question_fallbacks[0].reason, 'ambiguous question student match');
+  assert.equal(plan.blocking_ambiguities.length, 0);
+  assert.equal(plan.safe_to_apply, true);
+});
+
+test('class note questions and question-shaped discussions become class-question fallbacks', () => {
+  const job = jobFixture({
+    id: 67,
+    parse_json: {
+      mixed_recording_parse: {
+        parser: 'class-progress-parser',
+        parsed: {
+          daily_torah_updates: [],
+          class_notes: [{
+            title: 'Torah class',
+            summary: 'The class had broader discussion questions.',
+            student_questions: [],
+            questions: ['Why is this listed in the questions field?'],
+            discussions: ['What should everyone think about from this source?'],
+          }],
+        },
+      },
+    },
+  });
+  const plan = buildGuardedBackfillDryRun({ jobs: [job], students, jobRange: [64, 74] });
+  const questionRows = plan.row_level_change_plan.filter((row) => (
+    row.table === 'bna_accountability_events'
+    && row.after.event_type === 'question'
+  ));
+  assert.equal(questionRows.length, 8);
+  assert.equal(questionRows.every((row) => row.after.metadata.question_scope === 'class_question'), true);
+  assert.deepEqual([...new Set(questionRows.map((row) => row.after.metadata.source_kind))], [
+    'class_notes.questions',
+    'class_notes.discussions_question',
+  ]);
+  assert.equal(plan.class_question_fallbacks.length, 2);
+  assert.equal(plan.blocking_ambiguities.length, 0);
+  assert.equal(plan.safe_to_apply, true);
 });
 
 test('ambiguous names are excluded instead of auto-merged', () => {

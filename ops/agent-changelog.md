@@ -27048,3 +27048,39 @@ Guardrails held: no Drive write, no production DB mutation, no class backfill,
 no raw transcript export, no AI call, no paid retranscription, no send/publish,
 no charge/access grant, no credential/account/DNS change, and no broad Drive
 sync.
+
+## 2026-06-28T12:32:00+03:00 - Issue 41 Class Question Broadcast Dry Run
+
+Captured `RAW-20260628-003` and implemented the owner rule that unmatched or
+ambiguous question candidates should be class questions for every active
+student, not personal questions assigned to an uncertain student.
+
+- Updated the guarded class-drive intake dry-run planner to route unmatched
+  question candidates as `class_question_broadcast` rows.
+- Covered `class_notes.student_questions`, `class_notes.questions`, and
+  question-shaped `class_notes.discussions`.
+- Refreshed the 21-83 dry-run evidence with no production mutation.
+- Dry-run summary: 917 future `bna_accountability_events` writes, 912
+  class-question broadcast inserts, 5 matched student-question inserts, 2
+  existing rows skipped, and 0 blocking ambiguities.
+- Recorded ChatGPT/repo transcript access readiness: 29 repo-safe digest
+  recordings are available without raw bodies; raw transcripts remain private
+  in Drive/app storage.
+
+Evidence:
+
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md`
+
+Verification:
+
+- `node --test tests/class-drive-intake-reconcile.test.js`: 16/16 passed.
+- `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: dry-run evidence written; no production mutation.
+
+Remaining: production application is still blocked by `DEC-20260626-101`; the
+current apply lane refuses mutation by design. No Drive write, production DB
+mutation, class backfill, raw transcript export, AI call, paid retranscription,
+send/publish, charge/access grant, credential/account/DNS change, broad Drive
+sync, or `--apply` was performed.

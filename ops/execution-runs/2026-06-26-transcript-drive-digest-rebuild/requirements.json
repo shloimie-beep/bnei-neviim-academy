@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-26-transcript-drive-digest-rebuild",
   "title": "Transcript Drive Digest Rebuild",
-  "updated_at": "2026-06-28T09:08:00+03:00",
+  "updated_at": "2026-06-28T12:32:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260626-004",
@@ -51,6 +51,16 @@
       "captured_at": "2026-06-28T09:05:00+03:00",
       "content_fingerprint": "sha256:5766cf918e79c152c9c22f3f978240aafcbfec9f584b1e2364e3347cf9577418",
       "privacy_classification": "internal_goal_mode_backlog_parser_repair",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260628-003",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "captured_at": "2026-06-28T12:25:00+03:00",
+      "content_fingerprint": "sha256:f6baade0989c88784f7481a971fd0439a7339ec2cf8946a10c5f18d6f84b6c68",
+      "privacy_classification": "internal_goal_mode_student_question_routing_rule",
       "workspace": "bna",
       "project": "class_drive_intake",
       "source_type": "codex_chat"
@@ -279,6 +289,27 @@
       "source_id": "RAW-20260628-002",
       "source_statement": "Finish with evidence, PR/issue updates, live proof where app-visible, and exact remaining blockers.",
       "requirement_id": "REQ-20260628-140",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-003-S001",
+      "source_id": "RAW-20260628-003",
+      "source_statement": "Register the owner rule that unmatched or ambiguous student questions should become class questions for all active students.",
+      "requirement_id": "REQ-20260628-141",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-003-S002",
+      "source_id": "RAW-20260628-003",
+      "source_statement": "Update the dry-run planner so unmatched question candidates are routed to every active student portal as class questions, not personal questions.",
+      "requirement_id": "REQ-20260628-142",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-003-S003",
+      "source_id": "RAW-20260628-003",
+      "source_statement": "Run the safe no-write planner/evidence commands, keep production mutation blocked, and keep raw transcript bodies out of tracked GitHub.",
+      "requirement_id": "REQ-20260628-143",
       "classification": "requirement"
     }
   ],
@@ -1426,9 +1457,9 @@
         "REQ-20260628-136"
       ],
       "status": "done",
-      "implementation_status": "done",
+      "implementation_status": "done; superseded by REQ-20260628-143 class-question broadcast dry-run evidence",
       "can_continue_without_operator": true,
-      "next_action": "Keep DEC-20260626-101 open; no production apply command is currently safe. Review the student question/score approval packet before any dry-run planner or production apply approval.",
+      "next_action": "Use REQ-20260628-143 for the current question plan; keep score/progress blocked because 0 row-level score/progress rows exist.",
       "acceptance_criteria": [
         "Plan lists job IDs and student IDs/hashed unmatched refs",
         "Question rows separated from scores/progress",
@@ -1439,15 +1470,15 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
       ],
       "verification": [
-        "Plan records 10 parser repair candidates, 13 student question rows, 6 question rows needing review, 0 score/progress row-level apply rows.",
-        "Approval packet records verdict not_approved_not_safe_to_apply and gives a no-write dry-run-only approval option."
+        "PASS class-question broadcast dry-run evidence supersedes old human-match blocker; score/progress still has 0 row-level rows."
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T10:10:00+03:00",
+      "updated_at": "2026-06-28T12:32:00+03:00",
       "continuation": "Exact redacted repair plan refreshed; no student score/question/task/progress production write is safe yet. A dry-run-only owner approval packet is recorded for the next non-mutating planner step."
     },
     {
@@ -1469,9 +1500,9 @@
         "REQ-20260628-138"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "needs_operator_decision; exact dry-run plan is recorded, but production parser/question/score/task apply remains unapproved",
+      "implementation_status": "needs_operator_decision; question matching is unblocked in dry-run by class-question broadcast routing, but production apply is not approved and score/progress has no safe row-level plan",
       "can_continue_without_operator": false,
-      "next_action": "Shloimie should keep production writes blocked, or approve only the no-write dry-run planner in STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md. No production apply command is currently safe.",
+      "next_action": "Shloimie must approve a separate exact production apply implementation/path with snapshot and rollback proof before any mutation. Recommended now: review the 917-row class-question dry-run and keep production writes blocked.",
       "acceptance_criteria": [
         "Exact dry-run plan exists",
         "Approval names exact command/actions",
@@ -1480,15 +1511,16 @@
       "evidence": [
         "DEC-20260626-101",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
       ],
       "verification": [],
       "implementation_files": [],
       "deployment_required": false,
       "blocker_owner": "Shloimie",
-      "blocker": "Production student question/score/progress/task writes are not authorized; 6 question rows need human student-match review and score/progress has 0 safe row-level apply rows.",
-      "blocker_next_action": "Recommended: keep production writes blocked. Optional safe next step: approve the no-write dry-run planner packet only; do not approve --apply until a later plan emits safe row-level before/after rows.",
-      "updated_at": "2026-06-28T10:10:00+03:00"
+      "blocker": "Production question/task/score/progress writes are not authorized. The old student-match blocker is resolved in dry-run, but the 917-row question plan and 0-row score/progress state need owner review before any apply path.",
+      "blocker_next_action": "Review CLASS-QUESTION-BROADCAST-DRY-RUN.md and approve a separate exact production apply implementation/path only if the 917-row class-question plan is acceptable.",
+      "updated_at": "2026-06-28T12:32:00+03:00"
     },
     {
       "id": "REQ-20260628-140",
@@ -1509,7 +1541,8 @@
         "REQ-20260628-135",
         "REQ-20260628-136",
         "REQ-20260628-137",
-        "REQ-20260628-138"
+        "REQ-20260628-138",
+        "REQ-20260628-143"
       ],
       "status": "done",
       "implementation_status": "done; Issue #41 status comment posted without closing the issue, and remaining production-write blocker is recorded under DEC-20260626-101",
@@ -1530,7 +1563,8 @@
         "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
         "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
       ],
       "verification": [
         "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
@@ -1544,8 +1578,143 @@
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T10:03:00+03:00",
-      "continuation": "Safe Issue #41 content-card/parser closeout is posted. Issue remains open and production apply work remains separately blocked by REQ-20260628-139 / DEC-20260626-101."
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "continuation": "Safe Issue #41 content-card/parser and class-question dry-run evidence is posted locally. Issue remains open and production apply work remains separately blocked by REQ-20260628-139 / DEC-20260626-101."
+    },
+    {
+      "id": "REQ-20260628-141",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "batch_id": "M",
+      "deployment_required": false,
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "title": "Register class-question broadcast owner rule",
+      "expected_result": "The June 28 class-question broadcast rule is preserved as raw input and linked to the active Issue #41 run.",
+      "source_id": "RAW-20260628-003",
+      "source_statement_ids": [
+        "RAW-20260628-003-S001"
+      ],
+      "category": "source_registration",
+      "depends_on": [
+        "REQ-20260628-138"
+      ],
+      "status": "done",
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Use this rule in the guarded dry-run planner only; do not mutate production without a separate approved apply path.",
+      "acceptance_criteria": [
+        "Raw wording preserved",
+        "Rule linked to Issue #41 run",
+        "No production mutation performed"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md"
+      ],
+      "verification": [
+        "PASS raw source readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md"
+      ]
+    },
+    {
+      "id": "REQ-20260628-142",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "batch_id": "M",
+      "deployment_required": false,
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "title": "Route unmatched question candidates as class questions in the guarded dry-run planner",
+      "expected_result": "Unmatched or ambiguous question candidates from student question, question, and discussion-question lanes produce class-question broadcast proposals for active students and no blocking ambiguity.",
+      "source_id": "RAW-20260628-003",
+      "source_statement_ids": [
+        "RAW-20260628-003-S002"
+      ],
+      "category": "implementation",
+      "depends_on": [
+        "REQ-20260628-141"
+      ],
+      "status": "done",
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Keep production apply blocked; use the dry-run evidence for owner review.",
+      "acceptance_criteria": [
+        "Unmatched student_questions become class-question broadcasts",
+        "Ambiguous names become class-question broadcasts",
+        "class_notes.questions become class-question broadcasts",
+        "Question-shaped discussions become class-question broadcasts",
+        "Inactive students are excluded"
+      ],
+      "evidence": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/class-drive-intake-reconcile.test.js: 16/16"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "id": "REQ-20260628-143",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "batch_id": "M",
+      "deployment_required": false,
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "title": "Refresh sanitized class-question dry-run evidence and keep apply blocked",
+      "expected_result": "The 21-83 dry-run evidence is refreshed, class-question fallback rows are explicit, no production mutation occurs, and the remaining production apply blocker is exact.",
+      "source_id": "RAW-20260628-003",
+      "source_statement_ids": [
+        "RAW-20260628-003-S003"
+      ],
+      "category": "evidence",
+      "depends_on": [
+        "REQ-20260628-142"
+      ],
+      "status": "done",
+      "implementation_status": "done; dry-run evidence reports 917 future event writes, 912 class-question broadcast inserts, 5 matched inserts, 2 existing skips, and 0 blocking ambiguities",
+      "can_continue_without_operator": true,
+      "next_action": "Wait for owner decision on DEC-20260626-101 before any production apply implementation/path.",
+      "acceptance_criteria": [
+        "Dry-run evidence written",
+        "No production mutation",
+        "No raw transcript export",
+        "Production apply remains explicitly blocked"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.json"
+      ],
+      "verification": [
+        "PASS node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit: dry-run evidence written, no production mutation",
+        "PASS dry-run summary: safe_to_apply=true, expected bna_accountability_events=917, blocking_ambiguities=0"
+      ],
+      "implementation_files": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.json"
+      ]
     }
   ]
 }

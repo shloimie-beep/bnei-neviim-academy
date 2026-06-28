@@ -1,6 +1,6 @@
 # Content Card Topic Filter Audit
 
-Generated: 2026-06-28T06:35:18.334Z
+Generated: 2026-06-28T09:45:09.475Z
 Recordings audited: 29
 Manifest recordings: 29
 Raw transcript bodies included: false
@@ -56,11 +56,11 @@ Raw transcript bodies included: false
 | 58 | Class Notes + Class Sessions - 2026-06-11 - #58 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
 | 57 | Class Notes + Class Sessions - 2026-06-10 - #57 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
 | 56 | Class Notes + Class Sessions - 2026-06-10 - #56 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
-| 31 | Class Notes + Class Sessions - 2026-06-09 - #31 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Ready for owner review as digest memory only. |
-| 30 | Class Notes + Class Sessions - 2026-06-09 - #30 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Ready for owner review as digest memory only. |
-| 26 | Class Notes + Class Sessions - 2026-06-08 - #26 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Ready for owner review as digest memory only. |
-| 25 | Class Notes + Class Sessions - 2026-06-08 - #25 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Ready for owner review as digest memory only. |
-| 21 | Class Notes + Class Sessions - 2026-06-04 - #21 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Tasks | Ready for owner review as digest memory only. |
+| 31 | Class Notes + Class Sessions - 2026-06-09 - #31 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
+| 30 | Class Notes + Class Sessions - 2026-06-09 - #30 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
+| 26 | Class Notes + Class Sessions - 2026-06-08 - #26 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
+| 25 | Class Notes + Class Sessions - 2026-06-08 - #25 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Student Questions, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
+| 21 | Class Notes + Class Sessions - 2026-06-04 - #21 | Needs parse | Digest ready | Routing ready | Classified | Class Notes, Class Sessions, Drive Workflow, Parser Errors, Profile Notes, Tasks | Review parse gaps and private matching before any production write or parent-facing output. |
 
 ## Guardrails
 

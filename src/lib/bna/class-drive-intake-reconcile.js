@@ -185,6 +185,47 @@ function normalizeStudentQuestion(value) {
     : { student_name: '', question_text: text };
 }
 
+function compactWhitespace(value) {
+  return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function normalizeQuestionCandidateForBackfill(value, fallbackStudentName = '') {
+  if (typeof value === 'string') {
+    const text = compactWhitespace(value);
+    if (!text) return null;
+    const match = text.match(/^([^:-]{2,80})[:-]\s*(.+)$/);
+    return match
+      ? { student_name: compactWhitespace(match[1]), question_text: compactWhitespace(match[2]) }
+      : { student_name: compactWhitespace(fallbackStudentName), question_text: text };
+  }
+  if (value && typeof value === 'object') {
+    const studentName = compactWhitespace(value.student_name || value.student || value.name || fallbackStudentName);
+    const questionText = compactWhitespace(value.question_text || value.question || value.text || value.title || value.summary || '');
+    if (!questionText) return null;
+    return { student_name: studentName, question_text: questionText };
+  }
+  return null;
+}
+
+function questionCandidateItems(structured = {}) {
+  const candidates = [];
+  function pushQuestion(value, sourceKind, fallbackStudentName = '') {
+    const question = normalizeQuestionCandidateForBackfill(value, fallbackStudentName);
+    if (!question?.question_text) return;
+    candidates.push({ ...question, source_kind: sourceKind });
+  }
+  for (const note of toArray(structured.class_notes)) {
+    const fallbackStudentName = note?.student_name || '';
+    for (const question of toArray(note?.student_questions)) pushQuestion(question, 'class_notes.student_questions', fallbackStudentName);
+    for (const question of toArray(note?.questions)) pushQuestion(question, 'class_notes.questions', fallbackStudentName);
+    for (const discussion of toArray(note?.discussions)) {
+      const raw = compactWhitespace(typeof discussion === 'string' ? discussion : JSON.stringify(discussion || ''));
+      if (/\?$/.test(raw)) pushQuestion(discussion, 'class_notes.discussions_question', fallbackStudentName);
+    }
+  }
+  return candidates;
+}
+
 function existingClassSessionForJob(rows = [], jobId) {
   return toArray(rows).find((row) => Number(row.content_job_id || row.source_content_job_id || row.job_id) === Number(jobId));
 }
@@ -201,6 +242,13 @@ function existingQuestionEvent(rows = [], jobId, studentId, questionText) {
       && Number(row.student_id || metadata.student_id) === Number(studentId)
       && normalizeNameForMatch(row.question_text || row.title || row.notes || '') === normalized;
   });
+}
+
+function activeStudentsForClassQuestions(students = []) {
+  return toArray(students)
+    .filter((student) => Number(student?.id))
+    .filter((student) => !['archived', 'inactive'].includes(String(student.status || 'active').toLowerCase()))
+    .sort((a, b) => Number(a.id) - Number(b.id));
 }
 
 function duplicateGroupsForJobs(jobs = []) {
@@ -262,7 +310,7 @@ function buildPipelineTraceRows({
     const matches = parsedNames.map((name) => matchDetailsForName(name, students));
     const ambiguous = matches.filter((item) => item.ambiguous || !item.matched_student_id);
     const progressSignals = structured.daily_torah_updates.length + structured.group_goal_entries.length;
-    const questionSignals = structured.class_notes.reduce((sum, note) => sum + toArray(note.student_questions).length, 0);
+    const questionSignals = questionCandidateItems(structured).length;
     const hasIntake = parseRunSourceIds.has(String(job.id)) || rawStableIds.has(structured.raw_intake_stable_id);
     const statusText = `${job.status || ''} ${job.drive_stage || ''} ${errorText}`.toLowerCase();
 
@@ -470,18 +518,55 @@ function progressProposal({ job, update, students, torahEntries, groupGoalEntrie
 function questionProposals({ job, structured, students, accountabilityEvents }) {
   const proposals = [];
   const exclusions = [];
-  for (const note of structured.class_notes) {
-    for (const rawQuestion of toArray(note.student_questions)) {
-      const question = normalizeStudentQuestion(rawQuestion);
+  const classQuestionFallbacks = [];
+  for (const question of questionCandidateItems(structured)) {
       if (!question) continue;
       const match = question.student_name ? matchDetailsForName(question.student_name, students) : null;
       if (!match?.matched_student_id || match.ambiguous) {
-        exclusions.push({
-          reason: match?.ambiguous ? 'ambiguous question student match' : 'question has no student match',
+        const reason = match?.ambiguous ? 'ambiguous question student match' : 'question has no student match';
+        const activeStudents = activeStudentsForClassQuestions(students);
+        const fallback = {
+          reason,
+          routing: 'class_question_broadcast',
           student_name_hash: sha256(normalizeNameForMatch(question.student_name) || question.student_name || '').slice(0, 12),
           question_text_hash: sha256(question.question_text).slice(0, 12),
+          target_student_count: activeStudents.length,
+          source_kind: question.source_kind,
           match,
-        });
+        };
+        classQuestionFallbacks.push(fallback);
+        for (const student of activeStudents) {
+          const existing = existingQuestionEvent(accountabilityEvents, job.id, student.id, question.question_text);
+          proposals.push({
+            table: 'bna_accountability_events',
+            action: existing ? 'skip_existing' : 'insert',
+            natural_key: `content_job:${job.id}:class_question:${sha256(question.question_text).slice(0, 12)}:student:${student.id}`,
+            before: existing ? { id: existing.id } : null,
+            after: {
+              student_id: student.id,
+              event_type: 'question',
+              title: 'Class question',
+              question_text_hash: sha256(question.question_text).slice(0, 12),
+              source_content_job_id: job.id,
+              parent_visible: true,
+              student_visible: true,
+              metadata: {
+                source: 'class_drive_intake',
+                question_scope: 'class_question',
+                class_question_broadcast: true,
+                not_personal_student_question: true,
+                original_match_status: reason,
+                source_kind: question.source_kind,
+              },
+            },
+          });
+        }
+        if (!activeStudents.length) {
+          exclusions.push({
+            ...fallback,
+            reason: 'class question fallback has no active students',
+          });
+        }
         continue;
       }
       const existing = existingQuestionEvent(accountabilityEvents, job.id, match.matched_student_id, question.question_text);
@@ -498,11 +583,17 @@ function questionProposals({ job, structured, students, accountabilityEvents }) 
           source_content_job_id: job.id,
           parent_visible: true,
           student_visible: true,
+          metadata: {
+            source: 'class_drive_intake',
+            question_scope: 'student_question',
+            class_question_broadcast: false,
+            matched_student_ref: match.matched_student_ref,
+            source_kind: question.source_kind,
+          },
         },
       });
-    }
   }
-  return { proposals, exclusions };
+  return { proposals, exclusions, classQuestionFallbacks };
 }
 
 function buildGuardedBackfillDryRun({
@@ -520,6 +611,7 @@ function buildGuardedBackfillDryRun({
   const [start, end] = jobRange;
   const proposals = [];
   const ambiguityExclusions = [];
+  const classQuestionFallbacks = [];
   const duplicateExclusions = [];
   const candidateJobs = [];
   const excludedJobs = [];
@@ -561,13 +653,18 @@ function buildGuardedBackfillDryRun({
     const questions = questionProposals({ job, structured, students, accountabilityEvents });
     proposals.push(...questions.proposals);
     ambiguityExclusions.push(...questions.exclusions.map((item) => ({ job_id: job.id || null, ...item })));
+    for (const fallback of questions.classQuestionFallbacks || []) {
+      const withJob = { job_id: job.id || null, ...fallback, blocking: false };
+      classQuestionFallbacks.push(withJob);
+      ambiguityExclusions.push(withJob);
+    }
   }
   const plannedWrites = proposals.filter((row) => !/^skip/.test(row.action));
   const expectedRowCounts = plannedWrites.reduce((counts, row) => {
     counts[row.table] = (counts[row.table] || 0) + 1;
     return counts;
   }, {});
-  const blockingAmbiguities = ambiguityExclusions.filter((item) => /ambiguous|no student match|all-active/.test(item.reason || ''));
+  const blockingAmbiguities = ambiguityExclusions.filter((item) => item.blocking !== false && /ambiguous|no student match|all-active|no active students/.test(item.reason || ''));
   const safeToApply = plannedWrites.length > 0 && blockingAmbiguities.length === 0;
   return {
     generated_at: generatedAt,
@@ -577,6 +674,7 @@ function buildGuardedBackfillDryRun({
     approved_candidate_jobs: safeToApply ? candidateJobs.map((job) => job.job_id).filter(Boolean) : [],
     excluded_jobs: excludedJobs,
     row_level_change_plan: proposals,
+    class_question_fallbacks: classQuestionFallbacks,
     ambiguity_exclusions: ambiguityExclusions,
     duplicate_exclusions: duplicateExclusions,
     blocking_ambiguities: blockingAmbiguities,
@@ -663,6 +761,10 @@ function renderBackfillMarkdown(plan = {}) {
     '## Blocking Ambiguities',
     '',
     ...(toArray(plan.blocking_ambiguities).length ? toArray(plan.blocking_ambiguities).map((item) => `- Job ${item.job_id ?? ''}: ${redactSensitiveText(item.reason || '')} (${item.student_name_hash || item.matched_student_ref || 'redacted-student'})`) : ['- None']),
+    '',
+    '## Class Question Fallbacks',
+    '',
+    ...(toArray(plan.class_question_fallbacks).length ? toArray(plan.class_question_fallbacks).map((item) => `- Job ${item.job_id ?? ''}: ${redactSensitiveText(item.reason || '')}; routed to ${item.target_student_count || 0} active students as class question (${item.question_text_hash || 'redacted-question'})`) : ['- None']),
     '',
     '## Expected Row Counts',
     '',

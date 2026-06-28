@@ -42,16 +42,34 @@ Completed content-card/topic-filter repair:
 
 Student question/score apply status:
 
-- Current verdict: no production apply command is safe.
+- Current verdict: question matching is unblocked in dry-run, but production
+  apply is not approved or implemented.
 - 10 jobs need parser/reparse review: `71, 59, 58, 57, 56, 31, 30, 26, 25,
   21`.
-- 13 student-question rows exist; 7 are matched and 6 need human
-  student-match review.
+- The class-question broadcast rule from `RAW-20260628-003` is now captured:
+  unmatched/ambiguous question candidates route as class questions for every
+  active student, not as personal questions.
+- Refreshed dry-run evidence: 917 future `bna_accountability_events` writes,
+  including 912 class-question broadcast inserts, 5 matched student-question
+  inserts, and 2 existing rows skipped.
+- Blocking ambiguities: 0.
 - Score/progress has 0 safe row-level apply rows.
 - Evidence:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
   and
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`;
+  class-question dry-run evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md`.
+
+ChatGPT/repo transcript access status:
+
+- Repo-safe digest memory is available at
+  `content-memory/transcript-digests/manifest.json`: 29 recordings, raw
+  transcript bodies false.
+- Full raw transcripts remain private in Drive/app storage. `01 Transcript
+  Library` was last verified at 47 docs, and job #83 readback was 9683 chars.
+- Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md`.
 
 Exact next safe command:
 
@@ -75,6 +93,7 @@ Owner approval required before any of these commands/actions:
 If Shloimie approves a next step, create a new requirement or update
 `REQ-20260626-126` with the exact approved action, owner, consequences, and
 verification plan before running it. The only currently documented optional
-next step is the no-write dry-run planner approval in
-`STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`; it does not authorize production
-mutation.
+next step is owner review of the 917-row class-question dry-run plan. Any
+production apply path requires separate exact approval, snapshot/rollback
+proof, and an implementation path because the current apply lane refuses
+mutation by design.

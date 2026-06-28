@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-06-28T12:31:00+03:00",
+  "raw_id": "RAW-20260628-003",
+  "github_issue": 41,
+  "mode": "access_readiness_evidence_no_raw_export",
+  "repo_safe_digest_memory": {
+    "manifest": "content-memory/transcript-digests/manifest.json",
+    "recording_count": 29,
+    "raw_transcript_bodies_included": false,
+    "available_to_repo_tools": [
+      "generated titles",
+      "transcript character counts",
+      "categories",
+      "routing/status metadata",
+      "privacy-safe summaries and candidate files"
+    ]
+  },
+  "private_raw_transcript_access": {
+    "drive_library": "01 Transcript Library",
+    "last_verified_doc_count": 47,
+    "job_83_readback_chars": 9683,
+    "access_requirement": "authenticated private Drive/app access",
+    "raw_bodies_committed_to_github": false
+  },
+  "chatgpt_access_interpretation": "ChatGPT/assistant can use the tracked repo-safe digest library without raw transcript bodies. Full raw transcript reading must happen through an authenticated private Drive/app path; this batch did not export raw transcript bodies to GitHub.",
+  "guardrails": {
+    "raw_transcript_export_performed": false,
+    "drive_write_performed": false,
+    "production_db_mutation_performed": false,
+    "ai_call_performed": false
+  }
+}

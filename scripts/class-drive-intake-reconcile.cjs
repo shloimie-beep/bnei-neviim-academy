@@ -609,6 +609,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     excluded_jobs: backfill.excluded_jobs,
     safe_to_apply: backfill.safe_to_apply,
     row_level_change_plan: backfill.row_level_change_plan,
+    class_question_fallbacks: backfill.class_question_fallbacks,
     blocking_ambiguities: backfill.blocking_ambiguities,
     ambiguity_exclusions: backfill.ambiguity_exclusions,
     duplicate_exclusions: backfill.duplicate_exclusions,

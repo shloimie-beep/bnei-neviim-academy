@@ -1,6 +1,6 @@
 # Student Question Score Approval Packet
 
-Generated: 2026-06-28T10:10:00+03:00
+Generated: 2026-06-28T12:32:00+03:00
 
 Mode: read-only owner decision packet. No Drive write, production DB mutation,
 class backfill, raw transcript export, AI call, paid retranscription, send,
@@ -20,44 +20,53 @@ sync was performed.
 - Live `/api/bna/content-jobs?project_key=all` readback returns all 29 digest
   cards, 10 explicit `Needs parse` jobs, job #83's clean generated title, and
   no raw transcript text in digest-card payloads.
+- The no-write guarded planner now supports Shloimie's class-question rule:
+  unmatched or ambiguous question candidates are routed as class questions for
+  every active student, not as personal questions.
 
 ## What Is Not Safe Yet
 
-Production student question/task/score/progress writes are not safe to apply.
+Production student question/task/score/progress writes are still not approved
+or applied.
 
 Reasons:
 
 - 10 content jobs need parser/reparse review:
   `71, 59, 58, 57, 56, 31, 30, 26, 25, 21`.
-- 13 student-question rows were found.
-- 7 question rows are matched.
-- 6 question rows need human student-match review.
+- The refreshed dry-run has no blocking student-match ambiguities after the
+  class-question broadcast rule.
+- The refreshed dry-run is large: 917 future `bna_accountability_events` writes
+  if a separate production apply path is approved.
+- Dry-run question plan: 912 class-question broadcast inserts, 5 matched
+  student-question inserts, and 2 existing rows skipped.
 - Score/progress planning produced 0 row-level before/after apply rows.
 
-Rows needing student-match review, using redacted refs only:
+Rows formerly needing student-match review are now class-question fallback
+candidates in the dry-run, using redacted refs only:
 
-| Job | Question ref | Match status | Source kind |
-| --- | --- | --- | --- |
-| 58 | `question:c516d14ee4e5d49f` | no_student_name | class_notes.discussions_question |
-| 58 | `question:1a8cf5034c4c839f` | no_student_name | class_notes.discussions_question |
-| 26 | `question:51aa618b95a7d29d` | unmatched | class_notes.student_questions |
-| 26 | `question:2158d47f6c0c2923` | no_student_name | class_notes.discussions_question |
-| 26 | `question:8f9c41ec6da4ca8c` | no_student_name | class_notes.discussions_question |
-| 25 | `question:e1d44fb96cef6915` | no_student_name | class_notes.discussions_question |
+| Job | Question ref | Prior match status | Source kind | Dry-run routing |
+| --- | --- | --- | --- | --- |
+| 58 | `question:c516d14ee4e5d49f` | no_student_name | class_notes.discussions_question | class_question_broadcast |
+| 58 | `question:1a8cf5034c4c839f` | no_student_name | class_notes.discussions_question | class_question_broadcast |
+| 26 | `question:51aa618b95a7d29d` | unmatched | class_notes.student_questions | class_question_broadcast |
+| 26 | `question:2158d47f6c0c2923` | no_student_name | class_notes.discussions_question | class_question_broadcast |
+| 26 | `question:8f9c41ec6da4ca8c` | no_student_name | class_notes.discussions_question | class_question_broadcast |
+| 25 | `question:e1d44fb96cef6915` | no_student_name | class_notes.discussions_question | class_question_broadcast |
 
 ## Verdict
 
-No production apply command is currently safe.
+No production apply command has been approved or implemented.
 
-Recommended decision: keep production writes blocked until a later dry-run
-emits redacted row-level before/after changes, resolves or explicitly excludes
-the 6 ambiguous question rows, and either produces safe score/progress rows or
-proves that no score/progress write is needed.
+Recommended decision: review the large class-question broadcast dry-run before
+approving any production apply path. Score/progress remains blocked until a
+separate dry-run emits redacted before/after rows or proves no score/progress
+write is needed.
 
 ## Optional Next Approval
 
-Use this only if Shloimie wants Codex to run a no-write planner/reparse review
-next. This approval does not authorize production mutation.
+The no-write planner has now been run. Use this only if Shloimie wants Codex to
+rerun the no-write planner/reparse review. This approval does not authorize
+production mutation.
 
 ```text
 OWNER APPROVAL - CLASS CONTENT STUDENT APPLY DRY-RUN ONLY
@@ -72,7 +81,7 @@ node scripts/class-drive-intake-reconcile.cjs backfill --jobs 21-83 --out-dir op
 Allowed:
 - produce a dry-run row-level plan only;
 - emit redacted before/after rows if available;
-- keep ambiguous question rows excluded or marked needs review;
+- route unmatched/ambiguous question candidates as class-question broadcasts;
 - update sanitized repo evidence.
 
 Still forbidden:
