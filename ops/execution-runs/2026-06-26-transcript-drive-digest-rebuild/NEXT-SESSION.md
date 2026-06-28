@@ -234,6 +234,13 @@ Rabbi two-folder drop-off email notifier:
   `npm run bna:run:validate`, `npm run bna:run:next`,
   `npm run bna:run:status`, `npm run secrets:audit`, JSON parse,
   added-line privacy scan, `git diff --check`, and scheduler readback.
+- Commit `65ae09b5` was pushed to PR #49.
+- PR #49 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670`.
+- Issue #41 remains open; production apply remains blocked by
+  `DEC-20260626-101`.
 - After merge, re-register the scheduled task from the canonical checkout if
   this PR worktree is removed:
 

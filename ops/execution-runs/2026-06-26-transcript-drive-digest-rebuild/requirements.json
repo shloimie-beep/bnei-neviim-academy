@@ -2835,8 +2835,8 @@
         "REQ-20260628-160"
       ],
       "status": "done",
-      "implementation_status": "done; Drive/UI folder batch verified locally, final audits passed, commit/push and GitHub comments are the remaining external publication step for this turn",
-      "next_action": "Push the branch, comment PR #49 and Issue #41, and keep Issue #41 open. Next safe command after closeout is npm run bna:run:next.",
+      "implementation_status": "done; Drive/UI folder batch verified, committed, pushed to PR #49, and documented in PR #49 plus Issue #41 comments without closing Issue #41",
+      "next_action": "After merge, keep the two-folder workflow registered from the canonical checkout. Next safe command is npm run bna:run:next.",
       "acceptance_criteria": [
         "Required verification passes",
         "PR #49 updated",
@@ -2860,8 +2860,13 @@
         "PASS JSON/JSONL parse: 3 changed JSON files and 1 changed JSONL file",
         "PASS added-line privacy scan: no new secret literals, raw transcript bodies, or raw Drive file/doc URLs; intentional Drive folder URLs allowed",
         "PASS git diff --check with Windows CRLF warnings only",
-        "BLOCKED local server smoke: server requires DATABASE_URL in this worktree; no credentials copied into repo/worktree"
+        "BLOCKED local server smoke: server requires DATABASE_URL in this worktree; no credentials copied into repo/worktree",
+        "PASS commit 65ae09b5 pushed to PR #49",
+        "PASS PR #49 comment posted: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837",
+        "PASS Issue #41 comment posted and Issue #41 remains open: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670"
       ],
+      "implementation_commit": "65ae09b5",
+      "pushed_commit": "65ae09b5",
       "implementation_files": [
         "tests/one-time-drive-intake-folder-map.test.js"
       ]
@@ -2890,7 +2895,7 @@
         "REQ-20260628-160"
       ],
       "status": "done",
-      "implementation_status": "done; video/audio folder renamed, source-material folder confirmed, notifier scripts added, scheduled task registered, Gmail setup-test passed, and scheduler readback shows last result 0",
+      "implementation_status": "done; video/audio folder renamed, source-material folder confirmed, notifier scripts added, scheduled task registered, Gmail setup-test passed, scheduler readback shows last result 0, and commit 65ae09b5 was pushed/commented",
       "next_action": "After PR merge, re-register the scheduled task from the canonical checkout if this PR worktree is removed. Do not run production apply without final owner approval.",
       "acceptance_criteria": [
         "Only the two Rabbi-facing upload folders are watched",
@@ -2921,8 +2926,13 @@
         "PASS JSON parse: 6 changed JSON files",
         "PASS added-line privacy scan: 0 findings",
         "PASS git diff --check with Windows CRLF warnings only",
-        "PASS Task Scheduler readback: enabled, ready, last result 0, every 5 minutes"
+        "PASS Task Scheduler readback: enabled, ready, last result 0, every 5 minutes",
+        "PASS commit 65ae09b5 pushed to PR #49",
+        "PASS PR #49 comment posted: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837",
+        "PASS Issue #41 comment posted and Issue #41 remains open: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670"
       ],
+      "implementation_commit": "65ae09b5",
+      "pushed_commit": "65ae09b5",
       "implementation_files": [
         "src/lib/bna/one-time-drive-dropoff-notifier.js",
         "scripts/notify-one-time-drive-dropoffs.mjs",

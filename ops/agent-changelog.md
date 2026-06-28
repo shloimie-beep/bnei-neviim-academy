@@ -27348,6 +27348,13 @@ Verification:
 - Added-line privacy scan passed with 0 findings.
 - `git diff --check`: passed with Windows CRLF warnings only.
 - Task Scheduler readback: task enabled, ready, last result `0`, every 5 minutes.
+- Commit `65ae09b5` pushed to PR #49.
+- PR #49 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670`.
+- Issue #41 remains open and production apply remains blocked by
+  `DEC-20260626-101`.
 
 Guardrails honored: no production apply, no `--apply`, no production DB
 mutation, no student portal/question/score/task write, no class backfill, no
