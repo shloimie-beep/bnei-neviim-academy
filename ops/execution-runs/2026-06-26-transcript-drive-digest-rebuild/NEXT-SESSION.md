@@ -158,6 +158,51 @@ Exact next safe command:
 npm run bna:run:next
 ```
 
+Rabbi Drive folder structure batch:
+
+- `RAW-20260628-007` approved targeted Drive folder create/reuse under exact
+  parent `04 Content and Media Intake` only.
+- `REQ-20260628-158`, `REQ-20260628-159`, and `REQ-20260628-160` are Done.
+- Approved command run:
+  `node scripts/audit-one-time-rabbi-drive-folders.mjs --write` with the local
+  Google OAuth client/token path environment variables.
+- Drive result: parent confirmed; 3 folders created; 4 folders reused.
+- Created:
+  `04.05 Upload Here - Slideshows and Source Materials`,
+  `04.20 Source Material Review`, and `04.99 Needs Shloimie Decision`.
+- Reused semantic aliases:
+  `04.00 Upload Here - Rabbi Video Drops` for
+  `04.00 Upload Here - Videos and Audio for Transcription`,
+  `04.30 Social Output Drafts - Platform Review` for the social/newsletter
+  output drafts lane, and `04.90 Approved and Posted Social Outputs` for the
+  approved outputs lane.
+- Reused exact:
+  `04.10 Ingestion Queue - Transcribe and Parse`.
+- Old PowerPoint status: found in parent. Two `.pptx` files were visible in
+  the parent listing and classified as `slideshow_reference` /
+  `source_material`, `eligible_for_transcription=false`,
+  `no_transcription_required=true`, and `index_only_until_review=true`.
+- Rabbi video/audio link:
+  `https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t`.
+- Rabbi slides/source-material link:
+  `https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp`.
+- Super-admin UI now renders all folder links with open/copy controls;
+  Rabbi-facing provider UI renders only the two approved drop-off links.
+- Evidence:
+  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`,
+  `2026-06-28-rabbi-folder-creation-log.md`, and
+  `2026-06-28-rabbi-ui-drive-links-audit.md`.
+- Verification passed: JS syntax checks, 55 focused tests,
+  `npm run bna:run:validate`, `npm run bna:run:next`,
+  `npm run bna:run:status`, `npm run secrets:audit`, JSON/JSONL parse,
+  added-line privacy scan, and `git diff --check`.
+- Local server smoke was blocked because this worktree has no `DATABASE_URL`;
+  no credentials were copied into the repo/worktree.
+- `REQ-20260628-161` is Done locally; GitHub push/comment closeout follows in
+  the same Codex turn.
+- Issue #41 remains open; production apply remains blocked by
+  `DEC-20260626-101`.
+
 Owner approval required before any of these commands/actions:
 
 - `npm run content:export-transcripts -- --include-raw-transcript`

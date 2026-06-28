@@ -13,15 +13,24 @@ One Time needs a repeatable path from Rabbi/video/class material into useful
 review packages without accidentally publishing raw recordings or exposing BNA
 school data. The safe first milestone is an internal BNA Operations workflow:
 
-Drive drops -> recording/session record -> transcript/source notes -> source
-sheets -> worksheets -> question digests -> organic clips -> ad candidates ->
-approval package -> posting/reporting after explicit approval.
+Drive video/audio drops -> recording/session record -> transcript/source notes
+-> reviewed source sheets/materials -> worksheets -> question digests -> organic
+clips -> ad candidates -> approval package -> posting/reporting after explicit
+approval.
+
+Slideshows, PowerPoints, PDFs, worksheets, source sheets, and handouts are a
+separate source-material lane. They are indexed for review and can support
+class/session/topic work after review, but they do not trigger transcription,
+newsletter generation, social publishing, or member-visible output by
+themselves.
 
 ## Inputs
 
 Approved intake sources:
 
-- One Time Drive folder `04.00 Upload Here - Rabbi Video Drops`.
+- One Time Drive folder `04.00 Upload Here - Videos and Audio for Transcription`
+  (existing Drive title may still be `04.00 Upload Here - Rabbi Video Drops`).
+- One Time Drive folder `04.05 Upload Here - Slideshows and Source Materials`.
 - One Time Drive folder `04.10 Ingestion Queue - Transcribe and Parse`.
 - Content jobs already scoped to `one_time_mishnah_class`.
 - Meeting Drops for Rabbi/Shloimie planning recordings.
@@ -63,6 +72,16 @@ Not approved as automatic content intake:
   - launch/social material
   - support/member question material
 - Do not publish, send, grant access, or write back to Drive from intake.
+- Do not treat every child of `04 Content and Media Intake` as a recording.
+  File type and lane classification decide whether an item is transcription
+  intake, source material, output review, archive, or needs Shloimie decision.
+- PowerPoint and Google Slides files are `slideshow_reference` and
+  `source_material`; they are not transcription candidates.
+- PDFs, source sheets, worksheets, and handouts are source material; they are
+  not transcription candidates and need review before newsletter/member/social
+  use.
+- Unknown files route to `04.99 Needs Shloimie Decision` and trigger no
+  automation.
 
 ### 2. Transcript And Session Structure
 
@@ -197,6 +216,11 @@ Reports should separate:
 ## Guardrails
 
 - No raw recording is published automatically.
+- No slideshow, PowerPoint, PDF, worksheet, source sheet, or handout is
+  transcribed automatically.
+- No source-material file becomes a newsletter, social post, WhatsApp update,
+  email, source sheet, worksheet, or member-library item until review output is
+  created and explicit approval gates are satisfied.
 - No source sheet, worksheet, question digest, clip, ad, newsletter, social
   draft, WhatsApp update, email, or member-library item is sent or made visible
   without explicit approval.

@@ -27267,3 +27267,50 @@ Remaining: actual production apply remains blocked by `DEC-20260626-101`. No
 production task write, class backfill, Drive write, raw transcript export, AI
 call, paid retranscription, send/publish/charge/access grant, or
 credential/account/DNS change was performed.
+
+## 2026-06-28T18:30:00+03:00 - Rabbi Drive Folder Structure Batch
+
+Captured `RAW-20260628-007`, the goal-mode packet approving targeted Drive
+folder create/reuse under exact One Time parent folder
+`04 Content and Media Intake`.
+
+- Ran `node scripts/audit-one-time-rabbi-drive-folders.mjs --write` with local
+  Google OAuth paths.
+- Confirmed the parent folder is the documented `04 Content and Media Intake`.
+- Created 3 folders: `04.05 Upload Here - Slideshows and Source Materials`,
+  `04.20 Source Material Review`, and `04.99 Needs Shloimie Decision`.
+- Reused 4 folders, including the existing `04.00 Upload Here - Rabbi Video
+  Drops` as the canonical videos/audio upload lane.
+- Found two `.pptx` files in the parent listing and classified them as
+  source material / slideshow references, excluded from transcription and
+  index-only until review.
+- Updated folder maps, workflow docs, setup-script alias reuse, backend map
+  helpers, Operations super-admin folder cards, Rabbi-facing upload links, and
+  focused tests.
+
+Evidence:
+
+- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`
+- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-creation-log.md`
+- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-ui-drive-links-audit.md`
+
+Verification so far:
+
+- `node --check server.js`: passed.
+- `node --check` changed helper/scripts: passed.
+- `node --test tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js tests/one-time-external-user-portal.test.js tests/instances/one-time-shared-review-data.test.js`: 55/55 passed.
+- `npm run bna:run:validate`, `npm run bna:run:next`, and
+  `npm run bna:run:status`: passed.
+- `npm run secrets:audit`: passed, 5,362 tracked paths and 0 tracked
+  secret-risk files.
+- JSON/JSONL parse passed for changed structured files.
+- Added-line privacy scan passed: no new secret literals, raw transcript
+  bodies, or raw Drive file/doc URLs; intentional Drive folder URLs are
+  allowed for this batch.
+- `git diff --check`: passed with Windows CRLF warnings only.
+
+Local server smoke blocker: `node server.js` requires `DATABASE_URL` in this
+worktree. No credentials were copied into the repo/worktree.
+
+Remaining: commit, push, PR #49 comment, and Issue #41 comment. Issue #41
+remains open and production apply remains blocked by `DEC-20260626-101`.

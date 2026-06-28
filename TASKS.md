@@ -50,6 +50,16 @@ not authorize active GHL runtime paths.
   rows, 1 score/progress row, and 0 production task rows, plus the required
   snapshot/rollback/readback plans. `production-apply --apply` still refuses
   until final owner approval is recorded.
+  The Rabbi/One Time Drive folder structure batch is now locally implemented
+  under `RAW-20260628-007`: the exact parent `04 Content and Media Intake` was
+  confirmed, 3 missing subfolders were created, 4 existing folders were reused,
+  the uploaded `.pptx` files were classified as source material with no
+  transcription, and Operations/Rabbi UI links were added. Video/audio link:
+  `https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t`.
+  Slides/source-material link:
+  `https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp`.
+  Evidence:
+  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`.
   Owner approval is still required for any production parser/question/task/
   score/progress write or other unsafe/raw/external path. Done:
   active execution run created, Drive-first raw storage and GitHub digest

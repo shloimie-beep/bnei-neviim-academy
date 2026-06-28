@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-12T13:14:14.825Z",
+  "generatedAt": "2026-06-28T15:22:18.302Z",
   "root": {
     "id": "root",
     "name": "Google Drive My Drive root",
@@ -151,55 +151,164 @@
   "contentMediaIntakeFolders": [
     {
       "key": "videoDrop",
-      "name": "04.00 Upload Here - Rabbi Video Drops",
+      "canonicalKey": "videos_audio_transcription_upload",
+      "name": "04.00 Upload Here - Videos and Audio for Transcription",
+      "actualName": "04.00 Upload Here - Rabbi Video Drops",
       "driveStage": "one_time_video_drop",
-      "purpose": "Raw Rabbi video/audio drops and source media waiting for ingestion.",
+      "purpose": "Rabbi class videos, shiur audio, meeting recordings, and any media that should become transcript, parse, or content candidates.",
+      "handling": "automation/transcription intake; can create content jobs; still no publish/send without approval.",
       "backendUse": "bna_content_jobs.project_id=one_time_mishnah_class, source_type=google_drive, drive_stage=one_time_video_drop",
+      "intendedAudience": "rabbi_facing",
+      "laneType": "transcription",
+      "rabbiFacing": true,
+      "triggersTranscription": true,
+      "sourceMaterialOnly": false,
       "id": "1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
       "parents": [
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
-      "created": true
+      "created": false,
+      "reused": true,
+      "status": "reused_semantic_alias"
+    },
+    {
+      "key": "sourceMaterials",
+      "canonicalKey": "slideshows_source_materials_upload",
+      "name": "04.05 Upload Here - Slideshows and Source Materials",
+      "actualName": "04.05 Upload Here - Slideshows and Source Materials",
+      "driveStage": "one_time_source_material_upload",
+      "purpose": "PowerPoints, Google Slides, PDFs, worksheets, source sheets, handouts, and classroom materials that do not need transcription.",
+      "handling": "source_material / slideshow_reference; no transcription; index only until reviewed.",
+      "backendUse": "bna_content_jobs.source_type=google_drive_source_material, drive_stage=one_time_source_material_upload, eligible_for_transcription=false",
+      "intendedAudience": "rabbi_facing",
+      "laneType": "source_material",
+      "rabbiFacing": true,
+      "triggersTranscription": false,
+      "sourceMaterialOnly": true,
+      "id": "15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
+      "created": true,
+      "reused": false,
+      "status": "created"
     },
     {
       "key": "ingestionQueue",
+      "canonicalKey": "ingestion_queue_transcribe_parse",
       "name": "04.10 Ingestion Queue - Transcribe and Parse",
+      "actualName": "04.10 Ingestion Queue - Transcribe and Parse",
       "driveStage": "one_time_ingestion_queue",
-      "purpose": "Files being turned into transcripts, source notes, clip plans, and draft content jobs.",
+      "purpose": "Files/jobs actively being processed into transcripts, source notes, clip plans, and content jobs.",
+      "handling": "internal workflow queue; not the main Rabbi-facing drop-off folder unless intentionally used.",
       "backendUse": "bna_content_jobs.status=ingested|parsed with Drive file/folder IDs preserved",
+      "intendedAudience": "internal",
+      "laneType": "transcription_queue",
+      "rabbiFacing": false,
+      "triggersTranscription": true,
+      "sourceMaterialOnly": false,
       "id": "1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8",
       "parents": [
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/1E5wS4ZCUzdtN5T0CRKXl7U_qiJ6bHUw8",
-      "created": true
+      "created": false,
+      "reused": true,
+      "status": "reused_exact"
+    },
+    {
+      "key": "sourceMaterialReview",
+      "canonicalKey": "source_material_review",
+      "name": "04.20 Source Material Review",
+      "actualName": "04.20 Source Material Review",
+      "driveStage": "one_time_source_material_review",
+      "purpose": "Reviewed or queued slide/source-material references, source sheets, and worksheet review.",
+      "handling": "review lane only; no automatic public/member output.",
+      "backendUse": "bna_content_outputs output_type=source_material_review before member-visible or newsletter use",
+      "intendedAudience": "super_admin_only",
+      "laneType": "source_material_review",
+      "rabbiFacing": false,
+      "triggersTranscription": false,
+      "sourceMaterialOnly": true,
+      "id": "1KeOaVsgv2sKXb2yOAddfur2-2HInceWA",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1KeOaVsgv2sKXb2yOAddfur2-2HInceWA",
+      "created": true,
+      "reused": false,
+      "status": "created"
     },
     {
       "key": "socialOutputs",
-      "name": "04.30 Social Output Drafts - Platform Review",
+      "canonicalKey": "social_newsletter_output_drafts",
+      "name": "04.30 Social and Newsletter Output Drafts - Platform Review",
+      "actualName": "04.30 Social Output Drafts - Platform Review",
       "driveStage": "one_time_social_output_review",
-      "purpose": "Facebook, LinkedIn, YouTube, Instagram, WhatsApp status, and email/newsletter drafts awaiting Shloimie/Rabbi review.",
+      "purpose": "Facebook, LinkedIn, YouTube, Instagram, WhatsApp, newsletter, and email drafts awaiting platform review.",
+      "handling": "no sends or publishes without explicit approval.",
       "backendUse": "bna_content_outputs output_type/platform metadata before any Buffer or platform write",
+      "intendedAudience": "internal",
+      "laneType": "review_output",
+      "rabbiFacing": false,
+      "triggersTranscription": false,
+      "sourceMaterialOnly": false,
       "id": "17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h",
       "parents": [
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/17M05atqKqWw8L206Dx8X9ZcOPTRuLu9h",
-      "created": true
+      "created": false,
+      "reused": true,
+      "status": "reused_semantic_alias"
     },
     {
       "key": "approvedPosted",
-      "name": "04.90 Approved and Posted Social Outputs",
+      "canonicalKey": "approved_and_posted_outputs",
+      "name": "04.90 Approved and Posted Outputs",
+      "actualName": "04.90 Approved and Posted Social Outputs",
       "driveStage": "one_time_social_approved_posted",
-      "purpose": "Approved exports, destination URLs, screenshots, metrics, and rollback notes after an approved post/draft.",
+      "purpose": "Approved exports, destination URLs, screenshots, posted/published evidence, metrics, and rollback notes.",
+      "handling": "archive/evidence only.",
       "backendUse": "Buffer/social destination evidence and Workflow Q/R reporting after approval",
+      "intendedAudience": "archive",
+      "laneType": "approved_archive",
+      "rabbiFacing": false,
+      "triggersTranscription": false,
+      "sourceMaterialOnly": false,
       "id": "1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh",
       "parents": [
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/1DDTvKxcpXCTrFtJGDWu1ZiAQDH4YqmDh",
-      "created": true
+      "created": false,
+      "reused": true,
+      "status": "reused_semantic_alias"
+    },
+    {
+      "key": "needsDecision",
+      "canonicalKey": "needs_shloimie_decision",
+      "name": "04.99 Needs Shloimie Decision",
+      "actualName": "04.99 Needs Shloimie Decision",
+      "driveStage": "one_time_needs_shloimie_decision",
+      "purpose": "Ambiguous files, wrong-lane uploads, permissions/conflict issues, and files needing operator routing.",
+      "handling": "no automation until resolved.",
+      "backendUse": "operator decision queue; do not transcribe, publish, send, or create member-visible output",
+      "intendedAudience": "super_admin_only",
+      "laneType": "decision_queue",
+      "rabbiFacing": false,
+      "triggersTranscription": false,
+      "sourceMaterialOnly": false,
+      "id": "1clXzX1JJRwK5ykRaEf_qF5EhjPBezfxD",
+      "parents": [
+        "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
+      ],
+      "webViewLink": "https://drive.google.com/drive/folders/1clXzX1JJRwK5ykRaEf_qF5EhjPBezfxD",
+      "created": true,
+      "reused": false,
+      "status": "created"
     }
   ],
   "proposal": {
