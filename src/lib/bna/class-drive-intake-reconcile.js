@@ -4,12 +4,14 @@ const {
   findStudentForParsedName,
   normalizeNameForMatch,
   scoreStudentParsedNameMatch,
+  studentAliasesForServer,
 } = require('./student-match');
 const { normalizeParsedTorahEngagement } = require('./torah-learning');
 
 const APPLY_GATE_PHRASE = 'APPLY_GUARDED_CLASS_BACKFILL';
 const DEFAULT_REPAIR_JOB_RANGE = [64, 74];
 const DEFAULT_CATCHUP_FOCUS_JOB_IDS = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
+const DEFAULT_PRIVATE_REPARSE_JOB_IDS = DEFAULT_CATCHUP_FOCUS_JOB_IDS.slice();
 const PIPELINE_STAGES = [
   'source_discovered',
   'source_fingerprint',
@@ -1072,6 +1074,590 @@ function buildApplyLaneDesign({ backfillPlan = {}, exactJobIds = [] } = {}) {
   };
 }
 
+function escapeRegExp(value = '') {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function splitPrivateTranscriptSegments(transcript = '') {
+  const text = String(transcript || '').replace(/\r/g, '\n').replace(/\s+\n/g, '\n').trim();
+  if (!text) return [];
+  const chunks = text
+    .split(/\n+|(?<=[?!])\s+|(?<=\.)\s+(?=[A-Z\u0590-\u05ff])/u)
+    .map((chunk) => compactWhitespace(chunk))
+    .filter(Boolean);
+  const segments = [];
+  for (const chunk of chunks) {
+    if (chunk.length <= 520) {
+      segments.push(chunk);
+      continue;
+    }
+    for (let index = 0; index < chunk.length; index += 420) {
+      segments.push(compactWhitespace(chunk.slice(index, index + 520)));
+    }
+  }
+  return segments.map((segment, index) => ({
+    index,
+    text: segment,
+    source_window_ref: `window:${sha256(`${index}|${segment}`).slice(0, 12)}`,
+    source_window_hash: sha256(segment).slice(0, 16),
+    char_count: segment.length,
+  }));
+}
+
+function mentionStatusFromMatch(match = {}) {
+  if (match.ambiguous) return 'ambiguous';
+  if (match.matched_student_id) return 'matched';
+  return 'unmatched';
+}
+
+function transcriptStudentMentions({ job, segments = [], students = [] } = {}) {
+  const aliases = [];
+  for (const student of toArray(students).filter((item) => !['archived', 'inactive'].includes(String(item?.status || 'active').toLowerCase()))) {
+    for (const alias of studentAliasesForServer(student)) {
+      aliases.push({
+        student,
+        alias,
+        normalized_alias: normalizeNameForMatch(alias),
+        alias_hash: sha256(normalizeNameForMatch(alias) || alias).slice(0, 12),
+      });
+    }
+  }
+  aliases.sort((a, b) => b.normalized_alias.length - a.normalized_alias.length);
+  const mentions = [];
+  const seen = new Set();
+  for (const segment of segments) {
+    const normalizedSegment = ` ${normalizeNameForMatch(segment.text)} `;
+    for (const alias of aliases) {
+      if (!alias.normalized_alias) continue;
+      const regex = new RegExp(`\\s${escapeRegExp(alias.normalized_alias)}\\s`, 'g');
+      let match;
+      while ((match = regex.exec(normalizedSegment)) !== null) {
+        const key = `${segment.index}|${alias.student.id}|${alias.normalized_alias}|${match.index}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const matchDetails = matchDetailsForName(alias.alias, students);
+        mentions.push({
+          job_id: job.id || null,
+          mention_ref: `mention:${sha256(`${job.id}|${key}`).slice(0, 12)}`,
+          source_window_ref: segment.source_window_ref,
+          normalized_name_hash: alias.alias_hash,
+          match_status: mentionStatusFromMatch(matchDetails),
+          matched_student_ref: matchDetails.matched_student_ref,
+          best_score: matchDetails.best_score,
+          contenders: toArray(matchDetails.contenders).map((item) => ({
+            student_ref: item.student_ref,
+            score: item.score,
+          })),
+          raw_text_included: false,
+          _student_name_for_internal_match: alias.alias,
+        });
+      }
+    }
+  }
+  return mentions;
+}
+
+function questionSignal(segmentText = '') {
+  const text = String(segmentText || '');
+  if (/\?/.test(text)) return 'question_mark';
+  if (/\b(?:asked|asks|question|wanted to know|wondered|can you explain|what about)\b/i.test(text)) return 'question_cue';
+  if (/^\s*(?:why|what|how|when|where|who|which)\b/i.test(text) && text.length <= 180) return 'interrogative_cue';
+  return '';
+}
+
+function studentNameFromQuestionSegment(segmentText = '', mentions = []) {
+  const prefix = compactWhitespace(String(segmentText || '').match(/^([^:：-]{2,80})[:：-]\s*(.+)$/)?.[1] || '');
+  if (prefix) return prefix;
+  const matchedMentions = toArray(mentions).filter((mention) => mention.match_status === 'matched' && mention._student_name_for_internal_match);
+  const matchedIds = [...new Set(matchedMentions.map((mention) => mention.matched_student_ref).filter(Boolean))];
+  return matchedIds.length === 1 ? matchedMentions[0]._student_name_for_internal_match : '';
+}
+
+function privateQuestionCandidatesFromTranscript({ job, segments = [], mentions = [] } = {}) {
+  const candidates = [];
+  const seen = new Set();
+  for (const segment of segments) {
+    const signal = questionSignal(segment.text);
+    if (!signal || segment.text.length < 8) continue;
+    const windowMentions = mentions.filter((mention) => mention.source_window_ref === segment.source_window_ref);
+    const questionText = compactWhitespace(segment.text).slice(0, 700);
+    const questionHash = sha256(questionText).slice(0, 12);
+    if (seen.has(questionHash)) continue;
+    seen.add(questionHash);
+    candidates.push({
+      job_id: job.id || null,
+      question_ref: `question:${questionHash}`,
+      question_text_hash: questionHash,
+      source_window_ref: segment.source_window_ref,
+      source_window_hash: segment.source_window_hash,
+      candidate_chars: questionText.length,
+      signal,
+      student_name_hash: windowMentions.length
+        ? sha256(windowMentions.map((mention) => mention.normalized_name_hash).join('|')).slice(0, 12)
+        : null,
+      mention_refs: windowMentions.map((mention) => mention.mention_ref),
+      raw_text_included: false,
+      _question_text_for_internal_match: questionText,
+      _student_name_for_internal_match: studentNameFromQuestionSegment(segment.text, windowMentions),
+    });
+  }
+  return candidates;
+}
+
+function buildPrivateQuestionRouting({ job, questionCandidates = [], students = [], accountabilityEvents = [] } = {}) {
+  const candidateRoutes = [];
+  const rowPlan = [];
+  const classQuestionFallbacks = [];
+  const activeStudents = activeStudentsForClassQuestions(students);
+  for (const candidate of questionCandidates) {
+    const internalName = candidate._student_name_for_internal_match || '';
+    const match = internalName ? matchDetailsForName(internalName, students) : null;
+    const questionText = candidate._question_text_for_internal_match || candidate.question_text_hash;
+    if (match?.matched_student_id && !match.ambiguous) {
+      const existing = existingQuestionEvent(accountabilityEvents, job.id, match.matched_student_id, questionText);
+      const row = {
+        table: 'bna_accountability_events',
+        action: existing ? 'skip_existing' : 'insert',
+        routing: existing ? 'existing_skip' : 'personal_question',
+        natural_key: `content_job:${job.id}:student:${match.matched_student_id}:question:${candidate.question_text_hash}`,
+        before: existing ? { id: existing.id } : null,
+        after: {
+          student_id: match.matched_student_id,
+          event_type: 'question',
+          title: 'Student class question',
+          question_text_hash: candidate.question_text_hash,
+          source_content_job_id: job.id,
+          parent_visible: true,
+          student_visible: true,
+          metadata: {
+            source: 'private_reparse_dry_run',
+            question_scope: 'student_question',
+            class_question_broadcast: false,
+            matched_student_ref: match.matched_student_ref,
+            source_window_ref: candidate.source_window_ref,
+          },
+        },
+      };
+      rowPlan.push(row);
+      candidateRoutes.push({
+        job_id: job.id || null,
+        question_ref: candidate.question_ref,
+        question_text_hash: candidate.question_text_hash,
+        source_window_ref: candidate.source_window_ref,
+        routing: row.routing,
+        match_status: 'matched',
+        matched_student_ref: match.matched_student_ref,
+        row_count: 1,
+        insert_rows: existing ? 0 : 1,
+        skip_existing_rows: existing ? 1 : 0,
+        blocked_review_reason: '',
+        raw_text_included: false,
+      });
+      continue;
+    }
+
+    if (!activeStudents.length) {
+      candidateRoutes.push({
+        job_id: job.id || null,
+        question_ref: candidate.question_ref,
+        question_text_hash: candidate.question_text_hash,
+        source_window_ref: candidate.source_window_ref,
+        routing: 'blocked_review',
+        match_status: match?.ambiguous ? 'ambiguous' : 'no_student_name',
+        matched_student_ref: null,
+        row_count: 0,
+        insert_rows: 0,
+        skip_existing_rows: 0,
+        blocked_review_reason: 'No active students available for class-question broadcast.',
+        raw_text_included: false,
+      });
+      continue;
+    }
+
+    const reason = match?.ambiguous ? 'ambiguous question student match' : 'question has no student match';
+    let insertRows = 0;
+    let skipRows = 0;
+    for (const student of activeStudents) {
+      const existing = existingQuestionEvent(accountabilityEvents, job.id, student.id, questionText);
+      if (existing) skipRows += 1;
+      else insertRows += 1;
+      rowPlan.push({
+        table: 'bna_accountability_events',
+        action: existing ? 'skip_existing' : 'insert',
+        routing: existing ? 'existing_skip' : 'class_question_broadcast',
+        natural_key: `content_job:${job.id}:class_question:${candidate.question_text_hash}:student:${student.id}`,
+        before: existing ? { id: existing.id } : null,
+        after: {
+          student_id: student.id,
+          event_type: 'question',
+          title: 'Class question',
+          question_text_hash: candidate.question_text_hash,
+          source_content_job_id: job.id,
+          parent_visible: true,
+          student_visible: true,
+          metadata: {
+            source: 'private_reparse_dry_run',
+            question_scope: 'class_question',
+            class_question_broadcast: true,
+            not_personal_student_question: true,
+            original_match_status: reason,
+            source_window_ref: candidate.source_window_ref,
+          },
+        },
+      });
+    }
+    classQuestionFallbacks.push({
+      job_id: job.id || null,
+      question_ref: candidate.question_ref,
+      question_text_hash: candidate.question_text_hash,
+      source_window_ref: candidate.source_window_ref,
+      reason,
+      routing: 'class_question_broadcast',
+      target_student_count: activeStudents.length,
+      insert_rows: insertRows,
+      skip_existing_rows: skipRows,
+      blocking: false,
+    });
+    candidateRoutes.push({
+      job_id: job.id || null,
+      question_ref: candidate.question_ref,
+      question_text_hash: candidate.question_text_hash,
+      source_window_ref: candidate.source_window_ref,
+      routing: insertRows ? 'class_question_broadcast' : 'existing_skip',
+      match_status: match?.ambiguous ? 'ambiguous' : 'no_student_name',
+      matched_student_ref: null,
+      row_count: activeStudents.length,
+      insert_rows: insertRows,
+      skip_existing_rows: skipRows,
+      blocked_review_reason: '',
+      raw_text_included: false,
+    });
+  }
+  return { candidateRoutes, rowPlan, classQuestionFallbacks };
+}
+
+function taskCandidatesFromTranscript({ job, segments = [] } = {}) {
+  const rows = [];
+  const seen = new Set();
+  for (const segment of segments) {
+    if (questionSignal(segment.text)) continue;
+    if (!/\b(?:task|todo|to do|need to|needs to|make sure|fix|follow up|follow-up|remember to|next action|repair|update)\b/i.test(segment.text)) continue;
+    const hash = sha256(segment.text).slice(0, 12);
+    if (seen.has(hash)) continue;
+    seen.add(hash);
+    rows.push({
+      table: 'bna_tasks',
+      action: 'dry_run_insert_candidate',
+      routing: 'internal_task_candidate',
+      natural_key: `content_job:${job.id}:private_reparse_task:${hash}`,
+      before: null,
+      after: {
+        source_content_job_id: job.id,
+        canonical_task_key: `bna|class_drive_intake|content_job:${job.id}|private-reparse-task-${hash}`,
+        task_text_hash: hash,
+        source_window_ref: segment.source_window_ref,
+        production_task_write_allowed: false,
+        visibility: 'internal_agent_review',
+      },
+    });
+  }
+  return rows;
+}
+
+function progressCandidateFromSegment({ job, segment, mentions = [] } = {}) {
+  if (!/\b(?:minute|minutes|min|percent|percentage|progress|completed|complete|inside|listening|listened|distracted|score)\b/i.test(segment.text)) return null;
+  const matchedMentions = mentions.filter((mention) => mention.source_window_ref === segment.source_window_ref && mention.match_status === 'matched');
+  const matchedRefs = [...new Set(matchedMentions.map((mention) => mention.matched_student_ref).filter(Boolean))];
+  if (matchedRefs.length !== 1) {
+    return {
+      no_op: {
+        job_id: job.id || null,
+        source_window_ref: segment.source_window_ref,
+        reason: matchedRefs.length ? 'progress signal mentions multiple students; needs review' : 'progress signal has no safe student match',
+        raw_text_included: false,
+      },
+    };
+  }
+  const name = matchedMentions[0]._student_name_for_internal_match;
+  const percentMatch = segment.text.match(/\b(\d{1,3})\s*(?:%|percent|percentage)\b/i);
+  const minuteMatch = segment.text.match(/\b(\d{1,3})\s*(?:minutes?|mins?)\b/i);
+  const update = {
+    student_name: name,
+    date: toIsoDate(job.class_date || job.created_at),
+    goal_type: /\binside|following|text|sefer\b/i.test(segment.text) ? 'INSIDE' : 'LISTENING',
+    source_window_ref: segment.source_window_ref,
+  };
+  if (percentMatch) update.progress_percent = Number(percentMatch[1]);
+  if (minuteMatch) {
+    const minutes = Number(minuteMatch[1]);
+    update.goal_minutes = Math.max(10, minutes);
+    if (update.goal_type === 'INSIDE') update.inside_engaged_minutes = minutes;
+    else update.listening_minutes = minutes;
+  }
+  if (update.progress_percent === undefined && minuteMatch === null) {
+    return {
+      no_op: {
+        job_id: job.id || null,
+        source_window_ref: segment.source_window_ref,
+        reason: 'progress cue has no deterministic minute or percent value',
+        raw_text_included: false,
+      },
+    };
+  }
+  return { update };
+}
+
+function buildPrivateProgressPlan({ job, segments = [], mentions = [], students = [], torahEntries = [], groupGoalEntries = [] } = {}) {
+  const rowPlan = [];
+  const noOps = [];
+  const seen = new Set();
+  for (const segment of segments) {
+    const result = progressCandidateFromSegment({ job, segment, mentions });
+    if (!result) continue;
+    if (result.no_op) {
+      noOps.push(result.no_op);
+      continue;
+    }
+    const key = sha256(`${result.update.student_name}|${result.update.date}|${result.update.progress_percent ?? ''}|${result.update.listening_minutes ?? result.update.inside_engaged_minutes ?? ''}`).slice(0, 16);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const proposal = progressProposal({
+      job,
+      update: result.update,
+      students,
+      torahEntries,
+      groupGoalEntries,
+      sourceKind: 'private_transcript_dry_run',
+    });
+    if (proposal?.proposals) {
+      for (const row of proposal.proposals) {
+        row.source_window_ref = result.update.source_window_ref;
+        row.routing = row.table === 'bna_accountability_events' ? 'progress_event' : 'score_progress';
+        rowPlan.push(row);
+      }
+    }
+    if (proposal?.exclusion) {
+      noOps.push({
+        job_id: job.id || null,
+        source_window_ref: result.update.source_window_ref,
+        reason: proposal.exclusion.reason || 'progress candidate excluded',
+        match: proposal.exclusion.match || null,
+        raw_text_included: false,
+      });
+    }
+  }
+  if (!rowPlan.length && !noOps.length) {
+    noOps.push({
+      job_id: job.id || null,
+      reason: 'No deterministic score/progress signal was detected in the private transcript dry-run.',
+      raw_text_included: false,
+    });
+  }
+  return { rowPlan, noOps };
+}
+
+function privateNeedsParseReason(job = {}) {
+  const structured = extractStructuredOutput(job);
+  const hasTranscript = transcriptChars(job) > 0;
+  if (!hasTranscript) return 'No private transcript text was available to the dry-run reader.';
+  if (!structured.parser && !hasStructuredParse(job)) return 'Transcript exists, but parser request/output metadata is missing.';
+  if (structured.parser === 'canonical-intake-parser' && !hasStructuredParse(job)) return 'Canonical parser metadata exists, but class/progress/question structured output is empty.';
+  if (hasStructuredParse(job) && !(structured.class_notes.length || structured.daily_torah_updates.length || structured.group_goal_entries.length)) return 'Structured output exists, but class/progress lanes are incomplete.';
+  return 'Digest/card audit marked Needs parse because canonical class/progress read-model evidence was incomplete.';
+}
+
+function redactInternalPrivateFields(row = {}) {
+  const clone = JSON.parse(JSON.stringify(row));
+  delete clone._question_text_for_internal_match;
+  delete clone._student_name_for_internal_match;
+  return clone;
+}
+
+function buildPrivateReparseCanonicalDryRun({
+  jobs = [],
+  students = [],
+  accountabilityEvents = [],
+  torahEntries = [],
+  groupGoalEntries = [],
+  exactJobIds = DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  generatedAt = new Date().toISOString(),
+} = {}) {
+  const approvedIds = toArray(exactJobIds).map(Number).filter(Boolean);
+  const approvedSet = new Set(approvedIds);
+  const rows = [];
+  const allStudentMentions = [];
+  const allQuestionRoutes = [];
+  const allClassFallbacks = [];
+  const rowLevelChangePlan = [];
+  const taskRows = [];
+  const progressNoOps = [];
+  const inspectedJobs = toArray(jobs)
+    .filter((job) => approvedSet.has(Number(job.id)))
+    .sort((a, b) => Number(a.id) - Number(b.id));
+  const foundIds = new Set(inspectedJobs.map((job) => Number(job.id)));
+  const missingJobIds = approvedIds.filter((id) => !foundIds.has(id));
+
+  for (const job of inspectedJobs) {
+    const segments = splitPrivateTranscriptSegments(job.transcript_text || job.transcript || '');
+    const mentions = transcriptStudentMentions({ job, segments, students });
+    const questionCandidates = privateQuestionCandidatesFromTranscript({ job, segments, mentions });
+    const questionRouting = buildPrivateQuestionRouting({ job, questionCandidates, students, accountabilityEvents });
+    const progressPlan = buildPrivateProgressPlan({ job, segments, mentions, students, torahEntries, groupGoalEntries });
+    const jobTaskRows = taskCandidatesFromTranscript({ job, segments });
+
+    allStudentMentions.push(...mentions.map(redactInternalPrivateFields));
+    allQuestionRoutes.push(...questionRouting.candidateRoutes);
+    allClassFallbacks.push(...questionRouting.classQuestionFallbacks);
+    rowLevelChangePlan.push(...questionRouting.rowPlan, ...progressPlan.rowPlan, ...jobTaskRows);
+    taskRows.push(...jobTaskRows);
+    progressNoOps.push(...progressPlan.noOps);
+
+    rows.push({
+      job_id: Number(job.id),
+      transcript_chars: transcriptChars(job),
+      private_source_read: transcriptChars(job) > 0,
+      raw_transcript_body_included: false,
+      needs_parse_reason: privateNeedsParseReason(job),
+      segment_count: segments.length,
+      student_name_mentions: mentions.map(redactInternalPrivateFields),
+      question_candidates: questionCandidates.map(redactInternalPrivateFields).map((candidate) => ({
+        ...candidate,
+        routing: allQuestionRoutes.find((route) => route.question_ref === candidate.question_ref)?.routing || 'blocked_review',
+      })),
+      question_routing: questionRouting.candidateRoutes,
+      score_progress: {
+        row_level_change_rows: progressPlan.rowPlan,
+        no_op_reasons: progressPlan.noOps,
+      },
+      task_candidates: jobTaskRows,
+    });
+  }
+
+  for (const missingId of missingJobIds) {
+    rows.push({
+      job_id: missingId,
+      transcript_chars: 0,
+      private_source_read: false,
+      raw_transcript_body_included: false,
+      needs_parse_reason: 'Approved job ID was not returned by the private app transcript source query.',
+      segment_count: 0,
+      student_name_mentions: [],
+      question_candidates: [],
+      question_routing: [],
+      score_progress: {
+        row_level_change_rows: [],
+        no_op_reasons: [{ job_id: missingId, reason: 'No job row was available for score/progress dry-run.', raw_text_included: false }],
+      },
+      task_candidates: [],
+    });
+  }
+
+  const questionRoutes = allQuestionRoutes;
+  const plannedWrites = rowLevelChangePlan.filter((row) => !/^skip/.test(row.action));
+  return {
+    generated_at: generatedAt,
+    mode: 'private_reparse_canonical_write_dry_run_no_writes',
+    no_production_mutation: true,
+    no_drive_write: true,
+    no_ai_call: true,
+    approved_job_ids: approvedIds,
+    inspected_job_ids: inspectedJobs.map((job) => Number(job.id)),
+    missing_job_ids: missingJobIds,
+    raw_transcript_bodies_included: false,
+    raw_drive_urls_or_ids_included: false,
+    summary: {
+      approved_jobs: approvedIds.length,
+      inspected_jobs: inspectedJobs.length,
+      missing_jobs: missingJobIds.length,
+      private_transcript_sources_read: rows.filter((row) => row.private_source_read).length,
+      student_name_mentions: allStudentMentions.length,
+      question_candidates: questionRoutes.length,
+      personal_question_candidates: questionRoutes.filter((row) => row.routing === 'personal_question').length,
+      class_question_broadcast_candidates: questionRoutes.filter((row) => row.routing === 'class_question_broadcast').length,
+      existing_skip_candidates: questionRoutes.filter((row) => row.routing === 'existing_skip').length,
+      blocked_review_candidates: questionRoutes.filter((row) => row.routing === 'blocked_review').length,
+      row_level_change_plan_rows: rowLevelChangePlan.length,
+      planned_insert_or_update_rows: plannedWrites.length,
+      task_candidate_rows: taskRows.length,
+      score_progress_rows: rowLevelChangePlan.filter((row) => ['bna_torah_learning_entries', 'bna_group_goal_entries'].includes(row.table)).length,
+      score_progress_no_op_rows: progressNoOps.length,
+    },
+    rows,
+    student_name_mentions: allStudentMentions,
+    question_routing: questionRoutes,
+    class_question_fallbacks: allClassFallbacks,
+    task_rows: taskRows,
+    score_progress_no_ops: progressNoOps,
+    row_level_change_plan: rowLevelChangePlan,
+    expected_row_counts: plannedWrites.reduce((counts, row) => {
+      counts[row.table] = (counts[row.table] || 0) + 1;
+      return counts;
+    }, {}),
+    production_apply_allowed: false,
+    blocker: 'This is a no-write private reparse/canonical-write dry-run only. Production apply remains blocked by DEC-20260626-101.',
+  };
+}
+
+function renderPrivateReparseDryRunMarkdown(report = {}) {
+  const rows = toArray(report.rows);
+  return [
+    '# Private Reparse / Canonical-Write Dry-run',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `Mode: ${report.mode || 'private_reparse_canonical_write_dry_run_no_writes'}`,
+    `Approved job IDs: ${toArray(report.approved_job_ids).join(', ')}`,
+    `No production mutation: ${report.no_production_mutation !== false}`,
+    `No Drive write: ${report.no_drive_write !== false}`,
+    `No AI call: ${report.no_ai_call !== false}`,
+    `Raw transcript bodies included: ${report.raw_transcript_bodies_included === true}`,
+    `Raw Drive URLs/IDs included: ${report.raw_drive_urls_or_ids_included === true}`,
+    '',
+    '## Summary',
+    '',
+    ...Object.entries(report.summary || {}).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`),
+    '',
+    '## Why Each Job Was Needs Parse',
+    '',
+    '| Job | Transcript Chars | Private Source Read | Needs Parse Reason |',
+    '| --- | ---: | --- | --- |',
+    ...rows.map((row) => `| #${row.job_id} | ${row.transcript_chars || 0} | ${row.private_source_read ? 'yes' : 'no'} | ${String(row.needs_parse_reason || '').replace(/\|/g, '\\|')} |`),
+    '',
+    '## Question Routing',
+    '',
+    '| Job | Question Ref | Window | Routing | Match Status | Matched Student | Rows | Inserts | Existing Skips | Blocker |',
+    '| --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- |',
+    ...(toArray(report.question_routing).length ? toArray(report.question_routing).map((row) => `| #${row.job_id} | ${row.question_ref || ''} | ${row.source_window_ref || ''} | ${row.routing || ''} | ${row.match_status || ''} | ${row.matched_student_ref || ''} | ${row.row_count || 0} | ${row.insert_rows || 0} | ${row.skip_existing_rows || 0} | ${String(row.blocked_review_reason || '').replace(/\|/g, '\\|')} |`) : ['| - | - | - | - | - | - | 0 | 0 | 0 | none |']),
+    '',
+    '## Student-name Mentions',
+    '',
+    '| Job | Mention Ref | Window | Match Status | Matched Student | Best Score | Contenders |',
+    '| --- | --- | --- | --- | --- | ---: | ---: |',
+    ...(toArray(report.student_name_mentions).length ? toArray(report.student_name_mentions).map((row) => `| #${row.job_id} | ${row.mention_ref || ''} | ${row.source_window_ref || ''} | ${row.match_status || ''} | ${row.matched_student_ref || ''} | ${row.best_score || 0} | ${toArray(row.contenders).length} |`) : ['| - | - | - | - | - | 0 | 0 |']),
+    '',
+    '## Score / Progress',
+    '',
+    '| Job | Status | Detail | Window |',
+    '| --- | --- | --- | --- |',
+    ...(toArray(report.row_level_change_plan).filter((row) => ['bna_torah_learning_entries', 'bna_group_goal_entries'].includes(row.table)).map((row) => `| #${row.after?.source_content_job_id || ''} | ${row.action || ''} | ${row.table || ''}:${row.natural_key || ''} | ${row.source_window_ref || ''} |`)),
+    ...(toArray(report.score_progress_no_ops).map((row) => `| #${row.job_id || ''} | no_op | ${String(row.reason || '').replace(/\|/g, '\\|')} | ${row.source_window_ref || ''} |`)),
+    '',
+    '## Task Candidates',
+    '',
+    '| Job | Routing | Natural Key | Window |',
+    '| --- | --- | --- | --- |',
+    ...(toArray(report.task_rows).length ? toArray(report.task_rows).map((row) => `| #${row.after?.source_content_job_id || ''} | ${row.routing || ''} | ${row.natural_key || ''} | ${row.after?.source_window_ref || ''} |`) : ['| - | - | - | - |']),
+    '',
+    '## Row-level Plan',
+    '',
+    '| Table | Action | Routing | Natural Key |',
+    '| --- | --- | --- | --- |',
+    ...(toArray(report.row_level_change_plan).length ? toArray(report.row_level_change_plan).map((row) => `| ${row.table || ''} | ${row.action || ''} | ${row.routing || ''} | ${row.natural_key || ''} |`) : ['| - | - | - | - |']),
+    '',
+    `Remaining blocker: ${report.blocker || 'Production apply remains blocked.'}`,
+    '',
+  ].join('\n');
+}
+
 function renderBacklogCatchupCensusMarkdown(census = {}) {
   const rows = toArray(census.rows);
   return [
@@ -1332,12 +1918,14 @@ function renderBackfillMarkdown(plan = {}) {
 module.exports = {
   APPLY_GATE_PHRASE,
   DEFAULT_CATCHUP_FOCUS_JOB_IDS,
+  DEFAULT_PRIVATE_REPARSE_JOB_IDS,
   DEFAULT_REPAIR_JOB_RANGE,
   PIPELINE_STAGES,
   buildApplyLaneDesign,
   buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildPrivateReparseCanonicalDryRun,
   buildResearchContentCatchupPlan,
   buildScoreProgressCatchupPlan,
   buildTaskActionCatchupPlan,
@@ -1352,6 +1940,7 @@ module.exports = {
   renderBackfillMarkdown,
   renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderPrivateReparseDryRunMarkdown,
   renderResearchContentCatchupMarkdown,
   renderScoreProgressCatchupMarkdown,
   renderTaskActionCatchupMarkdown,

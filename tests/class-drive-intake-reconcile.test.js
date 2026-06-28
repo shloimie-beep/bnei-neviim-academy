@@ -9,6 +9,7 @@ const {
   buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildPrivateReparseCanonicalDryRun,
   buildResearchContentCatchupPlan,
   buildScoreProgressCatchupPlan,
   buildTaskActionCatchupPlan,
@@ -498,6 +499,65 @@ test('apply lane design documents required controls without enabling production 
   assert.match(design.apply_command_template, new RegExp(APPLY_GATE_PHRASE));
   assert.ok(design.refusal_conditions.includes('score/progress row lacks before/after'));
   assert.equal(design.success_planning_path.safe_to_apply_if_separately_approved, true);
+});
+
+test('private reparse dry-run routes matched and class questions without raw text', () => {
+  const privateQuestion = 'Amitai: Why does the pasuk repeat this phrase?';
+  const classQuestion = 'Why should everyone review the Mishnah again?';
+  const progressText = 'Amitai completed 50 percent progress inside.';
+  const taskText = 'Need to review the follow up task after class.';
+  const report = buildPrivateReparseCanonicalDryRun({
+    exactJobIds: [21],
+    students,
+    jobs: [jobFixture({
+      id: 21,
+      transcript_text: `${privateQuestion}\n${classQuestion}\n${progressText}\n${taskText}`,
+      parse_json: {},
+    })],
+  });
+
+  assert.equal(report.summary.inspected_jobs, 1);
+  assert.equal(report.summary.question_candidates, 2);
+  assert.equal(report.summary.personal_question_candidates, 1);
+  assert.equal(report.summary.class_question_broadcast_candidates, 1);
+  assert.ok(report.summary.student_name_mentions >= 1);
+  assert.ok(report.summary.score_progress_rows >= 1);
+  assert.equal(report.summary.task_candidate_rows, 1);
+  assert.doesNotMatch(JSON.stringify(report), /pasuk repeat|everyone review|completed 50 percent|follow up task/i);
+  assert.equal(report.raw_transcript_bodies_included, false);
+  assert.equal(report.row_level_change_plan.some((row) => row.routing === 'personal_question'), true);
+  assert.equal(report.row_level_change_plan.some((row) => row.routing === 'class_question_broadcast'), true);
+});
+
+test('private reparse dry-run records concrete no-op when progress cannot be safely matched', () => {
+  const report = buildPrivateReparseCanonicalDryRun({
+    exactJobIds: [25],
+    students,
+    jobs: [jobFixture({
+      id: 25,
+      transcript_text: 'The group made progress for 10 minutes, but no safe student name was spoken.',
+      parse_json: {},
+    })],
+  });
+
+  assert.equal(report.summary.score_progress_rows, 0);
+  assert.ok(report.score_progress_no_ops.some((row) => /no safe student match/i.test(row.reason)));
+  assert.equal(report.production_apply_allowed, false);
+});
+
+test('CLI refuses private reparse outside the exact approved job list', () => {
+  const script = path.join(__dirname, '..', 'scripts', 'class-drive-intake-reconcile.cjs');
+  const result = spawnSync(process.execPath, [
+    script,
+    'private-reparse',
+    '--job-ids',
+    '21,25',
+  ], {
+    encoding: 'utf8',
+    env: { ...process.env, DATABASE_URL: '', PGHOST: '' },
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /approved job IDs are exactly/);
 });
 
 test('source fingerprint is stable for retry/dedup comparisons', () => {

@@ -6,11 +6,13 @@ const path = require('path');
 const {
   APPLY_GATE_PHRASE,
   DEFAULT_CATCHUP_FOCUS_JOB_IDS,
+  DEFAULT_PRIVATE_REPARSE_JOB_IDS,
   DEFAULT_REPAIR_JOB_RANGE,
   buildApplyLaneDesign,
   buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildPrivateReparseCanonicalDryRun,
   buildResearchContentCatchupPlan,
   buildScoreProgressCatchupPlan,
   buildTaskActionCatchupPlan,
@@ -22,6 +24,7 @@ const {
   renderBackfillMarkdown,
   renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderPrivateReparseDryRunMarkdown,
   renderResearchContentCatchupMarkdown,
   renderScoreProgressCatchupMarkdown,
   renderTaskActionCatchupMarkdown,
@@ -40,6 +43,13 @@ function parseJobRange(value) {
   return Number.isFinite(single) ? [single, single] : DEFAULT_REPAIR_JOB_RANGE.slice();
 }
 
+function parseJobIds(value) {
+  return String(value || '')
+    .split(/[,\s]+/)
+    .map((item) => Number(item.trim()))
+    .filter((item) => Number.isFinite(item) && item > 0);
+}
+
 function parseArgs(argv) {
   const args = {
     command: 'all',
@@ -49,6 +59,7 @@ function parseArgs(argv) {
     skipDrive: false,
     drivePageSize: 50,
     jobs: DEFAULT_REPAIR_JOB_RANGE.slice(),
+    jobIds: [],
     outDir: DEFAULT_OUT_DIR,
     envFiles: [],
   };
@@ -61,15 +72,36 @@ function parseArgs(argv) {
     else if (item === '--skip-drive') args.skipDrive = true;
     else if (item === '--gate') args.gate = rest[++i] || '';
     else if (item === '--jobs') args.jobs = parseJobRange(rest[++i]);
+    else if (item === '--job-ids') args.jobIds = parseJobIds(rest[++i]);
     else if (item === '--out-dir') args.outDir = path.resolve(rest[++i]);
     else if (item === '--env-file') args.envFiles.push(path.resolve(rest[++i]));
     else if (item === '--drive-page-size') args.drivePageSize = Number(rest[++i] || 50) || 50;
     else if (item.startsWith('--jobs=')) args.jobs = parseJobRange(item.slice('--jobs='.length));
+    else if (item.startsWith('--job-ids=')) args.jobIds = parseJobIds(item.slice('--job-ids='.length));
     else if (item.startsWith('--out-dir=')) args.outDir = path.resolve(item.slice('--out-dir='.length));
     else if (item.startsWith('--env-file=')) args.envFiles.push(path.resolve(item.slice('--env-file='.length)));
   }
+  if (args.jobIds.length) args.jobs = [Math.min(...args.jobIds), Math.max(...args.jobIds)];
+  if (args.command === 'private-reparse' && !args.jobIds.length) {
+    args.jobIds = DEFAULT_PRIVATE_REPARSE_JOB_IDS.slice();
+    args.jobs = [Math.min(...args.jobIds), Math.max(...args.jobIds)];
+  }
   if (process.env.BNA_ENV_FILE) args.envFiles.unshift(path.resolve(process.env.BNA_ENV_FILE));
   return args;
+}
+
+function assertApprovedPrivateReparseScope(args) {
+  if (args.command !== 'private-reparse') return;
+  const approved = DEFAULT_PRIVATE_REPARSE_JOB_IDS.map(Number).sort((a, b) => a - b);
+  const requested = [...new Set(args.jobIds.map(Number).filter(Boolean))].sort((a, b) => a - b);
+  const approvedKey = approved.join(',');
+  const requestedKey = requested.join(',');
+  if (requestedKey !== approvedKey) {
+    throw new Error(`Refusing private reparse: approved job IDs are exactly ${approvedKey}; requested ${requestedKey || 'none'}.`);
+  }
+  args.jobIds = requested;
+  args.jobs = [Math.min(...requested), Math.max(...requested)];
+  args.skipDrive = true;
 }
 
 function loadEnvFile(filePath) {
@@ -392,7 +424,7 @@ async function queryIfTable(client, tableName, sql, params = []) {
   return (await client.query(sql, params)).rows;
 }
 
-async function loadDbSnapshot(jobRange) {
+async function loadDbSnapshot(jobRange, options = {}) {
   const snapshot = {
     jobs: [],
     students: [],
@@ -411,19 +443,27 @@ async function loadDbSnapshot(jobRange) {
     return snapshot;
   }
   const [start, end] = jobRange;
+  const exactJobIds = (options.exactJobIds || []).map(Number).filter(Boolean);
   try {
-    snapshot.jobs = await queryIfTable(client, 'bna_content_jobs', `
-      SELECT *
-      FROM bna_content_jobs
-      WHERE id BETWEEN $1 AND $2
-         OR drive_file_id IS NOT NULL
-         OR transcript_text IS NOT NULL
-         OR source_type ILIKE ANY(ARRAY['%drive%','%recording%','%class%'])
-         OR COALESCE(parse_json::text, '') ILIKE '%mixed_recording_parse%'
-         OR COALESCE(parse_json::text, '') ILIKE '%class_notes%'
-      ORDER BY id ASC
-      LIMIT 500
-    `, [start, end]);
+    snapshot.jobs = exactJobIds.length
+      ? await queryIfTable(client, 'bna_content_jobs', `
+        SELECT *
+        FROM bna_content_jobs
+        WHERE id = ANY($1::int[])
+        ORDER BY id ASC
+      `, [exactJobIds])
+      : await queryIfTable(client, 'bna_content_jobs', `
+        SELECT *
+        FROM bna_content_jobs
+        WHERE id BETWEEN $1 AND $2
+           OR drive_file_id IS NOT NULL
+           OR transcript_text IS NOT NULL
+           OR source_type ILIKE ANY(ARRAY['%drive%','%recording%','%class%'])
+           OR COALESCE(parse_json::text, '') ILIKE '%mixed_recording_parse%'
+           OR COALESCE(parse_json::text, '') ILIKE '%class_notes%'
+        ORDER BY id ASC
+        LIMIT 500
+      `, [start, end]);
     const jobIds = snapshot.jobs.map((job) => Number(job.id)).filter(Boolean);
     const ids = jobIds.length ? jobIds : [-1];
     snapshot.students = await queryIfTable(client, 'bna_students', `
@@ -653,6 +693,14 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     backfillPlan: recommendation,
     exactJobIds: catchupCensus.focus_job_ids,
   });
+  const privateReparseDryRun = buildPrivateReparseCanonicalDryRun({
+    jobs: snapshot.jobs,
+    students: snapshot.students,
+    accountabilityEvents: snapshot.accountabilityEvents,
+    torahEntries: snapshot.torahEntries,
+    groupGoalEntries: snapshot.groupGoalEntries,
+    exactJobIds: args.jobIds?.length ? args.jobIds : DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  });
   return {
     census,
     backfill,
@@ -663,6 +711,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     taskActionPlan,
     researchContentPlan,
     applyLaneDesign,
+    privateReparseDryRun,
   };
 }
 
@@ -740,9 +789,10 @@ function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-0
     ['SRC-20260628-148', 'Emit no-write task/action catch-up plan with canonical keys and dedupe rules.', 'REQ-20260628-148', [evidencePath('TASK-ACTION-CATCHUP-PLAN.md'), evidencePath('TASK-ACTION-CATCHUP-PLAN.json')]],
     ['SRC-20260628-149', 'Emit research/content catch-up plan proving card readiness without raw bodies.', 'REQ-20260628-149', [evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.md'), evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.json')]],
     ['SRC-20260628-150', 'Document apply-lane owner gate, snapshot, rollback, row evidence, dedupe, and refusal controls without executing apply.', 'REQ-20260628-150', [evidencePath('APPLY-LANE-DESIGN.md'), evidencePath('APPLY-LANE-DESIGN.json'), 'tests/class-drive-intake-reconcile.test.js']],
+    ['SRC-20260628-154', 'Produce exact-scope private reparse/canonical-write dry-run evidence for the 10 approved Needs-parse jobs without raw transcript bodies or production mutation.', 'REQ-20260628-154', [evidencePath('PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'), evidencePath('PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'), 'raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md']],
   ].map(([statement_id, source_statement, requirement_id, evidence_paths]) => ({
     statement_id,
-    source_id: statement_id.startsWith('SRC-20260628') ? 'RAW-20260628-004' : 'RAW-20260626-004',
+    source_id: statement_id === 'SRC-20260628-154' ? 'RAW-20260628-005' : statement_id.startsWith('SRC-20260628') ? 'RAW-20260628-004' : 'RAW-20260626-004',
     source_statement,
     requirement_id,
     classification: 'requirement',
@@ -758,7 +808,7 @@ function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-0
   }, {});
   return {
     generated_at: new Date().toISOString(),
-    source_id: 'RAW-20260626-004+RAW-20260628-004',
+    source_id: 'RAW-20260626-004+RAW-20260628-004+RAW-20260628-005',
     source_path: 'ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json',
     no_production_mutation: true,
     source_statement_count: statements.length,
@@ -824,6 +874,16 @@ function writeEvidence(args, auth, reports) {
   writeText(path.join(args.outDir, 'APPLY-LANE-DESIGN.md'), renderApplyLaneDesignMarkdown(reports.applyLaneDesign));
 }
 
+function writePrivateReparseEvidence(args, reports) {
+  writeJson(path.join(args.outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'), reports.privateReparseDryRun);
+  writeText(path.join(args.outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'), renderPrivateReparseDryRunMarkdown(reports.privateReparseDryRun));
+}
+
+function writeSourceCoverageEvidence(args, reports) {
+  writeJson(path.join(args.outDir, 'SOURCE-COVERAGE.json'), reports.sourceCoverage);
+  writeText(path.join(args.outDir, 'SOURCE-COVERAGE.md'), renderSourceCoverageMarkdown(reports.sourceCoverage));
+}
+
 function selectOutput(command, reports) {
   if (command === 'census' || command === 'stage-report') return reports.census;
   if (command === 'catchup-census') return reports.catchupCensus;
@@ -831,6 +891,7 @@ function selectOutput(command, reports) {
   if (command === 'task-action-plan') return reports.taskActionPlan;
   if (command === 'research-content-plan') return reports.researchContentPlan;
   if (command === 'apply-lane-design') return reports.applyLaneDesign;
+  if (command === 'private-reparse') return reports.privateReparseDryRun;
   if (command === 'orphan-output') {
     return {
       generated_at: reports.census.generated_at,
@@ -867,6 +928,7 @@ function selectOutput(command, reports) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  assertApprovedPrivateReparseScope(args);
   if ((args.apply || args.command === 'apply' || args.command === 'rollback') && args.gate !== APPLY_GATE_PHRASE) {
     throw new Error(`Refusing mutation: guarded apply requires --gate ${APPLY_GATE_PHRASE}.`);
   }
@@ -878,9 +940,13 @@ async function main() {
   let auth = authReadiness(envLoadResults, loadedSecretFiles);
   const driveReadback = await readDriveMetadata(args, auth);
   auth = authReadiness(envLoadResults, loadedSecretFiles, driveReadback);
-  const snapshot = await loadDbSnapshot(args.jobs);
+  const snapshot = await loadDbSnapshot(args.jobs, { exactJobIds: args.jobIds });
   const reports = reportsFrom(snapshot, auth, driveReadback, args);
-  if (args.write || args.command === 'all') writeEvidence(args, auth, reports);
+  if (args.write || args.command === 'all') {
+    if (args.command === 'private-reparse') writePrivateReparseEvidence(args, reports);
+    else if (args.command === 'source-coverage') writeSourceCoverageEvidence(args, reports);
+    else writeEvidence(args, auth, reports);
+  }
   process.stdout.write(`${JSON.stringify(selectOutput(args.command, reports), null, 2)}\n`);
 }
 

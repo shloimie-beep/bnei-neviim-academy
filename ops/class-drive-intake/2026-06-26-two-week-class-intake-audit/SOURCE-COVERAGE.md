@@ -1,13 +1,13 @@
 # Class/Drive Intake Source Coverage
 
-Generated: 2026-06-28T11:52:04.660Z
-Source: RAW-20260626-004+RAW-20260628-004
+Generated: 2026-06-28T12:38:45.979Z
+Source: RAW-20260626-004+RAW-20260628-004+RAW-20260628-005
 No production mutation: true
 
 ## Summary
 
-- Source statements: 13
-- Mapped statements: 13
+- Source statements: 14
+- Mapped statements: 14
 - Unmapped executable statements: 0
 - Statements with missing evidence: 0
 
@@ -28,3 +28,4 @@ No production mutation: true
 | SRC-20260628-148 | REQ-20260628-148 | yes |
 | SRC-20260628-149 | REQ-20260628-149 | yes |
 | SRC-20260628-150 | REQ-20260628-150 | yes |
+| SRC-20260628-154 | REQ-20260628-154 | yes |

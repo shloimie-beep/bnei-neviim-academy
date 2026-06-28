@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-28T11:52:04.660Z",
-  "source_id": "RAW-20260626-004+RAW-20260628-004",
+  "generated_at": "2026-06-28T12:38:45.979Z",
+  "source_id": "RAW-20260626-004+RAW-20260628-004+RAW-20260628-005",
   "source_path": "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json",
   "no_production_mutation": true,
-  "source_statement_count": 13,
-  "mapped_statement_count": 13,
+  "source_statement_count": 14,
+  "mapped_statement_count": 14,
   "unmapped_executable_statement_count": 0,
   "missing_evidence_count": 0,
   "by_requirement": {
@@ -20,7 +20,8 @@
     "REQ-20260628-147": 1,
     "REQ-20260628-148": 1,
     "REQ-20260628-149": 1,
-    "REQ-20260628-150": 1
+    "REQ-20260628-150": 1,
+    "REQ-20260628-154": 1
   },
   "statements": [
     {
@@ -183,6 +184,19 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.json",
         "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-154",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Produce exact-scope private reparse/canonical-write dry-run evidence for the 10 approved Needs-parse jobs without raw transcript bodies or production mutation.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json",
+        "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
       ],
       "evidence_present": true
     }

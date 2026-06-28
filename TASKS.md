@@ -29,11 +29,18 @@ not authorize active GHL runtime paths.
   parse` jobs, 29 ready research/content cards, 13 question candidates, 34
   internal task/action candidates, and 0 score/progress row-level changes;
   `APPLY-LANE-DESIGN` documents the owner gate/snapshot/rollback/refusal
-  controls while keeping production apply disabled. Score/progress still has 0
-  safe row-level apply rows. No production
-  apply command has been approved or implemented; the no-write owner decision
+  controls while keeping production apply disabled. Shloimie then approved a
+  private-source, no-write reparse/canonical-write dry-run for exactly jobs
+  `21, 25, 26, 30, 31, 56, 57, 58, 59, 71`; the generated sanitized evidence
+  inspected all 10 private transcript sources, found 261 student-name mentions,
+  1,285 question candidates, 36 matched personal-question candidates, 1,249
+  class-question broadcast candidates, 119 internal task candidates, 1
+  score/progress row, and 55 concrete score/progress no-op reasons. No
+  production apply command has been approved or implemented; the no-write owner decision
   packet is
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
+  Private reparse dry-run evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
   Owner approval is still required for any production parser/question/task/
   score/progress write or other unsafe/raw/external path. Done:
   active execution run created, Drive-first raw storage and GitHub digest

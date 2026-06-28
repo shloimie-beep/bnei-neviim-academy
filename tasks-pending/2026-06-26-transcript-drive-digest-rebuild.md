@@ -292,6 +292,63 @@ broad Drive sync, no class backfill, no raw transcript-body export, no AI call,
 no paid retranscription, no send/publish/charge/access grant, and no
 credential/account/DNS change.
 
+## June 28 private reparse dry-run approval
+
+Captured `RAW-20260628-005` from the owner approval and added
+`REQ-20260628-152` through `REQ-20260628-156` to the active Issue #41 run.
+
+Approved scope:
+
+- No-write private reparse/canonical-write dry-run only.
+- Exact approved job IDs: `21, 25, 26, 30, 31, 56, 57, 58, 59, 71`.
+- Allowed repo writes: sanitized evidence/status only.
+- Forbidden: `--apply`, production mutation, student portal writes,
+  score/progress writes, production task writes, class backfill, Drive
+  create/update/delete/move, raw transcript-body export, raw Drive URL/ID
+  evidence, AI calls, paid retranscription, sends/publishes/charges/access
+  grants, and credential/account/DNS changes.
+
+Execution result:
+
+- `REQ-20260628-152` Done: owner approval preserved in
+  `raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md`.
+- `REQ-20260628-153` Done: `private-reparse` mode refuses unapproved job IDs,
+  forces Drive listing off, and reads exact DB job IDs only.
+- `REQ-20260628-154` Done: generated
+  `PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN` evidence.
+- `REQ-20260628-155` Done: syntax checks, focused test suite, private evidence
+  privacy scan, run validation/status/next, source coverage, secrets audit,
+  JSON/JSONL parse, added-line privacy scan, and diff check passed.
+- `REQ-20260628-156` Needs verification until commit, push, PR #49 update, and
+  Issue #41 comment are complete.
+
+Private dry-run summary:
+
+- Inspected jobs: 10/10.
+- Missing jobs: 0.
+- Private transcript sources read: 10.
+- Student-name mentions: 261.
+- Question candidates: 1,285.
+- Personal question candidates: 36.
+- Class-question broadcast candidates: 1,249.
+- Existing skip candidates: 0.
+- Blocked-review candidates: 0.
+- Row-level dry-run rows: 10,149.
+- Internal task candidate rows: 119.
+- Score/progress rows: 1.
+- Score/progress no-op rows: 55.
+
+Evidence:
+
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json`
+
+Guardrails held so far: no `--apply`, no production DB mutation, no student
+portal write, no score/progress write, no production task write, no Drive
+write, no broad Drive sync, no class backfill, no raw transcript-body export,
+no AI call, no paid retranscription, no send/publish/charge/access grant, and
+no credential/account/DNS change.
+
 ## Goal-mode execution
 
 | Field | Value |

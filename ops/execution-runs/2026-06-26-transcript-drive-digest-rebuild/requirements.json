@@ -74,6 +74,16 @@
       "workspace": "bna",
       "project": "class_drive_intake",
       "source_type": "codex_chat_attachment"
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "captured_at": "2026-06-28T15:35:00+03:00",
+      "content_fingerprint": "sha256:a0afba2a37f9fdfd076145120136cc630f90ccf32c6fe624d9b121f3a94e0f2d",
+      "privacy_classification": "private_transcript_read_approved_exact_jobs_no_write",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat_owner_approval"
     }
   ],
   "source_statements": [
@@ -390,6 +400,62 @@
       "source_id": "RAW-20260628-004",
       "source_statement": "Run focused tests, audits, privacy scans, validation, secrets audit, JSON/JSONL parse checks, git diff check, and GitHub PR/Issue updates.",
       "requirement_id": "REQ-20260628-151",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S001",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Owner approves no-write private reparse/canonical-write dry-run for job IDs 21, 25, 26, 30, 31, 56, 57, 58, 59, and 71 only.",
+      "requirement_id": "REQ-20260628-152",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S002",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Read the private Drive/app transcript source only for those 10 jobs and keep raw transcript bodies out of GitHub.",
+      "requirement_id": "REQ-20260628-153",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S003",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Extract structured question candidates and spoken student-name mentions with safe normalized student/student_id matching where possible.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S004",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Separate matched personal questions from class-question broadcasts, existing skips, and blocked-review cases.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S005",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Produce redacted row-level before/after dry-run plans for student questions, class questions, tasks, scores, and progress.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S006",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Explain why each of the 10 jobs was Needs parse and emit score/progress rows or concrete no-op reasons.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S007",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Do not run --apply, mutate production, write student portals, backfill classes, write Drive, export raw transcripts, call AI, retranscribe, send, charge, grant access, or change credentials/accounts/DNS.",
+      "requirement_id": "REQ-20260628-155",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S008",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Update sanitized repo evidence, active execution run, NEXT-SESSION.md, ledger, changelog, PR #49, and Issue #41 with results while keeping PR #49 draft if production apply remains blocked.",
+      "requirement_id": "REQ-20260628-156",
       "classification": "requirement"
     }
   ],
@@ -2151,6 +2217,233 @@
         "src/lib/bna/class-drive-intake-reconcile.js",
         "scripts/class-drive-intake-reconcile.cjs",
         "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-152",
+      "title": "Register private reparse dry-run approval",
+      "expected_result": "Owner approval is preserved with exact 10-job scope and no-write guardrails.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S001"
+      ],
+      "category": "source_registration",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-151"
+      ],
+      "status": "done",
+      "implementation_status": "done; RAW-20260628-005 preserved the exact approved private-read/no-write scope",
+      "next_action": "Use REQ-20260628-153 through REQ-20260628-156 for the approved dry-run execution and closeout.",
+      "acceptance_criteria": [
+        "Raw approval file exists",
+        "Exact job IDs recorded",
+        "Forbidden actions recorded"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
+      ],
+      "verification": [
+        "PASS raw approval readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-153",
+      "title": "Implement exact-scope private reparse dry-run command",
+      "expected_result": "CLI supports private-reparse no-write mode, refuses unapproved job IDs, skips broad Drive listing, and reads only the approved job rows.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S002",
+        "RAW-20260628-005-S007"
+      ],
+      "category": "implementation",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-152"
+      ],
+      "status": "done",
+      "implementation_status": "done; private-reparse command validates exact approved IDs, forces skipDrive, and loads exact DB job IDs only",
+      "next_action": "Use the command only with the approved job list unless a new owner approval is recorded.",
+      "acceptance_criteria": [
+        "Unapproved scope refused",
+        "No Drive listing",
+        "No apply path",
+        "Exact job IDs only"
+      ],
+      "evidence": [
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/class-drive-intake-reconcile.test.js includes exact-scope refusal coverage"
+      ],
+      "implementation_files": [
+        "scripts/class-drive-intake-reconcile.cjs",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-154",
+      "title": "Generate private reparse canonical-write dry-run evidence",
+      "expected_result": "Sanitized evidence explains the Needs parse state for each approved job and emits redacted question routing, student mention matching, task rows, and score/progress rows or no-op reasons.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S003",
+        "RAW-20260628-005-S004",
+        "RAW-20260628-005-S005",
+        "RAW-20260628-005-S006"
+      ],
+      "category": "evidence",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-153"
+      ],
+      "status": "done",
+      "implementation_status": "done; PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN covers all 10 approved jobs and emits sanitized redacted routing/row-level dry-run evidence only",
+      "next_action": "Review the dry-run rows; production apply remains blocked unless separately approved with snapshot/rollback controls.",
+      "acceptance_criteria": [
+        "All 10 jobs inspected",
+        "No missing job IDs",
+        "Question routing emitted",
+        "Student mention match status emitted",
+        "Score/progress rows or no-op reasons emitted",
+        "Raw transcript bodies excluded"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json"
+      ],
+      "verification": [
+        "PASS private-reparse summary: inspected_jobs=10, missing_jobs=0, private_transcript_sources_read=10",
+        "PASS private-reparse summary: student_name_mentions=261, question_candidates=1285, personal_question_candidates=36, class_question_broadcast_candidates=1249, task_candidate_rows=119, score_progress_rows=1, score_progress_no_op_rows=55",
+        "PASS private reparse evidence privacy scan: no raw Drive URLs/IDs, no raw transcript body fields, no secret literals"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T16:00:00+03:00",
+      "id": "REQ-20260628-155",
+      "title": "Verify private reparse dry-run guardrails",
+      "expected_result": "Tests, syntax checks, privacy scans, secrets audit, JSON/JSONL parse, diff check, and run validation pass with no forbidden action performed.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S007"
+      ],
+      "category": "verification",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-154"
+      ],
+      "status": "done",
+      "implementation_status": "done; syntax checks, focused test suite, private evidence privacy scan, run validation/status/next, secrets audit, JSON/JSONL parse, added-line privacy scan, and diff check passed",
+      "next_action": "Proceed to REQ-20260628-156: commit, push, update PR #49, and comment Issue #41 while keeping production apply blocked.",
+      "acceptance_criteria": [
+        "Focused tests pass",
+        "Privacy scan passes",
+        "Secrets audit passes",
+        "Run validation passes",
+        "No forbidden action performed"
+      ],
+      "evidence": [
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/class-drive-intake-reconcile.js",
+        "PASS node --check scripts/class-drive-intake-reconcile.cjs",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js: 23/23",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js: 49/49",
+        "PASS private reparse evidence privacy scan: no raw Drive URLs/IDs, no raw transcript body fields, no secret literals",
+        "PASS node scripts/class-drive-intake-reconcile.cjs source-coverage --write --skip-drive --job-ids 21,25,26,30,31,56,57,58,59,71 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit: source_statement_count=14, missing_evidence_count=0",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 5352 tracked paths checked, 0 tracked secret-risk files",
+        "PASS JSON/JSONL parse: 2203 payloads, BOM-tolerant",
+        "PASS added-line privacy scan: 337059 added/new lines, no raw Drive URLs/IDs, secret literals, or raw transcript bodies",
+        "PASS git diff --check: Windows CRLF warnings only"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-156",
+      "title": "Publish private reparse dry-run status to PR #49 and Issue #41",
+      "expected_result": "PR #49, Issue #41, NEXT-SESSION, ledger, changelog, and task handoff reflect the private dry-run results while keeping PR #49 draft and Issue #41 open.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S008"
+      ],
+      "category": "github_closeout",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-155"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "needs_verification; local evidence exists but commit/push and GitHub updates are still pending",
+      "next_action": "Commit, push, update PR #49, add Issue #41 comment, then mark done with links.",
+      "acceptance_criteria": [
+        "Branch pushed",
+        "PR #49 updated and remains draft",
+        "Issue #41 commented and remains open",
+        "Remaining production blocker explicit"
+      ],
+      "evidence": [],
+      "verification": [
+        "PENDING commit/push/GitHub update"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/NEXT-SESSION.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
       ]
     }
   ]

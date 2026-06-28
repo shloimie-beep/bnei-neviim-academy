@@ -85,6 +85,24 @@ PR #49 catch-up package closeout:
 - Issue #41 remains open. Production parser/question/task/score/progress
   writes remain blocked by `DEC-20260626-101`.
 
+Private reparse dry-run approval:
+
+- `RAW-20260628-005` approved a no-write private reparse/canonical-write
+  dry-run for exactly jobs `21, 25, 26, 30, 31, 56, 57, 58, 59, 71`.
+- `REQ-20260628-152` through `REQ-20260628-154` are Done locally.
+- `REQ-20260628-155` and `REQ-20260628-156` remain open until final
+  verification, commit/push, PR #49 update, and Issue #41 comment are complete.
+- Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
+- Dry-run summary: 10/10 jobs inspected, 0 missing, 10 private transcript
+  sources read, 261 student-name mentions, 1,285 question candidates, 36
+  personal-question candidates, 1,249 class-question broadcast candidates, 0
+  blocked-review candidates, 119 internal task candidates, 1 score/progress
+  row, and 55 score/progress no-op rows.
+- Evidence is sanitized: raw transcript bodies false, raw Drive URLs/IDs false.
+- Production apply remains blocked by `DEC-20260626-101`; PR #49 should remain
+  draft unless production apply is separately approved and implemented.
+
 ChatGPT/repo transcript access status:
 
 - Repo-safe digest memory is available at

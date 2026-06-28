@@ -27141,3 +27141,62 @@ mutation, student portal write, score/progress write, production task write,
 Drive write, broad Drive sync, class backfill, raw transcript export, AI call,
 paid retranscription, send/publish/charge/access grant, or credential/account/
 DNS change was performed.
+
+## 2026-06-28T15:45:00+03:00 - Issue 41 Private Reparse Dry-run
+
+Captured `RAW-20260628-005`, the owner approval for a no-write private
+reparse/canonical-write dry-run for exactly jobs `21, 25, 26, 30, 31, 56, 57,
+58, 59, 71`.
+
+- Added `private-reparse` mode to `scripts/class-drive-intake-reconcile.cjs`.
+- The command refuses any job ID outside the exact approved list and forces
+  broad Drive listing off for this mode.
+- The DB snapshot path reads exact approved job IDs only.
+- Added deterministic private transcript dry-run extraction for sanitized
+  student-name mentions, question routing, task candidates, and
+  score/progress rows or no-op reasons.
+- Generated
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
+
+Dry-run summary:
+
+- Approved jobs: 10.
+- Inspected jobs: 10.
+- Missing jobs: 0.
+- Private transcript sources read: 10.
+- Student-name mentions: 261.
+- Question candidates: 1,285.
+- Personal question candidates: 36.
+- Class-question broadcast candidates: 1,249.
+- Existing skip candidates: 0.
+- Blocked-review candidates: 0.
+- Row-level dry-run rows: 10,149.
+- Internal task candidate rows: 119.
+- Score/progress rows: 1.
+- Score/progress no-op rows: 55.
+
+Verification:
+
+- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
+- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
+- `node --test tests/class-drive-intake-reconcile.test.js`: 23/23 passed.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  49/49 passed.
+- Private reparse evidence privacy scan: passed; no raw Drive URLs/IDs, no
+  raw transcript body fields, and no secret literals.
+- Source coverage refresh passed with 14 mapped statements and 0 missing
+  evidence.
+- `npm run bna:run:validate`, `npm run bna:run:next`, and
+  `npm run bna:run:status`: passed.
+- `npm run secrets:audit`: passed, 5,352 tracked paths and 0 secret-risk files.
+- JSON/JSONL parse passed: 2,203 payloads, BOM-tolerant.
+- Added-line privacy scan passed: 337,059 added/new lines, no raw Drive
+  URLs/IDs, secret literals, or raw transcript bodies.
+- `git diff --check`: passed with Windows CRLF warnings only.
+
+Remaining: commit/push, PR #49 update, and Issue #41 comment. Production apply remains blocked by
+`DEC-20260626-101`. No `--apply`, production mutation, student portal write,
+score/progress write, production task write, class backfill, Drive
+create/update/delete/move, raw transcript export, AI call, paid
+retranscription, send/publish/charge/access grant, or credential/account/DNS
+change was performed.
