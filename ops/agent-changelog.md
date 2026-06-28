@@ -27194,9 +27194,18 @@ Verification:
   URLs/IDs, secret literals, or raw transcript bodies.
 - `git diff --check`: passed with Windows CRLF warnings only.
 
-Remaining: commit/push, PR #49 update, and Issue #41 comment. Production apply remains blocked by
-`DEC-20260626-101`. No `--apply`, production mutation, student portal write,
-score/progress write, production task write, class backfill, Drive
-create/update/delete/move, raw transcript export, AI call, paid
-retranscription, send/publish/charge/access grant, or credential/account/DNS
-change was performed.
+Closeout:
+
+- Commit `34e29b60` pushed to PR #49.
+- PR #49 remains draft.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334`.
+- `REQ-20260628-156` is Done for this no-write dry-run closeout.
+
+Remaining: production apply remains blocked by `DEC-20260626-101`. No
+`--apply`, production mutation, student portal write, score/progress write,
+production task write, class backfill, Drive create/update/delete/move, raw
+transcript export, AI call, paid retranscription, send/publish/charge/access
+grant, or credential/account/DNS change was performed.

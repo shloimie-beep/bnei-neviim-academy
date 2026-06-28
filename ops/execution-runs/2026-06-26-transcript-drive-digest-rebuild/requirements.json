@@ -2228,7 +2228,7 @@
       "priority": "high",
       "can_continue_without_operator": true,
       "deployment_required": false,
-      "updated_at": "2026-06-28T15:45:00+03:00",
+      "updated_at": "2026-06-28T16:10:00+03:00",
       "id": "REQ-20260628-152",
       "title": "Register private reparse dry-run approval",
       "expected_result": "Owner approval is preserved with exact 10-job scope and no-write guardrails.",
@@ -2427,18 +2427,29 @@
       "depends_on": [
         "REQ-20260628-155"
       ],
-      "status": "needs_verification",
-      "implementation_status": "needs_verification; local evidence exists but commit/push and GitHub updates are still pending",
-      "next_action": "Commit, push, update PR #49, add Issue #41 comment, then mark done with links.",
+      "status": "done",
+      "implementation_status": "done; commit 34e29b60 pushed to PR #49, PR and Issue #41 comments posted, PR remains draft, and Issue #41 remains open",
+      "next_action": "No production apply until DEC-20260626-101 is resolved by a separate exact owner approval; next safe command is npm run bna:run:next.",
       "acceptance_criteria": [
         "Branch pushed",
         "PR #49 updated and remains draft",
         "Issue #41 commented and remains open",
         "Remaining production blocker explicit"
       ],
-      "evidence": [],
+      "evidence": [
+        "Commit 34e29b60 pushed to codex/issue41-class-question-fallback-20260628",
+        "PR #49 comment: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567",
+        "Issue #41 comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334",
+        "PR #49 verified draft: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json"
+      ],
       "verification": [
-        "PENDING commit/push/GitHub update"
+        "PASS git push -u origin codex/issue41-class-question-fallback-20260628",
+        "PASS gh pr view 49 --json number,url,isDraft,headRefName,baseRefName,title: isDraft=true",
+        "PASS gh pr comment 49",
+        "PASS gh issue comment 41",
+        "PASS production apply remains blocked by DEC-20260626-101"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/NEXT-SESSION.md",

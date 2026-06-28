@@ -89,9 +89,14 @@ Private reparse dry-run approval:
 
 - `RAW-20260628-005` approved a no-write private reparse/canonical-write
   dry-run for exactly jobs `21, 25, 26, 30, 31, 56, 57, 58, 59, 71`.
-- `REQ-20260628-152` through `REQ-20260628-154` are Done locally.
-- `REQ-20260628-155` and `REQ-20260628-156` remain open until final
-  verification, commit/push, PR #49 update, and Issue #41 comment are complete.
+- `REQ-20260628-152` through `REQ-20260628-156` are Done for the no-write
+  dry-run closeout.
+- Commit `34e29b60` was pushed to PR #49. PR #49 remains draft, and Issue #41
+  remains open.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334`.
 - Evidence:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
 - Dry-run summary: 10/10 jobs inspected, 0 missing, 10 private transcript

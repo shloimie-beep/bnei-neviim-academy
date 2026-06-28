@@ -319,8 +319,11 @@ Execution result:
 - `REQ-20260628-155` Done: syntax checks, focused test suite, private evidence
   privacy scan, run validation/status/next, source coverage, secrets audit,
   JSON/JSONL parse, added-line privacy scan, and diff check passed.
-- `REQ-20260628-156` Needs verification until commit, push, PR #49 update, and
-  Issue #41 comment are complete.
+- `REQ-20260628-156` Done: commit `34e29b60` pushed to PR #49, PR #49 remains
+  draft, Issue #41 remains open, and GitHub comments were posted:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567`
+  and
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334`.
 
 Private dry-run summary:
 
