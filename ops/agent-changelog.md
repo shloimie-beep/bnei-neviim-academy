@@ -26973,3 +26973,48 @@ Remaining: PR #45 is mergeable but still needs merge, deployment, and live
 Operations content smoke before app-visible Done. `DEC-20260626-101` remains
 open for any production parser/question/score apply, broad Drive sync, raw
 export, AI call, class backfill, or other unsafe write path.
+
+## 2026-06-28T09:58:00+03:00 - Issue 41 Content Cards Live Closeout
+
+Completed the safe app-visible content-card/topic-filter repair batch for
+Issue #41 without closing the issue or performing production student-data
+writes.
+
+- Merged PR #45 for the card/topic-filter repair:
+  `185f944613faca469c15df3d9ef6fefa3afd1850`.
+- Found live readback initially returned 0 digest cards because the deploy
+  bundle omitted `content-memory/transcript-digests`.
+- Merged follow-up PR #46 to include transcript digests in the Railway deploy
+  bundle: `c0b29982c1219a5cac0bdcb875b94cff3a3a22db`.
+- Deployed Railway `fd93be96-8bec-4c06-b42f-c53d177eab40` to
+  `skillful-motivation` / production.
+- Live readback passed: `/api/bna/content-jobs?project_key=all` returned 81
+  jobs, 29 digest cards, all 10 `Needs parse` jobs, job #83 clean title, and
+  `raw_body_in_digest_cards=false`.
+- Posted Issue #41 status comment without marking the issue done:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
+
+Evidence:
+
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json`
+- `ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md`
+- `ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md`
+- `ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md`
+
+Verification:
+
+- `node --test tests/content-card-view-model.test.js tests/transcript-digest-export.test.js`:
+  16/16 passed.
+- `npm run app:smoke`: passed.
+- Content research live smoke: passed.
+- Operations workspace taxonomy live smoke: passed.
+- Railway doctor: deployment `fd93be96-8bec-4c06-b42f-c53d177eab40`
+  `SUCCESS`.
+
+Remaining: student question, task, score, and progress production writes remain
+blocked by `DEC-20260626-101`. The current dry-run plan has 13 question rows,
+6 needing human student-match review, and 0 safe score/progress apply rows.
+No Drive write, production DB mutation, class backfill, raw transcript export,
+AI call, send/publish, charge/access grant, credential/account/DNS change, or
+broad Drive sync was performed in this closeout.

@@ -140,8 +140,12 @@ charges/access grants, credential/account/DNS changes, or stale deletion.
 
 June 28 execution update:
 
-- PR #45 is mergeable after resolving the master conflict and preserving both
-  Issue #41 and service-provider evidence records.
+- PR #45 is merged; follow-up PR #46 is merged to include
+  `content-memory/transcript-digests` in the Railway deploy bundle.
+- Railway deployment `fd93be96-8bec-4c06-b42f-c53d177eab40` reached `SUCCESS`.
+- Live readback confirms `/api/bna/content-jobs?project_key=all` returns 81
+  jobs, 29 digest cards, all 10 `Needs parse` jobs, job #83's clean generated
+  title, and no raw transcript text inside `digest_card` payloads.
 - Fresh read-only audit rerun: 18 Drive recordings, 29 content jobs, 0 Drive
   orphans, 13 student question rows, final verdict `PARTIAL`.
 - Privacy-safe digest export rerun: 29 recordings, raw transcript bodies false,
@@ -159,8 +163,10 @@ June 28 execution update:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
   and `.json`.
 
-Remaining: merge/deploy/live-smoke PR #45 for app-visible card/filter repair,
-then keep `DEC-20260626-101` open for any production parser/question/score
+Issue #41 status comment:
+`https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
+
+Remaining: keep `DEC-20260626-101` open for any production parser/question/score
 apply, broad Drive sync, raw export, AI call, class backfill, or other unsafe
 write path.
 
@@ -174,8 +180,8 @@ write path.
 | GPT output contract | `tasks-pending/_template-goal-mode-correction-output.md` |
 | Execution directive | Register first, then work requirements in batches until terminal statuses. |
 | Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
-| Deploy/live-smoke required for app-visible work | no app-visible deployment in this dry-run/digest batch |
-| Next requirement IDs to work | None currently unblocked; `DEC-20260626-101` remains open for any future write beyond #83 |
+| Deploy/live-smoke required for app-visible work | completed for content-card/topic-filter repair on Railway `fd93be96-8bec-4c06-b42f-c53d177eab40` |
+| Next requirement IDs to work | None currently unblocked; `DEC-20260626-101` remains open for any production write beyond #83 |
 
 ## Parsed requirements
 
@@ -195,9 +201,9 @@ write path.
 | REQ-20260626-128 | Run approved private Drive transcript sync for content job #83 only | RAW-20260626-007 | bna/drive-content-library | Codex | approved_private_drive_write | High | F | REQ-20260626-127 | Exact approved command creates #83 private Drive transcript doc, verifies readback, records sanitized pointer, reruns digest export and read-only audit, and keeps all broader writes blocked | `raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.*` | no | Done |
 | REQ-20260626-129 | Register PR #45 content-card/topic-filter addendum | RAW-20260626-008 | bna/class-drive-intake | Codex | source_addendum_registration | High | G | REQ-20260626-128 | PR #45 comment `4809202212` is preserved as raw input, linked to the active run, and Issue #41 remains open | `raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`; this register | no | Done |
 | REQ-20260626-130 | Audit all 29 digest recordings for card/filter readiness | RAW-20260626-008 | bna/class-drive-intake | Codex | audit | High | G | REQ-20260626-129 | Audit covers every digest recording and reports clean-title, parse, digest, routing, topic, category, next-action, and guardrail states without raw bodies | `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.*`; `scripts/audit-content-card-topic-filter.cjs` | no | Done |
-| REQ-20260626-131 | Repair Operations Content card digest display | RAW-20260626-008 | bna/operations-content-ui | Codex | implementation | High | G | REQ-20260626-130 | Cards show clean generated title, summary, main points, categories, parse status, digest status, routing status, topic status, and next action, and show Needs states for incomplete records | `src/lib/bna/content-card-view-model.js`; `server.js`; `public/operations.html` | required after PR review/merge | Blocked: local implementation complete; deploy/live smoke proof pending |
-| REQ-20260626-132 | Repair top topic filter using normalized digest/classification categories | RAW-20260626-008 | bna/operations-content-ui | Codex | implementation | High | G | REQ-20260626-130 | Top topic filter counts and filters multi-topic digest/category keys, has an All reset, includes Uncategorized/Needs Review states, and no longer depends on raw transcript-body topic search | `src/lib/bna/content-card-view-model.js`; `public/operations.html`; `tests/operations-content-library-taxonomy.test.js` | required after PR review/merge | Blocked: local implementation complete; deploy/live smoke proof pending |
-| REQ-20260626-133 | Verify content-card/topic-filter repair with no external writes | RAW-20260626-008 | bna/class-drive-intake | Codex | verification | High | G | REQ-20260626-131, REQ-20260626-132 | Focused local tests pass; audit passes; privacy-safe digest export passes; no Drive write, production mutation, class backfill, AI call, or raw transcript export is performed; final app-visible verification waits for deploy/live smoke | `tests/content-card-view-model.test.js`; `tests/operations-content-library-taxonomy.test.js`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.*` | required after PR review/merge | Blocked: local verification passed; deploy/live smoke proof pending |
+| REQ-20260626-131 | Repair Operations Content card digest display | RAW-20260626-008 | bna/operations-content-ui | Codex | implementation | High | G | REQ-20260626-130 | Cards show clean generated title, summary, main points, categories, parse status, digest status, routing status, topic status, and next action, and show Needs states for incomplete records | `src/lib/bna/content-card-view-model.js`; `server.js`; `public/operations.html`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.*` | deployed/live-smoked | Done |
+| REQ-20260626-132 | Repair top topic filter using normalized digest/classification categories | RAW-20260626-008 | bna/operations-content-ui | Codex | implementation | High | G | REQ-20260626-130 | Top topic filter counts and filters multi-topic digest/category keys, has an All reset, includes Uncategorized/Needs Review states, and no longer depends on raw transcript-body topic search | `src/lib/bna/content-card-view-model.js`; `public/operations.html`; `tests/operations-content-library-taxonomy.test.js`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.*` | deployed/live-smoked | Done |
+| REQ-20260626-133 | Verify content-card/topic-filter repair with no external writes | RAW-20260626-008 | bna/class-drive-intake | Codex | verification | High | G | REQ-20260626-131, REQ-20260626-132 | Focused local tests pass; audit passes; privacy-safe digest export passes; no Drive write, production mutation, class backfill, AI call, or raw transcript export is performed; final app-visible verification waits for deploy/live smoke | `tests/content-card-view-model.test.js`; `tests/operations-content-library-taxonomy.test.js`; `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.*`; `ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md` | deployed/live-smoked | Done |
 | REQ-20260626-126 | Owner approval gate for raw export, Drive writes, reparse/backfill, or production mutation | RAW-20260626-004, RAW-20260626-006, RAW-20260626-007 | bna/class-drive-intake | Shloimie | blocker | High | E | REQ-20260626-121..REQ-20260626-125, REQ-20260626-127, REQ-20260626-128 | One concise decision remains for any unsafe/raw/external write path beyond the completed #83 sync | `DEC-20260626-101` in this file and prior register | no | Needs operator decision |
 
 ## Parsed tasks
@@ -235,7 +241,7 @@ No new visible human task cards were created. This is agent lifecycle work.
 | REQ-20260626-119..125 | Digest exporter, classifier, artifacts, tests | Add safe exporter, block old default raw exporter, generate digest/gap/repair/Drive-plan artifacts | Syntax checks; focused tests; `npm run content:export-digests -- --privacy-scan` | none | none | not app-visible |
 | REQ-20260626-127 | Issue #41 Drive addendum | Preserve addendum and run read-only Drive transcript-library verification | `npm run content:sync-drive-library -- --dry-run --no-ai`; read-only folder listing; JSON parse | none | none | not app-visible |
 | REQ-20260626-128 | Approved #83 Drive transcript doc sync | Run exact approved command for job #83 only; record sanitized Drive pointer; rerun digest export and read-only audit | `npm run content:sync-drive-library -- --no-ai --verify --job-id 83`; `npm run content:export-digests -- --privacy-scan`; `npm run content:drive-intake-audit` | none | none | not app-visible |
-| REQ-20260626-129..133 | PR #45 content card/topic filter addendum | Preserve addendum, audit 29 digest recordings, attach digest card models to content jobs, repair card display and normalized multi-topic filters, and verify no raw transcript dependency | `npm run content:card-topic-audit`; `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`; `node --check server.js` | pending | pending | app-visible code path changed; deploy/live smoke not performed in this local PR batch |
+| REQ-20260626-129..133 | PR #45 content card/topic filter addendum | Preserve addendum, audit 29 digest recordings, attach digest card models to content jobs, repair card display and normalized multi-topic filters, and verify no raw transcript dependency | `npm run content:card-topic-audit`; `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`; `node --check server.js`; live content-card readback | PR #45 / PR #46 | `185f9446` / `c0b29982` | Railway `fd93be96-8bec-4c06-b42f-c53d177eab40`; live app/content/taxonomy smokes passed |
 | REQ-20260626-126 | Decision gate | Leave unsafe/export/write/apply actions blocked | Register and final answer | none | none | not app-visible |
 
 ## Final audit
@@ -256,7 +262,7 @@ No new visible human task cards were created. This is agent lifecycle work.
 | REQ-20260626-128 | Done | `RAW-20260626-007`; #83 Drive doc created and read back; sanitized hash pointer recorded | Raw/evidence files | Approved sync command; read-only post-sync listing; digest privacy scan; read-only intake audit | broader sync still blocked |
 | REQ-20260626-129 | Done | `RAW-20260626-008` preserves PR #45 comment `4809202212` | Raw/register files | Register readback | Issue #41 intentionally remains open |
 | REQ-20260626-130 | Done | `CONTENT-CARD-TOPIC-FILTER-AUDIT.md/json` covers 29 recordings | Audit output | `npm run content:card-topic-audit` | none |
-| REQ-20260626-131 | Blocked | Digest card view model and Operations card display show title, summary, main points, statuses, categories, and next action locally | `src/lib/bna/content-card-view-model.js`; `server.js`; `public/operations.html` | Focused content-card tests; syntax check | deploy/live smoke proof required after PR review/merge before Done |
-| REQ-20260626-132 | Blocked | Topic filter uses normalized multi-topic digest/category keys and no raw transcript topic search locally | `public/operations.html`; taxonomy tests | Focused taxonomy tests | deploy/live smoke proof required after PR review/merge before Done |
-| REQ-20260626-133 | Blocked | Focused local tests pass and audit guardrails report no Drive write, production mutation, class backfill, or raw body export | Tests/evidence files | `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`; `npm run content:card-topic-audit` | final app-visible verification needs deploy/live smoke after PR review/merge |
+| REQ-20260626-131 | Done | Digest card view model and Operations card display show title, summary, main points, statuses, categories, and next action; live API returns job #83 clean title and all 29 digest cards via `project_key=all` | `src/lib/bna/content-card-view-model.js`; `server.js`; `public/operations.html`; deploy bundle fix | Focused content-card tests; syntax check; live content-card readback | production student writes remain separate decision |
+| REQ-20260626-132 | Done | Topic filter uses normalized multi-topic digest/category keys and no raw transcript topic search; digest-card payloads are body-free | `public/operations.html`; taxonomy tests; `LIVE-CONTENT-CARD-READBACK.*` | Focused taxonomy tests; live content/taxonomy smokes | production student writes remain separate decision |
+| REQ-20260626-133 | Done | Focused local tests pass and audit guardrails report no Drive write, production mutation, class backfill, AI call, or raw body export; deployed readback confirms body-free digest cards | Tests/evidence files | `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`; `npm run content:card-topic-audit`; live smokes | broader production apply remains approval-gated |
 | REQ-20260626-126 | Needs operator decision | `DEC-20260626-101` | Register only | Blocker documented | Owner must approve any unsafe/raw/external write path |
