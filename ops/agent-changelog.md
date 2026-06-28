@@ -27018,3 +27018,33 @@ blocked by `DEC-20260626-101`. The current dry-run plan has 13 question rows,
 No Drive write, production DB mutation, class backfill, raw transcript export,
 AI call, send/publish, charge/access grant, credential/account/DNS change, or
 broad Drive sync was performed in this closeout.
+
+## 2026-06-28T10:10:00+03:00 - Issue 41 Student Apply Approval Packet
+
+Refreshed the Issue #41 student question/score repair evidence after the
+content-card work was live. The previous plan still referenced stale PR #45
+merge work; it now points to the current live status and the real remaining
+blocker.
+
+- Recorded that #83 Drive sync is complete, the transcript library is at 47
+  docs, privacy-safe digest export covers 29 recordings, and live content-card
+  readback returns 29 digest cards with no raw transcript text.
+- Added an owner decision packet for student question/task/score/progress
+  application.
+- Verdict remains `not_approved_not_safe_to_apply`: 10 jobs need parser/reparse
+  review, 13 student-question rows exist, 6 question rows need human
+  student-match review, and score/progress has 0 safe row-level apply rows.
+- The only documented optional next step is a no-write dry-run planner approval;
+  no production apply command is currently safe.
+
+Evidence:
+
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json`
+
+Guardrails held: no Drive write, no production DB mutation, no class backfill,
+no raw transcript export, no AI call, no paid retranscription, no send/publish,
+no charge/access grant, no credential/account/DNS change, and no broad Drive
+sync.

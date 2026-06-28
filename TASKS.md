@@ -20,8 +20,11 @@ not authorize active GHL runtime paths.
   raw transcript text inside `digest_card` payloads. Fresh read-only backlog
   audit remains `PARTIAL` with 10 jobs needing parse/reparse review, 13
   student-question rows, 6 question rows needing student-match review, and 0
-  safe score/progress apply rows. Owner approval is still required for any
-  production parser/question/score write or other unsafe/raw/external path. Done:
+  safe score/progress apply rows. No production apply command is currently
+  safe; the no-write owner decision packet is
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
+  Owner approval is still required for any production parser/question/task/
+  score/progress write or other unsafe/raw/external path. Done:
   active execution run created, Drive-first raw storage and GitHub digest
   policy documented, repo-safe digest exporter added, default raw transcript
   export blocked, 29 body-free recording digests generated, and sanitized

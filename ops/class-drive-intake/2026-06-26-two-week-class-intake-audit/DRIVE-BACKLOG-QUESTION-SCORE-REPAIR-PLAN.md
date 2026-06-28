@@ -1,10 +1,11 @@
 # Drive Backlog Question Score Repair Plan
 
-Generated: 2026-06-28T06:34:20.164Z
+Generated: 2026-06-28T10:10:00+03:00
 
-Mode: read-only repair plan. No Drive write, production DB mutation, class
-backfill, raw transcript export, AI call, paid retranscription, send, publish,
-charge, or access grant was performed.
+Mode: read-only repair plan refresh. No Drive write, production DB mutation,
+class backfill, raw transcript export, AI call, paid retranscription, send,
+publish, charge, access grant, credential/account/DNS change, or broad Drive
+sync was performed.
 
 ## Current Status
 
@@ -12,10 +13,16 @@ charge, or access grant was performed.
   orphans, final verdict `PARTIAL`.
 - Transcript library: last verified at 47 docs after the approved #83 private
   Drive transcript doc sync.
-- Digest export: 29 recordings, raw transcript bodies false, privacy findings 0.
-- Content cards: 29 generated titles, 10 `Needs parse`, 0 `Needs digest`,
-  0 `Needs routing`, 0 `Needs topic classification`.
-- Topic filters: 29 multi-topic cards, 0 uncategorized cards.
+- Approved #83 Drive sync: complete; readback passed at 9683 chars; repo
+  evidence stores only redacted hashes for the Drive doc pointer.
+- Digest export: 29 recordings, raw transcript bodies false, privacy findings
+  0.
+- Content cards/topic filter: PR #45 and PR #46 are merged; Railway deployment
+  `fd93be96-8bec-4c06-b42f-c53d177eab40` reached `SUCCESS`; live readback via
+  `project_key=all` returns 81 jobs, all 29 digest cards, job #83's clean
+  generated title, all 10 `Needs parse` jobs, and no raw transcript text inside
+  `digest_card` payloads.
+- Issue #41 remains open by design.
 
 ## Parser Repair Candidates
 
@@ -26,8 +33,8 @@ writes:
 
 Target: `content_job_parse_json`
 
-Status: review-only. `DEC-20260626-101` plus explicit production parser/canonical
-write approval is required before any apply command.
+Status: review-only. `DEC-20260626-101` plus explicit parser/canonical-write
+approval is required before any production apply command.
 
 ## Student Questions
 
@@ -53,8 +60,9 @@ Not ready to apply.
 
 The fresh read-only audit generated 0 row-level score/progress change rows and
 reports score/progress proposal state as `UNKNOWN` for relevant jobs. Kids'
-scores/progress should not be updated until an approved dry-run parser/canonical
-write plan emits redacted before/after rows.
+scores/progress should not be updated until a separately approved dry-run
+parser/canonical-write plan emits redacted before/after rows, or explicitly
+proves that no score/progress write is needed.
 
 ## Tasks And Research Cards
 
@@ -64,7 +72,7 @@ write plan emits redacted before/after rows.
 - Source sheet status: not verified by this audit
 - Production Tasks/research cards created: 0
 
-The Operations cards can now show the safe digest/task/question states. Creating
+The Operations cards now show safe digest/task/question states live. Creating
 production tasks, research cards, student question records, or score/progress
 rows remains blocked until the parser candidates and question matching are
 reviewed or explicitly approved for apply.
@@ -74,12 +82,23 @@ reviewed or explicitly approved for apply.
 - 10 content jobs need parser/reparse review.
 - 6 student question rows need human student-match review.
 - Student score/progress updates have no safe row-level apply plan yet.
-- PR #45 still needs merge, deployment, and live smoke before app-visible Done.
-- `DEC-20260626-101` remains open for production writes, class backfill, broad
-  Drive sync, raw export, AI call, paid retranscription, or other unsafe paths.
+- `DEC-20260626-101` remains open for production parser/question/task/
+  score/progress writes, class backfill, broad Drive sync, raw export, AI call,
+  paid retranscription, or other unsafe paths.
 
-Exact next safe command after this evidence is pushed:
+No production apply command is currently safe.
 
-```bash
-gh pr merge 45 --merge
+Recommended next safe move:
+
+1. Keep production writes blocked.
+2. Review the no-write owner approval packet:
+   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
+3. If approved, run only the dry-run planner named in that packet. Do not run
+   `--apply` unless a later dry-run emits safe row-level before/after rows and
+   Shloimie approves that exact apply command.
+
+Exact next safe command without new owner approval:
+
+```powershell
+npm run bna:run:next
 ```

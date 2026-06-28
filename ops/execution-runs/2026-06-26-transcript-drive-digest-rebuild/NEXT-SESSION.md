@@ -24,9 +24,12 @@ Completed targeted approval:
 Completed content-card/topic-filter repair:
 
 - `REQ-20260626-129` and `REQ-20260626-130` are Done for `RAW-20260626-008`.
-- `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are locally
-  implemented/tested but blocked on PR review/merge plus deploy/live-smoke
-  proof before Done.
+- `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are Done.
+- PR #45, PR #46, and PR #47 are merged.
+- Railway deployment `fd93be96-8bec-4c06-b42f-c53d177eab40` reached `SUCCESS`.
+- Live content-card readback passed with 81 jobs, 29 digest cards, all 10
+  `Needs parse` jobs, job #83's clean generated title, and no raw transcript
+  text in `digest_card` payloads.
 - Audit covers all 29 digest recordings.
 - Operations Content cards show clean generated titles, summary, main points,
   categories, parse status, digest status, routing status, topic status, and
@@ -36,6 +39,19 @@ Completed content-card/topic-filter repair:
 - Issue #41 remains open.
 - Evidence:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+
+Student question/score apply status:
+
+- Current verdict: no production apply command is safe.
+- 10 jobs need parser/reparse review: `71, 59, 58, 57, 56, 31, 30, 26, 25,
+  21`.
+- 13 student-question rows exist; 7 are matched and 6 need human
+  student-match review.
+- Score/progress has 0 safe row-level apply rows.
+- Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
+  and
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
 
 Exact next safe command:
 
@@ -53,7 +69,12 @@ Owner approval required before any of these commands/actions:
 - any paid retranscription
 - any Drive create/update/delete/move
 - `APPLY_GUARDED_CLASS_BACKFILL`
+- any `--apply` run for student questions, production tasks, scores, or
+  progress
 
 If Shloimie approves a next step, create a new requirement or update
 `REQ-20260626-126` with the exact approved action, owner, consequences, and
-verification plan before running it.
+verification plan before running it. The only currently documented optional
+next step is the no-write dry-run planner approval in
+`STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`; it does not authorize production
+mutation.

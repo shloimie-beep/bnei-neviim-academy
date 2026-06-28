@@ -1428,7 +1428,7 @@
       "status": "done",
       "implementation_status": "done",
       "can_continue_without_operator": true,
-      "next_action": "Keep DEC-20260626-101 open until exact production parser/question/score apply command is separately approved.",
+      "next_action": "Keep DEC-20260626-101 open; no production apply command is currently safe. Review the student question/score approval packet before any dry-run planner or production apply approval.",
       "acceptance_criteria": [
         "Plan lists job IDs and student IDs/hashed unmatched refs",
         "Question rows separated from scores/progress",
@@ -1437,15 +1437,18 @@
       ],
       "evidence": [
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json"
       ],
       "verification": [
-        "Plan records 10 parser repair candidates, 13 student question rows, 6 question rows needing review, 0 score/progress row-level apply rows."
+        "Plan records 10 parser repair candidates, 13 student question rows, 6 question rows needing review, 0 score/progress row-level apply rows.",
+        "Approval packet records verdict not_approved_not_safe_to_apply and gives a no-write dry-run-only approval option."
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T09:42:00+03:00",
-      "continuation": "Exact redacted repair plan recorded; no student score/question production write is safe yet."
+      "updated_at": "2026-06-28T10:10:00+03:00",
+      "continuation": "Exact redacted repair plan refreshed; no student score/question/task/progress production write is safe yet. A dry-run-only owner approval packet is recorded for the next non-mutating planner step."
     },
     {
       "id": "REQ-20260628-139",
@@ -1468,22 +1471,24 @@
       "status": "needs_operator_decision",
       "implementation_status": "needs_operator_decision; exact dry-run plan is recorded, but production parser/question/score/task apply remains unapproved",
       "can_continue_without_operator": false,
-      "next_action": "Shloimie must approve or reject an exact production apply command after reviewing DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md/json.",
+      "next_action": "Shloimie should keep production writes blocked, or approve only the no-write dry-run planner in STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md. No production apply command is currently safe.",
       "acceptance_criteria": [
         "Exact dry-run plan exists",
         "Approval names exact command/actions",
         "No mutation before approval"
       ],
       "evidence": [
-        "DEC-20260626-101"
+        "DEC-20260626-101",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json"
       ],
       "verification": [],
       "implementation_files": [],
       "deployment_required": false,
       "blocker_owner": "Shloimie",
       "blocker": "Production student question/score/progress/task writes are not authorized; 6 question rows need human student-match review and score/progress has 0 safe row-level apply rows.",
-      "blocker_next_action": "Review the repair plan and provide exact approval only for a reviewed apply command/job IDs, or keep writes blocked.",
-      "updated_at": "2026-06-28T09:58:00+03:00"
+      "blocker_next_action": "Recommended: keep production writes blocked. Optional safe next step: approve the no-write dry-run planner packet only; do not approve --apply until a later plan emits safe row-level before/after rows.",
+      "updated_at": "2026-06-28T10:10:00+03:00"
     },
     {
       "id": "REQ-20260628-140",

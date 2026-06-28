@@ -162,13 +162,21 @@ June 28 execution update:
 - Evidence:
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
   and `.json`.
+- Owner decision packet:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`
+  and `.json`.
+- Verdict: no production apply command is currently safe. The recommended
+  decision is to keep production student question/task/score/progress writes
+  blocked; the only documented optional next step is a no-write dry-run planner
+  approval.
 
 Issue #41 status comment:
 `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
 
-Remaining: keep `DEC-20260626-101` open for any production parser/question/score
-apply, broad Drive sync, raw export, AI call, class backfill, or other unsafe
-write path.
+Remaining: keep `DEC-20260626-101` open for any production parser/question/task/
+score/progress apply, broad Drive sync, raw export, AI call, class backfill, or
+other unsafe write path. Do not run `--apply`; no production apply command is
+safe yet.
 
 ## Goal-mode execution
 
@@ -181,7 +189,7 @@ write path.
 | Execution directive | Register first, then work requirements in batches until terminal statuses. |
 | Terminal statuses required | Done / Already satisfied / Blocked / Needs operator decision / Failed / Archived |
 | Deploy/live-smoke required for app-visible work | completed for content-card/topic-filter repair on Railway `fd93be96-8bec-4c06-b42f-c53d177eab40` |
-| Next requirement IDs to work | None currently unblocked; `DEC-20260626-101` remains open for any production write beyond #83 |
+| Next requirement IDs to work | None currently unblocked; `DEC-20260626-101` remains open for any production write beyond #83. Optional next owner decision is dry-run-only planner approval in `STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md` |
 
 ## Parsed requirements
 
