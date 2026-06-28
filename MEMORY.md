@@ -213,6 +213,12 @@
   recording parses must create `bna_raw_intake` provenance and
   `bna_intake_parse_runs`, and content parse JSON should store
   `raw_intake_stable_id`.
+- As of 2026-06-26, full/raw class transcript bodies stay in the private app
+  database, private Google Drive transcript library, or local untracked audit
+  workspaces. GitHub should receive privacy-safe transcript digests, manifests,
+  indexes, source hashes/refs, transcript character counts, generated titles,
+  category/routing outputs, task/question candidates, private-review pointers,
+  parse gaps, and dry-run repair plans by default.
 - Public parent-login entry must stay explicit: `/parent/login` should present
   a public login/continue screen, and an already-authenticated browser should
   ask the parent to continue or switch accounts rather than silently opening

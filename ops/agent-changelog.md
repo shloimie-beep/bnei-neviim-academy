@@ -26759,6 +26759,116 @@ Remaining:
 - App-visible work is draft-PR-ready, but not production-complete until PR
   merge, deployment, and live Operations/provider smoke verification.
 
+## 2026-06-26T13:21:00+03:00 - Issue 41 Drive Transcript Library Addendum Verified
+
+Processed `RAW-20260626-006` from GitHub issue #41 comment `4808518537` and
+linked it into the active transcript/Drive digest rebuild run as
+`REQ-20260626-127`.
+
+Read-only Drive verification confirmed `01 Transcript Library` exists under
+`40 Content Library - Marketing`, has 46 transcript docs, has 0 docs created
+since `2026-06-25T00:00:00Z`, includes jobs #65-#70, and does not include job
+#83. `npm run content:sync-drive-library -- --dry-run --no-ai` planned #83 as
+create and #65-#70 as updates while performing 0 creates, 0 updates, and 0 AI
+calls. No Drive write, production mutation, class backfill, raw export, paid
+retranscription, AI call, send, charge, credential/account/DNS change, or deploy
+was performed.
+
+Evidence:
+
+- `raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.json`
+- `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`
+
+Remaining: owner approval was required before any non-dry-run Drive sync beyond
+read-only verification. `DEC-20260626-101` stayed open for unsafe/raw/external
+write paths.
+
+## 2026-06-26T13:40:00+03:00 - Approved Job 83 Drive Transcript Sync Completed
+
+Processed `RAW-20260626-007` as a targeted owner approval for content job #83
+only and closed `REQ-20260626-128`.
+
+Ran the exact approved command:
+`npm run content:sync-drive-library -- --no-ai --verify --job-id 83`. The sync
+selected 1 real transcript job, created 1 private Drive transcript-library
+Google Doc, updated 0 docs, made 0 AI calls, and verified Drive readback for
+#83 with 9683 chars / ok.
+
+Recorded sanitized proof under
+`ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md`
+and `.json`. The tracked repo stores only hashed Drive pointers, not the raw
+Drive doc ID, raw Drive link, or transcript body.
+
+Post-sync verification:
+
+- Read-only library listing: `01 Transcript Library` now has 47 docs and #83
+  exists.
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings,
+  `raw_transcript_bodies_included=false`, 0 findings.
+- `npm run content:drive-intake-audit`: read-only audit refreshed with final
+  status `PARTIAL`.
+- `node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js`:
+  15/15 passed.
+- `npm run bna:run:validate`: 12 done, 1 needs operator decision, validation
+  passed.
+- `npm run bna:run:next`: no unblocked executable batch.
+- `npm run secrets:audit`: 0 tracked secret-risk files found.
+
+Remaining: `DEC-20260626-101` remains open for any future raw export, further
+Drive write beyond #83, production repair/reparse/canonical write, worker retry,
+paid retranscription, class backfill, broad Drive sync, or other
+unsafe/external write path.
+
+## 2026-06-26T15:05:00+03:00 - Issue 41 Content Card Topic Filter Repair Local PR Ready
+
+Processed `RAW-20260626-008` from PR #45 comment `4809202212` and linked it
+into the active transcript/Drive digest rebuild run as `REQ-20260626-129`
+through `REQ-20260626-133`.
+
+Implemented the local Operations Content repair batch:
+
+- Added a shared digest-card view model and `npm run content:card-topic-audit`.
+- Audited all 29 privacy-safe digest recordings.
+- Decorated `/api/bna/content-jobs` rows with repo-safe `digest_card` metadata.
+- Updated Content cards to show clean generated title, summary, main points,
+  categories, parse status, digest status, routing status, topic status, and
+  next action.
+- Updated the top topic filter to count and match normalized multi-topic digest/
+  classification categories instead of raw transcript-body topic inference.
+- Added focused tests.
+
+Evidence:
+
+- `raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.json`
+- `src/lib/bna/content-card-view-model.js`
+- `tests/content-card-view-model.test.js`
+- `tests/operations-content-library-taxonomy.test.js`
+
+Verification:
+
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated clean titles,
+  10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic classification`, raw
+  transcript bodies false.
+- `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  8/8 passed.
+- `node --check server.js`: passed.
+- `node --check scripts/audit-content-card-topic-filter.cjs`: passed.
+- `npm run bna:run:validate`: 14 done, 3 blocked, 1 needs operator decision,
+  validation passed.
+
+Guardrails held: no Drive write, no production DB mutation, no class backfill,
+no paid retranscription, no AI call, no raw transcript export, no stale
+deletion, no send/publish/charge/access grant, no credential/account/DNS change,
+and Issue #41 was not marked done.
+
+Remaining: `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are
+blocked only on PR review/merge plus deployment/live-smoke proof before
+app-visible Done status. `DEC-20260626-101` remains open for any future unsafe/
+raw/external write path beyond the completed #83 sync.
 ## 2026-06-26T14:15:00+03:00 - Service Provider Scopes and First-Party CRM Live Closeout
 
 Completed the service-provider role/scope package through merge, deployment,
@@ -26802,3 +26912,64 @@ Verification:
   `ops/live-smokes/2026-06-26T11-13-18-510Z-operations-helper-live-smoke.md`.
 
 Remaining: none.
+
+## 2026-06-28T09:34:20+03:00 - Issue 41 Drive Backlog Parser Repair Plan
+
+Processed `RAW-20260628-002` as a goal-mode continuation for Issue #41 and
+extended the active transcript/Drive digest rebuild run as `REQ-20260628-134`
+through `REQ-20260628-140`.
+
+Completed the safe local/read-only parser-backlog repair batch:
+
+- Resolved PR #45's merge conflict against current `master` while preserving
+  both Issue #41 and service-provider closeout evidence.
+- Patched the digest exporter so current audit source refs stay redacted and
+  class-recording transcript digests remain private-review-required by default.
+- Patched digest parse-gap generation so `UNKNOWN` audit stages remain visible
+  as blockers instead of looking complete.
+- Reran the fresh read-only Drive/class/content audit.
+- Reran the privacy-safe digest export and content-card topic audit.
+- Recorded the exact redacted parser/question/score repair plan.
+
+Current status:
+
+- Fresh audit: 18 Drive recordings, 29 content jobs, 0 Drive orphans, 13
+  student-question rows, final verdict `PARTIAL`.
+- Content cards: 29 generated titles, 10 `Needs parse`, 0 `Needs digest`, 0
+  `Needs routing`, 0 `Needs topic classification`.
+- Parser repair candidates: jobs #71, #59, #58, #57, #56, #31, #30, #26, #25,
+  and #21.
+- Student questions: 13 rows total, 7 matched, 6 need human student-match
+  review.
+- Scores/progress: 0 row-level apply rows; not safe to update kids' scores or
+  progress yet.
+
+Evidence:
+
+- `raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md`
+- `memory/2026-06-28.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+- `content-memory/transcript-digests/`
+
+Verification:
+
+- `npm run content:drive-intake-audit`: 18 Drive recordings, 29 content jobs,
+  13 student-question rows, final status `PARTIAL`.
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw
+  transcript bodies false, 0 findings.
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles,
+  10 `Needs parse`, 0 routing/topic-classification gaps.
+- `node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  25/25 passed.
+
+Guardrails held: no Drive write, no production DB mutation, no class backfill,
+no paid retranscription, no AI call, no raw transcript-body export, no stale
+deletion, no send/publish/charge/access grant, and no credential/account/DNS
+change.
+
+Remaining: PR #45 is mergeable but still needs merge, deployment, and live
+Operations content smoke before app-visible Done. `DEC-20260626-101` remains
+open for any production parser/question/score apply, broad Drive sync, raw
+export, AI call, class backfill, or other unsafe write path.

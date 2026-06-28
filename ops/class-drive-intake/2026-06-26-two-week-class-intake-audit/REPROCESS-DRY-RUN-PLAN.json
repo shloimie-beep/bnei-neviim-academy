@@ -1,0 +1,79 @@
+{
+  "generated_at": "2026-06-28T06:34:09.997Z",
+  "safe_to_apply": false,
+  "guardrail": "NOT SAFE TO APPLY - Issue #18 guardrail preserved; no class backfill writes attempted.",
+  "row_level_change_plan": [],
+  "dry_run_repair_candidates": [
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:71",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:59",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:58",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:57",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:56",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:31",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:30",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:26",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:25",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    },
+    {
+      "action": "dry_run_reparse",
+      "target": "content_job_parse_json",
+      "source_ref": "content_job:21",
+      "reason": "Transcript exists but no parser metadata/output was found.",
+      "no_production_mutation": true
+    }
+  ],
+  "apply_command": "BLOCKED: no apply command is authorized by this package."
+}

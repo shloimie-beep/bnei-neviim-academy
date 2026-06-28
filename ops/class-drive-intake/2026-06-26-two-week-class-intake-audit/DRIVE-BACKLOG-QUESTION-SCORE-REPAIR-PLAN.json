@@ -1,0 +1,142 @@
+{
+  "generated_at": "2026-06-28T06:34:20.164Z",
+  "mode": "read_only_repair_plan_no_writes",
+  "github_issue": 41,
+  "raw_ids": [
+    "RAW-20260628-002",
+    "RAW-20260626-008",
+    "RAW-20260626-004"
+  ],
+  "commands_run": [
+    "npm run content:drive-intake-audit",
+    "npm run content:export-digests -- --privacy-scan",
+    "npm run content:card-topic-audit"
+  ],
+  "guardrails": {
+    "drive_write_performed": false,
+    "production_db_mutation_performed": false,
+    "class_backfill_performed": false,
+    "raw_transcript_export_performed": false,
+    "ai_call_performed": false,
+    "paid_retranscription_performed": false,
+    "send_publish_charge_or_access_grant_performed": false
+  },
+  "current_state": {
+    "drive_recordings_in_range": 18,
+    "content_jobs_in_range": 29,
+    "drive_orphans_in_range": 0,
+    "transcript_library_last_verified_doc_count": 47,
+    "transcript_library_last_verified_source": "DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC",
+    "digest_recordings": 29,
+    "raw_transcript_bodies_included": false,
+    "privacy_scan_findings": 0
+  },
+  "content_cards": {
+    "generated_title": 29,
+    "needs_title": 0,
+    "needs_parse": 10,
+    "needs_digest": 0,
+    "needs_routing": 0,
+    "needs_topic_classification": 0,
+    "multi_topic_cards": 29,
+    "uncategorized_cards": 0,
+    "private_review_cards": 29
+  },
+  "parser_repair_candidates": {
+    "safe_to_apply": false,
+    "jobs": [
+      71,
+      59,
+      58,
+      57,
+      56,
+      31,
+      30,
+      26,
+      25,
+      21
+    ],
+    "target": "content_job_parse_json",
+    "proposed_operation": "dry_run_reparse_review_only",
+    "blocker": "DEC-20260626-101 plus explicit production parser/canonical-write approval"
+  },
+  "student_questions": {
+    "total_rows": 13,
+    "matched_rows": 7,
+    "needs_review_rows": 6,
+    "jobs_with_questions": [
+      25,
+      26,
+      30,
+      31,
+      58
+    ],
+    "needs_review": [
+      {
+        "job_id": 58,
+        "question_ref": "question:c516d14ee4e5d49f",
+        "match_status": "no_student_name",
+        "source_kind": "class_notes.discussions_question",
+        "next_action": "Human student-match review before any student/question write."
+      },
+      {
+        "job_id": 58,
+        "question_ref": "question:1a8cf5034c4c839f",
+        "match_status": "no_student_name",
+        "source_kind": "class_notes.discussions_question",
+        "next_action": "Human student-match review before any student/question write."
+      },
+      {
+        "job_id": 26,
+        "question_ref": "question:51aa618b95a7d29d",
+        "match_status": "unmatched",
+        "source_kind": "class_notes.student_questions",
+        "next_action": "Human student-match review before any student/question write."
+      },
+      {
+        "job_id": 26,
+        "question_ref": "question:2158d47f6c0c2923",
+        "match_status": "no_student_name",
+        "source_kind": "class_notes.discussions_question",
+        "next_action": "Human student-match review before any student/question write."
+      },
+      {
+        "job_id": 26,
+        "question_ref": "question:8f9c41ec6da4ca8c",
+        "match_status": "no_student_name",
+        "source_kind": "class_notes.discussions_question",
+        "next_action": "Human student-match review before any student/question write."
+      },
+      {
+        "job_id": 25,
+        "question_ref": "question:e1d44fb96cef6915",
+        "match_status": "no_student_name",
+        "source_kind": "class_notes.discussions_question",
+        "next_action": "Human student-match review before any student/question write."
+      }
+    ]
+  },
+  "student_scores_and_progress": {
+    "safe_to_apply": false,
+    "row_level_change_plan_count": 0,
+    "status": "not_ready",
+    "reason": "Fresh read-only audit reports score_progress_proposal as UNKNOWN for relevant jobs and generated no row-level score/progress apply plan.",
+    "next_action": "Run an approved dry-run parser/canonical-write plan that emits redacted before/after rows before any production student score/progress mutation."
+  },
+  "task_and_research_backlog": {
+    "digest_manifest_task_candidates": 34,
+    "task_category_cards": 10,
+    "student_question_category_cards": 5,
+    "source_sheet_status": "not_verified_by_this_audit",
+    "production_tasks_created": 0,
+    "next_action": "Show digest/task/question states in Operations cards; do not create production tasks or research cards until parser candidates are approved or reviewed."
+  },
+  "remaining_blockers": [
+    "10 content jobs need parser/reparse review before downstream writes.",
+    "6 student question rows need human student-match review.",
+    "Student score/progress updates have no safe row-level apply plan yet.",
+    "Issue #41 content-card repair still needs PR merge, deployment, and live smoke proof before app-visible Done.",
+    "DEC-20260626-101 remains open for any production write, class backfill, broad Drive sync, raw export, AI call, or paid retranscription."
+  ],
+  "exact_next_safe_command": "gh pr merge 45 --merge"
+}

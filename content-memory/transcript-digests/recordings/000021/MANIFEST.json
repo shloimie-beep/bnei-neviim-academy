@@ -1,0 +1,51 @@
+{
+  "job_id": 21,
+  "job_ref": "content_job:21",
+  "generated_title": "Class Recording 2026-06-04 - Job 021 (needs parser review)",
+  "original_title_policy": "not_exported_from_audit_artifact; use generated title in repo",
+  "source_type": "content_job_from_class_drive_intake_audit",
+  "raw_intake_id": null,
+  "drive_file_ref": "drive_file:5e3f1ad4ed3d",
+  "drive_file_hash": "5e3f1ad4ed3d2259",
+  "transcript_chars": 8568,
+  "transcript_hash": {
+    "available_in_repo": false,
+    "status": "private_app_or_drive_raw_body_required_to_compute",
+    "hash": null
+  },
+  "parser_used": null,
+  "parse_run_id": "structured output present",
+  "class_session_linkage": "CONFIRMED",
+  "category_list": [
+    "class_notes",
+    "class_session",
+    "drive_workflow_issue",
+    "parser_error",
+    "profile_note",
+    "task"
+  ],
+  "short_summary": "Privacy-safe digest for Class Recording 2026-06-04 - Job 021 (needs parser review). Raw transcript body remains in private app database or Drive.",
+  "subject_breakdown_status": "UNKNOWN",
+  "tasks_extracted": 1,
+  "questions_extracted_count": 0,
+  "student_matching_status": "no_student_question_candidates",
+  "accountability_profile_progress_status": {
+    "accountability_event": "CONFIRMED",
+    "profile_note": "UNKNOWN",
+    "student_progress": "UNKNOWN"
+  },
+  "private_meeting_flag": false,
+  "private_review_flag": true,
+  "content_marketing_flag": false,
+  "confidence": 0.62,
+  "blockers": [
+    "ambiguity_review:UNKNOWN",
+    "intake_record:UNKNOWN",
+    "profile_note_proposal:UNKNOWN",
+    "question_proposal:UNKNOWN",
+    "score_progress_proposal:UNKNOWN",
+    "student_name_alias_match:UNKNOWN"
+  ],
+  "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+  "raw_transcript_body_included": false
+}
