@@ -203,6 +203,44 @@ Rabbi Drive folder structure batch:
 - Issue #41 remains open; production apply remains blocked by
   `DEC-20260626-101`.
 
+Rabbi two-folder drop-off email notifier:
+
+- `RAW-20260628-008` captured Shloimie's request to make the two Rabbi-facing
+  Drive folders the main workflow and email the operator automatically on new
+  uploads.
+- `REQ-20260628-162` is Done locally.
+- The video/audio folder is now titled
+  `04.00 Upload Here - Videos and Audio for Transcription`.
+- The slides/source-materials folder remains
+  `04.05 Upload Here - Slideshows and Source Materials`.
+- Watched folders:
+  - videos/audio:
+    `https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t`
+  - slides/source materials:
+    `https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp`
+- Added notifier helper, CLI, local runner scripts, package scripts, tests,
+  and repo-safe evidence.
+- Local Windows scheduled task `BNA One Time Drive Dropoff Email` is enabled
+  every 5 minutes and currently points at this PR worktree.
+- Task Scheduler readback: ready, enabled, last result `0`.
+- Gmail setup-test message sent successfully; baseline marked 0 existing files
+  in the watched folders, so no old-file notification spam was sent.
+- The notifier prefers original downloadable files such as `.pptx`, `.mp4`,
+  and `.mov`, and suppresses same-base converted Google Slides notifications
+  when the original PowerPoint exists.
+- Evidence:
+  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md`.
+- Verification passed: notifier syntax checks, 18 focused tests,
+  `npm run bna:run:validate`, `npm run bna:run:next`,
+  `npm run bna:run:status`, `npm run secrets:audit`, JSON parse,
+  added-line privacy scan, `git diff --check`, and scheduler readback.
+- After merge, re-register the scheduled task from the canonical checkout if
+  this PR worktree is removed:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\register-one-time-drive-dropoff-notifier.ps1 -Recipient sdratler@gmail.com -EveryMinutes 5
+```
+
 Owner approval required before any of these commands/actions:
 
 - `npm run content:export-transcripts -- --include-raw-transcript`

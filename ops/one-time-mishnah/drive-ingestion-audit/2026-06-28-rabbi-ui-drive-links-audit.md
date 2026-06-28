@@ -1,6 +1,6 @@
 # Rabbi UI Drive Links Audit
 
-Date: 2026-06-28T15:22:18.300Z
+Date: 2026-06-28T17:32:08.730Z
 
 Super-admin UI expected links: project root, content/media parent, and all seven intake lanes.
 

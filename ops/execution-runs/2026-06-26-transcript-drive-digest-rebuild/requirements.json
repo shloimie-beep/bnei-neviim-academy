@@ -2865,6 +2865,74 @@
       "implementation_files": [
         "tests/one-time-drive-intake-folder-map.test.js"
       ]
+    },
+    {
+      "source_id": "RAW-20260628-008",
+      "source_path": "raw-input/RAW-20260628-008-rabbi-dropoff-email-notifier.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T20:55:00+03:00",
+      "id": "REQ-20260628-162",
+      "title": "Make two-folder Rabbi drop-off email workflow active",
+      "expected_result": "The two Rabbi-facing Drive upload folders are clearly titled and watched by a local notifier that emails the operator with Drive view links and original-file download links when Rabbi drops new files.",
+      "source_statement_ids": [
+        "RAW-20260628-008-S001",
+        "RAW-20260628-008-S002",
+        "RAW-20260628-008-S003"
+      ],
+      "category": "dropoff_email_notifier",
+      "batch_id": "R",
+      "depends_on": [
+        "REQ-20260628-160"
+      ],
+      "status": "done",
+      "implementation_status": "done; video/audio folder renamed, source-material folder confirmed, notifier scripts added, scheduled task registered, Gmail setup-test passed, and scheduler readback shows last result 0",
+      "next_action": "After PR merge, re-register the scheduled task from the canonical checkout if this PR worktree is removed. Do not run production apply without final owner approval.",
+      "acceptance_criteria": [
+        "Only the two Rabbi-facing upload folders are watched",
+        "New uploads send an operator email with file name, lane, Drive view link, and original-file direct download link where available",
+        "PowerPoint originals are preferred over same-base native Google Slides conversion copies",
+        "The watcher does not transcribe, publish, call AI, write student portals, update scores/progress, mutate production DB rows, backfill classes, move/delete Drive files, grant access, or export raw transcripts",
+        "Task Scheduler is enabled and returns last result 0"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-008-rabbi-dropoff-email-notifier.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.json",
+        "src/lib/bna/one-time-drive-dropoff-notifier.js",
+        "scripts/notify-one-time-drive-dropoffs.mjs",
+        "scripts/register-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.vbs"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/one-time-drive-dropoff-notifier.js",
+        "PASS node --check scripts/notify-one-time-drive-dropoffs.mjs",
+        "PASS node --check scripts/audit-one-time-rabbi-drive-folders.mjs",
+        "PASS node --test tests/one-time-drive-dropoff-notifier.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js: 18/18",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next: no unblocked executable batch",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 5372 tracked paths, 0 tracked secret-risk files",
+        "PASS JSON parse: 6 changed JSON files",
+        "PASS added-line privacy scan: 0 findings",
+        "PASS git diff --check with Windows CRLF warnings only",
+        "PASS Task Scheduler readback: enabled, ready, last result 0, every 5 minutes"
+      ],
+      "implementation_files": [
+        "src/lib/bna/one-time-drive-dropoff-notifier.js",
+        "scripts/notify-one-time-drive-dropoffs.mjs",
+        "scripts/register-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.vbs",
+        "tests/one-time-drive-dropoff-notifier.test.js",
+        "ops/one-time-mishnah/content-media-intake-workflow.md",
+        "ops/one-time-mishnah-class/drive-social-ingestion-map.json"
+      ]
     }
   ]
 }

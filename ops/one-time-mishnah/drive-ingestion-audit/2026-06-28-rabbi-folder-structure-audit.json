@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-06-28T15:22:18.300Z",
+  "checked_at": "2026-06-28T17:32:08.730Z",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "approved_parent_folder_id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
@@ -11,19 +11,19 @@
     "matches_documented_content_media_intake": true
   },
   "child_counts": {
-    "total": 9,
+    "total": 10,
     "folders": 7,
-    "files": 2
+    "files": 3
   },
   "folders": [
     {
       "key": "videoDrop",
       "title": "04.00 Upload Here - Videos and Audio for Transcription",
-      "actual_title": "04.00 Upload Here - Rabbi Video Drops",
+      "actual_title": "04.00 Upload Here - Videos and Audio for Transcription",
       "folder_id": "1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
       "url": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
       "parent_folder_id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
-      "status": "reused_semantic_alias",
+      "status": "reused_exact",
       "created": false,
       "reused": true,
       "intended_audience": "rabbi_facing",
@@ -38,9 +38,9 @@
       "folder_id": "15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
       "url": "https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
       "parent_folder_id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
-      "status": "created",
-      "created": true,
-      "reused": false,
+      "status": "reused_exact",
+      "created": false,
+      "reused": true,
       "intended_audience": "rabbi_facing",
       "lane_type": "source_material",
       "triggers_transcription": false,
@@ -68,9 +68,9 @@
       "folder_id": "1KeOaVsgv2sKXb2yOAddfur2-2HInceWA",
       "url": "https://drive.google.com/drive/folders/1KeOaVsgv2sKXb2yOAddfur2-2HInceWA",
       "parent_folder_id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
-      "status": "created",
-      "created": true,
-      "reused": false,
+      "status": "reused_exact",
+      "created": false,
+      "reused": true,
       "intended_audience": "super_admin_only",
       "lane_type": "source_material_review",
       "triggers_transcription": false,
@@ -113,9 +113,9 @@
       "folder_id": "1clXzX1JJRwK5ykRaEf_qF5EhjPBezfxD",
       "url": "https://drive.google.com/drive/folders/1clXzX1JJRwK5ykRaEf_qF5EhjPBezfxD",
       "parent_folder_id": "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv",
-      "status": "created",
-      "created": true,
-      "reused": false,
+      "status": "reused_exact",
+      "created": false,
+      "reused": true,
       "intended_audience": "super_admin_only",
       "lane_type": "decision_queue",
       "triggers_transcription": false,
@@ -123,6 +123,22 @@
     }
   ],
   "direct_child_files": [
+    {
+      "id_hash": "6dce1d56afd08c88",
+      "name": "Sanhedrin",
+      "mimeType": "application/vnd.google-apps.presentation",
+      "modifiedTime": "2026-06-28T16:59:50.825Z",
+      "createdTime": "2026-06-28T16:59:50.824Z",
+      "parent_id_hash": "93658e9d37709b94",
+      "route": "slideshow/source-material",
+      "source_type": "slideshow_reference",
+      "secondary_source_type": "source_material",
+      "eligible_for_transcription": false,
+      "eligible_for_content_generation": "review_required",
+      "no_transcription_required": true,
+      "index_only_until_review": true,
+      "next_action": "Classify as source material; attach to topic/class/session only after review; do not transcribe."
+    },
     {
       "id_hash": "d59e1ceb7e9ff955",
       "name": "Sanhedrin.pptx",
@@ -158,6 +174,22 @@
   ],
   "powerpoint_found_in_parent": true,
   "powerpoint_candidates": [
+    {
+      "id_hash": "6dce1d56afd08c88",
+      "name": "Sanhedrin",
+      "mimeType": "application/vnd.google-apps.presentation",
+      "modifiedTime": "2026-06-28T16:59:50.825Z",
+      "createdTime": "2026-06-28T16:59:50.824Z",
+      "parent_id_hash": "93658e9d37709b94",
+      "route": "slideshow/source-material",
+      "source_type": "slideshow_reference",
+      "secondary_source_type": "source_material",
+      "eligible_for_transcription": false,
+      "eligible_for_content_generation": "review_required",
+      "no_transcription_required": true,
+      "index_only_until_review": true,
+      "next_action": "Classify as source material; attach to topic/class/session only after review; do not transcribe."
+    },
     {
       "id_hash": "d59e1ceb7e9ff955",
       "name": "Sanhedrin.pptx",

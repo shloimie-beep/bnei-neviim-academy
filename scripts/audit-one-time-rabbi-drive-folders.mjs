@@ -242,6 +242,48 @@ function parentEvidence(parent, children, lanes, searchedPresentations) {
   };
 }
 
+function dropoffNotificationWorkflow(lanes) {
+  const videoLane = lanes.find((lane) => lane.key === 'videoDrop') || {};
+  const sourceLane = lanes.find((lane) => lane.key === 'sourceMaterials') || {};
+  return {
+    status: 'active_local_scheduled_watcher',
+    watcher_script: 'scripts/notify-one-time-drive-dropoffs.mjs',
+    scheduler_wrapper: 'scripts/run-one-time-drive-dropoff-notifier.ps1',
+    register_script: 'scripts/register-one-time-drive-dropoff-notifier.ps1',
+    recipient_env_var: 'ONE_TIME_DRIVE_DROPOFF_NOTIFY_TO',
+    default_poll_minutes: 5,
+    watched_lanes: [
+      {
+        key: 'videoDrop',
+        title: videoLane.name || '04.00 Upload Here - Videos and Audio for Transcription',
+        folder_id: videoLane.id || null,
+        folder_url: videoLane.webViewLink || '',
+        email_behavior: 'Send an operator email with Drive view and direct download link for new media files.',
+        handling: 'Transcription intake candidate only; no publish/send/student/member action is automatic.',
+      },
+      {
+        key: 'sourceMaterials',
+        title: sourceLane.name || '04.05 Upload Here - Slideshows and Source Materials',
+        folder_id: sourceLane.id || null,
+        folder_url: sourceLane.webViewLink || '',
+        email_behavior: 'Send an operator email with Drive view and direct download link for new original files such as .pptx.',
+        handling: 'Source-material only; PowerPoint/Slides/PDF/source sheets do not trigger transcription.',
+      },
+    ],
+    direct_download_policy: 'Prefer original non-native Drive files such as .pptx, .mp4, .mov, .m4a, and .pdf. Suppress native Google Slides conversion emails when a same-title original downloadable file exists.',
+    state_path: '.runtime/one-time-drive-dropoff-notifier/state.json',
+    no_automatic_actions: [
+      'no raw transcript export',
+      'no production DB mutation',
+      'no student portal write',
+      'no class backfill',
+      'no publish/send beyond the operator notification email',
+      'no Drive move/delete',
+      'no AI call',
+    ],
+  };
+}
+
 function updatedDriveSocialMap(existing, lanes) {
   return {
     ...existing,
@@ -308,6 +350,7 @@ function updatedDriveSocialMap(existing, lanes) {
       },
       social_publish_guard: 'No Buffer/social/newsletter/email/WhatsApp send or publish without explicit approval.',
     },
+    dropoff_notification_workflow: dropoffNotificationWorkflow(lanes),
   };
 }
 
@@ -348,6 +391,7 @@ function updatedPartnershipMap(existing, lanes) {
     },
     subfolders,
     contentMediaIntakeFolders: contentMediaFolders,
+    dropoffNotificationWorkflow: dropoffNotificationWorkflow(lanes),
   };
 }
 
@@ -364,6 +408,15 @@ Parent folder: [04 Content and Media Intake](${map.content_media_folder.webViewL
 | Target folder | Actual Drive title | Folder ID | Audience | Lane type | Triggers transcription | Source-material only | Status |
 |---|---|---|---|---|---|---|---|
 ${rows}
+
+## Rabbi-Facing Drop-Off Notification Workflow
+
+- Watcher: \`${map.dropoff_notification_workflow?.watcher_script || 'scripts/notify-one-time-drive-dropoffs.mjs'}\`
+- Schedule: every ${map.dropoff_notification_workflow?.default_poll_minutes || 5} minutes when the local scheduled task is registered.
+- Recipient: runtime env \`${map.dropoff_notification_workflow?.recipient_env_var || 'ONE_TIME_DRIVE_DROPOFF_NOTIFY_TO'}\`.
+- Video/audio folder emails include Drive view and direct download links for original media.
+- Slides/source-material folder emails prefer original downloadable files such as \`.pptx\`; native Google Slides conversion copies are suppressed when the same-title original file exists.
+- Guardrail: notification email only. No production DB mutation, student/member write, class backfill, transcription, AI call, Drive move/delete, publish, or social/newsletter send happens from this watcher.
 
 ## Classification Guardrails
 
@@ -392,6 +445,14 @@ Content/media parent: [04 Content and Media Intake](${driveFolderUrl(ONE_TIME_CO
 | Target folder | Actual Drive title | Folder ID | Audience | Lane type | Triggers transcription | Status |
 |---|---|---|---|---|---|---|
 ${folders}
+
+## Rabbi-Facing Drop-Off Notification Workflow
+
+- Watcher: \`${map.dropoffNotificationWorkflow?.watcher_script || 'scripts/notify-one-time-drive-dropoffs.mjs'}\`
+- Schedule: every ${map.dropoffNotificationWorkflow?.default_poll_minutes || 5} minutes when the local scheduled task is registered.
+- Recipient: runtime env \`${map.dropoffNotificationWorkflow?.recipient_env_var || 'ONE_TIME_DRIVE_DROPOFF_NOTIFY_TO'}\`.
+- The watcher monitors only the two Rabbi-facing upload folders and emails the operator with a direct download link when the file is downloadable.
+- Original PowerPoint/media files are preferred over native Google conversion copies for download/playback.
 `;
 }
 

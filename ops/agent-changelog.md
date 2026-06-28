@@ -27314,3 +27314,44 @@ worktree. No credentials were copied into the repo/worktree.
 
 Remaining: commit, push, PR #49 comment, and Issue #41 comment. Issue #41
 remains open and production apply remains blocked by `DEC-20260626-101`.
+
+## 2026-06-28T20:55:00+03:00 - Rabbi Drop-Off Email Notifier
+
+Captured `RAW-20260628-008` and made the Rabbi Scheller / One Time intake
+workflow operational around the two Rabbi-facing Drive folders.
+
+- Renamed the video/audio folder in Drive to
+  `04.00 Upload Here - Videos and Audio for Transcription`.
+- Confirmed the source-material folder remains
+  `04.05 Upload Here - Slideshows and Source Materials`.
+- Added `scripts/notify-one-time-drive-dropoffs.mjs`, local runner scripts,
+  and package scripts for dry-run, send, and baseline modes.
+- Registered local Windows scheduled task `BNA One Time Drive Dropoff Email`
+  to scan the two upload folders every 5 minutes and email the operator when
+  new files appear.
+- Added notifier helper/test coverage for direct original-file download links,
+  PowerPoint-vs-Google-Slides duplicate suppression, and explicit send mode.
+- Added repo-safe evidence at
+  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md`.
+
+Verification:
+
+- `node --check src/lib/bna/one-time-drive-dropoff-notifier.js`: passed.
+- `node --check scripts/notify-one-time-drive-dropoffs.mjs`: passed.
+- `node --check scripts/audit-one-time-rabbi-drive-folders.mjs`: passed.
+- `node --test tests/one-time-drive-dropoff-notifier.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js`: 18/18 passed.
+- `npm run bna:run:validate`: passed with remaining operator decisions only.
+- `npm run bna:run:next`: passed; no unblocked executable batch.
+- `npm run bna:run:status`: passed.
+- `npm run secrets:audit`: passed, 5,372 tracked paths and 0 tracked secret-risk files.
+- JSON parse passed for 6 changed JSON files.
+- Added-line privacy scan passed with 0 findings.
+- `git diff --check`: passed with Windows CRLF warnings only.
+- Task Scheduler readback: task enabled, ready, last result `0`, every 5 minutes.
+
+Guardrails honored: no production apply, no `--apply`, no production DB
+mutation, no student portal/question/score/task write, no class backfill, no
+raw transcript export, no AI call, no paid retranscription, no Drive file
+move/delete, no public publish/social/newsletter send, no access grant, and no
+credential/account/DNS change. The only send performed was the requested
+operator Gmail setup-test/notification path.

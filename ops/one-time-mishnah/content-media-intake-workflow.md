@@ -2,10 +2,11 @@
 
 Date: 2026-06-15
 
-Status: local workflow design for Rabbi Scheller / One Time. This document
-does not ingest files, transcribe media, publish content, create Buffer drafts,
-send messages, write Google Drive or video-host files, grant member access, or
-modify Rabbi-owned systems.
+Status: active Rabbi Scheller / One Time Drive drop-off workflow. This document
+defines the two Rabbi-facing intake folders and the operator email notification
+watcher. It does not transcribe media, publish content, create Buffer drafts,
+write production student/member data, move/delete Drive files, grant member
+access, or modify Rabbi-owned systems.
 
 ## Purpose
 
@@ -26,15 +27,44 @@ themselves.
 
 ## Inputs
 
-Approved intake sources:
+Main Rabbi-facing intake sources:
 
 - One Time Drive folder `04.00 Upload Here - Videos and Audio for Transcription`
-  (existing Drive title may still be `04.00 Upload Here - Rabbi Video Drops`).
+  for class videos, shiur audio, meeting recordings, and anything that should
+  become a transcript/parse/content candidate.
 - One Time Drive folder `04.05 Upload Here - Slideshows and Source Materials`.
+
+Internal/non-Rabbi-facing workflow folders:
+
 - One Time Drive folder `04.10 Ingestion Queue - Transcribe and Parse`.
 - Content jobs already scoped to `one_time_mishnah_class`.
 - Meeting Drops for Rabbi/Shloimie planning recordings.
 - Manual Operations upload/reference rows created by Shloimie/admin.
+
+## Main Drop-Off Notification Workflow
+
+The operational rule is intentionally simple:
+
+1. Rabbi uploads recordings/media to `04.00 Upload Here - Videos and Audio for
+   Transcription`.
+2. Rabbi uploads PowerPoints, Google Slides, PDFs, source sheets, worksheets,
+   and handouts to `04.05 Upload Here - Slideshows and Source Materials`.
+3. The local watcher `scripts/notify-one-time-drive-dropoffs.mjs` checks those
+   two folders only.
+4. New files trigger an operator email with the file name, folder lane, Drive
+   view link, and a direct download link when the original file is downloadable.
+5. If Drive creates a native Google Slides conversion beside an original
+   downloadable PowerPoint, the watcher prefers the original `.pptx` and
+   suppresses the conversion-copy notification so the email points to the file
+   most likely to preserve embedded media.
+
+The watcher state lives in
+`.runtime/one-time-drive-dropoff-notifier/state.json` and should be baselined
+with existing files before enabling scheduled sends.
+
+Notification emails are the only automatic send in this workflow. They do not
+transcribe, publish, create student/member tasks, update scores/progress, move
+Drive files, call AI, export raw transcripts, or write production data.
 
 Not approved as automatic content intake:
 

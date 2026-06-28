@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T15:22:18.302Z",
+  "generatedAt": "2026-06-28T17:32:08.731Z",
   "root": {
     "id": "root",
     "name": "Google Drive My Drive root",
@@ -153,7 +153,7 @@
       "key": "videoDrop",
       "canonicalKey": "videos_audio_transcription_upload",
       "name": "04.00 Upload Here - Videos and Audio for Transcription",
-      "actualName": "04.00 Upload Here - Rabbi Video Drops",
+      "actualName": "04.00 Upload Here - Videos and Audio for Transcription",
       "driveStage": "one_time_video_drop",
       "purpose": "Rabbi class videos, shiur audio, meeting recordings, and any media that should become transcript, parse, or content candidates.",
       "handling": "automation/transcription intake; can create content jobs; still no publish/send without approval.",
@@ -170,7 +170,7 @@
       "webViewLink": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
       "created": false,
       "reused": true,
-      "status": "reused_semantic_alias"
+      "status": "reused_exact"
     },
     {
       "key": "sourceMaterials",
@@ -191,9 +191,9 @@
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
-      "created": true,
-      "reused": false,
-      "status": "created"
+      "created": false,
+      "reused": true,
+      "status": "reused_exact"
     },
     {
       "key": "ingestionQueue",
@@ -237,9 +237,9 @@
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/1KeOaVsgv2sKXb2yOAddfur2-2HInceWA",
-      "created": true,
-      "reused": false,
-      "status": "created"
+      "created": false,
+      "reused": true,
+      "status": "reused_exact"
     },
     {
       "key": "socialOutputs",
@@ -306,9 +306,9 @@
         "1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv"
       ],
       "webViewLink": "https://drive.google.com/drive/folders/1clXzX1JJRwK5ykRaEf_qF5EhjPBezfxD",
-      "created": true,
-      "reused": false,
-      "status": "created"
+      "created": false,
+      "reused": true,
+      "status": "reused_exact"
     }
   ],
   "proposal": {
@@ -397,5 +397,42 @@
       "name": "02 Drive Folder Rules",
       "created": false
     }
-  ]
+  ],
+  "dropoffNotificationWorkflow": {
+    "status": "active_local_scheduled_watcher",
+    "watcher_script": "scripts/notify-one-time-drive-dropoffs.mjs",
+    "scheduler_wrapper": "scripts/run-one-time-drive-dropoff-notifier.ps1",
+    "register_script": "scripts/register-one-time-drive-dropoff-notifier.ps1",
+    "recipient_env_var": "ONE_TIME_DRIVE_DROPOFF_NOTIFY_TO",
+    "default_poll_minutes": 5,
+    "watched_lanes": [
+      {
+        "key": "videoDrop",
+        "title": "04.00 Upload Here - Videos and Audio for Transcription",
+        "folder_id": "1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+        "folder_url": "https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t",
+        "email_behavior": "Send an operator email with Drive view and direct download link for new media files.",
+        "handling": "Transcription intake candidate only; no publish/send/student/member action is automatic."
+      },
+      {
+        "key": "sourceMaterials",
+        "title": "04.05 Upload Here - Slideshows and Source Materials",
+        "folder_id": "15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
+        "folder_url": "https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp",
+        "email_behavior": "Send an operator email with Drive view and direct download link for new original files such as .pptx.",
+        "handling": "Source-material only; PowerPoint/Slides/PDF/source sheets do not trigger transcription."
+      }
+    ],
+    "direct_download_policy": "Prefer original non-native Drive files such as .pptx, .mp4, .mov, .m4a, and .pdf. Suppress native Google Slides conversion emails when a same-title original downloadable file exists.",
+    "state_path": ".runtime/one-time-drive-dropoff-notifier/state.json",
+    "no_automatic_actions": [
+      "no raw transcript export",
+      "no production DB mutation",
+      "no student portal write",
+      "no class backfill",
+      "no publish/send beyond the operator notification email",
+      "no Drive move/delete",
+      "no AI call"
+    ]
+  }
 }
