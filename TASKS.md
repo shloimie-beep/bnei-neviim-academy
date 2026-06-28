@@ -11,12 +11,14 @@ not authorize active GHL runtime paths.
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
   Transcript/Drive/class intake digest rebuild plus Issue #41 Drive addendum,
   approved #83 sync, and Drive-backed parser/backlog repair goal.
-  Current status: #83 private Drive doc sync done; PR #45 content-card/topic
-  filter repair is mergeable, locally implemented, and tested; fresh read-only
-  backlog audit remains `PARTIAL` with 10 jobs needing parse/reparse review,
-  13 student-question rows, 6 question rows needing student-match review, and
-  0 safe score/progress apply rows. App-visible done-state is blocked until PR
-  merge plus deploy/live smoke, and owner approval is required for any
+  Current status: #83 private Drive doc sync done; PR #45 and follow-up PR #46
+  are merged and deployed to Railway `fd93be96-8bec-4c06-b42f-c53d177eab40`.
+  Live readback now returns all 29 digest cards with job #83's clean generated
+  title, 10 explicit `Needs parse` jobs, normalized topic/status data, and no
+  raw transcript text inside `digest_card` payloads. Fresh read-only backlog
+  audit remains `PARTIAL` with 10 jobs needing parse/reparse review, 13
+  student-question rows, 6 question rows needing student-match review, and 0
+  safe score/progress apply rows. Owner approval is still required for any
   production parser/question/score write or other unsafe/raw/external path. Done:
   active execution run created, Drive-first raw storage and GitHub digest
   policy documented, repo-safe digest exporter added, default raw transcript
@@ -32,7 +34,8 @@ not authorize active GHL runtime paths.
   Verification passed: focused syntax checks, digest tests, two-week audit
   tests, content-card/topic-filter tests, digest privacy scan 0 findings,
   content-card topic audit, Drive sync dry-run/no-AI, approved #83
-  sync/readback, read-only Drive listing, fresh read-only intake audit, and
+  sync/readback, read-only Drive listing, fresh read-only intake audit, deploy,
+  Railway doctor, live app/content/taxonomy smokes, live content-card readback, and
   active run validation. Remaining decision: `DEC-20260626-101` keeps raw
   transcript-body export, any further Drive writes beyond #83, production
   reparse/canonical writes, worker retry, paid retranscription, class backfill,

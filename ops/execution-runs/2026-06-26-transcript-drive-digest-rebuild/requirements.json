@@ -993,10 +993,10 @@
       "depends_on": [
         "REQ-20260626-130"
       ],
-      "status": "blocked",
-      "implementation_status": "server attaches digest_card and Operations content cards render digest-derived safe fields and Needs states; local PR implementation complete, blocked only on deploy/live-smoke proof after PR review/merge",
+      "status": "done",
+      "implementation_status": "done; PR #45 merged and PR #46 fixed deploy bundle so live Operations API returns digest_card data for all 29 digest recordings via project_key=all",
       "can_continue_without_operator": true,
-      "next_action": "After PR review/merge approval, deploy the branch and run an Operations Content live smoke before marking this requirement done.",
+      "next_action": "none",
       "acceptance_criteria": [
         "Clean generated title displayed",
         "Main points and summary displayed",
@@ -1008,11 +1008,25 @@
         "src/lib/bna/content-card-view-model.js",
         "server.js",
         "public/operations.html",
-        "tests/content-card-view-model.test.js"
+        "tests/content-card-view-model.test.js",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
       ],
       "verification": [
         "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js",
-        "PASS node --check server.js"
+        "PASS node --check server.js",
+        "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
+        "PASS PR #46 merged: c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+        "PASS Railway doctor: deployment fd93be96-8bec-4c06-b42f-c53d177eab40 SUCCESS on skillful-motivation/production",
+        "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
       ],
       "implementation_files": [
         "src/lib/bna/content-card-view-model.js",
@@ -1021,11 +1035,19 @@
         "tests/content-card-view-model.test.js"
       ],
       "deployment_required": true,
-      "deployment_status": "not_deployed_in_local_pr_batch",
-      "updated_at": "2026-06-26T15:00:00+03:00",
-      "blocker": "App-visible Operations UI change is implemented locally and tested, but BNA done-state requires deployment/live-smoke evidence after PR review/merge.",
-      "blocker_owner": "Codex after PR review/merge approval",
-      "blocker_next_action": "Deploy the reviewed branch and run an Operations Content live smoke; then update deployment/live evidence and mark Done."
+      "deployment_status": "deployed_live_verified",
+      "updated_at": "2026-06-28T09:58:00+03:00",
+      "deployment_id": "fd93be96-8bec-4c06-b42f-c53d177eab40",
+      "deployed_commit": "c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+      "deployment_evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-132",
@@ -1045,10 +1067,10 @@
       "depends_on": [
         "REQ-20260626-130"
       ],
-      "status": "blocked",
-      "implementation_status": "topic filter now counts and matches contentTopicKeys arrays from digest_card and no longer uses raw transcript topic search; local PR implementation complete, blocked only on deploy/live-smoke proof after PR review/merge",
+      "status": "done",
+      "implementation_status": "done; normalized digest-card topic keys are deployed and live-smoked, with digest card payloads confirmed body-free",
       "can_continue_without_operator": true,
-      "next_action": "After PR review/merge approval, deploy the branch and run an Operations Content live smoke before marking this requirement done.",
+      "next_action": "none",
       "acceptance_criteria": [
         "Filter uses normalized category keys",
         "Multi-topic cards count under each topic",
@@ -1058,10 +1080,24 @@
       "evidence": [
         "public/operations.html",
         "tests/operations-content-library-taxonomy.test.js",
-        "tests/content-card-view-model.test.js"
+        "tests/content-card-view-model.test.js",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
       ],
       "verification": [
-        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js"
+        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js",
+        "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
+        "PASS PR #46 merged: c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+        "PASS Railway doctor: deployment fd93be96-8bec-4c06-b42f-c53d177eab40 SUCCESS on skillful-motivation/production",
+        "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -1069,11 +1105,19 @@
         "tests/content-card-view-model.test.js"
       ],
       "deployment_required": true,
-      "deployment_status": "not_deployed_in_local_pr_batch",
-      "updated_at": "2026-06-26T15:00:00+03:00",
-      "blocker": "App-visible Operations UI change is implemented locally and tested, but BNA done-state requires deployment/live-smoke evidence after PR review/merge.",
-      "blocker_owner": "Codex after PR review/merge approval",
-      "blocker_next_action": "Deploy the reviewed branch and run an Operations Content live smoke; then update deployment/live evidence and mark Done."
+      "deployment_status": "deployed_live_verified",
+      "updated_at": "2026-06-28T09:58:00+03:00",
+      "deployment_id": "fd93be96-8bec-4c06-b42f-c53d177eab40",
+      "deployed_commit": "c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+      "deployment_evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260626-133",
@@ -1094,10 +1138,10 @@
         "REQ-20260626-131",
         "REQ-20260626-132"
       ],
-      "status": "blocked",
-      "implementation_status": "focused local tests, audit, and no-write checks passed; final app-visible verification is blocked on deploy/live-smoke proof for REQ-20260626-131 and REQ-20260626-132",
+      "status": "done",
+      "implementation_status": "done; local tests/audits plus deployed live readback prove no Drive write, production DB mutation, class backfill, AI call, or raw transcript-body export occurred",
       "can_continue_without_operator": true,
-      "next_action": "Keep local verification evidence attached; wait for deploy/live-smoke proof after PR review/merge.",
+      "next_action": "none",
       "acceptance_criteria": [
         "Focused tests pass",
         "Audit covers 29 recordings",
@@ -1107,11 +1151,25 @@
       ],
       "evidence": [
         "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/TEST-RESULTS.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
       ],
       "verification": [
         "PASS npm run content:card-topic-audit",
-        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js"
+        "PASS node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js",
+        "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
+        "PASS PR #46 merged: c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+        "PASS Railway doctor: deployment fd93be96-8bec-4c06-b42f-c53d177eab40 SUCCESS on skillful-motivation/production",
+        "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
       ],
       "implementation_files": [
         "tests/content-card-view-model.test.js",
@@ -1119,10 +1177,7 @@
         "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/TEST-RESULTS.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-26T15:03:00+03:00",
-      "blocker": "Final verification cannot close until the app-visible Operations Content card/filter changes have deploy/live-smoke evidence.",
-      "blocker_owner": "Codex after PR review/merge approval",
-      "blocker_next_action": "After deploy/live smoke, rerun the focused tests/audits as needed and mark REQ-20260626-131 through REQ-20260626-133 Done."
+      "updated_at": "2026-06-28T09:58:00+03:00"
     },
     {
       "id": "REQ-20260628-134",
@@ -1184,10 +1239,10 @@
         "REQ-20260626-133",
         "REQ-20260628-134"
       ],
-      "status": "in_progress",
-      "implementation_status": "PR #45 was pushed but is currently conflicting with master",
+      "status": "done",
+      "implementation_status": "done; PR #45 was merged, PR #46 patched the deploy bundle, Railway deployment fd93be96 reached SUCCESS, and live smokes/readback passed",
       "can_continue_without_operator": true,
-      "next_action": "Rebase or merge latest master into PR #45 branch, resolve conflicts, rerun tests, push, then merge/deploy/live-smoke if safe.",
+      "next_action": "none",
       "acceptance_criteria": [
         "PR is mergeable",
         "Focused tests pass",
@@ -1195,16 +1250,42 @@
         "Operations Content live smoke recorded"
       ],
       "evidence": [
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
       ],
-      "verification": [],
+      "verification": [
+        "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
+        "PASS PR #46 merged: c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+        "PASS Railway doctor: deployment fd93be96-8bec-4c06-b42f-c53d177eab40 SUCCESS on skillful-motivation/production",
+        "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
+      ],
       "implementation_files": [
         "public/operations.html",
         "server.js",
         "src/lib/bna/content-card-view-model.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-28T09:08:00+03:00"
+      "updated_at": "2026-06-28T09:58:00+03:00",
+      "deployment_status": "deployed_live_verified",
+      "deployment_id": "fd93be96-8bec-4c06-b42f-c53d177eab40",
+      "deployed_commit": "c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+      "deployment_evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260628-136",
@@ -1266,10 +1347,10 @@
       "depends_on": [
         "REQ-20260628-136"
       ],
-      "status": "in_progress",
-      "implementation_status": "in_progress",
+      "status": "done",
+      "implementation_status": "done; safe digest/card tooling is deployed and live API readback returns all 29 digest cards with 10 explicit Needs parse jobs, task/question/topic candidate metadata, and no raw transcript text inside digest_card payloads",
       "can_continue_without_operator": true,
-      "next_action": "Merge/deploy PR #45 and live-smoke Operations content cards before marking this requirement done.",
+      "next_action": "Production student question/score/task writes remain blocked by REQ-20260628-139 until exact approval is supplied.",
       "acceptance_criteria": [
         "Backlog cards have useful state",
         "Question/research/task candidates appear from safe digest data",
@@ -1282,16 +1363,49 @@
         "tests/content-card-view-model.test.js",
         "tests/operations-content-library-taxonomy.test.js",
         "tests/transcript-digest-export.test.js",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md"
       ],
       "verification": [
         "PASS node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js: 25/25",
-        "PASS npm run content:card-topic-audit: 29 recordings, 29 generated titles, 10 Needs parse, 0 Needs digest/routing/topic classification"
+        "PASS npm run content:card-topic-audit: 29 recordings, 29 generated titles, 10 Needs parse, 0 Needs digest/routing/topic classification",
+        "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
+        "PASS PR #46 merged: c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+        "PASS Railway doctor: deployment fd93be96-8bec-4c06-b42f-c53d177eab40 SUCCESS on skillful-motivation/production",
+        "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
       ],
-      "implementation_files": [],
+      "implementation_files": [
+        "src/lib/bna/content-card-view-model.js",
+        "src/lib/bna/transcript-digest-export.js",
+        "server.js",
+        "public/operations.html",
+        "scripts/railway-redeploy.ps1"
+      ],
       "deployment_required": true,
-      "updated_at": "2026-06-28T09:40:00+03:00",
-      "continuation": "Local content-card/topic-filter and digest exporter fixes are implemented/tested; app-visible completion waits for PR #45 merge, deployment, and live Operations content smoke."
+      "updated_at": "2026-06-28T09:58:00+03:00",
+      "continuation": "Safe card/filter/backlog status repair is live. Production student question/score/progress writes remain approval-gated under REQ-20260628-139 and DEC-20260626-101.",
+      "deployment_status": "deployed_live_verified",
+      "deployment_id": "fd93be96-8bec-4c06-b42f-c53d177eab40",
+      "deployed_commit": "c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+      "deployment_evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
+      ]
     },
     {
       "id": "REQ-20260628-138",
@@ -1352,9 +1466,9 @@
         "REQ-20260628-138"
       ],
       "status": "needs_operator_decision",
-      "implementation_status": "standing approval gate remains active",
+      "implementation_status": "needs_operator_decision; exact dry-run plan is recorded, but production parser/question/score/task apply remains unapproved",
       "can_continue_without_operator": false,
-      "next_action": "After dry-run plan is recorded, Shloimie must approve the exact apply command/job IDs before production mutation.",
+      "next_action": "Shloimie must approve or reject an exact production apply command after reviewing DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md/json.",
       "acceptance_criteria": [
         "Exact dry-run plan exists",
         "Approval names exact command/actions",
@@ -1367,9 +1481,9 @@
       "implementation_files": [],
       "deployment_required": false,
       "blocker_owner": "Shloimie",
-      "blocker": "Exact production write/backfill/Drive-write approval is not yet available.",
-      "blocker_next_action": "Review the dry-run plan once produced and approve or reject exact apply action.",
-      "updated_at": "2026-06-28T09:08:00+03:00"
+      "blocker": "Production student question/score/progress/task writes are not authorized; 6 question rows need human student-match review and score/progress has 0 safe row-level apply rows.",
+      "blocker_next_action": "Review the repair plan and provide exact approval only for a reviewed apply command/job IDs, or keep writes blocked.",
+      "updated_at": "2026-06-28T09:58:00+03:00"
     },
     {
       "id": "REQ-20260628-140",
@@ -1394,9 +1508,9 @@
         "REQ-20260628-139"
       ],
       "status": "in_progress",
-      "implementation_status": "in_progress",
+      "implementation_status": "closeout in progress; PR #45 and #46 merged, deployment/live smokes/readback passed, Issue #41 comment still needs posting",
       "can_continue_without_operator": true,
-      "next_action": "Merge PR #45, deploy, run live Operations content smoke, then post Issue #41 status without marking done.",
+      "next_action": "Post Issue #41 status comment with PRs, commits, deployment, live readback, verification, and remaining DEC-20260626-101 blocker; do not close Issue #41.",
       "acceptance_criteria": [
         "Issue #41 not closed prematurely",
         "All requirements terminal",
@@ -1405,13 +1519,27 @@
       ],
       "evidence": [
         "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
+        "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
       ],
-      "verification": [],
+      "verification": [
+        "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
+        "PASS PR #46 merged: c0b29982c1219a5cac0bdcb875b94cff3a3a22db",
+        "PASS Railway doctor: deployment fd93be96-8bec-4c06-b42f-c53d177eab40 SUCCESS on skillful-motivation/production",
+        "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
+        "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
+        "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
+      ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T09:34:20+03:00",
-      "continuation": "Issue closeout is waiting on PR #45 merge/deploy/live smoke and owner approval for any production data writes."
+      "updated_at": "2026-06-28T09:58:00+03:00",
+      "continuation": "All safe app-visible work is live-verified; closeout comment is pending, and production data writes remain needs_operator_decision."
     }
   ]
 }
