@@ -1,0 +1,122 @@
+{
+  "generated_at": "2026-06-28T10:10:00+03:00",
+  "mode": "read_only_owner_decision_packet_no_writes",
+  "github_issue": 41,
+  "guardrails": {
+    "drive_write_performed": false,
+    "production_db_mutation_performed": false,
+    "class_backfill_performed": false,
+    "raw_transcript_export_performed": false,
+    "ai_call_performed": false,
+    "paid_retranscription_performed": false,
+    "send_publish_charge_or_access_grant_performed": false,
+    "credential_account_dns_change_performed": false,
+    "broad_drive_sync_performed": false
+  },
+  "working_now": {
+    "job_83_drive_sync_complete": true,
+    "job_83_drive_readback_chars": 9683,
+    "transcript_library_doc_count": 47,
+    "privacy_safe_digest_recordings": 29,
+    "raw_transcript_bodies_included": false,
+    "privacy_findings": 0,
+    "operations_content_cards_live": true,
+    "live_digest_cards_project_key_all": 29,
+    "live_needs_parse_jobs": 10,
+    "raw_body_in_live_digest_cards": false
+  },
+  "not_safe_yet": {
+    "parser_repair_candidate_jobs": [
+      71,
+      59,
+      58,
+      57,
+      56,
+      31,
+      30,
+      26,
+      25,
+      21
+    ],
+    "student_question_rows": 13,
+    "matched_question_rows": 7,
+    "needs_student_match_review_rows": 6,
+    "score_progress_row_level_apply_rows": 0
+  },
+  "needs_student_match_review": [
+    {
+      "job_id": 58,
+      "question_ref": "question:c516d14ee4e5d49f",
+      "match_status": "no_student_name",
+      "source_kind": "class_notes.discussions_question"
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:1a8cf5034c4c839f",
+      "match_status": "no_student_name",
+      "source_kind": "class_notes.discussions_question"
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:51aa618b95a7d29d",
+      "match_status": "unmatched",
+      "source_kind": "class_notes.student_questions"
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:2158d47f6c0c2923",
+      "match_status": "no_student_name",
+      "source_kind": "class_notes.discussions_question"
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:8f9c41ec6da4ca8c",
+      "match_status": "no_student_name",
+      "source_kind": "class_notes.discussions_question"
+    },
+    {
+      "job_id": 25,
+      "question_ref": "question:e1d44fb96cef6915",
+      "match_status": "no_student_name",
+      "source_kind": "class_notes.discussions_question"
+    }
+  ],
+  "production_apply_verdict": "not_approved_not_safe_to_apply",
+  "recommended_decision": "keep_production_writes_blocked",
+  "optional_next_approval": {
+    "title": "OWNER APPROVAL - CLASS CONTENT STUDENT APPLY DRY-RUN ONLY",
+    "allowed_job_ids": [
+      21,
+      25,
+      26,
+      30,
+      31,
+      56,
+      57,
+      58,
+      59,
+      71
+    ],
+    "allowed_command": "node scripts/class-drive-intake-reconcile.cjs backfill --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit",
+    "allowed": [
+      "produce a dry-run row-level plan only",
+      "emit redacted before/after rows if available",
+      "keep ambiguous question rows excluded or marked needs review",
+      "update sanitized repo evidence"
+    ],
+    "forbidden": [
+      "--apply",
+      "production DB mutation",
+      "production class backfill",
+      "Drive write/create/update/move/delete",
+      "raw transcript-body export",
+      "AI call",
+      "paid retranscription",
+      "stale deletion",
+      "sends/publishes/charges/access grants",
+      "credential/account/DNS changes",
+      "broad Drive sync"
+    ]
+  },
+  "exact_next_safe_command_without_new_approval": "npm run bna:run:next"
+}

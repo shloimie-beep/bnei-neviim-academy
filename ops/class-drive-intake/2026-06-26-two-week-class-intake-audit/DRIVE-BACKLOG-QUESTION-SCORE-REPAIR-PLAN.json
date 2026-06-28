@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-28T06:34:20.164Z",
-  "mode": "read_only_repair_plan_no_writes",
+  "generated_at": "2026-06-28T10:10:00+03:00",
+  "mode": "read_only_repair_plan_refresh_no_writes",
   "github_issue": 41,
   "raw_ids": [
     "RAW-20260628-002",
@@ -19,7 +19,9 @@
     "raw_transcript_export_performed": false,
     "ai_call_performed": false,
     "paid_retranscription_performed": false,
-    "send_publish_charge_or_access_grant_performed": false
+    "send_publish_charge_or_access_grant_performed": false,
+    "credential_account_dns_change_performed": false,
+    "broad_drive_sync_performed": false
   },
   "current_state": {
     "drive_recordings_in_range": 18,
@@ -27,9 +29,28 @@
     "drive_orphans_in_range": 0,
     "transcript_library_last_verified_doc_count": 47,
     "transcript_library_last_verified_source": "DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC",
+    "job_83_drive_sync": {
+      "status": "complete",
+      "readback_chars": 9683,
+      "repo_pointer_storage": "redacted_hashes_only"
+    },
     "digest_recordings": 29,
     "raw_transcript_bodies_included": false,
-    "privacy_scan_findings": 0
+    "privacy_scan_findings": 0,
+    "live_content_cards": {
+      "status": "deployed_live_verified",
+      "prs": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/46",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/47"
+      ],
+      "deployment_id": "fd93be96-8bec-4c06-b42f-c53d177eab40",
+      "project_key_all_jobs": 81,
+      "digest_cards": 29,
+      "needs_parse_jobs": 10,
+      "job_83_clean_title": true,
+      "raw_body_in_digest_cards": false
+    }
   },
   "content_cards": {
     "generated_title": 29,
@@ -135,8 +156,9 @@
     "10 content jobs need parser/reparse review before downstream writes.",
     "6 student question rows need human student-match review.",
     "Student score/progress updates have no safe row-level apply plan yet.",
-    "Issue #41 content-card repair still needs PR merge, deployment, and live smoke proof before app-visible Done.",
     "DEC-20260626-101 remains open for any production write, class backfill, broad Drive sync, raw export, AI call, or paid retranscription."
   ],
-  "exact_next_safe_command": "gh pr merge 45 --merge"
+  "production_apply_verdict": "not_approved_not_safe_to_apply",
+  "exact_next_safe_command_without_new_approval": "npm run bna:run:next",
+  "approval_packet": "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md"
 }
