@@ -1,11 +1,11 @@
 # Class Recording 2026-06-17 - Job 071 (needs parser review)
 
 - Job: content_job:71
-- Drive source: drive_file:0bca79c4ebf3cec8
+- Drive source: drive_file:0bca79c4ebf3
 - Transcript characters: 751
 - Transcript hash: private_app_or_drive_raw_body_required_to_compute
 - Parser: none
-- Class/session linkage: MISSING
+- Class/session linkage: UNKNOWN
 - Private review: yes
 - Raw transcript body included: no
 
@@ -28,15 +28,14 @@ Review parse gaps and private matching before any production write or parent-fac
 
 ## Blockers
 
-- accountability_proposal:MISSING
-- ambiguity_review:MISSING
-- class_session_match:MISSING
-- download:NEEDS_REVIEW
-- intake_record:MISSING
-- parent_student_visibility:NEEDS_REVIEW
-- profile_note_proposal:MISSING
-- question_proposal:MISSING
+- accountability_proposal:UNKNOWN
+- ambiguity_review:UNKNOWN
+- canonical_write_status:UNKNOWN
+- class_session_match:UNKNOWN
+- parser_request:UNKNOWN
+- profile_note_proposal:UNKNOWN
+- question_proposal:UNKNOWN
 - repo_digest_export:MISSING
-- score_progress_proposal:MISSING
-- structured_output:MISSING
-- student_name_alias_match:MISSING
+- score_progress_proposal:UNKNOWN
+- structured_output:UNKNOWN
+- student_name_alias_match:UNKNOWN

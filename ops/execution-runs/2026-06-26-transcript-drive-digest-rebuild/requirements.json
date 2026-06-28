@@ -1224,21 +1224,29 @@
       "depends_on": [
         "REQ-20260628-134"
       ],
-      "status": "not_started",
-      "implementation_status": "not started",
+      "status": "done",
+      "implementation_status": "done",
       "can_continue_without_operator": true,
-      "next_action": "Run read-only audit commands and write current backlog evidence.",
+      "next_action": "Use the fresh audit to keep card states visible and preserve apply blockers.",
       "acceptance_criteria": [
         "No Drive write",
         "No production mutation",
         "Current backlog counts reported",
         "Missing parse/question/task/research/card states listed by job ID"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/AUDIT-SUMMARY.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-VERDICT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-MATRIX.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPROCESS-DRY-RUN-PLAN.json"
+      ],
+      "verification": [
+        "PASS npm run content:drive-intake-audit: 18 Drive recordings, 29 content jobs, 13 student question rows, final status PARTIAL"
+      ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T09:08:00+03:00"
+      "updated_at": "2026-06-28T09:34:20+03:00",
+      "continuation": "Fresh read-only Drive/class/content audit rerun; verdict remains PARTIAL."
     },
     {
       "id": "REQ-20260628-137",
@@ -1258,21 +1266,32 @@
       "depends_on": [
         "REQ-20260628-136"
       ],
-      "status": "not_started",
-      "implementation_status": "not started",
+      "status": "in_progress",
+      "implementation_status": "in_progress",
       "can_continue_without_operator": true,
-      "next_action": "Use the fresh audit to implement safe parser/card/backlog repair code and tests.",
+      "next_action": "Merge/deploy PR #45 and live-smoke Operations content cards before marking this requirement done.",
       "acceptance_criteria": [
         "Backlog cards have useful state",
         "Question/research/task candidates appear from safe digest data",
         "Missing parse/digest/routing states are explicit",
         "Raw transcript bodies remain private"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "src/lib/bna/content-card-view-model.js",
+        "src/lib/bna/transcript-digest-export.js",
+        "tests/content-card-view-model.test.js",
+        "tests/operations-content-library-taxonomy.test.js",
+        "tests/transcript-digest-export.test.js",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md"
+      ],
+      "verification": [
+        "PASS node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js: 25/25",
+        "PASS npm run content:card-topic-audit: 29 recordings, 29 generated titles, 10 Needs parse, 0 Needs digest/routing/topic classification"
+      ],
       "implementation_files": [],
       "deployment_required": true,
-      "updated_at": "2026-06-28T09:08:00+03:00"
+      "updated_at": "2026-06-28T09:40:00+03:00",
+      "continuation": "Local content-card/topic-filter and digest exporter fixes are implemented/tested; app-visible completion waits for PR #45 merge, deployment, and live Operations content smoke."
     },
     {
       "id": "REQ-20260628-138",
@@ -1290,24 +1309,29 @@
       "priority": "high",
       "batch_id": "K",
       "depends_on": [
-        "REQ-20260628-136",
-        "REQ-20260628-137"
+        "REQ-20260628-136"
       ],
-      "status": "not_started",
-      "implementation_status": "not started",
+      "status": "done",
+      "implementation_status": "done",
       "can_continue_without_operator": true,
-      "next_action": "Generate exact dry-run plan; do not mutate production until approved.",
+      "next_action": "Keep DEC-20260626-101 open until exact production parser/question/score apply command is separately approved.",
       "acceptance_criteria": [
         "Plan lists job IDs and student IDs/hashed unmatched refs",
         "Question rows separated from scores/progress",
         "Ambiguous matches blocked",
         "Production write command is exact and approval-gated"
       ],
-      "evidence": [],
-      "verification": [],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json"
+      ],
+      "verification": [
+        "Plan records 10 parser repair candidates, 13 student question rows, 6 question rows needing review, 0 score/progress row-level apply rows."
+      ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T09:08:00+03:00"
+      "updated_at": "2026-06-28T09:42:00+03:00",
+      "continuation": "Exact redacted repair plan recorded; no student score/question production write is safe yet."
     },
     {
       "id": "REQ-20260628-139",
@@ -1369,21 +1393,25 @@
         "REQ-20260628-138",
         "REQ-20260628-139"
       ],
-      "status": "not_started",
-      "implementation_status": "not started",
+      "status": "in_progress",
+      "implementation_status": "in_progress",
       "can_continue_without_operator": true,
-      "next_action": "Update PR/Issue/run evidence after executable batches complete or hit approval gate.",
+      "next_action": "Merge PR #45, deploy, run live Operations content smoke, then post Issue #41 status without marking done.",
       "acceptance_criteria": [
         "Issue #41 not closed prematurely",
         "All requirements terminal",
         "Evidence links posted",
         "Remaining blocker exact"
       ],
-      "evidence": [],
+      "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md"
+      ],
       "verification": [],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T09:08:00+03:00"
+      "updated_at": "2026-06-28T09:34:20+03:00",
+      "continuation": "Issue closeout is waiting on PR #45 merge/deploy/live smoke and owner approval for any production data writes."
     }
   ]
 }

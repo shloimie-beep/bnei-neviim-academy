@@ -7,12 +7,17 @@ not authorize active GHL runtime paths.
 ## Now
 
 - [ ] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
-  `RAW-20260626-008` / `REQ-20260626-116` through `REQ-20260626-133`: Transcript/Drive/class
-  intake digest rebuild plus issue #41 Drive addendum and approved #83 sync.
-  Current status: #83 private Drive doc sync done and PR #45 content-card/topic
-  filter repair locally implemented/tested; app-visible done-state is blocked
-  until PR review/merge plus deploy/live smoke, and owner approval is required
-  for any additional unsafe/raw/external write path. Done:
+  `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
+  `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
+  Transcript/Drive/class intake digest rebuild plus Issue #41 Drive addendum,
+  approved #83 sync, and Drive-backed parser/backlog repair goal.
+  Current status: #83 private Drive doc sync done; PR #45 content-card/topic
+  filter repair is mergeable, locally implemented, and tested; fresh read-only
+  backlog audit remains `PARTIAL` with 10 jobs needing parse/reparse review,
+  13 student-question rows, 6 question rows needing student-match review, and
+  0 safe score/progress apply rows. App-visible done-state is blocked until PR
+  merge plus deploy/live smoke, and owner approval is required for any
+  production parser/question/score write or other unsafe/raw/external path. Done:
   active execution run created, Drive-first raw storage and GitHub digest
   policy documented, repo-safe digest exporter added, default raw transcript
   export blocked, 29 body-free recording digests generated, and sanitized
@@ -24,11 +29,11 @@ not authorize active GHL runtime paths.
   digest-card metadata to content jobs, shows clean generated titles, summary,
   main points, categories, parse/digest/routing/topic status, next action, and
   normalized multi-topic filters without raw transcript topic search.
-  Verification passed: focused syntax checks, digest tests 8/8, two-week audit
-  tests 7/7, content-card/topic-filter tests 8/8, digest privacy scan 0
-  findings, content-card topic audit, Drive sync dry-run/no-AI, approved #83
-  sync/readback, read-only Drive listing, read-only intake audit, and active run
-  validation. Remaining decision: `DEC-20260626-101` keeps raw
+  Verification passed: focused syntax checks, digest tests, two-week audit
+  tests, content-card/topic-filter tests, digest privacy scan 0 findings,
+  content-card topic audit, Drive sync dry-run/no-AI, approved #83
+  sync/readback, read-only Drive listing, fresh read-only intake audit, and
+  active run validation. Remaining decision: `DEC-20260626-101` keeps raw
   transcript-body export, any further Drive writes beyond #83, production
   reparse/canonical writes, worker retry, paid retranscription, class backfill,
   broad Drive sync, and other production mutations blocked until Shloimie

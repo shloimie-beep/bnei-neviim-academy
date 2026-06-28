@@ -1,6 +1,6 @@
 # Newsletter Ready Matrix
 
-Generated: 2026-06-26T11:13:59.665Z
+Generated: 2026-06-28T06:34:09.989Z
 
 | Job | Class date | Transcript chars | Parser | Questions | Matched questions | Newsletter status | Blockers |
 | --- | --- | --- | --- | --- | --- | --- | --- |

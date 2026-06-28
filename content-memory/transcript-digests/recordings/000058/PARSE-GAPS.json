@@ -1,38 +1,20 @@
 [
   {
-    "stage": "accountability_proposal",
-    "status": "MISSING",
-    "evidence": "",
-    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
-  },
-  {
     "stage": "ambiguity_review",
-    "status": "NEEDS_REVIEW",
-    "evidence": "question candidates need review before publishing",
-    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
-  },
-  {
-    "stage": "download",
-    "status": "NEEDS_REVIEW",
-    "evidence": "drive id linked to job",
+    "status": "UNKNOWN",
+    "evidence": "No student names to review.",
     "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
   },
   {
     "stage": "intake_record",
-    "status": "MISSING",
-    "evidence": "",
+    "status": "UNKNOWN",
+    "evidence": "No linked raw/canonical intake row was found.",
     "safe_next_action": "Link or create raw intake provenance without committing raw transcript bodies."
   },
   {
-    "stage": "parent_student_visibility",
-    "status": "NEEDS_REVIEW",
-    "evidence": "",
-    "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
-  },
-  {
-    "stage": "parser_request",
-    "status": "MISSING",
-    "evidence": "",
+    "stage": "profile_note_proposal",
+    "status": "UNKNOWN",
+    "evidence": "No profile-note candidates found.",
     "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
   },
   {
@@ -43,14 +25,14 @@
   },
   {
     "stage": "score_progress_proposal",
-    "status": "MISSING",
-    "evidence": "",
+    "status": "UNKNOWN",
+    "evidence": "No progress signals found.",
     "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
   },
   {
     "stage": "student_name_alias_match",
-    "status": "NEEDS_REVIEW",
-    "evidence": "2 question candidate(s)",
+    "status": "UNKNOWN",
+    "evidence": "No parsed student names found.",
     "safe_next_action": "Review parser/route evidence in private app or Drive before any production write."
   }
 ]

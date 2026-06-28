@@ -1,6 +1,6 @@
 # Private Review
 
 - Required: yes
-- Reason: Student matching, parent/student visibility, or private section classification needs review.
-- Pointer: drive_file:7af98685038f6629
+- Reason: Student question matching needs review before any student write.
+- Pointer: drive_file:7af98685038f
 - Raw text included: no

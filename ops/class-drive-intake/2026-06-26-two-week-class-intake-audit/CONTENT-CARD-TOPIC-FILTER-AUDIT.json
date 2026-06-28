@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T11:56:40.535Z",
+  "generated_at": "2026-06-28T06:35:18.334Z",
   "source_digest_root": "content-memory\\transcript-digests",
   "recording_count": 29,
   "manifest_recording_count": 29,
@@ -743,7 +743,7 @@
         "Generated title",
         "Needs parse"
       ],
-      "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+      "next_action": "Ready for owner review as digest memory only.",
       "raw_transcript_body_included": false
     },
     {
@@ -777,7 +777,7 @@
         "Generated title",
         "Needs parse"
       ],
-      "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+      "next_action": "Ready for owner review as digest memory only.",
       "raw_transcript_body_included": false
     },
     {
@@ -811,7 +811,7 @@
         "Generated title",
         "Needs parse"
       ],
-      "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+      "next_action": "Ready for owner review as digest memory only.",
       "raw_transcript_body_included": false
     },
     {
@@ -845,7 +845,7 @@
         "Generated title",
         "Needs parse"
       ],
-      "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+      "next_action": "Ready for owner review as digest memory only.",
       "raw_transcript_body_included": false
     },
     {
@@ -877,7 +877,7 @@
         "Generated title",
         "Needs parse"
       ],
-      "next_action": "Review parse gaps and private matching before any production write or parent-facing output.",
+      "next_action": "Ready for owner review as digest memory only.",
       "raw_transcript_body_included": false
     }
   ]

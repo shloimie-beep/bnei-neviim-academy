@@ -1,6 +1,6 @@
 # Private Review
 
 - Required: yes
-- Reason: Student matching, parent/student visibility, or private section classification needs review.
-- Pointer: drive_file:0414163d1c3e8df9
+- Reason: Class recording transcripts stay private by default; use only sanitized digest metadata in GitHub.
+- Pointer: drive_file:0414163d1c3e
 - Raw text included: no

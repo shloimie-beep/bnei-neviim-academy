@@ -138,6 +138,32 @@ Guardrail: this goal does not authorize silent production DB mutation, broad
 Drive sync/write, class backfill, raw transcript-body export, AI calls, sends,
 charges/access grants, credential/account/DNS changes, or stale deletion.
 
+June 28 execution update:
+
+- PR #45 is mergeable after resolving the master conflict and preserving both
+  Issue #41 and service-provider evidence records.
+- Fresh read-only audit rerun: 18 Drive recordings, 29 content jobs, 0 Drive
+  orphans, 13 student question rows, final verdict `PARTIAL`.
+- Privacy-safe digest export rerun: 29 recordings, raw transcript bodies false,
+  privacy scan findings 0.
+- Content-card audit rerun: 29 generated titles, 10 `Needs parse`, 0 `Needs
+  digest`, 0 `Needs routing`, 0 `Needs topic classification`.
+- Exact parser repair candidates: `71, 59, 58, 57, 56, 31, 30, 26, 25, 21`.
+- Exact question rows needing human student-match review:
+  `question:c516d14ee4e5d49f`, `question:1a8cf5034c4c839f`,
+  `question:51aa618b95a7d29d`, `question:2158d47f6c0c2923`,
+  `question:8f9c41ec6da4ca8c`, and `question:e1d44fb96cef6915`.
+- Student scores/progress are not safe to update yet: the audit generated 0
+  row-level score/progress apply rows.
+- Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
+  and `.json`.
+
+Remaining: merge/deploy/live-smoke PR #45 for app-visible card/filter repair,
+then keep `DEC-20260626-101` open for any production parser/question/score
+apply, broad Drive sync, raw export, AI call, class backfill, or other unsafe
+write path.
+
 ## Goal-mode execution
 
 | Field | Value |

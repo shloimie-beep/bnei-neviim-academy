@@ -336,7 +336,7 @@ function buildQuestionCandidates(questionRows = []) {
 function buildParseGaps(trace = {}, gap = {}) {
   const rows = [];
   for (const [stageName, stage] of Object.entries(trace.stages || {})) {
-    if (['MISSING', 'NEEDS_REVIEW'].includes(stage.status)) {
+    if (['MISSING', 'NEEDS_REVIEW', 'UNKNOWN'].includes(stage.status)) {
       rows.push({
         stage: stageName,
         status: stage.status,

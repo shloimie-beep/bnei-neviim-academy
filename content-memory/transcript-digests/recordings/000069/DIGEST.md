@@ -1,7 +1,7 @@
 # Class Recording 2026-06-17 - Job 069 (parsed)
 
 - Job: content_job:69
-- Drive source: drive_file:98876eddaa283ca2
+- Drive source: drive_file:98876eddaa28
 - Transcript characters: 23859
 - Transcript hash: private_app_or_drive_raw_body_required_to_compute
 - Parser: canonical-intake-parser
@@ -26,11 +26,10 @@ Review parse gaps and private matching before any production write or parent-fac
 
 ## Blockers
 
-- accountability_proposal:MISSING
-- ambiguity_review:MISSING
-- intake_record:MISSING
-- parent_student_visibility:NEEDS_REVIEW
-- question_proposal:MISSING
+- accountability_proposal:UNKNOWN
+- ambiguity_review:UNKNOWN
+- profile_note_proposal:UNKNOWN
+- question_proposal:UNKNOWN
 - repo_digest_export:MISSING
-- score_progress_proposal:MISSING
-- student_name_alias_match:MISSING
+- score_progress_proposal:UNKNOWN
+- student_name_alias_match:UNKNOWN

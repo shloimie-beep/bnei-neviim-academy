@@ -26912,3 +26912,64 @@ Verification:
   `ops/live-smokes/2026-06-26T11-13-18-510Z-operations-helper-live-smoke.md`.
 
 Remaining: none.
+
+## 2026-06-28T09:34:20+03:00 - Issue 41 Drive Backlog Parser Repair Plan
+
+Processed `RAW-20260628-002` as a goal-mode continuation for Issue #41 and
+extended the active transcript/Drive digest rebuild run as `REQ-20260628-134`
+through `REQ-20260628-140`.
+
+Completed the safe local/read-only parser-backlog repair batch:
+
+- Resolved PR #45's merge conflict against current `master` while preserving
+  both Issue #41 and service-provider closeout evidence.
+- Patched the digest exporter so current audit source refs stay redacted and
+  class-recording transcript digests remain private-review-required by default.
+- Patched digest parse-gap generation so `UNKNOWN` audit stages remain visible
+  as blockers instead of looking complete.
+- Reran the fresh read-only Drive/class/content audit.
+- Reran the privacy-safe digest export and content-card topic audit.
+- Recorded the exact redacted parser/question/score repair plan.
+
+Current status:
+
+- Fresh audit: 18 Drive recordings, 29 content jobs, 0 Drive orphans, 13
+  student-question rows, final verdict `PARTIAL`.
+- Content cards: 29 generated titles, 10 `Needs parse`, 0 `Needs digest`, 0
+  `Needs routing`, 0 `Needs topic classification`.
+- Parser repair candidates: jobs #71, #59, #58, #57, #56, #31, #30, #26, #25,
+  and #21.
+- Student questions: 13 rows total, 7 matched, 6 need human student-match
+  review.
+- Scores/progress: 0 row-level apply rows; not safe to update kids' scores or
+  progress yet.
+
+Evidence:
+
+- `raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md`
+- `memory/2026-06-28.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+- `content-memory/transcript-digests/`
+
+Verification:
+
+- `npm run content:drive-intake-audit`: 18 Drive recordings, 29 content jobs,
+  13 student-question rows, final status `PARTIAL`.
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw
+  transcript bodies false, 0 findings.
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles,
+  10 `Needs parse`, 0 routing/topic-classification gaps.
+- `node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  25/25 passed.
+
+Guardrails held: no Drive write, no production DB mutation, no class backfill,
+no paid retranscription, no AI call, no raw transcript-body export, no stale
+deletion, no send/publish/charge/access grant, and no credential/account/DNS
+change.
+
+Remaining: PR #45 is mergeable but still needs merge, deployment, and live
+Operations content smoke before app-visible Done. `DEC-20260626-101` remains
+open for any production parser/question/score apply, broad Drive sync, raw
+export, AI call, class backfill, or other unsafe write path.

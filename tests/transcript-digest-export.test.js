@@ -199,6 +199,24 @@ test('current audit source refs and class transcript privacy are preserved', () 
   assert.match(digest.privateReview.reason, /Class recording transcripts stay private by default/);
 });
 
+test('unknown current audit stages remain visible as parse gaps', () => {
+  const trace = currentAuditShapeTrace(83);
+  trace.stages.score_progress_proposal = stage('UNKNOWN');
+  trace.stages.question_proposal = stage('UNKNOWN');
+
+  const digest = buildDigestForJob({
+    trace,
+    gap: { ...sampleGap(83), status: 'ok_or_no_transcript' },
+    questionRows: [],
+    repairPlan: { dry_run_repair_candidates: [] },
+  });
+  const stages = new Set(digest.parseGaps.map((row) => `${row.stage}:${row.status}`));
+
+  assert.equal(stages.has('score_progress_proposal:UNKNOWN'), true);
+  assert.equal(stages.has('question_proposal:UNKNOWN'), true);
+  assert.equal(digest.manifest.blockers.includes('score_progress_proposal:UNKNOWN'), true);
+});
+
 test('student question candidates are deduped and ambiguous students are not auto-merged', () => {
   const digest = buildDigestForJob({
     trace: sampleTrace(83),

@@ -1,6 +1,6 @@
 # Two-Week Class Intake Audit Run Note
 
-Generated: 2026-06-26T11:13:59.679Z
+Generated: 2026-06-28T06:34:10.006Z
 
 ## Inputs
 

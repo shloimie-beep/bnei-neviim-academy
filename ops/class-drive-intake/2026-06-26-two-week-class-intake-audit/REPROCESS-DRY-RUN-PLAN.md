@@ -1,6 +1,6 @@
 # Reprocess Dry-Run Plan
 
-Generated: 2026-06-26T11:13:59.673Z
+Generated: 2026-06-28T06:34:09.997Z
 Safe to apply: false
 Guardrail: NOT SAFE TO APPLY - Issue #18 guardrail preserved; no class backfill writes attempted.
 

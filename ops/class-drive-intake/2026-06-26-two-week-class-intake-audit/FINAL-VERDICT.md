@@ -1,6 +1,6 @@
 # Two-Week Class Intake Audit - Final Verdict
 
-Generated: 2026-06-26T11:13:59.673Z
+Generated: 2026-06-28T06:34:09.997Z
 Status: PARTIAL
 Safe to apply class backfill: false
 

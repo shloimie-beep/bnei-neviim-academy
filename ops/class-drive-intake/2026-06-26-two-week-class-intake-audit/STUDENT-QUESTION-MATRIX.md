@@ -1,6 +1,6 @@
 # Student Question Matrix
 
-Generated: 2026-06-26T11:13:59.665Z
+Generated: 2026-06-28T06:34:09.989Z
 Mode: sanitized_repo_safe
 
 | Job | Class date | Question | Student | Match | Confidence | Review | Newsletter |

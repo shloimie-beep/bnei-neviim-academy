@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T11:13:59.665Z",
+  "generated_at": "2026-06-28T06:34:09.989Z",
   "mode": "read_only_two_week_class_intake_audit",
   "no_production_mutation": true,
   "start_date": "2026-06-12",
@@ -13,7 +13,7 @@
     "dry_run_repair_candidates": 10
   },
   "final_verdict": {
-    "generated_at": "2026-06-26T11:13:59.673Z",
+    "generated_at": "2026-06-28T06:34:09.997Z",
     "status": "PARTIAL",
     "summary": "Two-week class intake has incomplete organization or downstream pipeline gaps.",
     "safe_to_apply_class_backfill": false,

@@ -1,7 +1,7 @@
 # Class Recording 2026-06-08 - Job 026 (needs parser review)
 
 - Job: content_job:26
-- Drive source: drive_file:7af98685038f6629
+- Drive source: drive_file:7af98685038f
 - Transcript characters: 71944
 - Transcript hash: private_app_or_drive_raw_body_required_to_compute
 - Parser: none
@@ -29,11 +29,8 @@ Review parse gaps and private matching before any production write or parent-fac
 
 ## Blockers
 
-- accountability_proposal:MISSING
-- ambiguity_review:NEEDS_REVIEW
-- download:NEEDS_REVIEW
-- intake_record:MISSING
-- parent_student_visibility:NEEDS_REVIEW
-- parser_request:MISSING
-- score_progress_proposal:MISSING
-- student_name_alias_match:NEEDS_REVIEW
+- ambiguity_review:UNKNOWN
+- intake_record:UNKNOWN
+- profile_note_proposal:UNKNOWN
+- score_progress_proposal:UNKNOWN
+- student_name_alias_match:UNKNOWN
