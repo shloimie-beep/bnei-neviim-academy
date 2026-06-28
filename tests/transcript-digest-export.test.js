@@ -57,6 +57,40 @@ function sampleGap(jobId = 83) {
   };
 }
 
+function currentAuditShapeTrace(jobId = 83) {
+  return {
+    kind: 'content_job',
+    job_id: jobId,
+    job_ref: `content_job:${jobId}`,
+    status: 'transcribed',
+    drive_stage: '04 Parsed',
+    parser: 'canonical-intake-parser',
+    transcript_chars: 9025,
+    stages: {
+      source_discovered: {
+        status: 'CONFIRMED',
+        evidence: `content job ${jobId}`,
+        source_ref: {
+          drive_file: {
+            present: true,
+            redacted: 'drive_file:9f6f75a5d602',
+            sha256: '9f6f75a5d602bcf8ab6df7ed078a3d61f05e6bfc61a6d1f75742c2cea303847d',
+          },
+        },
+      },
+      intake_record: stage('CONFIRMED', 'RAW-20260625-002'),
+      parser_request: stage('CONFIRMED', 'canonical-intake-parser'),
+      structured_output: stage('CONFIRMED', 'canonical-intake-parser'),
+      class_session_match: stage('CONFIRMED'),
+      profile_note_proposal: stage('CONFIRMED', '2 class notes'),
+      question_proposal: stage('CONFIRMED', '0 question candidates'),
+      parent_student_visibility: stage('CONFIRMED'),
+      accountability_proposal: stage('CONFIRMED'),
+      score_progress_proposal: stage('CONFIRMED'),
+    },
+  };
+}
+
 function writeAuditFixture(root) {
   const auditDir = path.join(root, 'audit');
   fs.mkdirSync(auditDir, { recursive: true });
@@ -146,6 +180,23 @@ test('private meeting sections do not export raw text', () => {
   assert.equal(section.privacy, 'private_review_required');
   assert.equal(section.raw_text_included, false);
   assert.equal(section.lanes.includes('private_meeting'), true);
+});
+
+test('current audit source refs and class transcript privacy are preserved', () => {
+  const digest = buildDigestForJob({
+    trace: currentAuditShapeTrace(83),
+    gap: { ...sampleGap(83), status: 'ok_or_no_transcript' },
+    questionRows: [],
+    repairPlan: { dry_run_repair_candidates: [] },
+  });
+
+  assert.equal(digest.manifest.drive_file_ref, 'drive_file:9f6f75a5d602');
+  assert.equal(
+    digest.manifest.drive_file_hash,
+    '9f6f75a5d602bcf8'
+  );
+  assert.equal(digest.manifest.private_review_flag, true);
+  assert.match(digest.privateReview.reason, /Class recording transcripts stay private by default/);
 });
 
 test('student question candidates are deduped and ambiguous students are not auto-merged', () => {

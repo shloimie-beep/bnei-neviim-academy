@@ -124,6 +124,47 @@ function transcriptHashStatus(trace = {}) {
   };
 }
 
+function sourceRecordingRef(trace = {}) {
+  const direct = trace.source_recording_ref || {};
+  const discovered = trace.stages?.source_discovered?.source_ref?.drive_file || {};
+  const hash = direct.hash || direct.sha256 || discovered.hash || discovered.sha256 || null;
+  return {
+    redacted: direct.redacted || direct.id_ref || discovered.redacted || discovered.id_ref || null,
+    hash: hash ? String(hash).slice(0, 16) : null,
+  };
+}
+
+function privateReviewSignals({ trace = {}, gap = {}, sections = [], questions = [] } = {}) {
+  const transcriptChars = Number(trace.transcript_chars || gap.transcript_chars || 0);
+  const privateSection = sections.some((section) => section.privacy !== 'repo_safe_digest');
+  const unmatchedQuestions = questions.some((row) => row.match_status !== 'matched');
+  const visibilityReview = stageStatus(trace, 'parent_student_visibility') === 'NEEDS_REVIEW';
+  const transcriptBackedClassRecording = transcriptChars > 0 &&
+    (/^content_job:/i.test(String(trace.job_ref || gap.job_ref || '')) || trace.kind === 'content_job' || Boolean(trace.job_id || gap.job_id));
+  return {
+    privateSection,
+    unmatchedQuestions,
+    visibilityReview,
+    transcriptBackedClassRecording,
+  };
+}
+
+function privateReviewRequired(context = {}) {
+  const signals = privateReviewSignals(context);
+  return Object.values(signals).some(Boolean);
+}
+
+function privateReviewReason(context = {}) {
+  const signals = privateReviewSignals(context);
+  if (signals.privateSection) return 'Private section classification needs review.';
+  if (signals.unmatchedQuestions) return 'Student question matching needs review before any student write.';
+  if (signals.visibilityReview) return 'Parent/student visibility needs review before parent-facing output.';
+  if (signals.transcriptBackedClassRecording) {
+    return 'Class recording transcripts stay private by default; use only sanitized digest metadata in GitHub.';
+  }
+  return 'No private review flag from sanitized audit metadata.';
+}
+
 function classifySection(section = {}, context = {}) {
   const rawText = compactWhitespace([
     section.title,
@@ -323,9 +364,8 @@ function buildDigestForJob({ trace = {}, gap = {}, questionRows = [], repairPlan
   const repairs = repairsForJob(repairPlan, jobId);
   const sections = buildMetadataSections({ trace, gap, questions, repairs });
   const categories = categoryBreakdown(sections);
-  const privateFlag = sections.some((section) => section.privacy !== 'repo_safe_digest') ||
-    questions.some((row) => row.match_status !== 'matched') ||
-    stageStatus(trace, 'parent_student_visibility') === 'NEEDS_REVIEW';
+  const privateFlag = privateReviewRequired({ trace, gap, sections, questions });
+  const sourceRef = sourceRecordingRef(trace);
   const title = generatedTitleForJob({ trace, gap });
   const parseGaps = buildParseGaps(trace, gap);
 
@@ -336,8 +376,8 @@ function buildDigestForJob({ trace = {}, gap = {}, questionRows = [], repairPlan
     original_title_policy: 'not_exported_from_audit_artifact; use generated title in repo',
     source_type: 'content_job_from_class_drive_intake_audit',
     raw_intake_id: null,
-    drive_file_ref: trace.source_recording_ref?.redacted || null,
-    drive_file_hash: trace.source_recording_ref?.hash || null,
+    drive_file_ref: sourceRef.redacted,
+    drive_file_hash: sourceRef.hash,
     transcript_chars: trace.transcript_chars || gap.transcript_chars || 0,
     transcript_hash: transcriptHashStatus(trace),
     parser_used: trace.parser || null,
@@ -394,9 +434,7 @@ function buildDigestForJob({ trace = {}, gap = {}, questionRows = [], repairPlan
       : [],
     privateReview: {
       private_review_required: privateFlag,
-      reason: privateFlag
-        ? 'Student matching, parent/student visibility, or private section classification needs review.'
-        : 'No private review flag from sanitized audit metadata.',
+      reason: privateReviewReason({ trace, gap, sections, questions }),
       private_drive_or_app_pointer: manifest.drive_file_ref || manifest.job_ref,
       raw_text_included: false,
     },
