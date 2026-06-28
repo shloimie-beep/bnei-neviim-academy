@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-26-transcript-drive-digest-rebuild",
   "title": "Transcript Drive Digest Rebuild",
-  "updated_at": "2026-06-28T12:32:00+03:00",
+  "updated_at": "2026-06-28T14:45:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260626-004",
@@ -64,6 +64,16 @@
       "workspace": "bna",
       "project": "class_drive_intake",
       "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "captured_at": "2026-06-28T13:05:00+03:00",
+      "content_fingerprint": "sha256:96f9698173a0eab14b511f34ac694ea516a40bb9ba8c0e6077bceafbc751690e",
+      "privacy_classification": "internal_goal_mode_catchup_package",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat_attachment"
     }
   ],
   "source_statements": [
@@ -310,6 +320,76 @@
       "source_id": "RAW-20260628-003",
       "source_statement": "Run the safe no-write planner/evidence commands, keep production mutation blocked, and keep raw transcript bodies out of tracked GitHub.",
       "requirement_id": "REQ-20260628-143",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S001",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Continue Issue #41 in goal mode and turn dry-run evidence into a complete safe catch-up package without production mutation.",
+      "requirement_id": "REQ-20260628-144",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S002",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Inspect PR #49 readiness and keep it draft if production apply is not implemented.",
+      "requirement_id": "REQ-20260628-151",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S003",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Produce a current backlog census for all 29 digest recordings, especially jobs 21, 25, 26, 30, 31, 56, 57, 58, 59, and 71.",
+      "requirement_id": "REQ-20260628-145",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S004",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Investigate why 10 jobs still show Needs parse and distinguish digest readiness from parser/apply readiness.",
+      "requirement_id": "REQ-20260628-146",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S005",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Keep class-question broadcast routing in the row-level dry-run plan and do not run apply.",
+      "requirement_id": "REQ-20260628-143",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S006",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Investigate the 0 score/progress row state and emit no-write score/progress plans or no-op reasons per job.",
+      "requirement_id": "REQ-20260628-147",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S007",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Inspect task-shaped digest output and produce a no-write task/action catch-up plan with canonical keys and dedupe rules.",
+      "requirement_id": "REQ-20260628-148",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S008",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Confirm research/content cards are complete for all 29 digest recordings and no raw body is exposed.",
+      "requirement_id": "REQ-20260628-149",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S009",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Document a controlled apply-lane design with owner gate, snapshot, rollback, row-level evidence, dedupe keys, and refusal conditions, but do not execute production apply.",
+      "requirement_id": "REQ-20260628-150",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S010",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Run focused tests, audits, privacy scans, validation, secrets audit, JSON/JSONL parse checks, git diff check, and GitHub PR/Issue updates.",
+      "requirement_id": "REQ-20260628-151",
       "classification": "requirement"
     }
   ],
@@ -1714,6 +1794,350 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.json"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-144",
+      "title": "Register Issue #41 catch-up package continuation",
+      "expected_result": "The June 28 catch-up packet is preserved as raw input and mapped to active Issue #41 requirements without creating a duplicate run.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S001"
+      ],
+      "category": "source_registration",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-143"
+      ],
+      "status": "done",
+      "implementation_status": "done; raw catch-up packet registered and linked to the active transcript/Drive digest rebuild run",
+      "next_action": "Use REQ-20260628-145 through REQ-20260628-151 for the safe catch-up package evidence.",
+      "acceptance_criteria": [
+        "Raw packet is preserved",
+        "Requirement mappings exist",
+        "No duplicate run is created"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ],
+      "verification": [
+        "PASS raw source readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-145",
+      "title": "Produce repo-safe backlog catch-up census for all digest recordings",
+      "expected_result": "A no-write census covers all 29 digest recordings and classifies digest, private transcript availability, parse, routing, topic, questions, tasks, research/content, score/progress, human review, blockers, and next actions.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S003"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-144"
+      ],
+      "status": "done",
+      "implementation_status": "done; BACKLOG-CATCHUP-CENSUS reports 29 digest recordings, 10 focus jobs, 29 repo-safe digests, 29 private transcript refs, 10 Needs parse jobs, 13 question candidates, 34 task/action candidates, 29 ready content cards, and 0 score/progress rows",
+      "next_action": "Use census blockers to gate any future production apply or private reparse approval.",
+      "acceptance_criteria": [
+        "All 29 digest recordings covered",
+        "Focus jobs classified",
+        "No raw transcript body exported",
+        "Per-job next action is explicit"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.json"
+      ],
+      "verification": [
+        "PASS node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-146",
+      "title": "Diagnose the ten Needs parse digest jobs",
+      "expected_result": "The ten Needs parse jobs have concrete no-fake-completion reasons and exact safe next actions.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S004"
+      ],
+      "category": "diagnosis",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; Needs parse means private transcript count exists and digest exists, but parser metadata/structured class/progress output is incomplete or parser request is not visible; production reparse/canonical write is not approved",
+      "next_action": "If owner approves, run only an exact private reparse/canonical-write dry-run that emits sanitized before/after rows; do not mutate production.",
+      "acceptance_criteria": [
+        "Needs parse jobs listed",
+        "Cause is concrete",
+        "No fake parsed status assigned"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md"
+      ],
+      "verification": [
+        "PASS census rows list jobs 21,25,26,30,31,56,57,58,59,71 as Needs parse with private transcript chars and reparse next action"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "student_records",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-147",
+      "title": "Produce no-write score/progress catch-up plan",
+      "expected_result": "Score/progress has redacted row-level rows where safe or explicit no-op reasons per job when no safe row exists.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S006"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; SCORE-PROGRESS-CATCHUP-PLAN inspects 29 digest jobs and records 0 row-level changes, 29 no-op jobs, and 10 jobs needing private reparse before score/progress can be planned",
+      "next_action": "Keep score/progress production writes blocked until an approved parser/canonical-write dry-run emits before/after rows.",
+      "acceptance_criteria": [
+        "No-write plan exists",
+        "No-op reasons per job exist",
+        "0-row state is explicit"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.json"
+      ],
+      "verification": [
+        "PASS plan summary: inspected_jobs=29, row_level_change_count=0, no_op_jobs=29, jobs_needing_private_reparse=10"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-148",
+      "title": "Produce no-write task/action catch-up plan",
+      "expected_result": "Task-shaped digest output is classified into no-write canonical task/action candidates with dedupe keys and no production task creation.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S007"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; TASK-ACTION-CATCHUP-PLAN records 34 digest/parser/audit candidate rows, all internal agent task candidates, 0 human-visible task candidates, and no production task writes",
+      "next_action": "Do not create production tasks without a later exact owner-approved apply path.",
+      "acceptance_criteria": [
+        "Canonical task keys exist",
+        "Dedupe rule exists",
+        "Internal agent work is separated from human-visible tasks"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.json"
+      ],
+      "verification": [
+        "PASS plan summary: task_action_candidates=34, internal_agent_task_candidates=34, human_visible_task_candidates=0"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-149",
+      "title": "Produce research/content catch-up plan for digest cards",
+      "expected_result": "All digest recordings have repo-safe research/content card readiness evidence with no raw transcript bodies.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S008"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; RESEARCH-CONTENT-CATCHUP-PLAN confirms 29 inspected jobs, 29 content cards ready, 0 content-card repairs needed, 0 content idea candidates, and no raw bodies",
+      "next_action": "Keep content cards visible as sanitized digest cards; parser status remains separate for the 10 Needs parse jobs.",
+      "acceptance_criteria": [
+        "All 29 digest cards covered",
+        "Raw body excluded",
+        "Needs parse jobs still show honest parser state"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md"
+      ],
+      "verification": [
+        "PASS research/content plan summary: content_cards_ready=29, needs_content_card_repair=0"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-150",
+      "title": "Document guarded apply-lane design without executing production apply",
+      "expected_result": "A controlled apply-lane design documents owner gate, exact command shape, snapshot, rollback, row-level evidence, dedupe keys, dry-run default, refusal conditions, and current read-only refusal state.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S009"
+      ],
+      "category": "protocol",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145",
+        "REQ-20260628-147"
+      ],
+      "status": "done",
+      "implementation_status": "done; APPLY-LANE-DESIGN documents the controlled apply contract, reports the current CLI mutation path still refuses apply, and records dry-run success planning only",
+      "next_action": "If owner wants production writes, approve a separate exact implementation/apply path with job IDs/actions, snapshot, rollback, and row-level evidence.",
+      "acceptance_criteria": [
+        "Owner gate documented",
+        "Snapshot and rollback controls documented",
+        "Refusal conditions documented",
+        "Production apply not executed"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.json"
+      ],
+      "verification": [
+        "PASS node --test tests/class-drive-intake-reconcile.test.js includes apply-lane design and CLI refusal coverage"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-151",
+      "title": "Verify and publish PR #49 catch-up package status",
+      "expected_result": "Focused tests, digest/card audits, run validation/status, secrets audit, JSON/JSONL checks, privacy scans, diff check, PR update, and Issue #41 comment all pass without closing Issue #41.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S002",
+        "RAW-20260628-004-S010"
+      ],
+      "category": "verification",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145",
+        "REQ-20260628-146",
+        "REQ-20260628-147",
+        "REQ-20260628-148",
+        "REQ-20260628-149",
+        "REQ-20260628-150"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "needs_verification; code and evidence are generated locally but full verification, commit, push, PR update, and Issue #41 comment are still pending",
+      "next_action": "Run the required verification suite, update PR #49 and Issue #41, then mark this requirement done with links.",
+      "acceptance_criteria": [
+        "Focused tests pass",
+        "Privacy scans pass",
+        "Run validation/status pass",
+        "PR and Issue comments posted",
+        "Issue #41 remains open"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md"
+      ],
+      "verification": [
+        "PENDING full suite and GitHub update"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
       ]
     }
   ]

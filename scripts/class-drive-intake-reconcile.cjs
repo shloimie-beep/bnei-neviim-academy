@@ -5,15 +5,26 @@ const path = require('path');
 
 const {
   APPLY_GATE_PHRASE,
+  DEFAULT_CATCHUP_FOCUS_JOB_IDS,
   DEFAULT_REPAIR_JOB_RANGE,
+  buildApplyLaneDesign,
+  buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildResearchContentCatchupPlan,
+  buildScoreProgressCatchupPlan,
+  buildTaskActionCatchupPlan,
   evaluateSuspectedCauses,
   parseJsonMaybe,
   redactSensitiveText,
   redactedRef,
+  renderApplyLaneDesignMarkdown,
   renderBackfillMarkdown,
+  renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderResearchContentCatchupMarkdown,
+  renderScoreProgressCatchupMarkdown,
+  renderTaskActionCatchupMarkdown,
   sha256,
 } = require('../src/lib/bna/class-drive-intake-reconcile');
 
@@ -630,7 +641,29 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     recommendation,
     evidenceRoot: relativeRepoPath(args.outDir),
   });
-  return { census, backfill, recommendation, sourceCoverage };
+  const catchupInputs = loadCatchupInputs(args, recommendation);
+  const catchupCensus = buildBacklogCatchupCensus({
+    ...catchupInputs,
+    focusJobIds: DEFAULT_CATCHUP_FOCUS_JOB_IDS,
+  });
+  const scoreProgressPlan = buildScoreProgressCatchupPlan(catchupCensus);
+  const taskActionPlan = buildTaskActionCatchupPlan(catchupCensus);
+  const researchContentPlan = buildResearchContentCatchupPlan(catchupCensus);
+  const applyLaneDesign = buildApplyLaneDesign({
+    backfillPlan: recommendation,
+    exactJobIds: catchupCensus.focus_job_ids,
+  });
+  return {
+    census,
+    backfill,
+    recommendation,
+    sourceCoverage,
+    catchupCensus,
+    scoreProgressPlan,
+    taskActionPlan,
+    researchContentPlan,
+    applyLaneDesign,
+  };
 }
 
 function evidenceExists(relativePath) {
@@ -641,24 +674,75 @@ function relativeRepoPath(filePath) {
   return path.relative(REPO_ROOT, filePath).replace(/\\/g, '/');
 }
 
+function readJsonIfExists(filePath, fallback = null) {
+  if (!fs.existsSync(filePath)) return fallback;
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function readTextIfExists(filePath) {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+}
+
+function candidateIdsFromMarkdown(text = '') {
+  return String(text || '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .map((line) => {
+      const match = line.match(/^-\s+([A-Z]+(?:-[A-Z0-9]+)*-\d{6}(?:-[A-Z0-9]+)*):/);
+      return match ? match[1] : '';
+    })
+    .filter(Boolean);
+}
+
+function loadDigestRecords() {
+  const digestRoot = path.join(REPO_ROOT, 'content-memory', 'transcript-digests');
+  const manifest = readJsonIfExists(path.join(digestRoot, 'manifest.json'), { recordings: [] });
+  return (manifest.recordings || []).map((recording) => {
+    const manifestPath = path.join(digestRoot, recording.path || '');
+    const dir = path.dirname(manifestPath);
+    const manifestRow = readJsonIfExists(manifestPath, null);
+    if (!manifestRow) return null;
+    return {
+      manifest: manifestRow,
+      categories: readJsonIfExists(path.join(dir, 'CATEGORIES.json'), {}),
+      parse_gaps: readJsonIfExists(path.join(dir, 'PARSE-GAPS.json'), []),
+      task_candidate_ids: candidateIdsFromMarkdown(readTextIfExists(path.join(dir, 'TASK-CANDIDATES.md'))),
+      content_idea_candidate_ids: candidateIdsFromMarkdown(readTextIfExists(path.join(dir, 'CONTENT-IDEAS.md'))),
+      student_question_candidate_ids: candidateIdsFromMarkdown(readTextIfExists(path.join(dir, 'STUDENT-QUESTION-CANDIDATES.md'))),
+    };
+  }).filter(Boolean);
+}
+
+function loadCatchupInputs(args, recommendation) {
+  const evidencePath = (fileName) => path.join(args.outDir, fileName);
+  return {
+    digestRecords: loadDigestRecords(),
+    contentCardAudit: readJsonIfExists(evidencePath('CONTENT-CARD-TOPIC-FILTER-AUDIT.json'), {}),
+    questionMatrix: readJsonIfExists(evidencePath('STUDENT-QUESTION-MATRIX.json'), []),
+    backfillPlan: recommendation || readJsonIfExists(evidencePath('BACKFILL-RECOMMENDATION.json'), {}),
+    classQuestionDryRun: readJsonIfExists(evidencePath('CLASS-QUESTION-BROADCAST-DRY-RUN.json'), {}),
+  };
+}
+
 function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-06-24-closeout' } = {}) {
   const evidencePath = (fileName) => `${evidenceRoot}/${fileName}`;
   const statements = [
-    ['SRC-20260624-101', 'Create and activate the class/Drive intake goal; preserve raw source and register requirements.', 'REQ-20260624-101', ['raw-input/RAW-20260624-003-class-drive-intake-goal.md', 'tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
-    ['SRC-20260624-102', 'Read control manifest and branch from the exact integration base.', 'REQ-20260624-101', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
-    ['SRC-20260624-103', 'Build read-only diagnostics for pipeline census, stage reports, orphan output, ambiguity, proposed changes, duplicates, UI mismatch, and credentials/workers.', 'REQ-20260624-102', ['scripts/class-drive-intake-reconcile.cjs', 'src/lib/bna/class-drive-intake-reconcile.js', evidencePath('PIPELINE-CENSUS.json')]],
-    ['SRC-20260624-104', 'Trace every known uploaded class/job through the 20 required stages, explicitly inspecting jobs 64-74 if present.', 'REQ-20260624-102', [evidencePath('PIPELINE-CENSUS.json'), evidencePath('PIPELINE-CENSUS.md')]],
-    ['SRC-20260624-105', 'Verify or disprove the suspected causes including OpenAI 401, Drive config/auth, worker/parser/apply gaps, aliases, duplicates, generic parser, deployment, and stale status.', 'REQ-20260624-103', [evidencePath('PIPELINE-CENSUS.json'), evidencePath('PIPELINE-CENSUS.md')]],
-    ['SRC-20260624-106', 'Prepare a dry-run-only guarded backfill with row-level plan, exclusions, expected counts, transaction boundaries, rollback, idempotency, and gate phrase.', 'REQ-20260624-104', [evidencePath('BACKFILL-DRY-RUN.md'), evidencePath('BACKFILL-RECOMMENDATION.json')]],
-    ['SRC-20260624-107', 'Write BACKFILL-RECOMMENDATION.json for Prompt 09 / final integrator consumption.', 'REQ-20260624-104', [evidencePath('BACKFILL-RECOMMENDATION.json')]],
-    ['SRC-20260624-108', 'Cover multi-student extraction, scores/progress, student questions, linkage, ambiguity, duplicates, retries, visible failures, idempotency, read models, dry-run, and rollback with tests.', 'REQ-20260624-105', ['tests/class-drive-intake-reconcile.test.js', 'tests/class-drive-intake-shared-patch.test.js', evidencePath('VERIFICATION.md')]],
-    ['SRC-20260624-109', 'Detect credential readiness without printing secrets or raw Drive IDs.', 'REQ-20260624-106', [evidencePath('AUTH-READINESS.md')]],
-    ['SRC-20260624-110', 'Do not edit server.js; provide SHARED-PATCH.diff when shared wiring is required.', 'REQ-20260624-107', ['ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff', 'tests/class-drive-intake-shared-patch.test.js']],
-    ['SRC-20260624-111', 'Run focused tests, source coverage, JSON checks, secret audit, and git diff --check.', 'REQ-20260624-108', [evidencePath('VERIFICATION.md')]],
-    ['SRC-20260624-112', 'Commit and push the lane branch.', 'REQ-20260624-109', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
+    ['SRC-20260626-116', 'Create and activate the transcript/Drive digest rebuild run with raw source/register evidence.', 'REQ-20260626-116', ['raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md', 'ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json', 'tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md']],
+    ['SRC-20260626-119', 'Build privacy-safe digest export and block raw transcript export by default.', 'REQ-20260626-119', ['src/lib/bna/transcript-digest-export.js', 'scripts/export-content-digests.cjs', 'tests/transcript-digest-export.test.js']],
+    ['SRC-20260626-121', 'Generate repo-safe transcript digest memory for 29 recordings without raw transcript bodies.', 'REQ-20260626-121', ['content-memory/transcript-digests/manifest.json', 'content-memory/transcript-digests/index.md']],
+    ['SRC-20260626-127', 'Verify the Issue #41 Drive transcript library addendum with read-only evidence.', 'REQ-20260626-127', ['raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md', evidencePath('DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md')]],
+    ['SRC-20260626-128', 'Run the approved #83-only private Drive transcript sync and record sanitized readback proof.', 'REQ-20260626-128', ['raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md', evidencePath('DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md')]],
+    ['SRC-20260626-130', 'Audit all 29 digest recordings for content-card and topic-filter readiness.', 'REQ-20260626-130', [evidencePath('CONTENT-CARD-TOPIC-FILTER-AUDIT.md'), evidencePath('CONTENT-CARD-TOPIC-FILTER-AUDIT.json')]],
+    ['SRC-20260626-131', 'Repair Operations Content cards and normalized topic filters without exposing raw transcript bodies.', 'REQ-20260626-131', ['src/lib/bna/content-card-view-model.js', 'public/operations.html', 'tests/content-card-view-model.test.js', 'tests/operations-content-library-taxonomy.test.js', evidencePath('LIVE-CONTENT-CARD-READBACK.md')]],
+    ['SRC-20260628-143', 'Refresh class-question broadcast dry-run evidence and keep production apply blocked.', 'REQ-20260628-143', [evidencePath('BACKFILL-DRY-RUN.md'), evidencePath('BACKFILL-RECOMMENDATION.json'), evidencePath('CLASS-QUESTION-BROADCAST-DRY-RUN.md')]],
+    ['SRC-20260628-145', 'Produce a repo-safe catch-up census across all 29 digest recordings.', 'REQ-20260628-145', [evidencePath('BACKLOG-CATCHUP-CENSUS.md'), evidencePath('BACKLOG-CATCHUP-CENSUS.json')]],
+    ['SRC-20260628-147', 'Emit no-write score/progress catch-up plan with explicit no-op reasons.', 'REQ-20260628-147', [evidencePath('SCORE-PROGRESS-CATCHUP-PLAN.md'), evidencePath('SCORE-PROGRESS-CATCHUP-PLAN.json')]],
+    ['SRC-20260628-148', 'Emit no-write task/action catch-up plan with canonical keys and dedupe rules.', 'REQ-20260628-148', [evidencePath('TASK-ACTION-CATCHUP-PLAN.md'), evidencePath('TASK-ACTION-CATCHUP-PLAN.json')]],
+    ['SRC-20260628-149', 'Emit research/content catch-up plan proving card readiness without raw bodies.', 'REQ-20260628-149', [evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.md'), evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.json')]],
+    ['SRC-20260628-150', 'Document apply-lane owner gate, snapshot, rollback, row evidence, dedupe, and refusal controls without executing apply.', 'REQ-20260628-150', [evidencePath('APPLY-LANE-DESIGN.md'), evidencePath('APPLY-LANE-DESIGN.json'), 'tests/class-drive-intake-reconcile.test.js']],
   ].map(([statement_id, source_statement, requirement_id, evidence_paths]) => ({
     statement_id,
-    source_id: 'RAW-20260624-003',
+    source_id: statement_id.startsWith('SRC-20260628') ? 'RAW-20260628-004' : 'RAW-20260626-004',
     source_statement,
     requirement_id,
     classification: 'requirement',
@@ -674,8 +758,8 @@ function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-0
   }, {});
   return {
     generated_at: new Date().toISOString(),
-    source_id: 'RAW-20260624-003',
-    source_path: 'raw-input/RAW-20260624-003-class-drive-intake-goal.md',
+    source_id: 'RAW-20260626-004+RAW-20260628-004',
+    source_path: 'ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json',
     no_production_mutation: true,
     source_statement_count: statements.length,
     mapped_statement_count: statements.length - unmapped.length,
@@ -728,10 +812,25 @@ function writeEvidence(args, auth, reports) {
   writeText(path.join(args.outDir, 'AUTH-READINESS.md'), renderAuthMarkdown(auth));
   writeJson(path.join(args.outDir, 'SOURCE-COVERAGE.json'), reports.sourceCoverage);
   writeText(path.join(args.outDir, 'SOURCE-COVERAGE.md'), renderSourceCoverageMarkdown(reports.sourceCoverage));
+  writeJson(path.join(args.outDir, 'BACKLOG-CATCHUP-CENSUS.json'), reports.catchupCensus);
+  writeText(path.join(args.outDir, 'BACKLOG-CATCHUP-CENSUS.md'), renderBacklogCatchupCensusMarkdown(reports.catchupCensus));
+  writeJson(path.join(args.outDir, 'SCORE-PROGRESS-CATCHUP-PLAN.json'), reports.scoreProgressPlan);
+  writeText(path.join(args.outDir, 'SCORE-PROGRESS-CATCHUP-PLAN.md'), renderScoreProgressCatchupMarkdown(reports.scoreProgressPlan));
+  writeJson(path.join(args.outDir, 'TASK-ACTION-CATCHUP-PLAN.json'), reports.taskActionPlan);
+  writeText(path.join(args.outDir, 'TASK-ACTION-CATCHUP-PLAN.md'), renderTaskActionCatchupMarkdown(reports.taskActionPlan));
+  writeJson(path.join(args.outDir, 'RESEARCH-CONTENT-CATCHUP-PLAN.json'), reports.researchContentPlan);
+  writeText(path.join(args.outDir, 'RESEARCH-CONTENT-CATCHUP-PLAN.md'), renderResearchContentCatchupMarkdown(reports.researchContentPlan));
+  writeJson(path.join(args.outDir, 'APPLY-LANE-DESIGN.json'), reports.applyLaneDesign);
+  writeText(path.join(args.outDir, 'APPLY-LANE-DESIGN.md'), renderApplyLaneDesignMarkdown(reports.applyLaneDesign));
 }
 
 function selectOutput(command, reports) {
   if (command === 'census' || command === 'stage-report') return reports.census;
+  if (command === 'catchup-census') return reports.catchupCensus;
+  if (command === 'score-progress-plan') return reports.scoreProgressPlan;
+  if (command === 'task-action-plan') return reports.taskActionPlan;
+  if (command === 'research-content-plan') return reports.researchContentPlan;
+  if (command === 'apply-lane-design') return reports.applyLaneDesign;
   if (command === 'orphan-output') {
     return {
       generated_at: reports.census.generated_at,

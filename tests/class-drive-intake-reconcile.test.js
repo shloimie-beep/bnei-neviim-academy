@@ -5,8 +5,13 @@ const test = require('node:test');
 
 const {
   APPLY_GATE_PHRASE,
+  buildApplyLaneDesign,
+  buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildResearchContentCatchupPlan,
+  buildScoreProgressCatchupPlan,
+  buildTaskActionCatchupPlan,
   evaluateSuspectedCauses,
   extractStructuredOutput,
   jobSourceFingerprint,
@@ -362,6 +367,137 @@ test('CLI refuses guarded apply because this lane is read-only', () => {
   });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /read-only/);
+});
+
+test('backlog catch-up census separates repo-safe digests from parser/apply readiness', () => {
+  const census = buildBacklogCatchupCensus({
+    digestRecords: [{
+      manifest: {
+        job_id: 25,
+        generated_title: 'Class Recording 2026-06-08 - Job 025 (needs parser review)',
+        transcript_chars: 58244,
+        raw_transcript_body_included: false,
+        parser_used: null,
+        parse_run_id: 'structured output present',
+        category_list: ['class_notes', 'class_session', 'parser_error', 'student_question', 'task'],
+        questions_extracted_count: 3,
+        tasks_extracted: 1,
+        private_review_flag: true,
+      },
+      parse_gaps: [{ stage: 'score_progress_proposal', status: 'UNKNOWN', evidence: 'No progress signals found.' }],
+      task_candidate_ids: ['TASK-CANDIDATE-000025-DIGEST', 'TASK-CANDIDATE-000025-REPAIR-01'],
+      content_idea_candidate_ids: [],
+    }],
+    contentCardAudit: {
+      rows: [{
+        job_id: 25,
+        parse_status: 'Needs parse',
+        digest_status: 'Digest ready',
+        routing_status: 'Routing ready',
+        topic_status: 'Classified',
+      }],
+    },
+    questionMatrix: [{
+      job_id: 25,
+      question_ref: 'question:e1d44fb96cef6915',
+      match_status: 'no_student_name',
+    }],
+    backfillPlan: {
+      row_level_change_plan: [{
+        table: 'bna_accountability_events',
+        action: 'insert',
+        natural_key: 'content_job:25:class_question:e1d44fb96cef:student:643',
+        after: {
+          source_content_job_id: 25,
+          event_type: 'question',
+          metadata: { question_scope: 'class_question' },
+        },
+      }],
+      class_question_fallbacks: [{ job_id: 25, question_text_hash: 'e1d44fb96cef' }],
+    },
+  });
+
+  assert.equal(census.summary.recording_count, 1);
+  assert.equal(census.summary.repo_safe_digest_count, 1);
+  assert.equal(census.summary.needs_parse_count, 1);
+  assert.equal(census.summary.class_question_broadcast_insert_rows, 1);
+  assert.equal(census.summary.score_progress_row_level_change_count, 0);
+  assert.equal(census.rows[0].has_private_raw_transcript, true);
+  assert.equal(census.rows[0].raw_transcript_body_included, false);
+  assert.equal(census.rows[0].parse_status.key, 'needs_parse');
+  assert.match(census.rows[0].score_progress_candidate_status.reason, /No safe score\/progress rows/);
+});
+
+test('score/progress catch-up plan emits no-op reasons per job when no row-level rows exist', () => {
+  const census = buildBacklogCatchupCensus({
+    digestRecords: [{
+      manifest: {
+        job_id: 71,
+        generated_title: 'Class Recording 2026-06-17 - Job 071 (needs parser review)',
+        transcript_chars: 751,
+        raw_transcript_body_included: false,
+        parser_used: null,
+        parse_run_id: 'Transcript exists but parser request is not visible.',
+        category_list: ['class_notes', 'class_session', 'parser_error', 'task'],
+        tasks_extracted: 2,
+        private_review_flag: true,
+      },
+      parse_gaps: [{ stage: 'structured_output', status: 'UNKNOWN' }],
+    }],
+    backfillPlan: { row_level_change_plan: [] },
+  });
+  const plan = buildScoreProgressCatchupPlan(census);
+
+  assert.equal(plan.summary.row_level_change_count, 0);
+  assert.deepEqual(plan.summary.jobs_needing_private_reparse, [71]);
+  assert.equal(plan.production_apply_allowed, false);
+  assert.match(plan.rows[0].no_op_reason, /reparse/);
+});
+
+test('task/action and research/content plans remain no-write and deduped from digest candidates', () => {
+  const census = buildBacklogCatchupCensus({
+    digestRecords: [{
+      manifest: {
+        job_id: 83,
+        generated_title: 'Class Recording 2026-06-25 - Job 083 (parsed)',
+        transcript_chars: 9025,
+        raw_transcript_body_included: false,
+        parser_used: 'canonical-intake-parser',
+        parse_run_id: 'canonical-intake-parser',
+        category_list: ['class_notes', 'class_session', 'profile_note'],
+        tasks_extracted: 1,
+        private_review_flag: true,
+      },
+      task_candidate_ids: ['TASK-CANDIDATE-000083-DIGEST'],
+      content_idea_candidate_ids: [],
+    }],
+  });
+  const taskPlan = buildTaskActionCatchupPlan(census);
+  const researchPlan = buildResearchContentCatchupPlan(census);
+
+  assert.equal(taskPlan.production_task_creation_allowed, false);
+  assert.equal(taskPlan.summary.task_action_candidates, 1);
+  assert.match(taskPlan.rows[0].canonical_task_key, /content_job:83/);
+  assert.equal(researchPlan.raw_transcript_bodies_included, false);
+  assert.equal(researchPlan.summary.content_cards_ready, 1);
+});
+
+test('apply lane design documents required controls without enabling production mutation', () => {
+  const design = buildApplyLaneDesign({
+    backfillPlan: {
+      safe_to_apply: true,
+      expected_row_counts: { bna_accountability_events: 917 },
+      row_level_change_plan: [{ table: 'bna_accountability_events' }],
+      blocking_ambiguities: [],
+    },
+    exactJobIds: [21, 25, 26],
+  });
+
+  assert.equal(design.production_apply_executed, false);
+  assert.equal(design.current_apply_lane_status, 'refuses_mutation_by_design');
+  assert.match(design.apply_command_template, new RegExp(APPLY_GATE_PHRASE));
+  assert.ok(design.refusal_conditions.includes('score/progress row lacks before/after'));
+  assert.equal(design.success_planning_path.safe_to_apply_if_separately_approved, true);
 });
 
 test('source fingerprint is stable for retry/dedup comparisons', () => {

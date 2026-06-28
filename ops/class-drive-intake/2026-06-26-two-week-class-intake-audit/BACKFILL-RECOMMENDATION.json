@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T09:36:29.757Z",
+  "generated_at": "2026-06-28T11:52:04.628Z",
   "no_production_mutation": true,
   "candidate_jobs": [
     {
@@ -445,6 +445,10 @@
     {
       "job_id": 83,
       "reason": "no structured class/progress output available for backfill"
+    },
+    {
+      "job_id": 84,
+      "reason": "outside requested guarded backfill job range"
     }
   ],
   "safe_to_apply": true,

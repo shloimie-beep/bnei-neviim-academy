@@ -223,6 +223,54 @@ by `DEC-20260626-101`. The current apply lane refuses mutation by design; a
 future production apply needs a separately approved exact implementation/apply
 path with snapshot and rollback proof. Issue #41 remains open.
 
+## June 28 PR #49 catch-up package continuation
+
+Captured `RAW-20260628-004` from the attached
+`BNA_GOAL_MODE_EXECUTION_PACKET` and added continuation requirements
+`REQ-20260628-144` through `REQ-20260628-151` to the active Issue #41 run.
+
+Execution result so far:
+
+- `REQ-20260628-144` Done: continuation packet preserved and mapped to the
+  active run; no duplicate run created.
+- `REQ-20260628-145` Done: `BACKLOG-CATCHUP-CENSUS` covers all 29 digest
+  recordings, with 10 focus jobs, 29 repo-safe digests, 29 private transcript
+  refs by transcript-char count, 10 `Needs parse` jobs, 13 question
+  candidates, 34 task/action candidates, 29 ready research/content cards, and
+  0 score/progress row-level changes.
+- `REQ-20260628-146` Done: `Needs parse` now means the private transcript and
+  repo-safe digest exist, but parser metadata/structured class/progress output
+  is incomplete or parser request visibility is missing. No job was falsely
+  marked parsed.
+- `REQ-20260628-147` Done: `SCORE-PROGRESS-CATCHUP-PLAN` records 29 no-op
+  jobs, 0 row-level score/progress changes, and 10 jobs needing approved
+  private reparse before score/progress before/after rows can exist.
+- `REQ-20260628-148` Done: `TASK-ACTION-CATCHUP-PLAN` records 34 no-write
+  canonical task/action candidate rows, all internal agent/digest/parser/audit
+  candidates and 0 human-visible production task candidates.
+- `REQ-20260628-149` Done: `RESEARCH-CONTENT-CATCHUP-PLAN` confirms 29 ready
+  content/research digest cards, 0 card repairs needed, 0 content idea
+  candidates, and no raw transcript bodies.
+- `REQ-20260628-150` Done: `APPLY-LANE-DESIGN` documents the owner gate,
+  snapshot/rollback, row-level evidence, dedupe, small-batch, dry-run-default,
+  and refusal conditions while leaving production apply disabled.
+- `REQ-20260628-151` Needs verification until the full check suite, commit,
+  push, PR #49 update, and Issue #41 comment are complete.
+
+Key evidence:
+
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md`
+
+Guardrails held: no `--apply`, no production DB mutation, no student portal
+write, no score/progress write, no production task write, no Drive write, no
+broad Drive sync, no class backfill, no raw transcript-body export, no AI call,
+no paid retranscription, no send/publish/charge/access grant, and no
+credential/account/DNS change.
+
 ## Goal-mode execution
 
 | Field | Value |

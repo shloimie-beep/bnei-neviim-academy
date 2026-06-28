@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-28T09:36:29.734Z",
+  "generated_at": "2026-06-28T11:52:04.581Z",
   "no_production_mutation": true,
   "read_only_authorization_phrase": "READ_EXTERNAL_PRODUCTION_STATE",
   "inspected_job_range": [
@@ -10,7 +10,7 @@
   "drive_readback": {
     "skipped": false,
     "reason": "",
-    "files_count": 355,
+    "files_count": 362,
     "files": [
       {
         "name": "drive_file_name:cf71c0369b87",
@@ -1111,6 +1111,24 @@
         }
       },
       {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_SIMPLIFIED_PROCESSED_RECORDINGS_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
         "name": "drive_file_name:68530ef33fdf",
         "id_ref": {
           "present": true,
@@ -1831,6 +1849,24 @@
         }
       },
       {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_STAGE_03_TRANSCRIBED_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
         "name": "drive_file_name:68530ef33fdf",
         "id_ref": {
           "present": true,
@@ -2551,6 +2587,24 @@
         }
       },
       {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_STAGE_04_PARSED_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
         "name": "drive_file_name:68530ef33fdf",
         "id_ref": {
           "present": true,
@@ -3271,6 +3325,24 @@
         }
       },
       {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_STAGE_05_WHATSAPP_READY_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
         "name": "drive_file_name:68530ef33fdf",
         "id_ref": {
           "present": true,
@@ -3991,6 +4063,24 @@
         }
       },
       {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_STAGE_06_NEWSLETTER_CANDIDATES_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
         "name": "drive_file_name:68530ef33fdf",
         "id_ref": {
           "present": true,
@@ -4711,6 +4801,24 @@
         }
       },
       {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_STAGE_07_SOCIAL_CANDIDATES_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
         "name": "drive_file_name:68530ef33fdf",
         "id_ref": {
           "present": true,
@@ -5424,6 +5532,24 @@
         "modifiedTime": "2025-10-05T09:07:22.871Z",
         "size": "30381",
         "folder_label": "BNA_DRIVE_STAGE_07_SOCIAL_CANDIDATES_FOLDER_ID",
+        "folder_ref": {
+          "present": true,
+          "redacted": "drive_folder:5e3be11f49e3",
+          "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+        }
+      },
+      {
+        "name": "drive_file_name:bac3202a4328",
+        "id_ref": {
+          "present": true,
+          "redacted": "drive_file:8679173269d9",
+          "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+        },
+        "mimeType": "audio/mp4",
+        "createdTime": "2026-06-28T10:12:51.702Z",
+        "modifiedTime": "2026-06-28T10:12:52.349Z",
+        "size": "112501859",
+        "folder_label": "BNA_DRIVE_STAGE_08_BLOG_CANDIDATES_FOLDER_ID",
         "folder_ref": {
           "present": true,
           "redacted": "drive_folder:5e3be11f49e3",
@@ -6459,7 +6585,7 @@
     },
     "generic_ramble_parser_used_instead_of_class_parser": {
       "status": "CONFIRMED",
-      "evidence": "20 row(s) use canonical-intake-parser."
+      "evidence": "21 row(s) use canonical-intake-parser."
     },
     "local_fix_not_deployed": {
       "status": "UNKNOWN",
@@ -6467,7 +6593,7 @@
     },
     "stale_job_status_masking_completed_output": {
       "status": "CONFIRMED",
-      "evidence": "41 row(s) have in-progress status with output."
+      "evidence": "42 row(s) have in-progress status with output."
     }
   },
   "pipeline_rows": [
@@ -16740,6 +16866,135 @@
         "transcription_result": {
           "status": "CONFIRMED",
           "evidence": "9025 transcript chars"
+        },
+        "parser_request": {
+          "status": "CONFIRMED",
+          "evidence": "canonical-intake-parser"
+        },
+        "structured_output": {
+          "status": "CONFIRMED",
+          "evidence": "Canonical parser output exists but class/progress output is empty."
+        },
+        "class_session_match": {
+          "status": "CONFIRMED",
+          "evidence": "1 class session row(s)"
+        },
+        "student_name_alias_match": {
+          "status": "UNKNOWN",
+          "evidence": "No parsed student names found."
+        },
+        "ambiguity_review": {
+          "status": "UNKNOWN",
+          "evidence": "No student names to review."
+        },
+        "score_progress_proposal": {
+          "status": "UNKNOWN",
+          "evidence": "No progress signals found."
+        },
+        "question_proposal": {
+          "status": "UNKNOWN",
+          "evidence": "No parsed student questions found."
+        },
+        "profile_note_proposal": {
+          "status": "UNKNOWN",
+          "evidence": "No profile-note candidates found."
+        },
+        "accountability_proposal": {
+          "status": "UNKNOWN",
+          "evidence": "No accountability events found."
+        },
+        "canonical_write_status": {
+          "status": "CONFIRMED",
+          "evidence": "class=1 group=0 events=0"
+        },
+        "operations_read_model_visibility": {
+          "status": "CONFIRMED",
+          "evidence": "Operations-backed row is visible."
+        },
+        "parent_student_visibility": {
+          "status": "CONFIRMED",
+          "evidence": "Progress/accountability rows exist for downstream views."
+        },
+        "retry_dedup_status": {
+          "status": "CONFIRMED",
+          "evidence": "No duplicate or retry marker found."
+        }
+      }
+    },
+    {
+      "kind": "content_job",
+      "job_id": 84,
+      "title": "content_job:84",
+      "created_at": "2026-06-28T07:15:42.239Z",
+      "updated_at": "2026-06-28T07:17:34.652Z",
+      "status": "transcribed",
+      "drive_stage": "04 Parsed",
+      "transcript_chars": 49429,
+      "parser": "canonical-intake-parser",
+      "fingerprint_sha256": "be8d74a12f302c32e46080d2c80a24019c0ae7f974138bfb9c7b70c3407ad189",
+      "stage_order": [
+        "source_discovered",
+        "source_fingerprint",
+        "intake_record",
+        "queue_record",
+        "download",
+        "transcription_request",
+        "transcription_result",
+        "parser_request",
+        "structured_output",
+        "class_session_match",
+        "student_name_alias_match",
+        "ambiguity_review",
+        "score_progress_proposal",
+        "question_proposal",
+        "profile_note_proposal",
+        "accountability_proposal",
+        "canonical_write_status",
+        "operations_read_model_visibility",
+        "parent_student_visibility",
+        "retry_dedup_status"
+      ],
+      "stages": {
+        "source_discovered": {
+          "status": "CONFIRMED",
+          "evidence": "content job 84",
+          "source_ref": {
+            "drive_file": {
+              "present": true,
+              "redacted": "drive_file:8679173269d9",
+              "sha256": "8679173269d94e40fb6d327938cd8aeb46575346f240c02422d02e89d108fa61"
+            },
+            "drive_folder": {
+              "present": true,
+              "redacted": "drive_folder:5e3be11f49e3",
+              "sha256": "5e3be11f49e30d19d2b82ffb43ffa423bd4a4cf113607f6c70a2438984933403"
+            }
+          }
+        },
+        "source_fingerprint": {
+          "status": "CONFIRMED",
+          "evidence": "be8d74a12f302c32",
+          "sha256": "be8d74a12f302c32e46080d2c80a24019c0ae7f974138bfb9c7b70c3407ad189"
+        },
+        "intake_record": {
+          "status": "CONFIRMED",
+          "evidence": "RAW-20260628-001"
+        },
+        "queue_record": {
+          "status": "CONFIRMED",
+          "evidence": "status=transcribed stage=04 Parsed"
+        },
+        "download": {
+          "status": "CONFIRMED",
+          "evidence": "Download/transcript evidence exists."
+        },
+        "transcription_request": {
+          "status": "CONFIRMED",
+          "evidence": "Transcript or transcription metadata exists."
+        },
+        "transcription_result": {
+          "status": "CONFIRMED",
+          "evidence": "49429 transcript chars"
         },
         "parser_request": {
           "status": "CONFIRMED",

@@ -24,7 +24,13 @@ not authorize active GHL runtime paths.
   active students: 917 future `bna_accountability_events` writes are planned if
   a separate production apply path is approved, including 912 class-question
   broadcast inserts, 5 matched student-question inserts, and 2 existing rows
-  skipped. Score/progress still has 0 safe row-level apply rows. No production
+  skipped. The PR #49 catch-up package now adds repo-safe no-write evidence:
+  `BACKLOG-CATCHUP-CENSUS` covers all 29 digest recordings with 10 `Needs
+  parse` jobs, 29 ready research/content cards, 13 question candidates, 34
+  internal task/action candidates, and 0 score/progress row-level changes;
+  `APPLY-LANE-DESIGN` documents the owner gate/snapshot/rollback/refusal
+  controls while keeping production apply disabled. Score/progress still has 0
+  safe row-level apply rows. No production
   apply command has been approved or implemented; the no-write owner decision
   packet is
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.

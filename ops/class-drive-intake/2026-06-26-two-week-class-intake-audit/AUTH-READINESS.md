@@ -1,6 +1,6 @@
 # Auth Readiness
 
-Generated: 2026-06-28T09:35:33.717Z
+Generated: 2026-06-28T11:50:50.543Z
 No production mutation: true
 
 ## Database

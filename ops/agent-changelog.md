@@ -27084,3 +27084,39 @@ current apply lane refuses mutation by design. No Drive write, production DB
 mutation, class backfill, raw transcript export, AI call, paid retranscription,
 send/publish, charge/access grant, credential/account/DNS change, broad Drive
 sync, or `--apply` was performed.
+
+## 2026-06-28T14:45:00+03:00 - Issue 41 PR #49 Catch-up Package
+
+Captured `RAW-20260628-004` from the attached goal-mode packet and added
+`REQ-20260628-144` through `REQ-20260628-151` to the active transcript/Drive
+digest rebuild run.
+
+- Added repo-safe catch-up report builders to
+  `src/lib/bna/class-drive-intake-reconcile.js`.
+- Wired `scripts/class-drive-intake-reconcile.cjs` to emit no-write catch-up
+  evidence from digest/card/question dry-run artifacts.
+- Generated `BACKLOG-CATCHUP-CENSUS`: 29 digest recordings, 10 focus jobs, 29
+  repo-safe digests, 29 private transcript refs, 10 `Needs parse` jobs, 13
+  question candidates, 34 task/action candidates, 29 ready research/content
+  cards, and 0 score/progress row-level changes.
+- Generated `SCORE-PROGRESS-CATCHUP-PLAN`: 29 no-op jobs and 0 safe
+  score/progress rows.
+- Generated `TASK-ACTION-CATCHUP-PLAN`: 34 internal no-write candidate rows
+  and 0 human-visible production task candidates.
+- Generated `RESEARCH-CONTENT-CATCHUP-PLAN`: 29 ready sanitized content cards
+  and 0 card repairs needed.
+- Generated `APPLY-LANE-DESIGN`: owner gate, exact command shape, snapshot,
+  rollback, row-level evidence, dedupe keys, small batches, dry-run default,
+  and refusal conditions documented; production apply remains disabled.
+
+Verification so far:
+
+- `node --test tests/class-drive-intake-reconcile.test.js`: 20/20 passed.
+- `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: repo evidence refreshed, no production mutation.
+
+Remaining: `REQ-20260628-151` still needs the full verification suite, commit,
+push, PR #49 update, and Issue #41 comment. No `--apply`, production DB
+mutation, student portal write, score/progress write, production task write,
+Drive write, broad Drive sync, class backfill, raw transcript export, AI call,
+paid retranscription, send/publish/charge/access grant, or credential/account/
+DNS change was performed.

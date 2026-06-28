@@ -9,6 +9,7 @@ const { normalizeParsedTorahEngagement } = require('./torah-learning');
 
 const APPLY_GATE_PHRASE = 'APPLY_GUARDED_CLASS_BACKFILL';
 const DEFAULT_REPAIR_JOB_RANGE = [64, 74];
+const DEFAULT_CATCHUP_FOCUS_JOB_IDS = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
 const PIPELINE_STAGES = [
   'source_discovered',
   'source_fingerprint',
@@ -187,6 +188,22 @@ function normalizeStudentQuestion(value) {
 
 function compactWhitespace(value) {
   return String(value || '').replace(/\s+/g, ' ').trim();
+}
+
+function toPositiveNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) && number > 0 ? number : 0;
+}
+
+function candidateIdsFromMarkdown(text = '') {
+  return String(text || '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .map((line) => {
+      const match = line.match(/^-\s+([A-Z]+(?:-[A-Z0-9]+)*-\d{6}(?:-[A-Z0-9]+)*):/);
+      return match ? match[1] : '';
+    })
+    .filter(Boolean);
 }
 
 function normalizeQuestionCandidateForBackfill(value, fallbackStudentName = '') {
@@ -706,6 +723,529 @@ function buildGuardedBackfillDryRun({
   };
 }
 
+function jobIdFromNaturalKey(value = '') {
+  const match = String(value || '').match(/\bcontent_job:(\d+)\b/);
+  return match ? Number(match[1]) : 0;
+}
+
+function rowsByContentJob(rows = []) {
+  const map = new Map();
+  for (const row of toArray(rows)) {
+    const jobId = Number(row.job_id || row.source_content_job_id || row.after?.source_content_job_id || jobIdFromNaturalKey(row.natural_key));
+    if (!jobId) continue;
+    if (!map.has(jobId)) map.set(jobId, []);
+    map.get(jobId).push(row);
+  }
+  return map;
+}
+
+function digestCategories(record = {}) {
+  const manifest = record.manifest || record;
+  const categoryRows = toArray(record.categories?.categories);
+  const categoryList = toArray(manifest.category_list || manifest.categories);
+  return [...new Set([
+    ...categoryList,
+    ...categoryRows.map((item) => item.lane || item.category || item.key).filter(Boolean),
+  ])].sort();
+}
+
+function classifyDigestParseStatus(record = {}, cardRow = {}) {
+  const manifest = record.manifest || record;
+  const categories = digestCategories(record);
+  const parseGaps = toArray(record.parse_gaps);
+  const parserMissing = !manifest.parser_used || /structured output present|transcript exists but parser request is not visible/i.test(String(manifest.parse_run_id || ''));
+  const hasParserError = categories.includes('parser_error') || parseGaps.some((gap) => ['parser_request', 'structured_output'].includes(gap.stage));
+  if (cardRow.parse_status === 'Parsed' && !hasParserError && !parserMissing) return { key: 'parsed', label: 'Parsed', reason: 'Content-card audit reports parsed with parser metadata.' };
+  if (toPositiveNumber(manifest.transcript_chars) > 0 && (hasParserError || parserMissing)) {
+    return { key: 'needs_parse', label: 'Needs parse', reason: 'Private transcript exists, but parser metadata/structured class output is incomplete.' };
+  }
+  if (toPositiveNumber(manifest.transcript_chars) > 0) return { key: 'needs_parse', label: 'Needs parse', reason: 'Transcript exists but parser readiness is not proven.' };
+  return { key: 'needs_transcript', label: 'Needs transcript', reason: 'No transcript character count is available in repo-safe metadata.' };
+}
+
+function scoreProgressRows(rows = []) {
+  return toArray(rows).filter((row) => (
+    row.table === 'bna_torah_learning_entries'
+    || row.table === 'bna_group_goal_entries'
+    || row.after?.event_type === 'learning_note'
+  ));
+}
+
+function questionRows(rows = []) {
+  return toArray(rows).filter((row) => row.table === 'bna_accountability_events' && row.after?.event_type === 'question');
+}
+
+function buildBacklogCatchupCensus({
+  digestRecords = [],
+  contentCardAudit = {},
+  questionMatrix = [],
+  backfillPlan = {},
+  classQuestionDryRun = {},
+  focusJobIds = DEFAULT_CATCHUP_FOCUS_JOB_IDS,
+  generatedAt = new Date().toISOString(),
+} = {}) {
+  const cardRows = rowsByContentJob(contentCardAudit.rows || []);
+  const matrixRows = rowsByContentJob(questionMatrix);
+  const backfillRows = rowsByContentJob(backfillPlan.row_level_change_plan || []);
+  const fallbackRows = rowsByContentJob(backfillPlan.class_question_fallbacks || []);
+  const focusSet = new Set(toArray(focusJobIds).map(Number));
+  const records = toArray(digestRecords)
+    .map((record) => ({ ...record, manifest: record.manifest || record }))
+    .filter((record) => Number(record.manifest?.job_id))
+    .sort((a, b) => Number(a.manifest.job_id) - Number(b.manifest.job_id));
+
+  const rows = records.map((record) => {
+    const manifest = record.manifest;
+    const jobId = Number(manifest.job_id);
+    const categories = digestCategories(record);
+    const card = (cardRows.get(jobId) || [])[0] || {};
+    const rowPlan = backfillRows.get(jobId) || [];
+    const questionPlanRows = questionRows(rowPlan);
+    const classQuestionRows = questionPlanRows.filter((row) => row.after?.metadata?.question_scope === 'class_question');
+    const personalQuestionRows = questionPlanRows.filter((row) => row.after?.metadata?.question_scope === 'student_question');
+    const scoreRows = scoreProgressRows(rowPlan);
+    const parse = classifyDigestParseStatus(record, card);
+    const questionCandidates = matrixRows.get(jobId) || [];
+    const taskCandidateIds = record.task_candidate_ids || [];
+    const contentCandidateIds = record.content_idea_candidate_ids || [];
+    const digestReady = manifest.raw_transcript_body_included === false || Boolean(manifest.job_ref);
+    const routingReady = categories.some((category) => !['unknown_needs_review', 'uncategorized'].includes(category));
+    const topicReady = routingReady && card.topic_status !== 'Needs topic classification';
+    const scoreReason = scoreRows.length
+      ? 'Redacted score/progress before-after rows exist in the dry-run plan.'
+      : parse.key === 'needs_parse'
+        ? 'No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.'
+        : 'No score/progress rows are warranted by the current sanitized digest/backfill evidence.';
+    const needsHumanReview = Boolean(
+      manifest.private_review_flag
+      || parse.key !== 'parsed'
+      || scoreRows.length === 0
+      || classQuestionRows.length
+      || personalQuestionRows.length
+    );
+    const blockedReasons = [
+      parse.key !== 'parsed' ? 'needs_private_reparse_or_parser_review' : '',
+      scoreRows.length ? '' : 'score_progress_no_safe_rows',
+      questionPlanRows.length ? 'production_question_apply_not_approved' : '',
+      manifest.private_review_flag ? 'private_review_required' : '',
+    ].filter(Boolean);
+    const nextAction = parse.key !== 'parsed'
+      ? 'Run an approved dry-run reparse/canonical-write planner against the private transcript source; do not write production rows yet.'
+      : questionPlanRows.length
+        ? 'Review the class-question/student-question dry-run rows and approve an exact guarded apply path if acceptable.'
+        : 'Keep card visible as repo-safe digest evidence; no production write is implied by this report.';
+
+    return {
+      job_id: jobId,
+      focus_job: focusSet.has(jobId),
+      generated_title: manifest.generated_title || card.display_title || `content_job:${jobId}`,
+      has_repo_safe_digest: digestReady,
+      has_private_raw_transcript: toPositiveNumber(manifest.transcript_chars) > 0,
+      private_raw_transcript_ref: toPositiveNumber(manifest.transcript_chars) > 0 ? 'private_app_or_drive_raw_body' : 'none_visible_to_repo',
+      transcript_chars: toPositiveNumber(manifest.transcript_chars),
+      parse_status: parse,
+      digest_status: digestReady ? 'digest_ready' : 'needs_digest',
+      routing_status: routingReady ? 'routing_ready' : 'needs_routing',
+      topic_status: topicReady ? 'classified' : 'needs_topic_classification',
+      categories,
+      question_candidates: {
+        total: toPositiveNumber(manifest.questions_extracted_count) || questionCandidates.length,
+        matrix_rows: questionCandidates.length,
+        candidate_refs: questionCandidates.map((item) => item.question_ref || '').filter(Boolean),
+      },
+      class_question_candidates: {
+        fallback_candidates: (fallbackRows.get(jobId) || []).length,
+        broadcast_insert_rows: classQuestionRows.filter((row) => row.action === 'insert').length,
+        skip_existing_rows: classQuestionRows.filter((row) => /^skip/.test(row.action || '')).length,
+      },
+      matched_personal_question_candidates: {
+        matrix_rows: questionCandidates.filter((item) => item.match_status === 'matched').length,
+        insert_rows: personalQuestionRows.filter((row) => row.action === 'insert').length,
+        skip_existing_rows: personalQuestionRows.filter((row) => /^skip/.test(row.action || '')).length,
+      },
+      task_action_candidates: {
+        manifest_count: toPositiveNumber(manifest.tasks_extracted),
+        candidate_ids: taskCandidateIds,
+        production_task_write_allowed: false,
+      },
+      research_content_candidates: {
+        content_card_ready: digestReady && routingReady,
+        content_idea_candidate_ids: contentCandidateIds,
+        content_marketing_flag: Boolean(manifest.content_marketing_flag),
+      },
+      score_progress_candidate_status: {
+        status: scoreRows.length ? 'row_level_plan_ready' : 'no_safe_rows',
+        row_level_change_count: scoreRows.length,
+        reason: scoreReason,
+      },
+      needs_human_review: needsHumanReview,
+      blocked_reason: blockedReasons.join('; ') || '',
+      next_action: nextAction,
+      raw_transcript_body_included: false,
+    };
+  });
+
+  const sum = (selector) => rows.reduce((count, row) => count + Number(selector(row) || 0), 0);
+  const summary = {
+    recording_count: rows.length,
+    focus_job_count: rows.filter((row) => row.focus_job).length,
+    repo_safe_digest_count: rows.filter((row) => row.has_repo_safe_digest).length,
+    private_raw_transcript_available_count: rows.filter((row) => row.has_private_raw_transcript).length,
+    needs_parse_count: rows.filter((row) => row.parse_status.key === 'needs_parse').length,
+    digest_ready_count: rows.filter((row) => row.digest_status === 'digest_ready').length,
+    routing_ready_count: rows.filter((row) => row.routing_status === 'routing_ready').length,
+    topic_classified_count: rows.filter((row) => row.topic_status === 'classified').length,
+    question_candidate_count: sum((row) => row.question_candidates.total),
+    class_question_broadcast_insert_rows: sum((row) => row.class_question_candidates.broadcast_insert_rows),
+    matched_personal_question_insert_rows: sum((row) => row.matched_personal_question_candidates.insert_rows),
+    question_skip_existing_rows: sum((row) => row.class_question_candidates.skip_existing_rows + row.matched_personal_question_candidates.skip_existing_rows),
+    task_action_candidate_count: sum((row) => row.task_action_candidates.candidate_ids.length || row.task_action_candidates.manifest_count),
+    score_progress_row_level_change_count: sum((row) => row.score_progress_candidate_status.row_level_change_count),
+    research_content_card_ready_count: rows.filter((row) => row.research_content_candidates.content_card_ready).length,
+    human_review_required_count: rows.filter((row) => row.needs_human_review).length,
+  };
+
+  return {
+    generated_at: generatedAt,
+    mode: 'repo_safe_no_write_catchup_census',
+    no_production_mutation: true,
+    raw_transcript_bodies_included: false,
+    focus_job_ids: [...focusSet].sort((a, b) => a - b),
+    class_question_dry_run_summary: classQuestionDryRun.dry_run_result || null,
+    summary,
+    rows,
+    remaining_blockers: [
+      summary.needs_parse_count ? `${summary.needs_parse_count} digest jobs still need private parser/reparse review before downstream score/progress writes.` : '',
+      summary.score_progress_row_level_change_count ? '' : 'Score/progress has 0 safe row-level before-after rows in this no-write package.',
+      summary.class_question_broadcast_insert_rows || summary.matched_personal_question_insert_rows ? 'Question rows are planned only; production apply requires exact owner approval plus snapshot/rollback proof.' : '',
+    ].filter(Boolean),
+    guardrails: {
+      drive_write_performed: false,
+      production_db_mutation_performed: false,
+      class_backfill_performed: false,
+      raw_transcript_export_performed: false,
+      ai_call_performed: false,
+      apply_performed: false,
+    },
+  };
+}
+
+function buildScoreProgressCatchupPlan(census = {}) {
+  const rows = toArray(census.rows).map((row) => ({
+    job_id: row.job_id,
+    parse_status: row.parse_status?.key || 'unknown',
+    transcript_chars: row.transcript_chars || 0,
+    row_level_change_count: row.score_progress_candidate_status?.row_level_change_count || 0,
+    status: row.score_progress_candidate_status?.status || 'no_safe_rows',
+    before_after_rows_redacted: [],
+    no_op_reason: row.score_progress_candidate_status?.row_level_change_count
+      ? ''
+      : row.score_progress_candidate_status?.reason || 'No score/progress candidate rows were emitted.',
+    exact_next_action: row.score_progress_candidate_status?.row_level_change_count
+      ? 'Review row-level score/progress before-after plan before any apply command.'
+      : 'Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows.',
+  }));
+  return {
+    generated_at: census.generated_at || new Date().toISOString(),
+    mode: 'no_write_score_progress_catchup_plan',
+    no_production_mutation: true,
+    summary: {
+      inspected_jobs: rows.length,
+      row_level_change_count: rows.reduce((count, row) => count + row.row_level_change_count, 0),
+      no_op_jobs: rows.filter((row) => row.row_level_change_count === 0).length,
+      jobs_needing_private_reparse: rows.filter((row) => row.parse_status === 'needs_parse').map((row) => row.job_id),
+    },
+    rows,
+    production_apply_allowed: false,
+    blocker: 'Production score/progress writes require exact owner approval and redacted row-level before/after evidence. Current plan has no safe rows.',
+  };
+}
+
+function buildTaskActionCatchupPlan(census = {}) {
+  const rows = [];
+  for (const row of toArray(census.rows)) {
+    const candidateIds = row.task_action_candidates?.candidate_ids?.length
+      ? row.task_action_candidates.candidate_ids
+      : Array.from({ length: row.task_action_candidates?.manifest_count || 0 }, (_item, index) => `TASK-CANDIDATE-${String(row.job_id).padStart(6, '0')}-${String(index + 1).padStart(2, '0')}`);
+    for (const candidateId of candidateIds) {
+      const type = /DIGEST|REPAIR|PARSE|AUDIT/.test(candidateId) ? 'internal_agent_task' : 'human_visible_task_candidate';
+      rows.push({
+        job_id: row.job_id,
+        candidate_id: candidateId,
+        canonical_task_key: `bna|class_drive_intake|content_job:${row.job_id}|${candidateId.toLowerCase()}`,
+        candidate_type: type,
+        dedupe_key: sha256(`content_job:${row.job_id}|${candidateId}`).slice(0, 16),
+        action: 'no_write_plan_only',
+        production_task_write_allowed: false,
+        exact_next_action: type === 'internal_agent_task'
+          ? 'Keep as repo evidence/agent work; do not create a human-facing production task.'
+          : 'Review before any separately approved production task creation.',
+      });
+    }
+  }
+  return {
+    generated_at: census.generated_at || new Date().toISOString(),
+    mode: 'no_write_task_action_catchup_plan',
+    no_production_mutation: true,
+    summary: {
+      inspected_jobs: toArray(census.rows).length,
+      task_action_candidates: rows.length,
+      internal_agent_task_candidates: rows.filter((row) => row.candidate_type === 'internal_agent_task').length,
+      human_visible_task_candidates: rows.filter((row) => row.candidate_type === 'human_visible_task_candidate').length,
+    },
+    rows,
+    production_task_creation_allowed: false,
+    dedupe_rule: 'Use canonical_task_key; do not surface internal digest/parser/audit handoff rows as operator Pending cards.',
+  };
+}
+
+function buildResearchContentCatchupPlan(census = {}) {
+  const rows = toArray(census.rows).map((row) => ({
+    job_id: row.job_id,
+    generated_title: row.generated_title,
+    content_card_ready: row.research_content_candidates?.content_card_ready === true,
+    categories: row.categories,
+    topic_status: row.topic_status,
+    content_idea_candidate_ids: row.research_content_candidates?.content_idea_candidate_ids || [],
+    raw_transcript_body_included: false,
+    next_action: row.research_content_candidates?.content_card_ready
+      ? 'Content/research card can stay visible with sanitized digest metadata.'
+      : 'Repair digest/routing/topic evidence before showing as complete.',
+  }));
+  return {
+    generated_at: census.generated_at || new Date().toISOString(),
+    mode: 'repo_safe_research_content_catchup_plan',
+    no_production_mutation: true,
+    raw_transcript_bodies_included: false,
+    summary: {
+      inspected_jobs: rows.length,
+      content_cards_ready: rows.filter((row) => row.content_card_ready).length,
+      needs_content_card_repair: rows.filter((row) => !row.content_card_ready).length,
+      content_idea_candidate_count: rows.reduce((count, row) => count + row.content_idea_candidate_ids.length, 0),
+    },
+    rows,
+  };
+}
+
+function buildApplyLaneDesign({ backfillPlan = {}, exactJobIds = [] } = {}) {
+  const jobIds = toArray(exactJobIds).map(Number).filter(Boolean);
+  return {
+    generated_at: new Date().toISOString(),
+    mode: 'apply_lane_design_only_not_executed',
+    current_apply_lane_status: 'refuses_mutation_by_design',
+    production_apply_executed: false,
+    dry_run_default: true,
+    required_owner_gate_phrase: APPLY_GATE_PHRASE,
+    exact_job_ids_required: true,
+    planned_job_ids: jobIds,
+    dry_run_command: jobIds.length
+      ? `node scripts/class-drive-intake-reconcile.cjs backfill --jobs ${Math.min(...jobIds)}-${Math.max(...jobIds)} --out-dir <evidence-dir>`
+      : 'node scripts/class-drive-intake-reconcile.cjs backfill --jobs <exact-range> --out-dir <evidence-dir>',
+    apply_command_template: `node scripts/class-drive-intake-reconcile.cjs backfill --apply --gate ${APPLY_GATE_PHRASE} --jobs <exact-approved-job-range> --snapshot <snapshot-file> --rollback-out <rollback-file>`,
+    required_controls: [
+      'explicit owner approval naming job IDs and actions',
+      'production DB snapshot before write',
+      'rollback file generated before commit',
+      'row-level before/after evidence',
+      'idempotent natural keys',
+      'small batch support',
+      'dry-run remains default',
+    ],
+    refusal_conditions: [
+      'raw transcript body would be exported to GitHub',
+      'student match is ambiguous',
+      'score/progress row lacks before/after',
+      'target schema is unknown',
+      'snapshot path is missing',
+      'rollback path is missing',
+      'approval scope does not exactly match job IDs/actions',
+      'Drive write or broad sync is requested by the apply lane',
+    ],
+    success_planning_path: {
+      safe_to_apply_if_separately_approved: Boolean(backfillPlan.safe_to_apply),
+      expected_row_counts: backfillPlan.expected_row_counts || {},
+      row_level_change_plan_rows: toArray(backfillPlan.row_level_change_plan).length,
+      blocking_ambiguities: toArray(backfillPlan.blocking_ambiguities).length,
+      dry_run_performs_no_writes: true,
+    },
+    implementation_note: 'This packet documents the guarded apply contract but leaves the CLI mutation path disabled until an exact owner-approved implementation step is requested.',
+  };
+}
+
+function renderBacklogCatchupCensusMarkdown(census = {}) {
+  const rows = toArray(census.rows);
+  return [
+    '# Backlog Catch-up Census',
+    '',
+    `Generated: ${census.generated_at || new Date().toISOString()}`,
+    `Mode: ${census.mode || 'repo_safe_no_write_catchup_census'}`,
+    `No production mutation: ${census.no_production_mutation !== false}`,
+    `Raw transcript bodies included: ${census.raw_transcript_bodies_included === true}`,
+    '',
+    '## Summary',
+    '',
+    ...Object.entries(census.summary || {}).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`),
+    '',
+    '## Job Rows',
+    '',
+    '| Job | Focus | Digest | Private Transcript | Parse | Questions | Class Inserts | Personal Inserts | Score/Progress | Tasks | Research Card | Next Action |',
+    '| ---: | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | --- | --- |',
+    ...rows.map((row) => [
+      row.job_id,
+      row.focus_job ? 'yes' : 'no',
+      row.digest_status,
+      row.has_private_raw_transcript ? `${row.transcript_chars} chars` : 'no',
+      row.parse_status?.label || '',
+      row.question_candidates?.total || 0,
+      row.class_question_candidates?.broadcast_insert_rows || 0,
+      row.matched_personal_question_candidates?.insert_rows || 0,
+      row.score_progress_candidate_status?.status || '',
+      row.task_action_candidates?.candidate_ids?.length || row.task_action_candidates?.manifest_count || 0,
+      row.research_content_candidates?.content_card_ready ? 'ready' : 'needs repair',
+      redactSensitiveText(row.next_action || ''),
+    ].map((cell) => String(cell).replace(/\|/g, '/')).join(' | ')).map((line) => `| ${line} |`),
+    '',
+    '## Remaining Blockers',
+    '',
+    ...(toArray(census.remaining_blockers).length ? census.remaining_blockers.map((item) => `- ${redactSensitiveText(item)}`) : ['- None']),
+    '',
+    '## Guardrails',
+    '',
+    '- No Drive write.',
+    '- No production database mutation.',
+    '- No class backfill.',
+    '- No raw transcript body export.',
+    '- No apply command executed.',
+    '',
+  ].join('\n');
+}
+
+function renderScoreProgressCatchupMarkdown(plan = {}) {
+  return [
+    '# Score/Progress Catch-up Plan',
+    '',
+    `Generated: ${plan.generated_at || new Date().toISOString()}`,
+    `Mode: ${plan.mode || 'no_write_score_progress_catchup_plan'}`,
+    `No production mutation: ${plan.no_production_mutation !== false}`,
+    `Production apply allowed: ${plan.production_apply_allowed === true}`,
+    '',
+    '## Summary',
+    '',
+    ...Object.entries(plan.summary || {}).map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`),
+    '',
+    '## Job No-op/Plan Rows',
+    '',
+    '| Job | Parse | Row-Level Changes | Status | No-op Reason | Next Action |',
+    '| ---: | --- | ---: | --- | --- | --- |',
+    ...toArray(plan.rows).map((row) => [
+      row.job_id,
+      row.parse_status,
+      row.row_level_change_count ?? 0,
+      row.status,
+      row.no_op_reason,
+      row.exact_next_action,
+    ].map((cell) => String(cell ?? '').replace(/\|/g, '/')).join(' | ')).map((line) => `| ${line} |`),
+    '',
+    `Blocker: ${redactSensitiveText(plan.blocker || '')}`,
+    '',
+  ].join('\n');
+}
+
+function renderTaskActionCatchupMarkdown(plan = {}) {
+  return [
+    '# Task/Action Catch-up Plan',
+    '',
+    `Generated: ${plan.generated_at || new Date().toISOString()}`,
+    `Mode: ${plan.mode || 'no_write_task_action_catchup_plan'}`,
+    `No production mutation: ${plan.no_production_mutation !== false}`,
+    `Production task creation allowed: ${plan.production_task_creation_allowed === true}`,
+    '',
+    '## Summary',
+    '',
+    ...Object.entries(plan.summary || {}).map(([key, value]) => `- ${key}: ${value}`),
+    '',
+    '## Candidate Rows',
+    '',
+    '| Job | Candidate | Type | Dedupe | Action | Next Action |',
+    '| ---: | --- | --- | --- | --- | --- |',
+    ...toArray(plan.rows).map((row) => [
+      row.job_id,
+      row.candidate_id,
+      row.candidate_type,
+      row.dedupe_key,
+      row.action,
+      row.exact_next_action,
+    ].map((cell) => String(cell ?? '').replace(/\|/g, '/')).join(' | ')).map((line) => `| ${line} |`),
+    '',
+    `Dedupe rule: ${redactSensitiveText(plan.dedupe_rule || '')}`,
+    '',
+  ].join('\n');
+}
+
+function renderResearchContentCatchupMarkdown(plan = {}) {
+  return [
+    '# Research/Content Catch-up Plan',
+    '',
+    `Generated: ${plan.generated_at || new Date().toISOString()}`,
+    `Mode: ${plan.mode || 'repo_safe_research_content_catchup_plan'}`,
+    `No production mutation: ${plan.no_production_mutation !== false}`,
+    `Raw transcript bodies included: ${plan.raw_transcript_bodies_included === true}`,
+    '',
+    '## Summary',
+    '',
+    ...Object.entries(plan.summary || {}).map(([key, value]) => `- ${key}: ${value}`),
+    '',
+    '## Content Rows',
+    '',
+    '| Job | Card | Topic | Ideas | Categories | Next Action |',
+    '| ---: | --- | --- | ---: | --- | --- |',
+    ...toArray(plan.rows).map((row) => [
+      row.job_id,
+      row.content_card_ready ? 'ready' : 'needs repair',
+      row.topic_status,
+      row.content_idea_candidate_ids.length,
+      toArray(row.categories).join(', '),
+      row.next_action,
+    ].map((cell) => String(cell ?? '').replace(/\|/g, '/')).join(' | ')).map((line) => `| ${line} |`),
+    '',
+  ].join('\n');
+}
+
+function renderApplyLaneDesignMarkdown(design = {}) {
+  return [
+    '# Apply Lane Design',
+    '',
+    `Generated: ${design.generated_at || new Date().toISOString()}`,
+    `Mode: ${design.mode || 'apply_lane_design_only_not_executed'}`,
+    `Current apply lane status: ${design.current_apply_lane_status || ''}`,
+    `Production apply executed: ${design.production_apply_executed === true}`,
+    `Dry-run default: ${design.dry_run_default !== false}`,
+    `Required gate phrase: ${design.required_owner_gate_phrase || APPLY_GATE_PHRASE}`,
+    '',
+    '## Commands',
+    '',
+    `Dry-run command: \`${design.dry_run_command || ''}\``,
+    `Apply command template: \`${design.apply_command_template || ''}\``,
+    '',
+    '## Required Controls',
+    '',
+    ...toArray(design.required_controls).map((item) => `- ${item}`),
+    '',
+    '## Refusal Conditions',
+    '',
+    ...toArray(design.refusal_conditions).map((item) => `- ${item}`),
+    '',
+    '## Success Planning Path',
+    '',
+    '```json',
+    JSON.stringify(design.success_planning_path || {}, null, 2),
+    '```',
+    '',
+    redactSensitiveText(design.implementation_note || ''),
+    '',
+  ].join('\n');
+}
+
 function renderPipelineCensusMarkdown(census = {}) {
   const rows = toArray(census.pipeline_rows || census.rows);
   const causes = census.suspected_causes || {};
@@ -791,10 +1331,16 @@ function renderBackfillMarkdown(plan = {}) {
 
 module.exports = {
   APPLY_GATE_PHRASE,
+  DEFAULT_CATCHUP_FOCUS_JOB_IDS,
   DEFAULT_REPAIR_JOB_RANGE,
   PIPELINE_STAGES,
+  buildApplyLaneDesign,
+  buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildResearchContentCatchupPlan,
+  buildScoreProgressCatchupPlan,
+  buildTaskActionCatchupPlan,
   duplicateGroupsForJobs,
   evaluateSuspectedCauses,
   extractStructuredOutput,
@@ -802,8 +1348,13 @@ module.exports = {
   parseJsonMaybe,
   redactSensitiveText,
   redactedRef,
+  renderApplyLaneDesignMarkdown,
   renderBackfillMarkdown,
+  renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderResearchContentCatchupMarkdown,
+  renderScoreProgressCatchupMarkdown,
+  renderTaskActionCatchupMarkdown,
   sha256,
   transcriptChars,
 };

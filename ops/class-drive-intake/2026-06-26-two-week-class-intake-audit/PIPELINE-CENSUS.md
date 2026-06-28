@@ -1,12 +1,12 @@
 # Class/Drive Intake Pipeline Census
 
-Generated: 2026-06-28T09:36:29.734Z
+Generated: 2026-06-28T11:52:04.581Z
 No production mutation: true
 
 ## Summary
 
-- Inspected rows: 155
-- Content jobs: 80
+- Inspected rows: 156
+- Content jobs: 81
 - Drive orphans: 75
 - Missing canonical writes: 1
 - Student ambiguity/review rows: 0
@@ -28,9 +28,9 @@ No production mutation: true
 | questions_written_but_not_linked | DISPROVED | No orphan question write found. |
 | accountability_omitted | DISPROVED | No missing accountability candidate found. |
 | duplicates_suppressing_valid_retry | UNKNOWN | Duplicate source fingerprints exist. |
-| generic_ramble_parser_used_instead_of_class_parser | CONFIRMED | 20 row(s) use canonical-intake-parser. |
+| generic_ramble_parser_used_instead_of_class_parser | CONFIRMED | 21 row(s) use canonical-intake-parser. |
 | local_fix_not_deployed | UNKNOWN | This lane did not compare production revisions. |
-| stale_job_status_masking_completed_output | CONFIRMED | 41 row(s) have in-progress status with output. |
+| stale_job_status_masking_completed_output | CONFIRMED | 42 row(s) have in-progress status with output. |
 
 ## Job Rows
 
@@ -116,6 +116,7 @@ No production mutation: true
 | content_job | 81 | transcribed/03 Transcribed | 79807 | canonical-intake-parser | CONFIRMED | CONFIRMED |
 | content_job | 82 | transcribed/04 Parsed | 5309 | canonical-intake-parser | CONFIRMED | CONFIRMED |
 | content_job | 83 | transcribed/04 Parsed | 9025 | canonical-intake-parser | CONFIRMED | CONFIRMED |
+| content_job | 84 | transcribed/04 Parsed | 49429 | canonical-intake-parser | CONFIRMED | CONFIRMED |
 | drive_orphan |  | orphan_drive_file/BNA_DRIVE_ROOT_FOLDER_ID | 0 |  | UNKNOWN | UNKNOWN |
 | drive_orphan |  | orphan_drive_file/BNA_DRIVE_ROOT_FOLDER_ID | 0 |  | UNKNOWN | UNKNOWN |
 | drive_orphan |  | orphan_drive_file/BNA_DRIVE_ROOT_FOLDER_ID | 0 |  | UNKNOWN | UNKNOWN |

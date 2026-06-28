@@ -1,6 +1,6 @@
 # Guarded Class Backfill Dry Run
 
-Generated: 2026-06-28T09:36:29.757Z
+Generated: 2026-06-28T11:52:04.628Z
 Mode: dry_run_no_writes
 No production mutation: true
 Safe to apply: true
@@ -93,6 +93,7 @@ Required gate phrase: APPLY_GUARDED_CLASS_BACKFILL
 - Job 81: no structured class/progress output available for backfill
 - Job 82: no structured class/progress output available for backfill
 - Job 83: no structured class/progress output available for backfill
+- Job 84: outside requested guarded backfill job range
 
 ## Blocking Ambiguities
 
