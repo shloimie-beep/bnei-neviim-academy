@@ -10,6 +10,8 @@ The targeted owner approval for job #83 is preserved at
 `raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md`.
 The PR #45 content-card/topic-filter addendum is preserved at
 `raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`.
+The June 28 backlog/parser repair goal is preserved at
+`raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md`.
 
 Shloimie wants the class/transcript/Drive intake workflow rebuilt so raw
 transcript bodies stay in private Drive/app storage while GitHub receives
@@ -23,7 +25,8 @@ structured, useful, privacy-safe digests and categorized outputs.
 | Addendum raw ID | RAW-20260626-006 |
 | Approval raw ID | RAW-20260626-007 |
 | Content-card addendum raw ID | RAW-20260626-008 |
-| Source | Codex chat attachment; GitHub issue #41 comment `4808518537`; Codex chat owner approval; GitHub PR #45 comment `4809202212` |
+| Parser/backlog repair goal raw ID | RAW-20260628-002 |
+| Source | Codex chat attachment; GitHub issue #41 comment `4808518537`; Codex chat owner approval; GitHub PR #45 comment `4809202212`; Codex chat June 28 goal-mode request |
 | Parse status | implemented |
 | Requirement register | `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md` |
 | Execution run | `ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild` |
@@ -108,6 +111,32 @@ Audit result:
 29 recordings audited; 29 generated clean titles; 10 `Needs parse`; 0 `Needs
 routing`; 0 `Needs topic classification`; 29 multi-topic cards; raw transcript
 bodies false.
+
+## June 28 parser/backlog repair goal
+
+Shloimie asked Codex to make the remaining Drive/parser backlog repair a goal
+and work until finished. The requested outcome is that backlog, questions,
+research/content cards, tasks, parse state, routing state, and kids'
+scores/progress are filled from Drive-backed class transcript evidence.
+
+Parsed requirement IDs:
+
+- `REQ-20260628-134`: Register this goal-mode addendum.
+- `REQ-20260628-135`: Make PR #45 mergeable and live-verify the Content
+  card/topic-filter repair.
+- `REQ-20260628-136`: Run a fresh read-only Drive/class/content backlog audit.
+- `REQ-20260628-137`: Repair parser/backlog/research/task card tooling from
+  safe Drive-backed digest/classification evidence.
+- `REQ-20260628-138`: Build the exact dry-run student question and
+  score/progress update plan.
+- `REQ-20260628-139`: Keep production student/backlog writes and broad Drive
+  writes approval-gated until an exact reviewed apply plan is approved.
+- `REQ-20260628-140`: Close out with evidence, live proof where applicable,
+  PR/Issue comments, and exact remaining blockers.
+
+Guardrail: this goal does not authorize silent production DB mutation, broad
+Drive sync/write, class backfill, raw transcript-body export, AI calls, sends,
+charges/access grants, credential/account/DNS changes, or stale deletion.
 
 ## Goal-mode execution
 

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-26-transcript-drive-digest-rebuild",
   "title": "Transcript Drive Digest Rebuild",
-  "updated_at": "2026-06-26T14:55:00+03:00",
+  "updated_at": "2026-06-28T09:08:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260626-004",
@@ -44,6 +44,16 @@
       "project": "class_drive_intake",
       "source_type": "github_pr_comment",
       "source_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45#issuecomment-4809202212"
+    },
+    {
+      "source_id": "RAW-20260628-002",
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "captured_at": "2026-06-28T09:05:00+03:00",
+      "content_fingerprint": "sha256:5766cf918e79c152c9c22f3f978240aafcbfec9f584b1e2364e3347cf9577418",
+      "privacy_classification": "internal_goal_mode_backlog_parser_repair",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat"
     }
   ],
   "source_statements": [
@@ -221,6 +231,55 @@
       "source_statement": "Add tests and perform no Drive writes, production mutations, class backfill, AI call, or raw transcript export.",
       "requirement_id": "REQ-20260626-133",
       "classification": "guardrail"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S001",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Continue Issue #41 in goal mode until safe parsing, backlog, content cards, questions, tasks, and research repair requirements are terminal.",
+      "requirement_id": "REQ-20260628-134",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S002",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Make PR #45 mergeable and get the content-card/topic-filter repair live when safe.",
+      "requirement_id": "REQ-20260628-135",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S003",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Run a fresh read-only Drive/class/content audit for current backlog state.",
+      "requirement_id": "REQ-20260628-136",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S004",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Fill backlog, questions, research/content cards, tasks, parse status, and routing status from Drive-backed transcript/digest evidence where safe.",
+      "requirement_id": "REQ-20260628-137",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S005",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Kids scores and student questions need to be updated after the parser backlog is repaired.",
+      "requirement_id": "REQ-20260628-138",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S006",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Do not silently mutate production student records, perform broad Drive writes, export raw transcript bodies, or run class backfill without exact reviewed approval.",
+      "requirement_id": "REQ-20260628-139",
+      "classification": "guardrail"
+    },
+    {
+      "statement_id": "RAW-20260628-002-S007",
+      "source_id": "RAW-20260628-002",
+      "source_statement": "Finish with evidence, PR/issue updates, live proof where app-visible, and exact remaining blockers.",
+      "requirement_id": "REQ-20260628-140",
+      "classification": "requirement"
     }
   ],
   "canonical_tasks": [
@@ -1064,6 +1123,267 @@
       "blocker": "Final verification cannot close until the app-visible Operations Content card/filter changes have deploy/live-smoke evidence.",
       "blocker_owner": "Codex after PR review/merge approval",
       "blocker_next_action": "After deploy/live smoke, rerun the focused tests/audits as needed and mark REQ-20260626-131 through REQ-20260626-133 Done."
+    },
+    {
+      "id": "REQ-20260628-134",
+      "title": "Register Drive backlog parser repair goal-mode addendum",
+      "expected_result": "The June 28 goal-mode request is preserved as raw input and linked to the active Issue #41 transcript/Drive run.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S001"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "high",
+      "batch_id": "H",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "raw intake captured and active goal created",
+      "can_continue_without_operator": true,
+      "next_action": "Resolve PR #45 conflicts and continue safe parser/backlog repair.",
+      "acceptance_criteria": [
+        "Raw request preserved",
+        "Requirement run updated",
+        "Goal tool active"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ],
+      "verification": [
+        "PASS raw source readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-28T09:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260628-135",
+      "title": "Make PR #45 mergeable and live-verify content card/topic filter repair",
+      "expected_result": "PR #45 no longer conflicts with master; the Operations Content card/topic-filter repair is merged, deployed, and live-smoked before app-visible Done.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S002"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "operations-content-ui",
+      "owner": "Codex",
+      "category": "merge_deploy_live_smoke",
+      "priority": "high",
+      "batch_id": "H",
+      "depends_on": [
+        "REQ-20260626-131",
+        "REQ-20260626-132",
+        "REQ-20260626-133",
+        "REQ-20260628-134"
+      ],
+      "status": "in_progress",
+      "implementation_status": "PR #45 was pushed but is currently conflicting with master",
+      "can_continue_without_operator": true,
+      "next_action": "Rebase or merge latest master into PR #45 branch, resolve conflicts, rerun tests, push, then merge/deploy/live-smoke if safe.",
+      "acceptance_criteria": [
+        "PR is mergeable",
+        "Focused tests pass",
+        "PR merged or explicitly blocked",
+        "Operations Content live smoke recorded"
+      ],
+      "evidence": [
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/45"
+      ],
+      "verification": [],
+      "implementation_files": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/content-card-view-model.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-28T09:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260628-136",
+      "title": "Run fresh read-only Drive/class/content backlog audit",
+      "expected_result": "Current Drive, transcript library, content job, question, task, research/card, parse, digest, and routing status is audited without production mutation.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S003"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "audit",
+      "priority": "high",
+      "batch_id": "I",
+      "depends_on": [
+        "REQ-20260628-134"
+      ],
+      "status": "not_started",
+      "implementation_status": "not started",
+      "can_continue_without_operator": true,
+      "next_action": "Run read-only audit commands and write current backlog evidence.",
+      "acceptance_criteria": [
+        "No Drive write",
+        "No production mutation",
+        "Current backlog counts reported",
+        "Missing parse/question/task/research/card states listed by job ID"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-06-28T09:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260628-137",
+      "title": "Repair parser/backlog/research/task card tooling from Drive-backed evidence",
+      "expected_result": "Safe local tooling/API/UI gaps are repaired so backlog, questions, research/content cards, tasks, parse/digest/routing status, and next actions can be populated from digest/classification output without raw transcript exposure.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S004"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "implementation",
+      "priority": "high",
+      "batch_id": "J",
+      "depends_on": [
+        "REQ-20260628-136"
+      ],
+      "status": "not_started",
+      "implementation_status": "not started",
+      "can_continue_without_operator": true,
+      "next_action": "Use the fresh audit to implement safe parser/card/backlog repair code and tests.",
+      "acceptance_criteria": [
+        "Backlog cards have useful state",
+        "Question/research/task candidates appear from safe digest data",
+        "Missing parse/digest/routing states are explicit",
+        "Raw transcript bodies remain private"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": true,
+      "updated_at": "2026-06-28T09:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260628-138",
+      "title": "Build exact student question and score/progress update plan",
+      "expected_result": "A dry-run apply plan lists exact student question, score, progress, and task rows to create/update, with student matches, counts, rollback, and privacy review state.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S005"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "student_records",
+      "owner": "Codex",
+      "category": "dry_run_apply_plan",
+      "priority": "high",
+      "batch_id": "K",
+      "depends_on": [
+        "REQ-20260628-136",
+        "REQ-20260628-137"
+      ],
+      "status": "not_started",
+      "implementation_status": "not started",
+      "can_continue_without_operator": true,
+      "next_action": "Generate exact dry-run plan; do not mutate production until approved.",
+      "acceptance_criteria": [
+        "Plan lists job IDs and student IDs/hashed unmatched refs",
+        "Question rows separated from scores/progress",
+        "Ambiguous matches blocked",
+        "Production write command is exact and approval-gated"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-06-28T09:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260628-139",
+      "title": "Approval gate for production student/backlog writes and broad Drive writes",
+      "expected_result": "No production student question/score/progress mutation, class backfill, raw transcript export, broad Drive sync, or Drive write occurs without exact reviewed owner approval.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S006"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Shloimie",
+      "category": "blocker",
+      "priority": "high",
+      "batch_id": "K",
+      "depends_on": [
+        "REQ-20260628-138"
+      ],
+      "status": "needs_operator_decision",
+      "implementation_status": "standing approval gate remains active",
+      "can_continue_without_operator": false,
+      "next_action": "After dry-run plan is recorded, Shloimie must approve the exact apply command/job IDs before production mutation.",
+      "acceptance_criteria": [
+        "Exact dry-run plan exists",
+        "Approval names exact command/actions",
+        "No mutation before approval"
+      ],
+      "evidence": [
+        "DEC-20260626-101"
+      ],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": false,
+      "blocker_owner": "Shloimie",
+      "blocker": "Exact production write/backfill/Drive-write approval is not yet available.",
+      "blocker_next_action": "Review the dry-run plan once produced and approve or reject exact apply action.",
+      "updated_at": "2026-06-28T09:08:00+03:00"
+    },
+    {
+      "id": "REQ-20260628-140",
+      "title": "Close out Issue #41 parser/backlog repair with proof or blockers",
+      "expected_result": "PR, Issue #41, run status, ledger, changelog, tests, audits, live smokes, and remaining blockers are updated with exact evidence.",
+      "source_id": "RAW-20260628-002",
+      "source_statement_ids": [
+        "RAW-20260628-002-S007"
+      ],
+      "source_path": "raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "closeout",
+      "priority": "high",
+      "batch_id": "L",
+      "depends_on": [
+        "REQ-20260628-135",
+        "REQ-20260628-136",
+        "REQ-20260628-137",
+        "REQ-20260628-138",
+        "REQ-20260628-139"
+      ],
+      "status": "not_started",
+      "implementation_status": "not started",
+      "can_continue_without_operator": true,
+      "next_action": "Update PR/Issue/run evidence after executable batches complete or hit approval gate.",
+      "acceptance_criteria": [
+        "Issue #41 not closed prematurely",
+        "All requirements terminal",
+        "Evidence links posted",
+        "Remaining blocker exact"
+      ],
+      "evidence": [],
+      "verification": [],
+      "implementation_files": [],
+      "deployment_required": false,
+      "updated_at": "2026-06-28T09:08:00+03:00"
     }
   ]
 }
