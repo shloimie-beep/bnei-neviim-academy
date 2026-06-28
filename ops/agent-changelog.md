@@ -26991,6 +26991,8 @@ writes.
 - Live readback passed: `/api/bna/content-jobs?project_key=all` returned 81
   jobs, 29 digest cards, all 10 `Needs parse` jobs, job #83 clean title, and
   `raw_body_in_digest_cards=false`.
+- Posted Issue #41 status comment without marking the issue done:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
 
 Evidence:
 

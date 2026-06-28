@@ -1504,13 +1504,12 @@
         "REQ-20260628-135",
         "REQ-20260628-136",
         "REQ-20260628-137",
-        "REQ-20260628-138",
-        "REQ-20260628-139"
+        "REQ-20260628-138"
       ],
-      "status": "in_progress",
-      "implementation_status": "closeout in progress; PR #45 and #46 merged, deployment/live smokes/readback passed, Issue #41 comment still needs posting",
+      "status": "done",
+      "implementation_status": "done; Issue #41 status comment posted without closing the issue, and remaining production-write blocker is recorded under DEC-20260626-101",
       "can_continue_without_operator": true,
-      "next_action": "Post Issue #41 status comment with PRs, commits, deployment, live readback, verification, and remaining DEC-20260626-101 blocker; do not close Issue #41.",
+      "next_action": "Wait for owner decision on DEC-20260626-101 before any production parser/question/task/score/progress write.",
       "acceptance_criteria": [
         "Issue #41 not closed prematurely",
         "All requirements terminal",
@@ -1525,7 +1524,8 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json",
         "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
-        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md"
+        "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594"
       ],
       "verification": [
         "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
@@ -1534,12 +1534,13 @@
         "PASS npm run app:smoke: ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
         "PASS content research live smoke: ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
         "PASS operations workspace taxonomy live smoke: ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
-        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false"
+        "PASS live content-card API readback: project_key=all returned 81 jobs, 29 digest cards, 10 Needs parse jobs, job #83 clean title, and raw_body_in_digest_cards=false",
+        "PASS Issue #41 status comment posted: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594"
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T09:58:00+03:00",
-      "continuation": "All safe app-visible work is live-verified; closeout comment is pending, and production data writes remain needs_operator_decision."
+      "updated_at": "2026-06-28T10:03:00+03:00",
+      "continuation": "Safe Issue #41 content-card/parser closeout is posted. Issue remains open and production apply work remains separately blocked by REQ-20260628-139 / DEC-20260626-101."
     }
   ]
 }

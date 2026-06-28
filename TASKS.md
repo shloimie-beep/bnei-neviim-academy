@@ -13,6 +13,8 @@ not authorize active GHL runtime paths.
   approved #83 sync, and Drive-backed parser/backlog repair goal.
   Current status: #83 private Drive doc sync done; PR #45 and follow-up PR #46
   are merged and deployed to Railway `fd93be96-8bec-4c06-b42f-c53d177eab40`.
+  Issue #41 status comment posted:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
   Live readback now returns all 29 digest cards with job #83's clean generated
   title, 10 explicit `Needs parse` jobs, normalized topic/status data, and no
   raw transcript text inside `digest_card` payloads. Fresh read-only backlog
