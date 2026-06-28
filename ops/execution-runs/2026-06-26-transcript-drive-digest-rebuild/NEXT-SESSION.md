@@ -108,6 +108,36 @@ Private reparse dry-run approval:
 - Production apply remains blocked by `DEC-20260626-101`; PR #49 should remain
   draft unless production apply is separately approved and implemented.
 
+Production apply preflight:
+
+- `RAW-20260628-006` approved implementation of the guarded apply lane and
+  final no-write preflight only. It did not approve production mutation.
+- `REQ-20260628-157` is implemented locally and awaiting final verification,
+  commit, push, PR #49 update, and Issue #41 comment.
+- PR #49 checked as open, draft, clean, and mergeable. Issue #41 checked as
+  open.
+- Remote private-reparse evidence is readable and non-empty on the PR branch:
+  markdown `1,454,766` bytes and JSON `11,207,578` bytes.
+- Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md`,
+  `PRODUCTION-APPLY-PREFLIGHT.json`,
+  `PRODUCTION-APPLY-SNAPSHOT-PLAN.md`,
+  `PRODUCTION-APPLY-ROLLBACK-PLAN.md`,
+  `PRODUCTION-APPLY-BATCH-PLAN.md`, and
+  `PRODUCTION-APPLY-READBACK-PLAN.md`.
+- Preflight result: controls passed, 0 blocking refusal checks, and
+  `production_apply_command_may_be_run_now=false` because final owner approval
+  is still required.
+- Exact later-apply batch counts printed by the preflight: 36 personal-question
+  rows, 9,992 class-question broadcast rows from 1,249 class-question
+  candidates, 1 score/progress row, 0 production task rows, and 119 internal
+  task candidates left internal.
+- Snapshot path:
+  `C:\Users\User\BNA-Keyholder\issue41-production-apply\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl`.
+- Rollback path:
+  `C:\Users\User\BNA-Keyholder\issue41-production-apply\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql`.
+- Actual production apply remains blocked by `DEC-20260626-101`.
+
 ChatGPT/repo transcript access status:
 
 - Repo-safe digest memory is available at

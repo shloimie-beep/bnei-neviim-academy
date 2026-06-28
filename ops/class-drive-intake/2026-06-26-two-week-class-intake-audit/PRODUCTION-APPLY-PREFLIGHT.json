@@ -1,0 +1,357 @@
+{
+  "generated_at": "2026-06-28T13:14:08.495Z",
+  "mode": "production_apply_preflight_no_writes",
+  "branch": "codex/issue41-class-question-fallback-20260628",
+  "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/49",
+  "issue": "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41",
+  "no_production_mutation": true,
+  "production_apply_executed": false,
+  "production_apply_command_may_be_run_now": false,
+  "final_owner_approval_required": true,
+  "required_gate_phrase": "APPLY_GUARDED_CLASS_BACKFILL",
+  "approved_job_ids": [
+    21,
+    25,
+    26,
+    30,
+    31,
+    56,
+    57,
+    58,
+    59,
+    71
+  ],
+  "approved_actions": [
+    "personal_questions",
+    "class_question_broadcasts",
+    "score_progress"
+  ],
+  "snapshot_path": "C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl",
+  "snapshot_path_ref": {
+    "present": true,
+    "redacted": "snapshot_path:afe1553b1cbf",
+    "sha256": "afe1553b1cbf24575b2753e560e2773676fc72ff21f5b17f1cf810e9bb837bbb"
+  },
+  "rollback_path": "C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql",
+  "rollback_path_ref": {
+    "present": true,
+    "redacted": "rollback_path:981fa9546360",
+    "sha256": "981fa95463606f0eb3a1bd652f18ac6df86bcb5ada5b88a310fa5c1cfc3625b2"
+  },
+  "evidence_integrity": {
+    "checked_at": "2026-06-28T13:14:08.474Z",
+    "privacy_scan_passed": true,
+    "privacy_findings": [],
+    "files": [
+      {
+        "path": "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "exists": true,
+        "size": 1454766,
+        "sha256": "df59b8726bb64acf3bf3460a90379c00e5feecf06f06444bf5cff856f71c1704"
+      },
+      {
+        "path": "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json",
+        "exists": true,
+        "size": 11207578,
+        "sha256": "9ecb5aa683fc93a88dd88e7974757d289e267d373c1cec868f3d5b4c1df032ab"
+      }
+    ]
+  },
+  "private_reparse_summary": {
+    "approved_jobs": 10,
+    "inspected_jobs": 10,
+    "missing_jobs": 0,
+    "private_transcript_sources_read": 10,
+    "student_name_mentions": 261,
+    "question_candidates": 1285,
+    "personal_question_candidates": 36,
+    "class_question_broadcast_candidates": 1249,
+    "existing_skip_candidates": 0,
+    "blocked_review_candidates": 0,
+    "row_level_change_plan_rows": 10149,
+    "planned_insert_or_update_rows": 10149,
+    "task_candidate_rows": 119,
+    "score_progress_rows": 1,
+    "score_progress_no_op_rows": 55
+  },
+  "expected_row_counts": {
+    "personal_question_candidates": 36,
+    "personal_question_rows": 36,
+    "class_question_broadcast_candidates": 1249,
+    "class_question_broadcast_rows": 9992,
+    "score_progress_rows": 1,
+    "progress_event_rows_deferred": 1,
+    "production_task_rows": 0,
+    "internal_task_candidates_not_applied": 119,
+    "target_table_rows_if_all_requested_batches_are_later_approved": {
+      "bna_accountability_events": 10028,
+      "bna_torah_learning_entries": 1
+    }
+  },
+  "target_schema_mapping": {
+    "bna_accountability_events": {
+      "question_rows": 10028,
+      "write_columns": [
+        "student_id",
+        "event_type",
+        "title",
+        "question_text",
+        "metadata",
+        "source",
+        "source_message_id"
+      ],
+      "private_value_rule": "question_text is read from the private transcript source at apply time and must never be written to repo evidence",
+      "metadata_keys": [
+        "source_content_job_id",
+        "question_text_hash",
+        "question_scope",
+        "class_question_broadcast",
+        "source_window_ref",
+        "parent_visible",
+        "student_visible"
+      ]
+    },
+    "bna_torah_learning_entries": {
+      "score_progress_rows": 1,
+      "write_columns": [
+        "engaged_listening_minutes",
+        "inside_engaged_minutes",
+        "listening_without_following_minutes",
+        "daily_completion_percentage",
+        "daily_completed_boolean",
+        "note",
+        "updated_at"
+      ],
+      "before_after_rule": "snapshot must capture the full previous row before update; repo evidence stores row id and redacted hashes only"
+    },
+    "bna_tasks": {
+      "production_task_rows": 0,
+      "internal_task_candidates_not_applied": 119
+    }
+  },
+  "refusal_checks": [
+    {
+      "id": "exact_approved_job_ids",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "requested=21,25,26,30,31,56,57,58,59,71 report=21,25,26,30,31,56,57,58,59,71"
+    },
+    {
+      "id": "all_approved_jobs_inspected",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "inspected=21,25,26,30,31,56,57,58,59,71"
+    },
+    {
+      "id": "private_reparse_evidence_non_empty",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "private dry-run markdown/json evidence exists and is non-empty"
+    },
+    {
+      "id": "private_reparse_evidence_sanitized",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "no raw transcript body, raw Drive URL/ID, or secret literal detected in evidence"
+    },
+    {
+      "id": "known_private_reparse_counts_preserved",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "private dry-run summary matches the approved baseline packet"
+    },
+    {
+      "id": "row_counts_match_preflight",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "personal=36; classCandidates=1249; classRows=9992; scoreProgress=1; taskCandidates=119"
+    },
+    {
+      "id": "no_blocked_review_question_candidates",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "0 blocked-review question route(s)"
+    },
+    {
+      "id": "no_ambiguous_personal_question_matches",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "0 ambiguous personal route(s); ambiguous/no-name questions remain class broadcasts"
+    },
+    {
+      "id": "score_progress_before_after_present",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "1 score/progress row(s)"
+    },
+    {
+      "id": "target_schema_mapping_known",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "supported tables map to bna_accountability_events metadata and bna_torah_learning_entries updates"
+    },
+    {
+      "id": "snapshot_path_present",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl"
+    },
+    {
+      "id": "rollback_path_present",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql"
+    },
+    {
+      "id": "dedupe_keys_present",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "naturalKeys=10029; duplicateKeys=0"
+    },
+    {
+      "id": "production_db_readback_available",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "read-only production DB snapshot query succeeded"
+    },
+    {
+      "id": "no_drive_write_or_ai_or_raw_export",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "private preflight uses DB/app transcript source only and writes repo-safe evidence only"
+    },
+    {
+      "id": "production_tasks_not_enabled",
+      "passed": true,
+      "severity": "blocker",
+      "detail": "119 internal task candidate(s) remain internal and are not user-facing production tasks"
+    },
+    {
+      "id": "final_owner_apply_approval_recorded",
+      "passed": false,
+      "severity": "owner_approval",
+      "detail": "This packet authorizes implementation and final no-write preflight only; actual production apply needs a separate exact approval."
+    }
+  ],
+  "blocking_refusal_checks": [],
+  "preflight_controls_passed": true,
+  "batch_plan": [
+    {
+      "batch": "personal_questions",
+      "status": "ready_after_final_owner_approval",
+      "candidate_count": 36,
+      "row_level_apply_rows": 36,
+      "target_tables": {
+        "bna_accountability_events": 36
+      },
+      "command": "node scripts/class-drive-intake-reconcile.cjs production-apply --apply --gate APPLY_GUARDED_CLASS_BACKFILL --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --batch personal_questions --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\""
+    },
+    {
+      "batch": "class_question_broadcasts",
+      "status": "ready_after_final_owner_approval",
+      "candidate_count": 1249,
+      "row_level_apply_rows": 9992,
+      "target_tables": {
+        "bna_accountability_events": 9992
+      },
+      "command": "node scripts/class-drive-intake-reconcile.cjs production-apply --apply --gate APPLY_GUARDED_CLASS_BACKFILL --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --batch class_question_broadcasts --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\""
+    },
+    {
+      "batch": "score_progress",
+      "status": "ready_after_snapshot_and_final_owner_approval",
+      "candidate_count": 1,
+      "row_level_apply_rows": 1,
+      "ancillary_progress_event_rows_deferred": 1,
+      "target_tables": {
+        "bna_torah_learning_entries": 1
+      },
+      "command": "node scripts/class-drive-intake-reconcile.cjs production-apply --apply --gate APPLY_GUARDED_CLASS_BACKFILL --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --batch score_progress --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\"",
+      "note": "The ancillary progress_event row is deferred unless separately approved; the approved score/progress count is one row."
+    },
+    {
+      "batch": "production_tasks",
+      "status": "not_allowed_internal_candidates_only",
+      "candidate_count": 119,
+      "row_level_apply_rows": 0,
+      "target_tables": {},
+      "command": "",
+      "note": "Internal agent/parser/audit task candidates must not become user-facing tasks without a separate human-visible task plan."
+    }
+  ],
+  "snapshot_plan": {
+    "required_before_apply": true,
+    "path": "C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl",
+    "path_ref": {
+      "present": true,
+      "redacted": "snapshot_path:afe1553b1cbf",
+      "sha256": "afe1553b1cbf24575b2753e560e2773676fc72ff21f5b17f1cf810e9bb837bbb"
+    },
+    "commit_to_git": false,
+    "contains_private_data": true,
+    "required_tables": [
+      "bna_content_jobs",
+      "bna_students",
+      "bna_accountability_events",
+      "bna_torah_learning_entries",
+      "bna_group_goal_entries"
+    ],
+    "minimum_rows_to_capture": 10029,
+    "proof_to_record_in_repo": [
+      "snapshot path ref",
+      "snapshot hash",
+      "row counts by table",
+      "created_at timestamp"
+    ]
+  },
+  "rollback_plan": {
+    "required_before_apply": true,
+    "path": "C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql",
+    "path_ref": {
+      "present": true,
+      "redacted": "rollback_path:981fa9546360",
+      "sha256": "981fa95463606f0eb3a1bd652f18ac6df86bcb5ada5b88a310fa5c1cfc3625b2"
+    },
+    "commit_to_git": false,
+    "contains_private_data": true,
+    "strategy": [
+      "insert rows: delete by apply audit id and natural key",
+      "update rows: restore the full before snapshot for each row id",
+      "all batches: verify post-rollback row counts and write sanitized readback proof"
+    ]
+  },
+  "readback_plan": {
+    "required_after_each_batch": true,
+    "commands": [
+      "node scripts/class-drive-intake-reconcile.cjs production-apply-preflight --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\" --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit",
+      "node scripts/class-drive-intake-reconcile.cjs private-reparse --job-ids 21,25,26,30,31,56,57,58,59,71 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit",
+      "npm run bna:run:validate"
+    ],
+    "checks": [
+      "row counts match approved batch",
+      "rerun preflight shows zero duplicate natural keys",
+      "student/class portal read models show only approved question rows",
+      "no raw transcript body appears in repo evidence"
+    ]
+  },
+  "final_apply_commands": [
+    {
+      "batch": "personal_questions",
+      "expected_rows": 36,
+      "command": "node scripts/class-drive-intake-reconcile.cjs production-apply --apply --gate APPLY_GUARDED_CLASS_BACKFILL --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --batch personal_questions --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\"",
+      "do_not_run_until_final_owner_approval": true
+    },
+    {
+      "batch": "class_question_broadcasts",
+      "expected_rows": 9992,
+      "command": "node scripts/class-drive-intake-reconcile.cjs production-apply --apply --gate APPLY_GUARDED_CLASS_BACKFILL --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --batch class_question_broadcasts --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\"",
+      "do_not_run_until_final_owner_approval": true
+    },
+    {
+      "batch": "score_progress",
+      "expected_rows": 1,
+      "command": "node scripts/class-drive-intake-reconcile.cjs production-apply --apply --gate APPLY_GUARDED_CLASS_BACKFILL --job-ids 21,25,26,30,31,56,57,58,59,71 --approved-actions personal_questions,class_question_broadcasts,score_progress --batch score_progress --snapshot \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot-20260628-jobs-21-25-26-30-31-56-57-58-59-71.jsonl\" --rollback-out \"C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback-20260628-jobs-21-25-26-30-31-56-57-58-59-71.sql\"",
+      "do_not_run_until_final_owner_approval": true
+    }
+  ],
+  "remaining_blocker": "Final production apply is still blocked by DEC-20260626-101 until Shloimie approves the exact command(s), snapshot path, rollback path, and row counts printed by this preflight."
+}

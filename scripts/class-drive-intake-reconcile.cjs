@@ -7,11 +7,13 @@ const {
   APPLY_GATE_PHRASE,
   DEFAULT_CATCHUP_FOCUS_JOB_IDS,
   DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  DEFAULT_PRODUCTION_APPLY_ACTIONS,
   DEFAULT_REPAIR_JOB_RANGE,
   buildApplyLaneDesign,
   buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildProductionApplyPreflight,
   buildPrivateReparseCanonicalDryRun,
   buildResearchContentCatchupPlan,
   buildScoreProgressCatchupPlan,
@@ -24,6 +26,11 @@ const {
   renderBackfillMarkdown,
   renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderProductionApplyBatchPlanMarkdown,
+  renderProductionApplyPreflightMarkdown,
+  renderProductionApplyReadbackPlanMarkdown,
+  renderProductionApplyRollbackPlanMarkdown,
+  renderProductionApplySnapshotPlanMarkdown,
   renderPrivateReparseDryRunMarkdown,
   renderResearchContentCatchupMarkdown,
   renderScoreProgressCatchupMarkdown,
@@ -50,6 +57,13 @@ function parseJobIds(value) {
     .filter((item) => Number.isFinite(item) && item > 0);
 }
 
+function parseActionList(value) {
+  return String(value || '')
+    .split(/[,\s]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function parseArgs(argv) {
   const args = {
     command: 'all',
@@ -60,6 +74,10 @@ function parseArgs(argv) {
     drivePageSize: 50,
     jobs: DEFAULT_REPAIR_JOB_RANGE.slice(),
     jobIds: [],
+    approvedActions: [],
+    batch: '',
+    snapshotPath: '',
+    rollbackOutPath: '',
     outDir: DEFAULT_OUT_DIR,
     envFiles: [],
   };
@@ -73,11 +91,20 @@ function parseArgs(argv) {
     else if (item === '--gate') args.gate = rest[++i] || '';
     else if (item === '--jobs') args.jobs = parseJobRange(rest[++i]);
     else if (item === '--job-ids') args.jobIds = parseJobIds(rest[++i]);
+    else if (item === '--approved-actions' || item === '--actions') args.approvedActions = parseActionList(rest[++i]);
+    else if (item === '--batch') args.batch = rest[++i] || '';
+    else if (item === '--snapshot') args.snapshotPath = path.resolve(rest[++i] || '');
+    else if (item === '--rollback-out') args.rollbackOutPath = path.resolve(rest[++i] || '');
     else if (item === '--out-dir') args.outDir = path.resolve(rest[++i]);
     else if (item === '--env-file') args.envFiles.push(path.resolve(rest[++i]));
     else if (item === '--drive-page-size') args.drivePageSize = Number(rest[++i] || 50) || 50;
     else if (item.startsWith('--jobs=')) args.jobs = parseJobRange(item.slice('--jobs='.length));
     else if (item.startsWith('--job-ids=')) args.jobIds = parseJobIds(item.slice('--job-ids='.length));
+    else if (item.startsWith('--approved-actions=')) args.approvedActions = parseActionList(item.slice('--approved-actions='.length));
+    else if (item.startsWith('--actions=')) args.approvedActions = parseActionList(item.slice('--actions='.length));
+    else if (item.startsWith('--batch=')) args.batch = item.slice('--batch='.length);
+    else if (item.startsWith('--snapshot=')) args.snapshotPath = path.resolve(item.slice('--snapshot='.length));
+    else if (item.startsWith('--rollback-out=')) args.rollbackOutPath = path.resolve(item.slice('--rollback-out='.length));
     else if (item.startsWith('--out-dir=')) args.outDir = path.resolve(item.slice('--out-dir='.length));
     else if (item.startsWith('--env-file=')) args.envFiles.push(path.resolve(item.slice('--env-file='.length)));
   }
@@ -85,6 +112,9 @@ function parseArgs(argv) {
   if (args.command === 'private-reparse' && !args.jobIds.length) {
     args.jobIds = DEFAULT_PRIVATE_REPARSE_JOB_IDS.slice();
     args.jobs = [Math.min(...args.jobIds), Math.max(...args.jobIds)];
+  }
+  if (args.command === 'production-apply-preflight' && !args.approvedActions.length) {
+    args.approvedActions = DEFAULT_PRODUCTION_APPLY_ACTIONS.slice();
   }
   if (process.env.BNA_ENV_FILE) args.envFiles.unshift(path.resolve(process.env.BNA_ENV_FILE));
   return args;
@@ -102,6 +132,23 @@ function assertApprovedPrivateReparseScope(args) {
   args.jobIds = requested;
   args.jobs = [Math.min(...requested), Math.max(...requested)];
   args.skipDrive = true;
+}
+
+function assertApprovedProductionApplyScope(args) {
+  if (!['production-apply-preflight', 'production-apply'].includes(args.command)) return;
+  const approved = DEFAULT_PRIVATE_REPARSE_JOB_IDS.map(Number).sort((a, b) => a - b);
+  const requested = [...new Set(args.jobIds.map(Number).filter(Boolean))].sort((a, b) => a - b);
+  const approvedKey = approved.join(',');
+  const requestedKey = requested.join(',');
+  if (requestedKey !== approvedKey) {
+    throw new Error(`Refusing production apply preflight: approved job IDs are exactly ${approvedKey}; requested ${requestedKey || 'none'}.`);
+  }
+  args.jobIds = requested;
+  args.jobs = [Math.min(...requested), Math.max(...requested)];
+  args.skipDrive = true;
+  if (!args.snapshotPath) throw new Error('Refusing production apply preflight: --snapshot <snapshot-file> is required.');
+  if (!args.rollbackOutPath) throw new Error('Refusing production apply preflight: --rollback-out <rollback-file> is required.');
+  if (!args.approvedActions.length) throw new Error('Refusing production apply preflight: --approved-actions is required.');
 }
 
 function loadEnvFile(filePath) {
@@ -701,6 +748,18 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     groupGoalEntries: snapshot.groupGoalEntries,
     exactJobIds: args.jobIds?.length ? args.jobIds : DEFAULT_PRIVATE_REPARSE_JOB_IDS,
   });
+  const productionApplyPreflight = buildProductionApplyPreflight({
+    privateReparseDryRun,
+    approvedJobIds: args.jobIds?.length ? args.jobIds : DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+    approvedActions: args.approvedActions?.length ? args.approvedActions : DEFAULT_PRODUCTION_APPLY_ACTIONS,
+    snapshotPath: args.snapshotPath,
+    rollbackPath: args.rollbackOutPath,
+    evidenceIntegrity: inspectPrivateReparseEvidence(args.outDir),
+    dbBlockers: snapshot.blockers,
+    branch: 'codex/issue41-class-question-fallback-20260628',
+    pullRequest: 'https://github.com/shloimie-beep/bnei-neviim-academy/pull/49',
+    issue: 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/41',
+  });
   return {
     census,
     backfill,
@@ -712,6 +771,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     researchContentPlan,
     applyLaneDesign,
     privateReparseDryRun,
+    productionApplyPreflight,
   };
 }
 
@@ -730,6 +790,53 @@ function readJsonIfExists(filePath, fallback = null) {
 
 function readTextIfExists(filePath) {
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+}
+
+function scanEvidencePrivacy(filePaths = []) {
+  const secretLiteralPattern = new RegExp([
+    ['OPENAI', 'API', 'KEY'].join('_'),
+    ['GOOGLE', 'APPLICATION', 'CREDENTIALS'].join('_'),
+    ['DATABASE', 'URL'].join('_'),
+    ['RAILWAY', 'TOKEN'].join('_'),
+    ['SUPABASE', 'SERVICE'].join('_'),
+  ].join('|'), 'i');
+  const patterns = [
+    { id: 'raw_drive_url', pattern: /https?:\/\/(?:drive|docs)\.google\.com/i },
+    { id: 'raw_drive_id_query', pattern: /[?&]id=[A-Za-z0-9_-]{20,}/ },
+    { id: 'raw_transcript_field', pattern: /"(?:transcriptText|transcript_text|rawTranscript|raw_transcript|rawBody|raw_body|fullText|full_text)"\s*:/i },
+    { id: 'secret_literal', pattern: secretLiteralPattern },
+  ];
+  const findings = [];
+  for (const filePath of filePaths) {
+    if (!fs.existsSync(filePath)) continue;
+    const text = fs.readFileSync(filePath, 'utf8');
+    for (const item of patterns) {
+      if (item.pattern.test(text)) findings.push({ file: relativeRepoPath(filePath), pattern: item.id });
+    }
+  }
+  return {
+    passed: findings.length === 0,
+    findings,
+  };
+}
+
+function inspectPrivateReparseEvidence(outDir) {
+  const files = [
+    path.join(outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'),
+    path.join(outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'),
+  ];
+  const privacy = scanEvidencePrivacy(files);
+  return {
+    checked_at: new Date().toISOString(),
+    privacy_scan_passed: privacy.passed,
+    privacy_findings: privacy.findings,
+    files: files.map((filePath) => ({
+      path: relativeRepoPath(filePath),
+      exists: fs.existsSync(filePath),
+      size: fs.existsSync(filePath) ? fs.statSync(filePath).size : 0,
+      sha256: fs.existsSync(filePath) ? sha256(fs.readFileSync(filePath)) : null,
+    })),
+  };
 }
 
 function candidateIdsFromMarkdown(text = '') {
@@ -790,9 +897,10 @@ function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-0
     ['SRC-20260628-149', 'Emit research/content catch-up plan proving card readiness without raw bodies.', 'REQ-20260628-149', [evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.md'), evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.json')]],
     ['SRC-20260628-150', 'Document apply-lane owner gate, snapshot, rollback, row evidence, dedupe, and refusal controls without executing apply.', 'REQ-20260628-150', [evidencePath('APPLY-LANE-DESIGN.md'), evidencePath('APPLY-LANE-DESIGN.json'), 'tests/class-drive-intake-reconcile.test.js']],
     ['SRC-20260628-154', 'Produce exact-scope private reparse/canonical-write dry-run evidence for the 10 approved Needs-parse jobs without raw transcript bodies or production mutation.', 'REQ-20260628-154', [evidencePath('PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'), evidencePath('PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'), 'raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md']],
+    ['SRC-20260628-157', 'Implement and verify a no-write production apply preflight with exact job scope, snapshot/rollback requirements, small-batch commands, dedupe checks, and readback plan.', 'REQ-20260628-157', [evidencePath('PRODUCTION-APPLY-PREFLIGHT.md'), evidencePath('PRODUCTION-APPLY-PREFLIGHT.json'), evidencePath('PRODUCTION-APPLY-SNAPSHOT-PLAN.md'), evidencePath('PRODUCTION-APPLY-ROLLBACK-PLAN.md'), evidencePath('PRODUCTION-APPLY-BATCH-PLAN.md'), evidencePath('PRODUCTION-APPLY-READBACK-PLAN.md'), 'raw-input/RAW-20260628-006-production-apply-preflight-packet.md']],
   ].map(([statement_id, source_statement, requirement_id, evidence_paths]) => ({
     statement_id,
-    source_id: statement_id === 'SRC-20260628-154' ? 'RAW-20260628-005' : statement_id.startsWith('SRC-20260628') ? 'RAW-20260628-004' : 'RAW-20260626-004',
+    source_id: statement_id === 'SRC-20260628-157' ? 'RAW-20260628-006' : statement_id === 'SRC-20260628-154' ? 'RAW-20260628-005' : statement_id.startsWith('SRC-20260628') ? 'RAW-20260628-004' : 'RAW-20260626-004',
     source_statement,
     requirement_id,
     classification: 'requirement',
@@ -808,7 +916,7 @@ function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-0
   }, {});
   return {
     generated_at: new Date().toISOString(),
-    source_id: 'RAW-20260626-004+RAW-20260628-004+RAW-20260628-005',
+    source_id: 'RAW-20260626-004+RAW-20260628-004+RAW-20260628-005+RAW-20260628-006',
     source_path: 'ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json',
     no_production_mutation: true,
     source_statement_count: statements.length,
@@ -879,6 +987,15 @@ function writePrivateReparseEvidence(args, reports) {
   writeText(path.join(args.outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'), renderPrivateReparseDryRunMarkdown(reports.privateReparseDryRun));
 }
 
+function writeProductionApplyPreflightEvidence(args, reports) {
+  writeJson(path.join(args.outDir, 'PRODUCTION-APPLY-PREFLIGHT.json'), reports.productionApplyPreflight);
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-PREFLIGHT.md'), renderProductionApplyPreflightMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-SNAPSHOT-PLAN.md'), renderProductionApplySnapshotPlanMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-ROLLBACK-PLAN.md'), renderProductionApplyRollbackPlanMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-BATCH-PLAN.md'), renderProductionApplyBatchPlanMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-READBACK-PLAN.md'), renderProductionApplyReadbackPlanMarkdown(reports.productionApplyPreflight));
+}
+
 function writeSourceCoverageEvidence(args, reports) {
   writeJson(path.join(args.outDir, 'SOURCE-COVERAGE.json'), reports.sourceCoverage);
   writeText(path.join(args.outDir, 'SOURCE-COVERAGE.md'), renderSourceCoverageMarkdown(reports.sourceCoverage));
@@ -892,6 +1009,7 @@ function selectOutput(command, reports) {
   if (command === 'research-content-plan') return reports.researchContentPlan;
   if (command === 'apply-lane-design') return reports.applyLaneDesign;
   if (command === 'private-reparse') return reports.privateReparseDryRun;
+  if (command === 'production-apply-preflight') return reports.productionApplyPreflight;
   if (command === 'orphan-output') {
     return {
       generated_at: reports.census.generated_at,
@@ -929,6 +1047,15 @@ function selectOutput(command, reports) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   assertApprovedPrivateReparseScope(args);
+  assertApprovedProductionApplyScope(args);
+  if (args.command === 'production-apply-preflight' && args.apply) {
+    throw new Error('Refusing mutation: production-apply-preflight is a no-write command. Use it without --apply.');
+  }
+  if (args.command === 'production-apply') {
+    if (!args.apply) throw new Error('Refusing production apply: production-apply requires --apply plus final owner approval.');
+    if (args.gate !== APPLY_GATE_PHRASE) throw new Error(`Refusing production apply: guarded apply requires --gate ${APPLY_GATE_PHRASE}.`);
+    throw new Error('Refusing production apply: final owner approval for these exact commands has not been recorded after preflight. Run no-write preflight and wait for explicit approval.');
+  }
   if ((args.apply || args.command === 'apply' || args.command === 'rollback') && args.gate !== APPLY_GATE_PHRASE) {
     throw new Error(`Refusing mutation: guarded apply requires --gate ${APPLY_GATE_PHRASE}.`);
   }
@@ -944,6 +1071,7 @@ async function main() {
   const reports = reportsFrom(snapshot, auth, driveReadback, args);
   if (args.write || args.command === 'all') {
     if (args.command === 'private-reparse') writePrivateReparseEvidence(args, reports);
+    else if (args.command === 'production-apply-preflight') writeProductionApplyPreflightEvidence(args, reports);
     else if (args.command === 'source-coverage') writeSourceCoverageEvidence(args, reports);
     else writeEvidence(args, auth, reports);
   }

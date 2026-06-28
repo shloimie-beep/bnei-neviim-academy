@@ -9,6 +9,7 @@ const {
   buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildProductionApplyPreflight,
   buildPrivateReparseCanonicalDryRun,
   buildResearchContentCatchupPlan,
   buildScoreProgressCatchupPlan,
@@ -554,10 +555,144 @@ test('CLI refuses private reparse outside the exact approved job list', () => {
     '21,25',
   ], {
     encoding: 'utf8',
-    env: { ...process.env, DATABASE_URL: '', PGHOST: '' },
   });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /approved job IDs are exactly/);
+});
+
+function syntheticPrivatePreflightReport() {
+  const approvedIds = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
+  const personalRows = Array.from({ length: 36 }, (_, index) => ({
+    table: 'bna_accountability_events',
+    action: 'insert',
+    routing: 'personal_question',
+    natural_key: `content_job:21:student:${index + 1}:question:personal${index}`,
+    before: null,
+    after: { student_id: index + 1, event_type: 'question', question_text_hash: `p${index}` },
+  }));
+  const classRows = Array.from({ length: 9992 }, (_, index) => ({
+    table: 'bna_accountability_events',
+    action: 'insert',
+    routing: 'class_question_broadcast',
+    natural_key: `content_job:25:class_question:${Math.floor(index / 8)}:student:${index % 8}`,
+    before: null,
+    after: { student_id: index % 8, event_type: 'question', question_text_hash: `c${Math.floor(index / 8)}` },
+  }));
+  const scoreRows = [{
+    table: 'bna_torah_learning_entries',
+    action: 'update',
+    routing: 'score_progress',
+    natural_key: 'student:2800:date:2026-06-10:torah_learning',
+    before: { id: 334, progress_percent: '100.00' },
+    after: { student_id: 2800, date: '2026-06-10', daily_completion_percentage: 100 },
+  }];
+  const taskRows = Array.from({ length: 119 }, (_, index) => ({
+    table: 'bna_tasks',
+    action: 'dry_run_insert_candidate',
+    routing: 'internal_task_candidate',
+    natural_key: `content_job:56:private_reparse_task:${index}`,
+    before: null,
+    after: { canonical_task_key: `bna|class_drive_intake|task:${index}` },
+  }));
+  return {
+    approved_job_ids: approvedIds,
+    inspected_job_ids: approvedIds,
+    no_drive_write: true,
+    no_ai_call: true,
+    raw_transcript_bodies_included: false,
+    raw_drive_urls_or_ids_included: false,
+    summary: {
+      approved_jobs: 10,
+      inspected_jobs: 10,
+      private_transcript_sources_read: 10,
+      student_name_mentions: 261,
+      question_candidates: 1285,
+      personal_question_candidates: 36,
+      class_question_broadcast_candidates: 1249,
+      task_candidate_rows: 119,
+      score_progress_rows: 1,
+      score_progress_no_op_rows: 55,
+      blocked_review_candidates: 0,
+    },
+    question_routing: [
+      ...Array.from({ length: 36 }, (_, index) => ({ routing: 'personal_question', match_status: 'matched', question_ref: `personal:${index}` })),
+      ...Array.from({ length: 1249 }, (_, index) => ({ routing: 'class_question_broadcast', match_status: 'no_student_name', question_ref: `class:${index}` })),
+    ],
+    row_level_change_plan: [...personalRows, ...classRows, ...scoreRows, ...taskRows],
+  };
+}
+
+test('production apply preflight emits exact batch commands without enabling apply', () => {
+  const approvedIds = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
+  const preflight = buildProductionApplyPreflight({
+    privateReparseDryRun: syntheticPrivatePreflightReport(),
+    approvedJobIds: approvedIds,
+    approvedActions: ['personal_questions', 'class_question_broadcasts', 'score_progress'],
+    snapshotPath: 'C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot.jsonl',
+    rollbackPath: 'C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback.jsonl',
+    evidenceIntegrity: {
+      privacy_scan_passed: true,
+      files: [{ exists: true, size: 100 }, { exists: true, size: 200 }],
+    },
+    dbBlockers: [],
+  });
+
+  assert.equal(preflight.no_production_mutation, true);
+  assert.equal(preflight.production_apply_executed, false);
+  assert.equal(preflight.production_apply_command_may_be_run_now, false);
+  assert.equal(preflight.preflight_controls_passed, true);
+  assert.equal(preflight.expected_row_counts.personal_question_rows, 36);
+  assert.equal(preflight.expected_row_counts.class_question_broadcast_rows, 9992);
+  assert.equal(preflight.expected_row_counts.score_progress_rows, 1);
+  assert.equal(preflight.expected_row_counts.production_task_rows, 0);
+  assert.equal(preflight.expected_row_counts.internal_task_candidates_not_applied, 119);
+  assert.match(preflight.final_apply_commands[0].command, new RegExp(`--gate ${APPLY_GATE_PHRASE}`));
+  assert.ok(preflight.refusal_checks.some((check) => check.id === 'final_owner_apply_approval_recorded' && check.passed === false && check.severity === 'owner_approval'));
+});
+
+test('CLI refuses production apply preflight outside the exact approved job list', () => {
+  const script = path.join(__dirname, '..', 'scripts', 'class-drive-intake-reconcile.cjs');
+  const result = spawnSync(process.execPath, [
+    script,
+    'production-apply-preflight',
+    '--job-ids',
+    '21,25',
+    '--snapshot',
+    'C:\\private\\snapshot.jsonl',
+    '--rollback-out',
+    'C:\\private\\rollback.jsonl',
+    '--approved-actions',
+    'personal_questions',
+  ], {
+    encoding: 'utf8',
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /approved job IDs are exactly/);
+});
+
+test('CLI refuses production apply after gate until final owner approval exists', () => {
+  const script = path.join(__dirname, '..', 'scripts', 'class-drive-intake-reconcile.cjs');
+  const result = spawnSync(process.execPath, [
+    script,
+    'production-apply',
+    '--apply',
+    '--gate',
+    APPLY_GATE_PHRASE,
+    '--job-ids',
+    '21,25,26,30,31,56,57,58,59,71',
+    '--snapshot',
+    'C:\\private\\snapshot.jsonl',
+    '--rollback-out',
+    'C:\\private\\rollback.jsonl',
+    '--approved-actions',
+    'personal_questions',
+    '--batch',
+    'personal_questions',
+  ], {
+    encoding: 'utf8',
+  });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /final owner approval/i);
 });
 
 test('source fingerprint is stable for retry/dedup comparisons', () => {

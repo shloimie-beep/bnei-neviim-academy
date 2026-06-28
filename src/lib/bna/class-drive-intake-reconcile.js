@@ -12,6 +12,8 @@ const APPLY_GATE_PHRASE = 'APPLY_GUARDED_CLASS_BACKFILL';
 const DEFAULT_REPAIR_JOB_RANGE = [64, 74];
 const DEFAULT_CATCHUP_FOCUS_JOB_IDS = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
 const DEFAULT_PRIVATE_REPARSE_JOB_IDS = DEFAULT_CATCHUP_FOCUS_JOB_IDS.slice();
+const DEFAULT_PRODUCTION_APPLY_ACTIONS = ['personal_questions', 'class_question_broadcasts', 'score_progress'];
+const PRODUCTION_APPLY_TABLES = ['bna_accountability_events', 'bna_torah_learning_entries', 'bna_group_goal_entries'];
 const PIPELINE_STAGES = [
   'source_discovered',
   'source_fingerprint',
@@ -1074,6 +1076,287 @@ function buildApplyLaneDesign({ backfillPlan = {}, exactJobIds = [] } = {}) {
   };
 }
 
+function sortedUniqueNumbers(values = []) {
+  return [...new Set(toArray(values).map(Number).filter(Boolean))].sort((a, b) => a - b);
+}
+
+function sameNumberList(left = [], right = []) {
+  const a = sortedUniqueNumbers(left);
+  const b = sortedUniqueNumbers(right);
+  return a.length === b.length && a.every((value, index) => value === b[index]);
+}
+
+function normalizeApprovedActions(actions = []) {
+  const aliases = {
+    personal_question: 'personal_questions',
+    personal_questions: 'personal_questions',
+    class_question: 'class_question_broadcasts',
+    class_questions: 'class_question_broadcasts',
+    class_question_broadcast: 'class_question_broadcasts',
+    class_question_broadcasts: 'class_question_broadcasts',
+    score_progress: 'score_progress',
+    score: 'score_progress',
+    progress: 'score_progress',
+    production_task: 'production_tasks',
+    production_tasks: 'production_tasks',
+    tasks: 'production_tasks',
+  };
+  return [...new Set(toArray(actions)
+    .flatMap((item) => String(item || '').split(/[,\s]+/))
+    .map((item) => aliases[item.trim().toLowerCase()])
+    .filter(Boolean))];
+}
+
+function plannedWriteRows(rows = []) {
+  return toArray(rows).filter((row) => !/^skip/.test(String(row.action || '')));
+}
+
+function rowsByTable(rows = []) {
+  return toArray(rows).reduce((counts, row) => {
+    counts[row.table || 'unknown'] = (counts[row.table || 'unknown'] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function duplicateValues(values = []) {
+  const seen = new Set();
+  const dupes = new Set();
+  for (const value of values.filter(Boolean)) {
+    if (seen.has(value)) dupes.add(value);
+    seen.add(value);
+  }
+  return [...dupes].sort();
+}
+
+function preflightCheck(id, passed, detail, severity = 'blocker') {
+  return { id, passed: Boolean(passed), severity, detail };
+}
+
+function productionApplyCommand({ batch, jobIds = [], snapshotPath = '', rollbackPath = '', approvedActions = [] } = {}) {
+  return [
+    'node scripts/class-drive-intake-reconcile.cjs production-apply',
+    '--apply',
+    `--gate ${APPLY_GATE_PHRASE}`,
+    `--job-ids ${sortedUniqueNumbers(jobIds).join(',')}`,
+    `--approved-actions ${normalizeApprovedActions(approvedActions).join(',')}`,
+    `--batch ${batch}`,
+    `--snapshot "${snapshotPath || '<snapshot-file>'}"`,
+    `--rollback-out "${rollbackPath || '<rollback-file>'}"`,
+  ].join(' ');
+}
+
+function buildProductionApplyPreflight({
+  privateReparseDryRun = {},
+  approvedJobIds = DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  approvedActions = DEFAULT_PRODUCTION_APPLY_ACTIONS,
+  snapshotPath = '',
+  rollbackPath = '',
+  evidenceIntegrity = {},
+  dbBlockers = [],
+  branch = '',
+  pullRequest = '',
+  issue = '',
+  generatedAt = new Date().toISOString(),
+} = {}) {
+  const jobIds = sortedUniqueNumbers(approvedJobIds);
+  const actions = normalizeApprovedActions(approvedActions);
+  const summary = privateReparseDryRun.summary || {};
+  const reportJobIds = sortedUniqueNumbers(privateReparseDryRun.approved_job_ids || []);
+  const inspectedJobIds = sortedUniqueNumbers(privateReparseDryRun.inspected_job_ids || []);
+  const allPlanRows = plannedWriteRows(privateReparseDryRun.row_level_change_plan || []);
+  const questionRows = allPlanRows.filter((row) => row.table === 'bna_accountability_events' && row.after?.event_type === 'question');
+  const personalQuestionRows = questionRows.filter((row) => row.routing === 'personal_question');
+  const classQuestionRows = questionRows.filter((row) => row.routing === 'class_question_broadcast');
+  const scoreProgressRows = allPlanRows.filter((row) => ['bna_torah_learning_entries', 'bna_group_goal_entries'].includes(row.table));
+  const progressEventRows = allPlanRows.filter((row) => row.routing === 'progress_event');
+  const taskRows = allPlanRows.filter((row) => row.table === 'bna_tasks');
+  const supportedApplyRows = [
+    ...(actions.includes('personal_questions') ? personalQuestionRows : []),
+    ...(actions.includes('class_question_broadcasts') ? classQuestionRows : []),
+    ...(actions.includes('score_progress') ? scoreProgressRows : []),
+  ];
+  const naturalKeys = supportedApplyRows.map((row) => row.natural_key).filter(Boolean);
+  const duplicateNaturalKeys = duplicateValues(naturalKeys);
+  const targetTables = [...new Set(supportedApplyRows.map((row) => row.table).filter(Boolean))].sort();
+  const unknownTables = targetTables.filter((table) => !PRODUCTION_APPLY_TABLES.includes(table));
+  const scoreProgressBeforeAfterReady = scoreProgressRows.every((row) => Object.prototype.hasOwnProperty.call(row, 'before') && row.after && row.natural_key);
+  const classCandidateRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'class_question_broadcast');
+  const blockedReviewRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'blocked_review');
+  const ambiguousPersonalRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'personal_question' && row.match_status === 'ambiguous');
+  const countsMatch = (
+    Number(summary.personal_question_candidates || 0) === personalQuestionRows.length
+    && Number(summary.class_question_broadcast_candidates || 0) === classCandidateRows.length
+    && Number(summary.score_progress_rows || 0) === scoreProgressRows.length
+    && Number(summary.task_candidate_rows || 0) === taskRows.length
+  );
+  const knownResultPreserved = (
+    Number(summary.approved_jobs || 0) === 10
+    && Number(summary.inspected_jobs || 0) === 10
+    && Number(summary.private_transcript_sources_read || 0) === 10
+    && Number(summary.student_name_mentions || 0) === 261
+    && Number(summary.question_candidates || 0) === 1285
+    && Number(summary.personal_question_candidates || 0) === 36
+    && Number(summary.class_question_broadcast_candidates || 0) === 1249
+    && Number(summary.task_candidate_rows || 0) === 119
+    && Number(summary.score_progress_rows || 0) === 1
+    && Number(summary.score_progress_no_op_rows || 0) === 55
+    && Number(summary.blocked_review_candidates || 0) === 0
+  );
+  const checks = [
+    preflightCheck('exact_approved_job_ids', sameNumberList(jobIds, DEFAULT_PRIVATE_REPARSE_JOB_IDS) && sameNumberList(reportJobIds, DEFAULT_PRIVATE_REPARSE_JOB_IDS), `requested=${jobIds.join(',')} report=${reportJobIds.join(',')}`),
+    preflightCheck('all_approved_jobs_inspected', sameNumberList(inspectedJobIds, DEFAULT_PRIVATE_REPARSE_JOB_IDS), `inspected=${inspectedJobIds.join(',')}`),
+    preflightCheck('private_reparse_evidence_non_empty', toArray(evidenceIntegrity.files).every((file) => file.exists && file.size > 0) && toArray(evidenceIntegrity.files).length >= 2, 'private dry-run markdown/json evidence exists and is non-empty'),
+    preflightCheck('private_reparse_evidence_sanitized', evidenceIntegrity.privacy_scan_passed !== false && privateReparseDryRun.raw_transcript_bodies_included !== true && privateReparseDryRun.raw_drive_urls_or_ids_included !== true, 'no raw transcript body, raw Drive URL/ID, or secret literal detected in evidence'),
+    preflightCheck('known_private_reparse_counts_preserved', knownResultPreserved, 'private dry-run summary matches the approved baseline packet'),
+    preflightCheck('row_counts_match_preflight', countsMatch, `personal=${personalQuestionRows.length}; classCandidates=${classCandidateRows.length}; classRows=${classQuestionRows.length}; scoreProgress=${scoreProgressRows.length}; taskCandidates=${taskRows.length}`),
+    preflightCheck('no_blocked_review_question_candidates', blockedReviewRows.length === 0, `${blockedReviewRows.length} blocked-review question route(s)`),
+    preflightCheck('no_ambiguous_personal_question_matches', ambiguousPersonalRows.length === 0, `${ambiguousPersonalRows.length} ambiguous personal route(s); ambiguous/no-name questions remain class broadcasts`),
+    preflightCheck('score_progress_before_after_present', scoreProgressBeforeAfterReady, `${scoreProgressRows.length} score/progress row(s)`),
+    preflightCheck('target_schema_mapping_known', unknownTables.length === 0, unknownTables.length ? `unknown tables: ${unknownTables.join(', ')}` : 'supported tables map to bna_accountability_events metadata and bna_torah_learning_entries updates'),
+    preflightCheck('snapshot_path_present', Boolean(snapshotPath), snapshotPath || 'missing snapshot path'),
+    preflightCheck('rollback_path_present', Boolean(rollbackPath), rollbackPath || 'missing rollback path'),
+    preflightCheck('dedupe_keys_present', naturalKeys.length === supportedApplyRows.length && duplicateNaturalKeys.length === 0, `naturalKeys=${naturalKeys.length}; duplicateKeys=${duplicateNaturalKeys.length}`),
+    preflightCheck('production_db_readback_available', toArray(dbBlockers).length === 0, toArray(dbBlockers).length ? toArray(dbBlockers).join('; ') : 'read-only production DB snapshot query succeeded'),
+    preflightCheck('no_drive_write_or_ai_or_raw_export', privateReparseDryRun.no_drive_write !== false && privateReparseDryRun.no_ai_call !== false && privateReparseDryRun.raw_transcript_bodies_included !== true, 'private preflight uses DB/app transcript source only and writes repo-safe evidence only'),
+    preflightCheck('production_tasks_not_enabled', !actions.includes('production_tasks'), `${taskRows.length} internal task candidate(s) remain internal and are not user-facing production tasks`),
+    preflightCheck('final_owner_apply_approval_recorded', false, 'This packet authorizes implementation and final no-write preflight only; actual production apply needs a separate exact approval.', 'owner_approval'),
+  ];
+  const failedBlockers = checks.filter((check) => !check.passed && check.severity === 'blocker');
+  const batchPlans = [
+    {
+      batch: 'personal_questions',
+      status: actions.includes('personal_questions') ? 'ready_after_final_owner_approval' : 'not_requested',
+      candidate_count: Number(summary.personal_question_candidates || personalQuestionRows.length),
+      row_level_apply_rows: personalQuestionRows.length,
+      target_tables: rowsByTable(personalQuestionRows),
+      command: productionApplyCommand({ batch: 'personal_questions', jobIds, snapshotPath, rollbackPath, approvedActions: actions }),
+    },
+    {
+      batch: 'class_question_broadcasts',
+      status: actions.includes('class_question_broadcasts') ? 'ready_after_final_owner_approval' : 'not_requested',
+      candidate_count: Number(summary.class_question_broadcast_candidates || classCandidateRows.length),
+      row_level_apply_rows: classQuestionRows.length,
+      target_tables: rowsByTable(classQuestionRows),
+      command: productionApplyCommand({ batch: 'class_question_broadcasts', jobIds, snapshotPath, rollbackPath, approvedActions: actions }),
+    },
+    {
+      batch: 'score_progress',
+      status: actions.includes('score_progress') && scoreProgressBeforeAfterReady ? 'ready_after_snapshot_and_final_owner_approval' : 'blocked_or_not_requested',
+      candidate_count: Number(summary.score_progress_rows || scoreProgressRows.length),
+      row_level_apply_rows: scoreProgressRows.length,
+      ancillary_progress_event_rows_deferred: progressEventRows.length,
+      target_tables: rowsByTable(scoreProgressRows),
+      command: productionApplyCommand({ batch: 'score_progress', jobIds, snapshotPath, rollbackPath, approvedActions: actions }),
+      note: 'The ancillary progress_event row is deferred unless separately approved; the approved score/progress count is one row.',
+    },
+    {
+      batch: 'production_tasks',
+      status: 'not_allowed_internal_candidates_only',
+      candidate_count: Number(summary.task_candidate_rows || taskRows.length),
+      row_level_apply_rows: 0,
+      target_tables: {},
+      command: '',
+      note: 'Internal agent/parser/audit task candidates must not become user-facing tasks without a separate human-visible task plan.',
+    },
+  ];
+  const readbackCommands = [
+    `node scripts/class-drive-intake-reconcile.cjs production-apply-preflight --job-ids ${jobIds.join(',')} --approved-actions ${actions.join(',')} --snapshot "${snapshotPath || '<snapshot-file>'}" --rollback-out "${rollbackPath || '<rollback-file>'}" --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`,
+    `node scripts/class-drive-intake-reconcile.cjs private-reparse --job-ids ${jobIds.join(',')} --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`,
+    'npm run bna:run:validate',
+  ];
+  return {
+    generated_at: generatedAt,
+    mode: 'production_apply_preflight_no_writes',
+    branch,
+    pull_request: pullRequest,
+    issue,
+    no_production_mutation: true,
+    production_apply_executed: false,
+    production_apply_command_may_be_run_now: false,
+    final_owner_approval_required: true,
+    required_gate_phrase: APPLY_GATE_PHRASE,
+    approved_job_ids: jobIds,
+    approved_actions: actions,
+    snapshot_path: snapshotPath,
+    snapshot_path_ref: redactedRef(snapshotPath, 'snapshot_path'),
+    rollback_path: rollbackPath,
+    rollback_path_ref: redactedRef(rollbackPath, 'rollback_path'),
+    evidence_integrity: evidenceIntegrity,
+    private_reparse_summary: summary,
+    expected_row_counts: {
+      personal_question_candidates: Number(summary.personal_question_candidates || personalQuestionRows.length),
+      personal_question_rows: personalQuestionRows.length,
+      class_question_broadcast_candidates: Number(summary.class_question_broadcast_candidates || classCandidateRows.length),
+      class_question_broadcast_rows: classQuestionRows.length,
+      score_progress_rows: scoreProgressRows.length,
+      progress_event_rows_deferred: progressEventRows.length,
+      production_task_rows: 0,
+      internal_task_candidates_not_applied: taskRows.length,
+      target_table_rows_if_all_requested_batches_are_later_approved: rowsByTable(supportedApplyRows),
+    },
+    target_schema_mapping: {
+      bna_accountability_events: {
+        question_rows: questionRows.length,
+        write_columns: ['student_id', 'event_type', 'title', 'question_text', 'metadata', 'source', 'source_message_id'],
+        private_value_rule: 'question_text is read from the private transcript source at apply time and must never be written to repo evidence',
+        metadata_keys: ['source_content_job_id', 'question_text_hash', 'question_scope', 'class_question_broadcast', 'source_window_ref', 'parent_visible', 'student_visible'],
+      },
+      bna_torah_learning_entries: {
+        score_progress_rows: scoreProgressRows.length,
+        write_columns: ['engaged_listening_minutes', 'inside_engaged_minutes', 'listening_without_following_minutes', 'daily_completion_percentage', 'daily_completed_boolean', 'note', 'updated_at'],
+        before_after_rule: 'snapshot must capture the full previous row before update; repo evidence stores row id and redacted hashes only',
+      },
+      bna_tasks: {
+        production_task_rows: 0,
+        internal_task_candidates_not_applied: taskRows.length,
+      },
+    },
+    refusal_checks: checks,
+    blocking_refusal_checks: failedBlockers,
+    preflight_controls_passed: failedBlockers.length === 0,
+    batch_plan: batchPlans,
+    snapshot_plan: {
+      required_before_apply: true,
+      path: snapshotPath,
+      path_ref: redactedRef(snapshotPath, 'snapshot_path'),
+      commit_to_git: false,
+      contains_private_data: true,
+      required_tables: ['bna_content_jobs', 'bna_students', 'bna_accountability_events', 'bna_torah_learning_entries', 'bna_group_goal_entries'],
+      minimum_rows_to_capture: supportedApplyRows.length,
+      proof_to_record_in_repo: ['snapshot path ref', 'snapshot hash', 'row counts by table', 'created_at timestamp'],
+    },
+    rollback_plan: {
+      required_before_apply: true,
+      path: rollbackPath,
+      path_ref: redactedRef(rollbackPath, 'rollback_path'),
+      commit_to_git: false,
+      contains_private_data: true,
+      strategy: [
+        'insert rows: delete by apply audit id and natural key',
+        'update rows: restore the full before snapshot for each row id',
+        'all batches: verify post-rollback row counts and write sanitized readback proof',
+      ],
+    },
+    readback_plan: {
+      required_after_each_batch: true,
+      commands: readbackCommands,
+      checks: [
+        'row counts match approved batch',
+        'rerun preflight shows zero duplicate natural keys',
+        'student/class portal read models show only approved question rows',
+        'no raw transcript body appears in repo evidence',
+      ],
+    },
+    final_apply_commands: batchPlans.filter((batch) => batch.command).map((batch) => ({
+      batch: batch.batch,
+      expected_rows: batch.row_level_apply_rows,
+      command: batch.command,
+      do_not_run_until_final_owner_approval: true,
+    })),
+    remaining_blocker: 'Final production apply is still blocked by DEC-20260626-101 until Shloimie approves the exact command(s), snapshot path, rollback path, and row counts printed by this preflight.',
+  };
+}
+
 function escapeRegExp(value = '') {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -1658,6 +1941,135 @@ function renderPrivateReparseDryRunMarkdown(report = {}) {
   ].join('\n');
 }
 
+function renderProductionApplyPreflightMarkdown(report = {}) {
+  return [
+    '# Production Apply Preflight',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `Mode: ${report.mode || 'production_apply_preflight_no_writes'}`,
+    `Branch: ${report.branch || ''}`,
+    `PR: ${report.pull_request || ''}`,
+    `Issue: ${report.issue || ''}`,
+    `No production mutation: ${report.no_production_mutation !== false}`,
+    `Production apply executed: ${report.production_apply_executed === true}`,
+    `Production apply command may be run now: ${report.production_apply_command_may_be_run_now === true}`,
+    `Final owner approval required: ${report.final_owner_approval_required !== false}`,
+    `Required gate phrase: ${report.required_gate_phrase || APPLY_GATE_PHRASE}`,
+    `Approved job IDs: ${toArray(report.approved_job_ids).join(', ')}`,
+    `Approved action list: ${toArray(report.approved_actions).join(', ')}`,
+    '',
+    '## Expected Row Counts',
+    '',
+    ...Object.entries(report.expected_row_counts || {}).map(([key, value]) => `- ${key}: ${typeof value === 'object' ? JSON.stringify(value) : value}`),
+    '',
+    '## Refusal Checks',
+    '',
+    '| Check | Passed | Severity | Detail |',
+    '| --- | --- | --- | --- |',
+    ...toArray(report.refusal_checks).map((check) => `| ${check.id || ''} | ${check.passed ? 'yes' : 'no'} | ${check.severity || ''} | ${String(check.detail || '').replace(/\|/g, '/')} |`),
+    '',
+    '## Batch Commands - Do Not Run Until Final Approval',
+    '',
+    '| Batch | Expected Rows | Command |',
+    '| --- | ---: | --- |',
+    ...toArray(report.final_apply_commands).map((row) => `| ${row.batch || ''} | ${row.expected_rows || 0} | \`${String(row.command || '').replace(/\|/g, '/')} \` |`),
+    '',
+    '## Remaining Blocker',
+    '',
+    redactSensitiveText(report.remaining_blocker || ''),
+    '',
+  ].join('\n');
+}
+
+function renderProductionApplySnapshotPlanMarkdown(report = {}) {
+  const plan = report.snapshot_plan || {};
+  return [
+    '# Production Apply Snapshot Plan',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `Required before apply: ${plan.required_before_apply !== false}`,
+    `Snapshot path: ${plan.path || ''}`,
+    `Snapshot path ref: ${plan.path_ref?.redacted || ''}`,
+    `Commit snapshot to Git: ${plan.commit_to_git === true}`,
+    `Contains private data: ${plan.contains_private_data === true}`,
+    '',
+    '## Required Tables',
+    '',
+    ...toArray(plan.required_tables).map((table) => `- ${table}`),
+    '',
+    '## Repo Proof To Record',
+    '',
+    ...toArray(plan.proof_to_record_in_repo).map((item) => `- ${item}`),
+    '',
+    `Minimum rows to capture: ${plan.minimum_rows_to_capture || 0}`,
+    '',
+  ].join('\n');
+}
+
+function renderProductionApplyRollbackPlanMarkdown(report = {}) {
+  const plan = report.rollback_plan || {};
+  return [
+    '# Production Apply Rollback Plan',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `Required before apply: ${plan.required_before_apply !== false}`,
+    `Rollback path: ${plan.path || ''}`,
+    `Rollback path ref: ${plan.path_ref?.redacted || ''}`,
+    `Commit rollback artifact to Git: ${plan.commit_to_git === true}`,
+    `Contains private data: ${plan.contains_private_data === true}`,
+    '',
+    '## Strategy',
+    '',
+    ...toArray(plan.strategy).map((item) => `- ${item}`),
+    '',
+  ].join('\n');
+}
+
+function renderProductionApplyBatchPlanMarkdown(report = {}) {
+  return [
+    '# Production Apply Batch Plan',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `No production mutation: ${report.no_production_mutation !== false}`,
+    `Final owner approval required: ${report.final_owner_approval_required !== false}`,
+    '',
+    '| Batch | Status | Candidates | Row-Level Apply Rows | Target Tables | Note |',
+    '| --- | --- | ---: | ---: | --- | --- |',
+    ...toArray(report.batch_plan).map((row) => [
+      row.batch,
+      row.status,
+      row.candidate_count || 0,
+      row.row_level_apply_rows || 0,
+      JSON.stringify(row.target_tables || {}),
+      row.note || '',
+    ].map((cell) => String(cell ?? '').replace(/\|/g, '/')).join(' | ')).map((line) => `| ${line} |`),
+    '',
+    '## Commands - Do Not Run Until Final Approval',
+    '',
+    ...toArray(report.final_apply_commands).map((row) => `- ${row.batch}: \`${row.command}\``),
+    '',
+  ].join('\n');
+}
+
+function renderProductionApplyReadbackPlanMarkdown(report = {}) {
+  const plan = report.readback_plan || {};
+  return [
+    '# Production Apply Readback Plan',
+    '',
+    `Generated: ${report.generated_at || new Date().toISOString()}`,
+    `Required after each batch: ${plan.required_after_each_batch !== false}`,
+    '',
+    '## Commands',
+    '',
+    ...toArray(plan.commands).map((command) => `- \`${command}\``),
+    '',
+    '## Checks',
+    '',
+    ...toArray(plan.checks).map((check) => `- ${check}`),
+    '',
+  ].join('\n');
+}
+
 function renderBacklogCatchupCensusMarkdown(census = {}) {
   const rows = toArray(census.rows);
   return [
@@ -1919,12 +2331,14 @@ module.exports = {
   APPLY_GATE_PHRASE,
   DEFAULT_CATCHUP_FOCUS_JOB_IDS,
   DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  DEFAULT_PRODUCTION_APPLY_ACTIONS,
   DEFAULT_REPAIR_JOB_RANGE,
   PIPELINE_STAGES,
   buildApplyLaneDesign,
   buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildProductionApplyPreflight,
   buildPrivateReparseCanonicalDryRun,
   buildResearchContentCatchupPlan,
   buildScoreProgressCatchupPlan,
@@ -1940,6 +2354,11 @@ module.exports = {
   renderBackfillMarkdown,
   renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderProductionApplyBatchPlanMarkdown,
+  renderProductionApplyPreflightMarkdown,
+  renderProductionApplyReadbackPlanMarkdown,
+  renderProductionApplyRollbackPlanMarkdown,
+  renderProductionApplySnapshotPlanMarkdown,
   renderPrivateReparseDryRunMarkdown,
   renderResearchContentCatchupMarkdown,
   renderScoreProgressCatchupMarkdown,

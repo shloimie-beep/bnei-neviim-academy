@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-26-transcript-drive-digest-rebuild",
   "title": "Transcript Drive Digest Rebuild",
-  "updated_at": "2026-06-28T14:45:00+03:00",
+  "updated_at": "2026-06-28T16:45:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260626-004",
@@ -84,6 +84,16 @@
       "workspace": "bna",
       "project": "class_drive_intake",
       "source_type": "codex_chat_owner_approval"
+    },
+    {
+      "source_id": "RAW-20260628-006",
+      "source_path": "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
+      "captured_at": "2026-06-28T16:30:00+03:00",
+      "content_fingerprint": "sha256:2b68223f9c85d39cb0cd40c96f2106ef53a3aa69475b88f5f05cf0978fc483a6",
+      "privacy_classification": "internal_goal_mode_production_apply_preflight_no_mutation",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat_attachment"
     }
   ],
   "source_statements": [
@@ -456,6 +466,41 @@
       "source_id": "RAW-20260628-005",
       "source_statement": "Update sanitized repo evidence, active execution run, NEXT-SESSION.md, ledger, changelog, PR #49, and Issue #41 with results while keeping PR #49 draft if production apply remains blocked.",
       "requirement_id": "REQ-20260628-156",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S001",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Inspect source-of-truth files, PR #49, Issue #41, remote private-reparse evidence integrity, and active execution-run status before implementation.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S002",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Implement a guarded production apply lane and final no-write preflight for exactly jobs 21, 25, 26, 30, 31, 56, 57, 58, 59, and 71.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S003",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Require --apply, --gate APPLY_GUARDED_CLASS_BACKFILL, exact job IDs, snapshot file, rollback output, before/after evidence, dedupe keys, explicit approved actions, refusal checks, and readback commands before production mutation.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S004",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Create PRODUCTION-APPLY-PREFLIGHT, SNAPSHOT, ROLLBACK, BATCH, and READBACK evidence files without production writes.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S005",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Run required verification, update NEXT-SESSION, ledger, changelog, PR #49, and Issue #41, and stop before production apply until the final exact command is approved.",
+      "requirement_id": "REQ-20260628-157",
       "classification": "requirement"
     }
   ],
@@ -2456,6 +2501,79 @@
         "ops/agent-changelog.md",
         "ops/agent-task-ledger.jsonl"
       ]
+    },
+    {
+      "source_id": "RAW-20260628-006",
+      "source_path": "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T16:45:00+03:00",
+      "id": "REQ-20260628-157",
+      "title": "Implement guarded production apply preflight without applying",
+      "expected_result": "A no-write production-apply preflight lane exists for the approved 10 jobs, validates exact scope and evidence integrity, emits snapshot/rollback/batch/readback plans, prints final apply commands and row counts, refuses mutation, and records results in PR #49 and Issue #41.",
+      "source_statement_ids": [
+        "RAW-20260628-006-S001",
+        "RAW-20260628-006-S002",
+        "RAW-20260628-006-S003",
+        "RAW-20260628-006-S004",
+        "RAW-20260628-006-S005"
+      ],
+      "category": "production_apply_preflight",
+      "batch_id": "P",
+      "depends_on": [
+        "REQ-20260628-156"
+      ],
+      "status": "needs_verification",
+      "implementation_status": "implemented locally; production-apply-preflight evidence generated and production-apply remains refused until final owner approval",
+      "next_action": "Run full verification, commit, push, update PR #49 and Issue #41, then mark this requirement done while leaving DEC-20260626-101 open for actual apply.",
+      "acceptance_criteria": [
+        "PR #49 is mergeable or branch conflict is resolved",
+        "Remote private reparse evidence is non-empty and sanitized",
+        "Preflight command validates the exact approved job IDs",
+        "Preflight evidence prints exact batch apply commands, row counts, snapshot path, rollback path, and readback commands",
+        "Production apply command refuses until final owner approval",
+        "No production mutation, Drive write, AI call, raw transcript export, or class backfill occurs",
+        "Required verification commands pass",
+        "PR #49 and Issue #41 are updated while Issue #41 remains open"
+      ],
+      "evidence": [
+        "PR #49 state: mergeable CLEAN, draft, open",
+        "Issue #41 state: OPEN",
+        "Remote private-reparse evidence sizes: md=1454766, json=11207578",
+        "Remote private-reparse blob shas matched local git hash-object values",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-ROLLBACK-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md"
+      ],
+      "verification": [
+        "PASS immediate checks: npm run bna:run:status; npm run bna:run:next; npm run bna:run:validate",
+        "PASS node --check src/lib/bna/class-drive-intake-reconcile.js",
+        "PASS node --check scripts/class-drive-intake-reconcile.cjs",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js: 26/26",
+        "PASS production-apply-preflight generation: controls passed, 0 blocking refusal checks, production apply command may be run now=false"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-ROLLBACK-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md"
+      ],
+      "blocker": "Actual production apply is not authorized by RAW-20260628-006.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Review PRODUCTION-APPLY-PREFLIGHT, then approve exact batch command(s), row counts, snapshot path, rollback path, and readback commands if production mutation should proceed."
     }
   ]
 }

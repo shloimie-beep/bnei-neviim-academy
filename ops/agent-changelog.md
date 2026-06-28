@@ -27209,3 +27209,52 @@ Remaining: production apply remains blocked by `DEC-20260626-101`. No
 production task write, class backfill, Drive create/update/delete/move, raw
 transcript export, AI call, paid retranscription, send/publish/charge/access
 grant, or credential/account/DNS change was performed.
+
+## 2026-06-28T16:45:00+03:00 - Issue 41 Production Apply Preflight
+
+Captured `RAW-20260628-006`, the goal-mode packet approving implementation of
+the guarded production apply lane and final no-write preflight for exactly jobs
+`21, 25, 26, 30, 31, 56, 57, 58, 59, 71`. This packet did not approve
+production mutation.
+
+- Confirmed PR #49 is open, draft, clean, and mergeable.
+- Confirmed Issue #41 is open.
+- Confirmed remote private-reparse evidence is readable and non-empty on the
+  PR branch: markdown `1,454,766` bytes and JSON `11,207,578` bytes.
+- Added `production-apply-preflight` to the class-drive reconciliation CLI. It
+  refuses any job IDs outside the exact approved list and requires snapshot
+  path, rollback path, and explicit approved action list.
+- Added guarded `production-apply --apply` refusal behavior; it still refuses
+  until a final owner approval is recorded after preflight.
+- Generated `PRODUCTION-APPLY-PREFLIGHT.md/json`,
+  `PRODUCTION-APPLY-SNAPSHOT-PLAN.md`, `PRODUCTION-APPLY-ROLLBACK-PLAN.md`,
+  `PRODUCTION-APPLY-BATCH-PLAN.md`, and
+  `PRODUCTION-APPLY-READBACK-PLAN.md`.
+
+Preflight summary:
+
+- Controls passed: true.
+- Blocking refusal checks: 0.
+- Production apply command may be run now: false.
+- Personal-question rows: 36.
+- Class-question broadcast candidates: 1,249.
+- Class-question broadcast row-level rows: 9,992.
+- Score/progress rows: 1.
+- Progress event rows deferred: 1.
+- Production task rows: 0.
+- Internal task candidates not applied: 119.
+
+Verification so far:
+
+- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
+- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
+- `node --test tests/class-drive-intake-reconcile.test.js`: 26/26 passed.
+- `node scripts/class-drive-intake-reconcile.cjs production-apply-preflight --write ...`: passed and performed no writes.
+- `node scripts/class-drive-intake-reconcile.cjs source-coverage --write --skip-drive ...`: passed with 15 mapped statements and 0 missing evidence.
+
+Remaining: full verification, commit/push, PR #49 update, and Issue #41 comment
+are still pending. Actual production apply remains blocked by
+`DEC-20260626-101`. No `--apply`, production mutation, student portal write,
+score/progress write, production task write, class backfill, Drive write, raw
+transcript export, AI call, paid retranscription, send/publish/charge/access
+grant, or credential/account/DNS change was performed.

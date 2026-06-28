@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-28T12:38:45.979Z",
-  "source_id": "RAW-20260626-004+RAW-20260628-004+RAW-20260628-005",
+  "generated_at": "2026-06-28T13:15:43.339Z",
+  "source_id": "RAW-20260626-004+RAW-20260628-004+RAW-20260628-005+RAW-20260628-006",
   "source_path": "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json",
   "no_production_mutation": true,
-  "source_statement_count": 14,
-  "mapped_statement_count": 14,
+  "source_statement_count": 15,
+  "mapped_statement_count": 15,
   "unmapped_executable_statement_count": 0,
   "missing_evidence_count": 0,
   "by_requirement": {
@@ -21,7 +21,8 @@
     "REQ-20260628-148": 1,
     "REQ-20260628-149": 1,
     "REQ-20260628-150": 1,
-    "REQ-20260628-154": 1
+    "REQ-20260628-154": 1,
+    "REQ-20260628-157": 1
   },
   "statements": [
     {
@@ -197,6 +198,23 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json",
         "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-157",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Implement and verify a no-write production apply preflight with exact job scope, snapshot/rollback requirements, small-batch commands, dedupe checks, and readback plan.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-ROLLBACK-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md",
+        "raw-input/RAW-20260628-006-production-apply-preflight-packet.md"
       ],
       "evidence_present": true
     }
