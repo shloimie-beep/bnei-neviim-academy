@@ -2511,7 +2511,7 @@
       "priority": "high",
       "can_continue_without_operator": true,
       "deployment_required": false,
-      "updated_at": "2026-06-28T16:45:00+03:00",
+      "updated_at": "2026-06-28T17:05:00+03:00",
       "id": "REQ-20260628-157",
       "title": "Implement guarded production apply preflight without applying",
       "expected_result": "A no-write production-apply preflight lane exists for the approved 10 jobs, validates exact scope and evidence integrity, emits snapshot/rollback/batch/readback plans, prints final apply commands and row counts, refuses mutation, and records results in PR #49 and Issue #41.",
@@ -2527,9 +2527,9 @@
       "depends_on": [
         "REQ-20260628-156"
       ],
-      "status": "needs_verification",
-      "implementation_status": "implemented locally; production-apply-preflight evidence generated and production-apply remains refused until final owner approval",
-      "next_action": "Run full verification, commit, push, update PR #49 and Issue #41, then mark this requirement done while leaving DEC-20260626-101 open for actual apply.",
+      "status": "done",
+      "implementation_status": "done; commit f48a9094 pushed, PR #49 and Issue #41 comments posted, preflight controls passed, and production-apply remains refused until final owner approval",
+      "next_action": "Await Shloimie's exact final approval before any production apply; next safe command is npm run bna:run:next.",
       "acceptance_criteria": [
         "PR #49 is mergeable or branch conflict is resolved",
         "Remote private reparse evidence is non-empty and sanitized",
@@ -2545,6 +2545,9 @@
         "Issue #41 state: OPEN",
         "Remote private-reparse evidence sizes: md=1454766, json=11207578",
         "Remote private-reparse blob shas matched local git hash-object values",
+        "Commit f48a9094 pushed to codex/issue41-class-question-fallback-20260628",
+        "PR #49 comment: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826235797",
+        "Issue #41 comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826236603",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
@@ -2557,7 +2560,16 @@
         "PASS node --check src/lib/bna/class-drive-intake-reconcile.js",
         "PASS node --check scripts/class-drive-intake-reconcile.cjs",
         "PASS node --test tests/class-drive-intake-reconcile.test.js: 26/26",
-        "PASS production-apply-preflight generation: controls passed, 0 blocking refusal checks, production apply command may be run now=false"
+        "PASS focused suite: 52/52",
+        "PASS production-apply-preflight generation: controls passed, 0 blocking refusal checks, production apply command may be run now=false",
+        "PASS source coverage: 15 mapped statements, 0 missing evidence",
+        "PASS npm run bna:run:validate; npm run bna:run:next; npm run bna:run:status",
+        "PASS npm run secrets:audit: 0 findings",
+        "PASS JSON/JSONL parse: 2102 payloads",
+        "PASS preflight evidence privacy scan",
+        "PASS added-line privacy scan",
+        "PASS git diff --check with CRLF warnings only",
+        "PASS gh pr comment 49 and gh issue comment 41"
       ],
       "implementation_files": [
         "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
@@ -2571,7 +2583,10 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md"
       ],
-      "blocker": "Actual production apply is not authorized by RAW-20260628-006.",
+      "implementation_commit": "f48a9094",
+      "pushed_commit": "f48a9094",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/49",
+      "blocker": "Actual production apply is not authorized by RAW-20260628-006 and remains under DEC-20260626-101.",
       "blocker_owner": "Shloimie",
       "blocker_next_action": "Review PRODUCTION-APPLY-PREFLIGHT, then approve exact batch command(s), row counts, snapshot path, rollback path, and readback commands if production mutation should proceed."
     }

@@ -112,8 +112,12 @@ Production apply preflight:
 
 - `RAW-20260628-006` approved implementation of the guarded apply lane and
   final no-write preflight only. It did not approve production mutation.
-- `REQ-20260628-157` is implemented locally and awaiting final verification,
-  commit, push, PR #49 update, and Issue #41 comment.
+- `REQ-20260628-157` is Done for the no-write production apply preflight.
+- Commit `f48a9094` was pushed to PR #49.
+- PR #49 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826235797`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826236603`.
 - PR #49 checked as open, draft, clean, and mergeable. Issue #41 checked as
   open.
 - Remote private-reparse evidence is readable and non-empty on the PR branch:

@@ -27252,9 +27252,18 @@ Verification so far:
 - `node scripts/class-drive-intake-reconcile.cjs production-apply-preflight --write ...`: passed and performed no writes.
 - `node scripts/class-drive-intake-reconcile.cjs source-coverage --write --skip-drive ...`: passed with 15 mapped statements and 0 missing evidence.
 
-Remaining: full verification, commit/push, PR #49 update, and Issue #41 comment
-are still pending. Actual production apply remains blocked by
-`DEC-20260626-101`. No `--apply`, production mutation, student portal write,
-score/progress write, production task write, class backfill, Drive write, raw
-transcript export, AI call, paid retranscription, send/publish/charge/access
-grant, or credential/account/DNS change was performed.
+Closeout:
+
+- Commit `f48a9094` pushed to PR #49.
+- PR #49 remains draft.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826235797`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826236603`.
+- `REQ-20260628-157` is Done for this no-write preflight closeout.
+
+Remaining: actual production apply remains blocked by `DEC-20260626-101`. No
+`--apply`, production mutation, student portal write, score/progress write,
+production task write, class backfill, Drive write, raw transcript export, AI
+call, paid retranscription, send/publish/charge/access grant, or
+credential/account/DNS change was performed.

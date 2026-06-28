@@ -43,7 +43,8 @@ not authorize active GHL runtime paths.
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
   Pushed commit `34e29b60` to PR #49 and posted the sanitized dry-run closeout
   to PR #49 and Issue #41; PR #49 remains draft and Issue #41 remains open.
-  The production apply preflight is now implemented locally with zero writes:
+  The production apply preflight is now implemented, pushed, and commented with
+  zero writes:
   `PRODUCTION-APPLY-PREFLIGHT` records 0 blocking refusal checks, exact later
   batch counts of 36 personal-question rows, 9,992 class-question broadcast
   rows, 1 score/progress row, and 0 production task rows, plus the required
