@@ -27458,3 +27458,19 @@ Verification:
 - Targeted live browser readback: Content Library rendered 70 cards; Topic
   filter options included Torah, Content/Marketing, Operations, One Time, and
   Other; selecting Torah filtered to 1 card with no empty state.
+
+## 2026-06-30 - Combined closeout branch preserves PR #52 Resend bridge
+
+- While stacking the current systems closeout release branch, preserved the
+  PR #52 Operations bridge so first-party `bna_communications` rows are merged
+  into Operations Communications cards alongside existing communication
+  sources.
+- The stacked branch includes signed Resend inbound webhook route coverage,
+  Received Email fetch/dedupe support, One Time routing, first-party CRM
+  storage, and Operations card visibility tests from PR #52.
+- Final live Resend completion still depends on the external
+  `RESEND_FROM_EMAIL` / `RESEND_WEBHOOK_SECRET` / Resend `email.received`
+  webhook setup and an approved signed inbound replay/readback.
+- Guardrails preserved: no email/test email, WhatsApp, SMS, Telegram, Buffer,
+  campaign, DNS, payment, access, external CRM/GHL write, secret exposure, or
+  raw received-email body commit was performed by this stacking step.
