@@ -48870,7 +48870,19 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
         COALESCE(bot_settings.settings, '[]'::json) AS bot_settings,
         COALESCE(bot_settings.active_count, 0) AS active_bot_count,
         COALESCE(bot_settings.needs_route_count, 0) AS bot_needs_route_count,
-        next_check.next_check_in_date
+        next_check.next_check_in_date,
+        latest_event.latest_accountability_at,
+        COALESCE(attendance_counts.attendance_record_count, 0) AS attendance_record_count,
+        COALESCE(attendance_counts.attendance_present_count, 0) AS attendance_present_count,
+        CASE
+          WHEN COALESCE(attendance_counts.attendance_record_count, 0) > 0
+            THEN ROUND((attendance_counts.attendance_present_count::numeric / attendance_counts.attendance_record_count::numeric) * 100)::int
+          ELSE NULL
+        END AS attendance_percent,
+        latest_attendance.attendance_status AS latest_attendance_status,
+        latest_attendance.attendance_at AS latest_attendance_at,
+        latest_progress.progress_percent AS latest_progress_percent,
+        latest_progress.progress_at AS latest_progress_at
        FROM bna_students s
        LEFT JOIN (
          SELECT student_id, COUNT(*) AS open_goals
@@ -48890,6 +48902,44 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
          WHERE next_check_in_date IS NOT NULL AND next_check_in_date >= CURRENT_DATE
          GROUP BY student_id
        ) next_check ON next_check.student_id = s.id
+       LEFT JOIN LATERAL (
+         SELECT MAX(GREATEST(
+           COALESCE(a.updated_at, 'epoch'::timestamp),
+           COALESCE(a.occurred_at, 'epoch'::timestamp),
+           COALESCE(a.created_at, 'epoch'::timestamp)
+         )) AS latest_accountability_at
+         FROM bna_accountability_events a
+         WHERE a.student_id = s.id
+       ) latest_event ON TRUE
+       LEFT JOIN (
+         SELECT student_id,
+                COUNT(*) FILTER (
+                  WHERE COALESCE(NULLIF(trim(attendance_status), ''), '') <> ''
+                ) AS attendance_record_count,
+                COUNT(*) FILTER (
+                  WHERE lower(regexp_replace(COALESCE(attendance_status, ''), '[^a-z0-9]+', '_', 'g')) IN ('present', 'here', 'attended')
+                ) AS attendance_present_count
+         FROM bna_accountability_events
+         GROUP BY student_id
+       ) attendance_counts ON attendance_counts.student_id = s.id
+       LEFT JOIN LATERAL (
+         SELECT a.attendance_status,
+                COALESCE(a.occurred_at, a.created_at, a.updated_at) AS attendance_at
+         FROM bna_accountability_events a
+         WHERE a.student_id = s.id
+           AND COALESCE(NULLIF(trim(a.attendance_status), ''), '') <> ''
+         ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+         LIMIT 1
+       ) latest_attendance ON TRUE
+       LEFT JOIN LATERAL (
+         SELECT a.progress_percent,
+                COALESCE(a.occurred_at, a.created_at, a.updated_at) AS progress_at
+         FROM bna_accountability_events a
+         WHERE a.student_id = s.id
+           AND a.progress_percent IS NOT NULL
+         ORDER BY COALESCE(a.occurred_at, a.created_at, a.updated_at) DESC NULLS LAST, a.id DESC
+         LIMIT 1
+       ) latest_progress ON TRUE
        LEFT JOIN (
          SELECT student_id, COUNT(*) AS questions
          FROM bna_accountability_events

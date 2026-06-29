@@ -52,11 +52,33 @@ test('Student event and Goal Board matching prefer linked student IDs over name 
   assert.match(goalBoardItems, /normalizeLooseText\(event\.student_name \|\| ''\) === studentName/);
 });
 
+test('Operations student status surfaces last update, attendance, and progress', () => {
+  assert.match(operationsHtml, /function studentAttendanceSummary\(student, events = studentEvents\(student\)\)/);
+  assert.match(operationsHtml, /function studentLearningStatus\(student, options = \{\}\)/);
+  assert.match(operationsHtml, /data-student-learning-status/);
+  assert.match(operationsHtml, /renderContactDetailItem\('Last Updated'/);
+  assert.match(operationsHtml, /renderContactDetailItem\('Attendance Record'/);
+  assert.match(operationsHtml, /renderContactDetailItem\('Latest Progress Note'/);
+
+  const studentListRow = sliceBetween(operationsHtml, 'function renderStudentListRow(student, state, options = {})', 'function renderStudentCard');
+  assert.match(studentListRow, /studentLearningStatus\(student, \{ torahRecord \}\)/);
+  assert.match(studentListRow, /Updated \$\{escapeHtml\(learningStatus\.lastUpdatedAt/);
+  assert.match(studentListRow, /Attendance \$\{escapeHtml\(learningStatus\.attendance\.label\)\}/);
+  assert.match(studentListRow, /Goal \$\{Number\(learningStatus\.goalProgress \|\| 0\)\}%/);
+  assert.match(studentListRow, /Trip \$\{Number\(learningStatus\.tripProgress \|\| 0\)\}%/);
+});
+
 test('Server student/accountability routes enforce requested workspace scope', () => {
   const studentsRoute = sliceBetween(server, "app.get('/api/bna/students'", "app.post('/api/bna/students'");
   assert.match(studentsRoute, /appendRequestedProjectScopeCondition\(req, conditions, params, 's\.project_id'\)/);
   assert.match(studentsRoute, /await assertStudentAccess\(req, req\.query\.student_id\)/);
   assert.match(studentsRoute, /conditions\.push\(`s\.id = \$\$\{params\.length\}`\)/);
+  assert.match(studentsRoute, /latest_event\.latest_accountability_at/);
+  assert.match(studentsRoute, /attendance_counts\.attendance_record_count/);
+  assert.match(studentsRoute, /attendance_counts\.attendance_present_count/);
+  assert.match(studentsRoute, /attendance_percent/);
+  assert.match(studentsRoute, /latest_attendance\.attendance_status AS latest_attendance_status/);
+  assert.match(studentsRoute, /latest_progress\.progress_percent AS latest_progress_percent/);
 
   const assignmentsRoute = sliceBetween(server, "app.get('/api/bna/assignments'", "app.post('/api/bna/assignments'");
   assert.match(assignmentsRoute, /appendRequestedProjectScopeCondition\(req, conditions, params, 'a\.project_id'\)/);
