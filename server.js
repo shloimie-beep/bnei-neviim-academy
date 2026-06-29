@@ -42192,7 +42192,7 @@ app.get('/api/bna/communications', requireAdmin, async (req, res) => {
   }
 });
 
-app.get('/api/bna/communications/:id', requireAdmin, async (req, res) => {
+app.get('/api/bna/communications/:id(\\d+)', requireAdmin, async (req, res) => {
   try {
     const conditions = ['id = $1'];
     const params = [req.params.id];

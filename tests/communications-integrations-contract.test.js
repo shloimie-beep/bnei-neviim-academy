@@ -27,6 +27,20 @@ test('server exposes protected Buffer, Resend, draft, schedule, email, and DNS e
   ].forEach((snippet) => assert.ok(server.includes(snippet), snippet));
 });
 
+test('communications detail route cannot swallow integration subroutes', () => {
+  assert.ok(
+    server.includes("app.get('/api/bna/communications/:id(\\\\d+)', requireAdmin"),
+    'communication detail route should only match numeric ids',
+  );
+  const detailIndex = server.indexOf("app.get('/api/bna/communications/:id(\\\\d+)', requireAdmin");
+  const dnsIndex = server.indexOf("app.get('/api/bna/communications/dns-tasks', requireAdmin");
+  assert.ok(detailIndex !== -1 && dnsIndex !== -1, 'communications detail and DNS routes must both exist');
+  assert.ok(
+    detailIndex < dnsIndex,
+    'numeric detail route may be registered before DNS tasks because it cannot match dns-tasks',
+  );
+});
+
 test('communications integration schema includes social, email draft, and DNS setup task models', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_social_posts/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_email_drafts/);
