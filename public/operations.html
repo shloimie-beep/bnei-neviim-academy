@@ -20185,32 +20185,69 @@
                 .slice(0, 40);
         }
 
+        function renderWapiPhonebookEmptyWorkspace({ status = 'Read-only', phonebookMessage = 'Build the phonebook report to open the contact list, conversation, and details workspace.', recent = [] } = {}) {
+            return `
+                <section class="focus-panel">
+                    <div class="task-section-header">
+                        <h3>Phonebook Workspace</h3>
+                        <span>${escapeHtml(status)}</span>
+                    </div>
+                    <div class="wapi-mobile-stepper" data-wapi-mobile-back-navigation>
+                        ${wapiStepperButton('wapiPhonebookPane', 'List')}
+                        ${wapiStepperButton('wapiConversationPane', 'Conversation')}
+                        ${wapiStepperButton('wapiDetailsPane', 'Details')}
+                    </div>
+                    <div class="wapi-conversation-workspace" data-wapi-three-pane-workspace>
+                        <div class="wapi-workspace-pane${wapiPaneClass('wapiPhonebookPane')}" id="wapiPhonebookPane" aria-label="WhatsApp phonebook contacts">
+                            <div class="task-section-header"><h3>Phonebook</h3><span>0</span></div>
+                            <div class="empty-state">${escapeHtml(phonebookMessage)}</div>
+                            ${recent.length ? `<div class="mini-list">${recent.map(renderCommunicationEntry).join('')}</div>` : ''}
+                        </div>
+                        <div class="wapi-workspace-pane${wapiPaneClass('wapiConversationPane')}" id="wapiConversationPane" aria-label="Selected WhatsApp conversation">
+                            <div class="task-section-header">
+                                <div>
+                                    <h3>Conversation</h3>
+                                    <p class="settings-disabled-note">No WhatsApp contact is selected yet.</p>
+                                </div>
+                                <div class="wapi-sticky-action-area" data-wapi-sticky-action-area>
+                                    <button class="task-action" type="button" onclick="jumpToWapiWorkspacePane('wapiPhonebookPane')">Back to list</button>
+                                    <button class="task-action" type="button" onclick="jumpToWapiWorkspacePane('wapiDetailsPane')">Details</button>
+                                </div>
+                            </div>
+                            <div class="contact-detail-note">Chronological local timeline. Raw provider payloads are hidden by default; readback uses first-party communication, Telegram note, task, Decision, and ticket records.</div>
+                            <div class="wapi-timeline-list">
+                                <div class="empty-state">No linked messages, notes, tasks, or tickets are loaded for this phonebook record yet.</div>
+                            </div>
+                        </div>
+                        <aside class="wapi-workspace-pane${wapiPaneClass('wapiDetailsPane')}" id="wapiDetailsPane" aria-label="WhatsApp contact details">
+                            <div class="task-section-header"><h3>Details</h3><span>no-send</span></div>
+                            <div class="contact-detail-note">Select a phonebook record to review linked parent, student, provider, contact, task, Decision, and ticket context.</div>
+                            ${renderWapiSendReadiness({})}
+                            <div class="contact-detail-section">
+                                <h3>Local Actions</h3>
+                                <div class="contact-detail-note">Local-only. No WhatsApp message, broadcast, or external CRM write.</div>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+            `;
+        }
+
         function renderWapiPhonebookWorkspace(items = []) {
             const groups = wapiPhonebookGroupsSorted();
             if (!wapiPhonebookReport) {
-                const recent = items.slice(0, 8);
-                return `
-                    <section class="focus-panel">
-                        <div class="task-section-header">
-                            <h3>Phonebook Workspace</h3>
-                            <span>Read-only</span>
-                        </div>
-                        <div class="empty-state">Build the phonebook report to open the contact list, conversation, and details workspace.</div>
-                        ${recent.length ? `<div class="mini-list">${recent.map(renderCommunicationEntry).join('')}</div>` : ''}
-                    </section>
-                `;
+                return renderWapiPhonebookEmptyWorkspace({
+                    status: 'Read-only',
+                    phonebookMessage: 'Build the phonebook report to open the contact list, conversation, and details workspace.',
+                    recent: items.slice(0, 8),
+                });
             }
             const selected = selectedWapiPhonebookGroup(groups);
             if (!selected) {
-                return `
-                    <section class="focus-panel">
-                        <div class="task-section-header">
-                            <h3>Phonebook Workspace</h3>
-                            <span>0 contacts</span>
-                        </div>
-                        <div class="empty-state">No WhatsApp phonebook records are available yet.</div>
-                    </section>
-                `;
+                return renderWapiPhonebookEmptyWorkspace({
+                    status: '0 contacts',
+                    phonebookMessage: 'No WhatsApp phonebook records are available yet.',
+                });
             }
             const timeline = wapiGroupTimelineItems(selected, items);
             const linkedRecords = selected.linked_records || [];
