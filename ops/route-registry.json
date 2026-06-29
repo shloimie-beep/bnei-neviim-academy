@@ -997,6 +997,26 @@
       ]
     },
     {
+      "route": "/api/resend/inbound",
+      "surface": "public_resend_inbound_webhook",
+      "access": "public_signed_webhook",
+      "required_role": null,
+      "workspace_scope_required": false,
+      "public_allowed": true,
+      "expected_logged_out_behavior": "accept_only_valid_resend_svix_signed_email_received_events",
+      "expected_logged_in_behavior": "accept_only_valid_resend_svix_signed_email_received_events",
+      "privacy_risk": "critical",
+      "canonical_target": "/api/resend/inbound",
+      "security_expectation": "Public webhook path requires valid Resend/Svix headers and RESEND_WEBHOOK_SECRET verification before fetching received email content; non-email.received events are ignored with 2xx; recognized OneTime inbound mail is scoped to rabbi_sheller_provider/one_time_mishnah_class and no secret headers are stored.",
+      "smoke_expectation": "invalid_signature_rejected_valid_received_event_fetches_resend_email_and_writes_scoped_crm_message_without_send",
+      "related_goal_ids": [
+        "GOAL-CORE-003",
+        "GOAL-CORE-006",
+        "GOAL-CORE-009",
+        "GOAL-CORE-015"
+      ]
+    },
+    {
       "route": "/api/bna/assistant/control-plane/readiness",
       "surface": "operations_api_assistant_control_plane_readiness",
       "access": "private",

@@ -8201,6 +8201,15 @@
                 if (filters.contact_type) params.set('contact_type', filters.contact_type);
                 return this.request('GET', '/contact-communications?' + params.toString());
             },
+            getCommunications(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.channel) params.set('channel', filters.channel);
+                if (filters.direction) params.set('direction', filters.direction);
+                if (filters.limit) params.set('limit', filters.limit);
+                return this.request('GET', '/communications' + (params.toString() ? '?' + params.toString() : ''));
+            },
             getCrmContacts(filters = {}) {
                 const params = new URLSearchParams();
                 Object.entries(filters).forEach(([key, value]) => {
@@ -9891,7 +9900,7 @@
                     </div>
                     ${renderWorkspaceSwitcher()}
                     <nav class="ops-sidebar-nav">
-                        ${renderSidebarModuleList(navItems)}
+                        ${(sidebarMode === 'modules' || currentView === 'communications') ? renderSidebarModuleList(navItems) : renderSidebarSubnav()}
                     </nav>
                     <div class="ops-sidebar-footer">
                         <button type="button" class="ops-sidebar-mini" onclick="switchView('settings')">Settings</button>
@@ -16969,6 +16978,57 @@
             });
         }
 
+        function normalizeUnifiedCommunicationRecord(row = {}) {
+            const metadata = parseObjectMaybe(row.metadata);
+            const metadataTags = Array.isArray(metadata.communication_tags) ? metadata.communication_tags : [];
+            const sourceContext = {
+                ...parseObjectMaybe(metadata.source_context),
+                source_table: 'bna_communications',
+                communication_id: row.id || null,
+                external_message_id: row.external_message_id || metadata.email_message_id || metadata.resend_received_email_id || '',
+                message_id: row.external_message_id || metadata.email_message_id || '',
+                thread_key: row.thread_key || metadata.thread_key || '',
+                provider: row.provider || metadata.provider || '',
+                from_name: row.from_name || '',
+                from_address: row.from_address || '',
+                to_name: row.to_name || '',
+                to_address: row.to_address || '',
+                status: row.status || '',
+                raw_intake_id: metadata.raw_intake_id || ''
+            };
+            const communicationType = row.communication_type || metadata.communication_type || `${row.direction || 'logged'} ${row.channel || 'message'}`;
+            const summary = row.subject || metadata.subject || communicationType;
+            const body = row.body_text || metadata.body_text || '';
+            return {
+                ...row,
+                id: row.id ? `bna_communications:${row.id}` : `bna_communications:${row.external_message_id || row.thread_key || row.created_at || summary}`,
+                source_record_id: row.id || null,
+                source_record_type: 'bna_communications',
+                contact_type: row.student_id ? 'student' : row.signup_id ? 'signup' : 'general',
+                lead_parent_name: row.from_name || row.from_address || row.to_address || 'Email contact',
+                contact_email: row.from_address || row.to_address || '',
+                email: row.from_address || row.to_address || '',
+                summary,
+                body,
+                channel: row.channel || 'email',
+                direction: row.direction || 'inbound',
+                source: row.provider || metadata.source || 'bna_communications',
+                metadata: {
+                    ...metadata,
+                    source_table: 'bna_communications',
+                    communication_type: communicationType,
+                    communication_pipeline: metadata.communication_pipeline || (row.provider === 'resend' ? 'general' : ''),
+                    communication_tags: [...new Set(['bna communications', row.provider || '', communicationType, ...metadataTags].filter(Boolean))]
+                },
+                source_context: sourceContext
+            };
+        }
+
+        function mergeContactAndUnifiedCommunications(contactRows = [], unifiedRows = []) {
+            const normalizedUnifiedRows = (unifiedRows || []).map(normalizeUnifiedCommunicationRecord);
+            return communicationSortDescending(uniqueCommunicationsById([...(contactRows || []), ...normalizedUnifiedRows]));
+        }
+
         function phoneTokenVariantsClient(value = '') {
             const digits = normalizePhoneDigitsClient(value);
             if (!digits || digits.length < 7) return [];
@@ -19639,7 +19699,7 @@
 
         function renderCommunicationAuditHistoryPanel(items = communicationImportAuditItems()) {
             return `
-                <section class="focus-panel" data-communication-import-history>
+                <section class="focus-panel" data-communication-import-history data-communications-import-history>
                     <div class="task-section-header"><h3>Import History</h3><span>${items.length} audit rows</span></div>
                     ${items.length ? `<div class="mini-list">
                         ${items.map(item => `
@@ -19692,7 +19752,7 @@
                         ${renderSettingsControlRow('Upload', 'CSV / vCard / email export', 'Preview-only import source.', '<input class="task-action" type="file" accept=".csv,.vcf,.txt,text/csv,text/vcard" onchange="loadContactImportFile(event)">')}
                         ${renderSettingsControlRow('Mapping', 'name, email, phone, organization, student, notes', 'Field mapping is inferred before commit.', 'Preview')}
                         ${renderSettingsControlRow('Dedupe', `${Number(summary.possible_duplicates || 0)} possible duplicates`, 'Matches local contacts and parent leads by email or phone.', 'Local')}
-                        ${renderSettingsControlRow('Commit', contactImportPreview?.commit_blocked ? 'Blocked until approved' : 'Preview required', 'No contact, tag, email, WhatsApp, or external record is written here.', 'No-send')}
+                        ${renderSettingsControlRow('Commit', contactImportPreview?.commit_blocked ? 'Blocked until approved' : 'Preview required', 'No contacts, tags, emails, WhatsApp messages, or external records are written here.', 'No-send')}
                     </div>
                     <textarea id="contactImportText" class="form-control communication-import-textarea" placeholder="name,email,phone,tags&#10;Example Parent,parent@example.com,+972501234567,parent accountability"></textarea>
                     <div class="task-actions">
@@ -19737,6 +19797,16 @@
                             <p>Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission-aware lanes.</p>
                         </div>
                     </div>
+                    <section class="section-nav" data-communications-channel-rail aria-label="Communication channels">
+                        <div class="section-tab-list">
+                            ${tabsWithCounts(COMMUNICATIONS_SUBTABS, counts).map(tab => `
+                                <button type="button" class="section-tab ${String(section) === String(tab.id) ? 'active' : ''}" onclick="setCurrentSection('${tab.id}')">
+                                    <span>${escapeHtml(tab.label)}</span>
+                                    ${tab.count !== undefined && tab.count !== null ? `<span class="section-tab-count">${escapeHtml(String(tab.count))}</span>` : ''}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </section>
                     ${section === 'overview' ? `
                         <div class="communications-overview-shell" data-communications-overview-shell>
                             <div class="communications-main-stack" data-communications-main-panel>
@@ -35500,6 +35570,15 @@
                     if (providerErrors.length) providerIndexNotice = providerErrors.join('; ');
                 }
                 if (contactCommunicationsRes.status === 'fulfilled' && contactCommunicationsRes.value?.communications) contactCommunications = contactCommunicationsRes.value.communications;
+                if (needsContactData) {
+                    try {
+                        const unifiedCommunicationsRes = await api.getCommunications({ ...workspaceDataFilters, limit: 200 });
+                        contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, unifiedCommunicationsRes?.communications || []);
+                    } catch (error) {
+                        console.warn('Unified communications could not be loaded', error);
+                        contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, []);
+                    }
+                }
                 if (wapiPhonebookReportRes.status === 'fulfilled' && wapiPhonebookReportRes.value) wapiPhonebookReport = wapiPhonebookReportRes.value;
                 if (parentAnnouncementsRes.status === 'fulfilled' && parentAnnouncementsRes.value?.announcements) parentAnnouncements = parentAnnouncementsRes.value.announcements;
                 if (paymentsRes.status === 'fulfilled' && paymentsRes.value?.payments) payments = paymentsRes.value.payments;

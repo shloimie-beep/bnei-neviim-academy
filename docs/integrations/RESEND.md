@@ -10,6 +10,9 @@ Scope: One Time email-domain readiness and future launch emails. This file conta
 - API keys: https://resend.com/docs/dashboard/api-keys/introduction
 - Create API key: https://resend.com/docs/api-reference/api-keys/create-api-key
 - DMARC: https://resend.com/docs/dashboard/domains/dmarc
+- Receiving email: https://resend.com/docs/dashboard/receiving/introduction
+- Received Email API: https://resend.com/docs/api-reference/emails/retrieve-received-email
+- `email.received` webhook: https://resend.com/docs/webhooks/emails/received
 
 ## Current Local Implementation
 
@@ -21,8 +24,16 @@ Scope: One Time email-domain readiness and future launch emails. This file conta
   - Resend webhook event normalization
   - Svix-header webhook verification using the raw request body when a webhook
     signing secret is configured
+  - inbound `email.received` handling at `/api/resend/inbound` and
+    `/api/bna/resend/inbound`
+  - Received Email API fetch for full message content and attachment metadata
+  - first-party CRM routing into `rabbi_sheller_provider` /
+    `one_time_mishnah_class` for recognized `onetimeonetime.com` recipients
   - local webhook status storage against BNA email communication/email-log rows
     without storing raw email body content in metadata
+  - Operations Communications reads `bna_communications` rows beside
+    contact-communication notes so inbound emails are visible without an
+    external CRM write
   - send operation blocked unless readiness and explicit send confirmation pass
   - redacted errors
 - Operations UI:
@@ -46,9 +57,16 @@ Non-secret identifiers may be referenced in Decisions:
 - `RESEND_FROM_EMAIL`
 - `RESEND_FROM_NAME`
 - `RESEND_REPLY_TO`
+- `RESEND_PROFILE`
 - `RESEND_SEND_FALLBACK_APPROVED`
 - `RESEND_SHLOIMIE_DOMAIN`
+- `RESEND_RABBI_ACCOUNT_OWNER`
+- `RESEND_RABBI_PROVIDER_ACCOUNT`
 - `RESEND_RABBI_DOMAIN`
+- `RESEND_RABBI_FROM`
+- `RESEND_RABBI_FROM_EMAIL`
+- `RESEND_RABBI_FROM_NAME`
+- `RESEND_RABBI_REPLY_TO`
 
 Secrets must be stored only in keyholder/server environment:
 
@@ -72,6 +90,42 @@ Needed before sends:
 - DNS host/registrar access path
 - verified records from the provider dashboard
 - approved test recipient
+
+## OneTimeOneTime Current Intended Identity
+
+The One Time/Rabbi profile must resolve to these non-secret sender values:
+
+- profile: `RESEND_PROFILE=rabbi` when testing the Rabbi account path
+- domain: `onetimeonetime.com`
+- from email: `info@onetimeonetime.com`
+- display name: `OneTimeOneTime Mishnah`
+- reply-to: `info@onetimeonetime.com`
+
+Do not use the BNA sender domain as the OneTimeOneTime production identity.
+Do not recreate Zoho or change MX/DNS records from Codex without an explicit
+operator-approved DNS action.
+
+## Inbound Receive Setup
+
+After deployment, create or confirm a Resend webhook for event
+`email.received` pointing to:
+
+`https://bneineviimacademy.org/api/resend/inbound`
+
+Railway/server variables required by name only:
+
+- `RESEND_API_KEY` or the active Rabbi profile key path
+- `RESEND_WEBHOOK_SECRET`
+- `RESEND_RABBI_DOMAIN`
+- `RESEND_RABBI_FROM_EMAIL`
+- `RESEND_RABBI_FROM_NAME`
+- `RESEND_RABBI_REPLY_TO`
+
+Live acceptance requires a signed webhook replay or approved inbound test
+message proving invalid signatures reject, valid `email.received` fetches the
+Received Email API, the scoped CRM row appears under
+`rabbi_sheller_provider` / `one_time_mishnah_class`, and no outbound email send
+occurs.
 
 ## Local Acceptance
 

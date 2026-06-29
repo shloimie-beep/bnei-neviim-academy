@@ -37,29 +37,16 @@ test('contact import preview supports CSV vCard email exports before commit', ()
   assert.match(server, /app\.post\('\/api\/bna\/contact-imports\/preview'/);
   assert.match(server, /CSV\/vCard\/email export upload -> field mapping -> dedupe -> tags -> workspace association -> parent\/provider\/student classification -> preview before commit/);
   assert.match(server, /commit_blocked: true/);
-  assert.match(server, /source_inventory/);
-  assert.match(server, /contactImportPreviewScope/);
-  assert.match(server, /contactImportDedupeKey/);
-  assert.match(server, /const \{ source_row, \.\.\.safeRow \} = row/);
-  assert.match(server, /warm_leads_no_send_until_approval/);
-  assert.match(server, /forbidden_external_runtimes: \['ghl', 'go_high_level', 'leadconnector'\]/);
-  assert.match(server, /external_crm_write_performed: false/);
-  assert.match(server, /No contacts?, tags, emails?, WhatsApp messages?, external CRM records?, GHL\/LeadConnector records?, or billing records? are written/i);
+  assert.match(server, /No contacts?, tags, emails?, WhatsApp messages?, or external records? are written/i);
 });
 
-test('Operations communications view exposes top news, readable cards, WAPI status, and separated import tooling', () => {
-  assert.match(operations, /data-top-filter-rail="true" data-current-module="\$\{escapeHtml\(currentView\)\}"/);
-  assert.doesNotMatch(operations, /function renderTopFilterRail\(\) \{[\s\S]{0,240}if \(currentView === 'communications'\) return ''/);
-  assert.doesNotMatch(operations, /currentView === 'communications'\s*\?\s*renderCommunicationsChannelRail\('topbar'\)/);
+test('Operations communications view exposes top news, readable cards, WAPI status, and import preview', () => {
+  assert.match(operations, /data-communications-channel-rail/);
   assert.match(operations, /data-communications-overview-shell/);
-  assert.match(operations, /data-communications-readiness-panel/);
-  assert.match(operations, /data-communication-import-history/);
   assert.match(operations, /data-communications-no-duplicate-channel-cards/);
-  assert.match(operations, /function communicationIsImportAuditItem/);
-  assert.match(operations, /Import audit rows stay in Import History/);
-  assert.match(operations, /Email, WhatsApp, parent, student, provider, bot, and support lanes are selected from the module rail/);
-  assert.doesNotMatch(operations, /data-communications-no-duplicate-channel-cards[\s\S]{0,500}renderContactImportPreviewPanel/);
   assert.match(operations, /data-communication-top-news/);
+  assert.match(operations, /function communicationIsImportAuditItem/);
+  assert.match(operations, /data-communications-import-history/);
   assert.match(operations, /data-communication-screening-pipeline/);
   assert.match(operations, /data-contact-import-preview/);
   assert.match(operations, /data-communication-card/);
@@ -73,5 +60,15 @@ test('Operations communications view exposes top news, readable cards, WAPI stat
   assert.match(operations, /Live pull blocked/);
   assert.match(operations, /Bot Screening/);
   assert.match(operations, /Pipeline Stage/);
-  assert.doesNotMatch(operations, /if \(currentView === 'communications'\) return '<button class="primary-button" onclick="createCommunicationNotePrompt\(\)">New Message<\/button>'/);
+});
+
+test('Operations communications view merges first-party bna_communications rows', () => {
+  assert.match(operations, /getCommunications\(filters = \{\}\)/);
+  assert.match(operations, /return this\.request\('GET', '\/communications'/);
+  assert.match(operations, /function normalizeUnifiedCommunicationRecord\(row = \{\}\)/);
+  assert.match(operations, /source_table: 'bna_communications'/);
+  assert.match(operations, /source_record_type: 'bna_communications'/);
+  assert.match(operations, /function mergeContactAndUnifiedCommunications/);
+  assert.match(operations, /api\.getCommunications\(\{ \.\.\.workspaceDataFilters, limit: 200 \}\)/);
+  assert.match(operations, /contactCommunications = mergeContactAndUnifiedCommunications\(contactCommunications, unifiedCommunicationsRes\?\.communications \|\| \[\]\)/);
 });

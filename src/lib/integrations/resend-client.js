@@ -62,37 +62,37 @@ function getResendConfig(options = {}) {
     fileNames: ['resend-account-owner.txt', `${envFor('ACCOUNT_OWNER')}.txt`, profile ? `resend-${profile}-account-owner.txt` : ''],
     ...loaderOptions,
   }) || profile || 'unknown');
-  const providerAccount = String(options.providerAccount || loadConfigValue({
-    envName: 'RESEND_PROVIDER_ACCOUNT',
-    names: ['resend-provider-account'],
-    fileNames: ['resend-provider-account.txt', 'RESEND_PROVIDER_ACCOUNT.txt'],
-    ...loaderOptions,
-  }) || '').trim();
-  const rawFrom = String(options.from || loadConfigValue({
-    envName: 'RESEND_FROM',
-    names: ['resend-from'],
-    fileNames: ['resend-from.txt', 'RESEND_FROM.txt'],
-    ...loaderOptions,
-  }) || '').trim();
-  const fromEmail = normalizeEmail(options.fromEmail || rawFrom || loadConfigValue({
-    envName: 'RESEND_FROM_EMAIL',
-    names: ['resend-from-email'],
-    fileNames: ['resend-from-email.txt', 'RESEND_FROM_EMAIL.txt'],
-    ...loaderOptions,
-  }));
-  const fromName = String(options.fromName || loadConfigValue({
-    envName: 'RESEND_FROM_NAME',
-    names: ['resend-from-name'],
-    fileNames: ['resend-from-name.txt', 'RESEND_FROM_NAME.txt'],
-    ...loaderOptions,
-  }) || '').trim();
+  const configValue = (suffix, slug) => {
+    const profileEnvName = envFor(suffix);
+    const genericEnvName = `RESEND_${suffix}`;
+    const profileSlug = profile ? `resend-${profile}-${slug}` : '';
+    const names = [profileSlug, `resend-${slug}`].filter(Boolean);
+    const fileNames = [
+      `${profileEnvName}.txt`,
+      profileSlug ? `${profileSlug}.txt` : '',
+      `resend-${slug}.txt`,
+      `${genericEnvName}.txt`,
+    ].filter(Boolean);
+    const profileValue = loadConfigValue({
+      envName: profileEnvName,
+      names,
+      fileNames,
+      ...loaderOptions,
+    });
+    if (profileValue || profileEnvName === genericEnvName) return profileValue;
+    return loadConfigValue({
+      envName: genericEnvName,
+      names: [`resend-${slug}`],
+      fileNames: [`resend-${slug}.txt`, `${genericEnvName}.txt`],
+      ...loaderOptions,
+    });
+  };
+  const providerAccount = String(options.providerAccount || configValue('PROVIDER_ACCOUNT', 'provider-account') || '').trim();
+  const rawFrom = String(options.from || configValue('FROM', 'from') || '').trim();
+  const fromEmail = normalizeEmail(options.fromEmail || rawFrom || configValue('FROM_EMAIL', 'from-email'));
+  const fromName = String(options.fromName || configValue('FROM_NAME', 'from-name') || '').trim();
   const from = rawFrom || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : '');
-  const domain = String(options.domain || loadConfigValue({
-    envName: envFor('DOMAIN'),
-    names: ['resend-domain', profile ? `resend-${profile}-domain` : ''],
-    fileNames: ['resend-domain.txt', `${envFor('DOMAIN')}.txt`, profile ? `resend-${profile}-domain.txt` : ''],
-    ...loaderOptions,
-  }) || domainFromEmail(fromEmail)).trim().toLowerCase();
+  const domain = String(options.domain || configValue('DOMAIN', 'domain') || domainFromEmail(fromEmail)).trim().toLowerCase();
   const fallbackApproved = options.fallbackApproved !== undefined
     ? Boolean(options.fallbackApproved)
     : parseBoolean(loadConfigValue({
@@ -101,6 +101,7 @@ function getResendConfig(options = {}) {
       fileNames: ['resend-send-fallback-approved.txt', 'RESEND_SEND_FALLBACK_APPROVED.txt'],
       ...loaderOptions,
     }));
+  const replyTo = normalizeEmail(options.replyTo || options.reply_to || configValue('REPLY_TO', 'reply-to'));
   return {
     apiKey,
     apiBase,
@@ -110,6 +111,7 @@ function getResendConfig(options = {}) {
     from,
     fromEmail,
     fromName,
+    replyTo,
     fallbackApproved,
     profile: profile || null,
   };
@@ -583,7 +585,7 @@ async function sendResendEmail({ from, to, cc = [], bcc = [], replyTo = null, su
       to: recipients,
       ...(cc.length ? { cc } : {}),
       ...(bcc.length ? { bcc } : {}),
-      ...(replyTo ? { reply_to: replyTo } : {}),
+      ...((replyTo || config.replyTo) ? { reply_to: replyTo || config.replyTo } : {}),
       subject,
       ...(text ? { text } : {}),
       ...(html ? { html } : {}),
@@ -599,8 +601,128 @@ async function sendResendEmail({ from, to, cc = [], bcc = [], replyTo = null, su
   };
 }
 
+function headerValue(headers = {}, name = '') {
+  if (!headers || !name) return '';
+  if (typeof headers.get === 'function') return String(headers.get(name) || '');
+  const wanted = name.toLowerCase();
+  for (const [key, value] of Object.entries(headers || {})) {
+    if (String(key || '').toLowerCase() === wanted) {
+      return Array.isArray(value) ? String(value[0] || '') : String(value || '');
+    }
+  }
+  return '';
+}
+
+function svixSecretBytes(secret = '') {
+  const trimmed = String(secret || '').trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith('whsec_')) {
+    try {
+      const decoded = Buffer.from(trimmed.slice('whsec_'.length), 'base64');
+      if (decoded.length) return decoded;
+    } catch {}
+  }
+  return Buffer.from(trimmed, 'utf8');
+}
+
+function svixSignatureCandidates(signatureHeader = '') {
+  return String(signatureHeader || '')
+    .split(/\s+/)
+    .flatMap((entry) => entry.split(';'))
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry) => {
+      const [version, signature] = entry.split(',', 2);
+      return { version, signature };
+    })
+    .filter((entry) => entry.version === 'v1' && entry.signature);
+}
+
+function timingSafeBase64Equal(expectedBase64, candidateBase64) {
+  let expected;
+  let candidate;
+  try {
+    expected = Buffer.from(expectedBase64, 'base64');
+    candidate = Buffer.from(candidateBase64, 'base64');
+  } catch {
+    return false;
+  }
+  return expected.length === candidate.length && crypto.timingSafeEqual(expected, candidate);
+}
+
+function verifyResendWebhookSignature({
+  payload = '',
+  headers = {},
+  webhookSecret = '',
+  toleranceSeconds = 5 * 60,
+  now = Date.now(),
+} = {}) {
+  const secretBytes = svixSecretBytes(webhookSecret);
+  const id = headerValue(headers, 'svix-id');
+  const timestamp = headerValue(headers, 'svix-timestamp');
+  const signatureHeader = headerValue(headers, 'svix-signature');
+  if (!secretBytes) {
+    const error = new Error('RESEND_WEBHOOK_SECRET is not configured');
+    error.status = 503;
+    error.blocker = 'RESEND_WEBHOOK_SECRET is not configured. Create the Resend webhook and add the signing secret server-side.';
+    throw error;
+  }
+  if (!id || !timestamp || !signatureHeader) {
+    const error = new Error('Missing required Resend webhook Svix headers');
+    error.status = 401;
+    throw error;
+  }
+  const timestampSeconds = Number(timestamp);
+  if (!Number.isFinite(timestampSeconds)) {
+    const error = new Error('Invalid Resend webhook timestamp');
+    error.status = 401;
+    throw error;
+  }
+  if (toleranceSeconds !== null && toleranceSeconds !== undefined) {
+    const ageSeconds = Math.abs(Math.floor(Number(now) / 1000) - timestampSeconds);
+    if (ageSeconds > Number(toleranceSeconds)) {
+      const error = new Error('Resend webhook timestamp is outside the allowed tolerance');
+      error.status = 401;
+      throw error;
+    }
+  }
+  const rawPayload = typeof payload === 'string' ? payload : JSON.stringify(payload || {});
+  const signedContent = `${id}.${timestamp}.${rawPayload}`;
+  const expected = crypto
+    .createHmac('sha256', secretBytes)
+    .update(signedContent)
+    .digest('base64');
+  const valid = svixSignatureCandidates(signatureHeader)
+    .some((candidate) => timingSafeBase64Equal(expected, candidate.signature));
+  if (!valid) {
+    const error = new Error('Invalid Resend webhook signature');
+    error.status = 401;
+    throw error;
+  }
+  try {
+    return JSON.parse(rawPayload || '{}');
+  } catch {
+    const error = new Error('Invalid Resend webhook JSON payload');
+    error.status = 400;
+    throw error;
+  }
+}
+
+async function getReceivedEmail(emailId, runtime = {}) {
+  const id = String(emailId || '').trim();
+  if (!id) {
+    const error = new Error('Resend received email id is required');
+    error.status = 400;
+    throw error;
+  }
+  return resendRequest(`/emails/receiving/${encodeURIComponent(id)}?html_format=cid`, {
+    method: 'GET',
+  }, runtime);
+}
+
 module.exports = {
   domainFromEmail,
+  getReceivedEmail,
   getResendConfig,
   getResendDomainStatus,
   getResendReadiness,
@@ -611,6 +733,7 @@ module.exports = {
   resendRequest,
   resendWebhookStatusForEvent,
   sendResendEmail,
+  verifyResendWebhookSignature,
   verifyResendWebhookRequest,
   verifyResendDomain,
 };
