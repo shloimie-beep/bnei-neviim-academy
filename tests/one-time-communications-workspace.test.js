@@ -88,7 +88,7 @@ test('Resend draft and send endpoints preserve reply-to while keeping external s
   assert.match(server, /Recipient belongs to a different workspace\/project/);
   assert.match(server, /processResendWebhook/);
   assert.match(resendClient, /async function sendResendEmail\(\{ from, to, cc = \[\], bcc = \[\], replyTo = null/);
-  assert.match(resendClient, /\.\.\.\(replyTo \? \{ reply_to: replyTo \} : \{\}\)/);
+  assert.match(resendClient, /\.\.\.\(\(replyTo \|\| config\.replyTo\) \? \{ reply_to: replyTo \|\| config\.replyTo \} : \{\}\)/);
   assert.match(resendClient, /function verifyResendWebhookRequest/);
   assert.match(externalActions, /'resend:send': 'SEND_RESEND_EMAIL'/);
 });

@@ -27048,3 +27048,31 @@ Guardrails held: no Drive write, no production DB mutation, no class backfill,
 no raw transcript export, no AI call, no paid retranscription, no send/publish,
 no charge/access grant, no credential/account/DNS change, and no broad Drive
 sync.
+
+## 2026-06-29T18:17:35+03:00 - OneTimeOneTime Resend inbound CRM PR #52 bridge proof
+
+Updated the clean Resend inbound CRM release branch so Operations also reads
+first-party `bna_communications` rows and merges them into the existing
+Communications cards. The branch now covers the signed inbound webhook route,
+Received Email API fetch/dedupe, One Time CRM storage, and UI visibility path.
+
+- Added the `/api/bna/communications` client fetch and a safe
+  `bna_communications` normalizer/merge adapter in Operations.
+- Added focused tests for the Operations merge and the raw-body verified
+  `/api/resend/inbound` plus `/api/bna/resend/inbound` aliases.
+- Verification passed: syntax checks, focused Resend/inbound/UI suite 34/34,
+  security watchdog, communications watchdog, email Resend UX live smoke, and
+  WhatsApp UX live smoke.
+
+Evidence:
+
+- `ops/live-smokes/2026-06-29T15-16-03-168Z-email-resend-ux-live-smoke.md`
+- `ops/live-smokes/2026-06-29T15-16-03-855Z-whatsapp-ux-live-smoke.md`
+- `ops/watchdog-audits/2026-06-29T15-15-watchdog-security-routes.md`
+- `ops/watchdog-audits/2026-06-29T15-15-communications-alerts.md`
+
+Remaining: app/server-visible final Done still needs PR #52 deploy, value-free
+Railway/Resend env proof, configured or replayed signed `email.received`
+webhook, and redacted live Operations CRM readback. No email, WhatsApp, SMS,
+Telegram, Buffer, campaign, payment, DNS, access grant, external CRM/GHL write,
+secret exposure, or raw private received-email body commit was performed.

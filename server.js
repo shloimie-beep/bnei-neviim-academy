@@ -10177,7 +10177,7 @@ app.use(express.json({
   verify: (req, res, buf) => {
     const url = String(req.originalUrl || req.url || '');
     if (url.startsWith('/api/bna/resend/webhook') || url.startsWith('/api/resend/inbound') || url.startsWith('/api/bna/resend/inbound')) {
-      req.rawBody = Buffer.from(buf || '').toString('utf8');
+      req.rawBody = buf.toString('utf8');
     }
   },
 }));

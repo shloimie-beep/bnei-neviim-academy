@@ -8062,6 +8062,17 @@
                 if (filters.contact_type) params.set('contact_type', filters.contact_type);
                 return this.request('GET', '/contact-communications?' + params.toString());
             },
+            getCommunications(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.channel) params.set('channel', filters.channel);
+                if (filters.direction) params.set('direction', filters.direction);
+                if (filters.provider) params.set('provider', filters.provider);
+                if (filters.contact_id) params.set('contact_id', filters.contact_id);
+                if (filters.limit) params.set('limit', filters.limit);
+                return this.request('GET', '/communications' + (params.toString() ? '?' + params.toString() : ''));
+            },
             getCrmContacts(filters = {}) {
                 const params = new URLSearchParams();
                 Object.entries(filters).forEach(([key, value]) => {
@@ -16653,6 +16664,70 @@
                 seen.add(key);
                 return true;
             });
+        }
+
+        function normalizeUnifiedCommunicationRecord(row = {}) {
+            const metadata = parseObjectMaybe(row.metadata);
+            const sourceContext = parseObjectMaybe(row.source_context);
+            const communicationType = row.communication_type || metadata.communication_type || '';
+            const subject = row.subject || metadata.subject || row.summary || 'Email communication';
+            const body = row.body_text || row.body || row.body_preview || row.summary || '';
+            const fromAddress = row.from_address || metadata.from_address || '';
+            const toAddress = row.to_address || metadata.to_address || '';
+            const fromName = row.from_name || metadata.from_name || row.contact_name || '';
+            const metadataTags = [
+                ...(Array.isArray(metadata.communication_tags) ? metadata.communication_tags : []),
+                ...(Array.isArray(row.tags) ? row.tags : []),
+            ];
+            return {
+                id: row.id ? `bna_communications:${row.id}` : `bna_communications:${row.external_message_id || row.thread_key || row.created_at || subject}`,
+                source_table: 'bna_communications',
+                source_record_type: 'bna_communications',
+                channel: row.channel || metadata.channel || (/email|resend/i.test(communicationType) ? 'email' : 'message'),
+                direction: row.direction || metadata.direction || 'inbound',
+                source: row.provider || metadata.source || 'bna_communications',
+                provider: row.provider || metadata.provider || 'bna_communications',
+                subject,
+                summary: subject,
+                body,
+                contact_id: row.contact_id || metadata.contact_id || null,
+                contact_name: fromName || metadata.contact_name || 'General contact',
+                contact_email: fromAddress || metadata.contact_email || '',
+                email: fromAddress || metadata.email || '',
+                project_id: row.project_id || metadata.project_id || null,
+                project_key: row.project_key || metadata.project_key || '',
+                project_name: row.project_name || metadata.project_name || '',
+                workspace_key: row.workspace_key || metadata.workspace_key || '',
+                occurred_at: row.occurred_at || row.created_at || metadata.occurred_at || '',
+                created_at: row.created_at || row.occurred_at || metadata.created_at || '',
+                external_message_id: row.external_message_id || metadata.email_message_id || '',
+                thread_key: row.thread_key || metadata.thread_key || '',
+                follow_up_required: Boolean(row.follow_up_required || metadata.follow_up_required),
+                metadata: {
+                    ...metadata,
+                    source_table: 'bna_communications',
+                    source_record_type: 'bna_communications',
+                    communication_type: communicationType,
+                    from_address: fromAddress,
+                    to_address: toAddress,
+                    communication_tags: [...new Set(['bna communications', row.provider || '', communicationType, ...metadataTags].filter(Boolean))],
+                },
+                source_context: {
+                    ...sourceContext,
+                    source: 'bna_communications',
+                    unified_communication_id: row.id || '',
+                    contact_id: row.contact_id || '',
+                    from_address: fromAddress,
+                    to_address: toAddress,
+                    message_id: row.external_message_id || metadata.email_message_id || '',
+                    status: row.status || metadata.status || '',
+                },
+            };
+        }
+
+        function mergeContactAndUnifiedCommunications(contactRows = [], unifiedRows = []) {
+            const normalizedUnifiedRows = (unifiedRows || []).map(normalizeUnifiedCommunicationRecord).filter(Boolean);
+            return communicationSortDescending(uniqueCommunicationsById([...(contactRows || []), ...normalizedUnifiedRows]));
         }
 
         function phoneTokenVariantsClient(value = '') {
@@ -35096,6 +35171,15 @@
                     if (providerErrors.length) providerIndexNotice = providerErrors.join('; ');
                 }
                 if (contactCommunicationsRes.status === 'fulfilled' && contactCommunicationsRes.value?.communications) contactCommunications = contactCommunicationsRes.value.communications;
+                if (needsContactData) {
+                    try {
+                        const unifiedCommunicationsRes = await api.getCommunications({ ...workspaceDataFilters, limit: 200 });
+                        contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, unifiedCommunicationsRes?.communications || []);
+                    } catch (error) {
+                        console.warn('Unified communications could not be loaded', error);
+                        contactCommunications = mergeContactAndUnifiedCommunications(contactCommunications, []);
+                    }
+                }
                 if (wapiPhonebookReportRes.status === 'fulfilled' && wapiPhonebookReportRes.value) wapiPhonebookReport = wapiPhonebookReportRes.value;
                 if (parentAnnouncementsRes.status === 'fulfilled' && parentAnnouncementsRes.value?.announcements) parentAnnouncements = parentAnnouncementsRes.value.announcements;
                 if (paymentsRes.status === 'fulfilled' && paymentsRes.value?.payments) payments = paymentsRes.value.payments;
