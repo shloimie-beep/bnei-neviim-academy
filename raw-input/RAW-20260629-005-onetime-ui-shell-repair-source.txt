@@ -1,0 +1,793 @@
+BNA_GOAL_MODE_EXECUTION_PACKET
+
+SEPARATE CODEX WINDOW / SEPARATE WORKTREE REQUIRED
+
+Repo:
+https://github.com/shloimie-beep/bnei-neviim-academy
+
+Operator:
+Shloimie Dratler
+
+Project:
+Rabbi Sheller / OneTimeOneTime Mishnah Class
+
+Workspace:
+rabbi_sheller_provider
+
+Project key:
+one_time_mishnah_class
+
+Brand:
+OneTimeOneTime / One Time Mishnah Class
+
+Primary issue:
+The entire Rabbi Sheller / OneTimeOneTime Operations UI shell is visually broken. This is not only the email screen and not only the contacts screen. The dashboard, communications screen, top toolbar, buttons, tab rails, right rail, dark brand panels, and layout hierarchy are all messed up.
+
+This Codex window is only for the OneTimeOneTime UI shell repair.
+
+Do not mix this with:
+- contact spreadsheet import
+- email audience import
+- Resend DNS setup
+- Stripe setup
+- payment logic
+- WAPI data import
+
+Those are separate tasks.
+
+Your job in this window:
+Fix the OneTimeOneTime UI shell so the Rabbi workspace looks normal, readable, scoped, and usable again.
+
+============================================================
+EXACT LIVE ROUTES TO AUDIT
+============================================================
+
+Audit these exact routes:
+
+1. Dashboard / Overview:
+https://bneineviimacademy.org/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider
+
+2. Communications / Overview:
+https://bneineviimacademy.org/operations?view=communications&section=overview&workspace=rabbi_sheller_provider
+
+3. Members / CRM, if route exists:
+https://bneineviimacademy.org/operations?view=members&section=overview&workspace=rabbi_sheller_provider
+
+4. Program:
+https://bneineviimacademy.org/operations?view=program&section=overview&workspace=rabbi_sheller_provider
+
+5. Tasks:
+https://bneineviimacademy.org/operations?view=tasks&section=overview&workspace=rabbi_sheller_provider
+
+6. Automations:
+https://bneineviimacademy.org/operations?view=automations&section=overview&workspace=rabbi_sheller_provider
+
+7. Integrations:
+https://bneineviimacademy.org/operations?view=integrations&section=overview&workspace=rabbi_sheller_provider
+
+8. Reporting:
+https://bneineviimacademy.org/operations?view=reporting&section=overview&workspace=rabbi_sheller_provider
+
+If the app derives project from workspace, preserve that behavior unless the route needs `project=one_time_mishnah_class`.
+If a route redirects, record the actual final route.
+
+============================================================
+OBSERVED BROKEN UI FROM SCREENSHOTS
+============================================================
+
+The operator showed screenshots of the OneTimeOneTime dashboard and communications route.
+
+Dashboard screenshot problems:
+- Huge dark empty panel consuming the center of the screen.
+- “Command Center” card floating awkwardly in the middle of empty space.
+- Right-side “Today / Needs Attention” area squeezed and unreadable.
+- Multiple tiny vertical cards/counters crammed together.
+- Top buttons/pills are awkwardly stacked and confusing.
+- Header says One Time Mishnah Class, then repeats workspace context again.
+- The whole screen looks like a broken admin/debug dashboard instead of a working Rabbi workspace.
+
+Communications screenshot problems:
+- Top toolbar shows redundant controls:
+  - One Time Mishnah Class / Provider Workspace...
+  - Ask / Search
+  - date chip
+  - New Message
+- Below that, there is another row of channel tabs:
+  - Overview
+  - Parent Messages
+  - Student Messages
+  - Provider Messages
+  - Internal Dialogue
+  - WhatsApp
+  - Email
+  - Bot Conversations
+  - Announcements
+  - Templates
+  - Support
+- Then the same categories are repeated again as right-side count cards.
+- “Top News” is filled with repeated import internal notes, not a normal communications overview.
+- The layout has huge empty branded dark space.
+- The right rail and cards are cramped.
+- It looks broken and duplicated.
+
+Operator’s plain-English direction:
+“The whole One Time One Time UI is messed up. Buttons, top panel, tabs, everything. Fix the whole UI. It looks like adding the brand colors screwed up the whole layout.”
+
+============================================================
+SOURCE OF TRUTH / REPO PROTOCOL
+============================================================
+
+Before editing anything, inspect the repo. Do not assume.
+
+Read:
+- AGENTS.md
+- BNA-START-HERE.md
+- docs/BNA-RAMBLE-TO-DONE.md
+- ops/execution-runs/latest.json
+- the active run folder and NEXT-SESSION.md
+- TASKS.md
+- ops/one-time-mishnah/operator-ui-review/2026-06-26-rabbi-ui-cleanup-implementation-map.md
+- config/brands/one-time.json
+- config/service-provider-sites/one-time.json
+- public/operations.html
+- public/css/one-time-shared-review.css
+- relevant route/action registry files
+- relevant One Time UI tests
+
+Run first:
+npm run bna:run:status
+npm run bna:run:next
+npm run bna:run:blockers
+
+If active-run validation complains about branch/worktree mismatch, do not ignore it.
+Record the conflict and either:
+1. create the correct fresh worktree/branch from the expected base, or
+2. continue only if the repo protocol allows it and document why.
+
+Create/update:
+- raw intake record for this UI complaint
+- dated requirement register under tasks-pending/ or the active execution-run structure
+- requirement IDs
+- evidence paths
+- ledger/changelog records if changes are made
+
+Stable ID format:
+- RAW-YYYYMMDD-###
+- REQ-YYYYMMDD-###
+- TASK-YYYYMMDD-###
+- DEC-YYYYMMDD-###
+- Q-YYYYMMDD-###
+
+Do not mark anything done without:
+- inspected files
+- implementation evidence
+- test evidence
+- screenshot/browser evidence
+- deployment/live smoke evidence if app-visible work is deployed
+- exact blocker if any step cannot be completed
+
+============================================================
+IMPORTANT EXISTING CONTEXT
+============================================================
+
+The repo already has a One Time UI cleanup implementation map:
+ops/one-time-mishnah/operator-ui-review/2026-06-26-rabbi-ui-cleanup-implementation-map.md
+
+Use it.
+
+Known important points from that map:
+- The live Operations UI is primarily the static Express surface at public/operations.html.
+- public/operations.html is the main conflict point.
+- One Time work is first-party BNA Operations work.
+- Do not add GHL runtime.
+- Do not expose unrelated BNA school/family/student/provider/private Operations data in Rabbi scope.
+- One Time workspace/project:
+  rabbi_sheller_provider / one_time_mishnah_class
+- Brand config:
+  config/brands/one-time.json
+- The Rabbi workspace should have clean user sections and internal platform support hidden from normal Rabbi workflow.
+- Visible controls must be classified as:
+  Ready
+  Preview only
+  Needs Rabbi decision
+  Needs Shloimie setup
+  Blocked external setup
+  Internal support only
+
+Known brand config:
+- primary_color: #080910
+- accent_color: #ede518
+- black: #080910
+- charcoal: #10131a
+- navy: #081323
+- navy_2: #102634
+- teal: #08779c
+- cyan: #0b9fc9
+- yellow: #ede518
+- cream: #faf9f4
+- white: #ffffff
+- muted: #aeb9c6
+
+Brand colors are allowed, but brand styling must not destroy layout.
+
+============================================================
+ROOT-CAUSE HYPOTHESIS TO INVESTIGATE
+============================================================
+
+Do not assume this is only a CSS color issue.
+
+Investigate these likely causes:
+1. Multiple navigation systems are rendering at the same time:
+   - global Operations top toolbar
+   - workspace chip
+   - module header
+   - module tab rail
+   - right-side count cards
+   - internal status widgets
+2. One Time brand CSS may be globally overriding the Operations shell instead of being scoped.
+3. Dark branded panel/hero treatment may be used where normal dashboard cards should be used.
+4. Top rail and subtab rail may not be separated correctly.
+5. Right rail counters may duplicate tab counts.
+6. Internal import/audit notes are being treated as normal “Top News” content.
+7. One Time provider workspace may be inheriting generic BNA dashboard widgets that are not appropriate for Rabbi workspace.
+8. Shared Operations shell may be using one layout for BNA, super-admin, and One Time, causing clutter.
+9. CSS overflow/flex/grid rules may be squeezing cards into unreadable columns.
+
+Implement the fix at the shell/layout level, not by adding one-off patches per card.
+
+============================================================
+HIGH-LEVEL TARGET DESIGN
+============================================================
+
+Goal:
+The OneTimeOneTime workspace should look like a clean service-provider command center, not like a debug screen.
+
+Use this shell hierarchy:
+
+Left sidebar:
+- Keep the workspace directory and main module nav.
+- Keep it stable unless it causes overflow.
+- Do not show irrelevant internal platform tools as normal Rabbi workflow.
+
+Top header:
+- One compact breadcrumb/title line.
+- Show workspace name once.
+- Do not repeat “One Time Mishnah Class / Provider Workspace...” in multiple places.
+- Remove or demote large Ask/Search/date/New Message controls.
+- Date may be a small secondary text/chip if needed.
+- New Message should not be primary until communications send/readiness is safe.
+
+Top module tab rail:
+- One clean horizontal tab rail for the current module.
+- Counts may live inside tab chips.
+- Do not repeat tab counts in separate right-side count cards.
+- Horizontally scrollable on small screens.
+- Active state clear but not huge.
+
+Main content:
+- Normal cards/grid.
+- No giant empty dark rectangle.
+- Useful first panel for each module.
+- Consistent max-width, spacing, padding, border radius, text contrast.
+- Import/internal logs moved to audit/import history, not main visible content.
+
+Right rail:
+- Remove duplicate count cards.
+- If kept, it should show only useful contextual summary.
+- Collapse/hide on tablet/mobile.
+- Must not squeeze main content.
+
+Brand:
+- Use One Time logo/accent/color as branding.
+- Do not let dark background consume the whole page.
+- Use dark navy/black sparingly.
+- Use yellow accent for selected state or status only.
+- Preserve readability.
+
+============================================================
+REQUIREMENTS
+============================================================
+
+REQ-ONETIME-UI-SHELL-001 — Repair One Time Operations shell globally
+
+Scope:
+- all One Time / Rabbi workspace Operations routes
+- public/operations.html
+- public/css/one-time-shared-review.css
+- any scoped CSS/layout utilities needed
+- action/route registry if visible controls change
+- tests/smokes
+
+Acceptance:
+- One Time dashboard no longer has giant empty dark area.
+- One Time communications no longer has stacked duplicate toolbar/tab/card controls.
+- Top panel is visually coherent.
+- Buttons and pills have consistent size, alignment, and visual hierarchy.
+- Workspace title appears once.
+- Internal support/debug controls are not exposed as normal Rabbi workflow.
+- BNA global Operations surfaces are not broken.
+- Layout works at:
+  1440px
+  1024px
+  768px
+  430px
+  390px
+  360px
+
+REQ-ONETIME-UI-SHELL-002 — Fix toolbar and tab hierarchy
+
+Current bad behavior:
+The screen has too many horizontal layers and duplicate controls.
+
+Implement:
+1. For Rabbi workspace routes, render one compact top header.
+2. Move module/channel tabs into the primary module rail.
+3. Remove duplicate workspace chip from top toolbar.
+4. Remove/demote date chip.
+5. Remove/demote Ask/Search unless it is normal and compact.
+6. Remove/demote New Message; if present, it must be contextual and disabled/gated where sends are blocked.
+7. Counts stay in tabs/chips.
+8. Remove duplicate right-side count cards.
+9. On mobile/tablet, tabs scroll horizontally instead of wrapping into broken rows.
+
+Acceptance:
+- Communications route has one clean tab rail.
+- Parent Messages / Provider Messages / Email / WhatsApp counts are not repeated in multiple places.
+- Top toolbar does not dominate the UI.
+- No duplicate “One Time Mishnah Class / Provider Workspace...” chip.
+
+REQ-ONETIME-UI-DASHBOARD-003 — Fix dashboard overview route
+
+Route:
+https://bneineviimacademy.org/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider
+
+Implement:
+1. Replace giant empty dark panel with a useful dashboard grid.
+2. Put “Command Center / One Time Mishnah Class” as a normal header card or remove if redundant.
+3. Create useful cards:
+   - Today / Needs Attention
+   - Open Decisions
+   - Codex Queue
+   - Contact Import Status
+   - Email Setup Status
+   - Payment Setup Status
+   - Class / Program Status
+4. Right rail should not squeeze cards into unreadable columns.
+5. Remove skinny vertical stat cards.
+6. Use compact, readable cards with normal text wrapping.
+7. Make dashboard useful even when data counts are zero.
+
+Acceptance:
+- Dashboard route looks normal and usable.
+- No floating card in a blank void.
+- No giant dark rectangle with empty center.
+- Needs Attention readable.
+- Cards do not overflow.
+
+REQ-ONETIME-UI-COMMS-004 — Fix communications route
+
+Route:
+https://bneineviimacademy.org/operations?view=communications&section=overview&workspace=rabbi_sheller_provider
+
+Required tab rail:
+- Overview
+- Parent Messages
+- Student Messages
+- Provider Messages
+- Internal Dialogue
+- WhatsApp
+- Email
+- Bot Conversations
+- Announcements
+- Templates
+- Support
+
+Implement:
+1. These tabs go in the main module tab rail.
+2. Remove duplicate right-side channel count cards.
+3. Replace or demote Top News if it is showing repeated import logs.
+4. Move import/internal logs to Import History / Audit Log / Admin Notes.
+5. Overview should show a clean summary:
+   - Email readiness
+   - WhatsApp readiness
+   - audience count
+   - no-send status
+   - latest imports
+   - blockers
+6. Email tab must be separate from WhatsApp.
+7. Parent/provider/internal/bot support lanes must be visually separated.
+8. New Message must not be primary if sending is not ready.
+
+Acceptance:
+- Communications route no longer resembles the broken screenshot.
+- Tab hierarchy is clean.
+- Import logs do not dominate the normal screen.
+- Email and WhatsApp are separate.
+- No duplicate side count cards.
+- No unsafe send action appears ready.
+
+REQ-ONETIME-UI-BUTTONS-005 — Normalize buttons and action states
+
+Implement:
+1. Normalize:
+   - primary button
+   - secondary button
+   - tab chip
+   - status chip
+   - disabled/gated button
+   - support/internal-only button
+2. Every visible Rabbi workspace control must map to one of:
+   - Ready
+   - Preview only
+   - Needs Rabbi decision
+   - Needs Shloimie setup
+   - Blocked external setup
+   - Internal support only
+3. Live email send, WhatsApp send, Stripe checkout/charge, Zoom creation, Vimeo upload, DNS/Railway actions must not look ready.
+4. Internal support-only controls should be hidden or moved to Platform Support drawer.
+5. Use accent color only for active/selected state or important status.
+6. Avoid noisy badges and tiny abbreviations that clutter the layout.
+
+Acceptance:
+- Buttons look deliberate and consistent.
+- Unsafe actions are visually gated.
+- Action watchdog passes.
+- No visible live-send/live-charge action is ready.
+
+REQ-ONETIME-UI-BRAND-006 — Scope and repair One Time brand CSS
+
+Inspect:
+- config/brands/one-time.json
+- public/css/one-time-shared-review.css
+- public/operations.html
+- any CSS classes injected for One Time workspace
+
+Implement:
+1. Keep the brand config.
+2. Scope brand CSS under a One Time workspace class.
+3. Do not allow One Time brand CSS to globally affect BNA Operations.
+4. Remove/repair CSS that causes:
+   - giant blank hero panels
+   - unreadable dark text
+   - squeezed cards
+   - overflow
+   - duplicate sticky headers
+   - clipped rails
+   - tiny unreadable stat cards
+5. Use neutral Operations card layout first, then apply One Time accent.
+6. If needed, temporarily reduce brand effects to:
+   - logo
+   - accent border
+   - selected tab color
+   - compact header accent
+
+Acceptance:
+- Brand is present but no longer breaks the layout.
+- Contrast is readable.
+- BNA workspace unaffected.
+- One Time shell stable.
+
+REQ-ONETIME-UI-MODULES-007 — Audit and stabilize all visible One Time modules
+
+Audit:
+- Dashboard
+- Watchdog, if visible
+- Program
+- Agents
+- Members
+- Community
+- Studio
+- Content
+- Live
+- Schedule
+- Communications
+- Tasks
+- Automations
+- Integrations
+- Reporting
+- Settings, if present
+
+For each route:
+1. Open the route.
+2. Verify shell/header/tab/content layout.
+3. Check for duplicate header/tab/right-rail controls.
+4. Check that the page is not a blank giant dark panel.
+5. Check mobile/tablet behavior.
+6. Fix shared shell issues centrally.
+7. Do not over-polish module content in this pass unless required to fix shell.
+
+Acceptance:
+- Main One Time routes render sane shell.
+- No route has the broken top-panel pattern.
+- No route exposes internal platform controls as normal Rabbi workflow.
+- No route loses workspace scope.
+
+REQ-ONETIME-UI-SECURITY-008 — Preserve workspace/data separation
+
+While fixing UI, do not weaken data scoping.
+
+Acceptance:
+- All Rabbi workspace routes remain scoped to:
+  rabbi_sheller_provider / one_time_mishnah_class
+- No BNA contacts, students, private goals, family records, or school data show in Rabbi workspace.
+- No raw private contact data exposed.
+- No GHL runtime added.
+- Existing tenant isolation tests pass or are strengthened.
+
+REQ-ONETIME-UI-EVIDENCE-009 — Before/after proof
+
+Before changes:
+1. Capture current screenshots/evidence for:
+   - dashboard route
+   - communications route
+   - at least one mobile width if local browser proof is available
+2. Store evidence paths in run/status.
+
+After changes:
+1. Capture after screenshots/evidence for same routes and widths.
+2. Compare layout visually.
+3. Record exact route and viewport.
+
+Acceptance:
+- Evidence paths exist.
+- Before/after proof shows the broken shell was repaired.
+- If browser screenshot tooling is unavailable, record exact blocker and use live smoke/DOM evidence.
+
+============================================================
+FILES / AREAS TO INSPECT
+============================================================
+
+Start with:
+- public/operations.html
+- public/css/one-time-shared-review.css
+- config/brands/one-time.json
+- config/service-provider-sites/one-time.json
+- src/platform/instances/one-time.js
+- src/platform/service-provider-sites/index.js
+- ops/action-registry.json
+- ops/action-registry/actions.json
+- ops/route-registry.json
+- tests/one-time-operations-ui-smoke.test.js
+- tests/one-time-shared-review-branding.test.js
+- tests/rabbi-scheller-auth-navigation-contract.test.js
+- tests/rabbi-scheller-tenant-isolation-contract.test.js
+- scripts/smoke-one-time-shared-review-live.mjs
+- scripts/smoke-communications-screening-live.mjs
+- scripts/smoke-rabbi-onetime-landing-live.mjs
+
+Search:
+git grep -n "one-time-shared-review"
+git grep -n "rabbi_sheller_provider"
+git grep -n "one_time_mishnah_class"
+git grep -n "Provider Workspace"
+git grep -n "New Message"
+git grep -n "Ask / Search"
+git grep -n "Parent Messages"
+git grep -n "Student Messages"
+git grep -n "Provider Messages"
+git grep -n "Internal Dialogue"
+git grep -n "WhatsApp"
+git grep -n "Email"
+git grep -n "Bot Conversations"
+git grep -n "Templates"
+git grep -n "Top News"
+git grep -n "Screening Pipeline"
+git grep -n "Today / Needs Attention"
+git grep -n "workspaceNavItems"
+git grep -n "workspaceNavViewIds"
+git grep -n "PROVIDER_PROGRAM_SUBTABS"
+git grep -n "syncOperationsUrl"
+git grep -n "renderServiceProviders"
+git grep -n "renderProviderProgramWorkspace"
+git grep -n "renderOneTime"
+git grep -n "currentPrimaryAction"
+git grep -n "normalizeCurrentRouteForWorkspace"
+
+============================================================
+IMPLEMENTATION GUIDANCE
+============================================================
+
+Do:
+- fix layout hierarchy centrally
+- fix duplicated controls centrally
+- scope One Time CSS
+- improve responsive behavior
+- keep normal BNA Operations working
+- update tests to verify corrected layout
+- update action registry if visible controls/states change
+- document root cause
+
+Do not:
+- create a second UI shell from scratch if the existing shell can be repaired
+- add another toolbar on top of broken toolbars
+- hide problems by deleting data panels without replacement
+- weaken route/security tests
+- remove useful One Time functionality
+- over-focus on colors while layout stays broken
+
+Suggested corrected shell structure:
+
+Left Sidebar:
+- workspace title
+- workspace directory
+- main nav modules
+
+Header:
+- compact breadcrumb: One Time Mishnah Class / [Current Module]
+- compact role/scope text if needed
+- no large duplicate workspace chip
+
+Module Tab Rail:
+- current module tabs
+- scroll horizontally on mobile
+- counts inside chips
+
+Main:
+- clean content cards/grid
+- module-specific content
+
+Context Summary:
+- optional right rail only on desktop
+- no duplicate tab counts
+- hide on mobile
+
+Platform Support:
+- internal support/debug controls hidden by default
+- accessible only by Shloimie/platform support roles if existing support drawer exists
+
+============================================================
+GUARDRAILS
+============================================================
+
+Absolutely do not:
+- send email
+- send WhatsApp
+- send SMS
+- send Telegram
+- create Stripe checkout
+- charge money
+- create payment link
+- create Zoom meeting
+- upload to Vimeo
+- mutate DNS
+- mutate Railway services
+- write to external CRM
+- add GHL/LeadConnector runtime
+- import contacts
+- commit secrets
+- commit raw private data
+- weaken workspace security
+- expose BNA private data in Rabbi workspace
+
+Allowed:
+- UI code changes
+- CSS changes
+- route/header/tab structure changes
+- action registry updates for visible control states
+- tests and smoke updates
+- local browser screenshot/evidence
+- deployment if the repo’s normal app-visible release flow is available and this branch is safe to deploy
+- live smoke after deploy if credentials are available
+
+If deployment is blocked:
+- do not claim live-fixed
+- report exact blocker
+- still provide local evidence
+
+============================================================
+REQUIRED TESTS / COMMANDS
+============================================================
+
+Initial:
+npm run bna:run:status
+npm run bna:run:next
+npm run bna:run:blockers
+
+Focused tests after implementation:
+node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js
+
+Functional expansion if touched:
+node --test tests/one-time-member-library.test.js tests/one-time-classroom-calendar-community-bot.test.js tests/one-time-communications-workspace.test.js tests/live-class-infrastructure.test.js tests/operations-pwa-login.test.js tests/integrations/w4-onetime-readiness.test.js tests/provider-api-usage-readiness.test.js
+
+Watchdogs:
+npm run watchdog:actions
+npm run watchdog:security
+npm run watchdog:links
+npm run secrets:audit
+
+App/live smokes if environment and deployment authority exist:
+npm run app:smoke:one-time-shared-review
+npm run app:smoke:rabbi-onetime-landing
+npm run app:smoke:communications-screening
+npm run app:smoke:one-time-crm-contacts-ux
+npm run app:smoke:email-resend-ux
+
+Visual proof:
+- use existing audit/screenshot harness if available
+- capture dashboard and communications before/after
+- include desktop and mobile widths where possible
+
+Validation:
+npm run bna:run:validate
+
+If broad changes:
+npm test
+
+============================================================
+DEPLOYMENT / LIVE PROOF
+============================================================
+
+If the repo’s normal deployment credentials and procedure are available:
+1. deploy the app-visible UI fix according to repo conventions
+2. record deployment ID
+3. verify deployed commit
+4. run live smoke against deployed routes
+5. capture live after screenshots/evidence
+
+If deployment is not available:
+1. do not mark app-visible requirements done
+2. mark as needs deployment
+3. include local evidence and exact next deployment action
+
+============================================================
+FINAL REPORT REQUIRED
+============================================================
+
+Final Codex response must include:
+
+1. Summary
+   - include root cause
+   - explain whether brand CSS, shell hierarchy, duplicate controls, or routing caused the issue
+
+2. Requirements created/updated
+   - list IDs and statuses
+
+3. Files inspected
+
+4. Files changed
+
+5. Routes audited
+   - dashboard
+   - communications
+   - other One Time modules checked
+
+6. UI shell changes
+   - header/top toolbar
+   - tab rail
+   - main content
+   - right rail
+   - buttons
+   - brand CSS
+
+7. Before/after evidence
+   - screenshots or evidence paths
+   - viewport sizes
+
+8. Tests/commands run
+   - exact commands
+   - pass/fail
+   - blockers
+
+9. Deployment/live smoke
+   - deployment ID if deployed
+   - live smoke result if run
+   - exact blocker if not deployed
+
+10. Guardrail proof
+   - no email sent
+   - no WhatsApp sent
+   - no Stripe charge
+   - no DNS/Railway/external CRM mutation
+   - no contact import
+   - no secrets exposed
+
+11. Remaining UI issues
+   - only real unresolved issues
+   - exact next action
+
+12. Next step
+   - one concrete next action for Shloimie or Codex
+
+Do not return only a plan.
+Fix the OneTimeOneTime UI shell.
+Work until the UI repair requirements are terminal or precisely blocked.

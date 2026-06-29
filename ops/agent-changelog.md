@@ -27048,3 +27048,11 @@ Guardrails held: no Drive write, no production DB mutation, no class backfill,
 no raw transcript export, no AI call, no paid retranscription, no send/publish,
 no charge/access grant, no credential/account/DNS change, and no broad Drive
 sync.
+
+## 2026-06-29 - One Time Operations UI shell repair local verification
+
+- Registered `RAW-20260629-005` and execution run `2026-06-29-onetime-ui-shell-repair` in the clean release worktree.
+- Repaired the One Time Operations shell locally: compact topbar, shared Communications module rail, One Time dashboard cards, separated communications import audit history, regenerated action coverage/parity reports, and scoped broad One Time review CSS selectors.
+- Fixed a content topic recursion that blocked the One Time Operations browser smoke before Drive preview.
+- Verification passed: focused 43-test suite, action/security/link watchdogs, secrets audit, run validation, and before/after local browser evidence.
+- Release status: blocked pending deploy/live Railway smoke; no email, WhatsApp, SMS, Telegram report, payment, DNS/Railway mutation, contact import, external CRM/GHL, secrets, or raw private data action was performed.

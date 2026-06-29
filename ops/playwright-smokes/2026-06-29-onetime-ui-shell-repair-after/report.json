@@ -1,0 +1,3013 @@
+{
+  "ok": true,
+  "phase": "after",
+  "screenshotMode": "chrome-headless-viewport",
+  "productionWrites": false,
+  "externalActionsPerformed": false,
+  "captures": [
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Dashboard / Overview Ask 29 Jun One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Dashboard Overview Overview 2 Activity 2 Alerts 0 Today 0 Recent Updates 1 One Time Command Center Today / Needs Attention A scoped Rabbi workspace dashboard for launch work, communications readiness, program status, and blockers. No email, WhatsApp, payment, access, DNS, Railway, contact import, or external CRM action runs from this overview.",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": true,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-dashboard-overview",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+      "scrollHeight": 2550,
+      "scrollWidth": 1440,
+      "topFilterModule": "dashboard",
+      "topFilterText": "Dashboard Overview Overview 2 Activity 2 Alerts 0 Today 0 Recent Updates 1",
+      "topbarText": "One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Overview 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Activity 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Alerts 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Today 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Recent Updates 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open Tasks"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Review"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "View"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open CRM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Email"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Review"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Setup"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-dashboard-overview.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Communications / Overview Ask 29 Jun One Time Mishnah Class / Communications / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Communications Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements 0 Templates 0 Support Threads 0 Settings 0 Messages Communications Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": true,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": true,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": true,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-communications-overview",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=communications&section=overview&workspace=rabbi_sheller_provider",
+      "scrollHeight": 2639,
+      "scrollWidth": 1440,
+      "topFilterModule": "communications",
+      "topFilterText": "Communications Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements 0 Templates 0 Support Threads 0 Settings 0",
+      "topbarText": "One Time Mishnah Class / Communications / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Overview 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Parent Messages 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Student Messages 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Provider Messages 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Internal Dialogue 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "WhatsApp 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Email 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Bot Conversations 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Announcements 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Templates 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Support Threads 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Parent Lead 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Parent Accountability 0 Inbound messages are tagged into this first-party pipeli"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Student Issue 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Provider 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Payment 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Support 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Urgent Needs Attention 0 Inbound messages are tagged into this first-party pipel"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "General 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-communications-overview.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Members / Participants / Members Ask 29 Jun One Time Mishnah Class / Members / Participants / Members Participants / Members Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Open Members Members Participants / Members Overview 1 Participants / Members 1 CRM Contacts 1 Email Contacts 0 Participant Parents 0 Questions / Posts 0 Payment / Access 0 Messages / Help 0 Provider Roster Participants / Members Rabbi Sheller users are participants/members unless actually enrolled in BNA.",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-members-participants",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=contacts&section=participants&workspace=rabbi_sheller_provider",
+      "scrollHeight": 1000,
+      "scrollWidth": 1440,
+      "topFilterModule": "contacts",
+      "topFilterText": "Members Participants / Members Overview 1 Participants / Members 1 CRM Contacts 1 Email Contacts 0 Participant Parents 0 Questions / Posts 0 Payment / Access 0 Messages / Help 0",
+      "topbarText": "One Time Mishnah Class / Members / Participants / Members Participants / Members Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Open Members",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open Members"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Overview 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Participants / Members 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "CRM Contacts 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Email Contacts 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Participant Parents 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Questions / Posts 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Payment / Access 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Messages / Help 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-members-participants.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Program / Mishnayos Membership Ask 29 Jun One Time Mishnah Class / Program / Mishnayos Membership Mishnayos Membership Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Open Schedule Program Mishnayos Membership Program Overview 1 Launch / Checkout 0 Mishnayos Membership 0 Membership Tiers 0 7:00 Class 0 Worksheets / Source Sheets 0 Questions / Posts 0 Payment / Access 0 Provider Settings 1 Provider Workspace One Time Mishnah Class Rabbi Sheller is the current service provider ",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-program-membership",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=service_providers&section=program&workspace=rabbi_sheller_provider",
+      "scrollHeight": 1201,
+      "scrollWidth": 1440,
+      "topFilterModule": "service_providers",
+      "topFilterText": "Program Mishnayos Membership Program Overview 1 Launch / Checkout 0 Mishnayos Membership 0 Membership Tiers 0 7:00 Class 0 Worksheets / Source Sheets 0 Questions / Posts 0 Payment / Access 0 Provider Settings 1",
+      "topbarText": "One Time Mishnah Class / Program / Mishnayos Membership Mishnayos Membership Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Open Schedule",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open Schedule"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program Overview 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Launch / Checkout 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Mishnayos Membership 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Membership Tiers 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "7:00 Class 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Worksheets / Source Sheets 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Questions / Posts 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Payment / Access 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Provider Settings 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-program-membership.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Tasks / All Tasks Ask 29 Jun One Time Mishnah Class / Tasks / All Tasks All Tasks Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Decisions Tasks All Tasks My Tasks 0 One Time Tasks 2 All Tasks 0 Codex Queue 2 Blocked 0 Due Soon 0 Schedule 0 Done / Activity 2 Full History / Search 2 Archived 0 Decisions 0 Needs My Decision 0 Needs Rabbi Scheller 0 Needs External Owner 0 Decided 0 Superseded 0 Archived Decisions 0 Rabbi / One Time Workspace Task Dialogue Board Decisions, block",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-tasks",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=tasks&section=tasks&workspace=rabbi_sheller_provider",
+      "scrollHeight": 3873,
+      "scrollWidth": 1440,
+      "topFilterModule": "tasks",
+      "topFilterText": "Tasks All Tasks My Tasks 0 One Time Tasks 2 All Tasks 0 Codex Queue 2 Blocked 0 Due Soon 0 Schedule 0 Done / Activity 2 Full History / Search 2 Archived 0 Decisions 0 Needs My Decision 0 Needs Rabbi Scheller 0 Needs External Owner 0 Decided 0 Superseded 0 Archived Decisions 0",
+      "topbarText": "One Time Mishnah Class / Tasks / All Tasks All Tasks Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Decisions",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Decisions"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "My Tasks 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Tasks 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "All Tasks 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Codex Queue 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Blocked 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Due Soon 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Done / Activity 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Full History / Search 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Archived 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Decisions 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Needs My Decision 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Needs Rabbi Scheller 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Needs External Owner 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Decided 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Superseded 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Archived Decisions 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Add Task"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Create Decision"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Clear filters"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "My Tasks 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Tasks 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "All Tasks 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Codex Queue 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Blocked 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Due Soon 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Done / Activity 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Full History / Search 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Archived 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Decisions 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Needs My Decision 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Needs Rabbi Scheller 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Needs External Owner 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Decided 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Superseded 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Archived Decisions 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "All (0)"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "All"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Today"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "This week"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Upcoming"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "No date"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time (0)"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "All owners (0)"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "All (0)"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open history"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open history"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-tasks.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Automations / Center Ask 29 Jun One Time Mishnah Class / Automations / Center Center Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Refresh Automations Center Center 0 Operations Registry Automation Center Compact automation metadata across packages, services, owners, setup blockers, logs, and related tasks. Create automation with helper Automation Center 0 visible automations 0 registry items loaded. Run controls stay outside this read/write metadata surface. Package All Se",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-automations",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=automations&section=center&workspace=rabbi_sheller_provider",
+      "scrollHeight": 1000,
+      "scrollWidth": 1440,
+      "topFilterModule": "automations",
+      "topFilterText": "Automations Center Center 0",
+      "topbarText": "One Time Mishnah Class / Automations / Center Center Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Refresh",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Refresh"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Center 0"
+        },
+        {
+          "actionId": "ACTION-HELPER-CREATE-AUTOMATION",
+          "disabled": false,
+          "state": "working",
+          "text": "Create automation with helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Apply"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Refresh"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-automations.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Integrations / Google Ask 29 Jun One Time Mishnah Class / Integrations / Google Google Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Google Integrations Google Owner Setup 1 Google 4 Communications 0 Connectors 3 Drive / Social 0 Automations 8 Operations > Integrations Google Connected services, readiness checks, dry-run actions, and approval gates stay together here. Google Workspace OAuth not configured Canonical route: Operations > Integrations > Google. Natural-language",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-integrations",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=integrations&section=google&workspace=rabbi_sheller_provider",
+      "scrollHeight": 4217,
+      "scrollWidth": 1440,
+      "topFilterModule": "integrations",
+      "topFilterText": "Integrations Google Owner Setup 1 Google 4 Communications 0 Connectors 3 Drive / Social 0 Automations 8",
+      "topbarText": "One Time Mishnah Class / Integrations / Google Google Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Google",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Google"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Owner Setup 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Google 4"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Connectors 3"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Drive / Social 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations 8"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Preview Decision Draft"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Copy Phrase"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Find/list"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Doc preview"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Folder preview"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Move preview"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Test connection"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Sync preview"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "8-week plan"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Test connection"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "preview",
+          "text": "Sync preview"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Topic/material"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Test connection"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Place ID"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Locations"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Test connection"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-integrations.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Reporting / Overview Ask 29 Jun One Time Mishnah Class / Reporting / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Open Tasks Reporting Overview Overview 0 By Workspace 2 By Parent 0 By Student 0 By Provider 1 By Bot 0 Errors 0 Budgets / Limits 0 Settings 0 Usage API Usage Usage is grouped by workspace, role/account, provider, bot, and Studio provider jobs where existing logs support it. Token/cost values stay blank until backend tracking is added for prov",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 1000,
+      "label": "desktop-1440-reporting",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=api_usage&section=overview&workspace=rabbi_sheller_provider",
+      "scrollHeight": 1080,
+      "scrollWidth": 1440,
+      "topFilterModule": "api_usage",
+      "topFilterText": "Reporting Overview Overview 0 By Workspace 2 By Parent 0 By Student 0 By Provider 1 By Bot 0 Errors 0 Budgets / Limits 0 Settings 0",
+      "topbarText": "One Time Mishnah Class / Reporting / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Open Tasks",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "School"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Service Provider"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Platform Operations Super Admin / Member Super Admin"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Bnei Neviim Academy School / Member School"
+        },
+        {
+          "actionId": "ACTION-ONETIME-WORKSPACE-VIEW",
+          "disabled": false,
+          "state": "working",
+          "text": "One Time Mishnah Class Service Provider / project owner Current"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "blocked",
+          "text": "Dratler Family Family / Member Family"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open workspace settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Dashboard DB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Watchdog WG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program PG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Agents AG"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Members MB"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Community CO"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content CT"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Live LC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Schedule SC"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Communications CM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Tasks TS"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Automations AU"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Integrations IN"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Reporting RP"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings SE"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Help"
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open Tasks"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Overview 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "By Workspace 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "By Parent 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "By Student 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "By Provider 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "By Bot 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Errors 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Budgets / Limits 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 1440,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/desktop-1440-reporting.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Dashboard / Overview Ask 29 Jun One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Dashboard Overview Overview 2 Activity 2 Alerts 0 Today 0 Recent Updates 1 One Time Command Center Today / Needs Attention A scoped Rabbi workspace dashboard for launch work, communications readiness, program status, and blockers. No email, WhatsApp, payment, access, DNS, Railway, contact import, or external CRM action runs from this overview.",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": false,
+      "hasOneTimeDashboard": true,
+      "hasReadinessPanel": false,
+      "hasSchoolStudentsNav": false,
+      "height": 900,
+      "label": "mobile-390-dashboard-overview",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+      "scrollHeight": 3802,
+      "scrollWidth": 390,
+      "topFilterModule": "dashboard",
+      "topFilterText": "Dashboard Overview Overview 2 Activity 2 Alerts 0 Today 0 Recent Updates 1",
+      "topbarText": "One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": ""
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Overview 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Activity 2"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Alerts 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Today 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Recent Updates 1"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open Tasks"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Review"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "View"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open CRM"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Email"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Review"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Program"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Setup"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Open"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 390,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/mobile-390-dashboard-overview.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Communications / Overview Ask 29 Jun One Time Mishnah Class / Communications / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask Communications Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements 0 Templates 0 Support Threads 0 Settings 0 Messages Communications Parent, student, provider, internal, WhatsApp, email, and bot conversations are separated by permission",
+      "currentRole": "",
+      "currentWorkspace": "",
+      "hasAccountingNav": false,
+      "hasCommunicationsFilterRail": true,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasImportHistory": true,
+      "hasOneTimeDashboard": false,
+      "hasReadinessPanel": true,
+      "hasSchoolStudentsNav": false,
+      "height": 900,
+      "label": "mobile-390-communications-overview",
+      "navLabels": [
+        "Dashboard DB",
+        "Watchdog WG",
+        "Program PG",
+        "Agents AG",
+        "Members MB",
+        "Community CO",
+        "Content CT",
+        "Live LC",
+        "Schedule SC",
+        "Communications CM",
+        "Tasks TS",
+        "Automations AU",
+        "Integrations IN",
+        "Reporting RP",
+        "Settings SE"
+      ],
+      "route": "/operations?view=communications&section=overview&workspace=rabbi_sheller_provider",
+      "scrollHeight": 2398,
+      "scrollWidth": 390,
+      "topFilterModule": "communications",
+      "topFilterText": "Communications Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements 0 Templates 0 Support Threads 0 Settings 0",
+      "topbarText": "One Time Mishnah Class / Communications / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+      "visibleButtons": [
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": ""
+        },
+        {
+          "actionId": "ACTION-OPERATIONS-HELPER-OPEN",
+          "disabled": false,
+          "state": "working",
+          "text": "Ask"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Overview 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Parent Messages 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Student Messages 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Provider Messages 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Internal Dialogue 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "WhatsApp 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Email 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Bot Conversations 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Announcements 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Templates 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Support Threads 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Settings 0"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Parent Lead 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Parent Accountability 0 Inbound messages are tagged into this first-party pipeli"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Student Issue 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Provider 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Payment 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Content 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Support 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Urgent Needs Attention 0 Inbound messages are tagged into this first-party pipel"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "General 0 Inbound messages are tagged into this first-party pipeline."
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "x"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "working",
+          "text": "Teach helper"
+        },
+        {
+          "actionId": "",
+          "disabled": false,
+          "state": "gated",
+          "text": "Send"
+        }
+      ],
+      "width": 390,
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/mobile-390-communications-overview.png"
+    }
+  ],
+  "consoleErrors": [],
+  "checks": {
+    "communicationsUsesTopFilterRail": true,
+    "communicationsTopbarRailRemoved": true,
+    "communicationsOverviewImportPreviewRemoved": true,
+    "mobileNoHorizontalOverflow": true,
+    "providerWorkspaceScoped": true,
+    "schoolNavHidden": true,
+    "providerWorkspaceScopeSignal": "route workspace=rabbi_sheller_provider plus visible topbar One Time Mishnah Class / Scoped: one_time_mishnah_class"
+  }
+}

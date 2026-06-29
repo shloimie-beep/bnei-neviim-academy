@@ -1,39 +1,34 @@
 body.one-time-operations-active,
 [data-one-time-rabbi-dashboard],
 [data-one-time-rabbi-module] {
-  --ot-ops-background: #080910;
-  --ot-ops-panel: #10131a;
-  --ot-ops-card: #081323;
-  --ot-ops-card-strong: #102634;
-  --ot-ops-border: rgba(174, 185, 198, 0.24);
-  --ot-ops-border-strong: rgba(237, 229, 24, 0.36);
-  --ot-ops-text: #ffffff;
-  --ot-ops-muted-text: #aeb9c6;
+  --ot-ops-background: #faf9f4;
+  --ot-ops-panel: #ffffff;
+  --ot-ops-card: #ffffff;
+  --ot-ops-card-strong: #f5fbfd;
+  --ot-ops-border: rgba(8, 19, 35, 0.12);
+  --ot-ops-border-strong: rgba(8, 119, 156, 0.28);
+  --ot-ops-text: #081323;
+  --ot-ops-muted-text: #4b5563;
   --ot-ops-accent: #0b9fc9;
   --ot-ops-accent-deep: #08779c;
   --ot-ops-warning-gated: #ede518;
   --ot-ops-warning-soft: rgba(237, 229, 24, 0.14);
   --ot-ops-success-ready: #08779c;
   --ot-ops-success-soft: rgba(8, 119, 156, 0.18);
-  --ot-ops-preview-no-write: #faf9f4;
-  --ot-ops-preview-soft: rgba(250, 249, 244, 0.12);
+  --ot-ops-preview-no-write: #08779c;
+  --ot-ops-preview-soft: rgba(8, 119, 156, 0.1);
   --ot-ops-logo: url("/images/one-time/brand/onetimelogo.webp");
   --ot-ops-hero-portrait: url("/images/one-time/brand/onetime-hero-vertical.webp");
   --ot-ops-radius: 8px;
-  --ot-ops-shadow: 0 20px 56px rgba(8, 9, 16, 0.24);
+  --ot-ops-shadow: 0 16px 36px rgba(8, 19, 35, 0.1);
   color: var(--ot-ops-text);
 }
 
-body.one-time-operations-active .ops-main,
-[data-one-time-rabbi-dashboard],
-[data-one-time-rabbi-module] {
-  background:
-    linear-gradient(180deg, rgba(8, 9, 16, 0.98), rgba(8, 19, 35, 0.95) 42%, rgba(16, 38, 52, 0.92)),
-    var(--ot-ops-background);
+body.one-time-operations-active .ops-main {
+  background: linear-gradient(180deg, #ffffff 0%, #f1f8fa 54%, #faf9f4 100%);
 }
 
 body.one-time-operations-active .one-time-ops-dashboard-hero,
-body.one-time-operations-active [data-one-time-rabbi-dashboard],
 [data-one-time-rabbi-dashboard].one-time-ops-dashboard-hero,
 [data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero {
   overflow: hidden;
@@ -85,8 +80,8 @@ body.one-time-operations-active .one-time-approval-packet,
   min-width: 0;
   border: 1px solid var(--ot-ops-border);
   border-radius: var(--ot-ops-radius);
-  background: linear-gradient(180deg, rgba(16, 38, 52, 0.94), rgba(8, 19, 35, 0.94));
-  box-shadow: 0 14px 34px rgba(8, 9, 16, 0.18);
+  background: var(--ot-ops-panel);
+  box-shadow: var(--ot-ops-shadow);
   padding: 14px;
 }
 
@@ -113,7 +108,7 @@ body.one-time-operations-active .one-time-output-state,
   min-width: 0;
   border: 1px solid var(--ot-ops-border);
   border-radius: var(--ot-ops-radius);
-  background: rgba(250, 249, 244, 0.08);
+  background: var(--ot-ops-card);
   color: var(--ot-ops-text);
   padding: 12px;
 }
@@ -149,7 +144,7 @@ body.one-time-operations-active .one-time-ops-chip[data-state="gated"],
 [data-one-time-rabbi-module] .one-time-ops-chip[data-state="gated"] {
   border-color: rgba(237, 229, 24, 0.5);
   background: var(--ot-ops-warning-soft);
-  color: var(--ot-ops-warning-gated);
+  color: #5f5200;
 }
 
 body.one-time-operations-active .one-time-output-state.approved,
@@ -158,7 +153,7 @@ body.one-time-operations-active .one-time-ops-chip[data-state="ready"],
 [data-one-time-rabbi-module] .one-time-ops-chip[data-state="ready"] {
   border-color: rgba(8, 119, 156, 0.62);
   background: var(--ot-ops-success-soft);
-  color: #ffffff;
+  color: var(--ot-ops-accent-deep);
 }
 
 body.one-time-operations-active .one-time-ops-chip[data-state="preview"],
@@ -187,7 +182,7 @@ body.one-time-operations-active .one-time-ops-chip[data-state="blocked"],
   border: 1px solid rgba(237, 229, 24, 0.46);
   border-radius: 999px;
   background: rgba(237, 229, 24, 0.12);
-  color: var(--ot-ops-warning-gated);
+  color: #5f5200;
   font-size: 11px;
   font-weight: 800;
   line-height: 1.2;
@@ -234,7 +229,6 @@ body.one-time-operations-active .one-time-ops-mobile-button-row a,
 
 @media (max-width: 640px) {
   body.one-time-operations-active .one-time-ops-dashboard-hero,
-  body.one-time-operations-active [data-one-time-rabbi-dashboard],
   [data-one-time-rabbi-dashboard].one-time-ops-dashboard-hero,
   [data-one-time-rabbi-dashboard] .one-time-ops-dashboard-hero {
     grid-template-columns: 1fr;

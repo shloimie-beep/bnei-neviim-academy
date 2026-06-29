@@ -1866,6 +1866,132 @@
             padding: 12px;
         }
 
+        .communications-overview-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+            gap: 14px;
+            align-items: start;
+        }
+
+        .communications-main-stack,
+        .communications-context-stack {
+            display: grid;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .ops-topbar-context-note {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: thin;
+        }
+
+        .ops-brand-actions.is-one-time > span.ops-brand-chip {
+            display: none;
+        }
+
+        .ops-brand-actions.is-one-time .ops-brand-chip {
+            min-height: 32px;
+            padding: 6px 8px;
+        }
+
+        .one-time-dashboard-shell {
+            display: grid;
+            gap: 14px;
+        }
+
+        .one-time-dashboard-summary {
+            border: 1px solid rgba(8, 119, 156, 0.18);
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: var(--ops-card-shadow);
+            padding: 18px;
+        }
+
+        .one-time-dashboard-kicker {
+            color: #08779c;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .one-time-dashboard-title {
+            color: #081323;
+            font-size: 24px;
+            font-weight: 900;
+            line-height: 1.08;
+            margin-top: 4px;
+        }
+
+        .one-time-dashboard-copy {
+            color: #4b5563;
+            font-size: 13px;
+            line-height: 1.45;
+            margin-top: 6px;
+            max-width: 760px;
+        }
+
+        .one-time-dashboard-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .one-time-dashboard-card {
+            min-width: 0;
+            border: 1px solid rgba(8, 19, 35, 0.12);
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: var(--ops-card-shadow);
+            color: #132238;
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+        }
+
+        .one-time-dashboard-card[data-state="attention"] {
+            border-color: rgba(185, 28, 28, 0.26);
+            background: #fff8f8;
+        }
+
+        .one-time-dashboard-card[data-state="active"] {
+            border-color: rgba(8, 119, 156, 0.28);
+            background: #f5fbfd;
+        }
+
+        .one-time-dashboard-card strong {
+            color: #081323;
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .one-time-dashboard-card span {
+            color: #08779c;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .one-time-dashboard-card p {
+            color: #4b5563;
+            font-size: 12px;
+            line-height: 1.35;
+            margin: 0;
+        }
+
+        .one-time-dashboard-lists {
+            display: grid;
+            grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+            gap: 14px;
+            align-items: start;
+        }
+
         .communication-import-textarea {
             min-height: 140px;
             resize: vertical;
@@ -5365,16 +5491,20 @@
             height: 100vh;
             max-width: min(440px, calc(100vw - 28px));
             min-width: min(440px, calc(100vw - 28px));
+            pointer-events: none;
             position: fixed;
             right: 0;
             top: 0;
             transform: translateX(106%);
             transition: transform 0.2s ease;
+            visibility: hidden;
             z-index: 6601;
         }
 
         .bna-helper-panel.open {
+            pointer-events: auto;
             transform: translateX(0);
+            visibility: visible;
         }
 
         .bna-helper-header {
@@ -5820,6 +5950,14 @@
                 display: flex;
                 flex-wrap: nowrap;
                 overflow-x: auto;
+            }
+
+            .communications-overview-shell {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .one-time-dashboard-lists {
+                grid-template-columns: minmax(0, 1fr);
             }
 
             .section-tab {
@@ -6698,6 +6836,7 @@
         }
 
         .ops-brand-lockup {
+            flex: 1 1 260px;
             min-width: 0;
             display: flex;
             align-items: center;
@@ -6737,6 +6876,7 @@
 
         .ops-brand-actions {
             display: flex;
+            flex: 0 0 auto;
             flex-wrap: wrap;
             justify-content: flex-end;
             gap: 8px;
@@ -7019,9 +7159,8 @@
         }
 
         .ops-topbar-center {
-            order: 3;
-            flex: 0 0 100%;
-            max-width: 100%;
+            flex: 1 1 420px;
+            max-width: min(680px, 48vw);
             min-width: 0;
         }
 
@@ -8095,6 +8234,9 @@
                 const params = new URLSearchParams();
                 params.set('limit', String(limit));
                 if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.workspace_key) params.set('workspace_key', filters.workspace_key);
+                if (filters.project_key) params.set('project_key', filters.project_key);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/wapi/phonebook-report?' + params.toString());
             },
             applyWapiPhonebookCorrection(payload = {}) { return this.request('POST', '/wapi/phonebook-corrections', payload); },
@@ -8779,6 +8921,8 @@
             pipelines: 'pipelines',
             ramble: 'tasks',
             signups: 'contacts',
+            members: 'contacts',
+            member: 'contacts',
             billing: 'accounting',
             calendar_events: 'calendar',
             schedule: 'calendar',
@@ -8788,6 +8932,8 @@
             live_classes: 'live_classes',
             provider: 'service_providers',
             providers: 'service_providers',
+            program: 'service_providers',
+            programs: 'service_providers',
             service_provider: 'service_providers',
             service_providers: 'service_providers',
             studio: 'studio',
@@ -8807,6 +8953,8 @@
             team_admin: 'admin',
             usage: 'api_usage',
             api: 'api_usage',
+            reporting: 'api_usage',
+            reports: 'api_usage',
             roadmap: 'tasks',
             parser: 'tasks',
             intake: 'tasks',
@@ -10100,6 +10248,28 @@
             const isScoped = opsMe?.scope?.type === 'project';
             const roleLabel = currentWorkspaceRoleLabel();
             const statusChips = operationsTopbarStatusChips();
+            const oneTimeWorkspace = currentWorkspaceIsOneTime();
+            const centerHtml = oneTimeWorkspace
+                ? renderOneTimeTopbarContext()
+                : `<div class="ops-topbar-status" aria-label="Workspace status">
+                    ${statusChips.map(chip => `
+                        <button type="button" class="ops-brand-chip ${chip.tone ? `is-${chip.tone}` : ''}" onclick="${chip.action}" title="${escapeHtml(chip.title || chip.label)}">
+                            <span>${escapeHtml(chip.label)}</span>
+                            <strong>${escapeHtml(String(chip.value))}</strong>
+                        </button>
+                    `).join('')}
+                </div>`;
+            const actionsHtml = oneTimeWorkspace
+                ? `
+                    <button type="button" class="ops-brand-chip" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask</button>
+                    ${primary}
+                `
+                : `
+                    <span class="ops-brand-chip" title="${escapeHtml(roleLabel)}">${escapeHtml(opsWorkspaceLabel())}${isScoped ? ' / ' + escapeHtml(roleLabel) : ''}</span>
+                    <button type="button" class="ops-brand-chip" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask / Search</button>
+                    <span class="ops-brand-chip">${escapeHtml(new Date().toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' }))}</span>
+                    ${primary}
+                `;
             return `
                 <header class="ops-brand-topbar saas-topbar">
                     <div class="ops-brand-lockup">
@@ -10110,20 +10280,10 @@
                         </div>
                     </div>
                     <div class="ops-topbar-center">
-                        <div class="ops-topbar-status" aria-label="Workspace status">
-                            ${statusChips.map(chip => `
-                                <button type="button" class="ops-brand-chip ${chip.tone ? `is-${chip.tone}` : ''}" onclick="${chip.action}" title="${escapeHtml(chip.title || chip.label)}">
-                                    <span>${escapeHtml(chip.label)}</span>
-                                    <strong>${escapeHtml(String(chip.value))}</strong>
-                                </button>
-                            `).join('')}
-                        </div>
+                        ${centerHtml}
                     </div>
-                    <div class="ops-brand-actions" aria-label="Current workspace status">
-                        <span class="ops-brand-chip" title="${escapeHtml(roleLabel)}">${escapeHtml(opsWorkspaceLabel())}${isScoped ? ' · ' + escapeHtml(roleLabel) : ''}</span>
-                        <button type="button" class="ops-brand-chip" data-action-id="ACTION-OPERATIONS-HELPER-OPEN" data-bna-helper-open="true" aria-haspopup="dialog" aria-expanded="${bnaHelperOpen ? 'true' : 'false'}">Ask / Search</button>
-                        <span class="ops-brand-chip">${escapeHtml(new Date().toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' }))}</span>
-                        ${primary}
+                    <div class="ops-brand-actions ${oneTimeWorkspace ? 'is-one-time' : ''}" aria-label="Current workspace status">
+                        ${actionsHtml}
                     </div>
                 </header>
             `;
@@ -10164,6 +10324,16 @@
                         </div>
                     </div>
                 </nav>
+            `;
+        }
+
+        function renderOneTimeTopbarContext() {
+            return `
+                <div class="ops-topbar-context-note" data-one-time-topbar-context>
+                    <span class="status-chip">Scoped: one_time_mishnah_class</span>
+                    <span class="status-chip">No-send review</span>
+                    <span class="status-chip">${escapeHtml(currentWorkspaceRoleLabel())}</span>
+                </div>
             `;
         }
 
@@ -10221,6 +10391,7 @@
         }
 
         function currentPrimaryAction() {
+            if (currentWorkspaceIsOneTime() && currentView === 'dashboard') return '';
             if (currentView === 'pipelines') return '<button class="primary-button" onclick="createPipelineCardPrompt()">New Pipeline Card</button>';
             if (currentView === 'watchdog') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'tasks\')">Codex Work</button>';
             if (currentView === 'tasks') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'decisions\')">Decisions</button>';
@@ -10235,7 +10406,7 @@
             if (currentView === 'calendar') return '<button class="primary-button" onclick="createCalendarEventPrompt()">New Event</button>';
             if (currentView === 'service_providers' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'schedule\')">Open Schedule</button>';
             if (currentView === 'service_providers') return '<button class="primary-button" onclick="createServiceProviderPrompt()">Add Provider</button>';
-            if (currentView === 'communications') return '<button class="primary-button" onclick="createCommunicationNotePrompt()">New Message</button>';
+            if (currentView === 'communications') return '';
             if (currentView === 'internal_dialogue') return '<button class="primary-button" onclick="createInternalDialogueNotePrompt()">Add Note</button>';
             if (currentView === 'accounting') return '<button class="primary-button" onclick="setAccountingSection(\'payments\')">Open Payments</button>';
             if (currentView === 'automations') return '<button class="primary-button" onclick="refreshAutomations()">Refresh</button>';
@@ -10609,14 +10780,15 @@
         }
 
         function communicationsSubnavCounts() {
+            const visibleCommunications = contactCommunications.filter(item => !communicationIsImportAuditItem(item));
             return {
-                overview: contactCommunications.length + supportTickets.length,
-                parents: contactCommunications.filter(item => ['lead', 'signup'].includes(item.contact_type)).length,
-                students: contactCommunications.filter(item => item.contact_type === 'student').length,
-                providers: contactCommunications.filter(item => /provider|rabbi/i.test(`${item.summary || ''} ${item.body || ''}`)).length,
+                overview: visibleCommunications.length + supportTickets.length,
+                parents: visibleCommunications.filter(item => ['lead', 'signup'].includes(item.contact_type)).length,
+                students: visibleCommunications.filter(item => item.contact_type === 'student').length,
+                providers: visibleCommunications.filter(item => /provider|rabbi/i.test(`${item.summary || ''} ${item.body || ''}`)).length,
                 internal: internalMessages.length,
-                whatsapp: contactCommunications.filter(item => item.channel === 'whatsapp').length,
-                email: contactCommunications.filter(item => item.channel === 'email').length,
+                whatsapp: visibleCommunications.filter(item => item.channel === 'whatsapp').length,
+                email: visibleCommunications.filter(item => item.channel === 'email').length,
                 bots: supportTickets.filter(ticket => /bot|api|telegram/i.test(`${ticket.category || ''} ${ticket.title || ''}`)).length,
                 announcements: 0,
                 templates: 0,
@@ -10982,8 +11154,151 @@
             `;
         }
 
+        function oneTimeDashboardCount(value) {
+            const numeric = Number(value);
+            return Number.isFinite(numeric) ? numeric.toLocaleString() : String(value || 0);
+        }
+
+        function renderOneTimeDashboardCard(card = {}) {
+            const action = card.target
+                ? `<button class="task-action" type="button" data-one-time-action-state="navigate" data-button-state="working" onclick="${card.target}">${escapeHtml(card.action || 'Open')}</button>`
+                : '<button class="task-action" type="button" disabled data-one-time-action-state="blocked" data-button-state="blocked">No action</button>';
+            return `
+                <article class="one-time-dashboard-card" data-state="${escapeHtml(card.state || 'ok')}">
+                    <span>${escapeHtml(card.label || 'Status')}</span>
+                    <strong>${escapeHtml(oneTimeDashboardCount(card.value))}</strong>
+                    <p>${escapeHtml(card.note || '')}</p>
+                    ${action}
+                </article>
+            `;
+        }
+
+        function renderOneTimeDashboardOverview(metrics = operationsCommandMetrics()) {
+            const oneTimeTasks = tasks.filter(taskIsOneTimeRecord).sort(sortTasks);
+            const oneTimeOpenTasks = oneTimeTasks.filter(task => !['done', 'completed', 'archived'].includes(normalizeTaskStage(task.stage || task.status)));
+            const oneTimeDecisions = taskDecisionItems().filter(taskIsOneTimeRecord);
+            const codexQueue = oneTimeTasks.filter(taskMatchesCodexQueue);
+            const crmRows = oneTimeCrmContactRows();
+            const emailContacts = oneTimeEmailContactLeads();
+            const emailDrafts = communicationsIntegrationState?.emailDrafts || [];
+            const resend = communicationsIntegrationState?.resendHealth || {};
+            const paymentReadiness = oneTimePaymentAccessClassLinks();
+            const paymentGuardrails = paymentReadiness.guardrails || {};
+            const scheduleEvents = providerScheduleEvents();
+            const classesCount = (oneTimeClasses || []).length + scheduleEvents.length;
+            const importSummary = oneTimeCrmImportPreview();
+            const readiness = oneTimeProductReadiness();
+            const externalGateCount = Number(readiness.summary?.blocked_external_approval || 0)
+                + (resend.send_allowed ? 0 : 1)
+                + (paymentGuardrails.live_charges_enabled ? 0 : 1);
+            const cards = [
+                {
+                    label: 'Today / Needs Attention',
+                    value: oneTimeOpenTasks.length + metrics.notifications + oneTimeDecisions.length,
+                    note: 'Open One Time tasks, private alerts, and Decisions needing review.',
+                    target: "switchView('tasks')",
+                    state: oneTimeOpenTasks.length || metrics.notifications || oneTimeDecisions.length ? 'attention' : 'ok',
+                    action: 'Open Tasks'
+                },
+                {
+                    label: 'Open Decisions',
+                    value: oneTimeDecisions.length,
+                    note: 'Rabbi/Shloimie choices that unlock product, copy, access, or setup.',
+                    target: "openCommandTarget('tasks', 'decisions')",
+                    state: oneTimeDecisions.length ? 'attention' : 'ok',
+                    action: 'Review'
+                },
+                {
+                    label: 'Codex Queue',
+                    value: codexQueue.length,
+                    note: 'Machine-work status only. This does not requeue or send anything.',
+                    target: "switchView('agents')",
+                    state: codexQueue.length ? 'active' : 'ok',
+                    action: 'View'
+                },
+                {
+                    label: 'Contact Import Status',
+                    value: crmRows.length || importSummary.scoped_leads || 0,
+                    note: 'First-party One Time contacts/leads staged locally; no import is triggered here.',
+                    target: "switchView('contacts'); setCurrentSection('crm_contacts')",
+                    state: crmRows.length ? 'active' : 'ok',
+                    action: 'Open CRM'
+                },
+                {
+                    label: 'Email Setup Status',
+                    value: emailDrafts.length || emailContacts.length,
+                    note: resend.send_allowed ? 'Drafts are still confirmation-gated before send.' : 'Sender/domain readiness remains blocked or preview-only.',
+                    target: "switchView('communications'); setCurrentSection('email')",
+                    state: resend.send_allowed ? 'active' : 'attention',
+                    action: 'Email'
+                },
+                {
+                    label: 'Payment Setup Status',
+                    value: paymentGuardrails.live_charges_enabled ? 'Ready' : 'Blocked',
+                    note: 'Live charges, checkout creation, and access automation stay disabled without a separate approval packet.',
+                    target: "switchView('service_providers'); setCurrentSection('access')",
+                    state: paymentGuardrails.live_charges_enabled ? 'active' : 'attention',
+                    action: 'Review'
+                },
+                {
+                    label: 'Class / Program Status',
+                    value: classesCount,
+                    note: 'One Time class/package schedule and library status, scoped to the Rabbi workspace.',
+                    target: "switchView('service_providers'); setCurrentSection('program')",
+                    state: classesCount ? 'active' : 'ok',
+                    action: 'Program'
+                },
+                {
+                    label: 'External Gates',
+                    value: externalGateCount,
+                    note: 'Email sends, payments, Zoom/Vimeo/DNS/Railway/external CRM writes remain gated.',
+                    target: "switchView('integrations')",
+                    state: externalGateCount ? 'attention' : 'ok',
+                    action: 'Setup'
+                }
+            ];
+            return `
+                <div class="container">
+                    <div class="one-time-dashboard-shell" data-one-time-dashboard-shell data-one-time-rabbi-dashboard="operations">
+                        <section class="one-time-dashboard-summary" data-one-time-shell-summary>
+                            <div class="one-time-dashboard-kicker">One Time Command Center</div>
+                            <div class="one-time-dashboard-title">Today / Needs Attention</div>
+                            <p class="one-time-dashboard-copy">A scoped Rabbi workspace dashboard for launch work, communications readiness, program status, and blockers. No email, WhatsApp, payment, access, DNS, Railway, contact import, or external CRM action runs from this overview.</p>
+                            <div class="communication-status-strip" aria-label="One Time guardrails">
+                                <span class="status-chip">rabbi_sheller_provider</span>
+                                <span class="status-chip">one_time_mishnah_class</span>
+                                <span class="status-chip">No-send / no-charge</span>
+                                <span class="status-chip">First-party BNA Operations</span>
+                            </div>
+                        </section>
+                        <section class="one-time-dashboard-card-grid" aria-label="One Time dashboard status cards">
+                            ${cards.map(renderOneTimeDashboardCard).join('')}
+                        </section>
+                        <div class="one-time-dashboard-lists">
+                            <section class="focus-panel" aria-label="One Time tasks">
+                                <div class="task-section-header"><h3>One Time Work</h3><span>${oneTimeOpenTasks.length} open</span></div>
+                                <div class="task-list">${oneTimeOpenTasks.length ? oneTimeOpenTasks.slice(0, 6).map(task => renderTaskCard(task, taskColumn(task) || 'overview')).join('') : '<div class="empty-state">No One Time tasks are currently open.</div>'}</div>
+                            </section>
+                            <section class="focus-panel" aria-label="One Time readiness">
+                                <div class="task-section-header"><h3>Readiness Summary</h3><span>Guarded</span></div>
+                                <div class="settings-control-grid compact">
+                                    ${renderSettingsControlRow('Contact import', `${crmRows.length || importSummary.scoped_leads || 0} staged`, 'Review-only CRM/contact state. This dashboard does not import contacts.', 'No-send')}
+                                    ${renderSettingsControlRow('Email', resend.send_allowed ? 'Configured / confirmation gated' : 'Blocked or preview-only', 'Live email still requires sender/domain readiness and exact confirmation.', resend.send_allowed ? 'Gated' : 'Blocked')}
+                                    ${renderSettingsControlRow('WhatsApp', 'Separated lane', 'WAPI/Whapi grouping and sync stay in Communications / WhatsApp.', 'No-send')}
+                                    ${renderSettingsControlRow('Payment/access', paymentGuardrails.live_charges_enabled ? 'Check gates' : 'External approval blocked', 'No checkout, charge, access grant, or payment link is created here.', 'Blocked')}
+                                    ${renderSettingsControlRow('Program', `${classesCount} class/schedule records`, 'Class and library package state stays scoped to One Time.', 'Scoped')}
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderDashboard() {
             const metrics = operationsCommandMetrics();
+            const section = dashboardSection;
+            if (currentWorkspaceIsOneTime() && section === 'overview') return renderOneTimeDashboardOverview(metrics);
             const recentTasks = [...tasks].sort(sortTasks).slice(0, 6);
             const recentComms = [...contactCommunications]
                 .sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0))
@@ -10995,7 +11310,6 @@
                 { label: 'Accounting', value: metrics.paymentExceptions, note: 'Payments or signup matches needing review.', target: "openCommandTarget('accounting')" },
                 { label: 'API / Bot', value: supportTickets.filter(ticket => /bot|api|openai|kimi|telegram/i.test(`${ticket.category || ''} ${ticket.title || ''}`)).length, note: 'Tracked from support/automation errors until usage persistence is built.', target: "switchView('api_usage')" },
             ];
-            const section = dashboardSection;
             return `
                 <div class="container">
                     ${renderDashboardCompactHeader()}
@@ -19204,6 +19518,41 @@
             ].filter(Boolean).join(' / ');
         }
 
+        function communicationIsImportAuditItem(item = {}) {
+            const metadata = communicationMetadata(item);
+            const context = communicationSourceContext(item);
+            const source = String(item.source || metadata.source || context.source || '').toLowerCase();
+            const text = [
+                item.summary,
+                item.body,
+                metadata.import_source,
+                metadata.import_batch_id,
+                metadata.source_inventory,
+                metadata.contact_import,
+                metadata.contact_import_summary,
+                context.import_batch_id,
+                context.source_inventory,
+            ].map(value => typeof value === 'string' ? value : JSON.stringify(value || '')).join(' ').toLowerCase();
+            return Boolean(
+                ['contact_import', 'contacts_import', 'one_time_launch_contacts_import', 'downloads_inventory'].includes(source)
+                || metadata.import_batch_id
+                || metadata.import_source
+                || metadata.source_inventory
+                || metadata.contact_import
+                || metadata.contact_import_summary
+                || context.import_batch_id
+                || context.source_inventory
+                || /\b(contact import|launch contact import|one[-_\s]?time import|source inventory|import applied|import audit|dedupe batch|dry-run import|downloads inventory)\b/i.test(text)
+            );
+        }
+
+        function communicationImportAuditItems(items = contactCommunications, limit = 8) {
+            return [...(items || [])]
+                .filter(communicationIsImportAuditItem)
+                .sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0))
+                .slice(0, limit);
+        }
+
         function communicationAssociatedContext(item = {}) {
             const metadata = communicationMetadata(item);
             const project = item.project_name || item.project_key || metadata.workspace_key || '';
@@ -19239,7 +19588,7 @@
 
         function communicationTopNewsItems(limit = 6) {
             return [...contactCommunications]
-                .filter(communicationIsTopNews)
+                .filter(item => communicationIsTopNews(item) && !communicationIsImportAuditItem(item))
                 .sort((a, b) => {
                     const priorityWeight = { urgent: 3, high: 2, normal: 1, low: 0 };
                     const diff = (priorityWeight[communicationPriority(b)] || 0) - (priorityWeight[communicationPriority(a)] || 0);
@@ -19267,6 +19616,40 @@
                             </article>
                         `).join('')}
                     </div>` : '<div class="empty-state">No high-priority communication events are loaded.</div>'}
+                </section>
+            `;
+        }
+
+        function renderCommunicationsReadinessPanel() {
+            const workspace = currentWorkspaceRecord();
+            const projectKey = projectKeyForWorkspaceKey();
+            const workspaceKey = currentWorkspaceKey();
+            return `
+                <section class="focus-panel" data-communications-readiness-panel>
+                    <div class="task-section-header"><h3>Readiness</h3><span>No-send</span></div>
+                    <div class="settings-control-grid compact">
+                        ${renderSettingsControlRow('Workspace scope', workspace.display_name || workspaceKey, `Project filter: ${projectKey || 'all'}. Contact, email, and WhatsApp data are first-party and workspace-scoped.`, 'Scoped')}
+                        ${renderSettingsControlRow('Email lane', currentWorkspaceIsOneTime() ? 'One Time / Rabbi sender workspace' : 'Workspace sender workspace', 'Drafts, recipients, reply-to, and send approval stay in the Email tab. Overview never sends campaigns.', 'Separated')}
+                        ${renderSettingsControlRow('WhatsApp lane', 'WAPI / Whapi grouped locally', 'Phonebook and sync tools stay in the WhatsApp tab with confirmation gates. Overview never sends WhatsApp messages.', 'Separated')}
+                        ${renderSettingsControlRow('Import safety', 'Preview, dedupe, then explicit commit', 'Contact imports are no-send first-party records. Import audit rows are separated from normal messages.', 'Guarded')}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderCommunicationAuditHistoryPanel(items = communicationImportAuditItems()) {
+            return `
+                <section class="focus-panel" data-communication-import-history>
+                    <div class="task-section-header"><h3>Import History</h3><span>${items.length} audit rows</span></div>
+                    ${items.length ? `<div class="mini-list">
+                        ${items.map(item => `
+                            <div class="mini-list-item">
+                                <strong>${escapeHtml(communicationSubject(item))}</strong>
+                                <span>${escapeHtml([formatDateTime(item.occurred_at || item.created_at), communicationSourceLabel(item), communicationAssociatedContext(item)].filter(Boolean).join(' / '))}</span>
+                                <span>${escapeHtml(limitTextClient(item.body || item.summary || '', 180))}</span>
+                            </div>
+                        `).join('')}
+                    </div>` : '<div class="empty-state">No import audit rows are loaded for this workspace.</div>'}
                 </section>
             `;
         }
@@ -19342,7 +19725,9 @@
         function renderCommunications() {
             const section = communicationsSection;
             const allItems = [...contactCommunications].sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0));
-            const filtered = communicationsForSection(allItems, section);
+            const normalItems = allItems.filter(item => !communicationIsImportAuditItem(item));
+            const filtered = communicationsForSection(normalItems, section);
+            const counts = communicationsSubnavCounts();
             return `
                 <div class="container">
                     <div class="page-heading saas-page-heading">
@@ -19353,21 +19738,36 @@
                         </div>
                     </div>
                     ${section === 'overview' ? `
-                        <section class="focus-panel">
-                            <div class="task-overview-grid">
-                                ${renderMetricButton('Parent Messages', communicationsSubnavCounts().parents, 'Parent and lead communication records.', "setCurrentSection('parents')")}
-                                ${renderMetricButton('Student Messages', communicationsSubnavCounts().students, 'Student-linked notes and messages.', "setCurrentSection('students')")}
-                                ${renderMetricButton('Provider Messages', communicationsSubnavCounts().providers, 'Provider/Rabbi-related communication.', "setCurrentSection('providers')")}
-                                ${renderMetricButton('Bot / API Issues', communicationsSubnavCounts().bots, 'Bot/API records from support tickets.', "setCurrentSection('bots')")}
+                        <div class="communications-overview-shell" data-communications-overview-shell>
+                            <div class="communications-main-stack" data-communications-main-panel>
+                                <section class="focus-panel" data-communications-overview-summary>
+                                    <div class="task-section-header"><h3>Communications Overview</h3><span>${normalItems.length} active records</span></div>
+                                    <p class="settings-disabled-note">Email, WhatsApp, parent, student, provider, bot, and support lanes are selected from the module rail. Import audit rows stay in Import History.</p>
+                                    <div class="communication-status-strip" aria-label="Communication lane summary">
+                                        <span class="status-chip">${counts.parents} parents</span>
+                                        <span class="status-chip">${counts.students} students</span>
+                                        <span class="status-chip">${counts.providers} providers</span>
+                                        <span class="status-chip">${counts.email} email</span>
+                                        <span class="status-chip">${counts.whatsapp} WhatsApp</span>
+                                        <span class="status-chip">${counts.support_threads} support</span>
+                                    </div>
+                                </section>
+                                ${renderCommunicationTopNewsPanel(communicationTopNewsItems(6))}
+                                ${renderCommunicationScreeningPanel(normalItems)}
+                                <section class="focus-panel" data-communications-recent-messages>
+                                    <div class="task-section-header"><h3>Recent Active Messages</h3><span>${normalItems.length} records</span></div>
+                                    ${normalItems.length ? `<div class="mini-list">${normalItems.slice(0, 8).map(renderCommunicationEntry).join('')}</div>` : '<div class="empty-state">No active messages are loaded for this workspace.</div>'}
+                                </section>
                             </div>
-                        </section>
-                        ${renderCommunicationTopNewsPanel(communicationTopNewsItems(6))}
-                        ${renderCommunicationScreeningPanel(allItems)}
-                        ${renderContactImportPreviewPanel()}
+                            <aside class="communications-context-stack" data-communications-no-duplicate-channel-cards>
+                                ${renderCommunicationsReadinessPanel()}
+                                ${renderCommunicationAuditHistoryPanel(communicationImportAuditItems(allItems, 8))}
+                            </aside>
+                        </div>
                     ` : ''}
                     ${section === 'whatsapp' ? renderWhatsappSyncPanel(filtered) : ''}
                     ${section === 'email' ? renderEmailOperatorWorkspace(filtered) : ''}
-                    ${['overview', 'parents', 'students', 'providers'].includes(section) ? `
+                    ${['parents', 'students', 'providers'].includes(section) ? `
                         <section class="focus-panel">
                             <div class="task-section-header"><h3>${escapeHtml(COMMUNICATIONS_SUBTABS.find(tab => tab.id === section)?.label || 'Messages')}</h3><span>${filtered.length} records</span></div>
                             ${filtered.length ? `<div class="contact-list">${filtered.map(renderCommunicationCard).join('')}</div>` : '<div class="empty-state">No messages match this lane.</div>'}
@@ -24180,7 +24580,7 @@
                     button.disabled = true;
                     button.textContent = 'Building...';
                 }
-                wapiPhonebookReport = await api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() });
+                wapiPhonebookReport = await api.getWapiPhonebookReport(100, workspaceDataProjectFilters());
                 render();
             } catch (err) {
                 alert('Whapi phonebook report failed: ' + err.message);
@@ -24332,7 +24732,7 @@
                     confirm: 'APPLY_WAPI_CORRECTION'
                 });
                 if (!result?.success) throw new Error(result?.error || 'Correction was not applied');
-                wapiPhonebookReport = await api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() });
+                wapiPhonebookReport = await api.getWapiPhonebookReport(100, workspaceDataProjectFilters());
                 render();
                 const appliedCount = result?.crm_write_result?.applied_writes?.length || 0;
                 alert(`Local WAPI correction applied${appliedCount ? ` with ${appliedCount} contact/tag write(s)` : ''}. No WhatsApp message was sent.`);
@@ -31847,7 +32247,7 @@
             return uniqueEnglishList(fallbackSentences, limit);
         }
 
-        function contentParsedSections(job, parsed = {}) {
+        function contentParsedSections(job, parsed = {}, options = {}) {
             const classNotes = [
                 ...asList(parsed.class_notes),
                 ...asList(parsed.mixed_recording_parse?.class_notes),
@@ -31885,7 +32285,10 @@
                 ...fromClassNotes('highlights', ['newsletter_highlights']),
             ]);
             const outputBullets = outputDiscussionBullets(job);
-            const inferredTopics = inferredContentTopics(job);
+            const fallbackTopicKey = options.skipTopicFallback ? '' : contentFallbackTopicKey(job);
+            const inferredTopics = fallbackTopicKey && !['other', 'uncategorized'].includes(fallbackTopicKey)
+                ? [`${contentTopicLabelForKey(fallbackTopicKey)} material`]
+                : [];
             return {
                 topics: topics.length ? topics : (outputBullets.length ? outputBullets : inferredTopics),
                 discussions,
@@ -32204,7 +32607,8 @@
         }
 
         function contentTopicKeys(job = {}) {
-            const card = contentCardModel(job, parseJsonField(job.parse_json) || {}, contentParsedSections(job, parseJsonField(job.parse_json) || {}));
+            const parsed = parseJsonField(job.parse_json) || {};
+            const card = contentCardModel(job, parsed, contentParsedSections(job, parsed, { skipTopicFallback: true }));
             const digestKeys = [
                 ...(Array.isArray(card.topic_keys) ? card.topic_keys : []),
                 ...contentDigestCategories(card).map(category => category.key)
@@ -35009,7 +35413,7 @@
                     needsContactData ? api.getParentLeads(workspaceDataFilters) : Promise.resolve({ leads: [] }),
                     needsProviderData ? api.getServiceProviders({ approved_only: false }) : Promise.resolve({ providers: [] }),
                     needsContactData ? api.getContactCommunications(workspaceDataFilters) : Promise.resolve({ communications: [] }),
-                    needsWapiPhonebookData ? api.getWapiPhonebookReport(100, { workspace: currentWorkspaceKey() }) : Promise.resolve(null),
+                    needsWapiPhonebookData ? api.getWapiPhonebookReport(100, workspaceDataProjectFilters()) : Promise.resolve(null),
                     needsAnnouncementData ? api.getParentAnnouncements(workspaceFilter ? { workspace: workspaceFilter, limit: 20 } : { limit: 20 }) : Promise.resolve({ announcements: [] }),
                     needsAccountingData ? api.getPayments() : Promise.resolve({ payments: [] }),
                     needsAccountingData ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),

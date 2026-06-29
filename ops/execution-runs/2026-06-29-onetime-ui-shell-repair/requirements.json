@@ -1,0 +1,746 @@
+{
+  "run_id": "2026-06-29-onetime-ui-shell-repair",
+  "title": "OneTime UI Shell Repair",
+  "updated_at": "2026-06-29T17:23:30+03:00",
+  "sources": [
+    {
+      "source_id": "RAW-20260629-005",
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "captured_at": "2026-06-29T14:00:00+03:00",
+      "content_fingerprint": "sha256:5d1bdb0ccdccd3ddff346200ff32198e6596f65ace73697bb16320501bf68bb3",
+      "privacy_classification": "internal_goal_mode_ui_packet_no_raw_private_data",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_attachment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "RAW-20260629-005-S001",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Create or continue an active Codex goal, use a separate clean worktree for the OneTime UI shell repair, register raw intake and requirements first, and run the execution CLI.",
+      "requirement_id": "REQ-20260629-201",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S002",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Repair the OneTime Operations shell globally across Rabbi workspace routes so the UI looks normal, readable, scoped, and usable.",
+      "requirement_id": "REQ-20260629-202",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S003",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Fix the toolbar and tab hierarchy: one compact header, one clean module rail, no duplicate workspace chip, no dominant Ask/Search/date/New Message layer, and mobile tabs scroll instead of wrapping.",
+      "requirement_id": "REQ-20260629-203",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S004",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Fix the One Time dashboard overview route by replacing the giant empty dark panel and floating Command Center card with useful readable dashboard cards.",
+      "requirement_id": "REQ-20260629-204",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S005",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Fix the communications overview route with the specified tab rail, no duplicate right-side channel count cards, demoted import logs, separate Email and WhatsApp, and gated New Message.",
+      "requirement_id": "REQ-20260629-205",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S006",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Normalize One Time buttons and action states and keep unsafe send, payment, DNS, Railway, Zoom, Vimeo, and external actions visually gated.",
+      "requirement_id": "REQ-20260629-206",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S007",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Scope and repair One Time brand CSS so brand color remains present without globally breaking BNA Operations, contrast, rails, card sizing, or layout.",
+      "requirement_id": "REQ-20260629-207",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S008",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Audit dashboard, communications, members, program, tasks, automations, integrations, reporting, and other visible One Time modules for sane shell/header/tab/content behavior.",
+      "requirement_id": "REQ-20260629-208",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S009",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Preserve workspace/data separation: Rabbi routes stay scoped to rabbi_sheller_provider / one_time_mishnah_class; no BNA private data, raw contact data, secrets, or GHL runtime.",
+      "requirement_id": "REQ-20260629-209",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S010",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Capture before/after evidence, run focused tests/watchdogs/secrets audit/run validation, and deploy/live-smoke app-visible work or record an exact blocker.",
+      "requirement_id": "REQ-20260629-210",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260629-005-S011",
+      "source_id": "RAW-20260629-005",
+      "source_statement": "Do not send email, WhatsApp, SMS, Telegram, create Stripe checkout, charge money, mutate DNS/Railway, write external CRM, import contacts, commit secrets, or commit raw private data.",
+      "requirement_id": "REQ-20260629-210",
+      "classification": "guardrail"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260629-201",
+      "title": "Register OneTime UI shell packet and clean run",
+      "expected_result": "Raw source, dated register, active execution run, clean worktree context, source mapping, and initial ledger/task queue entries exist before UI implementation starts.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S001"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "batch-00-register",
+      "depends_on": [],
+      "status": "done",
+      "implementation_status": "Goal created; raw source copied; clean release worktree selected; stale clean-worktree active run pointer recorded; UI shell requirement register and active execution run initialized.",
+      "can_continue_without_operator": true,
+      "next_action": "Implementation and local verification are recorded; release remains blocked pending deploy/live smoke proof for app-visible requirements.",
+      "acceptance_criteria": [
+        "Raw packet is preserved",
+        "Requirement register exists",
+        "Execution run validates as the active run",
+        "Separate clean worktree is used",
+        "External-action guardrails are recorded"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+        "raw-input/RAW-20260629-005-onetime-ui-shell-repair-source.txt",
+        "tasks-pending/2026-06-29-onetime-ui-shell-repair.md",
+        "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/requirements.json",
+        "ops/execution-runs/latest.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS active Codex goal created for this packet",
+        "PASS source SHA-256 recorded",
+        "PRECHECK npm run bna:run:status failed before this run existed due stale clean-worktree transcript evidence paths; recorded in TEST-RESULTS.md",
+        "PRECHECK npm run bna:run:next failed for the same stale pointer",
+        "PRECHECK npm run bna:run:blockers failed for the same stale pointer"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+        "tasks-pending/2026-06-29-onetime-ui-shell-repair.md",
+        "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/requirements.json",
+        "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/run.json",
+        "TASKS.md",
+        "memory/2026-06-29.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-29T17:20:33+03:00"
+    },
+    {
+      "id": "REQ-20260629-202",
+      "title": "Repair One Time Operations shell globally",
+      "expected_result": "All One Time / Rabbi workspace Operations routes use a clean service-provider command-center shell without giant empty dark panels, duplicate controls, unreadable right rails, or broken hierarchy.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S002"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui_shell",
+      "priority": "P0",
+      "batch_id": "batch-01-shell",
+      "depends_on": [
+        "REQ-20260629-201"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local shell repair implemented and verified. One Time Operations shell renders compact scoped topbar, shared rails, readable dashboard/cards, and stable module surfaces. Release Done is blocked only by deploy/live smoke proof.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "No giant blank dark panel on One Time dashboard or module routes",
+        "Top panel is visually coherent",
+        "Main content and right rail do not squeeze each other",
+        "BNA global Operations surfaces are not broken",
+        "Layouts work at 1440, 1024, 768, 430, 390, and 360 widths"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "public/css/one-time-shared-review.css",
+        "tests/one-time-operations-ui-smoke.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-203",
+      "title": "Fix toolbar and tab hierarchy",
+      "expected_result": "Rabbi workspace routes render one compact top header and one clean module tab rail with counts in chips, no duplicate workspace chip, and mobile horizontal tab scrolling.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S003"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "ui_navigation",
+      "priority": "P0",
+      "batch_id": "batch-01-shell",
+      "depends_on": [
+        "REQ-20260629-201"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local toolbar/tab hierarchy implemented and verified. Communications now uses the shared top filter rail; topbar channel rail removed; One Time topbar actions are compact and no-send primary message action is removed.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Communications route has one clean tab rail",
+        "Counts are not repeated in separate right-side count cards",
+        "New Message is contextual and gated or demoted",
+        "No duplicate One Time workspace chip"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "ops/action-registry.json",
+        "ops/action-registry/actions.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-204",
+      "title": "Fix One Time dashboard overview",
+      "expected_result": "The One Time dashboard overview uses useful readable cards for attention, decisions, Codex queue, contact import, email setup, payment setup, and class/program status, without a blank hero panel or skinny vertical cards.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S004"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "dashboard_ui",
+      "priority": "P0",
+      "batch_id": "batch-02-module-content",
+      "depends_on": [
+        "REQ-20260629-202"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local dashboard overview implemented and verified. One Time dashboard uses readable cards for attention, decisions, Codex queue, contact import status, email setup, payment setup, class/program status, and external gates.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Dashboard route looks normal and usable",
+        "No floating card in a blank void",
+        "Needs Attention is readable",
+        "Cards do not overflow"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "tests/one-time-operations-ui-smoke.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-205",
+      "title": "Fix One Time communications overview",
+      "expected_result": "The Communications overview uses the required channel tab rail, separates Email and WhatsApp, demotes import/internal logs to audit/history, removes duplicate side count cards, and keeps send actions preview-only or blocked.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S005"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "communications_ui",
+      "priority": "P0",
+      "batch_id": "batch-02-module-content",
+      "depends_on": [
+        "REQ-20260629-202",
+        "REQ-20260629-203"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local communications overview implemented and verified. Import audit rows stay in Import History, normal messages/top news exclude import audit rows, Email and WhatsApp lanes stay separate, and contact import preview is removed from overview.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Required tab rail is present",
+        "No duplicate right-side channel count cards",
+        "Import logs do not dominate Top News",
+        "Email and WhatsApp are separate",
+        "No unsafe send action appears ready"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/one-time-communications-workspace.test.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-206",
+      "title": "Normalize One Time buttons and action states",
+      "expected_result": "Visible Rabbi workspace controls are consistently styled and mapped to Ready, Preview only, Needs Rabbi decision, Needs Shloimie setup, Blocked external setup, or Internal support only, with unsafe actions gated.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S006"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "action_state_ui",
+      "priority": "P1",
+      "batch_id": "batch-02-module-content",
+      "depends_on": [
+        "REQ-20260629-203"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local button/action-state verification complete. Unsafe send/charge/DNS/Railway/external controls remain gated; action coverage and universal action parity reports regenerated and passed.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Buttons look deliberate and consistent",
+        "Unsafe send/charge/DNS/Railway/external actions are gated",
+        "Internal support-only controls are hidden or demoted",
+        "Action watchdog passes"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "tests/watchdog-action-registry.test.js",
+        "ops/action-registry.json",
+        "ops/action-registry/actions.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-207",
+      "title": "Scope and repair One Time brand CSS",
+      "expected_result": "One Time brand configuration remains active, but brand CSS is scoped and no longer causes blank dark hero panels, unreadable contrast, squeezed cards, overflow, clipped rails, or global BNA Operations changes.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S007"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "brand_css",
+      "priority": "P0",
+      "batch_id": "batch-01-shell",
+      "depends_on": [
+        "REQ-20260629-201"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local One Time brand CSS scoped. Broad body.one-time-review-active article/section card styling was replaced with explicit One Time review classes; review branding tests pass.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Brand remains visible",
+        "CSS is scoped to One Time workspace",
+        "BNA workspace unaffected",
+        "Contrast and overflow are readable and stable"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/css/one-time-shared-review.css",
+        "tests/one-time-shared-review-branding.test.js",
+        "config/brands/one-time.json",
+        "config/service-provider-sites/one-time.json"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-208",
+      "title": "Audit and stabilize visible One Time modules",
+      "expected_result": "Dashboard, members, program, tasks, automations, integrations, reporting, and communications routes render sane shell/header/tab/content layout and retain workspace scope at desktop, tablet, and mobile widths.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S008"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "module_ui_audit",
+      "priority": "P1",
+      "batch_id": "batch-03-audit-security",
+      "depends_on": [
+        "REQ-20260629-202",
+        "REQ-20260629-203"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local route audit complete for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; screenshots and DOM report recorded.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Main One Time routes render sane shell",
+        "No route has the broken top-panel pattern",
+        "No route exposes internal platform controls as normal Rabbi workflow",
+        "No route loses workspace scope"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "scripts/smoke-rabbi-scheller-operations-navigation-local.mjs"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-209",
+      "title": "Preserve One Time workspace and data separation",
+      "expected_result": "UI shell fixes do not weaken Rabbi workspace scoping, do not expose BNA/private/family/provider data, and do not add GHL or external CRM runtime behavior.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S009"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "tenant_security",
+      "priority": "P0",
+      "batch_id": "batch-03-audit-security",
+      "depends_on": [
+        "REQ-20260629-202"
+      ],
+      "status": "blocked",
+      "implementation_status": "Local tenant/scope verification passed. Rabbi routes stayed visibly scoped to rabbi_sheller_provider / one_time_mishnah_class; school Students/Accounting nav stayed hidden; no GHL runtime or external write path was added.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Rabbi routes remain scoped to rabbi_sheller_provider / one_time_mishnah_class",
+        "No BNA contacts/students/private records show in Rabbi workspace",
+        "No raw private contact data exposed",
+        "No GHL runtime added"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "public/operations.html",
+        "tests/rabbi-scheller-tenant-isolation-contract.test.js",
+        "tests/watchdog-route-security.test.js",
+        "server.js"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    },
+    {
+      "id": "REQ-20260629-210",
+      "title": "Capture evidence, verify, deploy or block, and close out",
+      "expected_result": "Before/after screenshots or DOM/browser evidence, focused tests, watchdogs, secrets audit, run validation, ledger/changelog, and deployment/live-smoke proof or exact blocker are recorded before final Done.",
+      "source_id": "RAW-20260629-005",
+      "source_statement_ids": [
+        "RAW-20260629-005-S010",
+        "RAW-20260629-005-S011"
+      ],
+      "source_path": "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "category": "verification",
+      "priority": "P0",
+      "batch_id": "batch-04-proof-release",
+      "depends_on": [
+        "REQ-20260629-202",
+        "REQ-20260629-203",
+        "REQ-20260629-204",
+        "REQ-20260629-205",
+        "REQ-20260629-206",
+        "REQ-20260629-207",
+        "REQ-20260629-208",
+        "REQ-20260629-209"
+      ],
+      "status": "blocked",
+      "implementation_status": "Before/after evidence, focused tests, watchdogs, secrets audit, and run validation are recorded. Deploy/live smoke remains the only closeout blocker.",
+      "can_continue_without_operator": false,
+      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "acceptance_criteria": [
+        "Before and after evidence paths exist",
+        "Dashboard and communications have desktop and mobile proof",
+        "Focused tests and watchdogs pass or exact blockers are recorded",
+        "Deployment/live-smoke proof exists before app-visible Done",
+        "No external action guardrail was violated"
+      ],
+      "evidence": [
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/report.json",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.md",
+        "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-after/report.json",
+        "ops/action-registry/one-time-action-coverage.json",
+        "ops/action-registry/universal-action-parity.json",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+      ],
+      "verification": [
+        "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
+        "PASS after viewport screenshots and DOM report captured for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; production writes: no",
+        "PASS node --test tests/one-time-action-coverage.test.js tests/watchdog-action-registry.test.js tests/watchdog-route-security.test.js tests/one-time-operations-ui-smoke.test.js tests/rabbi-scheller-auth-navigation-contract.test.js tests/rabbi-scheller-tenant-isolation-contract.test.js tests/one-time-shared-review-branding.test.js tests/one-time-review-only-server.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/wapi-phonebook-report.test.js (43/43 pass)",
+        "PASS npm run watchdog:actions",
+        "PASS npm run watchdog:security",
+        "PASS npm run watchdog:links",
+        "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
+        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/EVIDENCE.md",
+        "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/DEPLOYMENT.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "deployment_required": true,
+      "updated_at": "2026-06-29T17:20:33+03:00",
+      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
+      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
+      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "id": "TASK-20260629-005",
+      "canonical_task_key": "onetime-ui-shell-repair",
+      "title": "Execute OneTime Rabbi Operations UI shell repair packet",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "source_id": "RAW-20260629-005",
+      "requirement_id": "REQ-20260629-210",
+      "owner": "Codex",
+      "lane": "agent_activity",
+      "status": "blocked_needs_release",
+      "visible": false,
+      "summary": "Local UI shell repair and verification passed; app-visible Done is blocked pending deployment/live smoke proof."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "DEC-20260629-201",
+      "title": "Keep external actions blocked during OneTime UI shell repair",
+      "owner": "Shloimie / account owner",
+      "status": "needs_operator_decision",
+      "recommended_option": "Keep this pass UI-only and no-send/no-charge/no-import; approve any external action in a separate explicit packet.",
+      "alternatives": [
+        "Approve a separate DNS-only packet later",
+        "Approve a separate test-send packet later",
+        "Defer all external actions"
+      ],
+      "consequences": "Codex can repair UI and run local/browser tests, but cannot send, charge, import, mutate DNS/Railway, or write external CRM data.",
+      "next_action": "Provide exact account/action/recipient or domain/confirmation phrase and rollback expectation for any future external action."
+    }
+  ]
+}

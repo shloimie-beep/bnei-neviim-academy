@@ -47,7 +47,18 @@ test('contact import preview supports CSV vCard email exports before commit', ()
   assert.match(server, /No contacts?, tags, emails?, WhatsApp messages?, external CRM records?, GHL\/LeadConnector records?, or billing records? are written/i);
 });
 
-test('Operations communications view exposes top news, readable cards, WAPI status, and import preview', () => {
+test('Operations communications view exposes top news, readable cards, WAPI status, and separated import tooling', () => {
+  assert.match(operations, /data-top-filter-rail="true" data-current-module="\$\{escapeHtml\(currentView\)\}"/);
+  assert.doesNotMatch(operations, /function renderTopFilterRail\(\) \{[\s\S]{0,240}if \(currentView === 'communications'\) return ''/);
+  assert.doesNotMatch(operations, /currentView === 'communications'\s*\?\s*renderCommunicationsChannelRail\('topbar'\)/);
+  assert.match(operations, /data-communications-overview-shell/);
+  assert.match(operations, /data-communications-readiness-panel/);
+  assert.match(operations, /data-communication-import-history/);
+  assert.match(operations, /data-communications-no-duplicate-channel-cards/);
+  assert.match(operations, /function communicationIsImportAuditItem/);
+  assert.match(operations, /Import audit rows stay in Import History/);
+  assert.match(operations, /Email, WhatsApp, parent, student, provider, bot, and support lanes are selected from the module rail/);
+  assert.doesNotMatch(operations, /data-communications-no-duplicate-channel-cards[\s\S]{0,500}renderContactImportPreviewPanel/);
   assert.match(operations, /data-communication-top-news/);
   assert.match(operations, /data-communication-screening-pipeline/);
   assert.match(operations, /data-contact-import-preview/);
@@ -62,4 +73,5 @@ test('Operations communications view exposes top news, readable cards, WAPI stat
   assert.match(operations, /Live pull blocked/);
   assert.match(operations, /Bot Screening/);
   assert.match(operations, /Pipeline Stage/);
+  assert.doesNotMatch(operations, /if \(currentView === 'communications'\) return '<button class="primary-button" onclick="createCommunicationNotePrompt\(\)">New Message<\/button>'/);
 });

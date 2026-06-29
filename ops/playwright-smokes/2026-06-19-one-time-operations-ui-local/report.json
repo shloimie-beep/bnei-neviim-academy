@@ -94,6 +94,59 @@
     "topRailModule": "content",
     "hasModuleToolbar": false
   },
+  "dashboardContract": {
+    "hasShell": true,
+    "shellText": "One Time Command Center Today / Needs Attention A scoped Rabbi workspace dashboard for launch work, communications readiness, program status, and blockers. No email, WhatsApp, payment, access, DNS, Railway, contact import, or external CRM action runs from this overview. rabbi_sheller_provider one_time_mishnah_class No-send / no-charge First-party BNA Operations Today / Needs Attention 2 Open One Time tasks, private alerts, and Decisions needing review. Open Tasks Open Decisions 0 Rabbi/Shloimie choices that unlock product, copy, access, or setup. Review Codex Queue 2 Machine-work status only. This does not requeue or send anything. View Contact Import Status 1 First-party One Time contacts/leads staged locally; no import is triggered here. Open CRM Email Setup Status 0 Sender/domain readiness remains blocked or preview-only. Email Payment Setup Status Blocked Live charges, checkout creation, and access automation stay disabled without a separate approval packet. Review Class / Program Status 2 One Time class/package schedule and library status, scoped to the Rabbi workspace. Program External Gates 2 Email sends, payments, Zoom/Vimeo/DNS/Railway/external CRM writes remain gated. Setup One Time Work2 open Codex Queue Codex running Needs refresh Complete One Time Operations UI Scoped UI smoke covers One Time modules, buttons, and no-write preview actions. One Time Today Action: Codex tasks Due No due date Updated 19 Jun, 12:30 Untouched >48 hours / Urgent but inactive / Codex-ready but unclaimed / Waiting for Rabbi Sheller Open detail page for notes, timestamps, comments, and decisions. Open Codex Queue Codex blocked needs human decision Needs refresh Prepare Vimeo Zoom and Resend credentials Credential-free integration UI is ready; live provider setup waits for owner-only account actions. One Time Normal Action: owner credentials pending Waiting: owner credentials Due No due date Updated 19 Jun, 12:25 No owner / Untouched >48 hours / Codex-ready but unclaimed / Waiting for access Open detail page for notes, timestamps, comments, and decisions. Open Readiness SummaryGuarded Contact import Review-only CRM/contact state. This dashboard does not import contacts. No-send 1 staged Email Live email still requires sender/domain readiness and exact confirmation. Blocked Blocked or preview-only WhatsApp WAPI/Whapi grouping and sync stay in Communications / WhatsApp. No-send Separated lane Payment/access No checkout, charge, access grant, or payment link is created here. Blocked External approval blocked Program Class and library package state stays scoped to One Time. Scoped 2 class/schedule records",
+    "hasSummary": true,
+    "hasTopbarContext": true,
+    "topbarContextText": "Scoped: one_time_mishnah_class No-send review Workspace Owner",
+    "actionLabels": [
+      "Ask"
+    ],
+    "layout": {
+      "width": 1156,
+      "wrapperBackgroundImage": "none",
+      "wrapperDisplay": "grid"
+    }
+  },
+  "communicationsContract": {
+    "hasOverviewShell": true,
+    "hasReadiness": true,
+    "hasImportHistory": true,
+    "hasTopFilterRail": true,
+    "hasTopbarChannelRail": false,
+    "topFilterIds": [
+      "overview",
+      "parents",
+      "students",
+      "providers",
+      "internal",
+      "whatsapp",
+      "email",
+      "bots",
+      "announcements",
+      "templates",
+      "support_threads",
+      "settings"
+    ],
+    "overviewText": "Communications Overview1 active records Email, WhatsApp, parent, student, provider, bot, and support lanes are selected from the module rail. Import audit rows stay in Import History. 1 parents 0 students 0 providers 1 email 0 WhatsApp 0 support Top News1 events high Email Inbound Parent asked about One Time membership Please send the member portal link when the review-only email lane is approved. one_time_mishnah_class Screening Pipeline1 screened Parent Lead 1 Inbound messages are tagged into this first-party pipeline. Parent Accountability 0 Inbound messages are tagged into this first-party pipeline. Student Issue 0 Inbound messages are tagged into this first-party pipeline. Provider 0 Inbound messages are tagged into this first-party pipeline. Payment 0 Inbound messages are tagged into this first-party pipeline. Content 0 Inbound messages are tagged into this first-party pipeline. Support 0 Inbound messages are tagged into this first-party pipeline. Urgent Needs Attention 0 Inbound messages are tagged into this first-party pipeline. General 0 Inbound messages are tagged into this first-party pipeline. Parent behavior notes use non-clinical coaching/self-regulation categories only. No diagnosis labels are created. Recent Active Messages1 records 19 Jun, 12:10 - Email - Inbound Parent asked about One Time membership Please send the member portal link when the review-only email lane is approved. Follow-up leadparent lead ReadinessNo-send Workspace scope Project filter: one_time_mishnah_class. Contact, email, and WhatsApp data are first-party and workspace-scoped. Scoped One Time Mishnah Class Email lane Drafts, recipients, reply-to, and send approval stay in the Email tab. Overview never sends campaigns. Separated One Time / Rabbi sender workspace WhatsApp lane Phonebook and sync tools stay in the WhatsApp tab with confirmation gates. Overview never sends WhatsApp messages. Separated WAPI / Whapi grouped locally Import safety Contact imports are no-send first-party records. Import audit rows are separated from normal messages. Guarded Preview, dedupe, then explicit commit Import History1 audit rows Launch contact import source inventory 19 Jun, 12:15 / dashboard / operator_review / one_time_mishnah_class Import audit row for contact import source inventory. This is not a parent message.",
+    "topNewsText": "Top News1 events high Email Inbound Parent asked about One Time membership Please send the member portal link when the review-only email lane is approved. one_time_mishnah_class",
+    "importHistoryText": "Import History1 audit rows Launch contact import source inventory 19 Jun, 12:15 / dashboard / operator_review / one_time_mishnah_class Import audit row for contact import source inventory. This is not a parent message.",
+    "recentText": "Recent Active Messages1 records 19 Jun, 12:10 - Email - Inbound Parent asked about One Time membership Please send the member portal link when the review-only email lane is approved. Follow-up leadparent lead",
+    "overviewContactLists": 0,
+    "hasImportPreviewOnOverview": false,
+    "layout": {
+      "viewportWidth": 1440,
+      "scrollWidth": 1440,
+      "shellWidth": 1156,
+      "mainWidth": 776.546875,
+      "contextWidth": 365.453125,
+      "contextRight": 1416
+    },
+    "actionLabels": [
+      "Ask"
+    ]
+  },
   "previewRequests": [
     {
       "method": "POST",
@@ -118,6 +171,8 @@
   },
   "screenshots": [
     "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png",
+    "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/dashboard-desktop.png",
+    "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/communications-desktop.png",
     "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png"
   ],
   "guardrails": {

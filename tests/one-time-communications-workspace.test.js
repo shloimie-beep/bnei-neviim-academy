@@ -26,7 +26,8 @@ test('One Time WhatsApp operator workspace keeps the three-pane no-send contract
   assert.match(operations, /\.sort\(\(a, b\) => Date\.parse\(a\.at \|\| 0\) - Date\.parse\(b\.at \|\| 0\)\)/);
   assert.match(operations, /wapiMobilePane = 'conversation'/);
   assert.match(operations, /wapiPaneClass/);
-  assert.match(operations, /getWapiPhonebookReport\(100, \{ workspace: currentWorkspaceKey\(\) \}\)/);
+  assert.match(operations, /getWapiPhonebookReport\(100, workspaceDataProjectFilters\(\)\)/);
+  assert.match(operations, /params\.set\('project_key', filters\.project_key\)/);
   assert.match(operations, /SEND_WHATSAPP/);
   assert.match(operations, /No WhatsApp message, broadcast, or external CRM write/);
   assert.match(server, /confirm !== 'SEND_WHATSAPP'/);
@@ -77,6 +78,22 @@ test('One Time CRM Contacts UX keeps lead review scoped and no-send', () => {
   assert.match(operations, /data-one-time-crm-contact-row/);
   assert.match(server, /app\.get\('\/api\/bna\/parent-leads'/);
   assert.match(server, /appendRequestedProjectScopeCondition\(req, conditions, params, 'l\.project_id'\)/);
+});
+
+test('One Time Operations shell has compact topbar and readable dashboard surface', () => {
+  assert.match(operations, /function renderOneTimeTopbarContext/);
+  assert.match(operations, /data-one-time-topbar-context/);
+  assert.match(operations, /Scoped: one_time_mishnah_class/);
+  assert.match(operations, /function renderOneTimeDashboardOverview/);
+  assert.match(operations, /data-one-time-dashboard-shell/);
+  assert.match(operations, /data-one-time-shell-summary/);
+  assert.match(operations, /Contact Import Status/);
+  assert.match(operations, /Email Setup Status/);
+  assert.match(operations, /Payment Setup Status/);
+  assert.match(operations, /Class \/ Program Status/);
+  assert.match(operations, /No email, WhatsApp, payment, access, DNS, Railway, contact import, or external CRM action runs from this overview/);
+  assert.match(operations, /if \(currentWorkspaceIsOneTime\(\) && currentView === 'dashboard'\) return ''/);
+  assert.doesNotMatch(operations, /data-legacy-topbar-actions-hidden/);
 });
 
 test('Resend draft and send endpoints preserve reply-to while keeping external send approval-gated', () => {

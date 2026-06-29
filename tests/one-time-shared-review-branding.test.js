@@ -114,6 +114,8 @@ test('shared One Time review pages include review branding assets', () => {
   assert.match(sharedReviewCss, /body\.one-time-review-active \.portal-sidebar/);
   assert.match(sharedReviewCss, /body\.one-time-review-active \.one-time-review-hero-card/);
   assert.match(sharedReviewCss, /body\.one-time-review-active \.progress-fill/);
+  assert.doesNotMatch(sharedReviewCss, /body\.one-time-review-active article/);
+  assert.doesNotMatch(sharedReviewCss, /body\.one-time-review-active section/);
 });
 
 test('committed One Time review assets and manifest exist', () => {

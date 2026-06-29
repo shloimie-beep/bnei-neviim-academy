@@ -184,6 +184,46 @@ const projectMeetings = [
   },
 ];
 
+const contactCommunications = [
+  {
+    id: 701,
+    contact_type: 'lead',
+    contact_name: 'One Time Parent',
+    project_key: 'one_time_mishnah_class',
+    workspace_key: 'rabbi_sheller_provider',
+    channel: 'email',
+    direction: 'inbound',
+    subject: 'Parent asked about One Time membership',
+    summary: 'Parent wants the member portal link and asked about the next live class.',
+    body: 'Please send the member portal link when the review-only email lane is approved.',
+    follow_up_required: true,
+    occurred_at: '2026-06-19T09:10:00.000Z',
+    metadata: {
+      communication_pipeline: 'parent_lead',
+      communication_priority: 'high',
+      top_news: true,
+    },
+  },
+  {
+    id: 702,
+    contact_type: 'general',
+    contact_name: 'Launch Contact Import',
+    project_key: 'one_time_mishnah_class',
+    workspace_key: 'rabbi_sheller_provider',
+    channel: 'internal_note',
+    direction: 'internal_note',
+    subject: 'Launch contact import source inventory',
+    summary: 'One Time import audit: source inventory reviewed for local first-party import.',
+    body: 'Import audit row for contact import source inventory. This is not a parent message.',
+    occurred_at: '2026-06-19T09:15:00.000Z',
+    metadata: {
+      import_batch_id: 'IMPORT-ONE-TIME-SMOKE',
+      import_source: 'operator_review',
+      communication_pipeline: 'contact_import',
+    },
+  },
+];
+
 const integrationCards = [
   {
     provider: 'vimeo',
@@ -339,7 +379,7 @@ function defaultApiPayload(pathname) {
   if (pathname === '/api/bna/pipeline-cards') return { cards: [] };
   if (pathname === '/api/bna/internal-dialogue') return { threads: [], messages: [] };
   if (pathname === '/api/bna/service-providers') return { providers: [{ id: 1, provider_name: 'Rabbi Elie Scheller', contact_name: 'Rabbi Elie Scheller', status: 'review', provider_status: 'review', services: [{ service_title: 'One Time Mishnah Class' }] }] };
-  if (pathname === '/api/bna/contact-communications') return { communications: [] };
+  if (pathname === '/api/bna/contact-communications') return { communications: contactCommunications };
   if (pathname === '/api/bna/parent-leads') return { leads: [] };
   if (pathname === '/api/bna/signups') return { signups: [] };
   if (pathname === '/api/bna/payments') return { payments: [] };
@@ -478,12 +518,18 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
-  page.on('pageerror', (error) => consoleErrors.push(error.message));
+  page.on('pageerror', (error) => consoleErrors.push(error.stack || error.message));
+
+  async function closeHelperPanel() {
+    await page.evaluate(() => window.toggleBnaHelper?.(false));
+    await page.waitForFunction(() => !document.querySelector('.bna-helper-panel.open'), null, { timeout: 2000 });
+  }
 
   try {
     await page.goto(`http://127.0.0.1:${activePort}/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules`, { waitUntil: 'networkidle' });
     await page.waitForSelector('[data-top-filter-rail][data-current-module="content"]', { timeout: 15000 });
     await page.waitForSelector('[data-preview-one-time-drive-brief]', { timeout: 15000 });
+    await closeHelperPanel();
 
     const initialContract = await page.evaluate(() => {
       const navItems = window.workspaceNavItems().map((item) => ({ id: item.id, label: item.label }));
@@ -525,12 +571,181 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     assert.ok(initialContract.sidebarLabels.some((label) => /Tasks/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Content/.test(label)));
     assert.ok(initialContract.sidebarLabels.some((label) => /Community/.test(label)));
-    assert.ok(initialContract.workspaceOptions.some((option) => /Bnei Neviim Academy/.test(option.label) && option.disabled));
+    const enabledNonCurrentWorkspaces = initialContract.workspaceOptions.filter((option) => !option.current && !option.disabled);
+    const schoolWorkspaceOptions = initialContract.workspaceOptions.filter((option) => /Bnei Neviim Academy|BNA|School/.test(option.label));
+    assert.deepEqual(enabledNonCurrentWorkspaces, [], `non-current workspace switch targets must stay disabled: ${JSON.stringify(initialContract.workspaceOptions)}`);
+    assert.ok(schoolWorkspaceOptions.every((option) => option.disabled), `school workspace targets must stay disabled when rendered: ${JSON.stringify(initialContract.workspaceOptions)}`);
     assert.ok(initialContract.workspaceOptions.some((option) => /One Time Mishnah Class/.test(option.label) && option.current));
     assert.equal(initialContract.driveButton, true);
 
-    await page.getByRole('button', { name: 'Preview Drive Brief' }).click();
-    await page.waitForSelector('[data-one-time-drive-brief-preview]', { timeout: 10000 });
+    await page.evaluate(() => {
+      window.switchView('dashboard');
+      window.setCurrentSection('overview');
+    });
+    await page.waitForSelector('[data-one-time-dashboard-shell]', { timeout: 10000 });
+    const dashboardContract = await page.evaluate(() => {
+      const shell = document.querySelector('[data-one-time-dashboard-shell]');
+      const actionLabels = Array.from(document.querySelectorAll('.ops-brand-actions > button, .ops-brand-actions > span'))
+        .map((item) => item.textContent.trim().replace(/\s+/g, ' '))
+        .filter(Boolean);
+      return {
+        hasShell: Boolean(shell),
+        shellText: shell?.textContent.replace(/\s+/g, ' ').trim() || '',
+        hasSummary: Boolean(document.querySelector('[data-one-time-shell-summary]')),
+        hasTopbarContext: Boolean(document.querySelector('[data-one-time-topbar-context]')),
+        topbarContextText: document.querySelector('[data-one-time-topbar-context]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+        actionLabels,
+        layout: (() => {
+          const rect = shell?.getBoundingClientRect();
+          const wrapper = document.querySelector('[data-one-time-rabbi-dashboard="operations"]');
+          const wrapperStyle = wrapper ? getComputedStyle(wrapper) : null;
+          return {
+            width: rect?.width || 0,
+            wrapperBackgroundImage: wrapperStyle?.backgroundImage || '',
+            wrapperDisplay: wrapperStyle?.display || '',
+          };
+        })(),
+      };
+    });
+    assert.equal(dashboardContract.hasShell, true);
+    assert.equal(dashboardContract.hasSummary, true);
+    assert.equal(dashboardContract.hasTopbarContext, true);
+    assert.match(dashboardContract.topbarContextText, /Scoped: one_time_mishnah_class/);
+    assert.match(dashboardContract.shellText, /One Time Command Center/);
+    assert.match(dashboardContract.shellText, /Contact Import Status/);
+    assert.match(dashboardContract.shellText, /Email Setup Status/);
+    assert.match(dashboardContract.shellText, /Payment Setup Status/);
+    assert.match(dashboardContract.shellText, /Class \/ Program Status/);
+    assert.match(dashboardContract.shellText, /No email, WhatsApp, payment, access, DNS, Railway, contact import, or external CRM action runs from this overview/);
+    assert.deepEqual(dashboardContract.actionLabels, ['Ask']);
+    assert.ok(dashboardContract.layout.width > 900, `dashboard shell should use the main column width: ${JSON.stringify(dashboardContract.layout)}`);
+    assert.doesNotMatch(dashboardContract.layout.wrapperBackgroundImage, /one-time|onetime|rgb\(8,\s*9,\s*16\)/i);
+    await closeHelperPanel();
+    await page.screenshot({ path: path.join(outDir, 'dashboard-desktop.png'), fullPage: true });
+
+    await page.evaluate(() => {
+      window.switchView('communications');
+      window.setCurrentSection('overview');
+    });
+    await page.waitForSelector('[data-communications-overview-shell]', { timeout: 10000 });
+    await page.waitForSelector('[data-top-filter-rail][data-current-module="communications"]', { timeout: 10000 });
+    const communicationsContract = await page.evaluate(() => {
+      const actionLabels = Array.from(document.querySelectorAll('.ops-brand-actions > button, .ops-brand-actions > span'))
+        .map((item) => item.textContent.trim().replace(/\s+/g, ' '))
+        .filter(Boolean);
+      return {
+        hasOverviewShell: Boolean(document.querySelector('[data-communications-overview-shell]')),
+        hasReadiness: Boolean(document.querySelector('[data-communications-readiness-panel]')),
+        hasImportHistory: Boolean(document.querySelector('[data-communication-import-history]')),
+        hasTopFilterRail: Boolean(document.querySelector('[data-top-filter-rail][data-current-module="communications"]')),
+        hasTopbarChannelRail: Boolean(document.querySelector('[data-communications-channel-location="topbar"]')),
+        topFilterIds: Array.from(document.querySelectorAll('[data-top-filter-rail][data-current-module="communications"] [data-top-filter-id]')).map((item) => item.getAttribute('data-top-filter-id')),
+        overviewText: document.querySelector('[data-communications-overview-shell]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+        topNewsText: document.querySelector('[data-communication-top-news]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+        importHistoryText: document.querySelector('[data-communication-import-history]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+        recentText: document.querySelector('[data-communications-recent-messages]')?.textContent.replace(/\s+/g, ' ').trim() || '',
+        overviewContactLists: document.querySelectorAll('[data-communications-overview-shell] .contact-list').length,
+        hasImportPreviewOnOverview: Boolean(document.querySelector('[data-communications-overview-shell] [data-contact-import-preview]')),
+        layout: (() => {
+          const shell = document.querySelector('[data-communications-overview-shell]');
+          const main = document.querySelector('[data-communications-main-panel]');
+          const context = document.querySelector('[data-communications-no-duplicate-channel-cards]');
+          const shellRect = shell?.getBoundingClientRect();
+          const mainRect = main?.getBoundingClientRect();
+          const contextRect = context?.getBoundingClientRect();
+          return {
+            viewportWidth: document.documentElement.clientWidth,
+            scrollWidth: document.documentElement.scrollWidth,
+            shellWidth: shellRect?.width || 0,
+            mainWidth: mainRect?.width || 0,
+            contextWidth: contextRect?.width || 0,
+            contextRight: contextRect?.right || 0,
+          };
+        })(),
+        actionLabels,
+      };
+    });
+    assert.equal(communicationsContract.hasOverviewShell, true);
+    assert.equal(communicationsContract.hasReadiness, true);
+    assert.equal(communicationsContract.hasImportHistory, true);
+    assert.equal(communicationsContract.hasTopFilterRail, true);
+    assert.equal(communicationsContract.hasTopbarChannelRail, false);
+    for (const expected of ['overview', 'parents', 'students', 'providers', 'internal', 'whatsapp', 'email', 'bots', 'announcements', 'templates', 'support_threads', 'settings']) {
+      assert.ok(communicationsContract.topFilterIds.includes(expected), `missing communications rail tab ${expected}`);
+    }
+    assert.equal(communicationsContract.overviewContactLists, 0);
+    assert.equal(communicationsContract.hasImportPreviewOnOverview, false);
+    assert.ok(communicationsContract.layout.shellWidth > 900, `communications overview should use the main column width: ${JSON.stringify(communicationsContract.layout)}`);
+    assert.ok(communicationsContract.layout.mainWidth > 520, `communications main panel is too narrow: ${JSON.stringify(communicationsContract.layout)}`);
+    assert.ok(communicationsContract.layout.contextWidth > 260, `communications context panel is too narrow: ${JSON.stringify(communicationsContract.layout)}`);
+    assert.ok(communicationsContract.layout.scrollWidth <= communicationsContract.layout.viewportWidth + 1, `communications overview overflowed horizontally: ${JSON.stringify(communicationsContract.layout)}`);
+    assert.match(communicationsContract.overviewText, /Communications Overview/);
+    assert.match(communicationsContract.overviewText, /Import History/);
+    assert.match(communicationsContract.topNewsText, /Parent asked about One Time membership/);
+    assert.doesNotMatch(communicationsContract.topNewsText, /Launch contact import source inventory/);
+    assert.match(communicationsContract.importHistoryText, /Launch contact import source inventory/);
+    assert.match(communicationsContract.recentText, /Parent asked about One Time membership/);
+    assert.doesNotMatch(communicationsContract.recentText, /Launch contact import source inventory/);
+    assert.deepEqual(communicationsContract.actionLabels, ['Ask']);
+    await closeHelperPanel();
+    await page.screenshot({ path: path.join(outDir, 'communications-desktop.png'), fullPage: true });
+
+    await page.evaluate(() => {
+      window.switchView('content');
+      window.setCurrentSection('meetings');
+    });
+    await page.waitForSelector('[data-preview-one-time-drive-brief]', { timeout: 10000 });
+
+    const previewButtonState = await page.locator('[data-preview-one-time-drive-brief]').first().evaluate((node) => ({
+      disabled: node.disabled || node.getAttribute('aria-disabled') === 'true',
+      onclick: node.getAttribute('onclick') || '',
+      text: node.textContent.trim().replace(/\s+/g, ' '),
+    }));
+    assert.deepEqual(previewButtonState, {
+      disabled: false,
+      onclick: 'previewLatestOneTimeDriveBrief(event)',
+      text: 'Preview Drive Brief',
+    });
+
+    const previewButton = page.locator('[data-preview-one-time-drive-brief]').first();
+    const previewResponsePromise = page
+      .waitForResponse((response) => response.url().includes('/api/bna/project-meetings/one-time-drive-brief/preview'), { timeout: 10000 })
+      .catch((error) => error);
+    await previewButton.click();
+    const previewResponse = await previewResponsePromise;
+    if (previewResponse instanceof Error) {
+      const clickDebug = await previewButton.evaluate((node) => {
+        const rect = node.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        const top = document.elementFromPoint(x, y);
+        return {
+          buttonRect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height },
+          topElement: top ? {
+            tag: top.tagName,
+            text: top.textContent.trim().replace(/\s+/g, ' ').slice(0, 120),
+            action: top.getAttribute('data-action-id') || '',
+            preview: top.hasAttribute('data-preview-one-time-drive-brief'),
+          } : null,
+          handlerType: typeof window.previewLatestOneTimeDriveBrief,
+          currentView: window.currentView,
+          currentSection: window.currentSectionId?.(),
+        };
+      });
+      assert.fail(`Drive preview click did not issue request: ${JSON.stringify({ clickDebug, consoleErrors })}`);
+    }
+    assert.equal(previewResponse.status(), 200);
+    await page.waitForFunction(() => (
+      Boolean(document.querySelector('[data-one-time-drive-brief-preview]'))
+      || /Drive brief preview failed|Could not preview/.test(document.body.textContent || '')
+    ), null, { timeout: 10000 });
+    const drivePreviewError = await page.evaluate(() => {
+      const error = Array.from(document.querySelectorAll('.error-banner, .error-text'))
+        .map((node) => node.textContent.replace(/\s+/g, ' ').trim())
+        .find((text) => /Drive brief preview failed|Could not preview/.test(text));
+      return error || '';
+    });
+    assert.equal(drivePreviewError, '');
     const previewContract = await page.locator('[data-one-time-drive-brief-preview]').evaluate((node) => node.textContent.replace(/\s+/g, ' ').trim());
     assert.match(previewContract, /No-write Drive Brief Preview/);
     assert.match(previewContract, /one_time_mishnah_class/);
@@ -554,10 +769,14 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
 
     const moduleChecks = [
       ['tasks', /Rabbi \/ One Time Dialogue|Complete One Time Operations UI/],
+      ['contacts', /Members|CRM Contacts|One Time leads\/members|Rabbi Sheller users are participants\/members/],
+      ['service_providers', /Program|Mishnayos Membership|One Time|membership/],
       ['community', /One Time Mishnah Community|One Time community overview/],
       ['content', /Rabbi Meeting Intake|Meeting Drops|One Time Library/],
       ['live_classes', /Live Classes|Program Schedule|7:00 Mishnah Class/],
+      ['automations', /Automations|automation/i],
       ['integrations', /Integrations|Google|Communications|Connectors/],
+      ['api_usage', /Reporting|API Usage|provider bot|instrumentation/i],
     ];
 
     for (const [name, expectedText] of moduleChecks) {
@@ -566,6 +785,24 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
       await page.waitForFunction((patternSource) => new RegExp(patternSource).test(document.body.textContent), expectedText.source, { timeout: 10000 });
       const bodyText = await page.evaluate(() => document.body.textContent.replace(/\s+/g, ' ').trim());
       assert.match(bodyText, expectedText, `${name} rendered expected One Time text`);
+    }
+
+    const exactRouteAliases = [
+      ['members', 'contacts'],
+      ['program', 'service_providers'],
+      ['reporting', 'api_usage'],
+    ];
+    for (const [requestedView, expectedModule] of exactRouteAliases) {
+      await page.goto(`http://127.0.0.1:${activePort}/operations?workspace=rabbi_sheller_provider&view=${requestedView}&section=overview`, { waitUntil: 'networkidle' });
+      await page.waitForSelector(`[data-top-filter-rail][data-current-module="${expectedModule}"]`, { timeout: 10000 });
+      const aliasContract = await page.evaluate(() => ({
+        workspace: window.currentWorkspaceKey(),
+        module: document.querySelector('[data-top-filter-rail]')?.getAttribute('data-current-module') || '',
+        text: document.body.textContent.replace(/\s+/g, ' ').trim(),
+      }));
+      assert.equal(aliasContract.workspace, 'rabbi_sheller_provider');
+      assert.equal(aliasContract.module, expectedModule);
+      assert.doesNotMatch(aliasContract.text, /BNA super admin|Dratler Family private/i);
     }
 
     await page.evaluate(() => {
@@ -597,10 +834,14 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
       ok: true,
       target: '/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules',
       initialContract,
+      dashboardContract,
+      communicationsContract,
       previewRequests,
       mobileMetrics,
       screenshots: [
         path.relative(root, path.join(outDir, 'desktop.png')).replace(/\\/g, '/'),
+        path.relative(root, path.join(outDir, 'dashboard-desktop.png')).replace(/\\/g, '/'),
+        path.relative(root, path.join(outDir, 'communications-desktop.png')).replace(/\\/g, '/'),
         path.relative(root, path.join(outDir, 'mobile-agents.png')).replace(/\\/g, '/'),
       ],
       guardrails: {
@@ -612,7 +853,7 @@ test('One Time Operations UI exposes scoped modules, buttons, agents, integratio
     fs.writeFileSync(path.join(outDir, 'report.json'), JSON.stringify(report, null, 2));
     fs.writeFileSync(
       path.join(outDir, 'report.md'),
-      `# One Time Operations UI Local Smoke\n\nPASS. Scoped One Time owner UI rendered provider modules, hidden school-only Students/Accounting modules, exposed Agents as read-only scoped status, clicked the no-write Drive Brief preview, and passed mobile overflow checks.\n\n- Desktop: ${report.screenshots[0]}\n- Mobile Agents: ${report.screenshots[1]}\n- Production writes: no\n- Preview requests: ${previewRequests.length}\n`,
+      `# One Time Operations UI Local Smoke\n\nPASS. Scoped One Time owner UI rendered the repaired dashboard shell, communications overview shell, provider modules, hidden school-only Students/Accounting modules, exposed Agents as read-only scoped status, clicked the no-write Drive Brief preview, and passed mobile overflow checks.\n\n- Desktop Content: ${report.screenshots[0]}\n- Desktop Dashboard: ${report.screenshots[1]}\n- Desktop Communications: ${report.screenshots[2]}\n- Mobile Agents: ${report.screenshots[3]}\n- Production writes: no\n- Preview requests: ${previewRequests.length}\n`,
     );
   } finally {
     await browser.close();

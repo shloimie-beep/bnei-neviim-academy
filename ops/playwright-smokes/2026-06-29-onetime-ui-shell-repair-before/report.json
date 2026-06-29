@@ -1,0 +1,634 @@
+{
+  "ok": true,
+  "phase": "before",
+  "screenshotMode": "chrome-headless-viewport",
+  "note": "Captured from current working tree before final shell cleanup; this state already contained a partial dashboard/topbar repair.",
+  "productionWrites": false,
+  "captures": [
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Dashboard / Overview Ask 29 Jun One Time Mishnah Class / Dashboard / Overview Overview Scoped: one",
+      "duplicateWorkspaceMentions": 16,
+      "filterRailText": "Dashboard Overview Overview 2 Activity 2 Alerts 0 Today 0 Recent Updates 1",
+      "hasCommandCenter": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasOneTimeDashboard": true,
+      "height": 1000,
+      "label": "desktop-1440-dashboard-overview",
+      "rects": [
+        {
+          "height": 107,
+          "text": "One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+          "width": 1204,
+          "x": 236,
+          "y": 0
+        },
+        {
+          "height": 36,
+          "text": "Scoped: one_time_mishnah_class No-send review Workspace Owner",
+          "width": 1152,
+          "x": 262,
+          "y": 58
+        },
+        {
+          "height": 32,
+          "text": "Ask",
+          "width": 38,
+          "x": 1376,
+          "y": 15
+        },
+        {
+          "height": 2357,
+          "text": "One Time Command Center Today / Needs Attention A scoped Rabbi workspace dashboard for launch work, communications readiness, program status",
+          "width": 1156,
+          "x": 260,
+          "y": 210
+        }
+      ],
+      "scrollHeight": 2591,
+      "scrollWidth": 1440,
+      "topbarText": "One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+      "width": 1440,
+      "route": "/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/desktop-1440-dashboard-overview.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Communications / Overview Ask 29 Jun One Time Mishnah Class / Communications / Overview Overview O",
+      "duplicateWorkspaceMentions": 17,
+      "filterRailText": "",
+      "hasCommandCenter": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": true,
+      "hasContactImportPreviewInCommsOverview": true,
+      "hasOneTimeDashboard": false,
+      "height": 1000,
+      "label": "desktop-1440-communications-overview",
+      "rects": [
+        {
+          "height": 107,
+          "text": "One Time Mishnah Class / Communications / Overview Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dia",
+          "width": 1204,
+          "x": 236,
+          "y": 0
+        },
+        {
+          "height": 36,
+          "text": "Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements",
+          "width": 1152,
+          "x": 262,
+          "y": 58
+        },
+        {
+          "height": 32,
+          "text": "Ask",
+          "width": 38,
+          "x": 1376,
+          "y": 15
+        },
+        {
+          "height": 2436,
+          "text": "Communications Overview0 active records Email, WhatsApp, parent, student, provider, bot, and support lanes are selected from the top toolbar",
+          "width": 240,
+          "x": 1171,
+          "y": 136
+        },
+        {
+          "height": 1605,
+          "text": "ReadinessNo-send Workspace scope Project filter: one_time_mishnah_class. Contact, email, and WhatsApp data are first-party and workspace-sco",
+          "width": 280,
+          "x": 1185,
+          "y": 136
+        }
+      ],
+      "scrollHeight": 2601,
+      "scrollWidth": 1440,
+      "topbarText": "One Time Mishnah Class / Communications / Overview Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements 0 Templates 0 Support 0 Ask",
+      "width": 1440,
+      "route": "/operations?view=communications&section=overview&workspace=rabbi_sheller_provider",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/desktop-1440-communications-overview.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Dashboard / Overview Ask 29 Jun One Time Mishnah Class / Dashboard / Overview Overview Scoped: one",
+      "duplicateWorkspaceMentions": 16,
+      "filterRailText": "Dashboard Overview Overview 2 Activity 2 Alerts 0 Today 0 Recent Updates 1",
+      "hasCommandCenter": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": false,
+      "hasContactImportPreviewInCommsOverview": false,
+      "hasOneTimeDashboard": true,
+      "height": 900,
+      "label": "mobile-390-dashboard-overview",
+      "rects": [
+        {
+          "height": 0,
+          "text": "One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "height": 0,
+          "text": "Scoped: one_time_mishnah_class No-send review Workspace Owner",
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "height": 0,
+          "text": "Ask",
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "height": 3635,
+          "text": "One Time Command Center Today / Needs Attention A scoped Rabbi workspace dashboard for launch work, communications readiness, program status",
+          "width": 370,
+          "x": 10,
+          "y": 153
+        }
+      ],
+      "scrollHeight": 3802,
+      "scrollWidth": 390,
+      "topbarText": "One Time Mishnah Class / Dashboard / Overview Overview Scoped: one_time_mishnah_class No-send review Workspace Owner Ask",
+      "width": 390,
+      "route": "/operations?view=dashboard&section=overview&workspace=rabbi_sheller_provider",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/mobile-390-dashboard-overview.png"
+    },
+    {
+      "bodyTextSample": "Back One Time Mishnah Class Workspace dashboard Workspace Directory One Time Mishnah Class Service Provider / Workspace Owner Switch Choose workspace Choose a workspace type, then choose the specific workspace. Categories are Super Admin, School, Service Provider, and Family. Workspace type Super Admin School Service Provider Family Specific workspace Super Admin Platform Operations Super Admin / Member Super Admin School Bnei Neviim Academy School / Member School Service Provider One Time Mishnah Class Service Provider / project owner Current Family Dratler Family Family / Member Family No workspaces match this filter yet. Open workspace settings Dashboard DB Watchdog WG Program PG Agents AG Members MB Community CO Content CT Live LC Schedule SC Communications CM Tasks TS Automations AU Integrations IN Reporting RP Settings SE Settings Help Logout One Time Mishnah Class Workspace Owner / Communications / Overview Ask 29 Jun One Time Mishnah Class / Communications / Overview Overview O",
+      "duplicateWorkspaceMentions": 17,
+      "filterRailText": "",
+      "hasCommandCenter": false,
+      "hasCommunicationsFilterRail": false,
+      "hasCommunicationsTopbarRail": true,
+      "hasContactImportPreviewInCommsOverview": true,
+      "hasOneTimeDashboard": false,
+      "height": 900,
+      "label": "mobile-390-communications-overview",
+      "rects": [
+        {
+          "height": 0,
+          "text": "One Time Mishnah Class / Communications / Overview Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dia",
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "height": 0,
+          "text": "Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements",
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "height": 0,
+          "text": "Ask",
+          "width": 0,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "height": 2972,
+          "text": "Communications Overview0 active records Email, WhatsApp, parent, student, provider, bot, and support lanes are selected from the top toolbar",
+          "width": 356,
+          "x": 17,
+          "y": 221
+        },
+        {
+          "height": 1891,
+          "text": "ReadinessNo-send Workspace scope Project filter: one_time_mishnah_class. Contact, email, and WhatsApp data are first-party and workspace-sco",
+          "width": 356,
+          "x": 17,
+          "y": 1302
+        }
+      ],
+      "scrollHeight": 3210,
+      "scrollWidth": 390,
+      "topbarText": "One Time Mishnah Class / Communications / Overview Overview Overview 0 Parent Messages 0 Student Messages 0 Provider Messages 0 Internal Dialogue 0 WhatsApp 0 Email 0 Bot Conversations 0 Announcements 0 Templates 0 Support 0 Ask",
+      "width": 390,
+      "route": "/operations?view=communications&section=overview&workspace=rabbi_sheller_provider",
+      "viewport": {
+        "width": 390,
+        "height": 900
+      },
+      "screenshot": "ops/playwright-smokes/2026-06-29-onetime-ui-shell-repair-before/mobile-390-communications-overview.png"
+    }
+  ],
+  "consoleErrors": [],
+  "requestSample": [
+    {
+      "method": "GET",
+      "pathname": "/operations",
+      "search": "?view=dashboard&section=overview&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/auth/me",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-directory",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-platform",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-settings/rabbi_sheller_provider/branding",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/calendar-events",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/pipeline-cards",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/internal-dialogue",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/projects",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/people",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-users",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider&status=all"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-users/role-audit",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider&limit=40"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/tasks",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/agent-fleet/status",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/ops/queue-health",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/support-tickets",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/signups",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/parent-leads",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/service-providers",
+      "search": "?approved_only=false"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/contact-communications",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/parent-announcements",
+      "search": "?workspace=rabbi_sheller_provider&limit=20"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/payments",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/payment-intake",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/payment-reminders/due",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/content-jobs",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/class-sessions",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/project-meetings",
+      "search": "?project=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/one-time/classes",
+      "search": "?limit=120"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/one-time/classroom",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/one-time/question-moderation",
+      "search": "?limit=80"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/members",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/live-sessions",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/content-prompts",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/content-bundles",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/students",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/assignments",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/assignment-prompts",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/devices",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/device-access-rules",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/torah-learning",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/accountability",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/group-goals",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/courses",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/worksheets",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/course-questions",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/gamification-events",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/shoutouts",
+      "search": "?project_key=one_time_mishnah_class"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/notifications",
+      "search": "?status=all&workspace=rabbi_sheller_provider&limit=100"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/notification-preferences",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/integrations/buffer/health",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/integrations/buffer/channels",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/integrations/resend/health",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/integrations/resend/domains",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/integrations/resend/events",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/communications/social/drafts",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/communications/email/drafts",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/communications/dns-tasks",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider&provider=resend"
+    },
+    {
+      "method": "GET",
+      "pathname": "/images/one-time/brand/onetime-hero-vertical.webp",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/config",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/tiers",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/provider-settings",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/checkouts",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/members",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/access-grants",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/library-items",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/live-sessions",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/communications",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/rabbi/site",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/one-time/product-system",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/one-time/test-identities-preview",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/one-time/agent-mode-acceptance",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/auth/me",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-directory",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-platform",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/workspace-settings/rabbi_sheller_provider/branding",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/calendar-events",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/pipeline-cards",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/internal-dialogue",
+      "search": "?workspace=rabbi_sheller_provider"
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/projects",
+      "search": ""
+    },
+    {
+      "method": "GET",
+      "pathname": "/api/bna/people",
+      "search": "?project_key=one_time_mishnah_class&workspace=rabbi_sheller_provider"
+    }
+  ]
+}

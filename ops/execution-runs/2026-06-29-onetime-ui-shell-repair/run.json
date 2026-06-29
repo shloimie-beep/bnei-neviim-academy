@@ -1,0 +1,25 @@
+{
+  "run_id": "2026-06-29-onetime-ui-shell-repair",
+  "title": "OneTime UI Shell Repair",
+  "created_at": "2026-06-29T13:53:06.183Z",
+  "updated_at": "2026-06-29T17:20:33+03:00",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260629-005",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "related_decisions": [
+    "DEC-20260629-201"
+  ],
+  "guardrails": [
+    "No email, WhatsApp, SMS, Telegram, Buffer, campaign, or announcement send",
+    "No Stripe checkout, charge, payment link, or access grant",
+    "No DNS, Railway, credential, OAuth, Zoom, Vimeo, Drive, or external account mutation",
+    "No contact import or WAPI data import in this UI shell pass",
+    "No GHL, GoHighLevel, LeadConnector, or external CRM runtime",
+    "No raw private contact data, secrets, or private screenshots committed"
+  ],
+  "status": "blocked_pending_deploy_live_smoke",
+  "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+}

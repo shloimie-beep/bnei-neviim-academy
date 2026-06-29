@@ -273,7 +273,8 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.doesNotMatch(server, /phonebook-report[\s\S]{0,500}SEND_WHATSAPP/);
   assert.doesNotMatch(server, /phonebook-corrections[\s\S]{0,900}SEND_WHATSAPP/);
 
-  assert.match(operations, /getWapiPhonebookReport\(100, \{ workspace: currentWorkspaceKey\(\) \}\)/);
+  assert.match(operations, /getWapiPhonebookReport\(100, workspaceDataProjectFilters\(\)\)/);
+  assert.match(operations, /params\.set\('project_key', filters\.project_key\)/);
   assert.match(operations, /applyWapiPhonebookCorrection/);
   assert.match(operations, /dry_run: true/);
   assert.match(operations, /apply_contact_tags: true/);
