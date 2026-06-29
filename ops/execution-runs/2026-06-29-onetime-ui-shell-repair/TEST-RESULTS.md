@@ -22,3 +22,13 @@
 - PASS draft PR opened: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`.
 - PASS `npm run bna:release-gate -- --json` dry run: branch clean, pushed, and no dry-run blockers.
 - BLOCKED `npm run railway:doctor`: Railway target guard requires explicit service ID/name and aborted before deploy.
+
+## Deploy And Live Smoke Commands
+
+- PASS explicit-target `npm run railway:doctor`: `skillful-motivation` / `production` / `skillful-motivation`.
+- PASS `npm run railway:redeploy`: deployment `18b0c3bf-8b79-4798-b1f9-0bbfa68c2fe6` reached SUCCESS.
+- FAIL first live UI smoke: UI shell checks passed, but `/api/bna/communications/dns-tasks` returned 500 because the generic communications detail route swallowed `dns-tasks`.
+- PASS route regression tests: `node --test tests/communications-integrations-contract.test.js tests/operations-module-scoping.test.js tests/communications-screening-import-ui.test.js tests/one-time-communications-workspace.test.js tests/one-time-operations-ui-smoke.test.js` passed 22/22.
+- PASS final `npm run railway:redeploy`: deployment `3033033b-5275-49b5-89ac-15b76eecc232` reached SUCCESS.
+- PASS live DNS tasks endpoint readback returned 200.
+- PASS final live One Time Operations UI shell smoke: `ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md`.

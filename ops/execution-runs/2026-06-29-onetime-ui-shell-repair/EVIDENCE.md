@@ -32,3 +32,12 @@ After screenshots include dashboard, communications, members, program, tasks, au
 - Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`
 - Release gate dry run: `npm run bna:release-gate -- --json` passed with clean pushed branch and no dry-run blockers.
 - Railway doctor: blocked by target guard because the target resolved to `one-time-production` without an explicit service name/id.
+
+## Deployment And Live Smoke Evidence
+
+- Correct Railway target doctor passed for `skillful-motivation` / `production` / `skillful-motivation`.
+- First deployment: `18b0c3bf-8b79-4798-b1f9-0bbfa68c2fe6`, SUCCESS; live smoke exposed `/api/bna/communications/dns-tasks` returning 500.
+- Route fix commit: `54a5124d24131c4062ecc6cd645ca91249682288`.
+- Final deployment: `3033033b-5275-49b5-89ac-15b76eecc232`, SUCCESS.
+- DNS tasks endpoint readback: `200`, `{"success":true,"dns_tasks":[]}`.
+- Final live smoke: `ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md` and `report.json`.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-29-onetime-ui-shell-repair",
   "title": "OneTime UI Shell Repair",
-  "updated_at": "2026-06-29T17:33:00+03:00",
+  "updated_at": "2026-06-29T17:55:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260629-005",
@@ -113,7 +113,7 @@
       "status": "done",
       "implementation_status": "Goal created; raw source copied; clean release worktree selected; stale clean-worktree active run pointer recorded; UI shell requirement register and active execution run initialized.",
       "can_continue_without_operator": true,
-      "next_action": "Release remains blocked pending explicit Railway service target plus deploy/live smoke proof.",
+      "next_action": "Run completed: implementation, release, live smoke, ledger, and changelog recorded.",
       "acceptance_criteria": [
         "Raw packet is preserved",
         "Requirement register exists",
@@ -130,7 +130,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS active Codex goal created for this packet",
@@ -140,7 +142,13 @@
         "PRECHECK npm run bna:run:blockers failed for the same stale pointer",
         "PASS git commit a6087dc created for UI shell repair",
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
-        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
@@ -151,7 +159,7 @@
         "memory/2026-06-29.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-29T17:33:00+03:00"
+      "updated_at": "2026-06-29T17:55:00+03:00"
     },
     {
       "id": "REQ-20260629-202",
@@ -171,10 +179,10 @@
       "depends_on": [
         "REQ-20260629-201"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local shell repair implemented and verified. One Time Operations shell renders compact scoped topbar, shared rails, readable dashboard/cards, and stable module surfaces. Release Done is blocked only by deploy/live smoke proof.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "No giant blank dark panel on One Time dashboard or module routes",
         "Top panel is visually coherent",
@@ -192,7 +200,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -207,18 +217,50 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
         "public/css/one-time-shared-review.css",
-        "tests/one-time-operations-ui-smoke.test.js"
+        "tests/one-time-operations-ui-smoke.test.js",
+        "public/css/one-time-operations.css",
+        "server.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-203",
@@ -238,10 +280,10 @@
       "depends_on": [
         "REQ-20260629-201"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local toolbar/tab hierarchy implemented and verified. Communications now uses the shared top filter rail; topbar channel rail removed; One Time topbar actions are compact and no-send primary message action is removed.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Communications route has one clean tab rail",
         "Counts are not repeated in separate right-side count cards",
@@ -258,7 +300,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -273,19 +317,52 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
         "tests/one-time-operations-ui-smoke.test.js",
         "ops/action-registry.json",
-        "ops/action-registry/actions.json"
+        "ops/action-registry/actions.json",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "server.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-204",
@@ -305,10 +382,10 @@
       "depends_on": [
         "REQ-20260629-202"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local dashboard overview implemented and verified. One Time dashboard uses readable cards for attention, decisions, Codex queue, contact import status, email setup, payment setup, class/program status, and external gates.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Dashboard route looks normal and usable",
         "No floating card in a blank void",
@@ -325,7 +402,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -340,17 +419,50 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
-        "tests/one-time-operations-ui-smoke.test.js"
+        "tests/one-time-operations-ui-smoke.test.js",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "server.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-205",
@@ -371,10 +483,10 @@
         "REQ-20260629-202",
         "REQ-20260629-203"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local communications overview implemented and verified. Import audit rows stay in Import History, normal messages/top news exclude import audit rows, Email and WhatsApp lanes stay separate, and contact import preview is removed from overview.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Required tab rail is present",
         "No duplicate right-side channel count cards",
@@ -392,7 +504,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -407,19 +521,50 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
         "tests/communications-screening-import-ui.test.js",
         "tests/one-time-operations-ui-smoke.test.js",
-        "tests/one-time-communications-workspace.test.js"
+        "tests/one-time-communications-workspace.test.js",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "server.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-206",
@@ -439,10 +584,10 @@
       "depends_on": [
         "REQ-20260629-203"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local button/action-state verification complete. Unsafe send/charge/DNS/Railway/external controls remain gated; action coverage and universal action parity reports regenerated and passed.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Buttons look deliberate and consistent",
         "Unsafe send/charge/DNS/Railway/external actions are gated",
@@ -459,7 +604,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -474,7 +621,13 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -482,13 +635,41 @@
         "ops/action-registry/universal-action-parity.json",
         "tests/watchdog-action-registry.test.js",
         "ops/action-registry.json",
-        "ops/action-registry/actions.json"
+        "ops/action-registry/actions.json",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "server.js",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-207",
@@ -508,10 +689,10 @@
       "depends_on": [
         "REQ-20260629-201"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local One Time brand CSS scoped. Broad body.one-time-review-active article/section card styling was replaced with explicit One Time review classes; review branding tests pass.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Brand remains visible",
         "CSS is scoped to One Time workspace",
@@ -528,7 +709,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -543,19 +726,53 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/css/one-time-shared-review.css",
         "tests/one-time-shared-review-branding.test.js",
         "config/brands/one-time.json",
-        "config/service-provider-sites/one-time.json"
+        "config/service-provider-sites/one-time.json",
+        "public/operations.html",
+        "public/css/one-time-operations.css",
+        "server.js",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-208",
@@ -576,10 +793,10 @@
         "REQ-20260629-202",
         "REQ-20260629-203"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local route audit complete for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; screenshots and DOM report recorded.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Main One Time routes render sane shell",
         "No route has the broken top-panel pattern",
@@ -596,7 +813,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -611,18 +830,51 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
         "tests/one-time-operations-ui-smoke.test.js",
-        "scripts/smoke-rabbi-scheller-operations-navigation-local.mjs"
+        "scripts/smoke-rabbi-scheller-operations-navigation-local.mjs",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "server.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-209",
@@ -642,10 +894,10 @@
       "depends_on": [
         "REQ-20260629-202"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Local tenant/scope verification passed. Rabbi routes stayed visibly scoped to rabbi_sheller_provider / one_time_mishnah_class; school Students/Accounting nav stayed hidden; no GHL runtime or external write path was added.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Rabbi routes remain scoped to rabbi_sheller_provider / one_time_mishnah_class",
         "No BNA contacts/students/private records show in Rabbi workspace",
@@ -662,7 +914,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -677,19 +931,52 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "public/operations.html",
         "tests/rabbi-scheller-tenant-isolation-contract.test.js",
         "tests/watchdog-route-security.test.js",
-        "server.js"
+        "server.js",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     },
     {
       "id": "REQ-20260629-210",
@@ -717,10 +1004,10 @@
         "REQ-20260629-208",
         "REQ-20260629-209"
       ],
-      "status": "blocked",
+      "status": "done",
       "implementation_status": "Before/after evidence, focused tests, watchdogs, secrets audit, and run validation are recorded. Deploy/live smoke remains the only closeout blocker.",
-      "can_continue_without_operator": false,
-      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this requirement; deployed and live-smoked on Railway production. Keep non-UI external actions in separate approval-gated packets.",
       "acceptance_criteria": [
         "Before and after evidence paths exist",
         "Dashboard and communications have desktop and mobile proof",
@@ -738,7 +1025,9 @@
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -753,20 +1042,55 @@
         "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
         "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
         "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
-        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy",
+        "PASS Railway deploy 3033033b-5275-49b5-89ac-15b76eecc232 to skillful-motivation / production / bneineviimacademy.org",
+        "PASS Railway service status: deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS",
+        "PASS live DNS tasks endpoint returned 200 with success true after numeric communications route fix",
+        "PASS live One Time Operations UI shell smoke: ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "PASS live routes checked: dashboard, communications, members, program, tasks, automations, integrations, reporting, plus mobile dashboard/communications",
+        "PASS no failed live resource responses, request failures, console errors, or page errors in final live smoke"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/TEST-RESULTS.md",
         "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/EVIDENCE.md",
         "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/DEPLOYMENT.md",
         "ops/agent-task-ledger.jsonl",
-        "ops/agent-changelog.md"
+        "ops/agent-changelog.md",
+        "public/operations.html",
+        "public/css/one-time-operations.css",
+        "public/css/one-time-shared-review.css",
+        "server.js",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "tests/communications-integrations-contract.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/wapi-phonebook-report.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:33:00+03:00",
-      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
-      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
-      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+      "updated_at": "2026-06-29T17:55:00+03:00",
+      "blocker": "",
+      "blocker_owner": "",
+      "blocker_next_action": "",
+      "deployment": {
+        "provider": "railway",
+        "project": "skillful-motivation",
+        "environment": "production",
+        "service": "skillful-motivation",
+        "domain": "bneineviimacademy.org",
+        "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+        "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+        "live_smoke_report": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md"
+      },
+      "deployment_evidence": [
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+        "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.json",
+        "Railway deployment 3033033b-5275-49b5-89ac-15b76eecc232 SUCCESS on skillful-motivation / production / bneineviimacademy.org"
+      ],
+      "live_smoke": "ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md",
+      "deployment_id": "3033033b-5275-49b5-89ac-15b76eecc232",
+      "deployed_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "implementation_commit": "54a5124d24131c4062ecc6cd645ca91249682288",
+      "pushed_commit": "54a5124d24131c4062ecc6cd645ca91249682288"
     }
   ],
   "canonical_tasks": [
@@ -780,25 +1104,25 @@
       "requirement_id": "REQ-20260629-210",
       "owner": "Codex",
       "lane": "agent_activity",
-      "status": "blocked_needs_railway_service_target",
+      "status": "completed_deployed_live_smoked",
       "visible": false,
-      "summary": "Local UI shell repair is committed, pushed, and in draft PR #51; live deployment/smoke is blocked until the Railway production service target is explicit."
+      "summary": "OneTime Rabbi Operations UI shell repair is implemented, committed, pushed, deployed to Railway production, and live-smoked across the requested routes."
     }
   ],
   "decisions": [
     {
       "id": "DEC-20260629-201",
-      "title": "Keep external actions blocked and require explicit Railway deploy target",
+      "title": "Keep non-UI external actions blocked during OneTime UI shell repair",
       "owner": "Shloimie / account owner",
-      "status": "needs_operator_decision",
+      "status": "decided",
       "recommended_option": "Keep this pass UI-only and no-send/no-charge/no-import; approve any external action in a separate explicit packet.",
       "alternatives": [
         "Approve a separate DNS-only packet later",
         "Approve a separate test-send packet later",
         "Defer all external actions"
       ],
-      "consequences": "Codex repaired and published the UI branch, but cannot safely deploy/live-smoke until the exact production Railway service target or approved release path is supplied.",
-      "next_action": "Confirm the Railway production service ID/name for bneineviimacademy.org, or instruct Codex to merge/release PR #51 through the approved normal deploy path."
+      "consequences": "The UI shell repair was safely deployed/live-smoked; sends, imports, Stripe/payment, DNS/account setup, WAPI import, external CRM/GHL, and credential actions remain out of scope for separate approval-gated packets.",
+      "next_action": "None for this UI shell run."
     }
   ]
 }

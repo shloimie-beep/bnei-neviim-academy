@@ -27064,3 +27064,11 @@ sync.
 - `npm run bna:release-gate -- --json` passed dry-run branch/push cleanliness checks.
 - `npm run railway:doctor` authenticated but was blocked by the Railway target guard because the target resolved to `one-time-production` with no explicit service name/id.
 - App-visible requirements remain blocked pending explicit Railway production service target plus deploy/live smoke proof. No sends, imports, charges, DNS/service config changes, external CRM/GHL writes, secrets, or raw private data actions were performed.
+
+## 2026-06-29 - One Time Operations UI shell deployed and live-smoked
+
+- Resolved the deployment target to the BNA app service `skillful-motivation` / `production` / `skillful-motivation`.
+- Deployed final branch head `54a5124d24131c4062ecc6cd645ca91249682288` to Railway deployment `3033033b-5275-49b5-89ac-15b76eecc232`.
+- Live smoke passed for the exact Rabbi One Time Operations dashboard, communications, members, program, tasks, automations, integrations, reporting routes, plus mobile dashboard/communications. Proof: `ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md`.
+- Fixed a live-only `/api/bna/communications/dns-tasks` 500 by making `/api/bna/communications/:id` numeric-only; the endpoint now returns 200 and the route regression test passes.
+- `REQ-20260629-201` through `REQ-20260629-210` are Done. No emails, WhatsApp/SMS/Telegram sends, Stripe/payment actions, contact imports, DNS/service configuration changes, external CRM/GHL writes, secrets, raw private data commits, or live screenshots were performed.

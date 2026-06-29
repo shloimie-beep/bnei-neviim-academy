@@ -1,12 +1,11 @@
 # Status
 
-Current status: local implementation verified, committed, pushed, and opened as draft PR #51; app-visible closeout is blocked pending explicit Railway deploy target plus live smoke proof.
+Current status: deployed and live-smoked.
 
-- Done: `REQ-20260629-201`
-- Blocked pending Railway service target and live proof: `REQ-20260629-202` through `REQ-20260629-210`
+- Done: `REQ-20260629-201` through `REQ-20260629-210`
 
-No unblocked local implementation batch remains. Branch `codex/rabbi-onetime-comms-scope-release-20260629` is pushed and draft PR #51 is open. `npm run bna:release-gate -- --json` passes dry-run branch cleanliness checks.
+Branch `codex/rabbi-onetime-comms-scope-release-20260629` is pushed and draft PR #51 is open. Railway deployment `3033033b-5275-49b5-89ac-15b76eecc232` is live on `skillful-motivation` / `production` / `bneineviimacademy.org`.
 
-Deployment blocker: `npm run railway:doctor` authenticated but Railway target guard aborted because the target resolves to `one-time-production` with no explicit service name/id. Exact next action is to confirm the production Railway service ID/name for `bneineviimacademy.org`, or release PR #51 through the approved normal production path, then deploy and run live smoke.
+Final live smoke: `ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md`.
 
-Guardrail status: no sends, imports, charges, DNS/service configuration changes, external CRM writes, secrets, or private raw data committed.
+Guardrail status: no sends, imports, charges, DNS/service configuration changes, external CRM writes, secrets, private raw data, or live screenshots committed.

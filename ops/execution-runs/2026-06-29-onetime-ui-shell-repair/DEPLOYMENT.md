@@ -1,17 +1,21 @@
 # Deployment
 
-Deployment status: blocked pending explicit Railway service target.
+Deployment status: deployed and live-smoked.
 
-Local implementation and verification passed. The UI-only branch was committed, pushed, and opened as draft PR #51:
-`https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`.
+Local implementation and verification passed. The UI-only branch was committed, pushed, opened as draft PR #51, deployed to Railway production, and live-smoked:
 
-Live deployment is blocked by the Railway target guard. `npm run railway:doctor` authenticated successfully, but resolved the local target to project `one-time-production` with no explicit service name/id and aborted with:
+- Branch: `codex/rabbi-onetime-comms-scope-release-20260629`
+- Commit: `54a5124d24131c4062ecc6cd645ca91249682288`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`
+- Railway project/environment/service: `skillful-motivation` / `production` / `skillful-motivation`
+- Railway deployment: `3033033b-5275-49b5-89ac-15b76eecc232`
+- Domain: `https://bneineviimacademy.org`
+- Live smoke: `ops/live-smokes/2026-06-29-onetime-ui-shell-repair-live/report.md`
 
-- `Railway target requires explicit service ID or service name; no production fallback is allowed.`
-- `BNA deploy target resolves to One Time project/service; aborting.`
+The first deploy attempt exposed a real live 500 from `/api/bna/communications/dns-tasks`; it was caused by the generic `/api/bna/communications/:id` route swallowing `dns-tasks`. The route is now numeric-only, the endpoint returns 200, and the final live smoke passed with 0 failed responses, request failures, console errors, or page errors.
 
-Per the BNA Definition of Done, `REQ-20260629-202` through `REQ-20260629-210` remain blocked instead of Done until deployment and live smoke proof exist.
+Per the BNA Definition of Done, `REQ-20260629-202` through `REQ-20260629-210` are now Done.
 
-Exact next action: confirm the Railway production service ID/name for `bneineviimacademy.org`, or release PR #51 through the approved normal production path, then run live smoke for the Rabbi One Time Operations dashboard, communications, members, program, tasks, automations, integrations, and reporting routes.
+Exact next action: none for this UI shell run. Keep contact import, email audience import, DNS/account setup, Stripe/payment, WAPI import, sends, external CRM/GHL, and secrets in separate approval-gated packets.
 
-Guardrails: no email, WhatsApp, SMS, Telegram report, Stripe checkout, payment charge, DNS/service config change, external CRM write, contact import, secret commit, or raw private data commit was performed.
+Guardrails: no email, WhatsApp, SMS, Telegram report, Stripe checkout, payment charge, DNS/service config change, external CRM write, contact import, secret commit, raw private data commit, or live screenshot commit was performed.
