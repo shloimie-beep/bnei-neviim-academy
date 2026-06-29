@@ -28931,10 +28931,93 @@
             };
         }
 
+        function normalizeStudentAttendanceStatus(value) {
+            const key = String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+            if (['present', 'here', 'attended', 'showed_up', 'came'].includes(key)) return 'present';
+            if (['late', 'tardy'].includes(key)) return 'late';
+            if (['absent', 'missed', 'missed_class', 'no_show', 'noshow'].includes(key)) return 'absent';
+            return key || 'unknown';
+        }
+
+        function studentAttendanceStatusLabel(value) {
+            const key = normalizeStudentAttendanceStatus(value);
+            if (key === 'present') return 'Present';
+            if (key === 'late') return 'Late';
+            if (key === 'absent') return 'Absent';
+            return value
+                ? String(value).replace(/[_-]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
+                : 'No attendance status';
+        }
+
+        function latestDateValue(values = []) {
+            return values
+                .filter(Boolean)
+                .sort((a, b) => Date.parse(b) - Date.parse(a))[0] || null;
+        }
+
+        function studentAttendanceEvents(student, events = studentEvents(student)) {
+            return (events || [])
+                .filter(event => String(event.attendance_status || '').trim())
+                .sort(sortEventsNewestFirst);
+        }
+
+        function studentAttendanceSummary(student, events = studentEvents(student)) {
+            const rows = studentAttendanceEvents(student, events);
+            const recordCount = rows.length || Number(student.attendance_record_count || 0);
+            const presentCount = rows.length
+                ? rows.filter(event => normalizeStudentAttendanceStatus(event.attendance_status) === 'present').length
+                : Number(student.attendance_present_count || 0);
+            const latestRow = rows[0] || null;
+            const latestStatus = latestRow?.attendance_status || student.latest_attendance_status || '';
+            const latestAt = latestRow?.occurred_at || latestRow?.created_at || student.latest_attendance_at || null;
+            const percent = recordCount
+                ? Math.round((presentCount / Math.max(1, recordCount)) * 100)
+                : 100;
+            return {
+                recordCount,
+                presentCount,
+                percent,
+                latestStatus,
+                latestAt,
+                label: recordCount ? `${percent}% present` : 'Present by default',
+                detail: recordCount
+                    ? `${presentCount}/${recordCount} attendance record${recordCount === 1 ? '' : 's'} present`
+                    : 'No attendance exceptions recorded',
+            };
+        }
+
+        function studentLearningStatus(student, options = {}) {
+            const events = options.events || studentEvents(student);
+            const sortedEvents = (events || []).slice().sort(sortEventsNewestFirst);
+            const goals = options.goals || events.filter(event => event.event_type === 'student_goal');
+            const torahRecord = options.torahRecord || torahStudentRecord(student);
+            const attendance = studentAttendanceSummary(student, events);
+            const goalProgress = studentProgressPercent(student, goals);
+            const latestProgress = student.latest_progress_percent !== null && student.latest_progress_percent !== undefined
+                ? Number(student.latest_progress_percent)
+                : null;
+            const tripProgress = Number(torahRecord?.percentage || 0);
+            return {
+                attendance,
+                goalProgress,
+                latestProgress,
+                tripProgress,
+                lastUpdatedAt: latestDateValue([
+                    student.latest_accountability_at,
+                    student.latest_progress_at,
+                    student.latest_attendance_at,
+                    sortedEvents[0]?.updated_at,
+                    sortedEvents[0]?.occurred_at,
+                    sortedEvents[0]?.created_at,
+                    torahRecord?.date,
+                    student.updated_at,
+                    student.created_at,
+                ]),
+            };
+        }
+
         function studentLatestActivityDate(student) {
-            const events = studentEvents(student);
-            const latestEvent = events.slice().sort(sortEventsNewestFirst)[0];
-            return latestEvent?.occurred_at || latestEvent?.created_at || student.updated_at || student.created_at || null;
+            return studentLearningStatus(student).lastUpdatedAt;
         }
 
         function studentMatchesStudentFilters(student) {
@@ -29187,6 +29270,7 @@
         function renderStudentListRow(student, state, options = {}) {
             const torahRecord = state.torahById.get(String(student.id));
             const snapshot = studentAccountabilitySnapshot(student);
+            const learningStatus = studentLearningStatus(student, { torahRecord });
             const meta = snapshot.metadata || {};
             const agreement = meta.agreement || {};
             const consequence = meta.consequence || {};
@@ -29208,10 +29292,13 @@
                         <span>${escapeHtml(personAudienceLabel(studentAudienceKey(student)))}</span>
                         <span>${escapeHtml(snapshot.deviceLabel)}</span>
                         <span>Bot ${escapeHtml(studentBotRouteLabel(botState))}</span>
+                        <span>Updated ${escapeHtml(learningStatus.lastUpdatedAt ? formatDate(learningStatus.lastUpdatedAt) : 'not yet')}</span>
+                        <span>Attendance ${escapeHtml(learningStatus.attendance.label)}</span>
+                        <span>Goal ${Number(learningStatus.goalProgress || 0)}%</span>
                         ${due ? `<span>Due ${escapeHtml(due)}</span>` : ''}
                         ${agreement.bedtime_time || agreement.wake_time ? `<span>Bed ${escapeHtml(agreement.bedtime_time || '--')} / Up ${escapeHtml(agreement.wake_time || '--')}</span>` : ''}
                         ${accessDuration ? `<span>${Number(accessDuration)} min access</span>` : ''}
-                        ${torahRecord ? `<span>Trip ${Number(torahRecord.percentage || 0)}%</span>` : ''}
+                        ${torahRecord ? `<span>Trip ${Number(learningStatus.tripProgress || 0)}%</span>` : ''}
                         ${consequence.recovery_path ? `<span>${escapeHtml(consequence.recovery_path)}</span>` : ''}
                         ${snapshot.accessWindow ? `<span>Open ${escapeHtml(snapshot.accessWindow)}</span>` : ''}
                     </div>
@@ -30438,6 +30525,26 @@
             `;
         }
 
+        function renderStudentLearningStatusPanel(student, options = {}) {
+            const status = studentLearningStatus(student, options);
+            const attendance = status.attendance;
+            const latestProgressAt = student.latest_progress_at ? formatDateTime(student.latest_progress_at) : '';
+            return `
+                <div class="student-profile-section full" data-student-learning-status>
+                    <h4>Learning Status</h4>
+                    <div class="contact-detail-grid">
+                        ${renderContactDetailItem('Last Updated', status.lastUpdatedAt ? formatDateTime(status.lastUpdatedAt) : 'No update recorded')}
+                        ${renderContactDetailItem('Attendance', attendance.label)}
+                        ${renderContactDetailItem('Attendance Record', attendance.detail)}
+                        ${renderContactDetailItem('Last Attendance', attendance.latestAt ? `${studentAttendanceStatusLabel(attendance.latestStatus)} - ${formatDateTime(attendance.latestAt)}` : 'No attendance exception recorded')}
+                        ${renderContactDetailItem('Goal Progress', `${Number(status.goalProgress || 0)}%`)}
+                        ${renderContactDetailItem('Latest Progress Note', status.latestProgress !== null ? `${Number(status.latestProgress)}%${latestProgressAt ? ` - ${latestProgressAt}` : ''}` : 'No progress note recorded')}
+                        ${renderContactDetailItem('Trip Progress', `${Number(status.tripProgress || 0)}%`)}
+                    </div>
+                </div>
+            `;
+        }
+
         function renderStudentProfileSummary(student) {
             const events = studentEvents(student);
             const questions = events.filter(event => event.event_type === 'question');
@@ -30451,6 +30558,7 @@
             const torahRecord = torahStudentRecord(student);
             const torahPercent = Number(torahRecord?.percentage || 0);
             const studentAssignments = assignmentsForStudent(student);
+            const learningStatus = studentLearningStatus(student, { events, goals, torahRecord });
 
             return `
                 <div class="student-profile-hero">
@@ -30458,11 +30566,13 @@
                     <h3>${escapeHtml(student.name)}</h3>
                     <p style="color: #cbd5e1; font-size: 13px; margin-top: 6px;">
                         Parent: ${escapeHtml(student.parent_name || 'Not linked yet')}
-                        ${latest ? ` &middot; Latest note: ${formatDate(latest.occurred_at || latest.created_at)}` : ''}
+                        ${learningStatus.lastUpdatedAt ? ` &middot; Updated: ${formatDate(learningStatus.lastUpdatedAt)}` : latest ? ` &middot; Latest note: ${formatDate(latest.occurred_at || latest.created_at)}` : ''}
                     </p>
                     <div class="student-profile-kpis">
                         ${renderMiniKpi(questions.length, 'Questions')}
                         ${renderMiniKpi(studentAssignments.length, 'Assignments')}
+                        ${renderMiniKpi(learningStatus.attendance.label, 'Attendance')}
+                        ${renderMiniKpi(`${Number(learningStatus.goalProgress || 0)}%`, 'Goal Progress')}
                         ${renderMiniKpi(goalCounts.due_today || 0, 'Due Today')}
                         ${renderMiniKpi(goalCounts.needs_review || 0, 'Needs Review')}
                         ${renderMiniKpi(`${torahPercent}%`, 'Trip Progress')}
@@ -30479,6 +30589,7 @@
                         </p>
                         ${nextCheckIn ? `<p style="color:#cbd5e1; font-size:12px; margin-top:6px;">Next check-in: ${formatDate(nextCheckIn)}</p>` : ''}
                     </div>
+                    ${renderStudentLearningStatusPanel(student, { events, goals, torahRecord })}
                     ${renderStudentIdentityProfileSection(student)}
                     <div class="student-profile-section">
                         <h4>Parent / Contact</h4>
@@ -30587,6 +30698,7 @@
             const followUps = events.filter(event => event.follow_up_required);
             const torahRecord = torahStudentRecord(student);
             const torahPercent = Number(torahRecord?.percentage || 0);
+            const learningStatus = studentLearningStatus(student, { events, goals, torahRecord });
 
             return `
                 <div class="student-profile-hero">
@@ -30594,10 +30706,12 @@
                     <h3>${escapeHtml(student.name)}</h3>
                     <p style="color: #cbd5e1; font-size: 13px; margin-top: 6px;">
                         Parent: ${escapeHtml(student.parent_name || 'Not linked yet')}
-                        ${latest ? ` &middot; Latest note: ${formatDate(latest.occurred_at || latest.created_at)}` : ''}
+                        ${learningStatus.lastUpdatedAt ? ` &middot; Updated: ${formatDate(learningStatus.lastUpdatedAt)}` : latest ? ` &middot; Latest note: ${formatDate(latest.occurred_at || latest.created_at)}` : ''}
                     </p>
                     <div class="student-profile-kpis">
                         ${renderMiniKpi(questions.length, 'Questions')}
+                        ${renderMiniKpi(learningStatus.attendance.label, 'Attendance')}
+                        ${renderMiniKpi(`${Number(learningStatus.goalProgress || 0)}%`, 'Goal Progress')}
                         ${renderMiniKpi(goalCounts.due_today || 0, 'Due Today')}
                         ${renderMiniKpi(goalCounts.needs_review || 0, 'Needs Review')}
                         ${renderMiniKpi(`${torahPercent}%`, 'Trip Progress')}
@@ -30620,6 +30734,8 @@
                     <div class="student-profile-section full">
                         ${renderGoalBoardAdminPanel(student, goalBoardItems)}
                     </div>
+
+                    ${renderStudentLearningStatusPanel(student, { events, goals, torahRecord })}
 
                     <div class="student-profile-section">
                         <h4>Accountability Chart</h4>

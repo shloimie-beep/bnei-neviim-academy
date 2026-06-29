@@ -51,3 +51,21 @@ test('system correction inside recording can still create task work', () => {
   assert.ok(parsed.tasks.length >= 1);
   assert.match(parsed.tasks[0].stable_id, /^TASK-20260617-/);
 });
+
+test('class recording parses attendance and student progress without creating Codex work', () => {
+  const parsed = parseIntakeText({
+    raw_input: [
+      'Class recording: Eitan was present for the Mishnah class.',
+      'His student goal score was 70 percent and he should keep practicing inside reading.',
+    ].join(' '),
+    source_type: 'class_recording',
+    source_date: '2026-06-29',
+  });
+
+  assert.equal(parsed.tasks.length, 0);
+  assert.ok(parsed.attendance.length >= 1);
+  assert.equal(parsed.attendance[0].fields.status, 'present');
+  assert.equal(parsed.attendance[0].target_lane, 'Student Attendance');
+  assert.ok(parsed.goals.length >= 1);
+  assert.equal(parsed.goals[0].target_lane, 'Student Progress / Goals');
+});
