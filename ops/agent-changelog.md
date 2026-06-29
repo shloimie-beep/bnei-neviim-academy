@@ -27056,3 +27056,11 @@ sync.
 - Fixed a content topic recursion that blocked the One Time Operations browser smoke before Drive preview.
 - Verification passed: focused 43-test suite, action/security/link watchdogs, secrets audit, run validation, and before/after local browser evidence.
 - Release status: blocked pending deploy/live Railway smoke; no email, WhatsApp, SMS, Telegram report, payment, DNS/Railway mutation, contact import, external CRM/GHL, secrets, or raw private data action was performed.
+
+## 2026-06-29 - One Time Operations UI shell release handoff
+
+- Committed and pushed the UI-only branch `codex/rabbi-onetime-comms-scope-release-20260629`.
+- Opened draft PR #51: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`.
+- `npm run bna:release-gate -- --json` passed dry-run branch/push cleanliness checks.
+- `npm run railway:doctor` authenticated but was blocked by the Railway target guard because the target resolved to `one-time-production` with no explicit service name/id.
+- App-visible requirements remain blocked pending explicit Railway production service target plus deploy/live smoke proof. No sends, imports, charges, DNS/service config changes, external CRM/GHL writes, secrets, or raw private data actions were performed.

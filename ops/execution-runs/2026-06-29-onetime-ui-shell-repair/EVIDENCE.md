@@ -24,3 +24,11 @@ After screenshots include dashboard, communications, members, program, tasks, au
 - `ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md`
 - `ops/action-registry/one-time-action-coverage.json`
 - `ops/action-registry/universal-action-parity.json`
+
+## Release Handoff Evidence
+
+- Commit: `a6087dc019c3f146cab28eceafc8b7e629c59aec`
+- Branch pushed: `codex/rabbi-onetime-comms-scope-release-20260629`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`
+- Release gate dry run: `npm run bna:release-gate -- --json` passed with clean pushed branch and no dry-run blockers.
+- Railway doctor: blocked by target guard because the target resolved to `one-time-production` without an explicit service name/id.

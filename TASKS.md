@@ -13,7 +13,11 @@ not authorize active GHL runtime paths.
   right rail, responsive shell, and scoped One Time brand CSS without mixing in
   contact import, email audience import, DNS, Stripe, payment, WAPI import,
   sends, external CRM, secrets, or GHL runtime. Register:
-  `tasks-pending/2026-06-29-onetime-ui-shell-repair.md`. Current status: local implementation and verification passed; blocked pending deploy/live Railway smoke proof before app-visible Done.
+  `tasks-pending/2026-06-29-onetime-ui-shell-repair.md`. Current status:
+  local implementation and verification passed; branch
+  `codex/rabbi-onetime-comms-scope-release-20260629` is pushed and draft PR
+  #51 is open; blocked pending explicit Railway production service target and
+  live smoke proof before app-visible Done.
 - [ ] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-29-onetime-ui-shell-repair",
   "title": "OneTime UI Shell Repair",
-  "updated_at": "2026-06-29T17:23:30+03:00",
+  "updated_at": "2026-06-29T17:33:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260629-005",
@@ -113,7 +113,7 @@
       "status": "done",
       "implementation_status": "Goal created; raw source copied; clean release worktree selected; stale clean-worktree active run pointer recorded; UI shell requirement register and active execution run initialized.",
       "can_continue_without_operator": true,
-      "next_action": "Implementation and local verification are recorded; release remains blocked pending deploy/live smoke proof for app-visible requirements.",
+      "next_action": "Release remains blocked pending explicit Railway service target plus deploy/live smoke proof.",
       "acceptance_criteria": [
         "Raw packet is preserved",
         "Requirement register exists",
@@ -129,14 +129,18 @@
         "ops/execution-runs/latest.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS active Codex goal created for this packet",
         "PASS source SHA-256 recorded",
         "PRECHECK npm run bna:run:status failed before this run existed due stale clean-worktree transcript evidence paths; recorded in TEST-RESULTS.md",
         "PRECHECK npm run bna:run:next failed for the same stale pointer",
-        "PRECHECK npm run bna:run:blockers failed for the same stale pointer"
+        "PRECHECK npm run bna:run:blockers failed for the same stale pointer",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "implementation_files": [
         "raw-input/RAW-20260629-005-onetime-ui-shell-repair.md",
@@ -147,7 +151,7 @@
         "memory/2026-06-29.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-29T17:20:33+03:00"
+      "updated_at": "2026-06-29T17:33:00+03:00"
     },
     {
       "id": "REQ-20260629-202",
@@ -170,7 +174,7 @@
       "status": "blocked",
       "implementation_status": "Local shell repair implemented and verified. One Time Operations shell renders compact scoped topbar, shared rails, readable dashboard/cards, and stable module surfaces. Release Done is blocked only by deploy/live smoke proof.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "No giant blank dark panel on One Time dashboard or module routes",
         "Top panel is visually coherent",
@@ -187,7 +191,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -197,7 +202,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -205,10 +215,10 @@
         "tests/one-time-operations-ui-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-203",
@@ -231,7 +241,7 @@
       "status": "blocked",
       "implementation_status": "Local toolbar/tab hierarchy implemented and verified. Communications now uses the shared top filter rail; topbar channel rail removed; One Time topbar actions are compact and no-send primary message action is removed.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Communications route has one clean tab rail",
         "Counts are not repeated in separate right-side count cards",
@@ -247,7 +257,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -257,7 +268,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -266,10 +282,10 @@
         "ops/action-registry/actions.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-204",
@@ -292,7 +308,7 @@
       "status": "blocked",
       "implementation_status": "Local dashboard overview implemented and verified. One Time dashboard uses readable cards for attention, decisions, Codex queue, contact import status, email setup, payment setup, class/program status, and external gates.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Dashboard route looks normal and usable",
         "No floating card in a blank void",
@@ -308,7 +324,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -318,17 +335,22 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
         "tests/one-time-operations-ui-smoke.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-205",
@@ -352,7 +374,7 @@
       "status": "blocked",
       "implementation_status": "Local communications overview implemented and verified. Import audit rows stay in Import History, normal messages/top news exclude import audit rows, Email and WhatsApp lanes stay separate, and contact import preview is removed from overview.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Required tab rail is present",
         "No duplicate right-side channel count cards",
@@ -369,7 +391,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -379,7 +402,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -388,10 +416,10 @@
         "tests/one-time-communications-workspace.test.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-206",
@@ -414,7 +442,7 @@
       "status": "blocked",
       "implementation_status": "Local button/action-state verification complete. Unsafe send/charge/DNS/Railway/external controls remain gated; action coverage and universal action parity reports regenerated and passed.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Buttons look deliberate and consistent",
         "Unsafe send/charge/DNS/Railway/external actions are gated",
@@ -430,7 +458,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -440,7 +469,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -451,10 +485,10 @@
         "ops/action-registry/actions.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-207",
@@ -477,7 +511,7 @@
       "status": "blocked",
       "implementation_status": "Local One Time brand CSS scoped. Broad body.one-time-review-active article/section card styling was replaced with explicit One Time review classes; review branding tests pass.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Brand remains visible",
         "CSS is scoped to One Time workspace",
@@ -493,7 +527,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -503,7 +538,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/css/one-time-shared-review.css",
@@ -512,10 +552,10 @@
         "config/service-provider-sites/one-time.json"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-208",
@@ -539,7 +579,7 @@
       "status": "blocked",
       "implementation_status": "Local route audit complete for dashboard, communications, members, program, tasks, automations, integrations, reporting, and mobile dashboard/communications; screenshots and DOM report recorded.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Main One Time routes render sane shell",
         "No route has the broken top-panel pattern",
@@ -555,7 +595,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -565,7 +606,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -573,10 +619,10 @@
         "scripts/smoke-rabbi-scheller-operations-navigation-local.mjs"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-209",
@@ -599,7 +645,7 @@
       "status": "blocked",
       "implementation_status": "Local tenant/scope verification passed. Rabbi routes stayed visibly scoped to rabbi_sheller_provider / one_time_mishnah_class; school Students/Accounting nav stayed hidden; no GHL runtime or external write path was added.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Rabbi routes remain scoped to rabbi_sheller_provider / one_time_mishnah_class",
         "No BNA contacts/students/private records show in Rabbi workspace",
@@ -615,7 +661,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -625,7 +672,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "public/operations.html",
@@ -634,10 +686,10 @@
         "server.js"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     },
     {
       "id": "REQ-20260629-210",
@@ -668,7 +720,7 @@
       "status": "blocked",
       "implementation_status": "Before/after evidence, focused tests, watchdogs, secrets audit, and run validation are recorded. Deploy/live smoke remains the only closeout blocker.",
       "can_continue_without_operator": false,
-      "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.",
+      "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
       "acceptance_criteria": [
         "Before and after evidence paths exist",
         "Dashboard and communications have desktop and mobile proof",
@@ -685,7 +737,8 @@
         "ops/action-registry/universal-action-parity.json",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-action-audit.md",
         "ops/watchdog-audits/2026-06-29T14-23-watchdog-security-routes.md",
-        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md"
+        "ops/watchdog-audits/2026-06-29T14-23-watchdog-link-audit.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51"
       ],
       "verification": [
         "PASS before viewport screenshots and DOM report captured against local fixture APIs; production writes: no",
@@ -695,7 +748,12 @@
         "PASS npm run watchdog:security",
         "PASS npm run watchdog:links",
         "PASS npm run secrets:audit (5329 tracked paths, 0 tracked secret-risk files)",
-        "PASS npm run bna:run:validate (final run after latest watchdogs)"
+        "PASS npm run bna:run:validate (final run after latest watchdogs)",
+        "PASS git commit a6087dc created for UI shell repair",
+        "PASS git push -u origin codex/rabbi-onetime-comms-scope-release-20260629",
+        "PASS draft PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+        "PASS npm run bna:release-gate -- --json (dry run): clean pushed branch, no dry-run blockers",
+        "BLOCKED npm run railway:doctor: Railway target guard requires explicit production service ID/name and aborted before deploy"
       ],
       "implementation_files": [
         "ops/execution-runs/2026-06-29-onetime-ui-shell-repair/TEST-RESULTS.md",
@@ -705,10 +763,10 @@
         "ops/agent-changelog.md"
       ],
       "deployment_required": true,
-      "updated_at": "2026-06-29T17:20:33+03:00",
-      "blocker": "Local implementation, screenshots, focused tests, watchdogs, and secrets audit passed, but app-visible Done requires a push/deploy plus live Railway smoke proof. This separate UI-only worktree has not been deployed or live-smoked.",
-      "blocker_owner": "Codex release owner / Shloimie if deployment authorization or Railway credentials are required",
-      "blocker_next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+      "updated_at": "2026-06-29T17:33:00+03:00",
+      "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+      "blocker_owner": "Shloimie / Railway account owner / Codex release owner with explicit service target",
+      "blocker_next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
     }
   ],
   "canonical_tasks": [
@@ -722,15 +780,15 @@
       "requirement_id": "REQ-20260629-210",
       "owner": "Codex",
       "lane": "agent_activity",
-      "status": "blocked_needs_release",
+      "status": "blocked_needs_railway_service_target",
       "visible": false,
-      "summary": "Local UI shell repair and verification passed; app-visible Done is blocked pending deployment/live smoke proof."
+      "summary": "Local UI shell repair is committed, pushed, and in draft PR #51; live deployment/smoke is blocked until the Railway production service target is explicit."
     }
   ],
   "decisions": [
     {
       "id": "DEC-20260629-201",
-      "title": "Keep external actions blocked during OneTime UI shell repair",
+      "title": "Keep external actions blocked and require explicit Railway deploy target",
       "owner": "Shloimie / account owner",
       "status": "needs_operator_decision",
       "recommended_option": "Keep this pass UI-only and no-send/no-charge/no-import; approve any external action in a separate explicit packet.",
@@ -739,8 +797,8 @@
         "Approve a separate test-send packet later",
         "Defer all external actions"
       ],
-      "consequences": "Codex can repair UI and run local/browser tests, but cannot send, charge, import, mutate DNS/Railway, or write external CRM data.",
-      "next_action": "Provide exact account/action/recipient or domain/confirmation phrase and rollback expectation for any future external action."
+      "consequences": "Codex repaired and published the UI branch, but cannot safely deploy/live-smoke until the exact production Railway service target or approved release path is supplied.",
+      "next_action": "Confirm the Railway production service ID/name for bneineviimacademy.org, or instruct Codex to merge/release PR #51 through the approved normal deploy path."
     }
   ]
 }

@@ -69,4 +69,14 @@ Goal mode: yes. Codex goal created for the OneTime Operations UI shell repair.
 
 Local implementation and verification passed. `REQ-20260629-202` through `REQ-20260629-210` are blocked pending deploy/live Railway smoke proof, not marked Done. See `ops/execution-runs/2026-06-29-onetime-ui-shell-repair/EVIDENCE.md`, `TEST-RESULTS.md`, and `DEPLOYMENT.md`.
 
-Next action: Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence.
+Next action: Confirm the exact Railway production service name/id for `bneineviimacademy.org`, or release draft PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.
+
+## Release Handoff Update - 2026-06-29T17:33:00+03:00
+
+The UI-only branch was committed and pushed:
+
+- Branch: `codex/rabbi-onetime-comms-scope-release-20260629`
+- Commit: `a6087dc019c3f146cab28eceafc8b7e629c59aec`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`
+
+`npm run bna:release-gate -- --json` passed dry-run branch/push cleanliness checks. `npm run railway:doctor` authenticated, but deploy remains blocked because the Railway target guard resolved the target to `one-time-production` with no explicit service name/id and aborted. `REQ-20260629-202` through `REQ-20260629-210` remain blocked pending explicit Railway target plus live smoke proof.

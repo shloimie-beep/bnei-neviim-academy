@@ -2,7 +2,7 @@
   "run_id": "2026-06-29-onetime-ui-shell-repair",
   "title": "OneTime UI Shell Repair",
   "created_at": "2026-06-29T13:53:06.183Z",
-  "updated_at": "2026-06-29T17:20:33+03:00",
+  "updated_at": "2026-06-29T17:33:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -20,6 +20,22 @@
     "No GHL, GoHighLevel, LeadConnector, or external CRM runtime",
     "No raw private contact data, secrets, or private screenshots committed"
   ],
-  "status": "blocked_pending_deploy_live_smoke",
-  "next_action": "Commit/push/deploy the UI-only branch, run live smoke for the Rabbi One Time Operations routes, then update these blocked requirements to Done with deployment/live-smoke evidence."
+  "status": "blocked_pending_railway_service_target",
+  "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes.",
+  "git_refs": {
+    "branch": "codex/rabbi-onetime-comms-scope-release-20260629",
+    "pushed_commit": "a6087dc019c3f146cab28eceafc8b7e629c59aec",
+    "remote": "origin",
+    "pr_number": 51,
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/51",
+    "pr_state": "draft",
+    "base_branch": "master"
+  },
+  "deployment": {
+    "status": "blocked_pending_explicit_railway_service_target",
+    "provider": "railway",
+    "railway_doctor": "blocked_by_target_guard",
+    "blocker": "Branch was committed, pushed, and draft PR #51 opened, but live deployment is blocked by the Railway target guard: npm run railway:doctor resolved the local target to project one-time-production with no explicit service name/id and aborted with \"Railway target requires explicit service ID or service name\" plus \"BNA deploy target resolves to One Time project/service; aborting.\" No live smoke was run because deployment did not occur.",
+    "next_action": "Confirm the exact Railway production service name/id for the bneineviimacademy.org app target, or merge/release PR #51 through the approved normal production path, then deploy and run live smoke for the Rabbi One Time Operations routes."
+  }
 }

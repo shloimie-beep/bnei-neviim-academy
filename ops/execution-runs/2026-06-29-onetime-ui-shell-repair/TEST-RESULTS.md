@@ -14,3 +14,11 @@
 - `npm ci` was run in this clean worktree because `node_modules` was absent; it installed from the existing lockfile.
 - The first focused test run exposed a content topic recursion in the Operations content route; `contentParsedSections` / `contentTopicKeys` now use a skip-fallback guard and the rerun passed.
 - The in-app browser could render and inspect the DOM, but its screenshot API timed out. Local Chrome headless captured the before/after viewport screenshots against the fixture server.
+
+## Release Handoff Commands
+
+- PASS `git commit -m "Repair One Time Operations UI shell"` -> `a6087dc019c3f146cab28eceafc8b7e629c59aec`.
+- PASS `git push -u origin codex/rabbi-onetime-comms-scope-release-20260629`.
+- PASS draft PR opened: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/51`.
+- PASS `npm run bna:release-gate -- --json` dry run: branch clean, pushed, and no dry-run blockers.
+- BLOCKED `npm run railway:doctor`: Railway target guard requires explicit service ID/name and aborted before deploy.
