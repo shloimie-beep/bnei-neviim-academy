@@ -129,6 +129,7 @@ const {
 const integrationSecretLoader = require('./src/lib/integrations/secret-loader');
 const bufferIntegration = require('./src/lib/integrations/buffer-client');
 const resendIntegration = require('./src/lib/integrations/resend-client');
+const resendInboundCrm = require('./src/lib/integrations/resend-inbound-crm');
 const stripeIntegration = require('./src/lib/integrations/stripe');
 const zoomIntegration = require('./src/lib/integrations/zoom');
 const videoHostingIntegration = require('./src/lib/integrations/video-hosting');
@@ -448,6 +449,11 @@ app.use((req, res, next) => {
 
 const DEFAULT_PROJECT_KEY = 'bna';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const ONE_TIME_PROVIDER_WORKSPACE_KEY = 'rabbi_sheller_provider';
+const ONE_TIME_EMAIL_DOMAIN = 'onetimeonetime.com';
+const ONE_TIME_EMAIL_FROM = 'info@onetimeonetime.com';
+const ONE_TIME_EMAIL_FROM_NAME = 'OneTimeOneTime Mishnah';
+const ONE_TIME_EMAIL_REPLY_TO = ONE_TIME_EMAIL_FROM;
 const INSTANCE_RUNTIME_FLAGS = buildOneTimeRuntimeFlags(process.env);
 const ONE_TIME_DRIVE_ROOT_ID = '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2';
 const ONE_TIME_LIBRARY_APPROVAL_FLAG = 'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING';
@@ -2956,7 +2962,7 @@ const RESEND_DOMAIN = resendRuntimeConfig.domain || '';
 const RESEND_FROM = resendRuntimeConfig.from || '';
 const RESEND_FROM_EMAIL = normalizeEmail(resendRuntimeConfig.fromEmail || process.env.RESEND_FROM_EMAIL);
 const RESEND_FROM_NAME = String(resendRuntimeConfig.fromName || process.env.RESEND_FROM_NAME || '').trim();
-const RESEND_REPLY_TO = normalizeEmail(process.env.RESEND_REPLY_TO || integrationConfigValue('RESEND_REPLY_TO', ['resend-api-key', 'resend'], ['resend-api-key.txt', 'RESEND_REPLY_TO.txt', 'resend.txt']));
+const RESEND_REPLY_TO = normalizeEmail(resendRuntimeConfig.replyTo || process.env.RESEND_REPLY_TO || integrationConfigValue('RESEND_REPLY_TO', ['resend-reply-to'], ['resend-reply-to.txt', 'RESEND_REPLY_TO.txt']));
 const RESEND_SEND_FALLBACK_APPROVED = Boolean(resendRuntimeConfig.fallbackApproved);
 const RESEND_WEBHOOK_SECRET = integrationSecretLoader.loadSecret({
   envName: 'RESEND_WEBHOOK_SECRET',
@@ -4217,13 +4223,36 @@ function safeSenderDisplayName(value, fallback = 'Bnei Neviim Academy Office') {
   return raw;
 }
 
+function isOneTimeEmailScope(workspace = null) {
+  const workspaceKey = typeof workspace === 'string'
+    ? workspace
+    : (workspace?.workspace_key || workspace?.workspace || workspace?.project_key || workspace?.project || workspace?.key || '');
+  const projectKey = typeof workspace === 'string'
+    ? workspace
+    : (workspace?.project_key || workspace?.project || workspace?.workspace_project_key || '');
+  return (
+    normalizeWorkspaceKey(workspaceKey) === ONE_TIME_PROVIDER_WORKSPACE_KEY
+    || normalizeProjectKey(projectKey) === ONE_TIME_PROJECT_KEY
+    || /rabbi|scheller|sheller|one[_-]?time|mishnah|mishna/i.test(`${workspaceKey || ''} ${projectKey || ''}`)
+  );
+}
+
 function academySenderIdentity(workspace = null) {
   const workspaceKey = typeof workspace === 'string'
     ? workspace
     : (workspace?.workspace_key || workspace?.project_key || workspace?.key || '');
-  const fallbackName = /rabbi|scheller|sheller|one_time/i.test(String(workspaceKey || ''))
-    ? 'Rabbi Scheller Office'
-    : 'Bnei Neviim Academy Office';
+  if (isOneTimeEmailScope(workspace)) {
+    return {
+      fromName: ONE_TIME_EMAIL_FROM_NAME,
+      shortLabel: ONE_TIME_EMAIL_FROM_NAME,
+      fromEmail: ONE_TIME_EMAIL_FROM,
+      replyTo: ONE_TIME_EMAIL_REPLY_TO,
+      workspaceKey: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      projectKey: ONE_TIME_PROJECT_KEY,
+      oneTime: true,
+    };
+  }
+  const fallbackName = 'Bnei Neviim Academy Office';
   const envName = RESEND_FROM_NAME || process.env.MAIL_FROM_NAME || process.env.GMAIL_FROM_NAME || '';
   const fromName = safeSenderDisplayName(envName, fallbackName);
   return {
@@ -4235,30 +4264,38 @@ function academySenderIdentity(workspace = null) {
 }
 
 function resendServerRuntimeConfig(identity = academySenderIdentity()) {
-  const fromEmail = RESEND_FROM_EMAIL || normalizeEmail(RESEND_FROM);
-  const fromName = RESEND_FROM_NAME || identity.fromName || '';
-  const from = RESEND_FROM || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : '');
+  const oneTimeIdentity = Boolean(identity?.oneTime || normalizeEmail(identity?.fromEmail) === ONE_TIME_EMAIL_FROM);
+  const fromEmail = oneTimeIdentity
+    ? ONE_TIME_EMAIL_FROM
+    : (RESEND_FROM_EMAIL || normalizeEmail(RESEND_FROM) || normalizeEmail(identity?.fromEmail));
+  const fromName = oneTimeIdentity
+    ? ONE_TIME_EMAIL_FROM_NAME
+    : (RESEND_FROM_NAME || identity?.fromName || '');
+  const from = oneTimeIdentity
+    ? `${ONE_TIME_EMAIL_FROM_NAME} <${ONE_TIME_EMAIL_FROM}>`
+    : (RESEND_FROM || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : ''));
   return {
     apiKey: RESEND_API_KEY,
     apiBase: RESEND_API_BASE_URL,
     accountOwner: RESEND_ACCOUNT_OWNER,
     providerAccount: RESEND_PROVIDER_ACCOUNT,
-    domain: RESEND_DOMAIN || resendIntegration.domainFromEmail(fromEmail),
+    domain: oneTimeIdentity ? ONE_TIME_EMAIL_DOMAIN : (RESEND_DOMAIN || resendIntegration.domainFromEmail(fromEmail)),
     from,
     fromEmail,
     fromName,
+    replyTo: oneTimeIdentity ? ONE_TIME_EMAIL_REPLY_TO : (RESEND_REPLY_TO || identity?.replyTo || null),
     fallbackApproved: RESEND_SEND_FALLBACK_APPROVED,
   };
 }
 
 async function sendResendMessage({ to, subject, text, html, workspace = null }) {
-  if (!RESEND_API_KEY || !RESEND_FROM_EMAIL) {
+  const identity = academySenderIdentity(workspace);
+  const runtimeConfig = resendServerRuntimeConfig(identity);
+  if (!runtimeConfig.apiKey || !runtimeConfig.fromEmail) {
     const error = new Error('Resend is not configured: RESEND_API_KEY and RESEND_FROM_EMAIL are required');
     error.statusCode = 503;
     throw error;
   }
-  const identity = academySenderIdentity(workspace);
-  const runtimeConfig = resendServerRuntimeConfig(identity);
   const readiness = await resendIntegration.getResendReadiness({ config: runtimeConfig, fetchImpl: fetch });
   if (!readiness.send_allowed) {
     const error = new Error(readiness.blocker || 'Resend send is blocked until sender domain/account readiness passes');
@@ -4269,7 +4306,7 @@ async function sendResendMessage({ to, subject, text, html, workspace = null }) 
   const response = await fetch(`${RESEND_API_BASE_URL}/emails`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
+      Authorization: `Bearer ${runtimeConfig.apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -4278,7 +4315,7 @@ async function sendResendMessage({ to, subject, text, html, workspace = null }) 
       subject,
       text: text || '',
       html: html || (text ? String(text).replace(/\n/g, '<br>') : ''),
-      ...(identity.replyTo ? { reply_to: identity.replyTo } : {}),
+      ...((runtimeConfig.replyTo || identity.replyTo) ? { reply_to: runtimeConfig.replyTo || identity.replyTo } : {}),
     }),
   });
   const payload = await response.json().catch(() => ({}));
@@ -10143,7 +10180,8 @@ app.post('/api/webhooks/stripe/rabbi', express.raw({ type: 'application/json', l
 app.use(express.json({
   limit: '25mb',
   verify: (req, res, buf) => {
-    if (req.originalUrl && req.originalUrl.startsWith('/api/bna/resend/webhook')) {
+    const url = String(req.originalUrl || req.url || '');
+    if (url.startsWith('/api/bna/resend/webhook') || url.startsWith('/api/resend/inbound') || url.startsWith('/api/bna/resend/inbound')) {
       req.rawBody = Buffer.from(buf || '').toString('utf8');
     }
   },
@@ -14629,6 +14667,24 @@ CREATE TABLE IF NOT EXISTS bna_communications (
   occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_resend_event_id
+ON bna_communications ((metadata->>'resend_event_id'))
+WHERE provider = 'resend'
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'resend_event_id', '') <> '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_resend_received_email_id
+ON bna_communications ((metadata->>'resend_received_email_id'))
+WHERE provider = 'resend'
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'resend_received_email_id', '') <> '';
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_communications_resend_email_message_id
+ON bna_communications ((metadata->>'email_message_id'))
+WHERE provider = 'resend'
+  AND direction = 'inbound'
+  AND COALESCE(metadata->>'email_message_id', '') <> '';
 
 CREATE TABLE IF NOT EXISTS bna_message_connectors (
   id SERIAL PRIMARY KEY,
@@ -42328,6 +42384,86 @@ app.post('/api/bna/communications', requireAdmin, async (req, res) => {
   }
 });
 
+function resendInboundResponse(result = {}) {
+  return {
+    success: Boolean(result.success),
+    ignored: Boolean(result.ignored),
+    duplicate: Boolean(result.duplicate),
+    fetched: Boolean(result.fetched),
+    reason: result.reason || null,
+    event_type: result.event_type || 'email.received',
+    communication_id: result.communication_id || null,
+    contact_id: result.contact_id || null,
+    provider_message_id: result.provider_message_id || null,
+    email_message_id: result.email_message_id || null,
+    thread_key: result.thread_key || null,
+    workspace_key: result.workspace_key || null,
+    project_key: result.project_key || null,
+    attachment_count: Number(result.attachment_count || 0),
+  };
+}
+
+async function handleResendInboundWebhook(req, res) {
+  const rawPayload = typeof req.rawBody === 'string'
+    ? req.rawBody
+    : JSON.stringify(req.body && typeof req.body === 'object' ? req.body : {});
+  let event;
+  try {
+    const verification = resendIntegration.verifyResendWebhookRequest({
+      payload: rawPayload,
+      headers: req.headers,
+      secret: RESEND_WEBHOOK_SECRET,
+    });
+    event = JSON.parse(rawPayload || '{}');
+    event.__svix_id = verification.svix_id || String(req.headers['svix-id'] || '').trim();
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Resend inbound webhook verification failed');
+    const status = Number(err?.status || err?.statusCode || 401);
+    if (status === 401) {
+      return res.status(401).json({ success: false, error: 'Unauthorized Resend webhook' });
+    }
+    return res.status(status).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+
+  const eventType = String(event.type || event.event || '').trim();
+  if (eventType !== 'email.received') {
+    return res.status(200).json({
+      success: true,
+      ignored: true,
+      reason: 'unsupported_event_type',
+      event_type: eventType || null,
+    });
+  }
+
+  try {
+    const project = await getProjectByKey(ONE_TIME_PROJECT_KEY, pool);
+    const workspaceId = await getWorkspaceIdForProjectKey(ONE_TIME_PROJECT_KEY, pool);
+    const identity = academySenderIdentity(ONE_TIME_PROVIDER_WORKSPACE_KEY);
+    const runtimeConfig = resendServerRuntimeConfig(identity);
+    const result = await resendInboundCrm.processResendInboundEvent({
+      db: pool,
+      event,
+      workspaceId,
+      projectId: project?.id || null,
+      fetchReceivedEmail: (emailId) => resendIntegration.getReceivedEmail(emailId, {
+        config: runtimeConfig,
+        fetchImpl: fetch,
+      }),
+    });
+    return res.status(200).json(resendInboundResponse(result));
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'Resend inbound webhook processing failed');
+    return res.status(safe.status || 500).json({
+      success: false,
+      error: safe.error,
+      blocker: safe.blocker,
+    });
+  }
+}
+
+app.post('/api/resend/inbound', handleResendInboundWebhook);
+app.post('/api/bna/resend/inbound', handleResendInboundWebhook);
+
 app.post('/api/bna/resend/webhook', async (req, res) => {
   try {
     const result = await resendIntegration.processResendWebhook({
@@ -42350,8 +42486,18 @@ app.get('/api/bna/resend/status', requireAdmin, async (req, res) => {
   res.json({
     success: true,
     email_provider: EMAIL_PROVIDER,
-    resend_configured: Boolean(RESEND_API_KEY && RESEND_FROM_EMAIL),
+    resend_configured: Boolean(RESEND_API_KEY && (RESEND_FROM_EMAIL || ONE_TIME_EMAIL_FROM)),
+    resend_webhook_configured: Boolean(RESEND_WEBHOOK_SECRET),
     resend_from_email: RESEND_FROM_EMAIL || null,
+    resend_inbound_endpoint: '/api/resend/inbound',
+    one_time_sender_identity: {
+      domain: ONE_TIME_EMAIL_DOMAIN,
+      from_name: ONE_TIME_EMAIL_FROM_NAME,
+      from_email: ONE_TIME_EMAIL_FROM,
+      reply_to: ONE_TIME_EMAIL_REPLY_TO,
+      workspace_key: ONE_TIME_PROVIDER_WORKSPACE_KEY,
+      project_key: ONE_TIME_PROJECT_KEY,
+    },
     sender_identity: {
       from_name: identity.fromName,
       from_email: identity.fromEmail,

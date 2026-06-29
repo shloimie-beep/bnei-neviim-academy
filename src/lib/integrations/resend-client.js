@@ -42,6 +42,31 @@ function getResendConfig(options = {}) {
   const profile = String(options.profile || process.env.RESEND_PROFILE || '').trim().toLowerCase();
   const profilePrefix = ['shloimie', 'rabbi'].includes(profile) ? `RESEND_${profile.toUpperCase()}` : 'RESEND';
   const envFor = (suffix) => profilePrefix === 'RESEND' ? `RESEND_${suffix}` : `${profilePrefix}_${suffix}`;
+  const configValue = (suffix, slug) => {
+    const profileEnvName = envFor(suffix);
+    const genericEnvName = `RESEND_${suffix}`;
+    const profileSlug = profile ? `resend-${profile}-${slug}` : '';
+    const names = [profileSlug, `resend-${slug}`].filter(Boolean);
+    const fileNames = [
+      `${profileEnvName}.txt`,
+      profileSlug ? `${profileSlug}.txt` : '',
+      `resend-${slug}.txt`,
+      `${genericEnvName}.txt`,
+    ].filter(Boolean);
+    const profileValue = loadConfigValue({
+      envName: profileEnvName,
+      names,
+      fileNames,
+      ...loaderOptions,
+    });
+    if (profileValue || profileEnvName === genericEnvName) return profileValue;
+    return loadConfigValue({
+      envName: genericEnvName,
+      names: [`resend-${slug}`],
+      fileNames: [`resend-${slug}.txt`, `${genericEnvName}.txt`],
+      ...loaderOptions,
+    });
+  };
   const apiKey = options.apiKey !== undefined
     ? String(options.apiKey || '').trim()
     : loadSecret({
@@ -62,37 +87,12 @@ function getResendConfig(options = {}) {
     fileNames: ['resend-account-owner.txt', `${envFor('ACCOUNT_OWNER')}.txt`, profile ? `resend-${profile}-account-owner.txt` : ''],
     ...loaderOptions,
   }) || profile || 'unknown');
-  const providerAccount = String(options.providerAccount || loadConfigValue({
-    envName: 'RESEND_PROVIDER_ACCOUNT',
-    names: ['resend-provider-account'],
-    fileNames: ['resend-provider-account.txt', 'RESEND_PROVIDER_ACCOUNT.txt'],
-    ...loaderOptions,
-  }) || '').trim();
-  const rawFrom = String(options.from || loadConfigValue({
-    envName: 'RESEND_FROM',
-    names: ['resend-from'],
-    fileNames: ['resend-from.txt', 'RESEND_FROM.txt'],
-    ...loaderOptions,
-  }) || '').trim();
-  const fromEmail = normalizeEmail(options.fromEmail || rawFrom || loadConfigValue({
-    envName: 'RESEND_FROM_EMAIL',
-    names: ['resend-from-email'],
-    fileNames: ['resend-from-email.txt', 'RESEND_FROM_EMAIL.txt'],
-    ...loaderOptions,
-  }));
-  const fromName = String(options.fromName || loadConfigValue({
-    envName: 'RESEND_FROM_NAME',
-    names: ['resend-from-name'],
-    fileNames: ['resend-from-name.txt', 'RESEND_FROM_NAME.txt'],
-    ...loaderOptions,
-  }) || '').trim();
+  const providerAccount = String(options.providerAccount || configValue('PROVIDER_ACCOUNT', 'provider-account') || '').trim();
+  const rawFrom = String(options.from || configValue('FROM', 'from') || '').trim();
+  const fromEmail = normalizeEmail(options.fromEmail || rawFrom || configValue('FROM_EMAIL', 'from-email'));
+  const fromName = String(options.fromName || configValue('FROM_NAME', 'from-name') || '').trim();
   const from = rawFrom || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : '');
-  const domain = String(options.domain || loadConfigValue({
-    envName: envFor('DOMAIN'),
-    names: ['resend-domain', profile ? `resend-${profile}-domain` : ''],
-    fileNames: ['resend-domain.txt', `${envFor('DOMAIN')}.txt`, profile ? `resend-${profile}-domain.txt` : ''],
-    ...loaderOptions,
-  }) || domainFromEmail(fromEmail)).trim().toLowerCase();
+  const domain = String(options.domain || configValue('DOMAIN', 'domain') || domainFromEmail(fromEmail)).trim().toLowerCase();
   const fallbackApproved = options.fallbackApproved !== undefined
     ? Boolean(options.fallbackApproved)
     : parseBoolean(loadConfigValue({
@@ -101,6 +101,7 @@ function getResendConfig(options = {}) {
       fileNames: ['resend-send-fallback-approved.txt', 'RESEND_SEND_FALLBACK_APPROVED.txt'],
       ...loaderOptions,
     }));
+  const replyTo = normalizeEmail(options.replyTo || options.reply_to || configValue('REPLY_TO', 'reply-to'));
   return {
     apiKey,
     apiBase,
@@ -110,6 +111,7 @@ function getResendConfig(options = {}) {
     from,
     fromEmail,
     fromName,
+    replyTo,
     fallbackApproved,
     profile: profile || null,
   };
@@ -494,6 +496,18 @@ async function verifyResendDomain(domain, runtime = {}) {
   };
 }
 
+async function getReceivedEmail(emailId, runtime = {}) {
+  const id = String(emailId || '').trim();
+  if (!id) {
+    const error = new Error('Resend received email id is required');
+    error.status = 400;
+    throw error;
+  }
+  return resendRequest(`/emails/receiving/${encodeURIComponent(id)}?html_format=cid`, {
+    method: 'GET',
+  }, runtime);
+}
+
 async function getResendReadiness(runtime = {}) {
   const config = runtime.config || getResendConfig(runtime);
   const base = {
@@ -505,6 +519,7 @@ async function getResendReadiness(runtime = {}) {
     domain: config.domain || null,
     from: config.from || null,
     from_email: config.fromEmail || null,
+    reply_to: config.replyTo || null,
     domain_verified: false,
     send_allowed: false,
     fallback_approved: Boolean(config.fallbackApproved),
@@ -583,7 +598,7 @@ async function sendResendEmail({ from, to, cc = [], bcc = [], replyTo = null, su
       to: recipients,
       ...(cc.length ? { cc } : {}),
       ...(bcc.length ? { bcc } : {}),
-      ...(replyTo ? { reply_to: replyTo } : {}),
+      ...((replyTo || config.replyTo) ? { reply_to: replyTo || config.replyTo } : {}),
       subject,
       ...(text ? { text } : {}),
       ...(html ? { html } : {}),
@@ -601,6 +616,7 @@ async function sendResendEmail({ from, to, cc = [], bcc = [], replyTo = null, su
 
 module.exports = {
   domainFromEmail,
+  getReceivedEmail,
   getResendConfig,
   getResendDomainStatus,
   getResendReadiness,
