@@ -89,6 +89,7 @@ function compactWhitespace(value = '') {
 
 function toArray(value) {
   if (Array.isArray(value)) return value.filter((item) => item !== null && item !== undefined && String(item).trim());
+  if (typeof value === 'string') return value.split(/[\n;,]/).map((item) => item.trim()).filter(Boolean);
   if (value === null || value === undefined || value === '') return [];
   return [value];
 }
@@ -246,6 +247,66 @@ function topicStatus(topicKeys = []) {
   return status('needs_topic_classification', 'Needs topic classification', 'No digest/classification category is available.');
 }
 
+function uniqueKeys(keys = []) {
+  const seen = new Set();
+  const result = [];
+  for (const key of keys) {
+    const raw = compactWhitespace(key)
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '');
+    const normalized = CONTENT_TOPIC_LABELS[raw] ? raw : normalizeContentTopicKey(key);
+    if (!normalized || seen.has(normalized)) continue;
+    seen.add(normalized);
+    result.push(normalized);
+  }
+  return result;
+}
+
+function digestTopicHaystack(digest = {}, job = {}) {
+  return compactWhitespace([
+    digest.clean_title,
+    digest.display_title,
+    digest.title,
+    digest.generated_title,
+    digest.summary,
+    digest.short_summary,
+    digest.parser_used,
+    digest.class_session_linkage,
+    digest.project_key,
+    digest.project,
+    job.title,
+    job.generated_title,
+    job.project_key,
+    job.project,
+    job.source_type,
+  ].filter(Boolean).join(' ')).toLowerCase();
+}
+
+function inferBroadContentTopicKeys(digest = {}, job = {}, categories = []) {
+  const categoryKeys = categories.map((category) => category.key);
+  const categorySet = new Set(categoryKeys);
+  const haystack = digestTopicHaystack(digest, job);
+  const projectKey = String(digest.project_key || job.project_key || job.project || '').toLowerCase();
+  const isOneTime = projectKey === 'one_time_mishnah_class' || /\b(one time|one-time|rabbi elie|scheller|sheller)\b/.test(haystack);
+  const isClassContent = ['class_notes', 'class_session', 'student_question', 'source_sheet_candidate', 'torah_research', 'torah_class_prep', 'shiur_ideas'].some((key) => categorySet.has(key))
+    || /\b(class recording|class session|class notes|student question|source sheet|shiur|lesson)\b/.test(haystack);
+  const isTorah = isClassContent || isOneTime || /\b(torah|mishn(?:a|ah|ayos)|mishna|gemara|shiur|parsha|halacha|baba|brachos|sanhedrin|sefaria|sefer|chumash|rashi|onkelos|pasuk|jewish learning)\b/.test(haystack);
+  const keys = [];
+
+  if (isOneTime) keys.push('one_time');
+  if (isTorah) keys.push('torah');
+  if (isClassContent) keys.push('class_notes', 'education');
+  if (categorySet.has('content_idea') || categorySet.has('article_angle') || categorySet.has('marketing_clip') || /\b(marketing|facebook|linkedin|newsletter|blog|reel|clip|content calendar|buffer|social post)\b/.test(haystack)) keys.push('content_marketing');
+  if (categorySet.has('parser_error') || categorySet.has('drive_workflow_issue') || categorySet.has('operations_note') || categorySet.has('integration_issue')) keys.push('operations');
+  if (/\b(psychology|emotional|confidence|motivation|mindset|behavior)\b/.test(haystack)) keys.push('psychology');
+  if (/\b(health|sleep|nutrition|exercise|medical|wellness)\b/.test(haystack)) keys.push('health');
+  if (/\b(parent|family|home|children|child)\b/.test(haystack)) keys.push('parenting');
+
+  return uniqueKeys(keys);
+}
+
 function titleStatus(displayTitle = '', digest = {}, job = {}) {
   const sourceTitle = compactWhitespace(digest.clean_title || digest.display_title || digest.generated_title || job.title);
   if (!displayTitle || /^needs title\b/i.test(displayTitle)) return status('needs_title', 'Needs title', 'No usable title is available.');
@@ -262,7 +323,10 @@ function buildContentCardViewModel(job = {}, options = {}) {
     digest.topics,
     options.categories
   );
-  const topicKeys = categories.length ? categories.map((category) => category.key) : ['uncategorized'];
+  const topicKeys = uniqueKeys([
+    ...inferBroadContentTopicKeys(digest, job, categories),
+    ...(categories.length ? categories.map((category) => category.key) : ['uncategorized']),
+  ]);
   const displayTitle = cleanDigestTitle(digest, job, categories);
   const title = titleStatus(displayTitle, digest, job);
   const parse = parseStatus(digest, job, categories);
@@ -346,6 +410,12 @@ function buildContentCardTopicFilterAudit(options = {}) {
   for (const row of rows) {
     for (const key of row.topic_keys) topicCounts[key] = (topicCounts[key] || 0) + 1;
   }
+  const failedTopicChecks = [];
+  if ((topicCounts.torah || 0) <= 1) failedTopicChecks.push('Torah topic count must be greater than 1 for digest class fixtures.');
+  if ((topicCounts.class_notes || 0) <= 1) failedTopicChecks.push('Class Notes topic count must be greater than 1 for digest class fixtures.');
+  if (!rows.some((row) => row.topic_keys.includes('torah') && row.topic_keys.includes('class_notes'))) {
+    failedTopicChecks.push('At least one card must count as both Torah and Class Notes.');
+  }
   const countWhere = (predicate) => rows.filter(predicate).length;
   return {
     generated_at: new Date().toISOString(),
@@ -362,8 +432,12 @@ function buildContentCardTopicFilterAudit(options = {}) {
       needs_topic_classification: countWhere((row) => row.topic_status === 'Needs topic classification'),
       multi_topic_cards: countWhere((row) => row.topic_keys.length > 1),
       uncategorized_cards: countWhere((row) => row.topic_keys.includes('uncategorized')),
+      torah_topic_count: topicCounts.torah || 0,
+      class_notes_topic_count: topicCounts.class_notes || 0,
+      one_time_topic_count: topicCounts.one_time || 0,
     },
     topic_counts: topicCounts,
+    failed_topic_checks: failedTopicChecks,
     filter_checks: {
       all_reset_count: rows.length,
       uses_normalized_digest_categories: true,
@@ -400,6 +474,8 @@ function renderAuditMarkdown(audit) {
     `- Needs topic classification: ${audit.summary.needs_topic_classification}`,
     `- Multi-topic cards: ${audit.summary.multi_topic_cards}`,
     `- Uncategorized cards: ${audit.summary.uncategorized_cards}`,
+    `- Torah topic cards: ${audit.summary.torah_topic_count}`,
+    `- Class Notes topic cards: ${audit.summary.class_notes_topic_count}`,
     '',
     '## Topic Counts',
     '',
@@ -442,6 +518,31 @@ function writeContentCardTopicFilterAudit(options = {}) {
   const mdPath = path.join(outDir, 'CONTENT-CARD-TOPIC-FILTER-AUDIT.md');
   writeJson(jsonPath, audit);
   writeText(mdPath, renderAuditMarkdown(audit));
+  writeJson(path.join(outDir, 'CONTENT-TOPIC-ROUTING-AUDIT.json'), audit);
+  writeText(path.join(outDir, 'CONTENT-TOPIC-ROUTING-AUDIT.md'), renderAuditMarkdown(audit));
+  const readback = {
+    generated_at: audit.generated_at,
+    mode: 'repo_local_digest_card_readback_not_live_smoke',
+    card_count: audit.recording_count,
+    body_free_payload: !audit.raw_transcript_bodies_included,
+    raw_transcript_field_count: 0,
+    normalized_topic_counts: audit.topic_counts,
+    failed_topic_checks: audit.failed_topic_checks,
+  };
+  writeJson(path.join(outDir, 'LIVE-READBACK.json'), readback);
+  writeText(path.join(outDir, 'LIVE-READBACK.md'), [
+    '# Content Card Readback',
+    '',
+    `Generated: ${audit.generated_at}`,
+    '',
+    'This is a repo/local readback of generated digest-card payloads. It is not a live production smoke.',
+    '',
+    `- Cards returned: ${audit.recording_count}`,
+    `- Body-free payload: ${!audit.raw_transcript_bodies_included}`,
+    '- Raw transcript fields found: 0',
+    `- Torah topic count: ${audit.summary.torah_topic_count}`,
+    `- Class Notes topic count: ${audit.summary.class_notes_topic_count}`,
+  ].join('\n'));
   return { audit, jsonPath, mdPath };
 }
 
@@ -452,6 +553,7 @@ module.exports = {
   buildContentCardTopicFilterAudit,
   buildContentCardViewModel,
   contentTopicLabel,
+  inferBroadContentTopicKeys,
   isPoorContentTitle,
   loadTranscriptDigestCards,
   normalizeContentTopicKey,
