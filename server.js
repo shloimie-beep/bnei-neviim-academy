@@ -148,6 +148,11 @@ const {
   loadTranscriptDigestCards,
 } = require('./src/lib/bna/content-card-view-model');
 const {
+  ONE_TIME_CONTENT_MEDIA_INTAKE_LANES,
+  driveFolderLinksFromMap,
+  rabbiFacingDriveLinksFromMap,
+} = require('./src/lib/bna/one-time-drive-intake-map');
+const {
   buildCommunityModerationReadiness,
   buildModerationHistoryEvent,
 } = require('./src/lib/bna/community-moderation');
@@ -10213,9 +10218,18 @@ app.get('/api/one-time/campaign', (req, res) => {
 function oneTimeSharedReviewDataForRequest(req) {
   const host = req.get('host') || 'localhost:3000';
   const protocol = req.get('x-forwarded-proto') || req.protocol || 'http';
-  return buildOneTimeSharedReviewData({
+  const driveSocialMap = oneTimeDriveSocialIngestionMap();
+  const review = buildOneTimeSharedReviewData({
     baseUrl: `${protocol}://${host}`,
   });
+  return {
+    ...review,
+    provider_portal: {
+      ...(review.provider_portal || {}),
+      drive_dropoff_links: rabbiFacingDriveLinksFromMap(driveSocialMap),
+    },
+    drive_social_ingestion: driveSocialMap,
+  };
 }
 
 function oneTimeViewAsSigningSecret() {
@@ -26857,6 +26871,8 @@ async function ensureDefaultServiceProviderDirectory(db = pool) {
           root_folder_id: oneTimeDriveSocialMap.root.id,
           root_folder_url: oneTimeDriveSocialMap.root.webViewLink,
           content_media_folder_id: oneTimeDriveSocialMap.content_media_folder?.id || null,
+          folder_links: oneTimeDriveSocialMap.folder_links || [],
+          rabbi_facing_dropoff_links: oneTimeDriveSocialMap.rabbi_facing_dropoff_links || [],
           map_path: 'ops/one-time-mishnah-class/drive-social-ingestion-map.json',
         },
         login_release_guard: oneTimeDriveSocialMap.login_release_guard,
@@ -26912,6 +26928,8 @@ async function ensureDefaultServiceProviderDirectory(db = pool) {
           root_folder_id: oneTimeDriveSocialMap.root.id,
           root_folder_url: oneTimeDriveSocialMap.root.webViewLink,
           content_media_folder_id: oneTimeDriveSocialMap.content_media_folder?.id || null,
+          folder_links: oneTimeDriveSocialMap.folder_links || [],
+          rabbi_facing_dropoff_links: oneTimeDriveSocialMap.rabbi_facing_dropoff_links || [],
           map_path: 'ops/one-time-mishnah-class/drive-social-ingestion-map.json',
         },
         login_release_guard: oneTimeDriveSocialMap.login_release_guard,
@@ -30995,29 +31013,23 @@ function oneTimeDriveSocialIngestionFallback() {
       name: '04 Content and Media Intake',
       webViewLink: 'https://drive.google.com/drive/folders/1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv',
     },
-    lanes: [
-      {
-        key: 'videoDrop',
-        name: '04.00 Upload Here - Rabbi Video Drops',
-        drive_stage: 'one_time_video_drop',
-        purpose: 'Raw Rabbi video/audio drops and source media waiting for ingestion.',
-        backend_use: 'bna_content_jobs.project_id=one_time_mishnah_class, source_type=google_drive, drive_stage=one_time_video_drop',
-      },
-      {
-        key: 'ingestionQueue',
-        name: '04.10 Ingestion Queue - Transcribe and Parse',
-        drive_stage: 'one_time_ingestion_queue',
-        purpose: 'Files being turned into transcripts, source notes, clip plans, and draft content jobs.',
-        backend_use: 'bna_content_jobs.status=ingested|parsed with Drive file/folder IDs preserved',
-      },
-      {
-        key: 'socialOutputs',
-        name: '04.30 Social Output Drafts - Platform Review',
-        drive_stage: 'one_time_social_output_review',
-        purpose: 'Facebook, LinkedIn, YouTube, Instagram, WhatsApp status, and email/newsletter drafts awaiting review.',
-        backend_use: 'bna_content_outputs output_type/platform metadata before any Buffer or platform write',
-      },
-    ],
+    lanes: ONE_TIME_CONTENT_MEDIA_INTAKE_LANES.map((lane) => ({
+      key: lane.key,
+      canonical_key: lane.canonical_key,
+      name: lane.name,
+      previous_names: lane.previous_names,
+      drive_stage: lane.drive_stage,
+      purpose: lane.purpose,
+      handling: lane.handling,
+      backend_use: lane.backend_use,
+      intended_audience: lane.intended_audience,
+      lane_type: lane.lane_type,
+      rabbi_facing: lane.rabbi_facing,
+      super_admin_visible: lane.super_admin_visible,
+      triggers_transcription: lane.triggers_transcription,
+      source_material_only: lane.source_material_only,
+      copy_label: lane.copy_label || '',
+    })),
     backend_mapping: {
       content_job_project_key: ONE_TIME_PROJECT_KEY,
       operations_workspace_key: 'rabbi_sheller_provider',
@@ -31026,8 +31038,19 @@ function oneTimeDriveSocialIngestionFallback() {
       drive_folder_id_field: 'bna_content_jobs.drive_folder_id',
       drive_stage_field: 'bna_content_jobs.drive_stage',
       output_table: 'bna_content_outputs',
+      media_upload_folder_key: 'videoDrop',
+      source_material_upload_folder_key: 'sourceMaterials',
+      output_drafts_folder_key: 'socialOutputs',
+      approved_outputs_folder_key: 'approvedPosted',
+      ambiguous_files_folder_key: 'needsDecision',
       output_types: ['facebook_post', 'linkedin_post', 'youtube_description', 'whatsapp_update', 'weekly_newsletter', 'website_blog'],
-      social_publish_guard: 'Buffer/social writes require explicit approval and configured connector settings.',
+      classification_rules: {
+        audio_video: { route: 'transcription_intake', eligible_for_transcription: true },
+        powerpoint_google_slides: { route: 'slideshow/source-material', eligible_for_transcription: false, eligible_for_content_generation: 'review_required' },
+        pdf_source_sheet_worksheet: { route: 'source-material', eligible_for_transcription: false, eligible_for_content_generation: 'review_required' },
+        unknown: { route: 'needs Shloimie decision', eligible_for_transcription: false },
+      },
+      social_publish_guard: 'No Buffer/social/newsletter/email/WhatsApp send or publish without explicit approval.',
     },
     social_platforms: [
       { key: 'facebook', label: 'Facebook', outputType: 'facebook_post', status: 'needs_shloimie_channel_mapping', destination: 'Buffer Facebook channel or Meta page', requiredSetting: 'BUFFER_FACEBOOK_CHANNEL_ID or approved manual destination' },
@@ -31060,8 +31083,14 @@ function oneTimeDriveSocialIngestionFallback() {
 function oneTimeDriveSocialIngestionMap() {
   const fallback = oneTimeDriveSocialIngestionFallback();
   const map = readJsonFile(ONE_TIME_DRIVE_SOCIAL_INGESTION_MAP_PATH, null);
-  if (!map || map.project_key !== ONE_TIME_PROJECT_KEY) return fallback;
-  return {
+  if (!map || map.project_key !== ONE_TIME_PROJECT_KEY) {
+    return {
+      ...fallback,
+      folder_links: driveFolderLinksFromMap(fallback),
+      rabbi_facing_dropoff_links: rabbiFacingDriveLinksFromMap(fallback),
+    };
+  }
+  const merged = {
     ...fallback,
     ...map,
     root: { ...fallback.root, ...(map.root || {}) },
@@ -31071,6 +31100,11 @@ function oneTimeDriveSocialIngestionMap() {
     app_access_readiness: { ...fallback.app_access_readiness, ...(map.app_access_readiness || {}) },
     lanes: Array.isArray(map.lanes) && map.lanes.length ? map.lanes : fallback.lanes,
     social_platforms: Array.isArray(map.social_platforms) && map.social_platforms.length ? map.social_platforms : fallback.social_platforms,
+  };
+  return {
+    ...merged,
+    folder_links: driveFolderLinksFromMap(merged),
+    rabbi_facing_dropoff_links: rabbiFacingDriveLinksFromMap(merged),
   };
 }
 
@@ -37227,6 +37261,8 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
         root_folder_id: oneTimeDriveSocialMap.root.id,
         root_folder_url: oneTimeDriveSocialMap.root.webViewLink,
         content_media_folder_id: oneTimeDriveSocialMap.content_media_folder?.id || '',
+        folder_links: oneTimeDriveSocialMap.folder_links || [],
+        rabbi_facing_dropoff_links: oneTimeDriveSocialMap.rabbi_facing_dropoff_links || [],
         lanes: oneTimeDriveSocialMap.lanes,
         backend_mapping: oneTimeDriveSocialMap.backend_mapping,
       },

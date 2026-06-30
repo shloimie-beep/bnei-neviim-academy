@@ -93,31 +93,87 @@ const SUBFOLDERS = [
 const CONTENT_MEDIA_INTAKE_FOLDERS = [
   {
     key: 'videoDrop',
-    name: '04.00 Upload Here - Rabbi Video Drops',
+    name: '04.00 Upload Here - Videos and Audio for Transcription',
+    previousNames: ['04.00 Upload Here - Rabbi Video Drops'],
     driveStage: 'one_time_video_drop',
-    purpose: 'Raw Rabbi video/audio drops and source media waiting for ingestion.',
+    purpose: 'Rabbi class videos, shiur audio, meeting recordings, and media that should become transcript/parse/content candidates.',
     backendUse: 'bna_content_jobs.project_id=one_time_mishnah_class, source_type=google_drive, drive_stage=one_time_video_drop',
+    intendedAudience: 'rabbi_facing',
+    laneType: 'transcription',
+    triggersTranscription: true,
+    sourceMaterialOnly: false,
+  },
+  {
+    key: 'sourceMaterials',
+    name: '04.05 Upload Here - Slideshows and Source Materials',
+    previousNames: [],
+    driveStage: 'one_time_source_material_upload',
+    purpose: 'PowerPoints, Google Slides, PDFs, worksheets, source sheets, handouts, and classroom materials that do not need transcription.',
+    backendUse: 'bna_content_jobs.source_type=google_drive_source_material, drive_stage=one_time_source_material_upload, eligible_for_transcription=false',
+    intendedAudience: 'rabbi_facing',
+    laneType: 'source_material',
+    triggersTranscription: false,
+    sourceMaterialOnly: true,
   },
   {
     key: 'ingestionQueue',
     name: '04.10 Ingestion Queue - Transcribe and Parse',
+    previousNames: [],
     driveStage: 'one_time_ingestion_queue',
     purpose: 'Files being turned into transcripts, source notes, clip plans, and draft content jobs.',
     backendUse: 'bna_content_jobs.status=ingested|parsed with Drive file/folder IDs preserved',
+    intendedAudience: 'internal',
+    laneType: 'transcription_queue',
+    triggersTranscription: true,
+    sourceMaterialOnly: false,
+  },
+  {
+    key: 'sourceMaterialReview',
+    name: '04.20 Source Material Review',
+    previousNames: [],
+    driveStage: 'one_time_source_material_review',
+    purpose: 'Reviewed or queued slide/source-material references, source sheets, and worksheet review.',
+    backendUse: 'bna_content_outputs output_type=source_material_review before public/member/newsletter use',
+    intendedAudience: 'super_admin_only',
+    laneType: 'source_material_review',
+    triggersTranscription: false,
+    sourceMaterialOnly: true,
   },
   {
     key: 'socialOutputs',
-    name: '04.30 Social Output Drafts - Platform Review',
+    name: '04.30 Social and Newsletter Output Drafts - Platform Review',
+    previousNames: ['04.30 Social Output Drafts - Platform Review'],
     driveStage: 'one_time_social_output_review',
     purpose: 'Facebook, LinkedIn, YouTube, Instagram, WhatsApp status, and email/newsletter drafts awaiting Shloimie/Rabbi review.',
     backendUse: 'bna_content_outputs output_type/platform metadata before any Buffer or platform write',
+    intendedAudience: 'internal',
+    laneType: 'review_output',
+    triggersTranscription: false,
+    sourceMaterialOnly: false,
   },
   {
     key: 'approvedPosted',
-    name: '04.90 Approved and Posted Social Outputs',
+    name: '04.90 Approved and Posted Outputs',
+    previousNames: ['04.90 Approved and Posted Social Outputs'],
     driveStage: 'one_time_social_approved_posted',
     purpose: 'Approved exports, destination URLs, screenshots, metrics, and rollback notes after an approved post/draft.',
     backendUse: 'Buffer/social destination evidence and Workflow Q/R reporting after approval',
+    intendedAudience: 'archive',
+    laneType: 'approved_archive',
+    triggersTranscription: false,
+    sourceMaterialOnly: false,
+  },
+  {
+    key: 'needsDecision',
+    name: '04.99 Needs Shloimie Decision',
+    previousNames: [],
+    driveStage: 'one_time_needs_shloimie_decision',
+    purpose: 'Ambiguous files, wrong-lane uploads, permissions/conflict issues, and files needing operator routing.',
+    backendUse: 'operator decision queue; no automation until resolved',
+    intendedAudience: 'super_admin_only',
+    laneType: 'decision_queue',
+    triggersTranscription: false,
+    sourceMaterialOnly: false,
   },
 ];
 
@@ -2148,6 +2204,30 @@ async function ensureFolder(drive, name, parentId = 'root') {
   return { ...created.data, created: true };
 }
 
+async function ensureFolderWithAliases(drive, folder, parentId = 'root') {
+  const names = [folder.name].concat(folder.previousNames || []);
+  for (const name of names) {
+    const existing = await findFolder(drive, name, parentId);
+    if (existing) {
+      return {
+        ...existing,
+        name: folder.name,
+        actualName: existing.name,
+        created: false,
+        reused: true,
+        reusedSemanticAlias: existing.name !== folder.name,
+      };
+    }
+  }
+  const created = await ensureFolder(drive, folder.name, parentId);
+  return {
+    ...created,
+    actualName: created.name,
+    reused: false,
+    reusedSemanticAlias: false,
+  };
+}
+
 async function ensureDoc(drive, name, parentId) {
   const result = await drive.files.list({
     q: [
@@ -2666,7 +2746,7 @@ async function main() {
   }
   const contentMediaIntakeFolders = [];
   for (const folder of CONTENT_MEDIA_INTAKE_FOLDERS) {
-    const ensured = await ensureFolder(drive, folder.name, subfoldersByKey.contentMedia.id);
+    const ensured = await ensureFolderWithAliases(drive, folder, subfoldersByKey.contentMedia.id);
     contentMediaIntakeFolders.push({ ...folder, ...ensured });
   }
   const historicalDraftsFolder = await ensureFolder(drive, 'Historical Drafts', subfoldersByKey.done.id);

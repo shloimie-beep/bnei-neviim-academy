@@ -1,0 +1,316 @@
+{
+  "generated_at": "2026-06-28T11:52:04.752Z",
+  "mode": "no_write_score_progress_catchup_plan",
+  "no_production_mutation": true,
+  "summary": {
+    "inspected_jobs": 29,
+    "row_level_change_count": 0,
+    "no_op_jobs": 29,
+    "jobs_needing_private_reparse": [
+      21,
+      25,
+      26,
+      30,
+      31,
+      56,
+      57,
+      58,
+      59,
+      71
+    ]
+  },
+  "rows": [
+    {
+      "job_id": 21,
+      "parse_status": "needs_parse",
+      "transcript_chars": 8568,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 25,
+      "parse_status": "needs_parse",
+      "transcript_chars": 58244,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 26,
+      "parse_status": "needs_parse",
+      "transcript_chars": 71944,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 30,
+      "parse_status": "needs_parse",
+      "transcript_chars": 29040,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 31,
+      "parse_status": "needs_parse",
+      "transcript_chars": 52560,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 56,
+      "parse_status": "needs_parse",
+      "transcript_chars": 105867,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 57,
+      "parse_status": "needs_parse",
+      "transcript_chars": 35521,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 58,
+      "parse_status": "needs_parse",
+      "transcript_chars": 55809,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 59,
+      "parse_status": "needs_parse",
+      "transcript_chars": 5481,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 64,
+      "parse_status": "parsed",
+      "transcript_chars": 63148,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 65,
+      "parse_status": "parsed",
+      "transcript_chars": 77245,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 66,
+      "parse_status": "parsed",
+      "transcript_chars": 40257,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 67,
+      "parse_status": "parsed",
+      "transcript_chars": 55731,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 68,
+      "parse_status": "parsed",
+      "transcript_chars": 64715,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 69,
+      "parse_status": "parsed",
+      "transcript_chars": 23859,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 70,
+      "parse_status": "parsed",
+      "transcript_chars": 24519,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 71,
+      "parse_status": "needs_parse",
+      "transcript_chars": 751,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No safe score/progress rows because parser output lacks structured progress signals; reparse/canonical-write dry-run is required first.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 72,
+      "parse_status": "parsed",
+      "transcript_chars": 5505,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 73,
+      "parse_status": "parsed",
+      "transcript_chars": 32048,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 74,
+      "parse_status": "parsed",
+      "transcript_chars": 33459,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 75,
+      "parse_status": "parsed",
+      "transcript_chars": 41580,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 76,
+      "parse_status": "parsed",
+      "transcript_chars": 5456,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 77,
+      "parse_status": "parsed",
+      "transcript_chars": 19941,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 78,
+      "parse_status": "parsed",
+      "transcript_chars": 77315,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 79,
+      "parse_status": "parsed",
+      "transcript_chars": 70420,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 80,
+      "parse_status": "parsed",
+      "transcript_chars": 56556,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 81,
+      "parse_status": "parsed",
+      "transcript_chars": 79807,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 82,
+      "parse_status": "parsed",
+      "transcript_chars": 5309,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    },
+    {
+      "job_id": 83,
+      "parse_status": "parsed",
+      "transcript_chars": 9025,
+      "row_level_change_count": 0,
+      "status": "no_safe_rows",
+      "before_after_rows_redacted": [],
+      "no_op_reason": "No score/progress rows are warranted by the current sanitized digest/backfill evidence.",
+      "exact_next_action": "Keep as no-op until an approved private reparse/canonical-write dry-run emits score/progress before-after rows."
+    }
+  ],
+  "production_apply_allowed": false,
+  "blocker": "Production score/progress writes require exact owner approval and redacted row-level before/after evidence. Current plan has no safe rows."
+}

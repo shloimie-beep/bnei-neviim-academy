@@ -1,0 +1,355 @@
+{
+  "generated_at": "2026-06-28T11:52:04.752Z",
+  "mode": "no_write_task_action_catchup_plan",
+  "no_production_mutation": true,
+  "summary": {
+    "inspected_jobs": 29,
+    "task_action_candidates": 34,
+    "internal_agent_task_candidates": 34,
+    "human_visible_task_candidates": 0
+  },
+  "rows": [
+    {
+      "job_id": 21,
+      "candidate_id": "TASK-CANDIDATE-000021-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:21|task-candidate-000021-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "e8550150987733a4",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 25,
+      "candidate_id": "TASK-CANDIDATE-000025-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:25|task-candidate-000025-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "300e7921262c5e6b",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 26,
+      "candidate_id": "TASK-CANDIDATE-000026-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:26|task-candidate-000026-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "18d8a54db020623e",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 30,
+      "candidate_id": "TASK-CANDIDATE-000030-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:30|task-candidate-000030-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "5029c1fffc2fc4d1",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 31,
+      "candidate_id": "TASK-CANDIDATE-000031-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:31|task-candidate-000031-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "b384ecd6845be781",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 56,
+      "candidate_id": "TASK-CANDIDATE-000056-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:56|task-candidate-000056-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "f5c13ceee2cc1eb0",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 56,
+      "candidate_id": "TASK-CANDIDATE-000056-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:56|task-candidate-000056-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "e0d1f2e8760eee58",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 57,
+      "candidate_id": "TASK-CANDIDATE-000057-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:57|task-candidate-000057-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "da4e805afe3f795e",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 57,
+      "candidate_id": "TASK-CANDIDATE-000057-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:57|task-candidate-000057-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "69b36a2772ce1107",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 58,
+      "candidate_id": "TASK-CANDIDATE-000058-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:58|task-candidate-000058-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "9833fc2b77337c27",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 58,
+      "candidate_id": "TASK-CANDIDATE-000058-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:58|task-candidate-000058-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "5e13db4f3887176d",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 59,
+      "candidate_id": "TASK-CANDIDATE-000059-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:59|task-candidate-000059-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "4507ae2a864d0ab3",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 59,
+      "candidate_id": "TASK-CANDIDATE-000059-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:59|task-candidate-000059-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "c177c6f6a17e67d0",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 64,
+      "candidate_id": "TASK-CANDIDATE-000064-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:64|task-candidate-000064-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "a03026dd6da2f1d9",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 65,
+      "candidate_id": "TASK-CANDIDATE-000065-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:65|task-candidate-000065-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "6fd63b35f3ed465d",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 66,
+      "candidate_id": "TASK-CANDIDATE-000066-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:66|task-candidate-000066-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "3069f2aab8bcd9a5",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 67,
+      "candidate_id": "TASK-CANDIDATE-000067-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:67|task-candidate-000067-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "3887292bab9b04bf",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 68,
+      "candidate_id": "TASK-CANDIDATE-000068-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:68|task-candidate-000068-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "01da5a524dabf6ed",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 69,
+      "candidate_id": "TASK-CANDIDATE-000069-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:69|task-candidate-000069-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "2da870cf78b33c2b",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 70,
+      "candidate_id": "TASK-CANDIDATE-000070-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:70|task-candidate-000070-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "72253cb715649252",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 71,
+      "candidate_id": "TASK-CANDIDATE-000071-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:71|task-candidate-000071-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "e7ab24e5a3d80e71",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 71,
+      "candidate_id": "TASK-CANDIDATE-000071-REPAIR-01",
+      "canonical_task_key": "bna|class_drive_intake|content_job:71|task-candidate-000071-repair-01",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "99aa5f65bcadf8b7",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 72,
+      "candidate_id": "TASK-CANDIDATE-000072-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:72|task-candidate-000072-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "9000f5561974715e",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 73,
+      "candidate_id": "TASK-CANDIDATE-000073-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:73|task-candidate-000073-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "d8d9ce1f1e2363e3",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 74,
+      "candidate_id": "TASK-CANDIDATE-000074-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:74|task-candidate-000074-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "98526286611b00a3",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 75,
+      "candidate_id": "TASK-CANDIDATE-000075-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:75|task-candidate-000075-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "39bffb8765290391",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 76,
+      "candidate_id": "TASK-CANDIDATE-000076-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:76|task-candidate-000076-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "dfbc932e601dd149",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 77,
+      "candidate_id": "TASK-CANDIDATE-000077-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:77|task-candidate-000077-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "032f34bd98691eb1",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 78,
+      "candidate_id": "TASK-CANDIDATE-000078-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:78|task-candidate-000078-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "a9e9cbb700363162",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 79,
+      "candidate_id": "TASK-CANDIDATE-000079-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:79|task-candidate-000079-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "6176c20da13c7c42",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 80,
+      "candidate_id": "TASK-CANDIDATE-000080-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:80|task-candidate-000080-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "78b5f0fe2c2dd57f",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 81,
+      "candidate_id": "TASK-CANDIDATE-000081-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:81|task-candidate-000081-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "2dd8fef2ed5d7e64",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 82,
+      "candidate_id": "TASK-CANDIDATE-000082-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:82|task-candidate-000082-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "b99c306760460db0",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    },
+    {
+      "job_id": 83,
+      "candidate_id": "TASK-CANDIDATE-000083-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:83|task-candidate-000083-digest",
+      "candidate_type": "internal_agent_task",
+      "dedupe_key": "5698312ea7f9baf9",
+      "action": "no_write_plan_only",
+      "production_task_write_allowed": false,
+      "exact_next_action": "Keep as repo evidence/agent work; do not create a human-facing production task."
+    }
+  ],
+  "production_task_creation_allowed": false,
+  "dedupe_rule": "Use canonical_task_key; do not surface internal digest/parser/audit handoff rows as operator Pending cards."
+}

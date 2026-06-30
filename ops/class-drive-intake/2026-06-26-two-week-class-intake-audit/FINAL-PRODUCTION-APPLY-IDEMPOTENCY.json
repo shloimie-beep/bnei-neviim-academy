@@ -1,0 +1,20 @@
+{
+  "generated_at": "2026-06-30T05:33:41.842Z",
+  "mode": "issue41_final_apply_idempotency_readback",
+  "raw_transcript_bodies_included": false,
+  "raw_drive_urls_or_ids_included": false,
+  "question_rows": {
+    "personal_expected": 7,
+    "class_expected": 6,
+    "personal_found": 7,
+    "class_found": 6,
+    "class_fanout_rows_found": 0
+  },
+  "task_rows": {
+    "expected": 25,
+    "found": 25
+  },
+  "score_progress_rows_written": 0,
+  "passed": true,
+  "second_run_would_duplicate": false
+}

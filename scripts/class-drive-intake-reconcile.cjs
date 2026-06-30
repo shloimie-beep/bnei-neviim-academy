@@ -5,15 +5,36 @@ const path = require('path');
 
 const {
   APPLY_GATE_PHRASE,
+  DEFAULT_CATCHUP_FOCUS_JOB_IDS,
+  DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  DEFAULT_PRODUCTION_APPLY_ACTIONS,
   DEFAULT_REPAIR_JOB_RANGE,
+  buildApplyLaneDesign,
+  buildBacklogCatchupCensus,
   buildGuardedBackfillDryRun,
   buildPipelineTraceRows,
+  buildProductionApplyPreflight,
+  buildPrivateReparseCanonicalDryRun,
+  buildResearchContentCatchupPlan,
+  buildScoreProgressCatchupPlan,
+  buildTaskActionCatchupPlan,
   evaluateSuspectedCauses,
   parseJsonMaybe,
   redactSensitiveText,
   redactedRef,
+  renderApplyLaneDesignMarkdown,
   renderBackfillMarkdown,
+  renderBacklogCatchupCensusMarkdown,
   renderPipelineCensusMarkdown,
+  renderProductionApplyBatchPlanMarkdown,
+  renderProductionApplyPreflightMarkdown,
+  renderProductionApplyReadbackPlanMarkdown,
+  renderProductionApplyRollbackPlanMarkdown,
+  renderProductionApplySnapshotPlanMarkdown,
+  renderPrivateReparseDryRunMarkdown,
+  renderResearchContentCatchupMarkdown,
+  renderScoreProgressCatchupMarkdown,
+  renderTaskActionCatchupMarkdown,
   sha256,
 } = require('../src/lib/bna/class-drive-intake-reconcile');
 
@@ -29,6 +50,20 @@ function parseJobRange(value) {
   return Number.isFinite(single) ? [single, single] : DEFAULT_REPAIR_JOB_RANGE.slice();
 }
 
+function parseJobIds(value) {
+  return String(value || '')
+    .split(/[,\s]+/)
+    .map((item) => Number(item.trim()))
+    .filter((item) => Number.isFinite(item) && item > 0);
+}
+
+function parseActionList(value) {
+  return String(value || '')
+    .split(/[,\s]+/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
 function parseArgs(argv) {
   const args = {
     command: 'all',
@@ -38,6 +73,11 @@ function parseArgs(argv) {
     skipDrive: false,
     drivePageSize: 50,
     jobs: DEFAULT_REPAIR_JOB_RANGE.slice(),
+    jobIds: [],
+    approvedActions: [],
+    batch: '',
+    snapshotPath: '',
+    rollbackOutPath: '',
     outDir: DEFAULT_OUT_DIR,
     envFiles: [],
   };
@@ -50,15 +90,65 @@ function parseArgs(argv) {
     else if (item === '--skip-drive') args.skipDrive = true;
     else if (item === '--gate') args.gate = rest[++i] || '';
     else if (item === '--jobs') args.jobs = parseJobRange(rest[++i]);
+    else if (item === '--job-ids') args.jobIds = parseJobIds(rest[++i]);
+    else if (item === '--approved-actions' || item === '--actions') args.approvedActions = parseActionList(rest[++i]);
+    else if (item === '--batch') args.batch = rest[++i] || '';
+    else if (item === '--snapshot') args.snapshotPath = path.resolve(rest[++i] || '');
+    else if (item === '--rollback-out') args.rollbackOutPath = path.resolve(rest[++i] || '');
     else if (item === '--out-dir') args.outDir = path.resolve(rest[++i]);
     else if (item === '--env-file') args.envFiles.push(path.resolve(rest[++i]));
     else if (item === '--drive-page-size') args.drivePageSize = Number(rest[++i] || 50) || 50;
     else if (item.startsWith('--jobs=')) args.jobs = parseJobRange(item.slice('--jobs='.length));
+    else if (item.startsWith('--job-ids=')) args.jobIds = parseJobIds(item.slice('--job-ids='.length));
+    else if (item.startsWith('--approved-actions=')) args.approvedActions = parseActionList(item.slice('--approved-actions='.length));
+    else if (item.startsWith('--actions=')) args.approvedActions = parseActionList(item.slice('--actions='.length));
+    else if (item.startsWith('--batch=')) args.batch = item.slice('--batch='.length);
+    else if (item.startsWith('--snapshot=')) args.snapshotPath = path.resolve(item.slice('--snapshot='.length));
+    else if (item.startsWith('--rollback-out=')) args.rollbackOutPath = path.resolve(item.slice('--rollback-out='.length));
     else if (item.startsWith('--out-dir=')) args.outDir = path.resolve(item.slice('--out-dir='.length));
     else if (item.startsWith('--env-file=')) args.envFiles.push(path.resolve(item.slice('--env-file='.length)));
   }
+  if (args.jobIds.length) args.jobs = [Math.min(...args.jobIds), Math.max(...args.jobIds)];
+  if (args.command === 'private-reparse' && !args.jobIds.length) {
+    args.jobIds = DEFAULT_PRIVATE_REPARSE_JOB_IDS.slice();
+    args.jobs = [Math.min(...args.jobIds), Math.max(...args.jobIds)];
+  }
+  if (args.command === 'production-apply-preflight' && !args.approvedActions.length) {
+    args.approvedActions = DEFAULT_PRODUCTION_APPLY_ACTIONS.slice();
+  }
   if (process.env.BNA_ENV_FILE) args.envFiles.unshift(path.resolve(process.env.BNA_ENV_FILE));
   return args;
+}
+
+function assertApprovedPrivateReparseScope(args) {
+  if (args.command !== 'private-reparse') return;
+  const approved = DEFAULT_PRIVATE_REPARSE_JOB_IDS.map(Number).sort((a, b) => a - b);
+  const requested = [...new Set(args.jobIds.map(Number).filter(Boolean))].sort((a, b) => a - b);
+  const approvedKey = approved.join(',');
+  const requestedKey = requested.join(',');
+  if (requestedKey !== approvedKey) {
+    throw new Error(`Refusing private reparse: approved job IDs are exactly ${approvedKey}; requested ${requestedKey || 'none'}.`);
+  }
+  args.jobIds = requested;
+  args.jobs = [Math.min(...requested), Math.max(...requested)];
+  args.skipDrive = true;
+}
+
+function assertApprovedProductionApplyScope(args) {
+  if (!['production-apply-preflight', 'production-apply'].includes(args.command)) return;
+  const approved = DEFAULT_PRIVATE_REPARSE_JOB_IDS.map(Number).sort((a, b) => a - b);
+  const requested = [...new Set(args.jobIds.map(Number).filter(Boolean))].sort((a, b) => a - b);
+  const approvedKey = approved.join(',');
+  const requestedKey = requested.join(',');
+  if (requestedKey !== approvedKey) {
+    throw new Error(`Refusing production apply preflight: approved job IDs are exactly ${approvedKey}; requested ${requestedKey || 'none'}.`);
+  }
+  args.jobIds = requested;
+  args.jobs = [Math.min(...requested), Math.max(...requested)];
+  args.skipDrive = true;
+  if (!args.snapshotPath) throw new Error('Refusing production apply preflight: --snapshot <snapshot-file> is required.');
+  if (!args.rollbackOutPath) throw new Error('Refusing production apply preflight: --rollback-out <rollback-file> is required.');
+  if (!args.approvedActions.length) throw new Error('Refusing production apply preflight: --approved-actions is required.');
 }
 
 function loadEnvFile(filePath) {
@@ -381,7 +471,7 @@ async function queryIfTable(client, tableName, sql, params = []) {
   return (await client.query(sql, params)).rows;
 }
 
-async function loadDbSnapshot(jobRange) {
+async function loadDbSnapshot(jobRange, options = {}) {
   const snapshot = {
     jobs: [],
     students: [],
@@ -389,6 +479,7 @@ async function loadDbSnapshot(jobRange) {
     groupGoalEntries: [],
     torahEntries: [],
     accountabilityEvents: [],
+    questionReviews: [],
     contentOutputs: [],
     intakeParseRuns: [],
     rawIntake: [],
@@ -400,19 +491,27 @@ async function loadDbSnapshot(jobRange) {
     return snapshot;
   }
   const [start, end] = jobRange;
+  const exactJobIds = (options.exactJobIds || []).map(Number).filter(Boolean);
   try {
-    snapshot.jobs = await queryIfTable(client, 'bna_content_jobs', `
-      SELECT *
-      FROM bna_content_jobs
-      WHERE id BETWEEN $1 AND $2
-         OR drive_file_id IS NOT NULL
-         OR transcript_text IS NOT NULL
-         OR source_type ILIKE ANY(ARRAY['%drive%','%recording%','%class%'])
-         OR COALESCE(parse_json::text, '') ILIKE '%mixed_recording_parse%'
-         OR COALESCE(parse_json::text, '') ILIKE '%class_notes%'
-      ORDER BY id ASC
-      LIMIT 500
-    `, [start, end]);
+    snapshot.jobs = exactJobIds.length
+      ? await queryIfTable(client, 'bna_content_jobs', `
+        SELECT *
+        FROM bna_content_jobs
+        WHERE id = ANY($1::int[])
+        ORDER BY id ASC
+      `, [exactJobIds])
+      : await queryIfTable(client, 'bna_content_jobs', `
+        SELECT *
+        FROM bna_content_jobs
+        WHERE id BETWEEN $1 AND $2
+           OR drive_file_id IS NOT NULL
+           OR transcript_text IS NOT NULL
+           OR source_type ILIKE ANY(ARRAY['%drive%','%recording%','%class%'])
+           OR COALESCE(parse_json::text, '') ILIKE '%mixed_recording_parse%'
+           OR COALESCE(parse_json::text, '') ILIKE '%class_notes%'
+        ORDER BY id ASC
+        LIMIT 500
+      `, [start, end]);
     const jobIds = snapshot.jobs.map((job) => Number(job.id)).filter(Boolean);
     const ids = jobIds.length ? jobIds : [-1];
     snapshot.students = await queryIfTable(client, 'bna_students', `
@@ -439,6 +538,14 @@ async function loadDbSnapshot(jobRange) {
       ORDER BY id DESC
       LIMIT 2000
     `, [[...ids.map((id) => `%source_content_job_id%${id}%`), ...ids.map((id) => `%content job #${id}%`)], ids.map(String)]);
+    snapshot.questionReviews = await queryIfTable(client, 'bna_one_time_question_reviews', `
+      SELECT *
+      FROM bna_one_time_question_reviews
+      WHERE content_job_id = ANY($1::int[])
+         OR source_context::text ILIKE ANY($2::text[])
+      ORDER BY id DESC
+      LIMIT 2000
+    `, [ids, [...ids.map((id) => `%source_content_job_id%${id}%`), ...ids.map((id) => `%content_job%${id}%`)]]);
     snapshot.contentOutputs = await queryIfTable(client, 'bna_content_outputs', 'SELECT * FROM bna_content_outputs WHERE job_id = ANY($1::int[]) ORDER BY id ASC', [ids]);
     snapshot.intakeParseRuns = await queryIfTable(client, 'bna_intake_parse_runs', `
       SELECT *
@@ -599,6 +706,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     groupGoalEntries: snapshot.groupGoalEntries,
     torahEntries: snapshot.torahEntries,
     accountabilityEvents: snapshot.accountabilityEvents,
+    questionReviews: snapshot.questionReviews,
     jobRange: args.jobs,
   });
   const recommendation = {
@@ -609,6 +717,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     excluded_jobs: backfill.excluded_jobs,
     safe_to_apply: backfill.safe_to_apply,
     row_level_change_plan: backfill.row_level_change_plan,
+    class_question_fallbacks: backfill.class_question_fallbacks,
     blocking_ambiguities: backfill.blocking_ambiguities,
     ambiguity_exclusions: backfill.ambiguity_exclusions,
     duplicate_exclusions: backfill.duplicate_exclusions,
@@ -629,7 +738,52 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     recommendation,
     evidenceRoot: relativeRepoPath(args.outDir),
   });
-  return { census, backfill, recommendation, sourceCoverage };
+  const catchupInputs = loadCatchupInputs(args, recommendation);
+  const catchupCensus = buildBacklogCatchupCensus({
+    ...catchupInputs,
+    focusJobIds: DEFAULT_CATCHUP_FOCUS_JOB_IDS,
+  });
+  const scoreProgressPlan = buildScoreProgressCatchupPlan(catchupCensus);
+  const taskActionPlan = buildTaskActionCatchupPlan(catchupCensus);
+  const researchContentPlan = buildResearchContentCatchupPlan(catchupCensus);
+  const applyLaneDesign = buildApplyLaneDesign({
+    backfillPlan: recommendation,
+    exactJobIds: catchupCensus.focus_job_ids,
+  });
+  const privateReparseDryRun = buildPrivateReparseCanonicalDryRun({
+    jobs: snapshot.jobs,
+    students: snapshot.students,
+    accountabilityEvents: snapshot.accountabilityEvents,
+    questionReviews: snapshot.questionReviews,
+    torahEntries: snapshot.torahEntries,
+    groupGoalEntries: snapshot.groupGoalEntries,
+    exactJobIds: args.jobIds?.length ? args.jobIds : DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+  });
+  const productionApplyPreflight = buildProductionApplyPreflight({
+    privateReparseDryRun,
+    approvedJobIds: args.jobIds?.length ? args.jobIds : DEFAULT_PRIVATE_REPARSE_JOB_IDS,
+    approvedActions: args.approvedActions?.length ? args.approvedActions : DEFAULT_PRODUCTION_APPLY_ACTIONS,
+    snapshotPath: args.snapshotPath,
+    rollbackPath: args.rollbackOutPath,
+    evidenceIntegrity: inspectPrivateReparseEvidence(args.outDir),
+    dbBlockers: snapshot.blockers,
+    branch: 'codex/issue41-class-question-fallback-20260628',
+    pullRequest: 'https://github.com/shloimie-beep/bnei-neviim-academy/pull/49',
+    issue: 'https://github.com/shloimie-beep/bnei-neviim-academy/issues/41',
+  });
+  return {
+    census,
+    backfill,
+    recommendation,
+    sourceCoverage,
+    catchupCensus,
+    scoreProgressPlan,
+    taskActionPlan,
+    researchContentPlan,
+    applyLaneDesign,
+    privateReparseDryRun,
+    productionApplyPreflight,
+  };
 }
 
 function evidenceExists(relativePath) {
@@ -640,24 +794,124 @@ function relativeRepoPath(filePath) {
   return path.relative(REPO_ROOT, filePath).replace(/\\/g, '/');
 }
 
+function readJsonIfExists(filePath, fallback = null) {
+  if (!fs.existsSync(filePath)) return fallback;
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
+function readTextIfExists(filePath) {
+  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : '';
+}
+
+function scanEvidencePrivacy(filePaths = []) {
+  const secretLiteralPattern = new RegExp([
+    ['OPENAI', 'API', 'KEY'].join('_'),
+    ['GOOGLE', 'APPLICATION', 'CREDENTIALS'].join('_'),
+    ['DATABASE', 'URL'].join('_'),
+    ['RAILWAY', 'TOKEN'].join('_'),
+    ['SUPABASE', 'SERVICE'].join('_'),
+  ].join('|'), 'i');
+  const patterns = [
+    { id: 'raw_drive_url', pattern: /https?:\/\/(?:drive|docs)\.google\.com/i },
+    { id: 'raw_drive_id_query', pattern: /[?&]id=[A-Za-z0-9_-]{20,}/ },
+    { id: 'raw_transcript_field', pattern: /"(?:transcriptText|transcript_text|rawTranscript|raw_transcript|rawBody|raw_body|fullText|full_text)"\s*:/i },
+    { id: 'secret_literal', pattern: secretLiteralPattern },
+  ];
+  const findings = [];
+  for (const filePath of filePaths) {
+    if (!fs.existsSync(filePath)) continue;
+    const text = fs.readFileSync(filePath, 'utf8');
+    for (const item of patterns) {
+      if (item.pattern.test(text)) findings.push({ file: relativeRepoPath(filePath), pattern: item.id });
+    }
+  }
+  return {
+    passed: findings.length === 0,
+    findings,
+  };
+}
+
+function inspectPrivateReparseEvidence(outDir) {
+  const files = [
+    path.join(outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'),
+    path.join(outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'),
+  ];
+  const privacy = scanEvidencePrivacy(files);
+  return {
+    checked_at: new Date().toISOString(),
+    privacy_scan_passed: privacy.passed,
+    privacy_findings: privacy.findings,
+    files: files.map((filePath) => ({
+      path: relativeRepoPath(filePath),
+      exists: fs.existsSync(filePath),
+      size: fs.existsSync(filePath) ? fs.statSync(filePath).size : 0,
+      sha256: fs.existsSync(filePath) ? sha256(fs.readFileSync(filePath)) : null,
+    })),
+  };
+}
+
+function candidateIdsFromMarkdown(text = '') {
+  return String(text || '')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .map((line) => {
+      const match = line.match(/^-\s+([A-Z]+(?:-[A-Z0-9]+)*-\d{6}(?:-[A-Z0-9]+)*):/);
+      return match ? match[1] : '';
+    })
+    .filter(Boolean);
+}
+
+function loadDigestRecords() {
+  const digestRoot = path.join(REPO_ROOT, 'content-memory', 'transcript-digests');
+  const manifest = readJsonIfExists(path.join(digestRoot, 'manifest.json'), { recordings: [] });
+  return (manifest.recordings || []).map((recording) => {
+    const manifestPath = path.join(digestRoot, recording.path || '');
+    const dir = path.dirname(manifestPath);
+    const manifestRow = readJsonIfExists(manifestPath, null);
+    if (!manifestRow) return null;
+    return {
+      manifest: manifestRow,
+      categories: readJsonIfExists(path.join(dir, 'CATEGORIES.json'), {}),
+      parse_gaps: readJsonIfExists(path.join(dir, 'PARSE-GAPS.json'), []),
+      task_candidate_ids: candidateIdsFromMarkdown(readTextIfExists(path.join(dir, 'TASK-CANDIDATES.md'))),
+      content_idea_candidate_ids: candidateIdsFromMarkdown(readTextIfExists(path.join(dir, 'CONTENT-IDEAS.md'))),
+      student_question_candidate_ids: candidateIdsFromMarkdown(readTextIfExists(path.join(dir, 'STUDENT-QUESTION-CANDIDATES.md'))),
+    };
+  }).filter(Boolean);
+}
+
+function loadCatchupInputs(args, recommendation) {
+  const evidencePath = (fileName) => path.join(args.outDir, fileName);
+  return {
+    digestRecords: loadDigestRecords(),
+    contentCardAudit: readJsonIfExists(evidencePath('CONTENT-CARD-TOPIC-FILTER-AUDIT.json'), {}),
+    questionMatrix: readJsonIfExists(evidencePath('STUDENT-QUESTION-MATRIX.json'), []),
+    backfillPlan: recommendation || readJsonIfExists(evidencePath('BACKFILL-RECOMMENDATION.json'), {}),
+    classQuestionDryRun: readJsonIfExists(evidencePath('CLASS-QUESTION-BROADCAST-DRY-RUN.json'), {}),
+  };
+}
+
 function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-06-24-closeout' } = {}) {
   const evidencePath = (fileName) => `${evidenceRoot}/${fileName}`;
   const statements = [
-    ['SRC-20260624-101', 'Create and activate the class/Drive intake goal; preserve raw source and register requirements.', 'REQ-20260624-101', ['raw-input/RAW-20260624-003-class-drive-intake-goal.md', 'tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
-    ['SRC-20260624-102', 'Read control manifest and branch from the exact integration base.', 'REQ-20260624-101', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
-    ['SRC-20260624-103', 'Build read-only diagnostics for pipeline census, stage reports, orphan output, ambiguity, proposed changes, duplicates, UI mismatch, and credentials/workers.', 'REQ-20260624-102', ['scripts/class-drive-intake-reconcile.cjs', 'src/lib/bna/class-drive-intake-reconcile.js', evidencePath('PIPELINE-CENSUS.json')]],
-    ['SRC-20260624-104', 'Trace every known uploaded class/job through the 20 required stages, explicitly inspecting jobs 64-74 if present.', 'REQ-20260624-102', [evidencePath('PIPELINE-CENSUS.json'), evidencePath('PIPELINE-CENSUS.md')]],
-    ['SRC-20260624-105', 'Verify or disprove the suspected causes including OpenAI 401, Drive config/auth, worker/parser/apply gaps, aliases, duplicates, generic parser, deployment, and stale status.', 'REQ-20260624-103', [evidencePath('PIPELINE-CENSUS.json'), evidencePath('PIPELINE-CENSUS.md')]],
-    ['SRC-20260624-106', 'Prepare a dry-run-only guarded backfill with row-level plan, exclusions, expected counts, transaction boundaries, rollback, idempotency, and gate phrase.', 'REQ-20260624-104', [evidencePath('BACKFILL-DRY-RUN.md'), evidencePath('BACKFILL-RECOMMENDATION.json')]],
-    ['SRC-20260624-107', 'Write BACKFILL-RECOMMENDATION.json for Prompt 09 / final integrator consumption.', 'REQ-20260624-104', [evidencePath('BACKFILL-RECOMMENDATION.json')]],
-    ['SRC-20260624-108', 'Cover multi-student extraction, scores/progress, student questions, linkage, ambiguity, duplicates, retries, visible failures, idempotency, read models, dry-run, and rollback with tests.', 'REQ-20260624-105', ['tests/class-drive-intake-reconcile.test.js', 'tests/class-drive-intake-shared-patch.test.js', evidencePath('VERIFICATION.md')]],
-    ['SRC-20260624-109', 'Detect credential readiness without printing secrets or raw Drive IDs.', 'REQ-20260624-106', [evidencePath('AUTH-READINESS.md')]],
-    ['SRC-20260624-110', 'Do not edit server.js; provide SHARED-PATCH.diff when shared wiring is required.', 'REQ-20260624-107', ['ops/class-drive-intake/2026-06-24-closeout/SHARED-PATCH.diff', 'tests/class-drive-intake-shared-patch.test.js']],
-    ['SRC-20260624-111', 'Run focused tests, source coverage, JSON checks, secret audit, and git diff --check.', 'REQ-20260624-108', [evidencePath('VERIFICATION.md')]],
-    ['SRC-20260624-112', 'Commit and push the lane branch.', 'REQ-20260624-109', ['tasks-pending/2026-06-24-class-drive-intake-reconciliation-goal.md']],
+    ['SRC-20260626-116', 'Create and activate the transcript/Drive digest rebuild run with raw source/register evidence.', 'REQ-20260626-116', ['raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md', 'ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json', 'tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md']],
+    ['SRC-20260626-119', 'Build privacy-safe digest export and block raw transcript export by default.', 'REQ-20260626-119', ['src/lib/bna/transcript-digest-export.js', 'scripts/export-content-digests.cjs', 'tests/transcript-digest-export.test.js']],
+    ['SRC-20260626-121', 'Generate repo-safe transcript digest memory for 29 recordings without raw transcript bodies.', 'REQ-20260626-121', ['content-memory/transcript-digests/manifest.json', 'content-memory/transcript-digests/index.md']],
+    ['SRC-20260626-127', 'Verify the Issue #41 Drive transcript library addendum with read-only evidence.', 'REQ-20260626-127', ['raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md', evidencePath('DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md')]],
+    ['SRC-20260626-128', 'Run the approved #83-only private Drive transcript sync and record sanitized readback proof.', 'REQ-20260626-128', ['raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md', evidencePath('DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md')]],
+    ['SRC-20260626-130', 'Audit all 29 digest recordings for content-card and topic-filter readiness.', 'REQ-20260626-130', [evidencePath('CONTENT-CARD-TOPIC-FILTER-AUDIT.md'), evidencePath('CONTENT-CARD-TOPIC-FILTER-AUDIT.json')]],
+    ['SRC-20260626-131', 'Repair Operations Content cards and normalized topic filters without exposing raw transcript bodies.', 'REQ-20260626-131', ['src/lib/bna/content-card-view-model.js', 'public/operations.html', 'tests/content-card-view-model.test.js', 'tests/operations-content-library-taxonomy.test.js', evidencePath('LIVE-CONTENT-CARD-READBACK.md')]],
+    ['SRC-20260628-143', 'Refresh class-question broadcast dry-run evidence and keep production apply blocked.', 'REQ-20260628-143', [evidencePath('BACKFILL-DRY-RUN.md'), evidencePath('BACKFILL-RECOMMENDATION.json'), evidencePath('CLASS-QUESTION-BROADCAST-DRY-RUN.md')]],
+    ['SRC-20260628-145', 'Produce a repo-safe catch-up census across all 29 digest recordings.', 'REQ-20260628-145', [evidencePath('BACKLOG-CATCHUP-CENSUS.md'), evidencePath('BACKLOG-CATCHUP-CENSUS.json')]],
+    ['SRC-20260628-147', 'Emit no-write score/progress catch-up plan with explicit no-op reasons.', 'REQ-20260628-147', [evidencePath('SCORE-PROGRESS-CATCHUP-PLAN.md'), evidencePath('SCORE-PROGRESS-CATCHUP-PLAN.json')]],
+    ['SRC-20260628-148', 'Emit no-write task/action catch-up plan with canonical keys and dedupe rules.', 'REQ-20260628-148', [evidencePath('TASK-ACTION-CATCHUP-PLAN.md'), evidencePath('TASK-ACTION-CATCHUP-PLAN.json')]],
+    ['SRC-20260628-149', 'Emit research/content catch-up plan proving card readiness without raw bodies.', 'REQ-20260628-149', [evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.md'), evidencePath('RESEARCH-CONTENT-CATCHUP-PLAN.json')]],
+    ['SRC-20260628-150', 'Document apply-lane owner gate, snapshot, rollback, row evidence, dedupe, and refusal controls without executing apply.', 'REQ-20260628-150', [evidencePath('APPLY-LANE-DESIGN.md'), evidencePath('APPLY-LANE-DESIGN.json'), 'tests/class-drive-intake-reconcile.test.js']],
+    ['SRC-20260628-154', 'Produce exact-scope private reparse/canonical-write dry-run evidence for the 10 approved Needs-parse jobs without raw transcript bodies or production mutation.', 'REQ-20260628-154', [evidencePath('PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'), evidencePath('PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'), 'raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md']],
+    ['SRC-20260628-157', 'Implement and verify a no-write production apply preflight with exact job scope, snapshot/rollback requirements, small-batch commands, dedupe checks, and readback plan.', 'REQ-20260628-157', [evidencePath('PRODUCTION-APPLY-PREFLIGHT.md'), evidencePath('PRODUCTION-APPLY-PREFLIGHT.json'), evidencePath('PRODUCTION-APPLY-SNAPSHOT-PLAN.md'), evidencePath('PRODUCTION-APPLY-ROLLBACK-PLAN.md'), evidencePath('PRODUCTION-APPLY-BATCH-PLAN.md'), evidencePath('PRODUCTION-APPLY-READBACK-PLAN.md'), 'raw-input/RAW-20260628-006-production-apply-preflight-packet.md']],
   ].map(([statement_id, source_statement, requirement_id, evidence_paths]) => ({
     statement_id,
-    source_id: 'RAW-20260624-003',
+    source_id: statement_id === 'SRC-20260628-157' ? 'RAW-20260628-006' : statement_id === 'SRC-20260628-154' ? 'RAW-20260628-005' : statement_id.startsWith('SRC-20260628') ? 'RAW-20260628-004' : 'RAW-20260626-004',
     source_statement,
     requirement_id,
     classification: 'requirement',
@@ -673,8 +927,8 @@ function buildLaneSourceCoverage({ evidenceRoot = 'ops/class-drive-intake/2026-0
   }, {});
   return {
     generated_at: new Date().toISOString(),
-    source_id: 'RAW-20260624-003',
-    source_path: 'raw-input/RAW-20260624-003-class-drive-intake-goal.md',
+    source_id: 'RAW-20260626-004+RAW-20260628-004+RAW-20260628-005+RAW-20260628-006',
+    source_path: 'ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json',
     no_production_mutation: true,
     source_statement_count: statements.length,
     mapped_statement_count: statements.length - unmapped.length,
@@ -727,10 +981,46 @@ function writeEvidence(args, auth, reports) {
   writeText(path.join(args.outDir, 'AUTH-READINESS.md'), renderAuthMarkdown(auth));
   writeJson(path.join(args.outDir, 'SOURCE-COVERAGE.json'), reports.sourceCoverage);
   writeText(path.join(args.outDir, 'SOURCE-COVERAGE.md'), renderSourceCoverageMarkdown(reports.sourceCoverage));
+  writeJson(path.join(args.outDir, 'BACKLOG-CATCHUP-CENSUS.json'), reports.catchupCensus);
+  writeText(path.join(args.outDir, 'BACKLOG-CATCHUP-CENSUS.md'), renderBacklogCatchupCensusMarkdown(reports.catchupCensus));
+  writeJson(path.join(args.outDir, 'SCORE-PROGRESS-CATCHUP-PLAN.json'), reports.scoreProgressPlan);
+  writeText(path.join(args.outDir, 'SCORE-PROGRESS-CATCHUP-PLAN.md'), renderScoreProgressCatchupMarkdown(reports.scoreProgressPlan));
+  writeJson(path.join(args.outDir, 'TASK-ACTION-CATCHUP-PLAN.json'), reports.taskActionPlan);
+  writeText(path.join(args.outDir, 'TASK-ACTION-CATCHUP-PLAN.md'), renderTaskActionCatchupMarkdown(reports.taskActionPlan));
+  writeJson(path.join(args.outDir, 'RESEARCH-CONTENT-CATCHUP-PLAN.json'), reports.researchContentPlan);
+  writeText(path.join(args.outDir, 'RESEARCH-CONTENT-CATCHUP-PLAN.md'), renderResearchContentCatchupMarkdown(reports.researchContentPlan));
+  writeJson(path.join(args.outDir, 'APPLY-LANE-DESIGN.json'), reports.applyLaneDesign);
+  writeText(path.join(args.outDir, 'APPLY-LANE-DESIGN.md'), renderApplyLaneDesignMarkdown(reports.applyLaneDesign));
+}
+
+function writePrivateReparseEvidence(args, reports) {
+  writeJson(path.join(args.outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json'), reports.privateReparseDryRun);
+  writeText(path.join(args.outDir, 'PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md'), renderPrivateReparseDryRunMarkdown(reports.privateReparseDryRun));
+}
+
+function writeProductionApplyPreflightEvidence(args, reports) {
+  writeJson(path.join(args.outDir, 'PRODUCTION-APPLY-PREFLIGHT.json'), reports.productionApplyPreflight);
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-PREFLIGHT.md'), renderProductionApplyPreflightMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-SNAPSHOT-PLAN.md'), renderProductionApplySnapshotPlanMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-ROLLBACK-PLAN.md'), renderProductionApplyRollbackPlanMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-BATCH-PLAN.md'), renderProductionApplyBatchPlanMarkdown(reports.productionApplyPreflight));
+  writeText(path.join(args.outDir, 'PRODUCTION-APPLY-READBACK-PLAN.md'), renderProductionApplyReadbackPlanMarkdown(reports.productionApplyPreflight));
+}
+
+function writeSourceCoverageEvidence(args, reports) {
+  writeJson(path.join(args.outDir, 'SOURCE-COVERAGE.json'), reports.sourceCoverage);
+  writeText(path.join(args.outDir, 'SOURCE-COVERAGE.md'), renderSourceCoverageMarkdown(reports.sourceCoverage));
 }
 
 function selectOutput(command, reports) {
   if (command === 'census' || command === 'stage-report') return reports.census;
+  if (command === 'catchup-census') return reports.catchupCensus;
+  if (command === 'score-progress-plan') return reports.scoreProgressPlan;
+  if (command === 'task-action-plan') return reports.taskActionPlan;
+  if (command === 'research-content-plan') return reports.researchContentPlan;
+  if (command === 'apply-lane-design') return reports.applyLaneDesign;
+  if (command === 'private-reparse') return reports.privateReparseDryRun;
+  if (command === 'production-apply-preflight') return reports.productionApplyPreflight;
   if (command === 'orphan-output') {
     return {
       generated_at: reports.census.generated_at,
@@ -767,6 +1057,16 @@ function selectOutput(command, reports) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  assertApprovedPrivateReparseScope(args);
+  assertApprovedProductionApplyScope(args);
+  if (args.command === 'production-apply-preflight' && args.apply) {
+    throw new Error('Refusing mutation: production-apply-preflight is a no-write command. Use it without --apply.');
+  }
+  if (args.command === 'production-apply') {
+    if (!args.apply) throw new Error('Refusing production apply: production-apply requires --apply plus final owner approval.');
+    if (args.gate !== APPLY_GATE_PHRASE) throw new Error(`Refusing production apply: guarded apply requires --gate ${APPLY_GATE_PHRASE}.`);
+    throw new Error('Refusing production apply: final owner approval for these exact commands has not been recorded after preflight. Run no-write preflight and wait for explicit approval.');
+  }
   if ((args.apply || args.command === 'apply' || args.command === 'rollback') && args.gate !== APPLY_GATE_PHRASE) {
     throw new Error(`Refusing mutation: guarded apply requires --gate ${APPLY_GATE_PHRASE}.`);
   }
@@ -778,9 +1078,14 @@ async function main() {
   let auth = authReadiness(envLoadResults, loadedSecretFiles);
   const driveReadback = await readDriveMetadata(args, auth);
   auth = authReadiness(envLoadResults, loadedSecretFiles, driveReadback);
-  const snapshot = await loadDbSnapshot(args.jobs);
+  const snapshot = await loadDbSnapshot(args.jobs, { exactJobIds: args.jobIds });
   const reports = reportsFrom(snapshot, auth, driveReadback, args);
-  if (args.write || args.command === 'all') writeEvidence(args, auth, reports);
+  if (args.write || args.command === 'all') {
+    if (args.command === 'private-reparse') writePrivateReparseEvidence(args, reports);
+    else if (args.command === 'production-apply-preflight') writeProductionApplyPreflightEvidence(args, reports);
+    else if (args.command === 'source-coverage') writeSourceCoverageEvidence(args, reports);
+    else writeEvidence(args, auth, reports);
+  }
   process.stdout.write(`${JSON.stringify(selectOutput(args.command, reports), null, 2)}\n`);
 }
 

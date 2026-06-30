@@ -921,6 +921,48 @@
             }).join('');
         }
 
+        function renderDriveDropoffLinks(links = []) {
+            const safeLinks = (Array.isArray(links) ? links : [])
+                .filter(link => link?.rabbi_facing && link.webViewLink)
+                .filter(link => !/ingestion|review|draft|approved|decision|transcript|backend|production/i.test(`${link.key || ''} ${link.title || ''} ${link.lane_type || ''}`));
+            if (!safeLinks.length) return '';
+            return `
+                <div class="service-list" style="margin-bottom:12px;">
+                    ${safeLinks.map(link => `
+                        <article class="service-card">
+                            <div class="service-head">
+                                <div>
+                                    <h3>${escapeHtml(link.title || link.target_title || 'Drive upload folder')}</h3>
+                                    <p class="small">${escapeHtml(link.purpose || 'Approved Rabbi-facing upload folder.')}</p>
+                                </div>
+                                <span class="status-pill">${link.triggers_transcription ? 'Transcription intake' : 'Source material only'}</span>
+                            </div>
+                            <div class="service-meta">
+                                <span class="status-pill">${escapeHtml(link.intended_audience || 'rabbi_facing')}</span>
+                                <span class="status-pill">${link.source_material_only ? 'No transcription' : 'Can enter transcription'}</span>
+                                <span class="status-pill">${escapeHtml(link.status || 'mapped')}</span>
+                            </div>
+                            <div class="button-row">
+                                <a class="btn primary" href="${escapeHtml(link.webViewLink)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.copy_label || 'Open upload folder')}</a>
+                                <button class="btn" type="button" onclick="copyProviderDriveLink(event, '${escapeHtml(link.webViewLink)}')">Copy link</button>
+                            </div>
+                        </article>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        async function copyProviderDriveLink(event, url) {
+            event.preventDefault();
+            event.stopPropagation();
+            try {
+                await navigator.clipboard?.writeText(url || '');
+                event.currentTarget.textContent = 'Copied';
+            } catch {
+                event.currentTarget.textContent = 'Copy unavailable';
+            }
+        }
+
         function setClassMediaStatus(message = '', isError = false) {
             const el = document.getElementById('classMediaStatus');
             if (!el) return;
@@ -1242,6 +1284,7 @@
             const provider = data.provider || {};
             const services = Array.isArray(data.services) ? data.services : [];
             const classMedia = Array.isArray(data.one_time_class_media) ? data.one_time_class_media : [];
+            const driveDropoffLinks = Array.isArray(data.drive_dropoff_links) ? data.drive_dropoff_links : [];
             const entitlements = Array.isArray(data.entitlements) ? data.entitlements : [];
             const integrations = Array.isArray(data.integrations) ? data.integrations : [];
             const accessChecklist = Array.isArray(data.access_checklist) ? data.access_checklist : [];
@@ -1449,7 +1492,7 @@
             document.getElementById('classMediaServiceSelect').innerHTML = classMediaServiceOptions(services);
             document.getElementById('classMediaSessionSelect').innerHTML = classMediaSessionOptions(services);
             document.getElementById('classMediaList').innerHTML = data.one_time_class_media_enabled
-                ? renderClassMediaList(classMedia)
+                ? `${renderDriveDropoffLinks(driveDropoffLinks)}${renderClassMediaList(classMedia)}`
                 : '<p class="small">Class Media is available only in the Rabbi Sheller / One Time provider workspace.</p>';
             renderProviderScopePanels(data);
             renderProviderNav();
@@ -1493,6 +1536,7 @@
             const nav = document.getElementById('providerNav');
             const sections = providerSections();
             const links = data.links || {};
+            const driveDropoffLinks = Array.isArray(data.drive_dropoff_links) ? data.drive_dropoff_links : [];
             const login = data.login_access || {};
             const workspace = data.settings_center?.workspace || {};
             const groups = [];
@@ -1760,6 +1804,8 @@
                 mediaPanel.classList.remove('provider-section-hidden');
                 mediaPanel.innerHTML = `
                     <h2>Content Library, Videos, Worksheets</h2>
+                    <div class="notice">Upload folders are limited to approved Rabbi-facing drop-off links. Internal ingestion queues, draft review folders, private transcript libraries, and backend IDs are not exposed here.</div>
+                    ${renderDriveDropoffLinks(driveDropoffLinks)}
                     <div class="service-list">
                         ${reviewCard(data.course?.title || 'Course', `${data.module?.title || ''} / ${data.lesson?.title || ''}`, `${data.course?.progress_percent || 0}% progress`)}
                         ${reviewCard(data.video?.title || 'Manual Vimeo reference', data.video?.description || '', data.video?.media_provider || 'manual reference')}

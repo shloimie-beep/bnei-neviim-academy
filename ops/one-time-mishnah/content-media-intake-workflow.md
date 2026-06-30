@@ -2,10 +2,11 @@
 
 Date: 2026-06-15
 
-Status: local workflow design for Rabbi Scheller / One Time. This document
-does not ingest files, transcribe media, publish content, create Buffer drafts,
-send messages, write Google Drive or video-host files, grant member access, or
-modify Rabbi-owned systems.
+Status: active Rabbi Scheller / One Time Drive drop-off workflow. This document
+defines the two Rabbi-facing intake folders and the operator email notification
+watcher. It does not transcribe media, publish content, create Buffer drafts,
+write production student/member data, move/delete Drive files, grant member
+access, or modify Rabbi-owned systems.
 
 ## Purpose
 
@@ -13,19 +14,57 @@ One Time needs a repeatable path from Rabbi/video/class material into useful
 review packages without accidentally publishing raw recordings or exposing BNA
 school data. The safe first milestone is an internal BNA Operations workflow:
 
-Drive drops -> recording/session record -> transcript/source notes -> source
-sheets -> worksheets -> question digests -> organic clips -> ad candidates ->
-approval package -> posting/reporting after explicit approval.
+Drive video/audio drops -> recording/session record -> transcript/source notes
+-> reviewed source sheets/materials -> worksheets -> question digests -> organic
+clips -> ad candidates -> approval package -> posting/reporting after explicit
+approval.
+
+Slideshows, PowerPoints, PDFs, worksheets, source sheets, and handouts are a
+separate source-material lane. They are indexed for review and can support
+class/session/topic work after review, but they do not trigger transcription,
+newsletter generation, social publishing, or member-visible output by
+themselves.
 
 ## Inputs
 
-Approved intake sources:
+Main Rabbi-facing intake sources:
 
-- One Time Drive folder `04.00 Upload Here - Rabbi Video Drops`.
+- One Time Drive folder `04.00 Upload Here - Videos and Audio for Transcription`
+  for class videos, shiur audio, meeting recordings, and anything that should
+  become a transcript/parse/content candidate.
+- One Time Drive folder `04.05 Upload Here - Slideshows and Source Materials`.
+
+Internal/non-Rabbi-facing workflow folders:
+
 - One Time Drive folder `04.10 Ingestion Queue - Transcribe and Parse`.
 - Content jobs already scoped to `one_time_mishnah_class`.
 - Meeting Drops for Rabbi/Shloimie planning recordings.
 - Manual Operations upload/reference rows created by Shloimie/admin.
+
+## Main Drop-Off Notification Workflow
+
+The operational rule is intentionally simple:
+
+1. Rabbi uploads recordings/media to `04.00 Upload Here - Videos and Audio for
+   Transcription`.
+2. Rabbi uploads PowerPoints, Google Slides, PDFs, source sheets, worksheets,
+   and handouts to `04.05 Upload Here - Slideshows and Source Materials`.
+3. The local watcher `scripts/notify-one-time-drive-dropoffs.mjs` checks those
+   two folders only.
+4. New files trigger an operator email with the file name, folder lane, Drive
+   view link, and a direct download link when the original file is downloadable.
+5. If Drive creates a native Google Slides conversion beside an original
+   downloadable PowerPoint, the watcher prefers the original `.pptx` and
+   suppresses the conversion-copy notification so the email points to the file
+   most likely to preserve embedded media.
+
+The watcher state lives in
+`.runtime/one-time-drive-dropoff-notifier/state.json` and should be baselined
+with existing files before enabling scheduled sends.
+
+Notification emails are the only automatic send in this workflow. They do not
+transcribe, publish, create student/member tasks, update scores/progress, move
+Drive files, call AI, export raw transcripts, or write production data.
 
 Not approved as automatic content intake:
 
@@ -63,6 +102,16 @@ Not approved as automatic content intake:
   - launch/social material
   - support/member question material
 - Do not publish, send, grant access, or write back to Drive from intake.
+- Do not treat every child of `04 Content and Media Intake` as a recording.
+  File type and lane classification decide whether an item is transcription
+  intake, source material, output review, archive, or needs Shloimie decision.
+- PowerPoint and Google Slides files are `slideshow_reference` and
+  `source_material`; they are not transcription candidates.
+- PDFs, source sheets, worksheets, and handouts are source material; they are
+  not transcription candidates and need review before newsletter/member/social
+  use.
+- Unknown files route to `04.99 Needs Shloimie Decision` and trigger no
+  automation.
 
 ### 2. Transcript And Session Structure
 
@@ -197,6 +246,11 @@ Reports should separate:
 ## Guardrails
 
 - No raw recording is published automatically.
+- No slideshow, PowerPoint, PDF, worksheet, source sheet, or handout is
+  transcribed automatically.
+- No source-material file becomes a newsletter, social post, WhatsApp update,
+  email, source sheet, worksheet, or member-library item until review output is
+  created and explicit approval gates are satisfied.
 - No source sheet, worksheet, question digest, clip, ad, newsletter, social
   draft, WhatsApp update, email, or member-library item is sent or made visible
   without explicit approval.

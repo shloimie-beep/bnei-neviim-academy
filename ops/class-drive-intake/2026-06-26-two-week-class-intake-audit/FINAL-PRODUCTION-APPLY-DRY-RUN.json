@@ -1,0 +1,895 @@
+{
+  "generated_at": "2026-06-30T05:33:06.350Z",
+  "mode": "issue41_final_guarded_apply_plan",
+  "no_drive_write": true,
+  "no_ai_call": true,
+  "no_send_publish_or_public_output": true,
+  "raw_transcript_bodies_included": false,
+  "raw_drive_urls_or_ids_included": false,
+  "production_apply_requires_approval_id": "ISSUE41-FINAL-SHLOIMIE-QUESTION-TASK-PARSER-APPLY-NO-SCORE-PROGRESS",
+  "summary": {
+    "question_rows_total": 13,
+    "student_specific_matched_rows": 7,
+    "general_class_question_rows": 6,
+    "student_match_blocked_rows": 0,
+    "score_progress_rows": 0,
+    "task_research_private_review_rows": 25,
+    "parser_backlog_job_ids": [
+      21,
+      25,
+      26,
+      30,
+      31,
+      56,
+      57,
+      58,
+      59,
+      71
+    ],
+    "recording_digest_count": 29,
+    "class_question_fanout_rows": 0
+  },
+  "checks": [
+    {
+      "id": "owner_decision_packet_valid",
+      "passed": true,
+      "detail": "owner decision matches final approved counts"
+    },
+    {
+      "id": "question_rows_total_13",
+      "passed": true,
+      "detail": "questionRows=13"
+    },
+    {
+      "id": "student_specific_rows_7",
+      "passed": true,
+      "detail": "personal=7"
+    },
+    {
+      "id": "general_class_rows_6",
+      "passed": true,
+      "detail": "general=6"
+    },
+    {
+      "id": "student_match_blockers_zero",
+      "passed": true,
+      "detail": "blocked=0"
+    },
+    {
+      "id": "general_class_no_fanout",
+      "passed": true,
+      "detail": "classRows=6; fanoutRows=0"
+    },
+    {
+      "id": "score_progress_rows_zero",
+      "passed": true,
+      "detail": "score/progress final state is terminal no-op for Issue #41"
+    },
+    {
+      "id": "task_private_review_rows_25",
+      "passed": true,
+      "detail": "approvedTaskRows=25; sourceTaskRows=25"
+    },
+    {
+      "id": "parser_backlog_exact_10",
+      "passed": true,
+      "detail": "21,25,26,30,31,56,57,58,59,71"
+    }
+  ],
+  "blocking_checks": [],
+  "personal_question_rows": [
+    {
+      "job_id": 25,
+      "question_ref": "question:6019529478340587",
+      "question_text_hash": "6019529478340587",
+      "matched_student_ref": "student:643",
+      "matched_student_id": 643,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    },
+    {
+      "job_id": 25,
+      "question_ref": "question:60209685cc7d6f18",
+      "question_text_hash": "60209685cc7d6f18",
+      "matched_student_ref": "student:643",
+      "matched_student_id": 643,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:f6c6b9b262d1ded1",
+      "question_text_hash": "f6c6b9b262d1ded1",
+      "matched_student_ref": "student:21982",
+      "matched_student_id": 21982,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:21aaf39597e516fe",
+      "question_text_hash": "21aaf39597e516fe",
+      "matched_student_ref": "student:21983",
+      "matched_student_id": 21983,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    },
+    {
+      "job_id": 30,
+      "question_ref": "question:5a39d7e6e9c73fd9",
+      "question_text_hash": "5a39d7e6e9c73fd9",
+      "matched_student_ref": "student:2436",
+      "matched_student_id": 2436,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    },
+    {
+      "job_id": 31,
+      "question_ref": "question:fa503a5ec9da60db",
+      "question_text_hash": "fa503a5ec9da60db",
+      "matched_student_ref": "student:21982",
+      "matched_student_id": 21982,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:d7297f7b6a534cd7",
+      "question_text_hash": "d7297f7b6a534cd7",
+      "matched_student_ref": "student:643",
+      "matched_student_id": 643,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing"
+    }
+  ],
+  "general_class_question_rows": [
+    {
+      "job_id": 25,
+      "question_ref": "question:e1d44fb96cef6915",
+      "question_text_hash": "e1d44fb96cef6915",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:51aa618b95a7d29d",
+      "question_text_hash": "51aa618b95a7d29d",
+      "match_status": "unmatched",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:2158d47f6c0c2923",
+      "question_text_hash": "2158d47f6c0c2923",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:8f9c41ec6da4ca8c",
+      "question_text_hash": "8f9c41ec6da4ca8c",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:c516d14ee4e5d49f",
+      "question_text_hash": "c516d14ee4e5d49f",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:1a8cf5034c4c839f",
+      "question_text_hash": "1a8cf5034c4c839f",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null
+    }
+  ],
+  "task_research_private_review_rows": [
+    {
+      "job_id": 56,
+      "candidate_id": "TASK-CANDIDATE-000056-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:56|task-candidate-000056-digest",
+      "title": "Private content digest review for content job #56",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 57,
+      "candidate_id": "TASK-CANDIDATE-000057-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:57|task-candidate-000057-digest",
+      "title": "Private content digest review for content job #57",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 58,
+      "candidate_id": "TASK-CANDIDATE-000058-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:58|task-candidate-000058-digest",
+      "title": "Private content digest review for content job #58",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 59,
+      "candidate_id": "TASK-CANDIDATE-000059-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:59|task-candidate-000059-digest",
+      "title": "Private content digest review for content job #59",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 64,
+      "candidate_id": "TASK-CANDIDATE-000064-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:64|task-candidate-000064-digest",
+      "title": "Private content digest review for content job #64",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 65,
+      "candidate_id": "TASK-CANDIDATE-000065-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:65|task-candidate-000065-digest",
+      "title": "Private content digest review for content job #65",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 66,
+      "candidate_id": "TASK-CANDIDATE-000066-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:66|task-candidate-000066-digest",
+      "title": "Private content digest review for content job #66",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 67,
+      "candidate_id": "TASK-CANDIDATE-000067-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:67|task-candidate-000067-digest",
+      "title": "Private content digest review for content job #67",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 68,
+      "candidate_id": "TASK-CANDIDATE-000068-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:68|task-candidate-000068-digest",
+      "title": "Private content digest review for content job #68",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 69,
+      "candidate_id": "TASK-CANDIDATE-000069-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:69|task-candidate-000069-digest",
+      "title": "Private content digest review for content job #69",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 70,
+      "candidate_id": "TASK-CANDIDATE-000070-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:70|task-candidate-000070-digest",
+      "title": "Private content digest review for content job #70",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 71,
+      "candidate_id": "TASK-CANDIDATE-000071-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:71|task-candidate-000071-digest",
+      "title": "Private content digest review for content job #71",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 72,
+      "candidate_id": "TASK-CANDIDATE-000072-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:72|task-candidate-000072-digest",
+      "title": "Private content digest review for content job #72",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 73,
+      "candidate_id": "TASK-CANDIDATE-000073-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:73|task-candidate-000073-digest",
+      "title": "Private content digest review for content job #73",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 74,
+      "candidate_id": "TASK-CANDIDATE-000074-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:74|task-candidate-000074-digest",
+      "title": "Private content digest review for content job #74",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 75,
+      "candidate_id": "TASK-CANDIDATE-000075-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:75|task-candidate-000075-digest",
+      "title": "Private content digest review for content job #75",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 76,
+      "candidate_id": "TASK-CANDIDATE-000076-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:76|task-candidate-000076-digest",
+      "title": "Private content digest review for content job #76",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 77,
+      "candidate_id": "TASK-CANDIDATE-000077-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:77|task-candidate-000077-digest",
+      "title": "Private content digest review for content job #77",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 78,
+      "candidate_id": "TASK-CANDIDATE-000078-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:78|task-candidate-000078-digest",
+      "title": "Private content digest review for content job #78",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 79,
+      "candidate_id": "TASK-CANDIDATE-000079-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:79|task-candidate-000079-digest",
+      "title": "Private content digest review for content job #79",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 80,
+      "candidate_id": "TASK-CANDIDATE-000080-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:80|task-candidate-000080-digest",
+      "title": "Private content digest review for content job #80",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 81,
+      "candidate_id": "TASK-CANDIDATE-000081-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:81|task-candidate-000081-digest",
+      "title": "Private content digest review for content job #81",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 82,
+      "candidate_id": "TASK-CANDIDATE-000082-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:82|task-candidate-000082-digest",
+      "title": "Private content digest review for content job #82",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 83,
+      "candidate_id": "TASK-CANDIDATE-000083-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:83|task-candidate-000083-digest",
+      "title": "Private content digest review for content job #83",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    },
+    {
+      "job_id": 21,
+      "candidate_id": "TASK-CANDIDATE-ISSUE41-PARSER-BACKLOG-REVIEW",
+      "canonical_task_key": "bna|class_drive_intake|issue41|parser-backlog-review",
+      "title": "Private parser backlog review for Issue #41 focus jobs",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send"
+    }
+  ],
+  "blocked_question_rows": [],
+  "row_level_plan": [
+    {
+      "job_id": 25,
+      "question_ref": "question:6019529478340587",
+      "question_text_hash": "6019529478340587",
+      "matched_student_ref": "student:643",
+      "matched_student_id": 643,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 25,
+      "question_ref": "question:60209685cc7d6f18",
+      "question_text_hash": "60209685cc7d6f18",
+      "matched_student_ref": "student:643",
+      "matched_student_id": 643,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:f6c6b9b262d1ded1",
+      "question_text_hash": "f6c6b9b262d1ded1",
+      "matched_student_ref": "student:21982",
+      "matched_student_id": 21982,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:21aaf39597e516fe",
+      "question_text_hash": "21aaf39597e516fe",
+      "matched_student_ref": "student:21983",
+      "matched_student_id": 21983,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 30,
+      "question_ref": "question:5a39d7e6e9c73fd9",
+      "question_text_hash": "5a39d7e6e9c73fd9",
+      "matched_student_ref": "student:2436",
+      "matched_student_id": 2436,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 31,
+      "question_ref": "question:fa503a5ec9da60db",
+      "question_text_hash": "fa503a5ec9da60db",
+      "matched_student_ref": "student:21982",
+      "matched_student_id": 21982,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:d7297f7b6a534cd7",
+      "question_text_hash": "d7297f7b6a534cd7",
+      "matched_student_ref": "student:643",
+      "matched_student_id": 643,
+      "match_status": "matched",
+      "confidence": 100,
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "row_action": "insert_if_missing",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 25,
+      "question_ref": "question:e1d44fb96cef6915",
+      "question_text_hash": "e1d44fb96cef6915",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:51aa618b95a7d29d",
+      "question_text_hash": "51aa618b95a7d29d",
+      "match_status": "unmatched",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:2158d47f6c0c2923",
+      "question_text_hash": "2158d47f6c0c2923",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 26,
+      "question_ref": "question:8f9c41ec6da4ca8c",
+      "question_text_hash": "8f9c41ec6da4ca8c",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:c516d14ee4e5d49f",
+      "question_text_hash": "c516d14ee4e5d49f",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "question_ref": "question:1a8cf5034c4c839f",
+      "question_text_hash": "1a8cf5034c4c839f",
+      "match_status": "no_student_name",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "row_action": "insert_if_missing",
+      "student_id": null,
+      "raw_text_included": false
+    },
+    {
+      "job_id": 56,
+      "candidate_id": "TASK-CANDIDATE-000056-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:56|task-candidate-000056-digest",
+      "title": "Private content digest review for content job #56",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 57,
+      "candidate_id": "TASK-CANDIDATE-000057-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:57|task-candidate-000057-digest",
+      "title": "Private content digest review for content job #57",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "candidate_id": "TASK-CANDIDATE-000058-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:58|task-candidate-000058-digest",
+      "title": "Private content digest review for content job #58",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 59,
+      "candidate_id": "TASK-CANDIDATE-000059-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:59|task-candidate-000059-digest",
+      "title": "Private content digest review for content job #59",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 64,
+      "candidate_id": "TASK-CANDIDATE-000064-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:64|task-candidate-000064-digest",
+      "title": "Private content digest review for content job #64",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 65,
+      "candidate_id": "TASK-CANDIDATE-000065-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:65|task-candidate-000065-digest",
+      "title": "Private content digest review for content job #65",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 66,
+      "candidate_id": "TASK-CANDIDATE-000066-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:66|task-candidate-000066-digest",
+      "title": "Private content digest review for content job #66",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 67,
+      "candidate_id": "TASK-CANDIDATE-000067-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:67|task-candidate-000067-digest",
+      "title": "Private content digest review for content job #67",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 68,
+      "candidate_id": "TASK-CANDIDATE-000068-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:68|task-candidate-000068-digest",
+      "title": "Private content digest review for content job #68",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 69,
+      "candidate_id": "TASK-CANDIDATE-000069-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:69|task-candidate-000069-digest",
+      "title": "Private content digest review for content job #69",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 70,
+      "candidate_id": "TASK-CANDIDATE-000070-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:70|task-candidate-000070-digest",
+      "title": "Private content digest review for content job #70",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 71,
+      "candidate_id": "TASK-CANDIDATE-000071-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:71|task-candidate-000071-digest",
+      "title": "Private content digest review for content job #71",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 72,
+      "candidate_id": "TASK-CANDIDATE-000072-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:72|task-candidate-000072-digest",
+      "title": "Private content digest review for content job #72",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 73,
+      "candidate_id": "TASK-CANDIDATE-000073-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:73|task-candidate-000073-digest",
+      "title": "Private content digest review for content job #73",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 74,
+      "candidate_id": "TASK-CANDIDATE-000074-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:74|task-candidate-000074-digest",
+      "title": "Private content digest review for content job #74",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 75,
+      "candidate_id": "TASK-CANDIDATE-000075-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:75|task-candidate-000075-digest",
+      "title": "Private content digest review for content job #75",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 76,
+      "candidate_id": "TASK-CANDIDATE-000076-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:76|task-candidate-000076-digest",
+      "title": "Private content digest review for content job #76",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 77,
+      "candidate_id": "TASK-CANDIDATE-000077-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:77|task-candidate-000077-digest",
+      "title": "Private content digest review for content job #77",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 78,
+      "candidate_id": "TASK-CANDIDATE-000078-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:78|task-candidate-000078-digest",
+      "title": "Private content digest review for content job #78",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 79,
+      "candidate_id": "TASK-CANDIDATE-000079-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:79|task-candidate-000079-digest",
+      "title": "Private content digest review for content job #79",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 80,
+      "candidate_id": "TASK-CANDIDATE-000080-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:80|task-candidate-000080-digest",
+      "title": "Private content digest review for content job #80",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 81,
+      "candidate_id": "TASK-CANDIDATE-000081-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:81|task-candidate-000081-digest",
+      "title": "Private content digest review for content job #81",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 82,
+      "candidate_id": "TASK-CANDIDATE-000082-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:82|task-candidate-000082-digest",
+      "title": "Private content digest review for content job #82",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 83,
+      "candidate_id": "TASK-CANDIDATE-000083-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:83|task-candidate-000083-digest",
+      "title": "Private content digest review for content job #83",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 21,
+      "candidate_id": "TASK-CANDIDATE-ISSUE41-PARSER-BACKLOG-REVIEW",
+      "canonical_task_key": "bna|class_drive_intake|issue41|parser-backlog-review",
+      "title": "Private parser backlog review for Issue #41 focus jobs",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "routing": "private_task_research_review",
+      "raw_text_included": false
+    }
+  ],
+  "privacy_scan": {
+    "passed": true,
+    "findings": []
+  },
+  "dry_run_passed": true
+}

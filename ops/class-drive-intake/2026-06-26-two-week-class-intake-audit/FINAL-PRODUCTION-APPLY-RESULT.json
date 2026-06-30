@@ -1,0 +1,460 @@
+{
+  "generated_at": "2026-06-30T05:33:38.258Z",
+  "mode": "issue41_final_guarded_apply_result",
+  "production_apply_executed": true,
+  "status": "applied_or_already_satisfied",
+  "applied_rows": [
+    {
+      "job_id": 25,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:0fd42b3f73c4",
+        "sha256": "0fd42b3f73c448b34940b339f87d07adf116b05c0227aad72e8f0ee90533e699"
+      },
+      "question_ref": "question:6019529478340587",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 25,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:9bdb2af67992",
+        "sha256": "9bdb2af6799204a299c603994b8e400e4b1fd625efdb74066cc869fee42c9df3"
+      },
+      "question_ref": "question:60209685cc7d6f18",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 26,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:f6e0a1e2ac41",
+        "sha256": "f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae"
+      },
+      "question_ref": "question:f6c6b9b262d1ded1",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 26,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:b1556dea32e9",
+        "sha256": "b1556dea32e9d0cdbfed038fd7787275775ea40939c146a64e205bcb349ad02f"
+      },
+      "question_ref": "question:21aaf39597e516fe",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 30,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:6c658ee83fb7",
+        "sha256": "6c658ee83fb7e812482494f3e416a876f63f418a0b8a1f5e76d47ee4177035cb"
+      },
+      "question_ref": "question:5a39d7e6e9c73fd9",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 31,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:9f1f9dce319c",
+        "sha256": "9f1f9dce319c4700ef28ec8c53bd3cc8e6abe64c68385479ab89215806a5bdd6"
+      },
+      "question_ref": "question:fa503a5ec9da60db",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 58,
+      "row_ref": {
+        "present": true,
+        "redacted": "accountability_event:28dae7c8bde2",
+        "sha256": "28dae7c8bde2f3ca608f86d0e16a214dee74c74bee011cdfdd46bc04b655bc14"
+      },
+      "question_ref": "question:d7297f7b6a534cd7",
+      "routing": "personal_question",
+      "target_table": "bna_accountability_events",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 25,
+      "row_ref": {
+        "present": true,
+        "redacted": "question_review:ef2d127de37b",
+        "sha256": "ef2d127de37b942baad06145e54b0c619a1f22327b2ebbcfbec78f5564afe39d"
+      },
+      "question_ref": "question:e1d44fb96cef6915",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 26,
+      "row_ref": {
+        "present": true,
+        "redacted": "question_review:e7f6c011776e",
+        "sha256": "e7f6c011776e8db7cd330b54174fd76f7d0216b612387a5ffcfb81e6f0919683"
+      },
+      "question_ref": "question:51aa618b95a7d29d",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 26,
+      "row_ref": {
+        "present": true,
+        "redacted": "question_review:7902699be42c",
+        "sha256": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451"
+      },
+      "question_ref": "question:2158d47f6c0c2923",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 26,
+      "row_ref": {
+        "present": true,
+        "redacted": "question_review:2c624232cdd2",
+        "sha256": "2c624232cdd221771294dfbb310aca000a0df6ac8b66b696d90ef06fdefb64a3"
+      },
+      "question_ref": "question:8f9c41ec6da4ca8c",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 58,
+      "row_ref": {
+        "present": true,
+        "redacted": "question_review:19581e27de7c",
+        "sha256": "19581e27de7ced00ff1ce50b2047e7a567c76b1cbaebabe5ef03f7c3017bb5b7"
+      },
+      "question_ref": "question:c516d14ee4e5d49f",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 58,
+      "row_ref": {
+        "present": true,
+        "redacted": "question_review:4a44dc153642",
+        "sha256": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5"
+      },
+      "question_ref": "question:1a8cf5034c4c839f",
+      "routing": "class_question",
+      "target_table": "bna_one_time_question_reviews",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 56,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:da28719dfd9c",
+        "sha256": "da28719dfd9c4da81f433d4788c3d0e10d97180018d0e32b65c967c45661597e"
+      },
+      "candidate_id": "TASK-CANDIDATE-000056-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 57,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:672eb365c903",
+        "sha256": "672eb365c903a3b4558bebaef687a5fe9599d87f8b816558d88cc53f5ae9e577"
+      },
+      "candidate_id": "TASK-CANDIDATE-000057-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 58,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:a78000a5ff63",
+        "sha256": "a78000a5ff6306012360b87357e93eb04bd07897b57167459c36c70215ddbc70"
+      },
+      "candidate_id": "TASK-CANDIDATE-000058-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 59,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:9589262630f7",
+        "sha256": "9589262630f775d921bef5b9b2d36fa40f91afebeab887deefc721ff3c787b2c"
+      },
+      "candidate_id": "TASK-CANDIDATE-000059-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 64,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:0ee372d0a0fe",
+        "sha256": "0ee372d0a0fefa4431a2ece96d93c06f3984e8cb8d2d1c4003549e975413bf3e"
+      },
+      "candidate_id": "TASK-CANDIDATE-000064-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 65,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:4fc779c823fd",
+        "sha256": "4fc779c823fd37ed61f66a6ae37c9dffed06bb295f3902d2fa9d485aa741a724"
+      },
+      "candidate_id": "TASK-CANDIDATE-000065-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 66,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:1a09807a0e69",
+        "sha256": "1a09807a0e6928a66d91025ed5fccd713c9edb101e72a1bbcb8a01cd9a53cb51"
+      },
+      "candidate_id": "TASK-CANDIDATE-000066-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 67,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:a7bb44725889",
+        "sha256": "a7bb4472588958f3423a69c1f8a922f367b3c8e5fc72dfc8d138f646943d0b44"
+      },
+      "candidate_id": "TASK-CANDIDATE-000067-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 68,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:eb5af8ab99b5",
+        "sha256": "eb5af8ab99b55cda453f70e6a92c7b327bd8f76f49ff6a81c18ade4c26690057"
+      },
+      "candidate_id": "TASK-CANDIDATE-000068-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 69,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:ce63ea0809ce",
+        "sha256": "ce63ea0809ce32335dd7692f1e0c6c5f3493f2b4039351662b60741de4d9a9bd"
+      },
+      "candidate_id": "TASK-CANDIDATE-000069-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 70,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:2c674047a16d",
+        "sha256": "2c674047a16dab9c7804377dc82649ca3b5bb40cdb51e8d13dbee804d08e5a57"
+      },
+      "candidate_id": "TASK-CANDIDATE-000070-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 71,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:934aa7be7dea",
+        "sha256": "934aa7be7deafc0053e92ce49a029603af8bc0b3891322a10b7ab730dfaa5d63"
+      },
+      "candidate_id": "TASK-CANDIDATE-000071-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 72,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:36c321ad538f",
+        "sha256": "36c321ad538f860b4e2875eb52eb13c962ecbbf15e87ea091460277d622bda55"
+      },
+      "candidate_id": "TASK-CANDIDATE-000072-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 73,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:728edd27debc",
+        "sha256": "728edd27debc2046984906dbbb117313dab4a9f0e9b47c7f0411e236c175f3e2"
+      },
+      "candidate_id": "TASK-CANDIDATE-000073-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 74,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:8ffe8459134b",
+        "sha256": "8ffe8459134b46975acd31df13a50c51dbeacf1c19a764bf1602ba7c73ffc8fb"
+      },
+      "candidate_id": "TASK-CANDIDATE-000074-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 75,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:99cf15ac55d5",
+        "sha256": "99cf15ac55d54e0c14d9bd363e3037ab63daebbc68b836ea162fcd22f86c4545"
+      },
+      "candidate_id": "TASK-CANDIDATE-000075-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 76,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:6a7a1382f96c",
+        "sha256": "6a7a1382f96c6e92e5ae50aedcbf77cc1e51c0750c363cb9bbcd4d558421b2c4"
+      },
+      "candidate_id": "TASK-CANDIDATE-000076-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 77,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:3c98b2624d1e",
+        "sha256": "3c98b2624d1e35016ae337691a8bdce3a639429a9cb34c3e7e04842ab8904b64"
+      },
+      "candidate_id": "TASK-CANDIDATE-000077-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 78,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:4aa7c75f447a",
+        "sha256": "4aa7c75f447a322ef6880842b631cdc226eeb598cac8f5c813dc06f7d6a58493"
+      },
+      "candidate_id": "TASK-CANDIDATE-000078-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 79,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:2e1943902be9",
+        "sha256": "2e1943902be93c87e9d31812ef887d1f91326e8e8e3779feb59c48c9ac32f58f"
+      },
+      "candidate_id": "TASK-CANDIDATE-000079-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 80,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:2ced184d8477",
+        "sha256": "2ced184d8477465987593807f31360e94b539aa41f515e0a973179f881663698"
+      },
+      "candidate_id": "TASK-CANDIDATE-000080-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 81,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:0be057bbbdf7",
+        "sha256": "0be057bbbdf7ad63295016eb691feb8c21a364073267de09503eb04b954d522e"
+      },
+      "candidate_id": "TASK-CANDIDATE-000081-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 82,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:c211bfaf37ed",
+        "sha256": "c211bfaf37edd35f533f3433432157d182ba23fb70ab9a2101cff4b9ad7d6262"
+      },
+      "candidate_id": "TASK-CANDIDATE-000082-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 83,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:52a6932d5af5",
+        "sha256": "52a6932d5af5316a815af86286167054ebaa4953cedb82e3914a5c126e363ea4"
+      },
+      "candidate_id": "TASK-CANDIDATE-000083-DIGEST",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    },
+    {
+      "job_id": 21,
+      "row_ref": {
+        "present": true,
+        "redacted": "task:4f6ceab7942f",
+        "sha256": "4f6ceab7942f9dece7e2e0e93b2c16560d49670d2187082af547c3c3dd339460"
+      },
+      "candidate_id": "TASK-CANDIDATE-ISSUE41-PARSER-BACKLOG-REVIEW",
+      "target_table": "bna_tasks",
+      "apply_status": "inserted"
+    }
+  ],
+  "readback": {
+    "generated_at": "2026-06-30T05:33:29.965Z",
+    "mode": "issue41_final_apply_readback",
+    "raw_transcript_bodies_included": false,
+    "raw_drive_urls_or_ids_included": false,
+    "question_rows": {
+      "personal_expected": 7,
+      "class_expected": 6,
+      "personal_found": 7,
+      "class_found": 6,
+      "class_fanout_rows_found": 0
+    },
+    "task_rows": {
+      "expected": 25,
+      "found": 25
+    },
+    "score_progress_rows_written": 0,
+    "passed": true
+  },
+  "raw_transcript_bodies_included": false,
+  "raw_drive_urls_or_ids_included": false
+}

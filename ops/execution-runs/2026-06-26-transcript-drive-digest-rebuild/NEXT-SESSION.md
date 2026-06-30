@@ -1,80 +1,47 @@
 # Next Session
 
-Open terminal blocker:
+Issue #41 final production closeout is complete for the approved scope.
 
-- `REQ-20260626-126` / `DEC-20260626-101`
+## Final Apply
 
-Latest addendum proof:
+- Raw approval: `raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md`
+- Branch: `codex/issue41-class-question-fallback-20260628`
+- PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49`
+- Command:
+  `node scripts/class-drive-intake-apply-approved.cjs --run-id 2026-06-26-transcript-drive-digest-rebuild --issue 41 --owner-decision ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.json --question-packet ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-STUDENT-QUESTION-SCORE-APPLY-APPROVAL-PACKET.json --task-packet ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-RESEARCH-CARD-APPROVAL-PACKET.json --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit --apply --approval-id ISSUE41-FINAL-SHLOIMIE-QUESTION-TASK-PARSER-APPLY-NO-SCORE-PROGRESS`
+- Result: production apply executed and committed.
 
-- `REQ-20260626-127` is Done for GitHub issue #41 comment `4808518537`.
-- `01 Transcript Library` exists, jobs #65-#70 exist, no docs were created
-  since `2026-06-25T00:00:00Z`, and job #83 is absent from the Drive
-  transcript library.
-- Evidence:
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md`
+## Readback
 
-Completed targeted approval:
+- Personal student question rows: 7 expected, 7 found.
+- General class question-review rows: 6 expected, 6 found.
+- General class question fanout rows: 0 found.
+- Private task/research review rows: 25 expected, 25 found.
+- Score/progress/grading rows written: 0.
+- Idempotency readback passed; second run would not duplicate rows.
 
-- `REQ-20260626-128` is Done for `RAW-20260626-007`.
-- The approved command created the private Drive transcript doc for #83 and
-  verified readback.
-- Sanitized proof:
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md`
+## Evidence
 
-Completed content-card/topic-filter repair:
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-RESULT.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-READBACK.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-IDEMPOTENCY.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PARSER-REPAIR-RESULTS.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-RESEARCH-CARD-APPLY-PLAN.md`
 
-- `REQ-20260626-129` and `REQ-20260626-130` are Done for `RAW-20260626-008`.
-- `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are Done.
-- PR #45, PR #46, and PR #47 are merged.
-- Railway deployment `fd93be96-8bec-4c06-b42f-c53d177eab40` reached `SUCCESS`.
-- Live content-card readback passed with 81 jobs, 29 digest cards, all 10
-  `Needs parse` jobs, job #83's clean generated title, and no raw transcript
-  text in `digest_card` payloads.
-- Audit covers all 29 digest recordings.
-- Operations Content cards show clean generated titles, summary, main points,
-  categories, parse status, digest status, routing status, topic status, and
-  next action.
-- The topic filter uses normalized multi-topic digest/category keys and no raw
-  transcript-body topic search.
-- Issue #41 remains open.
-- Evidence:
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
+## Verification
 
-Student question/score apply status:
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw bodies false, 0 privacy findings.
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles, 10 explicit parser-backlog items, routing/topic classification ready.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js tests/class-drive-intake-apply-approved.test.js`: 55/55 passed.
 
-- Current verdict: no production apply command is safe.
-- 10 jobs need parser/reparse review: `71, 59, 58, 57, 56, 31, 30, 26, 25,
-  21`.
-- 13 student-question rows exist; 7 are matched and 6 need human
-  student-match review.
-- Score/progress has 0 safe row-level apply rows.
-- Evidence:
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
-  and
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
+## Remaining Guardrail
+
+No Issue #41 classification decision remains. Future raw transcript export, broad Drive sync, additional Drive write, class backfill, paid retranscription, AI call, send/publish, score/progress write, worker retry, or unrelated production mutation still requires a new exact owner approval after dry-run evidence.
 
 Exact next safe command:
 
 ```powershell
-npm run bna:run:next
+npm run bna:run:status
 ```
-
-Owner approval required before any of these commands/actions:
-
-- `npm run content:export-transcripts -- --include-raw-transcript`
-- `npm run content:sync-drive-library` without `--dry-run`
-  except the already-completed `--no-ai --verify --job-id 83` run
-- any production reparse/canonical write
-- any worker retry
-- any paid retranscription
-- any Drive create/update/delete/move
-- `APPLY_GUARDED_CLASS_BACKFILL`
-- any `--apply` run for student questions, production tasks, scores, or
-  progress
-
-If Shloimie approves a next step, create a new requirement or update
-`REQ-20260626-126` with the exact approved action, owner, consequences, and
-verification plan before running it. The only currently documented optional
-next step is the no-write dry-run planner approval in
-`STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`; it does not authorize production
-mutation.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-26-transcript-drive-digest-rebuild",
   "title": "Transcript Drive Digest Rebuild",
-  "updated_at": "2026-06-28T09:08:00+03:00",
+  "updated_at": "2026-06-28T18:55:00+03:00",
   "sources": [
     {
       "source_id": "RAW-20260626-004",
@@ -54,6 +54,56 @@
       "workspace": "bna",
       "project": "class_drive_intake",
       "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260628-003",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "captured_at": "2026-06-28T12:25:00+03:00",
+      "content_fingerprint": "sha256:f6baade0989c88784f7481a971fd0439a7339ec2cf8946a10c5f18d6f84b6c68",
+      "privacy_classification": "internal_goal_mode_student_question_routing_rule",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat"
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "captured_at": "2026-06-28T13:05:00+03:00",
+      "content_fingerprint": "sha256:96f9698173a0eab14b511f34ac694ea516a40bb9ba8c0e6077bceafbc751690e",
+      "privacy_classification": "internal_goal_mode_catchup_package",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat_attachment"
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "captured_at": "2026-06-28T15:35:00+03:00",
+      "content_fingerprint": "sha256:a0afba2a37f9fdfd076145120136cc630f90ccf32c6fe624d9b121f3a94e0f2d",
+      "privacy_classification": "private_transcript_read_approved_exact_jobs_no_write",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat_owner_approval"
+    },
+    {
+      "source_id": "RAW-20260628-006",
+      "source_path": "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
+      "captured_at": "2026-06-28T16:30:00+03:00",
+      "content_fingerprint": "sha256:2b68223f9c85d39cb0cd40c96f2106ef53a3aa69475b88f5f05cf0978fc483a6",
+      "privacy_classification": "internal_goal_mode_production_apply_preflight_no_mutation",
+      "workspace": "bna",
+      "project": "class_drive_intake",
+      "source_type": "codex_chat_attachment"
+    },
+    {
+      "source_id": "RAW-20260628-007",
+      "source_path": "raw-input/RAW-20260628-007-rabbi-drive-folder-structure-packet.md",
+      "captured_at": "2026-06-28T18:20:00+03:00",
+      "content_fingerprint": "sha256:9da53015acd76251cb76751d649fad9bd23b26324f4d48d99b13958ec67df6d1",
+      "privacy_classification": "approved_targeted_drive_folder_create_repo_safe",
+      "workspace": "rabbi_sheller_provider",
+      "project": "one_time_mishnah_class",
+      "source_type": "codex_chat_goal_mode_packet"
     }
   ],
   "source_statements": [
@@ -280,6 +330,244 @@
       "source_statement": "Finish with evidence, PR/issue updates, live proof where app-visible, and exact remaining blockers.",
       "requirement_id": "REQ-20260628-140",
       "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-003-S001",
+      "source_id": "RAW-20260628-003",
+      "source_statement": "Register the owner rule that unmatched or ambiguous student questions should become class questions for all active students.",
+      "requirement_id": "REQ-20260628-141",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-003-S002",
+      "source_id": "RAW-20260628-003",
+      "source_statement": "Update the dry-run planner so unmatched question candidates are routed to every active student portal as class questions, not personal questions.",
+      "requirement_id": "REQ-20260628-142",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-003-S003",
+      "source_id": "RAW-20260628-003",
+      "source_statement": "Run the safe no-write planner/evidence commands, keep production mutation blocked, and keep raw transcript bodies out of tracked GitHub.",
+      "requirement_id": "REQ-20260628-143",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S001",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Continue Issue #41 in goal mode and turn dry-run evidence into a complete safe catch-up package without production mutation.",
+      "requirement_id": "REQ-20260628-144",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S002",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Inspect PR #49 readiness and keep it draft if production apply is not implemented.",
+      "requirement_id": "REQ-20260628-151",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S003",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Produce a current backlog census for all 29 digest recordings, especially jobs 21, 25, 26, 30, 31, 56, 57, 58, 59, and 71.",
+      "requirement_id": "REQ-20260628-145",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S004",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Investigate why 10 jobs still show Needs parse and distinguish digest readiness from parser/apply readiness.",
+      "requirement_id": "REQ-20260628-146",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S005",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Keep class-question broadcast routing in the row-level dry-run plan and do not run apply.",
+      "requirement_id": "REQ-20260628-143",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S006",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Investigate the 0 score/progress row state and emit no-write score/progress plans or no-op reasons per job.",
+      "requirement_id": "REQ-20260628-147",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S007",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Inspect task-shaped digest output and produce a no-write task/action catch-up plan with canonical keys and dedupe rules.",
+      "requirement_id": "REQ-20260628-148",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S008",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Confirm research/content cards are complete for all 29 digest recordings and no raw body is exposed.",
+      "requirement_id": "REQ-20260628-149",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S009",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Document a controlled apply-lane design with owner gate, snapshot, rollback, row-level evidence, dedupe keys, and refusal conditions, but do not execute production apply.",
+      "requirement_id": "REQ-20260628-150",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-004-S010",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Run focused tests, audits, privacy scans, validation, secrets audit, JSON/JSONL parse checks, git diff check, and GitHub PR/Issue updates.",
+      "requirement_id": "REQ-20260628-151",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S001",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Owner approves no-write private reparse/canonical-write dry-run for job IDs 21, 25, 26, 30, 31, 56, 57, 58, 59, and 71 only.",
+      "requirement_id": "REQ-20260628-152",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S002",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Read the private Drive/app transcript source only for those 10 jobs and keep raw transcript bodies out of GitHub.",
+      "requirement_id": "REQ-20260628-153",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S003",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Extract structured question candidates and spoken student-name mentions with safe normalized student/student_id matching where possible.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S004",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Separate matched personal questions from class-question broadcasts, existing skips, and blocked-review cases.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S005",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Produce redacted row-level before/after dry-run plans for student questions, class questions, tasks, scores, and progress.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S006",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Explain why each of the 10 jobs was Needs parse and emit score/progress rows or concrete no-op reasons.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S007",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Do not run --apply, mutate production, write student portals, backfill classes, write Drive, export raw transcripts, call AI, retranscribe, send, charge, grant access, or change credentials/accounts/DNS.",
+      "requirement_id": "REQ-20260628-155",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-005-S008",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Update sanitized repo evidence, active execution run, NEXT-SESSION.md, ledger, changelog, PR #49, and Issue #41 with results while keeping PR #49 draft if production apply remains blocked.",
+      "requirement_id": "REQ-20260628-156",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S001",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Inspect source-of-truth files, PR #49, Issue #41, remote private-reparse evidence integrity, and active execution-run status before implementation.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S002",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Implement a guarded production apply lane and final no-write preflight for exactly jobs 21, 25, 26, 30, 31, 56, 57, 58, 59, and 71.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S003",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Require --apply, --gate APPLY_GUARDED_CLASS_BACKFILL, exact job IDs, snapshot file, rollback output, before/after evidence, dedupe keys, explicit approved actions, refusal checks, and readback commands before production mutation.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S004",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Create PRODUCTION-APPLY-PREFLIGHT, SNAPSHOT, ROLLBACK, BATCH, and READBACK evidence files without production writes.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-006-S005",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Run required verification, update NEXT-SESSION, ledger, changelog, PR #49, and Issue #41, and stop before production apply until the final exact command is approved.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S001",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Inspect exact Drive parent folder 1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv, confirm it is 04 Content and Media Intake, list children, and find or diagnose Rabbi uploaded PowerPoint.",
+      "requirement_id": "REQ-20260628-158",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S002",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Create missing folders under 04 Content and Media Intake, reuse existing semantic aliases, and do not duplicate, move, rename, or delete existing Drive files.",
+      "requirement_id": "REQ-20260628-158",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S003",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Classify audio/video as transcription intake, PowerPoint/Google Slides as slideshow/source-material with no transcription, PDFs/source sheets/worksheets as source-material, Google Docs by safe metadata, and unknown files as Needs Shloimie Decision.",
+      "requirement_id": "REQ-20260628-159",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S004",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Update repo-safe folder maps, backend settings/defaults, workflow docs, and sanitized evidence for folders created/reused and PowerPoint classification.",
+      "requirement_id": "REQ-20260628-159",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S005",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Update super-admin/Rabbi workspace UI so Shloimie can open/copy project root, parent, and all seven folder links with audience, purpose, transcription, source-only, and status labels.",
+      "requirement_id": "REQ-20260628-160",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S006",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Rabbi-facing UI must show only videos/audio and slideshows/source-material upload links and must not expose internal queues, output drafts, private transcript library, raw backend IDs, production DB info, or admin-only evidence.",
+      "requirement_id": "REQ-20260628-160",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S007",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Nothing in the slideshow/source-material folder should automatically become a newsletter/social post; source material needs review output and approval before member/social/newsletter use.",
+      "requirement_id": "REQ-20260628-159",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "RAW-20260628-007-S008",
+      "source_id": "RAW-20260628-007",
+      "source_statement": "Run focused verification, update active run, NEXT-SESSION, ledger, changelog, PR #49, and Issue #41, and do not close Issue #41 or run production apply.",
+      "requirement_id": "REQ-20260628-161",
+      "classification": "requirement"
     }
   ],
   "canonical_tasks": [
@@ -291,6 +579,18 @@
       "project_key": "class_drive_intake",
       "source_id": "RAW-20260626-004",
       "requirement_id": "REQ-20260626-116",
+      "visible": false,
+      "lane": "agent_work",
+      "status": "done"
+    },
+    {
+      "canonical_task_key": "rabbi_sheller_provider|one_time_mishnah_class|RAW-20260628-007|rabbi_drive_folder_structure",
+      "title": "Create and verify Rabbi Drive intake folder structure",
+      "owner": "Codex",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "source_id": "RAW-20260628-007",
+      "requirement_id": "REQ-20260628-158",
       "visible": false,
       "lane": "agent_work",
       "status": "done"
@@ -859,13 +1159,13 @@
         "REQ-20260626-128",
         "REQ-20260626-133"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "targeted job #83 Drive sync was approved and completed under REQ-20260626-128; all broader unsafe or external write paths remain unauthorized",
-      "can_continue_without_operator": false,
-      "blocker": "Owner must explicitly approve any raw transcript-body export, any further Drive doc create/update/delete beyond job #83, production reparse/canonical write, worker retry, paid retranscription, class backfill, broad Drive sync, or other production mutation.",
+      "status": "done",
+      "implementation_status": "done; broad unsafe/raw/Drive/class-backfill paths remain gated while the separately approved exact Issue #41 production apply was consumed and verified",
+      "can_continue_without_operator": true,
+      "blocker": "",
       "blocker_owner": "Shloimie",
-      "blocker_next_action": "For any additional non-dry-run Drive sync or production action, provide a new exact approval after a dry-run plan is recorded.",
-      "next_action": "Await owner approval for any remaining unsafe/raw/external write path; otherwise treat the job #83 sync and digest plan as complete.",
+      "blocker_next_action": "",
+      "next_action": "Future raw transcript export, broad Drive sync, class backfill, sends/publishes, AI calls, paid transcription, or additional production mutations still require a new exact owner approval after dry-run evidence.",
       "acceptance_criteria": [
         "Decision is concise",
         "Dependent write/apply/export paths remain blocked"
@@ -875,12 +1175,17 @@
         "raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md",
         "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md",
+        "raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-READBACK.md"
       ],
       "verification": [
         "PASS blocker documented as DEC-20260626-101",
         "PASS issue #41 addendum reinforced the no-write owner approval gate",
-        "PASS targeted #83 approval was consumed only by REQ-20260626-128"
+        "PASS targeted #83 approval was consumed only by REQ-20260626-128",
+        "PASS final Issue #41 exact apply used only the approved command/approval ID and did not include Drive writes, raw export, class backfill, sends, AI calls, or score/progress writes",
+        "PASS future unsafe paths remain forbidden unless separately approved"
       ],
       "implementation_files": [
         "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
@@ -888,7 +1193,7 @@
         "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-26T14:55:00+03:00"
+      "updated_at": "2026-06-30T08:36:00+03:00"
     },
     {
       "id": "REQ-20260626-129",
@@ -1426,9 +1731,9 @@
         "REQ-20260628-136"
       ],
       "status": "done",
-      "implementation_status": "done",
+      "implementation_status": "done; superseded by REQ-20260628-143 class-question broadcast dry-run evidence",
       "can_continue_without_operator": true,
-      "next_action": "Keep DEC-20260626-101 open; no production apply command is currently safe. Review the student question/score approval packet before any dry-run planner or production apply approval.",
+      "next_action": "Use REQ-20260628-143 for the current question plan; keep score/progress blocked because 0 row-level score/progress rows exist.",
       "acceptance_criteria": [
         "Plan lists job IDs and student IDs/hashed unmatched refs",
         "Question rows separated from scores/progress",
@@ -1439,15 +1744,15 @@
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
       ],
       "verification": [
-        "Plan records 10 parser repair candidates, 13 student question rows, 6 question rows needing review, 0 score/progress row-level apply rows.",
-        "Approval packet records verdict not_approved_not_safe_to_apply and gives a no-write dry-run-only approval option."
+        "PASS class-question broadcast dry-run evidence supersedes old human-match blocker; score/progress still has 0 row-level rows."
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T10:10:00+03:00",
+      "updated_at": "2026-06-28T12:32:00+03:00",
       "continuation": "Exact redacted repair plan refreshed; no student score/question/task/progress production write is safe yet. A dry-run-only owner approval packet is recorded for the next non-mutating planner step."
     },
     {
@@ -1468,10 +1773,10 @@
       "depends_on": [
         "REQ-20260628-138"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "needs_operator_decision; exact dry-run plan is recorded, but production parser/question/score/task apply remains unapproved",
-      "can_continue_without_operator": false,
-      "next_action": "Shloimie should keep production writes blocked, or approve only the no-write dry-run planner in STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md. No production apply command is currently safe.",
+      "status": "done",
+      "implementation_status": "done; final owner approval RAW-20260630-001 replaced the obsolete 917-row broadcast plan with a guarded 13-question/25-private-review apply, executed and read back successfully",
+      "can_continue_without_operator": true,
+      "next_action": "No further owner classification decision is needed for Issue #41 question/task/parser closeout.",
       "acceptance_criteria": [
         "Exact dry-run plan exists",
         "Approval names exact command/actions",
@@ -1480,15 +1785,32 @@
       "evidence": [
         "DEC-20260626-101",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md",
+        "raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-RESULT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-IDEMPOTENCY.md"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "PASS final dry-run 13 question rows: 7 personal, 6 class-scoped, 0 blockers, 0 fanout",
+        "PASS production apply committed with exact approval ID",
+        "PASS readback found 7 personal question rows, 6 class question-review rows, 25 private-review task rows, 0 score/progress rows",
+        "PASS idempotency readback showed no duplicate second-run requirement"
+      ],
+      "implementation_files": [
+        "scripts/class-drive-intake-apply-approved.cjs",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-apply-approved.test.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
       "deployment_required": false,
       "blocker_owner": "Shloimie",
-      "blocker": "Production student question/score/progress/task writes are not authorized; 6 question rows need human student-match review and score/progress has 0 safe row-level apply rows.",
-      "blocker_next_action": "Recommended: keep production writes blocked. Optional safe next step: approve the no-write dry-run planner packet only; do not approve --apply until a later plan emits safe row-level before/after rows.",
-      "updated_at": "2026-06-28T10:10:00+03:00"
+      "blocker": "",
+      "blocker_next_action": "",
+      "updated_at": "2026-06-30T08:36:00+03:00"
     },
     {
       "id": "REQ-20260628-140",
@@ -1509,7 +1831,8 @@
         "REQ-20260628-135",
         "REQ-20260628-136",
         "REQ-20260628-137",
-        "REQ-20260628-138"
+        "REQ-20260628-138",
+        "REQ-20260628-143"
       ],
       "status": "done",
       "implementation_status": "done; Issue #41 status comment posted without closing the issue, and remaining production-write blocker is recorded under DEC-20260626-101",
@@ -1530,7 +1853,8 @@
         "ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md",
         "ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md",
         "ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md",
-        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594"
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
       ],
       "verification": [
         "PASS PR #45 merged: 185f944613faca469c15df3d9ef6fefa3afd1850",
@@ -1544,8 +1868,1102 @@
       ],
       "implementation_files": [],
       "deployment_required": false,
-      "updated_at": "2026-06-28T10:03:00+03:00",
-      "continuation": "Safe Issue #41 content-card/parser closeout is posted. Issue remains open and production apply work remains separately blocked by REQ-20260628-139 / DEC-20260626-101."
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "continuation": "Safe Issue #41 content-card/parser and class-question dry-run evidence is posted locally. Issue remains open and production apply work remains separately blocked by REQ-20260628-139 / DEC-20260626-101."
+    },
+    {
+      "id": "REQ-20260628-141",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "batch_id": "M",
+      "deployment_required": false,
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "title": "Register class-question broadcast owner rule",
+      "expected_result": "The June 28 class-question broadcast rule is preserved as raw input and linked to the active Issue #41 run.",
+      "source_id": "RAW-20260628-003",
+      "source_statement_ids": [
+        "RAW-20260628-003-S001"
+      ],
+      "category": "source_registration",
+      "depends_on": [
+        "REQ-20260628-138"
+      ],
+      "status": "done",
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Use this rule in the guarded dry-run planner only; do not mutate production without a separate approved apply path.",
+      "acceptance_criteria": [
+        "Raw wording preserved",
+        "Rule linked to Issue #41 run",
+        "No production mutation performed"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md"
+      ],
+      "verification": [
+        "PASS raw source readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md"
+      ]
+    },
+    {
+      "id": "REQ-20260628-142",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "batch_id": "M",
+      "deployment_required": false,
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "title": "Route unmatched question candidates as class questions in the guarded dry-run planner",
+      "expected_result": "Unmatched or ambiguous question candidates from student question, question, and discussion-question lanes produce class-question broadcast proposals for active students and no blocking ambiguity.",
+      "source_id": "RAW-20260628-003",
+      "source_statement_ids": [
+        "RAW-20260628-003-S002"
+      ],
+      "category": "implementation",
+      "depends_on": [
+        "REQ-20260628-141"
+      ],
+      "status": "done",
+      "implementation_status": "done",
+      "can_continue_without_operator": true,
+      "next_action": "Keep production apply blocked; use the dry-run evidence for owner review.",
+      "acceptance_criteria": [
+        "Unmatched student_questions become class-question broadcasts",
+        "Ambiguous names become class-question broadcasts",
+        "class_notes.questions become class-question broadcasts",
+        "Question-shaped discussions become class-question broadcasts",
+        "Inactive students are excluded"
+      ],
+      "evidence": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/class-drive-intake-reconcile.test.js: 16/16"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "id": "REQ-20260628-143",
+      "source_path": "raw-input/RAW-20260628-003-class-question-broadcast-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "batch_id": "M",
+      "deployment_required": false,
+      "updated_at": "2026-06-28T12:32:00+03:00",
+      "title": "Refresh sanitized class-question dry-run evidence and keep apply blocked",
+      "expected_result": "The 21-83 dry-run evidence is refreshed, class-question fallback rows are explicit, no production mutation occurs, and the remaining production apply blocker is exact.",
+      "source_id": "RAW-20260628-003",
+      "source_statement_ids": [
+        "RAW-20260628-003-S003"
+      ],
+      "category": "evidence",
+      "depends_on": [
+        "REQ-20260628-142"
+      ],
+      "status": "done",
+      "implementation_status": "done; dry-run evidence reports 917 future event writes, 912 class-question broadcast inserts, 5 matched inserts, 2 existing skips, and 0 blocking ambiguities",
+      "can_continue_without_operator": true,
+      "next_action": "Wait for owner decision on DEC-20260626-101 before any production apply implementation/path.",
+      "acceptance_criteria": [
+        "Dry-run evidence written",
+        "No production mutation",
+        "No raw transcript export",
+        "Production apply remains explicitly blocked"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.json"
+      ],
+      "verification": [
+        "PASS node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit: dry-run evidence written, no production mutation",
+        "PASS dry-run summary: safe_to_apply=true, expected bna_accountability_events=917, blocking_ambiguities=0"
+      ],
+      "implementation_files": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.json"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:25:00+03:00",
+      "id": "REQ-20260628-144",
+      "title": "Register Issue #41 catch-up package continuation",
+      "expected_result": "The June 28 catch-up packet is preserved as raw input and mapped to active Issue #41 requirements without creating a duplicate run.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S001"
+      ],
+      "category": "source_registration",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-143"
+      ],
+      "status": "done",
+      "implementation_status": "done; raw catch-up packet registered and linked to the active transcript/Drive digest rebuild run",
+      "next_action": "Use REQ-20260628-145 through REQ-20260628-151 for the safe catch-up package evidence.",
+      "acceptance_criteria": [
+        "Raw packet is preserved",
+        "Requirement mappings exist",
+        "No duplicate run is created"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ],
+      "verification": [
+        "PASS raw source readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-145",
+      "title": "Produce repo-safe backlog catch-up census for all digest recordings",
+      "expected_result": "A no-write census covers all 29 digest recordings and classifies digest, private transcript availability, parse, routing, topic, questions, tasks, research/content, score/progress, human review, blockers, and next actions.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S003"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-144"
+      ],
+      "status": "done",
+      "implementation_status": "done; BACKLOG-CATCHUP-CENSUS reports 29 digest recordings, 10 focus jobs, 29 repo-safe digests, 29 private transcript refs, 10 Needs parse jobs, 13 question candidates, 34 task/action candidates, 29 ready content cards, and 0 score/progress rows",
+      "next_action": "Use census blockers to gate any future production apply or private reparse approval.",
+      "acceptance_criteria": [
+        "All 29 digest recordings covered",
+        "Focus jobs classified",
+        "No raw transcript body exported",
+        "Per-job next action is explicit"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.json"
+      ],
+      "verification": [
+        "PASS node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-146",
+      "title": "Diagnose the ten Needs parse digest jobs",
+      "expected_result": "The ten Needs parse jobs have concrete no-fake-completion reasons and exact safe next actions.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S004"
+      ],
+      "category": "diagnosis",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; Needs parse means private transcript count exists and digest exists, but parser metadata/structured class/progress output is incomplete or parser request is not visible; production reparse/canonical write is not approved",
+      "next_action": "If owner approves, run only an exact private reparse/canonical-write dry-run that emits sanitized before/after rows; do not mutate production.",
+      "acceptance_criteria": [
+        "Needs parse jobs listed",
+        "Cause is concrete",
+        "No fake parsed status assigned"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md"
+      ],
+      "verification": [
+        "PASS census rows list jobs 21,25,26,30,31,56,57,58,59,71 as Needs parse with private transcript chars and reparse next action"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "student_records",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-147",
+      "title": "Produce no-write score/progress catch-up plan",
+      "expected_result": "Score/progress has redacted row-level rows where safe or explicit no-op reasons per job when no safe row exists.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S006"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; SCORE-PROGRESS-CATCHUP-PLAN inspects 29 digest jobs and records 0 row-level changes, 29 no-op jobs, and 10 jobs needing private reparse before score/progress can be planned",
+      "next_action": "Keep score/progress production writes blocked until an approved parser/canonical-write dry-run emits before/after rows.",
+      "acceptance_criteria": [
+        "No-write plan exists",
+        "No-op reasons per job exist",
+        "0-row state is explicit"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.json"
+      ],
+      "verification": [
+        "PASS plan summary: inspected_jobs=29, row_level_change_count=0, no_op_jobs=29, jobs_needing_private_reparse=10"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-148",
+      "title": "Produce no-write task/action catch-up plan",
+      "expected_result": "Task-shaped digest output is classified into no-write canonical task/action candidates with dedupe keys and no production task creation.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S007"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; TASK-ACTION-CATCHUP-PLAN records 34 digest/parser/audit candidate rows, all internal agent task candidates, 0 human-visible task candidates, and no production task writes",
+      "next_action": "Do not create production tasks without a later exact owner-approved apply path.",
+      "acceptance_criteria": [
+        "Canonical task keys exist",
+        "Dedupe rule exists",
+        "Internal agent work is separated from human-visible tasks"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.json"
+      ],
+      "verification": [
+        "PASS plan summary: task_action_candidates=34, internal_agent_task_candidates=34, human_visible_task_candidates=0"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-149",
+      "title": "Produce research/content catch-up plan for digest cards",
+      "expected_result": "All digest recordings have repo-safe research/content card readiness evidence with no raw transcript bodies.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S008"
+      ],
+      "category": "evidence",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145"
+      ],
+      "status": "done",
+      "implementation_status": "done; RESEARCH-CONTENT-CATCHUP-PLAN confirms 29 inspected jobs, 29 content cards ready, 0 content-card repairs needed, 0 content idea candidates, and no raw bodies",
+      "next_action": "Keep content cards visible as sanitized digest cards; parser status remains separate for the 10 Needs parse jobs.",
+      "acceptance_criteria": [
+        "All 29 digest cards covered",
+        "Raw body excluded",
+        "Needs parse jobs still show honest parser state"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md"
+      ],
+      "verification": [
+        "PASS research/content plan summary: content_cards_ready=29, needs_content_card_repair=0"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-150",
+      "title": "Document guarded apply-lane design without executing production apply",
+      "expected_result": "A controlled apply-lane design documents owner gate, exact command shape, snapshot, rollback, row-level evidence, dedupe keys, dry-run default, refusal conditions, and current read-only refusal state.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S009"
+      ],
+      "category": "protocol",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145",
+        "REQ-20260628-147"
+      ],
+      "status": "done",
+      "implementation_status": "done; APPLY-LANE-DESIGN documents the controlled apply contract, reports the current CLI mutation path still refuses apply, and records dry-run success planning only",
+      "next_action": "If owner wants production writes, approve a separate exact implementation/apply path with job IDs/actions, snapshot, rollback, and row-level evidence.",
+      "acceptance_criteria": [
+        "Owner gate documented",
+        "Snapshot and rollback controls documented",
+        "Refusal conditions documented",
+        "Production apply not executed"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.json"
+      ],
+      "verification": [
+        "PASS node --test tests/class-drive-intake-reconcile.test.js includes apply-lane design and CLI refusal coverage"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-004",
+      "source_path": "raw-input/RAW-20260628-004-issue41-catchup-package-continuation.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T14:45:00+03:00",
+      "id": "REQ-20260628-151",
+      "title": "Verify and publish PR #49 catch-up package status",
+      "expected_result": "Focused tests, digest/card audits, run validation/status, secrets audit, JSON/JSONL checks, privacy scans, diff check, PR update, and Issue #41 comment all pass without closing Issue #41.",
+      "source_statement_ids": [
+        "RAW-20260628-004-S002",
+        "RAW-20260628-004-S010"
+      ],
+      "category": "verification",
+      "batch_id": "N",
+      "depends_on": [
+        "REQ-20260628-145",
+        "REQ-20260628-146",
+        "REQ-20260628-147",
+        "REQ-20260628-148",
+        "REQ-20260628-149",
+        "REQ-20260628-150"
+      ],
+      "status": "done",
+      "implementation_status": "done; code and evidence were verified, committed, pushed to PR #49, and documented in PR #49 plus Issue #41 comments without closing Issue #41",
+      "next_action": "Keep Issue #41 open; run npm run bna:run:next for the next safe batch, or wait for exact owner approval before any production apply/write path.",
+      "acceptance_criteria": [
+        "Focused tests pass",
+        "Privacy scans pass",
+        "Run validation/status pass",
+        "PR and Issue comments posted",
+        "Issue #41 remains open"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011",
+        "https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041"
+      ],
+      "verification": [
+        "PASS npm run content:export-digests -- --privacy-scan: 29 recordings, raw bodies false, 0 privacy findings",
+        "PASS npm run content:card-topic-audit: 29 recordings, 29 generated titles, 10 Needs parse, 0 Needs routing, 0 Needs topic classification",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js: 46/46",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 0 tracked secret-risk files",
+        "PASS JSON/JSONL parse: 2200 payloads, BOM-tolerant",
+        "PASS added-line privacy scan: no raw Drive URLs/IDs, secret literals, or raw transcript bodies",
+        "PASS git diff --check: Windows CRLF warnings only",
+        "PASS git push origin codex/issue41-class-question-fallback-20260628",
+        "PASS PR #49 updated and Issue #41 comment posted; Issue #41 remains open"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T16:10:00+03:00",
+      "id": "REQ-20260628-152",
+      "title": "Register private reparse dry-run approval",
+      "expected_result": "Owner approval is preserved with exact 10-job scope and no-write guardrails.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S001"
+      ],
+      "category": "source_registration",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-151"
+      ],
+      "status": "done",
+      "implementation_status": "done; RAW-20260628-005 preserved the exact approved private-read/no-write scope",
+      "next_action": "Use REQ-20260628-153 through REQ-20260628-156 for the approved dry-run execution and closeout.",
+      "acceptance_criteria": [
+        "Raw approval file exists",
+        "Exact job IDs recorded",
+        "Forbidden actions recorded"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
+      ],
+      "verification": [
+        "PASS raw approval readback"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-153",
+      "title": "Implement exact-scope private reparse dry-run command",
+      "expected_result": "CLI supports private-reparse no-write mode, refuses unapproved job IDs, skips broad Drive listing, and reads only the approved job rows.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S002",
+        "RAW-20260628-005-S007"
+      ],
+      "category": "implementation",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-152"
+      ],
+      "status": "done",
+      "implementation_status": "done; private-reparse command validates exact approved IDs, forces skipDrive, and loads exact DB job IDs only",
+      "next_action": "Use the command only with the approved job list unless a new owner approval is recorded.",
+      "acceptance_criteria": [
+        "Unapproved scope refused",
+        "No Drive listing",
+        "No apply path",
+        "Exact job IDs only"
+      ],
+      "evidence": [
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "verification": [
+        "PASS node --test tests/class-drive-intake-reconcile.test.js includes exact-scope refusal coverage"
+      ],
+      "implementation_files": [
+        "scripts/class-drive-intake-reconcile.cjs",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-154",
+      "title": "Generate private reparse canonical-write dry-run evidence",
+      "expected_result": "Sanitized evidence explains the Needs parse state for each approved job and emits redacted question routing, student mention matching, task rows, and score/progress rows or no-op reasons.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S003",
+        "RAW-20260628-005-S004",
+        "RAW-20260628-005-S005",
+        "RAW-20260628-005-S006"
+      ],
+      "category": "evidence",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-153"
+      ],
+      "status": "done",
+      "implementation_status": "done; PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN covers all 10 approved jobs and emits sanitized redacted routing/row-level dry-run evidence only",
+      "next_action": "Review the dry-run rows; production apply remains blocked unless separately approved with snapshot/rollback controls.",
+      "acceptance_criteria": [
+        "All 10 jobs inspected",
+        "No missing job IDs",
+        "Question routing emitted",
+        "Student mention match status emitted",
+        "Score/progress rows or no-op reasons emitted",
+        "Raw transcript bodies excluded"
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json"
+      ],
+      "verification": [
+        "PASS private-reparse summary: inspected_jobs=10, missing_jobs=0, private_transcript_sources_read=10",
+        "PASS private-reparse summary: student_name_mentions=261, question_candidates=1285, personal_question_candidates=36, class_question_broadcast_candidates=1249, task_candidate_rows=119, score_progress_rows=1, score_progress_no_op_rows=55",
+        "PASS private reparse evidence privacy scan: no raw Drive URLs/IDs, no raw transcript body fields, no secret literals"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T16:00:00+03:00",
+      "id": "REQ-20260628-155",
+      "title": "Verify private reparse dry-run guardrails",
+      "expected_result": "Tests, syntax checks, privacy scans, secrets audit, JSON/JSONL parse, diff check, and run validation pass with no forbidden action performed.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S007"
+      ],
+      "category": "verification",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-154"
+      ],
+      "status": "done",
+      "implementation_status": "done; syntax checks, focused test suite, private evidence privacy scan, run validation/status/next, secrets audit, JSON/JSONL parse, added-line privacy scan, and diff check passed",
+      "next_action": "Proceed to REQ-20260628-156: commit, push, update PR #49, and comment Issue #41 while keeping production apply blocked.",
+      "acceptance_criteria": [
+        "Focused tests pass",
+        "Privacy scan passes",
+        "Secrets audit passes",
+        "Run validation passes",
+        "No forbidden action performed"
+      ],
+      "evidence": [
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/class-drive-intake-reconcile.js",
+        "PASS node --check scripts/class-drive-intake-reconcile.cjs",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js: 23/23",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js: 49/49",
+        "PASS private reparse evidence privacy scan: no raw Drive URLs/IDs, no raw transcript body fields, no secret literals",
+        "PASS node scripts/class-drive-intake-reconcile.cjs source-coverage --write --skip-drive --job-ids 21,25,26,30,31,56,57,58,59,71 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit: source_statement_count=14, missing_evidence_count=0",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 5352 tracked paths checked, 0 tracked secret-risk files",
+        "PASS JSON/JSONL parse: 2203 payloads, BOM-tolerant",
+        "PASS added-line privacy scan: 337059 added/new lines, no raw Drive URLs/IDs, secret literals, or raw transcript bodies",
+        "PASS git diff --check: Windows CRLF warnings only"
+      ],
+      "implementation_files": [
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-005",
+      "source_path": "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T15:45:00+03:00",
+      "id": "REQ-20260628-156",
+      "title": "Publish private reparse dry-run status to PR #49 and Issue #41",
+      "expected_result": "PR #49, Issue #41, NEXT-SESSION, ledger, changelog, and task handoff reflect the private dry-run results while keeping PR #49 draft and Issue #41 open.",
+      "source_statement_ids": [
+        "RAW-20260628-005-S008"
+      ],
+      "category": "github_closeout",
+      "batch_id": "O",
+      "depends_on": [
+        "REQ-20260628-155"
+      ],
+      "status": "done",
+      "implementation_status": "done; commit 34e29b60 pushed to PR #49, PR and Issue #41 comments posted, PR remains draft, and Issue #41 remains open",
+      "next_action": "No production apply until DEC-20260626-101 is resolved by a separate exact owner approval; next safe command is npm run bna:run:next.",
+      "acceptance_criteria": [
+        "Branch pushed",
+        "PR #49 updated and remains draft",
+        "Issue #41 commented and remains open",
+        "Remaining production blocker explicit"
+      ],
+      "evidence": [
+        "Commit 34e29b60 pushed to codex/issue41-class-question-fallback-20260628",
+        "PR #49 comment: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567",
+        "Issue #41 comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334",
+        "PR #49 verified draft: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json"
+      ],
+      "verification": [
+        "PASS git push -u origin codex/issue41-class-question-fallback-20260628",
+        "PASS gh pr view 49 --json number,url,isDraft,headRefName,baseRefName,title: isDraft=true",
+        "PASS gh pr comment 49",
+        "PASS gh issue comment 41",
+        "PASS production apply remains blocked by DEC-20260626-101"
+      ],
+      "implementation_files": [
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/NEXT-SESSION.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-006",
+      "source_path": "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T17:05:00+03:00",
+      "id": "REQ-20260628-157",
+      "title": "Implement guarded production apply preflight without applying",
+      "expected_result": "A no-write production-apply preflight lane exists for the approved 10 jobs, validates exact scope and evidence integrity, emits snapshot/rollback/batch/readback plans, prints final apply commands and row counts, refuses mutation, and records results in PR #49 and Issue #41.",
+      "source_statement_ids": [
+        "RAW-20260628-006-S001",
+        "RAW-20260628-006-S002",
+        "RAW-20260628-006-S003",
+        "RAW-20260628-006-S004",
+        "RAW-20260628-006-S005"
+      ],
+      "category": "production_apply_preflight",
+      "batch_id": "P",
+      "depends_on": [
+        "REQ-20260628-156"
+      ],
+      "status": "done",
+      "implementation_status": "done; commit f48a9094 pushed, PR #49 and Issue #41 comments posted, preflight controls passed, and production-apply remains refused until final owner approval",
+      "next_action": "Await Shloimie's exact final approval before any production apply; next safe command is npm run bna:run:next.",
+      "acceptance_criteria": [
+        "PR #49 is mergeable or branch conflict is resolved",
+        "Remote private reparse evidence is non-empty and sanitized",
+        "Preflight command validates the exact approved job IDs",
+        "Preflight evidence prints exact batch apply commands, row counts, snapshot path, rollback path, and readback commands",
+        "Production apply command refuses until final owner approval",
+        "No production mutation, Drive write, AI call, raw transcript export, or class backfill occurs",
+        "Required verification commands pass",
+        "PR #49 and Issue #41 are updated while Issue #41 remains open"
+      ],
+      "evidence": [
+        "PR #49 state: mergeable CLEAN, draft, open",
+        "Issue #41 state: OPEN",
+        "Remote private-reparse evidence sizes: md=1454766, json=11207578",
+        "Remote private-reparse blob shas matched local git hash-object values",
+        "Commit f48a9094 pushed to codex/issue41-class-question-fallback-20260628",
+        "PR #49 comment: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826235797",
+        "Issue #41 comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826236603",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-ROLLBACK-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md"
+      ],
+      "verification": [
+        "PASS immediate checks: npm run bna:run:status; npm run bna:run:next; npm run bna:run:validate",
+        "PASS node --check src/lib/bna/class-drive-intake-reconcile.js",
+        "PASS node --check scripts/class-drive-intake-reconcile.cjs",
+        "PASS node --test tests/class-drive-intake-reconcile.test.js: 26/26",
+        "PASS focused suite: 52/52",
+        "PASS production-apply-preflight generation: controls passed, 0 blocking refusal checks, production apply command may be run now=false",
+        "PASS source coverage: 15 mapped statements, 0 missing evidence",
+        "PASS npm run bna:run:validate; npm run bna:run:next; npm run bna:run:status",
+        "PASS npm run secrets:audit: 0 findings",
+        "PASS JSON/JSONL parse: 2102 payloads",
+        "PASS preflight evidence privacy scan",
+        "PASS added-line privacy scan",
+        "PASS git diff --check with CRLF warnings only",
+        "PASS gh pr comment 49 and gh issue comment 41"
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260628-006-production-apply-preflight-packet.md",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "scripts/class-drive-intake-reconcile.cjs",
+        "tests/class-drive-intake-reconcile.test.js",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-ROLLBACK-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md"
+      ],
+      "implementation_commit": "f48a9094",
+      "pushed_commit": "f48a9094",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/49",
+      "blocker": "Actual production apply is not authorized by RAW-20260628-006 and remains under DEC-20260626-101.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Review PRODUCTION-APPLY-PREFLIGHT, then approve exact batch command(s), row counts, snapshot path, rollback path, and readback commands if production mutation should proceed."
+    },
+    {
+      "source_id": "RAW-20260628-007",
+      "source_path": "raw-input/RAW-20260628-007-rabbi-drive-folder-structure-packet.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T18:30:00+03:00",
+      "id": "REQ-20260628-158",
+      "title": "Create and verify Rabbi Drive intake folder structure",
+      "expected_result": "Exact parent 04 Content and Media Intake is confirmed, all seven required folders exist by reuse or creation, PowerPoint files are identified, and no existing Drive files are moved/deleted/renamed.",
+      "source_statement_ids": [
+        "RAW-20260628-007-S001",
+        "RAW-20260628-007-S002"
+      ],
+      "category": "drive_folder_structure",
+      "batch_id": "Q",
+      "depends_on": [
+        "REQ-20260628-157"
+      ],
+      "status": "done",
+      "implementation_status": "done; approved Drive folder create/reuse run confirmed parent, created 3 missing folders, reused 4 existing folders, and found two PowerPoint files in the parent",
+      "next_action": "Proceed to UI/config verification and PR/Issue closeout without production apply.",
+      "acceptance_criteria": [
+        "Parent folder confirmed",
+        "Required folder structure exists",
+        "Existing folders reused without duplicates",
+        "PowerPoint files classified without transcription",
+        "No existing files moved/deleted/renamed"
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-creation-log.md"
+      ],
+      "verification": [
+        "PASS node scripts/audit-one-time-rabbi-drive-folders.mjs --write with approved OAuth paths",
+        "PASS parent_confirmed=true",
+        "PASS folders_created=3 and folders_reused=4",
+        "PASS powerpoint_found_in_parent=true"
+      ],
+      "implementation_files": [
+        "scripts/audit-one-time-rabbi-drive-folders.mjs",
+        "ops/one-time-mishnah-class/drive-social-ingestion-map.json",
+        "ops/one-time-mishnah-class/partnership-drive-map.json"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-007",
+      "source_path": "raw-input/RAW-20260628-007-rabbi-drive-folder-structure-packet.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T18:30:00+03:00",
+      "id": "REQ-20260628-159",
+      "title": "Implement Drive intake classification and repo-safe maps",
+      "expected_result": "Backend/config/docs classify media vs source material vs review/output/decision lanes, prevent source material from transcription/newsletter automation, and store repo-safe evidence.",
+      "source_statement_ids": [
+        "RAW-20260628-007-S003",
+        "RAW-20260628-007-S004",
+        "RAW-20260628-007-S007"
+      ],
+      "category": "classification_config_docs",
+      "batch_id": "Q",
+      "depends_on": [
+        "REQ-20260628-158"
+      ],
+      "status": "done",
+      "implementation_status": "done; helper, maps, workflow docs, setup script aliases, and sanitized evidence all carry the new classification guardrails",
+      "next_action": "Proceed to UI link verification and GitHub closeout.",
+      "acceptance_criteria": [
+        "Audio/video route to transcription intake",
+        "PowerPoint/Slides route to source material and no transcription",
+        "PDF/source sheets route to source material and no transcription",
+        "Unknown files require Shloimie decision",
+        "Repo evidence excludes raw transcript bodies and file IDs for direct files"
+      ],
+      "evidence": [
+        "src/lib/bna/one-time-drive-intake-map.js",
+        "ops/one-time-mishnah/content-media-intake-workflow.md",
+        "ops/one-time-mishnah-class/drive-social-ingestion-map.json",
+        "ops/one-time-mishnah-class/partnership-drive-map.json"
+      ],
+      "verification": [
+        "PASS node --test tests/one-time-drive-intake-folder-map.test.js",
+        "PASS PowerPoint candidates route slideshow/source-material with eligible_for_transcription=false"
+      ],
+      "implementation_files": [
+        "src/lib/bna/one-time-drive-intake-map.js",
+        "scripts/setup-one-time-partnership-drive.mjs",
+        "ops/one-time-mishnah/content-media-intake-workflow.md"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-007",
+      "source_path": "raw-input/RAW-20260628-007-rabbi-drive-folder-structure-packet.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T18:30:00+03:00",
+      "id": "REQ-20260628-160",
+      "title": "Expose safe Drive folder links in super-admin and Rabbi UI",
+      "expected_result": "Super-admin can open/copy project root, parent, and seven lanes; Rabbi-facing portal shows only the two approved drop-off folders.",
+      "source_statement_ids": [
+        "RAW-20260628-007-S005",
+        "RAW-20260628-007-S006"
+      ],
+      "category": "ui_links",
+      "batch_id": "Q",
+      "depends_on": [
+        "REQ-20260628-159"
+      ],
+      "status": "done",
+      "implementation_status": "done; Operations settings renders all Drive folder cards and provider portal renders only Rabbi-facing drop-off links with copy buttons",
+      "next_action": "Run final verification and update PR #49 / Issue #41 while keeping Issue #41 open.",
+      "acceptance_criteria": [
+        "Super-admin sees all folder links and statuses",
+        "Rabbi-facing view sees only video/audio and slides/source-material links",
+        "Copy-link buttons exist",
+        "Internal/private links are not exposed to Rabbi-facing UI"
+      ],
+      "evidence": [
+        "public/operations.html",
+        "public/provider.html",
+        "src/platform/instances/one-time-shared-review-data.js",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-ui-drive-links-audit.md"
+      ],
+      "verification": [
+        "PASS node --test tests/one-time-drive-intake-folder-map.test.js",
+        "PASS review provider payload includes only two Drive dropoff links"
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "public/provider.html",
+        "src/platform/instances/one-time-shared-review-data.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-007",
+      "source_path": "raw-input/RAW-20260628-007-rabbi-drive-folder-structure-packet.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T18:55:00+03:00",
+      "id": "REQ-20260628-161",
+      "title": "Verify and publish Rabbi Drive folder closeout without closing Issue 41",
+      "expected_result": "Focused checks, active run validation, secrets/privacy scans, JSON parse, diff check, commit/push, PR #49 comment, and Issue #41 comment complete while Issue #41 remains open and production apply remains blocked.",
+      "source_statement_ids": [
+        "RAW-20260628-007-S008"
+      ],
+      "category": "github_closeout",
+      "batch_id": "Q",
+      "depends_on": [
+        "REQ-20260628-160"
+      ],
+      "status": "done",
+      "implementation_status": "done; Drive/UI folder batch verified, committed, pushed to PR #49, and documented in PR #49 plus Issue #41 comments without closing Issue #41",
+      "next_action": "After merge, keep the two-folder workflow registered from the canonical checkout. Next safe command is npm run bna:run:next.",
+      "acceptance_criteria": [
+        "Required verification passes",
+        "PR #49 updated",
+        "Issue #41 commented and still open",
+        "No production apply or forbidden action performed"
+      ],
+      "evidence": [
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-creation-log.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-ui-drive-links-audit.md",
+        "tests/one-time-drive-intake-folder-map.test.js"
+      ],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check src/lib/bna/one-time-drive-intake-map.js; src/platform/instances/one-time-shared-review-data.js; scripts/audit-one-time-rabbi-drive-folders.mjs; scripts/setup-one-time-partnership-drive.mjs",
+        "PASS focused tests: 55/55",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 5362 tracked paths, 0 tracked secret-risk files",
+        "PASS JSON/JSONL parse: 3 changed JSON files and 1 changed JSONL file",
+        "PASS added-line privacy scan: no new secret literals, raw transcript bodies, or raw Drive file/doc URLs; intentional Drive folder URLs allowed",
+        "PASS git diff --check with Windows CRLF warnings only",
+        "BLOCKED local server smoke: server requires DATABASE_URL in this worktree; no credentials copied into repo/worktree",
+        "PASS commit 65ae09b5 pushed to PR #49",
+        "PASS PR #49 comment posted: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837",
+        "PASS Issue #41 comment posted and Issue #41 remains open: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670"
+      ],
+      "implementation_commit": "65ae09b5",
+      "pushed_commit": "65ae09b5",
+      "implementation_files": [
+        "tests/one-time-drive-intake-folder-map.test.js"
+      ]
+    },
+    {
+      "source_id": "RAW-20260628-008",
+      "source_path": "raw-input/RAW-20260628-008-rabbi-dropoff-email-notifier.md",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex",
+      "priority": "high",
+      "can_continue_without_operator": true,
+      "deployment_required": false,
+      "updated_at": "2026-06-28T20:55:00+03:00",
+      "id": "REQ-20260628-162",
+      "title": "Make two-folder Rabbi drop-off email workflow active",
+      "expected_result": "The two Rabbi-facing Drive upload folders are clearly titled and watched by a local notifier that emails the operator with Drive view links and original-file download links when Rabbi drops new files.",
+      "source_statement_ids": [
+        "RAW-20260628-008-S001",
+        "RAW-20260628-008-S002",
+        "RAW-20260628-008-S003"
+      ],
+      "category": "dropoff_email_notifier",
+      "batch_id": "R",
+      "depends_on": [
+        "REQ-20260628-160"
+      ],
+      "status": "done",
+      "implementation_status": "done; video/audio folder renamed, source-material folder confirmed, notifier scripts added, scheduled task registered, Gmail setup-test passed, scheduler readback shows last result 0, and commit 65ae09b5 was pushed/commented",
+      "next_action": "After PR merge, re-register the scheduled task from the canonical checkout if this PR worktree is removed. Do not run production apply without final owner approval.",
+      "acceptance_criteria": [
+        "Only the two Rabbi-facing upload folders are watched",
+        "New uploads send an operator email with file name, lane, Drive view link, and original-file direct download link where available",
+        "PowerPoint originals are preferred over same-base native Google Slides conversion copies",
+        "The watcher does not transcribe, publish, call AI, write student portals, update scores/progress, mutate production DB rows, backfill classes, move/delete Drive files, grant access, or export raw transcripts",
+        "Task Scheduler is enabled and returns last result 0"
+      ],
+      "evidence": [
+        "raw-input/RAW-20260628-008-rabbi-dropoff-email-notifier.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md",
+        "ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.json",
+        "src/lib/bna/one-time-drive-dropoff-notifier.js",
+        "scripts/notify-one-time-drive-dropoffs.mjs",
+        "scripts/register-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.vbs"
+      ],
+      "verification": [
+        "PASS node --check src/lib/bna/one-time-drive-dropoff-notifier.js",
+        "PASS node --check scripts/notify-one-time-drive-dropoffs.mjs",
+        "PASS node --check scripts/audit-one-time-rabbi-drive-folders.mjs",
+        "PASS node --test tests/one-time-drive-dropoff-notifier.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js: 18/18",
+        "PASS npm run bna:run:validate",
+        "PASS npm run bna:run:next: no unblocked executable batch",
+        "PASS npm run bna:run:status",
+        "PASS npm run secrets:audit: 5372 tracked paths, 0 tracked secret-risk files",
+        "PASS JSON parse: 6 changed JSON files",
+        "PASS added-line privacy scan: 0 findings",
+        "PASS git diff --check with Windows CRLF warnings only",
+        "PASS Task Scheduler readback: enabled, ready, last result 0, every 5 minutes",
+        "PASS commit 65ae09b5 pushed to PR #49",
+        "PASS PR #49 comment posted: https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837",
+        "PASS Issue #41 comment posted and Issue #41 remains open: https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670"
+      ],
+      "implementation_commit": "65ae09b5",
+      "pushed_commit": "65ae09b5",
+      "implementation_files": [
+        "src/lib/bna/one-time-drive-dropoff-notifier.js",
+        "scripts/notify-one-time-drive-dropoffs.mjs",
+        "scripts/register-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.ps1",
+        "scripts/run-one-time-drive-dropoff-notifier.vbs",
+        "tests/one-time-drive-dropoff-notifier.test.js",
+        "ops/one-time-mishnah/content-media-intake-workflow.md",
+        "ops/one-time-mishnah-class/drive-social-ingestion-map.json"
+      ]
     }
   ]
 }

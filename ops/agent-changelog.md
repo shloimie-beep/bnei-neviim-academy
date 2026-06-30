@@ -27048,3 +27048,348 @@ Guardrails held: no Drive write, no production DB mutation, no class backfill,
 no raw transcript export, no AI call, no paid retranscription, no send/publish,
 no charge/access grant, no credential/account/DNS change, and no broad Drive
 sync.
+
+## 2026-06-28T12:32:00+03:00 - Issue 41 Class Question Broadcast Dry Run
+
+Captured `RAW-20260628-003` and implemented the owner rule that unmatched or
+ambiguous question candidates should be class questions for every active
+student, not personal questions assigned to an uncertain student.
+
+- Updated the guarded class-drive intake dry-run planner to route unmatched
+  question candidates as `class_question_broadcast` rows.
+- Covered `class_notes.student_questions`, `class_notes.questions`, and
+  question-shaped `class_notes.discussions`.
+- Refreshed the 21-83 dry-run evidence with no production mutation.
+- Dry-run summary: 917 future `bna_accountability_events` writes, 912
+  class-question broadcast inserts, 5 matched student-question inserts, 2
+  existing rows skipped, and 0 blocking ambiguities.
+- Recorded ChatGPT/repo transcript access readiness: 29 repo-safe digest
+  recordings are available without raw bodies; raw transcripts remain private
+  in Drive/app storage.
+
+Evidence:
+
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md`
+
+Verification:
+
+- `node --test tests/class-drive-intake-reconcile.test.js`: 16/16 passed.
+- `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: dry-run evidence written; no production mutation.
+
+Remaining: production application is still blocked by `DEC-20260626-101`; the
+current apply lane refuses mutation by design. No Drive write, production DB
+mutation, class backfill, raw transcript export, AI call, paid retranscription,
+send/publish, charge/access grant, credential/account/DNS change, broad Drive
+sync, or `--apply` was performed.
+
+## 2026-06-28T14:45:00+03:00 - Issue 41 PR #49 Catch-up Package
+
+Captured `RAW-20260628-004` from the attached goal-mode packet and added
+`REQ-20260628-144` through `REQ-20260628-151` to the active transcript/Drive
+digest rebuild run.
+
+- Added repo-safe catch-up report builders to
+  `src/lib/bna/class-drive-intake-reconcile.js`.
+- Wired `scripts/class-drive-intake-reconcile.cjs` to emit no-write catch-up
+  evidence from digest/card/question dry-run artifacts.
+- Generated `BACKLOG-CATCHUP-CENSUS`: 29 digest recordings, 10 focus jobs, 29
+  repo-safe digests, 29 private transcript refs, 10 `Needs parse` jobs, 13
+  question candidates, 34 task/action candidates, 29 ready research/content
+  cards, and 0 score/progress row-level changes.
+- Generated `SCORE-PROGRESS-CATCHUP-PLAN`: 29 no-op jobs and 0 safe
+  score/progress rows.
+- Generated `TASK-ACTION-CATCHUP-PLAN`: 34 internal no-write candidate rows
+  and 0 human-visible production task candidates.
+- Generated `RESEARCH-CONTENT-CATCHUP-PLAN`: 29 ready sanitized content cards
+  and 0 card repairs needed.
+- Generated `APPLY-LANE-DESIGN`: owner gate, exact command shape, snapshot,
+  rollback, row-level evidence, dedupe keys, small batches, dry-run default,
+  and refusal conditions documented; production apply remains disabled.
+
+Verification:
+
+- `node --test tests/class-drive-intake-reconcile.test.js`: 20/20 passed.
+- `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: repo evidence refreshed, no production mutation.
+- `npm run content:export-digests -- --privacy-scan`: passed, 29 recordings,
+  raw bodies false, 0 privacy findings.
+- `npm run content:card-topic-audit`: passed, 29 recordings, 29 generated
+  titles, 10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic
+  classification`.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  passed, 46/46.
+- `npm run bna:run:validate`, `npm run bna:run:next`,
+  `npm run bna:run:status`, and `npm run secrets:audit`: passed.
+- JSON/JSONL parse passed: 2200 payloads, BOM-tolerant.
+- Added-line privacy scan passed: no raw Drive URLs/IDs, secret literals, or
+  raw transcript bodies.
+- `git diff --check`: passed with Windows CRLF warnings only.
+- Commit `2a86311f87d3a6d8ffa20fbd7397d25d16a33442` pushed to PR #49.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011`
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041`
+
+Remaining: Issue #41 remains open. `DEC-20260626-101` still blocks any
+production parser/question/task/score/progress write, further Drive write
+beyond #83, raw transcript export, broad sync, class backfill, paid
+retranscription, worker retry, or other unsafe/external mutation. No `--apply`,
+production DB
+mutation, student portal write, score/progress write, production task write,
+Drive write, broad Drive sync, class backfill, raw transcript export, AI call,
+paid retranscription, send/publish/charge/access grant, or credential/account/
+DNS change was performed.
+
+## 2026-06-28T15:45:00+03:00 - Issue 41 Private Reparse Dry-run
+
+Captured `RAW-20260628-005`, the owner approval for a no-write private
+reparse/canonical-write dry-run for exactly jobs `21, 25, 26, 30, 31, 56, 57,
+58, 59, 71`.
+
+- Added `private-reparse` mode to `scripts/class-drive-intake-reconcile.cjs`.
+- The command refuses any job ID outside the exact approved list and forces
+  broad Drive listing off for this mode.
+- The DB snapshot path reads exact approved job IDs only.
+- Added deterministic private transcript dry-run extraction for sanitized
+  student-name mentions, question routing, task candidates, and
+  score/progress rows or no-op reasons.
+- Generated
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
+
+Dry-run summary:
+
+- Approved jobs: 10.
+- Inspected jobs: 10.
+- Missing jobs: 0.
+- Private transcript sources read: 10.
+- Student-name mentions: 261.
+- Question candidates: 1,285.
+- Personal question candidates: 36.
+- Class-question broadcast candidates: 1,249.
+- Existing skip candidates: 0.
+- Blocked-review candidates: 0.
+- Row-level dry-run rows: 10,149.
+- Internal task candidate rows: 119.
+- Score/progress rows: 1.
+- Score/progress no-op rows: 55.
+
+Verification:
+
+- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
+- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
+- `node --test tests/class-drive-intake-reconcile.test.js`: 23/23 passed.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
+  49/49 passed.
+- Private reparse evidence privacy scan: passed; no raw Drive URLs/IDs, no
+  raw transcript body fields, and no secret literals.
+- Source coverage refresh passed with 14 mapped statements and 0 missing
+  evidence.
+- `npm run bna:run:validate`, `npm run bna:run:next`, and
+  `npm run bna:run:status`: passed.
+- `npm run secrets:audit`: passed, 5,352 tracked paths and 0 secret-risk files.
+- JSON/JSONL parse passed: 2,203 payloads, BOM-tolerant.
+- Added-line privacy scan passed: 337,059 added/new lines, no raw Drive
+  URLs/IDs, secret literals, or raw transcript bodies.
+- `git diff --check`: passed with Windows CRLF warnings only.
+
+Closeout:
+
+- Commit `34e29b60` pushed to PR #49.
+- PR #49 remains draft.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334`.
+- `REQ-20260628-156` is Done for this no-write dry-run closeout.
+
+Remaining: production apply remains blocked by `DEC-20260626-101`. No
+`--apply`, production mutation, student portal write, score/progress write,
+production task write, class backfill, Drive create/update/delete/move, raw
+transcript export, AI call, paid retranscription, send/publish/charge/access
+grant, or credential/account/DNS change was performed.
+
+## 2026-06-28T16:45:00+03:00 - Issue 41 Production Apply Preflight
+
+Captured `RAW-20260628-006`, the goal-mode packet approving implementation of
+the guarded production apply lane and final no-write preflight for exactly jobs
+`21, 25, 26, 30, 31, 56, 57, 58, 59, 71`. This packet did not approve
+production mutation.
+
+- Confirmed PR #49 is open, draft, clean, and mergeable.
+- Confirmed Issue #41 is open.
+- Confirmed remote private-reparse evidence is readable and non-empty on the
+  PR branch: markdown `1,454,766` bytes and JSON `11,207,578` bytes.
+- Added `production-apply-preflight` to the class-drive reconciliation CLI. It
+  refuses any job IDs outside the exact approved list and requires snapshot
+  path, rollback path, and explicit approved action list.
+- Added guarded `production-apply --apply` refusal behavior; it still refuses
+  until a final owner approval is recorded after preflight.
+- Generated `PRODUCTION-APPLY-PREFLIGHT.md/json`,
+  `PRODUCTION-APPLY-SNAPSHOT-PLAN.md`, `PRODUCTION-APPLY-ROLLBACK-PLAN.md`,
+  `PRODUCTION-APPLY-BATCH-PLAN.md`, and
+  `PRODUCTION-APPLY-READBACK-PLAN.md`.
+
+Preflight summary:
+
+- Controls passed: true.
+- Blocking refusal checks: 0.
+- Production apply command may be run now: false.
+- Personal-question rows: 36.
+- Class-question broadcast candidates: 1,249.
+- Class-question broadcast row-level rows: 9,992.
+- Score/progress rows: 1.
+- Progress event rows deferred: 1.
+- Production task rows: 0.
+- Internal task candidates not applied: 119.
+
+Verification so far:
+
+- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
+- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
+- `node --test tests/class-drive-intake-reconcile.test.js`: 26/26 passed.
+- `node scripts/class-drive-intake-reconcile.cjs production-apply-preflight --write ...`: passed and performed no writes.
+- `node scripts/class-drive-intake-reconcile.cjs source-coverage --write --skip-drive ...`: passed with 15 mapped statements and 0 missing evidence.
+
+Closeout:
+
+- Commit `f48a9094` pushed to PR #49.
+- PR #49 remains draft.
+- PR comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826235797`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826236603`.
+- `REQ-20260628-157` is Done for this no-write preflight closeout.
+
+Remaining: actual production apply remains blocked by `DEC-20260626-101`. No
+`--apply`, production mutation, student portal write, score/progress write,
+production task write, class backfill, Drive write, raw transcript export, AI
+call, paid retranscription, send/publish/charge/access grant, or
+credential/account/DNS change was performed.
+
+## 2026-06-28T18:30:00+03:00 - Rabbi Drive Folder Structure Batch
+
+Captured `RAW-20260628-007`, the goal-mode packet approving targeted Drive
+folder create/reuse under exact One Time parent folder
+`04 Content and Media Intake`.
+
+- Ran `node scripts/audit-one-time-rabbi-drive-folders.mjs --write` with local
+  Google OAuth paths.
+- Confirmed the parent folder is the documented `04 Content and Media Intake`.
+- Created 3 folders: `04.05 Upload Here - Slideshows and Source Materials`,
+  `04.20 Source Material Review`, and `04.99 Needs Shloimie Decision`.
+- Reused 4 folders, including the existing `04.00 Upload Here - Rabbi Video
+  Drops` as the canonical videos/audio upload lane.
+- Found two `.pptx` files in the parent listing and classified them as
+  source material / slideshow references, excluded from transcription and
+  index-only until review.
+- Updated folder maps, workflow docs, setup-script alias reuse, backend map
+  helpers, Operations super-admin folder cards, Rabbi-facing upload links, and
+  focused tests.
+
+Evidence:
+
+- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`
+- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-creation-log.md`
+- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-ui-drive-links-audit.md`
+
+Verification so far:
+
+- `node --check server.js`: passed.
+- `node --check` changed helper/scripts: passed.
+- `node --test tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js tests/one-time-external-user-portal.test.js tests/instances/one-time-shared-review-data.test.js`: 55/55 passed.
+- `npm run bna:run:validate`, `npm run bna:run:next`, and
+  `npm run bna:run:status`: passed.
+- `npm run secrets:audit`: passed, 5,362 tracked paths and 0 tracked
+  secret-risk files.
+- JSON/JSONL parse passed for changed structured files.
+- Added-line privacy scan passed: no new secret literals, raw transcript
+  bodies, or raw Drive file/doc URLs; intentional Drive folder URLs are
+  allowed for this batch.
+- `git diff --check`: passed with Windows CRLF warnings only.
+
+Local server smoke blocker: `node server.js` requires `DATABASE_URL` in this
+worktree. No credentials were copied into the repo/worktree.
+
+Remaining: commit, push, PR #49 comment, and Issue #41 comment. Issue #41
+remains open and production apply remains blocked by `DEC-20260626-101`.
+
+## 2026-06-28T20:55:00+03:00 - Rabbi Drop-Off Email Notifier
+
+Captured `RAW-20260628-008` and made the Rabbi Scheller / One Time intake
+workflow operational around the two Rabbi-facing Drive folders.
+
+- Renamed the video/audio folder in Drive to
+  `04.00 Upload Here - Videos and Audio for Transcription`.
+- Confirmed the source-material folder remains
+  `04.05 Upload Here - Slideshows and Source Materials`.
+- Added `scripts/notify-one-time-drive-dropoffs.mjs`, local runner scripts,
+  and package scripts for dry-run, send, and baseline modes.
+- Registered local Windows scheduled task `BNA One Time Drive Dropoff Email`
+  to scan the two upload folders every 5 minutes and email the operator when
+  new files appear.
+- Added notifier helper/test coverage for direct original-file download links,
+  PowerPoint-vs-Google-Slides duplicate suppression, and explicit send mode.
+- Added repo-safe evidence at
+  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md`.
+
+Verification:
+
+- `node --check src/lib/bna/one-time-drive-dropoff-notifier.js`: passed.
+- `node --check scripts/notify-one-time-drive-dropoffs.mjs`: passed.
+- `node --check scripts/audit-one-time-rabbi-drive-folders.mjs`: passed.
+- `node --test tests/one-time-drive-dropoff-notifier.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js`: 18/18 passed.
+- `npm run bna:run:validate`: passed with remaining operator decisions only.
+- `npm run bna:run:next`: passed; no unblocked executable batch.
+- `npm run bna:run:status`: passed.
+- `npm run secrets:audit`: passed, 5,372 tracked paths and 0 tracked secret-risk files.
+- JSON parse passed for 6 changed JSON files.
+- Added-line privacy scan passed with 0 findings.
+- `git diff --check`: passed with Windows CRLF warnings only.
+- Task Scheduler readback: task enabled, ready, last result `0`, every 5 minutes.
+- Commit `65ae09b5` pushed to PR #49.
+- PR #49 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837`.
+- Issue #41 comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670`.
+- Issue #41 remains open and production apply remains blocked by
+  `DEC-20260626-101`.
+
+Guardrails honored: no production apply, no `--apply`, no production DB
+mutation, no student portal/question/score/task write, no class backfill, no
+raw transcript export, no AI call, no paid retranscription, no Drive file
+move/delete, no public publish/social/newsletter send, no access grant, and no
+credential/account/DNS change. The only send performed was the requested
+operator Gmail setup-test/notification path.
+
+## 2026-06-30 - Issue #41 final guarded apply completed
+
+- Captured final owner approval as
+  `raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md`.
+- Replaced the old general-class-question fanout path with class-scoped
+  `bna_one_time_question_reviews` rows.
+- Added `scripts/class-drive-intake-apply-approved.cjs` with exact approval ID,
+  count, privacy, fanout, readback, and idempotency gates.
+- Generated final owner decision, question/score approval, task/research
+  approval, parser repair, score no-op, dry-run, apply, readback, and
+  idempotency evidence under
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/`.
+- Ran the approved production apply. Readback found 7 matched personal
+  question rows, 6 class-scoped general question-review rows, 25 private
+  task/research review rows, 0 score/progress rows, and 0 class-question fanout
+  rows.
+- Refreshed privacy-safe digest/card evidence: 29 recordings, raw bodies false,
+  0 privacy findings.
+
+Verification:
+
+- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
+- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
+- `node --check scripts/class-drive-intake-apply-approved.cjs`: passed.
+- `node --test tests/class-drive-intake-apply-approved.test.js tests/class-drive-intake-reconcile.test.js`: passed.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js tests/class-drive-intake-apply-approved.test.js`: 55/55 passed.
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw
+  bodies false, 0 privacy findings.
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles, 10
+  explicit parser-backlog items, 0 routing gaps, 0 topic-classification gaps.

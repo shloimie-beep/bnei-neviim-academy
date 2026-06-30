@@ -1,0 +1,52 @@
+{
+  "generated_at": "2026-06-28T11:52:04.755Z",
+  "mode": "apply_lane_design_only_not_executed",
+  "current_apply_lane_status": "refuses_mutation_by_design",
+  "production_apply_executed": false,
+  "dry_run_default": true,
+  "required_owner_gate_phrase": "APPLY_GUARDED_CLASS_BACKFILL",
+  "exact_job_ids_required": true,
+  "planned_job_ids": [
+    21,
+    25,
+    26,
+    30,
+    31,
+    56,
+    57,
+    58,
+    59,
+    71
+  ],
+  "dry_run_command": "node scripts/class-drive-intake-reconcile.cjs backfill --jobs 21-71 --out-dir <evidence-dir>",
+  "apply_command_template": "node scripts/class-drive-intake-reconcile.cjs backfill --apply --gate APPLY_GUARDED_CLASS_BACKFILL --jobs <exact-approved-job-range> --snapshot <snapshot-file> --rollback-out <rollback-file>",
+  "required_controls": [
+    "explicit owner approval naming job IDs and actions",
+    "production DB snapshot before write",
+    "rollback file generated before commit",
+    "row-level before/after evidence",
+    "idempotent natural keys",
+    "small batch support",
+    "dry-run remains default"
+  ],
+  "refusal_conditions": [
+    "raw transcript body would be exported to GitHub",
+    "student match is ambiguous",
+    "score/progress row lacks before/after",
+    "target schema is unknown",
+    "snapshot path is missing",
+    "rollback path is missing",
+    "approval scope does not exactly match job IDs/actions",
+    "Drive write or broad sync is requested by the apply lane"
+  ],
+  "success_planning_path": {
+    "safe_to_apply_if_separately_approved": true,
+    "expected_row_counts": {
+      "bna_accountability_events": 917
+    },
+    "row_level_change_plan_rows": 919,
+    "blocking_ambiguities": 0,
+    "dry_run_performs_no_writes": true
+  },
+  "implementation_note": "This packet documents the guarded apply contract but leaves the CLI mutation path disabled until an exact owner-approved implementation step is requested."
+}

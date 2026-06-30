@@ -1,0 +1,222 @@
+{
+  "generated_at": "2026-06-28T13:15:43.339Z",
+  "source_id": "RAW-20260626-004+RAW-20260628-004+RAW-20260628-005+RAW-20260628-006",
+  "source_path": "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json",
+  "no_production_mutation": true,
+  "source_statement_count": 15,
+  "mapped_statement_count": 15,
+  "unmapped_executable_statement_count": 0,
+  "missing_evidence_count": 0,
+  "by_requirement": {
+    "REQ-20260626-116": 1,
+    "REQ-20260626-119": 1,
+    "REQ-20260626-121": 1,
+    "REQ-20260626-127": 1,
+    "REQ-20260626-128": 1,
+    "REQ-20260626-130": 1,
+    "REQ-20260626-131": 1,
+    "REQ-20260628-143": 1,
+    "REQ-20260628-145": 1,
+    "REQ-20260628-147": 1,
+    "REQ-20260628-148": 1,
+    "REQ-20260628-149": 1,
+    "REQ-20260628-150": 1,
+    "REQ-20260628-154": 1,
+    "REQ-20260628-157": 1
+  },
+  "statements": [
+    {
+      "statement_id": "SRC-20260626-116",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Create and activate the transcript/Drive digest rebuild run with raw source/register evidence.",
+      "requirement_id": "REQ-20260626-116",
+      "classification": "requirement",
+      "evidence_paths": [
+        "raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md",
+        "ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/requirements.json",
+        "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260626-119",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Build privacy-safe digest export and block raw transcript export by default.",
+      "requirement_id": "REQ-20260626-119",
+      "classification": "requirement",
+      "evidence_paths": [
+        "src/lib/bna/transcript-digest-export.js",
+        "scripts/export-content-digests.cjs",
+        "tests/transcript-digest-export.test.js"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260626-121",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Generate repo-safe transcript digest memory for 29 recordings without raw transcript bodies.",
+      "requirement_id": "REQ-20260626-121",
+      "classification": "requirement",
+      "evidence_paths": [
+        "content-memory/transcript-digests/manifest.json",
+        "content-memory/transcript-digests/index.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260626-127",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Verify the Issue #41 Drive transcript library addendum with read-only evidence.",
+      "requirement_id": "REQ-20260626-127",
+      "classification": "requirement",
+      "evidence_paths": [
+        "raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260626-128",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Run the approved #83-only private Drive transcript sync and record sanitized readback proof.",
+      "requirement_id": "REQ-20260626-128",
+      "classification": "requirement",
+      "evidence_paths": [
+        "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260626-130",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Audit all 29 digest recordings for content-card and topic-filter readiness.",
+      "requirement_id": "REQ-20260626-130",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260626-131",
+      "source_id": "RAW-20260626-004",
+      "source_statement": "Repair Operations Content cards and normalized topic filters without exposing raw transcript bodies.",
+      "requirement_id": "REQ-20260626-131",
+      "classification": "requirement",
+      "evidence_paths": [
+        "src/lib/bna/content-card-view-model.js",
+        "public/operations.html",
+        "tests/content-card-view-model.test.js",
+        "tests/operations-content-library-taxonomy.test.js",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-143",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Refresh class-question broadcast dry-run evidence and keep production apply blocked.",
+      "requirement_id": "REQ-20260628-143",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-145",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Produce a repo-safe catch-up census across all 29 digest recordings.",
+      "requirement_id": "REQ-20260628-145",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKLOG-CATCHUP-CENSUS.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-147",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Emit no-write score/progress catch-up plan with explicit no-op reasons.",
+      "requirement_id": "REQ-20260628-147",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/SCORE-PROGRESS-CATCHUP-PLAN.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-148",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Emit no-write task/action catch-up plan with canonical keys and dedupe rules.",
+      "requirement_id": "REQ-20260628-148",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-ACTION-CATCHUP-PLAN.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-149",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Emit research/content catch-up plan proving card readiness without raw bodies.",
+      "requirement_id": "REQ-20260628-149",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/RESEARCH-CONTENT-CATCHUP-PLAN.json"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-150",
+      "source_id": "RAW-20260628-004",
+      "source_statement": "Document apply-lane owner gate, snapshot, rollback, row evidence, dedupe, and refusal controls without executing apply.",
+      "requirement_id": "REQ-20260628-150",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/APPLY-LANE-DESIGN.json",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-154",
+      "source_id": "RAW-20260628-005",
+      "source_statement": "Produce exact-scope private reparse/canonical-write dry-run evidence for the 10 approved Needs-parse jobs without raw transcript bodies or production mutation.",
+      "requirement_id": "REQ-20260628-154",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.json",
+        "raw-input/RAW-20260628-005-private-reparse-dry-run-approval.md"
+      ],
+      "evidence_present": true
+    },
+    {
+      "statement_id": "SRC-20260628-157",
+      "source_id": "RAW-20260628-006",
+      "source_statement": "Implement and verify a no-write production apply preflight with exact job scope, snapshot/rollback requirements, small-batch commands, dedupe checks, and readback plan.",
+      "requirement_id": "REQ-20260628-157",
+      "classification": "requirement",
+      "evidence_paths": [
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.json",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-SNAPSHOT-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-ROLLBACK-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-BATCH-PLAN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-READBACK-PLAN.md",
+        "raw-input/RAW-20260628-006-production-apply-preflight-packet.md"
+      ],
+      "evidence_present": true
+    }
+  ]
+}

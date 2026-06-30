@@ -1,6 +1,9 @@
 const REVIEW_ACCESS_CODE = 'TEST-ONETIME-REVIEW-ACCESS';
 const WORKSPACE_KEY = 'rabbi_sheller_provider';
 const PROJECT_KEY = 'one_time_mishnah_class';
+const {
+  rabbiFacingDriveLinksFromMap,
+} = require('../../lib/bna/one-time-drive-intake-map');
 
 function joinUrl(baseUrl, path) {
   const normalizedBase = String(baseUrl || '').replace(/\/+$/, '');
@@ -43,6 +46,32 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
     email_preview: joinUrl(baseUrl, '/one-time-email-review.html'),
     one_time_home: joinUrl(baseUrl, '/one-time'),
   };
+  const driveDropoffLinks = rabbiFacingDriveLinksFromMap({
+    root: {
+      id: '16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2',
+      name: 'One Time Mishnah Class - Rabbi Elie Scheller',
+      webViewLink: 'https://drive.google.com/drive/folders/16cfBPM8dbxKmMPOB8PcnGybU7BQUT7L2',
+    },
+    content_media_folder: {
+      id: '1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv',
+      name: '04 Content and Media Intake',
+      webViewLink: 'https://drive.google.com/drive/folders/1M9E7tGrOMPSa3g6YoKckw0uKiwDCswXv',
+    },
+    lanes: [
+      {
+        key: 'videoDrop',
+        id: '1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t',
+        webViewLink: 'https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t',
+        actual_name: '04.00 Upload Here - Rabbi Video Drops',
+      },
+      {
+        key: 'sourceMaterials',
+        id: '15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp',
+        webViewLink: 'https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp',
+        actual_name: '04.05 Upload Here - Slideshows and Source Materials',
+      },
+    ],
+  });
 
   const student = {
     id: 'TEST-ONETIME-STUDENT-001',
@@ -722,6 +751,7 @@ function buildOneTimeSharedReviewData({ baseUrl = 'http://localhost:3000', check
       login_access: loginAccess,
       crm_workspace: crmWorkspace,
       content_workspace: contentWorkspace,
+      drive_dropoff_links: driveDropoffLinks,
       automation_center: automationCenter,
       settings_center: settingsCenter,
       student_portal_boundary: studentPortalBoundary,

@@ -6,25 +6,77 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
+- [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
   Transcript/Drive/class intake digest rebuild plus Issue #41 Drive addendum,
   approved #83 sync, and Drive-backed parser/backlog repair goal.
-  Current status: #83 private Drive doc sync done; PR #45 and follow-up PR #46
+  Final status: Issue #41 production closeout is applied and read back under
+  `RAW-20260630-001`. The old 917-row/912-broadcast class-question plan was
+  replaced with the owner-approved final scope: 13 question rows total, 7
+  student-specific matched rows, 6 class-scoped general question-review rows,
+  0 student-match blockers, 0 score/progress/grading rows, and 25 private
+  task/research review rows. Guarded apply command
+  `node scripts/class-drive-intake-apply-approved.cjs --apply --approval-id ISSUE41-FINAL-SHLOIMIE-QUESTION-TASK-PARSER-APPLY-NO-SCORE-PROGRESS`
+  committed successfully; readback found 7 personal question rows, 6
+  class-scoped review rows, 25 private-review task rows, 0 score/progress
+  rows, and 0 class-question fanout rows. Idempotency readback passed.
+  Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-RESULT.md`.
+  Historical status: #83 private Drive doc sync done; PR #45 and follow-up PR #46
   are merged and deployed to Railway `fd93be96-8bec-4c06-b42f-c53d177eab40`.
   Issue #41 status comment posted:
   `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
   Live readback now returns all 29 digest cards with job #83's clean generated
   title, 10 explicit `Needs parse` jobs, normalized topic/status data, and no
   raw transcript text inside `digest_card` payloads. Fresh read-only backlog
-  audit remains `PARTIAL` with 10 jobs needing parse/reparse review, 13
-  student-question rows, 6 question rows needing student-match review, and 0
-  safe score/progress apply rows. No production apply command is currently
-  safe; the no-write owner decision packet is
+  audit remains `PARTIAL` with 10 jobs needing parse/reparse review. The
+  class-question dry-run now resolves the old human-match question blocker by
+  routing unmatched/ambiguous question candidates as class questions for all
+  active students: 917 future `bna_accountability_events` writes are planned if
+  a separate production apply path is approved, including 912 class-question
+  broadcast inserts, 5 matched student-question inserts, and 2 existing rows
+  skipped. The PR #49 catch-up package now adds repo-safe no-write evidence:
+  `BACKLOG-CATCHUP-CENSUS` covers all 29 digest recordings with 10 `Needs
+  parse` jobs, 29 ready research/content cards, 13 question candidates, 34
+  internal task/action candidates, and 0 score/progress row-level changes;
+  `APPLY-LANE-DESIGN` documents the owner gate/snapshot/rollback/refusal
+  controls while keeping production apply disabled. Shloimie then approved a
+  private-source, no-write reparse/canonical-write dry-run for exactly jobs
+  `21, 25, 26, 30, 31, 56, 57, 58, 59, 71`; the generated sanitized evidence
+  inspected all 10 private transcript sources, found 261 student-name mentions,
+  1,285 question candidates, 36 matched personal-question candidates, 1,249
+  class-question broadcast candidates, 119 internal task candidates, 1
+  score/progress row, and 55 concrete score/progress no-op reasons. No
+  production apply command has been approved or implemented; the no-write owner decision
+  packet is
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`.
-  Owner approval is still required for any production parser/question/task/
-  score/progress write or other unsafe/raw/external path. Done:
+  Private reparse dry-run evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
+  Pushed commit `34e29b60` to PR #49 and posted the sanitized dry-run closeout
+  to PR #49 and Issue #41; PR #49 remains draft and Issue #41 remains open.
+  The production apply preflight is now implemented, pushed, and commented with
+  zero writes:
+  `PRODUCTION-APPLY-PREFLIGHT` records 0 blocking refusal checks, exact later
+  batch counts of 36 personal-question rows, 9,992 class-question broadcast
+  rows, 1 score/progress row, and 0 production task rows, plus the required
+  snapshot/rollback/readback plans. `production-apply --apply` still refuses
+  until final owner approval is recorded.
+  The Rabbi/One Time Drive folder structure batch is now locally implemented
+  under `RAW-20260628-007`: the exact parent `04 Content and Media Intake` was
+  confirmed, 3 missing subfolders were created, 4 existing folders were reused,
+  the uploaded `.pptx` files were classified as source material with no
+  transcription, and Operations/Rabbi UI links were added. Video/audio link:
+  `https://drive.google.com/drive/folders/1CiZImvpk8HjLDF0B5k9XyCuIt0p2tx8t`.
+  Slides/source-material link:
+  `https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp`.
+  Evidence:
+  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`.
+  The exact Issue #41 production parser/question/task closeout approval was
+  consumed and verified. Any future raw transcript export, broad Drive sync,
+  additional Drive write, class backfill, AI call, send/publish, score/progress
+  write, or other unrelated production mutation still requires a fresh exact
+  owner approval after dry-run evidence. Done:
   active execution run created, Drive-first raw storage and GitHub digest
   policy documented, repo-safe digest exporter added, default raw transcript
   export blocked, 29 body-free recording digests generated, and sanitized
@@ -40,12 +92,13 @@ not authorize active GHL runtime paths.
   tests, content-card/topic-filter tests, digest privacy scan 0 findings,
   content-card topic audit, Drive sync dry-run/no-AI, approved #83
   sync/readback, read-only Drive listing, fresh read-only intake audit, deploy,
-  Railway doctor, live app/content/taxonomy smokes, live content-card readback, and
-  active run validation. Remaining decision: `DEC-20260626-101` keeps raw
-  transcript-body export, any further Drive writes beyond #83, production
-  reparse/canonical writes, worker retry, paid retranscription, class backfill,
-  broad Drive sync, and other production mutations blocked until Shloimie
-  explicitly approves an exact next action. Register:
+  Railway doctor, live app/content/taxonomy smokes, live content-card readback,
+  class-question broadcast dry-run evidence, and active run validation.
+  Remaining future guardrail: `DEC-20260626-101` keeps raw transcript-body
+  export, any further Drive writes beyond approved targeted batches, worker
+  retry, paid retranscription, class backfill, broad Drive sync, and other
+  unrelated production mutations blocked until Shloimie explicitly approves an
+  exact next action. Register:
   `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`.
 - [x] `RAW-20260626-004` / `REQ-20260626-116` through
   `REQ-20260626-120`: Canonical Issue #24 owner follow-up for helper/task

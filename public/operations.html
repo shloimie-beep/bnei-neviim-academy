@@ -23738,6 +23738,75 @@
             return map && typeof map === 'object' ? map : {};
         }
 
+        function driveFolderLinksForMap(map = {}) {
+            if (Array.isArray(map.folder_links) && map.folder_links.length) return map.folder_links;
+            const root = map.root || {};
+            const content = map.content_media_folder || {};
+            const lanes = Array.isArray(map.lanes) ? map.lanes : [];
+            const rootLink = root.id || root.webViewLink ? [{
+                key: 'projectRoot',
+                title: root.name || 'Project root folder',
+                purpose: 'Project root folder for the One Time Mishnah Class workspace.',
+                intended_audience: 'super_admin_only',
+                lane_type: 'project_root',
+                webViewLink: root.webViewLink,
+                status: root.id ? 'mapped' : 'missing',
+                triggers_transcription: false,
+                source_material_only: false
+            }] : [];
+            const parentLink = content.id || content.webViewLink ? [{
+                key: 'contentMedia',
+                title: content.name || '04 Content and Media Intake',
+                purpose: 'Parent folder for Rabbi content/media intake and review lanes.',
+                intended_audience: 'super_admin_only',
+                lane_type: 'parent',
+                webViewLink: content.webViewLink,
+                status: content.id ? 'mapped' : 'missing',
+                triggers_transcription: false,
+                source_material_only: false
+            }] : [];
+            return rootLink.concat(parentLink).concat(lanes.map(lane => ({
+                key: lane.key,
+                title: lane.name || lane.key || 'Drive lane',
+                actual_title: lane.actual_name || lane.name || '',
+                purpose: lane.purpose || lane.backend_use || '',
+                handling: lane.handling || '',
+                intended_audience: lane.intended_audience || (lane.rabbi_facing ? 'rabbi_facing' : 'internal'),
+                lane_type: lane.lane_type || lane.drive_stage || '',
+                webViewLink: lane.webViewLink,
+                status: lane.status || (lane.id ? 'mapped' : 'missing'),
+                triggers_transcription: Boolean(lane.triggers_transcription),
+                source_material_only: Boolean(lane.source_material_only),
+                rabbi_facing: Boolean(lane.rabbi_facing),
+                copy_label: lane.copy_label || ''
+            })));
+        }
+
+        function renderDriveFolderLinkCard(folder = {}) {
+            const url = folder.webViewLink || '';
+            const copyLabel = folder.copy_label || 'Copy link';
+            const titleSuffix = folder.actual_title && folder.actual_title !== folder.title
+                ? `Actual Drive title: ${folder.actual_title}`
+                : '';
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(folder.title || folder.key || 'Drive folder')}</div>
+                    <div class="content-card-meta">${escapeHtml([folder.status || 'mapped', folder.intended_audience || '', folder.lane_type || ''].filter(Boolean).join(' / '))}</div>
+                    <p class="event-meta">${escapeHtml(folder.purpose || folder.handling || '')}</p>
+                    ${titleSuffix ? `<p class="event-meta">${escapeHtml(titleSuffix)}</p>` : ''}
+                    <div class="service-meta" style="margin-top:8px;">
+                        <span class="status-pill">${folder.triggers_transcription ? 'Triggers transcription' : 'No transcription trigger'}</span>
+                        <span class="status-pill">${folder.source_material_only ? 'Source-material only' : 'Not source-only'}</span>
+                        <span class="status-pill">${folder.rabbi_facing ? 'Rabbi-facing' : 'Super-admin/internal'}</span>
+                    </div>
+                    <div class="task-actions">
+                        ${url ? `<a class="task-action primary" href="${escapeHtml(url)}" target="_blank" rel="noopener">Open folder</a>` : '<button class="task-action" disabled>Missing link</button>'}
+                        ${url ? `<button class="task-action" type="button" onclick="copyText(event, '${escapeHtml(url)}')">${escapeHtml(copyLabel)}</button>` : ''}
+                    </div>
+                </article>
+            `;
+        }
+
         function defaultOneTimeAppAccessReadiness() {
             return {
                 status: 'blocked_pending_owner_approved_external_app_access',
@@ -23855,6 +23924,7 @@
         function renderDriveSocialIngestionSettings() {
             const map = currentDriveSocialIngestionMap();
             const lanes = Array.isArray(map.lanes) ? map.lanes : [];
+            const folderLinks = driveFolderLinksForMap(map);
             const guard = map.login_release_guard || {};
             const requiredBeforeLogin = Array.isArray(guard.requiredBeforeSendingLogin) ? guard.requiredBeforeSendingLogin : [];
             const blockers = Array.isArray(guard.currentKnownBlockers) ? guard.currentKnownBlockers : [];
@@ -23872,16 +23942,9 @@
                         ${renderSettingsControlRow('Drive fields', [backend.drive_file_id_field, backend.drive_folder_id_field, backend.drive_stage_field].filter(Boolean).join(', ') || 'Drive fields pending', 'Drive file, folder, and stage are stored on content jobs for ingestion traceability.', 'Mapped')}
                         ${renderSettingsControlRow('Social guard', backend.social_publish_guard || 'Approval required before any social write.', 'Buffer/social drafts and publish-now actions remain explicit approval paths.', 'Guarded')}
                     </div>
-                    ${lanes.length ? `
+                    ${folderLinks.length ? `
                         <div class="content-section-grid" style="margin-top:12px;">
-                            ${lanes.map(lane => `
-                                <article class="content-card">
-                                    <div class="content-card-title">${escapeHtml(lane.name || lane.key)}</div>
-                                    <div class="content-card-meta">${escapeHtml(lane.drive_stage || 'drive stage pending')}</div>
-                                    <p class="event-meta">${escapeHtml(lane.purpose || lane.backend_use || '')}</p>
-                                    ${lane.webViewLink ? `<a class="task-action" href="${escapeHtml(lane.webViewLink)}" target="_blank" rel="noopener">Open Drive Lane</a>` : ''}
-                                </article>
-                            `).join('')}
+                            ${folderLinks.map(renderDriveFolderLinkCard).join('')}
                         </div>
                     ` : '<div class="empty-state">Drive/social lanes are not loaded yet. Run the One Time Drive setup script to create and map folders.</div>'}
                     <div class="content-section-grid" style="margin-top:12px;">
