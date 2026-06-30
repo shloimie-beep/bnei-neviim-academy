@@ -1,0 +1,165 @@
+{
+  "started_at": "2026-06-30T12:28:31.153Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "health endpoint reachable",
+      "ok": true,
+      "duration_ms": 678,
+      "details": {
+        "ok": true
+      }
+    },
+    {
+      "name": "Resend health separates provider, sender, and domain readiness",
+      "ok": true,
+      "duration_ms": 975,
+      "details": {
+        "configured": true,
+        "connected": true,
+        "sender_configured": true,
+        "domain_configured": true,
+        "domain_verified": false,
+        "send_allowed": false,
+        "domain": "bneineviimacademy.org"
+      }
+    },
+    {
+      "name": "Resend domain endpoint is readable or safely blocked",
+      "ok": true,
+      "duration_ms": 371,
+      "details": {
+        "status": 200,
+        "domains_count": 1
+      }
+    },
+    {
+      "name": "Resend webhook events endpoint hides raw payload by default",
+      "ok": true,
+      "duration_ms": 236,
+      "details": {
+        "events_count": 0,
+        "raw_payload_hidden": true
+      }
+    },
+    {
+      "name": "Configured Resend domain status endpoint is readable or safely blocked",
+      "ok": true,
+      "duration_ms": 354,
+      "details": {
+        "status": 200,
+        "domain": "bneineviimacademy.org",
+        "domains_count": 1
+      }
+    },
+    {
+      "name": "Operations Email UX runtime at 1024px",
+      "ok": true,
+      "duration_ms": 10568,
+      "details": {
+        "width": 1024,
+        "role": "super_admin",
+        "scope": "all",
+        "email": {
+          "current_module": "communications",
+          "active_filter": "page",
+          "has_workspace": true,
+          "has_readiness_gates": true,
+          "has_draft_editor": true,
+          "has_from": true,
+          "has_reply_to": true,
+          "has_template": true,
+          "has_related_record": true,
+          "mentions_provider_account": true,
+          "mentions_sender_identity": true,
+          "mentions_domain_readiness": true,
+          "mentions_send_confirmation": true,
+          "mentions_no_send": true,
+          "forbidden_crm_terms": [],
+          "enabled_send_buttons": [],
+          "send_buttons": [],
+          "page_overflow": false,
+          "client_width": 1024,
+          "scroll_width": 1024
+        },
+        "settings": {
+          "has_panel": true,
+          "has_webhook_events": true,
+          "mentions_provider_connection": true,
+          "mentions_sender_identity": true,
+          "mentions_domain": true,
+          "mentions_raw_hidden": true,
+          "enabled_email_send_buttons": [],
+          "email_buttons": [],
+          "page_overflow": false,
+          "client_width": 1024,
+          "scroll_width": 1024
+        },
+        "console_errors": [
+          "Failed to load resource: the server responded with a status of 500 ()",
+          "Failed to load resource: the server responded with a status of 500 ()"
+        ]
+      }
+    },
+    {
+      "name": "Operations Email UX runtime at 390px",
+      "ok": true,
+      "duration_ms": 14191,
+      "details": {
+        "width": 390,
+        "role": "super_admin",
+        "scope": "all",
+        "email": {
+          "current_module": "communications",
+          "active_filter": "page",
+          "has_workspace": true,
+          "has_readiness_gates": true,
+          "has_draft_editor": true,
+          "has_from": true,
+          "has_reply_to": true,
+          "has_template": true,
+          "has_related_record": true,
+          "mentions_provider_account": true,
+          "mentions_sender_identity": true,
+          "mentions_domain_readiness": true,
+          "mentions_send_confirmation": true,
+          "mentions_no_send": true,
+          "forbidden_crm_terms": [],
+          "enabled_send_buttons": [],
+          "send_buttons": [],
+          "page_overflow": false,
+          "client_width": 390,
+          "scroll_width": 390
+        },
+        "settings": {
+          "has_panel": true,
+          "has_webhook_events": true,
+          "mentions_provider_connection": true,
+          "mentions_sender_identity": true,
+          "mentions_domain": true,
+          "mentions_raw_hidden": true,
+          "enabled_email_send_buttons": [],
+          "email_buttons": [],
+          "page_overflow": false,
+          "client_width": 390,
+          "scroll_width": 390
+        },
+        "console_errors": [
+          "Failed to load resource: the server responded with a status of 500 ()",
+          "Failed to load resource: the server responded with a status of 500 ()"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "resend_health_checked": true,
+    "resend_domain_endpoint_readable": true,
+    "resend_events_endpoint_readable": true,
+    "provider_sender_domain_separated": true,
+    "external_send_performed": false,
+    "runtime_widths_checked": [
+      1024,
+      390
+    ]
+  }
+}

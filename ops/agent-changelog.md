@@ -27474,3 +27474,45 @@ Verification:
 - Guardrails preserved: no email/test email, WhatsApp, SMS, Telegram, Buffer,
   campaign, DNS, payment, access, external CRM/GHL write, secret exposure, or
   raw received-email body commit was performed by this stacking step.
+
+## 2026-06-30 - Current systems closeout merged, deployed, and recorded
+
+- Created the canonical current-systems closeout register and audit for
+  `RAW-20260630-005`:
+  `tasks-pending/2026-06-30-current-systems-closeout.md` and
+  `ops/system-audits/2026-06-30-current-systems-closeout.md`.
+- Created execution run
+  `ops/execution-runs/2026-06-30-current-systems-closeout` and pointed
+  `ops/execution-runs/latest.json` at it so the active run reflects the current
+  goal instead of the older transcript-drive digest run.
+- Merged release PR #56 into `master` with merge commit `98cfc464` and
+  deployed Railway production service `skillful-motivation` with deployment
+  `6257a4af-bb62-4fd4-b1b5-aff1ec057f40`.
+- Closed PR #52 and PR #55 as superseded by PR #56.
+- Verified production with app, content research, operations helper,
+  communications screening, content topic filter, class upload trace,
+  Email/Resend no-send, and One Time CRM contacts live smokes.
+- Left Resend live inbound/outbound completion blocked on external
+  `RESEND_FROM_EMAIL`, `RESEND_WEBHOOK_SECRET`, webhook subscription, signed
+  inbound replay, and explicit real-send recipient approval.
+
+Verification:
+
+- Focused node checks and tests on the release branch passed, including 45/45
+  Resend, communications, and content tests.
+- `npm run content:card-topic-audit -- --out-dir ops/class-drive-intake/2026-06-30-content-topic-routing-closeout`: passed.
+- `npm run watchdog:security`, `npm run watchdog:communications`, and
+  `npm run watchdog:content`: passed.
+- `npm run app:smoke`: passed after deployment.
+- `npm run app:smoke:email-resend-ux`: passed with
+  `external_send_performed=false`.
+- `npm run app:smoke:one-time-crm-contacts-ux`: passed with 1591 scoped leads
+  and 112 scoped communications.
+- `npm run app:smoke:class-upload-trace`: passed for job #78, with no transcript
+  body written to the report.
+- `npm run bna:run:validate`: passed for
+  `ops/execution-runs/2026-06-30-current-systems-closeout` with 7 done and 1
+  blocked requirement.
+- `npm run bna:run:next`: passed; no unblocked executable batch remains.
+- `npm run bna:run:blockers`: passed; only `REQ-20260630-203` remains blocked
+  on Resend/account-owner action.

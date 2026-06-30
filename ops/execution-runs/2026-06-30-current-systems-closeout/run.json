@@ -1,0 +1,27 @@
+{
+  "run_id": "2026-06-30-current-systems-closeout",
+  "title": "Current Systems Closeout Before UI Correction",
+  "created_at": "2026-06-30T12:31:10.015Z",
+  "updated_at": "2026-06-30T12:35:00.000Z",
+  "active": true,
+  "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
+  "requirements_file": "requirements.json",
+  "raw_id": "RAW-20260630-005",
+  "workspace_key": "bna",
+  "project_key": "current_systems_closeout",
+  "related_decisions": [
+    "DEC-20260630-201",
+    "EMAIL-SMOKE-20260630-201",
+    "DEC-20260626-101"
+  ],
+  "guardrails": [
+    "No primary dirty worktree changes reverted",
+    "No real email/test email send without explicit safe recipient approval",
+    "No WhatsApp/SMS/Telegram/Buffer/campaign send",
+    "No DNS/account/payment/access mutation",
+    "No external CRM/GHL runtime write",
+    "No raw transcript body export",
+    "No raw private received-email body commit",
+    "No Drive write/backfill/AI/paid transcription/score/progress/grading write"
+  ]
+}
