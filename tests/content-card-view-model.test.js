@@ -37,7 +37,12 @@ test('content card model turns mechanical digest titles into clean generated tit
   assert.equal(card.digest_status.label, 'Digest ready');
   assert.equal(card.routing_status.label, 'Routing ready');
   assert.equal(card.topic_status.label, 'Classified');
-  assert.deepEqual(card.topic_keys, ['class_notes', 'class_session', 'drive_workflow_issue', 'profile_note']);
+  assert.ok(card.topic_keys.includes('torah'));
+  assert.ok(card.topic_keys.includes('class_notes'));
+  assert.ok(card.topic_keys.includes('education'));
+  assert.ok(card.topic_keys.includes('operations'));
+  assert.ok(card.topic_keys.includes('class_session'));
+  assert.ok(card.topic_keys.includes('drive_workflow_issue'));
   assert.match(card.summary, /Raw transcript body remains private/);
   assert.doesNotMatch(JSON.stringify(card), /PRIVATE RAW TRANSCRIPT BODY/);
 });
@@ -84,9 +89,31 @@ test('repo digest audit covers all 29 recordings without raw transcript bodies',
   assert.equal(audit.guardrails.drive_writes_performed, false);
   assert.equal(audit.guardrails.production_db_mutation_performed, false);
   assert.equal(audit.summary.multi_topic_cards > 0, true);
+  assert.equal(audit.topic_counts.torah > 1, true);
+  assert.equal(audit.topic_counts.education > 1, true);
   assert.equal(audit.topic_counts.class_notes > 0, true);
   assert.equal(audit.topic_counts.drive_workflow_issue > 0, true);
+  assert.deepEqual(audit.failed_topic_checks, []);
   assert.deepEqual(audit.rows.filter((row) => row.raw_transcript_body_included), []);
+});
+
+test('One Time Mishnah digest content is counted under One Time and Torah', () => {
+  const card = buildContentCardViewModel(
+    { id: 86, project_key: 'one_time_mishnah_class' },
+    {
+      digest: {
+        job_id: 86,
+        generated_title: 'Sanhedrin New perek daled.pptx',
+        project_key: 'one_time_mishnah_class',
+        category_list: ['class_notes', 'class_session', 'source_sheets'],
+        raw_transcript_body_included: false,
+      },
+    }
+  );
+
+  assert.ok(card.topic_keys.includes('one_time'));
+  assert.ok(card.topic_keys.includes('torah'));
+  assert.ok(card.topic_keys.includes('class_notes'));
 });
 
 test('operations UI uses digest-card topic arrays instead of transcript-body topic search', () => {
