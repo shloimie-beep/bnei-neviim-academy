@@ -3,10 +3,9 @@
   "title": "Current Systems Closeout Before UI Correction",
   "updated_at": "2026-06-30T12:35:00.000Z",
   "git_refs": {
-    "branch": "codex/current-systems-closeout-records-20260630",
-    "pr_number": "records-pr-pending",
-    "pr_branch": "codex/current-systems-closeout-records-20260630",
-    "expected_remote_head": "98cfc4649e4bc52009a1aac9ee4616c1f5eeb272"
+    "pr_number": 57,
+    "pr_url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/57",
+    "pr_branch": "codex/current-systems-closeout-records-20260630"
   },
   "sources": [
     {
@@ -481,7 +480,7 @@
       "verification": [
         "PR #56 readback: MERGED.",
         "PR #52 and PR #55 closed as superseded by PR #56.",
-        "Records branch based on origin/master after merge commit 98cfc464."
+        "Records PR #57 merged with commit 668072eb85399754f3ce27af228f66912b6d161c."
       ],
       "implementation_files": [
         "ops/system-audits/2026-06-30-current-systems-closeout.md",
