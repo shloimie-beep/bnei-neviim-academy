@@ -1,0 +1,368 @@
+{
+  "generated_at": "2026-06-30T05:32:10.297Z",
+  "issue": 41,
+  "mode": "approved_task_research_private_review_packet_sanitized",
+  "current_task_action_candidates": 34,
+  "approved_private_review_rows_count": 25,
+  "reconciliation": {
+    "current_task_action_candidates": 34,
+    "digest_review_rows_approved": 24,
+    "parser_repair_rows_seen": 10,
+    "parser_repair_rows_consolidated_to_one_private_review": true,
+    "superseded_internal_repair_rows": 9,
+    "approved_total": 25
+  },
+  "approved_rows": [
+    {
+      "job_id": 56,
+      "candidate_id": "TASK-CANDIDATE-000056-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:56|task-candidate-000056-digest",
+      "title": "Private content digest review for content job #56",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 57,
+      "candidate_id": "TASK-CANDIDATE-000057-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:57|task-candidate-000057-digest",
+      "title": "Private content digest review for content job #57",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 58,
+      "candidate_id": "TASK-CANDIDATE-000058-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:58|task-candidate-000058-digest",
+      "title": "Private content digest review for content job #58",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 59,
+      "candidate_id": "TASK-CANDIDATE-000059-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:59|task-candidate-000059-digest",
+      "title": "Private content digest review for content job #59",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 64,
+      "candidate_id": "TASK-CANDIDATE-000064-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:64|task-candidate-000064-digest",
+      "title": "Private content digest review for content job #64",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 65,
+      "candidate_id": "TASK-CANDIDATE-000065-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:65|task-candidate-000065-digest",
+      "title": "Private content digest review for content job #65",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 66,
+      "candidate_id": "TASK-CANDIDATE-000066-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:66|task-candidate-000066-digest",
+      "title": "Private content digest review for content job #66",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 67,
+      "candidate_id": "TASK-CANDIDATE-000067-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:67|task-candidate-000067-digest",
+      "title": "Private content digest review for content job #67",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 68,
+      "candidate_id": "TASK-CANDIDATE-000068-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:68|task-candidate-000068-digest",
+      "title": "Private content digest review for content job #68",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 69,
+      "candidate_id": "TASK-CANDIDATE-000069-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:69|task-candidate-000069-digest",
+      "title": "Private content digest review for content job #69",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 70,
+      "candidate_id": "TASK-CANDIDATE-000070-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:70|task-candidate-000070-digest",
+      "title": "Private content digest review for content job #70",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 71,
+      "candidate_id": "TASK-CANDIDATE-000071-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:71|task-candidate-000071-digest",
+      "title": "Private content digest review for content job #71",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 72,
+      "candidate_id": "TASK-CANDIDATE-000072-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:72|task-candidate-000072-digest",
+      "title": "Private content digest review for content job #72",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 73,
+      "candidate_id": "TASK-CANDIDATE-000073-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:73|task-candidate-000073-digest",
+      "title": "Private content digest review for content job #73",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 74,
+      "candidate_id": "TASK-CANDIDATE-000074-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:74|task-candidate-000074-digest",
+      "title": "Private content digest review for content job #74",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 75,
+      "candidate_id": "TASK-CANDIDATE-000075-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:75|task-candidate-000075-digest",
+      "title": "Private content digest review for content job #75",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 76,
+      "candidate_id": "TASK-CANDIDATE-000076-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:76|task-candidate-000076-digest",
+      "title": "Private content digest review for content job #76",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 77,
+      "candidate_id": "TASK-CANDIDATE-000077-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:77|task-candidate-000077-digest",
+      "title": "Private content digest review for content job #77",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 78,
+      "candidate_id": "TASK-CANDIDATE-000078-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:78|task-candidate-000078-digest",
+      "title": "Private content digest review for content job #78",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 79,
+      "candidate_id": "TASK-CANDIDATE-000079-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:79|task-candidate-000079-digest",
+      "title": "Private content digest review for content job #79",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 80,
+      "candidate_id": "TASK-CANDIDATE-000080-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:80|task-candidate-000080-digest",
+      "title": "Private content digest review for content job #80",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 81,
+      "candidate_id": "TASK-CANDIDATE-000081-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:81|task-candidate-000081-digest",
+      "title": "Private content digest review for content job #81",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 82,
+      "candidate_id": "TASK-CANDIDATE-000082-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:82|task-candidate-000082-digest",
+      "title": "Private content digest review for content job #82",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 83,
+      "candidate_id": "TASK-CANDIDATE-000083-DIGEST",
+      "canonical_task_key": "bna|class_drive_intake|content_job:83|task-candidate-000083-digest",
+      "title": "Private content digest review for content job #83",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "no_write_plan_only",
+      "raw_text_included": false
+    },
+    {
+      "job_id": 21,
+      "candidate_id": "TASK-CANDIDATE-ISSUE41-PARSER-BACKLOG-REVIEW",
+      "canonical_task_key": "bna|class_drive_intake|issue41|parser-backlog-review",
+      "title": "Private parser backlog review for Issue #41 focus jobs",
+      "target_table": "bna_tasks",
+      "row_action": "insert_if_missing",
+      "privacy": "private_review_no_send",
+      "source_plan_action": "consolidates_10_repair_candidates",
+      "covered_job_ids": [
+        21,
+        25,
+        26,
+        30,
+        31,
+        56,
+        57,
+        58,
+        59,
+        71
+      ],
+      "raw_text_included": false
+    }
+  ],
+  "not_approved_rows": [
+    {
+      "job_id": 21,
+      "candidate_id": "TASK-CANDIDATE-000021-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 25,
+      "candidate_id": "TASK-CANDIDATE-000025-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 26,
+      "candidate_id": "TASK-CANDIDATE-000026-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 30,
+      "candidate_id": "TASK-CANDIDATE-000030-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 31,
+      "candidate_id": "TASK-CANDIDATE-000031-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 56,
+      "candidate_id": "TASK-CANDIDATE-000056-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 57,
+      "candidate_id": "TASK-CANDIDATE-000057-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 58,
+      "candidate_id": "TASK-CANDIDATE-000058-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 59,
+      "candidate_id": "TASK-CANDIDATE-000059-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    },
+    {
+      "job_id": 71,
+      "candidate_id": "TASK-CANDIDATE-000071-REPAIR-01",
+      "approval_status": "not_approved_individually_consolidated",
+      "reason": "Individual parser repair candidates are consolidated into one private parser-backlog review record to avoid internal task inflation."
+    }
+  ],
+  "raw_transcript_bodies_included": false,
+  "sends_or_publication_allowed": false
+}

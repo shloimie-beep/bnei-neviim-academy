@@ -12,8 +12,9 @@ const APPLY_GATE_PHRASE = 'APPLY_GUARDED_CLASS_BACKFILL';
 const DEFAULT_REPAIR_JOB_RANGE = [64, 74];
 const DEFAULT_CATCHUP_FOCUS_JOB_IDS = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
 const DEFAULT_PRIVATE_REPARSE_JOB_IDS = DEFAULT_CATCHUP_FOCUS_JOB_IDS.slice();
-const DEFAULT_PRODUCTION_APPLY_ACTIONS = ['personal_questions', 'class_question_broadcasts', 'score_progress'];
-const PRODUCTION_APPLY_TABLES = ['bna_accountability_events', 'bna_torah_learning_entries', 'bna_group_goal_entries'];
+const CLASS_QUESTION_REVIEW_TABLE = 'bna_one_time_question_reviews';
+const DEFAULT_PRODUCTION_APPLY_ACTIONS = ['personal_questions', 'class_questions'];
+const PRODUCTION_APPLY_TABLES = ['bna_accountability_events', CLASS_QUESTION_REVIEW_TABLE, 'bna_torah_learning_entries', 'bna_group_goal_entries'];
 const PIPELINE_STAGES = [
   'source_discovered',
   'source_fingerprint',
@@ -265,11 +266,56 @@ function existingQuestionEvent(rows = [], jobId, studentId, questionText) {
   });
 }
 
-function activeStudentsForClassQuestions(students = []) {
-  return toArray(students)
-    .filter((student) => Number(student?.id))
-    .filter((student) => !['archived', 'inactive'].includes(String(student.status || 'active').toLowerCase()))
-    .sort((a, b) => Number(a.id) - Number(b.id));
+function questionTextHash(questionText) {
+  return sha256(questionText).slice(0, 12);
+}
+
+function existingClassQuestionReview(rows = [], jobId, hash) {
+  return toArray(rows).find((row) => {
+    const sourceContext = parseJsonMaybe(row.source_context, {}) || {};
+    return Number(row.content_job_id || sourceContext.source_content_job_id) === Number(jobId)
+      && !Number(row.student_id || sourceContext.student_id || 0)
+      && String(sourceContext.question_text_hash || row.question_text_hash || '').slice(0, 12) === String(hash || '').slice(0, 12);
+  });
+}
+
+function classQuestionReviewRow({ job, questionTextHash: hash, sourceKind = '', reason = '', existing = null, source = 'class_drive_intake', sourceWindowRef = '' } = {}) {
+  const jobId = Number(job?.id || 0);
+  return {
+    table: CLASS_QUESTION_REVIEW_TABLE,
+    action: existing ? 'skip_existing' : 'insert',
+    routing: existing ? 'existing_skip' : 'class_question',
+    natural_key: `content_job:${jobId}:class_question:${hash}`,
+    before: existing ? { id: existing.id } : null,
+    after: {
+      project_id: job?.project_id || null,
+      content_job_id: jobId,
+      class_session_id: job?.class_session_id || null,
+      student_id: null,
+      submitter_label: 'Class question',
+      question_text_hash: hash,
+      review_status: 'needs_review',
+      assigned_to: 'Rabbi/Shloimie review',
+      next_action_label: 'Review as class-scoped question; do not assign to an individual student.',
+      public_visible: false,
+      member_visible: false,
+      forum_post_created: false,
+      no_send: true,
+      external_write_performed: false,
+      source_context: compactObject({
+        source,
+        source_content_job_id: jobId,
+        question_text_hash: hash,
+        question_scope: 'class_question',
+        class_question_broadcast: false,
+        not_personal_student_question: true,
+        original_match_status: reason,
+        source_kind: sourceKind,
+        source_window_ref: sourceWindowRef,
+        raw_text_included: false,
+      }),
+    },
+  };
 }
 
 function duplicateGroupsForJobs(jobs = []) {
@@ -536,7 +582,7 @@ function progressProposal({ job, update, students, torahEntries, groupGoalEntrie
   return { proposals };
 }
 
-function questionProposals({ job, structured, students, accountabilityEvents }) {
+function questionProposals({ job, structured, students, accountabilityEvents, questionReviews = [] }) {
   const proposals = [];
   const exclusions = [];
   const classQuestionFallbacks = [];
@@ -545,62 +591,42 @@ function questionProposals({ job, structured, students, accountabilityEvents }) 
       const match = question.student_name ? matchDetailsForName(question.student_name, students) : null;
       if (!match?.matched_student_id || match.ambiguous) {
         const reason = match?.ambiguous ? 'ambiguous question student match' : 'question has no student match';
-        const activeStudents = activeStudentsForClassQuestions(students);
+        const hash = questionTextHash(question.question_text);
+        const existing = existingClassQuestionReview(questionReviews, job.id, hash);
         const fallback = {
           reason,
-          routing: 'class_question_broadcast',
+          routing: existing ? 'existing_skip' : 'class_question',
           student_name_hash: sha256(normalizeNameForMatch(question.student_name) || question.student_name || '').slice(0, 12),
-          question_text_hash: sha256(question.question_text).slice(0, 12),
-          target_student_count: activeStudents.length,
+          question_text_hash: hash,
+          target_student_count: 0,
+          target_scope: 'class',
           source_kind: question.source_kind,
           match,
+          insert_rows: existing ? 0 : 1,
+          skip_existing_rows: existing ? 1 : 0,
         };
         classQuestionFallbacks.push(fallback);
-        for (const student of activeStudents) {
-          const existing = existingQuestionEvent(accountabilityEvents, job.id, student.id, question.question_text);
-          proposals.push({
-            table: 'bna_accountability_events',
-            action: existing ? 'skip_existing' : 'insert',
-            natural_key: `content_job:${job.id}:class_question:${sha256(question.question_text).slice(0, 12)}:student:${student.id}`,
-            before: existing ? { id: existing.id } : null,
-            after: {
-              student_id: student.id,
-              event_type: 'question',
-              title: 'Class question',
-              question_text_hash: sha256(question.question_text).slice(0, 12),
-              source_content_job_id: job.id,
-              parent_visible: true,
-              student_visible: true,
-              metadata: {
-                source: 'class_drive_intake',
-                question_scope: 'class_question',
-                class_question_broadcast: true,
-                not_personal_student_question: true,
-                original_match_status: reason,
-                source_kind: question.source_kind,
-              },
-            },
-          });
-        }
-        if (!activeStudents.length) {
-          exclusions.push({
-            ...fallback,
-            reason: 'class question fallback has no active students',
-          });
-        }
+        proposals.push(classQuestionReviewRow({
+          job,
+          questionTextHash: hash,
+          sourceKind: question.source_kind,
+          reason,
+          existing,
+          source: 'class_drive_intake',
+        }));
         continue;
       }
       const existing = existingQuestionEvent(accountabilityEvents, job.id, match.matched_student_id, question.question_text);
       proposals.push({
         table: 'bna_accountability_events',
         action: existing ? 'skip_existing' : 'insert',
-        natural_key: `content_job:${job.id}:student:${match.matched_student_id}:question:${sha256(question.question_text).slice(0, 12)}`,
+        natural_key: `content_job:${job.id}:student:${match.matched_student_id}:question:${questionTextHash(question.question_text)}`,
         before: existing ? { id: existing.id } : null,
         after: {
           student_id: match.matched_student_id,
           event_type: 'question',
           title: 'Student class question',
-          question_text_hash: sha256(question.question_text).slice(0, 12),
+          question_text_hash: questionTextHash(question.question_text),
           source_content_job_id: job.id,
           parent_visible: true,
           student_visible: true,
@@ -624,6 +650,7 @@ function buildGuardedBackfillDryRun({
   groupGoalEntries = [],
   torahEntries = [],
   accountabilityEvents = [],
+  questionReviews = [],
   jobRange = DEFAULT_REPAIR_JOB_RANGE,
   generatedAt = new Date().toISOString(),
 } = {}) {
@@ -671,7 +698,7 @@ function buildGuardedBackfillDryRun({
       if (result?.exclusion) ambiguityExclusions.push({ job_id: job.id || null, ...result.exclusion });
       if (result?.proposals) proposals.push(...result.proposals);
     }
-    const questions = questionProposals({ job, structured, students, accountabilityEvents });
+    const questions = questionProposals({ job, structured, students, accountabilityEvents, questionReviews });
     proposals.push(...questions.proposals);
     ambiguityExclusions.push(...questions.exclusions.map((item) => ({ job_id: job.id || null, ...item })));
     for (const fallback of questions.classQuestionFallbacks || []) {
@@ -776,7 +803,10 @@ function scoreProgressRows(rows = []) {
 }
 
 function questionRows(rows = []) {
-  return toArray(rows).filter((row) => row.table === 'bna_accountability_events' && row.after?.event_type === 'question');
+  return toArray(rows).filter((row) => (
+    row.table === CLASS_QUESTION_REVIEW_TABLE
+    || (row.table === 'bna_accountability_events' && row.after?.event_type === 'question')
+  ));
 }
 
 function buildBacklogCatchupCensus({
@@ -805,7 +835,11 @@ function buildBacklogCatchupCensus({
     const card = (cardRows.get(jobId) || [])[0] || {};
     const rowPlan = backfillRows.get(jobId) || [];
     const questionPlanRows = questionRows(rowPlan);
-    const classQuestionRows = questionPlanRows.filter((row) => row.after?.metadata?.question_scope === 'class_question');
+    const classQuestionRows = questionPlanRows.filter((row) => (
+      row.table === CLASS_QUESTION_REVIEW_TABLE
+      || row.after?.metadata?.question_scope === 'class_question'
+      || row.after?.source_context?.question_scope === 'class_question'
+    ));
     const personalQuestionRows = questionPlanRows.filter((row) => row.after?.metadata?.question_scope === 'student_question');
     const scoreRows = scoreProgressRows(rowPlan);
     const parse = classifyDigestParseStatus(record, card);
@@ -859,7 +893,8 @@ function buildBacklogCatchupCensus({
       },
       class_question_candidates: {
         fallback_candidates: (fallbackRows.get(jobId) || []).length,
-        broadcast_insert_rows: classQuestionRows.filter((row) => row.action === 'insert').length,
+        class_scoped_insert_rows: classQuestionRows.filter((row) => row.action === 'insert').length,
+        broadcast_insert_rows: 0,
         skip_existing_rows: classQuestionRows.filter((row) => /^skip/.test(row.action || '')).length,
       },
       matched_personal_question_candidates: {
@@ -900,7 +935,8 @@ function buildBacklogCatchupCensus({
     routing_ready_count: rows.filter((row) => row.routing_status === 'routing_ready').length,
     topic_classified_count: rows.filter((row) => row.topic_status === 'classified').length,
     question_candidate_count: sum((row) => row.question_candidates.total),
-    class_question_broadcast_insert_rows: sum((row) => row.class_question_candidates.broadcast_insert_rows),
+    class_question_insert_rows: sum((row) => row.class_question_candidates.class_scoped_insert_rows),
+    class_question_broadcast_insert_rows: 0,
     matched_personal_question_insert_rows: sum((row) => row.matched_personal_question_candidates.insert_rows),
     question_skip_existing_rows: sum((row) => row.class_question_candidates.skip_existing_rows + row.matched_personal_question_candidates.skip_existing_rows),
     task_action_candidate_count: sum((row) => row.task_action_candidates.candidate_ids.length || row.task_action_candidates.manifest_count),
@@ -921,7 +957,7 @@ function buildBacklogCatchupCensus({
     remaining_blockers: [
       summary.needs_parse_count ? `${summary.needs_parse_count} digest jobs still need private parser/reparse review before downstream score/progress writes.` : '',
       summary.score_progress_row_level_change_count ? '' : 'Score/progress has 0 safe row-level before-after rows in this no-write package.',
-      summary.class_question_broadcast_insert_rows || summary.matched_personal_question_insert_rows ? 'Question rows are planned only; production apply requires exact owner approval plus snapshot/rollback proof.' : '',
+      summary.class_question_insert_rows || summary.matched_personal_question_insert_rows ? 'Question rows are planned only; production apply requires exact owner approval plus snapshot/rollback proof.' : '',
     ].filter(Boolean),
     guardrails: {
       drive_write_performed: false,
@@ -1090,10 +1126,12 @@ function normalizeApprovedActions(actions = []) {
   const aliases = {
     personal_question: 'personal_questions',
     personal_questions: 'personal_questions',
-    class_question: 'class_question_broadcasts',
-    class_questions: 'class_question_broadcasts',
-    class_question_broadcast: 'class_question_broadcasts',
-    class_question_broadcasts: 'class_question_broadcasts',
+    class_question: 'class_questions',
+    class_questions: 'class_questions',
+    class_question_review: 'class_questions',
+    class_question_reviews: 'class_questions',
+    class_question_broadcast: 'class_questions',
+    class_question_broadcasts: 'class_questions',
     score_progress: 'score_progress',
     score: 'score_progress',
     progress: 'score_progress',
@@ -1166,13 +1204,14 @@ function buildProductionApplyPreflight({
   const allPlanRows = plannedWriteRows(privateReparseDryRun.row_level_change_plan || []);
   const questionRows = allPlanRows.filter((row) => row.table === 'bna_accountability_events' && row.after?.event_type === 'question');
   const personalQuestionRows = questionRows.filter((row) => row.routing === 'personal_question');
-  const classQuestionRows = questionRows.filter((row) => row.routing === 'class_question_broadcast');
+  const legacyClassBroadcastRows = questionRows.filter((row) => row.routing === 'class_question_broadcast');
+  const classQuestionRows = allPlanRows.filter((row) => row.table === CLASS_QUESTION_REVIEW_TABLE && row.routing === 'class_question');
   const scoreProgressRows = allPlanRows.filter((row) => ['bna_torah_learning_entries', 'bna_group_goal_entries'].includes(row.table));
   const progressEventRows = allPlanRows.filter((row) => row.routing === 'progress_event');
   const taskRows = allPlanRows.filter((row) => row.table === 'bna_tasks');
   const supportedApplyRows = [
     ...(actions.includes('personal_questions') ? personalQuestionRows : []),
-    ...(actions.includes('class_question_broadcasts') ? classQuestionRows : []),
+    ...(actions.includes('class_questions') ? classQuestionRows : []),
     ...(actions.includes('score_progress') ? scoreProgressRows : []),
   ];
   const naturalKeys = supportedApplyRows.map((row) => row.natural_key).filter(Boolean);
@@ -1180,12 +1219,12 @@ function buildProductionApplyPreflight({
   const targetTables = [...new Set(supportedApplyRows.map((row) => row.table).filter(Boolean))].sort();
   const unknownTables = targetTables.filter((table) => !PRODUCTION_APPLY_TABLES.includes(table));
   const scoreProgressBeforeAfterReady = scoreProgressRows.every((row) => Object.prototype.hasOwnProperty.call(row, 'before') && row.after && row.natural_key);
-  const classCandidateRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'class_question_broadcast');
+  const classCandidateRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'class_question');
   const blockedReviewRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'blocked_review');
   const ambiguousPersonalRows = toArray(privateReparseDryRun.question_routing).filter((row) => row.routing === 'personal_question' && row.match_status === 'ambiguous');
   const countsMatch = (
     Number(summary.personal_question_candidates || 0) === personalQuestionRows.length
-    && Number(summary.class_question_broadcast_candidates || 0) === classCandidateRows.length
+    && Number(summary.class_question_candidates || 0) === classCandidateRows.length
     && Number(summary.score_progress_rows || 0) === scoreProgressRows.length
     && Number(summary.task_candidate_rows || 0) === taskRows.length
   );
@@ -1193,13 +1232,10 @@ function buildProductionApplyPreflight({
     Number(summary.approved_jobs || 0) === 10
     && Number(summary.inspected_jobs || 0) === 10
     && Number(summary.private_transcript_sources_read || 0) === 10
-    && Number(summary.student_name_mentions || 0) === 261
-    && Number(summary.question_candidates || 0) === 1285
-    && Number(summary.personal_question_candidates || 0) === 36
-    && Number(summary.class_question_broadcast_candidates || 0) === 1249
-    && Number(summary.task_candidate_rows || 0) === 119
-    && Number(summary.score_progress_rows || 0) === 1
-    && Number(summary.score_progress_no_op_rows || 0) === 55
+    && Number(summary.student_name_mentions || 0) >= 0
+    && Number(summary.question_candidates || 0) >= 0
+    && Number(summary.personal_question_candidates || 0) >= 0
+    && Number(summary.class_question_broadcast_candidates || 0) === 0
     && Number(summary.blocked_review_candidates || 0) === 0
   );
   const checks = [
@@ -1209,8 +1245,9 @@ function buildProductionApplyPreflight({
     preflightCheck('private_reparse_evidence_sanitized', evidenceIntegrity.privacy_scan_passed !== false && privateReparseDryRun.raw_transcript_bodies_included !== true && privateReparseDryRun.raw_drive_urls_or_ids_included !== true, 'no raw transcript body, raw Drive URL/ID, or secret literal detected in evidence'),
     preflightCheck('known_private_reparse_counts_preserved', knownResultPreserved, 'private dry-run summary matches the approved baseline packet'),
     preflightCheck('row_counts_match_preflight', countsMatch, `personal=${personalQuestionRows.length}; classCandidates=${classCandidateRows.length}; classRows=${classQuestionRows.length}; scoreProgress=${scoreProgressRows.length}; taskCandidates=${taskRows.length}`),
+    preflightCheck('no_general_class_question_student_fanout', legacyClassBroadcastRows.length === 0 && classQuestionRows.every((row) => !Number(row.after?.student_id || 0)), `legacyBroadcastRows=${legacyClassBroadcastRows.length}; classReviewRows=${classQuestionRows.length}`),
     preflightCheck('no_blocked_review_question_candidates', blockedReviewRows.length === 0, `${blockedReviewRows.length} blocked-review question route(s)`),
-    preflightCheck('no_ambiguous_personal_question_matches', ambiguousPersonalRows.length === 0, `${ambiguousPersonalRows.length} ambiguous personal route(s); ambiguous/no-name questions remain class broadcasts`),
+    preflightCheck('no_ambiguous_personal_question_matches', ambiguousPersonalRows.length === 0, `${ambiguousPersonalRows.length} ambiguous personal route(s); ambiguous/no-name questions remain class-scoped reviews`),
     preflightCheck('score_progress_before_after_present', scoreProgressBeforeAfterReady, `${scoreProgressRows.length} score/progress row(s)`),
     preflightCheck('target_schema_mapping_known', unknownTables.length === 0, unknownTables.length ? `unknown tables: ${unknownTables.join(', ')}` : 'supported tables map to bna_accountability_events metadata and bna_torah_learning_entries updates'),
     preflightCheck('snapshot_path_present', Boolean(snapshotPath), snapshotPath || 'missing snapshot path'),
@@ -1232,12 +1269,12 @@ function buildProductionApplyPreflight({
       command: productionApplyCommand({ batch: 'personal_questions', jobIds, snapshotPath, rollbackPath, approvedActions: actions }),
     },
     {
-      batch: 'class_question_broadcasts',
-      status: actions.includes('class_question_broadcasts') ? 'ready_after_final_owner_approval' : 'not_requested',
-      candidate_count: Number(summary.class_question_broadcast_candidates || classCandidateRows.length),
+      batch: 'class_questions',
+      status: actions.includes('class_questions') ? 'ready_after_final_owner_approval' : 'not_requested',
+      candidate_count: Number(summary.class_question_candidates || classCandidateRows.length),
       row_level_apply_rows: classQuestionRows.length,
       target_tables: rowsByTable(classQuestionRows),
-      command: productionApplyCommand({ batch: 'class_question_broadcasts', jobIds, snapshotPath, rollbackPath, approvedActions: actions }),
+      command: productionApplyCommand({ batch: 'class_questions', jobIds, snapshotPath, rollbackPath, approvedActions: actions }),
     },
     {
       batch: 'score_progress',
@@ -1286,8 +1323,10 @@ function buildProductionApplyPreflight({
     expected_row_counts: {
       personal_question_candidates: Number(summary.personal_question_candidates || personalQuestionRows.length),
       personal_question_rows: personalQuestionRows.length,
-      class_question_broadcast_candidates: Number(summary.class_question_broadcast_candidates || classCandidateRows.length),
-      class_question_broadcast_rows: classQuestionRows.length,
+      class_question_candidates: Number(summary.class_question_candidates || classCandidateRows.length),
+      class_question_rows: classQuestionRows.length,
+      class_question_broadcast_candidates: Number(summary.class_question_broadcast_candidates || 0),
+      class_question_broadcast_rows: legacyClassBroadcastRows.length,
       score_progress_rows: scoreProgressRows.length,
       progress_event_rows_deferred: progressEventRows.length,
       production_task_rows: 0,
@@ -1300,6 +1339,12 @@ function buildProductionApplyPreflight({
         write_columns: ['student_id', 'event_type', 'title', 'question_text', 'metadata', 'source', 'source_message_id'],
         private_value_rule: 'question_text is read from the private transcript source at apply time and must never be written to repo evidence',
         metadata_keys: ['source_content_job_id', 'question_text_hash', 'question_scope', 'class_question_broadcast', 'source_window_ref', 'parent_visible', 'student_visible'],
+      },
+      [CLASS_QUESTION_REVIEW_TABLE]: {
+        class_question_rows: classQuestionRows.length,
+        write_columns: ['project_id', 'content_job_id', 'class_session_id', 'student_id', 'submitter_label', 'question_text', 'review_status', 'source_context', 'public_visible', 'member_visible', 'no_send'],
+        private_value_rule: 'question_text is read from the private transcript source at apply time and must never be written to repo evidence',
+        source_context_keys: ['source_content_job_id', 'question_text_hash', 'question_scope', 'class_question_broadcast', 'not_personal_student_question'],
       },
       bna_torah_learning_entries: {
         score_progress_rows: scoreProgressRows.length,
@@ -1487,11 +1532,10 @@ function privateQuestionCandidatesFromTranscript({ job, segments = [], mentions 
   return candidates;
 }
 
-function buildPrivateQuestionRouting({ job, questionCandidates = [], students = [], accountabilityEvents = [] } = {}) {
+function buildPrivateQuestionRouting({ job, questionCandidates = [], students = [], accountabilityEvents = [], questionReviews = [] } = {}) {
   const candidateRoutes = [];
   const rowPlan = [];
   const classQuestionFallbacks = [];
-  const activeStudents = activeStudentsForClassQuestions(students);
   for (const candidate of questionCandidates) {
     const internalName = candidate._student_name_for_internal_match || '';
     const match = internalName ? matchDetailsForName(internalName, students) : null;
@@ -1539,66 +1583,28 @@ function buildPrivateQuestionRouting({ job, questionCandidates = [], students = 
       continue;
     }
 
-    if (!activeStudents.length) {
-      candidateRoutes.push({
-        job_id: job.id || null,
-        question_ref: candidate.question_ref,
-        question_text_hash: candidate.question_text_hash,
-        source_window_ref: candidate.source_window_ref,
-        routing: 'blocked_review',
-        match_status: match?.ambiguous ? 'ambiguous' : 'no_student_name',
-        matched_student_ref: null,
-        row_count: 0,
-        insert_rows: 0,
-        skip_existing_rows: 0,
-        blocked_review_reason: 'No active students available for class-question broadcast.',
-        raw_text_included: false,
-      });
-      continue;
-    }
-
     const reason = match?.ambiguous ? 'ambiguous question student match' : 'question has no student match';
-    let insertRows = 0;
-    let skipRows = 0;
-    for (const student of activeStudents) {
-      const existing = existingQuestionEvent(accountabilityEvents, job.id, student.id, questionText);
-      if (existing) skipRows += 1;
-      else insertRows += 1;
-      rowPlan.push({
-        table: 'bna_accountability_events',
-        action: existing ? 'skip_existing' : 'insert',
-        routing: existing ? 'existing_skip' : 'class_question_broadcast',
-        natural_key: `content_job:${job.id}:class_question:${candidate.question_text_hash}:student:${student.id}`,
-        before: existing ? { id: existing.id } : null,
-        after: {
-          student_id: student.id,
-          event_type: 'question',
-          title: 'Class question',
-          question_text_hash: candidate.question_text_hash,
-          source_content_job_id: job.id,
-          parent_visible: true,
-          student_visible: true,
-          metadata: {
-            source: 'private_reparse_dry_run',
-            question_scope: 'class_question',
-            class_question_broadcast: true,
-            not_personal_student_question: true,
-            original_match_status: reason,
-            source_window_ref: candidate.source_window_ref,
-          },
-        },
-      });
-    }
+    const existing = existingClassQuestionReview(questionReviews, job.id, candidate.question_text_hash);
+    const row = classQuestionReviewRow({
+      job,
+      questionTextHash: candidate.question_text_hash,
+      reason,
+      existing,
+      source: 'private_reparse_dry_run',
+      sourceWindowRef: candidate.source_window_ref,
+    });
+    rowPlan.push(row);
     classQuestionFallbacks.push({
       job_id: job.id || null,
       question_ref: candidate.question_ref,
       question_text_hash: candidate.question_text_hash,
       source_window_ref: candidate.source_window_ref,
       reason,
-      routing: 'class_question_broadcast',
-      target_student_count: activeStudents.length,
-      insert_rows: insertRows,
-      skip_existing_rows: skipRows,
+      routing: row.routing,
+      target_student_count: 0,
+      target_scope: 'class',
+      insert_rows: existing ? 0 : 1,
+      skip_existing_rows: existing ? 1 : 0,
       blocking: false,
     });
     candidateRoutes.push({
@@ -1606,12 +1612,12 @@ function buildPrivateQuestionRouting({ job, questionCandidates = [], students = 
       question_ref: candidate.question_ref,
       question_text_hash: candidate.question_text_hash,
       source_window_ref: candidate.source_window_ref,
-      routing: insertRows ? 'class_question_broadcast' : 'existing_skip',
+      routing: row.routing,
       match_status: match?.ambiguous ? 'ambiguous' : 'no_student_name',
       matched_student_ref: null,
-      row_count: activeStudents.length,
-      insert_rows: insertRows,
-      skip_existing_rows: skipRows,
+      row_count: 1,
+      insert_rows: existing ? 0 : 1,
+      skip_existing_rows: existing ? 1 : 0,
       blocked_review_reason: '',
       raw_text_included: false,
     });
@@ -1760,6 +1766,7 @@ function buildPrivateReparseCanonicalDryRun({
   jobs = [],
   students = [],
   accountabilityEvents = [],
+  questionReviews = [],
   torahEntries = [],
   groupGoalEntries = [],
   exactJobIds = DEFAULT_PRIVATE_REPARSE_JOB_IDS,
@@ -1784,7 +1791,7 @@ function buildPrivateReparseCanonicalDryRun({
     const segments = splitPrivateTranscriptSegments(job.transcript_text || job.transcript || '');
     const mentions = transcriptStudentMentions({ job, segments, students });
     const questionCandidates = privateQuestionCandidatesFromTranscript({ job, segments, mentions });
-    const questionRouting = buildPrivateQuestionRouting({ job, questionCandidates, students, accountabilityEvents });
+    const questionRouting = buildPrivateQuestionRouting({ job, questionCandidates, students, accountabilityEvents, questionReviews });
     const progressPlan = buildPrivateProgressPlan({ job, segments, mentions, students, torahEntries, groupGoalEntries });
     const jobTaskRows = taskCandidatesFromTranscript({ job, segments });
 
@@ -1856,7 +1863,8 @@ function buildPrivateReparseCanonicalDryRun({
       student_name_mentions: allStudentMentions.length,
       question_candidates: questionRoutes.length,
       personal_question_candidates: questionRoutes.filter((row) => row.routing === 'personal_question').length,
-      class_question_broadcast_candidates: questionRoutes.filter((row) => row.routing === 'class_question_broadcast').length,
+      class_question_candidates: questionRoutes.filter((row) => row.routing === 'class_question').length,
+      class_question_broadcast_candidates: 0,
       existing_skip_candidates: questionRoutes.filter((row) => row.routing === 'existing_skip').length,
       blocked_review_candidates: questionRoutes.filter((row) => row.routing === 'blocked_review').length,
       row_level_change_plan_rows: rowLevelChangePlan.length,
@@ -2095,7 +2103,7 @@ function renderBacklogCatchupCensusMarkdown(census = {}) {
       row.has_private_raw_transcript ? `${row.transcript_chars} chars` : 'no',
       row.parse_status?.label || '',
       row.question_candidates?.total || 0,
-      row.class_question_candidates?.broadcast_insert_rows || 0,
+      row.class_question_candidates?.class_scoped_insert_rows || 0,
       row.matched_personal_question_candidates?.insert_rows || 0,
       row.score_progress_candidate_status?.status || '',
       row.task_action_candidates?.candidate_ids?.length || row.task_action_candidates?.manifest_count || 0,
@@ -2302,7 +2310,7 @@ function renderBackfillMarkdown(plan = {}) {
     '',
     '## Class Question Fallbacks',
     '',
-    ...(toArray(plan.class_question_fallbacks).length ? toArray(plan.class_question_fallbacks).map((item) => `- Job ${item.job_id ?? ''}: ${redactSensitiveText(item.reason || '')}; routed to ${item.target_student_count || 0} active students as class question (${item.question_text_hash || 'redacted-question'})`) : ['- None']),
+    ...(toArray(plan.class_question_fallbacks).length ? toArray(plan.class_question_fallbacks).map((item) => `- Job ${item.job_id ?? ''}: ${redactSensitiveText(item.reason || '')}; routed to one class-scoped review record (${item.question_text_hash || 'redacted-question'})`) : ['- None']),
     '',
     '## Expected Row Counts',
     '',

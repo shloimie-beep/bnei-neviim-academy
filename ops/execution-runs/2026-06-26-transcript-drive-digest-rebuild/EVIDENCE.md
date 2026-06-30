@@ -1,52 +1,40 @@
 # Evidence
 
-Primary evidence:
+Primary final evidence:
 
-- `raw-input/RAW-20260626-004-transcript-drive-digest-rebuild.md`
-- `raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md`
-- `raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md`
-- `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`
-- `docs/content-transcript-digest-policy.md`
-- `content-memory/transcript-digests/index.md`
-- `content-memory/transcript-digests/manifest.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TRANSCRIPT-GAPS.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/REPAIR-CANDIDATES.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-DRY-RUN.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-DRY-RUN.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.json`
+- `raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/OWNER-DECISION-GENERAL-CLASS-QUESTIONS.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-STUDENT-QUESTION-SCORE-APPLY-APPROVAL-PACKET.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-RESEARCH-CARD-APPROVAL-PACKET.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-RESULT.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-READBACK.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-IDEMPOTENCY.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PARSER-REPAIR-RESULTS.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-MATCH-REVIEW.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-SCORE-PROGRESS-PLAN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/TASK-RESEARCH-CARD-APPLY-PLAN.md`
+
+Final apply summary:
+
+- Question rows total: 13.
+- Student-specific matched rows: 7.
+- General class question-review rows: 6.
+- Student-match blocked rows: 0.
+- General class question fanout rows: 0.
+- Score/progress/grading rows written: 0.
+- Private task/research review rows: 25.
+- Raw transcript bodies in repo evidence: false.
+- Raw Drive URLs/IDs in repo evidence: false.
+
+Digest/card evidence:
+
+- `content-memory/transcript-digests/manifest.json`: 29 recordings, raw bodies false.
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`: 29 generated titles, 10 explicit parser-backlog items, 0 routing gaps, 0 topic-classification gaps.
+
+Earlier retained evidence:
+
 - `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.json`
-- `ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild/COMPLETION-AUDIT.md`
-
-Generated digest summary:
-
-- Recording digests: 29
-- Raw transcript bodies included: false
-- Privacy scan findings: 0
-- Stale deletion performed: false
-
-Issue #41 Drive addendum summary:
-
-- `01 Transcript Library` exists under `40 Content Library - Marketing`.
-- Transcript docs found: 46.
-- Docs created since `2026-06-25T00:00:00Z`: 0.
-- Jobs #65-#70 exist.
-- Job #83 is absent and remains a dry-run `would-create` doc.
-- `npm run content:sync-drive-library -- --dry-run --no-ai` performed 0
-  creates, 0 updates, and 0 AI calls.
-
-Approved #83 sync summary:
-
-- Command:
-  `npm run content:sync-drive-library -- --no-ai --verify --job-id 83`
-- Real transcript jobs selected: 1.
-- Private Drive docs created: 1.
-- Private Drive docs updated: 0.
-- AI calls: 0.
-- Readback: #83, 9683 chars, ok.
-- Post-sync transcript-library doc count: 47.
-- Job #83 doc pointer: redacted ID hash `aae509b32ccf0b54`; raw Drive doc ID
-  and raw link are not stored in tracked files.
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`
+- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRODUCTION-APPLY-PREFLIGHT.md`

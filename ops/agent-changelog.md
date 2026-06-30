@@ -27362,3 +27362,34 @@ raw transcript export, no AI call, no paid retranscription, no Drive file
 move/delete, no public publish/social/newsletter send, no access grant, and no
 credential/account/DNS change. The only send performed was the requested
 operator Gmail setup-test/notification path.
+
+## 2026-06-30 - Issue #41 final guarded apply completed
+
+- Captured final owner approval as
+  `raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md`.
+- Replaced the old general-class-question fanout path with class-scoped
+  `bna_one_time_question_reviews` rows.
+- Added `scripts/class-drive-intake-apply-approved.cjs` with exact approval ID,
+  count, privacy, fanout, readback, and idempotency gates.
+- Generated final owner decision, question/score approval, task/research
+  approval, parser repair, score no-op, dry-run, apply, readback, and
+  idempotency evidence under
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/`.
+- Ran the approved production apply. Readback found 7 matched personal
+  question rows, 6 class-scoped general question-review rows, 25 private
+  task/research review rows, 0 score/progress rows, and 0 class-question fanout
+  rows.
+- Refreshed privacy-safe digest/card evidence: 29 recordings, raw bodies false,
+  0 privacy findings.
+
+Verification:
+
+- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
+- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
+- `node --check scripts/class-drive-intake-apply-approved.cjs`: passed.
+- `node --test tests/class-drive-intake-apply-approved.test.js tests/class-drive-intake-reconcile.test.js`: passed.
+- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js tests/class-drive-intake-apply-approved.test.js`: 55/55 passed.
+- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw
+  bodies false, 0 privacy findings.
+- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles, 10
+  explicit parser-backlog items, 0 routing gaps, 0 topic-classification gaps.

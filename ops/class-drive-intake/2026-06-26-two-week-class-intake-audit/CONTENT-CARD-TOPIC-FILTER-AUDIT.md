@@ -1,6 +1,6 @@
 # Content Card Topic Filter Audit
 
-Generated: 2026-06-28T11:52:38.758Z
+Generated: 2026-06-30T05:34:19.738Z
 Recordings audited: 29
 Manifest recordings: 29
 Raw transcript bodies included: false

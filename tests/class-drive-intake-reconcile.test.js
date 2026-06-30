@@ -131,7 +131,7 @@ test('student question extraction links the question to the matched student', ()
   assert.equal(questionRow.after.metadata.class_question_broadcast, false);
 });
 
-test('unmatched questions are planned as class questions for every active student', () => {
+test('unmatched questions are planned as one class-scoped review row', () => {
   const job = jobFixture({
     id: 65,
     parse_json: {
@@ -150,17 +150,20 @@ test('unmatched questions are planned as class questions for every active studen
   });
   const plan = buildGuardedBackfillDryRun({ jobs: [job], students, jobRange: [64, 74] });
   const questionRows = plan.row_level_change_plan.filter((row) => (
-    row.table === 'bna_accountability_events'
-    && row.after.event_type === 'question'
+    row.table === 'bna_one_time_question_reviews'
+    && row.routing === 'class_question'
   ));
-  assert.deepEqual(questionRows.map((row) => row.after.student_id), [1, 2, 3, 4]);
-  assert.equal(questionRows.some((row) => row.after.student_id === 5), false);
-  assert.equal(questionRows.every((row) => row.after.title === 'Class question'), true);
-  assert.equal(questionRows.every((row) => row.after.metadata.question_scope === 'class_question'), true);
-  assert.equal(questionRows.every((row) => row.after.metadata.class_question_broadcast === true), true);
-  assert.equal(questionRows.every((row) => row.after.metadata.not_personal_student_question === true), true);
+  assert.equal(questionRows.length, 1);
+  assert.equal(questionRows[0].after.student_id, null);
+  assert.equal(questionRows[0].after.source_context.question_scope, 'class_question');
+  assert.equal(questionRows[0].after.source_context.class_question_broadcast, false);
+  assert.equal(questionRows[0].after.source_context.not_personal_student_question, true);
+  assert.equal(questionRows[0].after.public_visible, false);
+  assert.equal(questionRows[0].after.member_visible, false);
+  assert.equal(questionRows[0].after.no_send, true);
   assert.equal(plan.class_question_fallbacks.length, 1);
-  assert.equal(plan.class_question_fallbacks[0].target_student_count, 4);
+  assert.equal(plan.class_question_fallbacks[0].target_scope, 'class');
+  assert.equal(plan.class_question_fallbacks[0].target_student_count, 0);
   assert.equal(plan.blocking_ambiguities.length, 0);
   assert.equal(plan.safe_to_apply, true);
 });
@@ -184,10 +187,11 @@ test('ambiguous question names are class-question fallbacks instead of blocking 
   });
   const plan = buildGuardedBackfillDryRun({ jobs: [job], students, jobRange: [64, 74] });
   const questionRows = plan.row_level_change_plan.filter((row) => (
-    row.table === 'bna_accountability_events'
-    && row.after.event_type === 'question'
+    row.table === 'bna_one_time_question_reviews'
+    && row.routing === 'class_question'
   ));
-  assert.equal(questionRows.length, 4);
+  assert.equal(questionRows.length, 1);
+  assert.equal(questionRows[0].after.student_id, null);
   assert.equal(plan.class_question_fallbacks[0].reason, 'ambiguous question student match');
   assert.equal(plan.blocking_ambiguities.length, 0);
   assert.equal(plan.safe_to_apply, true);
@@ -214,12 +218,14 @@ test('class note questions and question-shaped discussions become class-question
   });
   const plan = buildGuardedBackfillDryRun({ jobs: [job], students, jobRange: [64, 74] });
   const questionRows = plan.row_level_change_plan.filter((row) => (
-    row.table === 'bna_accountability_events'
-    && row.after.event_type === 'question'
+    row.table === 'bna_one_time_question_reviews'
+    && row.routing === 'class_question'
   ));
-  assert.equal(questionRows.length, 8);
-  assert.equal(questionRows.every((row) => row.after.metadata.question_scope === 'class_question'), true);
-  assert.deepEqual([...new Set(questionRows.map((row) => row.after.metadata.source_kind))], [
+  assert.equal(questionRows.length, 2);
+  assert.equal(questionRows.every((row) => row.after.student_id === null), true);
+  assert.equal(questionRows.every((row) => row.after.source_context.question_scope === 'class_question'), true);
+  assert.equal(questionRows.every((row) => row.after.source_context.class_question_broadcast === false), true);
+  assert.deepEqual([...new Set(questionRows.map((row) => row.after.source_context.source_kind))], [
     'class_notes.questions',
     'class_notes.discussions_question',
   ]);
@@ -406,13 +412,14 @@ test('backlog catch-up census separates repo-safe digests from parser/apply read
     }],
     backfillPlan: {
       row_level_change_plan: [{
-        table: 'bna_accountability_events',
+        table: 'bna_one_time_question_reviews',
         action: 'insert',
-        natural_key: 'content_job:25:class_question:e1d44fb96cef:student:643',
+        routing: 'class_question',
+        natural_key: 'content_job:25:class_question:e1d44fb96cef',
         after: {
-          source_content_job_id: 25,
-          event_type: 'question',
-          metadata: { question_scope: 'class_question' },
+          content_job_id: 25,
+          student_id: null,
+          source_context: { question_scope: 'class_question', question_text_hash: 'e1d44fb96cef' },
         },
       }],
       class_question_fallbacks: [{ job_id: 25, question_text_hash: 'e1d44fb96cef' }],
@@ -422,7 +429,8 @@ test('backlog catch-up census separates repo-safe digests from parser/apply read
   assert.equal(census.summary.recording_count, 1);
   assert.equal(census.summary.repo_safe_digest_count, 1);
   assert.equal(census.summary.needs_parse_count, 1);
-  assert.equal(census.summary.class_question_broadcast_insert_rows, 1);
+  assert.equal(census.summary.class_question_insert_rows, 1);
+  assert.equal(census.summary.class_question_broadcast_insert_rows, 0);
   assert.equal(census.summary.score_progress_row_level_change_count, 0);
   assert.equal(census.rows[0].has_private_raw_transcript, true);
   assert.equal(census.rows[0].raw_transcript_body_included, false);
@@ -520,14 +528,16 @@ test('private reparse dry-run routes matched and class questions without raw tex
   assert.equal(report.summary.inspected_jobs, 1);
   assert.equal(report.summary.question_candidates, 2);
   assert.equal(report.summary.personal_question_candidates, 1);
-  assert.equal(report.summary.class_question_broadcast_candidates, 1);
+  assert.equal(report.summary.class_question_candidates, 1);
+  assert.equal(report.summary.class_question_broadcast_candidates, 0);
   assert.ok(report.summary.student_name_mentions >= 1);
   assert.ok(report.summary.score_progress_rows >= 1);
   assert.equal(report.summary.task_candidate_rows, 1);
   assert.doesNotMatch(JSON.stringify(report), /pasuk repeat|everyone review|completed 50 percent|follow up task/i);
   assert.equal(report.raw_transcript_bodies_included, false);
   assert.equal(report.row_level_change_plan.some((row) => row.routing === 'personal_question'), true);
-  assert.equal(report.row_level_change_plan.some((row) => row.routing === 'class_question_broadcast'), true);
+  assert.equal(report.row_level_change_plan.some((row) => row.table === 'bna_one_time_question_reviews' && row.routing === 'class_question'), true);
+  assert.equal(report.row_level_change_plan.some((row) => row.routing === 'class_question_broadcast'), false);
 });
 
 test('private reparse dry-run records concrete no-op when progress cannot be safely matched', () => {
@@ -562,7 +572,7 @@ test('CLI refuses private reparse outside the exact approved job list', () => {
 
 function syntheticPrivatePreflightReport() {
   const approvedIds = [21, 25, 26, 30, 31, 56, 57, 58, 59, 71];
-  const personalRows = Array.from({ length: 36 }, (_, index) => ({
+  const personalRows = Array.from({ length: 7 }, (_, index) => ({
     table: 'bna_accountability_events',
     action: 'insert',
     routing: 'personal_question',
@@ -570,23 +580,16 @@ function syntheticPrivatePreflightReport() {
     before: null,
     after: { student_id: index + 1, event_type: 'question', question_text_hash: `p${index}` },
   }));
-  const classRows = Array.from({ length: 9992 }, (_, index) => ({
-    table: 'bna_accountability_events',
+  const classRows = Array.from({ length: 6 }, (_, index) => ({
+    table: 'bna_one_time_question_reviews',
     action: 'insert',
-    routing: 'class_question_broadcast',
-    natural_key: `content_job:25:class_question:${Math.floor(index / 8)}:student:${index % 8}`,
+    routing: 'class_question',
+    natural_key: `content_job:25:class_question:${index}`,
     before: null,
-    after: { student_id: index % 8, event_type: 'question', question_text_hash: `c${Math.floor(index / 8)}` },
+    after: { student_id: null, content_job_id: 25, question_text_hash: `c${index}`, source_context: { question_scope: 'class_question', class_question_broadcast: false } },
   }));
-  const scoreRows = [{
-    table: 'bna_torah_learning_entries',
-    action: 'update',
-    routing: 'score_progress',
-    natural_key: 'student:2800:date:2026-06-10:torah_learning',
-    before: { id: 334, progress_percent: '100.00' },
-    after: { student_id: 2800, date: '2026-06-10', daily_completion_percentage: 100 },
-  }];
-  const taskRows = Array.from({ length: 119 }, (_, index) => ({
+  const scoreRows = [];
+  const taskRows = Array.from({ length: 25 }, (_, index) => ({
     table: 'bna_tasks',
     action: 'dry_run_insert_candidate',
     routing: 'internal_task_candidate',
@@ -605,18 +608,19 @@ function syntheticPrivatePreflightReport() {
       approved_jobs: 10,
       inspected_jobs: 10,
       private_transcript_sources_read: 10,
-      student_name_mentions: 261,
-      question_candidates: 1285,
-      personal_question_candidates: 36,
-      class_question_broadcast_candidates: 1249,
-      task_candidate_rows: 119,
-      score_progress_rows: 1,
-      score_progress_no_op_rows: 55,
+      student_name_mentions: 13,
+      question_candidates: 13,
+      personal_question_candidates: 7,
+      class_question_candidates: 6,
+      class_question_broadcast_candidates: 0,
+      task_candidate_rows: 25,
+      score_progress_rows: 0,
+      score_progress_no_op_rows: 10,
       blocked_review_candidates: 0,
     },
     question_routing: [
-      ...Array.from({ length: 36 }, (_, index) => ({ routing: 'personal_question', match_status: 'matched', question_ref: `personal:${index}` })),
-      ...Array.from({ length: 1249 }, (_, index) => ({ routing: 'class_question_broadcast', match_status: 'no_student_name', question_ref: `class:${index}` })),
+      ...Array.from({ length: 7 }, (_, index) => ({ routing: 'personal_question', match_status: 'matched', question_ref: `personal:${index}` })),
+      ...Array.from({ length: 6 }, (_, index) => ({ routing: 'class_question', match_status: 'no_student_name', question_ref: `class:${index}` })),
     ],
     row_level_change_plan: [...personalRows, ...classRows, ...scoreRows, ...taskRows],
   };
@@ -627,7 +631,7 @@ test('production apply preflight emits exact batch commands without enabling app
   const preflight = buildProductionApplyPreflight({
     privateReparseDryRun: syntheticPrivatePreflightReport(),
     approvedJobIds: approvedIds,
-    approvedActions: ['personal_questions', 'class_question_broadcasts', 'score_progress'],
+    approvedActions: ['personal_questions', 'class_questions'],
     snapshotPath: 'C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\snapshot.jsonl',
     rollbackPath: 'C:\\Users\\User\\BNA-Keyholder\\issue41-production-apply\\rollback.jsonl',
     evidenceIntegrity: {
@@ -641,11 +645,12 @@ test('production apply preflight emits exact batch commands without enabling app
   assert.equal(preflight.production_apply_executed, false);
   assert.equal(preflight.production_apply_command_may_be_run_now, false);
   assert.equal(preflight.preflight_controls_passed, true);
-  assert.equal(preflight.expected_row_counts.personal_question_rows, 36);
-  assert.equal(preflight.expected_row_counts.class_question_broadcast_rows, 9992);
-  assert.equal(preflight.expected_row_counts.score_progress_rows, 1);
+  assert.equal(preflight.expected_row_counts.personal_question_rows, 7);
+  assert.equal(preflight.expected_row_counts.class_question_rows, 6);
+  assert.equal(preflight.expected_row_counts.class_question_broadcast_rows, 0);
+  assert.equal(preflight.expected_row_counts.score_progress_rows, 0);
   assert.equal(preflight.expected_row_counts.production_task_rows, 0);
-  assert.equal(preflight.expected_row_counts.internal_task_candidates_not_applied, 119);
+  assert.equal(preflight.expected_row_counts.internal_task_candidates_not_applied, 25);
   assert.match(preflight.final_apply_commands[0].command, new RegExp(`--gate ${APPLY_GATE_PHRASE}`));
   assert.ok(preflight.refusal_checks.some((check) => check.id === 'final_owner_apply_approval_recorded' && check.passed === false && check.severity === 'owner_approval'));
 });

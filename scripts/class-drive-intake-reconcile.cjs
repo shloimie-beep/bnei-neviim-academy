@@ -479,6 +479,7 @@ async function loadDbSnapshot(jobRange, options = {}) {
     groupGoalEntries: [],
     torahEntries: [],
     accountabilityEvents: [],
+    questionReviews: [],
     contentOutputs: [],
     intakeParseRuns: [],
     rawIntake: [],
@@ -537,6 +538,14 @@ async function loadDbSnapshot(jobRange, options = {}) {
       ORDER BY id DESC
       LIMIT 2000
     `, [[...ids.map((id) => `%source_content_job_id%${id}%`), ...ids.map((id) => `%content job #${id}%`)], ids.map(String)]);
+    snapshot.questionReviews = await queryIfTable(client, 'bna_one_time_question_reviews', `
+      SELECT *
+      FROM bna_one_time_question_reviews
+      WHERE content_job_id = ANY($1::int[])
+         OR source_context::text ILIKE ANY($2::text[])
+      ORDER BY id DESC
+      LIMIT 2000
+    `, [ids, [...ids.map((id) => `%source_content_job_id%${id}%`), ...ids.map((id) => `%content_job%${id}%`)]]);
     snapshot.contentOutputs = await queryIfTable(client, 'bna_content_outputs', 'SELECT * FROM bna_content_outputs WHERE job_id = ANY($1::int[]) ORDER BY id ASC', [ids]);
     snapshot.intakeParseRuns = await queryIfTable(client, 'bna_intake_parse_runs', `
       SELECT *
@@ -697,6 +706,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     groupGoalEntries: snapshot.groupGoalEntries,
     torahEntries: snapshot.torahEntries,
     accountabilityEvents: snapshot.accountabilityEvents,
+    questionReviews: snapshot.questionReviews,
     jobRange: args.jobs,
   });
   const recommendation = {
@@ -744,6 +754,7 @@ function reportsFrom(snapshot, auth, driveReadback, args) {
     jobs: snapshot.jobs,
     students: snapshot.students,
     accountabilityEvents: snapshot.accountabilityEvents,
+    questionReviews: snapshot.questionReviews,
     torahEntries: snapshot.torahEntries,
     groupGoalEntries: snapshot.groupGoalEntries,
     exactJobIds: args.jobIds?.length ? args.jobIds : DEFAULT_PRIVATE_REPARSE_JOB_IDS,

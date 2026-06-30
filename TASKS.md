@@ -6,12 +6,24 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
+- [x] `RAW-20260626-004` / `RAW-20260626-006` / `RAW-20260626-007` /
   `RAW-20260626-008` / `RAW-20260628-002` / `REQ-20260626-116` through
   `REQ-20260626-133` plus `REQ-20260628-134` through `REQ-20260628-140`:
   Transcript/Drive/class intake digest rebuild plus Issue #41 Drive addendum,
   approved #83 sync, and Drive-backed parser/backlog repair goal.
-  Current status: #83 private Drive doc sync done; PR #45 and follow-up PR #46
+  Final status: Issue #41 production closeout is applied and read back under
+  `RAW-20260630-001`. The old 917-row/912-broadcast class-question plan was
+  replaced with the owner-approved final scope: 13 question rows total, 7
+  student-specific matched rows, 6 class-scoped general question-review rows,
+  0 student-match blockers, 0 score/progress/grading rows, and 25 private
+  task/research review rows. Guarded apply command
+  `node scripts/class-drive-intake-apply-approved.cjs --apply --approval-id ISSUE41-FINAL-SHLOIMIE-QUESTION-TASK-PARSER-APPLY-NO-SCORE-PROGRESS`
+  committed successfully; readback found 7 personal question rows, 6
+  class-scoped review rows, 25 private-review task rows, 0 score/progress
+  rows, and 0 class-question fanout rows. Idempotency readback passed.
+  Evidence:
+  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-RESULT.md`.
+  Historical status: #83 private Drive doc sync done; PR #45 and follow-up PR #46
   are merged and deployed to Railway `fd93be96-8bec-4c06-b42f-c53d177eab40`.
   Issue #41 status comment posted:
   `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
@@ -60,8 +72,11 @@ not authorize active GHL runtime paths.
   `https://drive.google.com/drive/folders/15FF6m32bEIWbXQSdTtqPw4yu_QIVvCPp`.
   Evidence:
   `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`.
-  Owner approval is still required for any production parser/question/task/
-  score/progress write or other unsafe/raw/external path. Done:
+  The exact Issue #41 production parser/question/task closeout approval was
+  consumed and verified. Any future raw transcript export, broad Drive sync,
+  additional Drive write, class backfill, AI call, send/publish, score/progress
+  write, or other unrelated production mutation still requires a fresh exact
+  owner approval after dry-run evidence. Done:
   active execution run created, Drive-first raw storage and GitHub digest
   policy documented, repo-safe digest exporter added, default raw transcript
   export blocked, 29 body-free recording digests generated, and sanitized
@@ -79,11 +94,11 @@ not authorize active GHL runtime paths.
   sync/readback, read-only Drive listing, fresh read-only intake audit, deploy,
   Railway doctor, live app/content/taxonomy smokes, live content-card readback,
   class-question broadcast dry-run evidence, and active run validation.
-  Remaining decision: `DEC-20260626-101` keeps raw
-  transcript-body export, any further Drive writes beyond #83, production
-  reparse/canonical writes, worker retry, paid retranscription, class backfill,
-  broad Drive sync, and other production mutations blocked until Shloimie
-  explicitly approves an exact next action. Register:
+  Remaining future guardrail: `DEC-20260626-101` keeps raw transcript-body
+  export, any further Drive writes beyond approved targeted batches, worker
+  retry, paid retranscription, class backfill, broad Drive sync, and other
+  unrelated production mutations blocked until Shloimie explicitly approves an
+  exact next action. Register:
   `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`.
 - [x] `RAW-20260626-004` / `REQ-20260626-116` through
   `REQ-20260626-120`: Canonical Issue #24 owner follow-up for helper/task

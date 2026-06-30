@@ -1159,13 +1159,13 @@
         "REQ-20260626-128",
         "REQ-20260626-133"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "targeted job #83 Drive sync was approved and completed under REQ-20260626-128; all broader unsafe or external write paths remain unauthorized",
-      "can_continue_without_operator": false,
-      "blocker": "Owner must explicitly approve any raw transcript-body export, any further Drive doc create/update/delete beyond job #83, production reparse/canonical write, worker retry, paid retranscription, class backfill, broad Drive sync, or other production mutation.",
+      "status": "done",
+      "implementation_status": "done; broad unsafe/raw/Drive/class-backfill paths remain gated while the separately approved exact Issue #41 production apply was consumed and verified",
+      "can_continue_without_operator": true,
+      "blocker": "",
       "blocker_owner": "Shloimie",
-      "blocker_next_action": "For any additional non-dry-run Drive sync or production action, provide a new exact approval after a dry-run plan is recorded.",
-      "next_action": "Await owner approval for any remaining unsafe/raw/external write path; otherwise treat the job #83 sync and digest plan as complete.",
+      "blocker_next_action": "",
+      "next_action": "Future raw transcript export, broad Drive sync, class backfill, sends/publishes, AI calls, paid transcription, or additional production mutations still require a new exact owner approval after dry-run evidence.",
       "acceptance_criteria": [
         "Decision is concise",
         "Dependent write/apply/export paths remain blocked"
@@ -1175,12 +1175,17 @@
         "raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md",
         "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-JOB-83-SYNC.md",
+        "raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-READBACK.md"
       ],
       "verification": [
         "PASS blocker documented as DEC-20260626-101",
         "PASS issue #41 addendum reinforced the no-write owner approval gate",
-        "PASS targeted #83 approval was consumed only by REQ-20260626-128"
+        "PASS targeted #83 approval was consumed only by REQ-20260626-128",
+        "PASS final Issue #41 exact apply used only the approved command/approval ID and did not include Drive writes, raw export, class backfill, sends, AI calls, or score/progress writes",
+        "PASS future unsafe paths remain forbidden unless separately approved"
       ],
       "implementation_files": [
         "tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md",
@@ -1188,7 +1193,7 @@
         "raw-input/RAW-20260626-007-owner-approval-job-83-drive-sync.md"
       ],
       "deployment_required": false,
-      "updated_at": "2026-06-26T14:55:00+03:00"
+      "updated_at": "2026-06-30T08:36:00+03:00"
     },
     {
       "id": "REQ-20260626-129",
@@ -1768,10 +1773,10 @@
       "depends_on": [
         "REQ-20260628-138"
       ],
-      "status": "needs_operator_decision",
-      "implementation_status": "needs_operator_decision; question matching is unblocked in dry-run by class-question broadcast routing, but production apply is not approved and score/progress has no safe row-level plan",
-      "can_continue_without_operator": false,
-      "next_action": "Shloimie must approve a separate exact production apply implementation/path with snapshot and rollback proof before any mutation. Recommended now: review the 917-row class-question dry-run and keep production writes blocked.",
+      "status": "done",
+      "implementation_status": "done; final owner approval RAW-20260630-001 replaced the obsolete 917-row broadcast plan with a guarded 13-question/25-private-review apply, executed and read back successfully",
+      "can_continue_without_operator": true,
+      "next_action": "No further owner classification decision is needed for Issue #41 question/task/parser closeout.",
       "acceptance_criteria": [
         "Exact dry-run plan exists",
         "Approval names exact command/actions",
@@ -1781,15 +1786,31 @@
         "DEC-20260626-101",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md",
         "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json",
-        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md"
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md",
+        "raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-ISSUE-41-OWNER-DECISION-AND-SCOPE.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-DRY-RUN.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-RESULT.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-READBACK.md",
+        "ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/FINAL-PRODUCTION-APPLY-IDEMPOTENCY.md"
       ],
-      "verification": [],
-      "implementation_files": [],
+      "verification": [
+        "PASS final dry-run 13 question rows: 7 personal, 6 class-scoped, 0 blockers, 0 fanout",
+        "PASS production apply committed with exact approval ID",
+        "PASS readback found 7 personal question rows, 6 class question-review rows, 25 private-review task rows, 0 score/progress rows",
+        "PASS idempotency readback showed no duplicate second-run requirement"
+      ],
+      "implementation_files": [
+        "scripts/class-drive-intake-apply-approved.cjs",
+        "src/lib/bna/class-drive-intake-reconcile.js",
+        "tests/class-drive-intake-apply-approved.test.js",
+        "tests/class-drive-intake-reconcile.test.js"
+      ],
       "deployment_required": false,
       "blocker_owner": "Shloimie",
-      "blocker": "Production question/task/score/progress writes are not authorized. The old student-match blocker is resolved in dry-run, but the 917-row question plan and 0-row score/progress state need owner review before any apply path.",
-      "blocker_next_action": "Review CLASS-QUESTION-BROADCAST-DRY-RUN.md and approve a separate exact production apply implementation/path only if the 917-row class-question plan is acceptable.",
-      "updated_at": "2026-06-28T12:32:00+03:00"
+      "blocker": "",
+      "blocker_next_action": "",
+      "updated_at": "2026-06-30T08:36:00+03:00"
     },
     {
       "id": "REQ-20260628-140",
