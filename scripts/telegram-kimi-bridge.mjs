@@ -4114,6 +4114,164 @@ function studentAliases(student) {
   return [...aliases].filter((alias) => alias.length >= 3);
 }
 
+function escapeRegexLiteral(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function isBnaTorahParticipationStudent(student = {}) {
+  const tags = Array.isArray(student.tags) ? student.tags.map((tag) => String(tag || '').toLowerCase()) : [];
+  if (tags.some((tag) => ['external', 'external-accountability', 'not-bna-school', 'not-school', 'non-school'].includes(tag))) {
+    return false;
+  }
+  if (student.project_id !== undefined && student.project_id !== null && Number(student.project_id) !== 1) {
+    return false;
+  }
+  return Boolean(student.id && student.name);
+}
+
+function telegramParticipationAliases(student = {}) {
+  const normalizedName = normalizeStudentLookupText(student.name);
+  const aliases = new Set(studentAliases(student));
+  if (/eitan|golombo|colombo/.test(normalizedName)) {
+    ['eitan chaim', 'eitan', 'golombo', 'golumbo', 'colombo'].forEach((alias) => aliases.add(alias));
+  }
+  if (/huda|weber/.test(normalizedName)) {
+    ['huda', 'hooda', 'who to', 'weber'].forEach((alias) => aliases.add(normalizeStudentLookupText(alias)));
+  }
+  if (/hillel|baraka/.test(normalizedName)) {
+    ['hillel', 'baraka'].forEach((alias) => aliases.add(alias));
+  }
+  if (/menachem|dratler/.test(normalizedName)) {
+    ['menachem', 'mendel', 'dratler'].forEach((alias) => aliases.add(alias));
+  }
+  if (/amitai|kosofsky|kosovsky/.test(normalizedName)) {
+    ['amitai', 'amitay', 'amity', 'kosofsky', 'kosovsky'].forEach((alias) => aliases.add(alias));
+  }
+  return [...aliases]
+    .map((alias) => normalizeStudentLookupText(alias))
+    .filter((alias) => alias.length >= 3)
+    .sort((a, b) => b.length - a.length);
+}
+
+function israelDateString(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jerusalem',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(date).reduce((acc, part) => {
+    acc[part.type] = part.value;
+    return acc;
+  }, {});
+  return `${parts.year}-${parts.month}-${parts.day}`;
+}
+
+function dateStringFromTelegramParticipationText(text, { now = new Date() } = {}) {
+  const normalized = normalizeStudentLookupText(text);
+  const explicit = String(text || '').match(/\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b/);
+  if (explicit) {
+    return `${explicit[1]}-${explicit[2].padStart(2, '0')}-${explicit[3].padStart(2, '0')}`;
+  }
+  if (/\byesterday\b/.test(normalized)) return israelDateString(new Date(now.getTime() - 24 * 60 * 60 * 1000));
+  return israelDateString(now);
+}
+
+function hasTelegramDailyTorahParticipationIntent(text) {
+  const normalized = normalizeStudentLookupText(text);
+  const participationSignal = /\b(credit|full|half|zero|0|50|100|percent|percentage|present|there|attendance|late|absent|learned|torah|status quo|default|everyone else)\b/.test(normalized);
+  const studentSignal = /\b(eitan|golombo|colombo|huda|hooda|hillel|menachem|amitai|kosofsky|kosovsky)\b/.test(normalized);
+  return participationSignal && studentSignal;
+}
+
+function participationScoreFromSegment(segment) {
+  const normalized = normalizeStudentLookupText(segment);
+  if (/\b(full credit|full|100|hundred|all credit)\b/.test(normalized)) return 100;
+  if (/\b(half credit|half|50)\b/.test(normalized)) return 50;
+  if (/\b(zero|0|no credit|did not get credit|didnt get credit|didn t get credit)\b/.test(normalized)) return 0;
+  const percent = normalized.match(/\b(100|[1-9]?\d)\s*(?:percent|%)\b/);
+  if (percent) return Math.max(0, Math.min(100, Number(percent[1])));
+  return null;
+}
+
+function participationAttendanceFromSegment(segment, percent = null) {
+  const normalized = normalizeStudentLookupText(segment);
+  if (/\b(absent|not there|not here|did not come|didnt come|didn t come|missed|no show)\b/.test(normalized)) return 'absent';
+  if (/\b(late|came late)\b/.test(normalized)) return 'late';
+  if (/\b(was there|there|present|came|attended|showed up)\b/.test(normalized)) return 'present';
+  return percent !== null ? 'present' : null;
+}
+
+function hasDefaultFullParticipation(text) {
+  const normalized = normalizeStudentLookupText(text);
+  return /\b(status quo|without updating|default|everyone else|all boys|all students|they re there|they are there)\b/.test(normalized)
+    && /\b(100|full credit|full|hundred)\b/.test(normalized);
+}
+
+function findTelegramParticipationMentions(normalizedText, students = []) {
+  const mentions = [];
+  const seen = new Set();
+  for (const student of students.filter(isBnaTorahParticipationStudent)) {
+    for (const alias of telegramParticipationAliases(student)) {
+      const pattern = new RegExp(`(^|\\s)${escapeRegexLiteral(alias)}(?=\\s|$)`, 'g');
+      let match;
+      while ((match = pattern.exec(normalizedText))) {
+        const index = match.index + (match[1] ? match[1].length : 0);
+        const key = `${student.id}:${index}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        mentions.push({ student, alias, index });
+      }
+    }
+  }
+  return mentions.sort((a, b) => a.index - b.index || b.alias.length - a.alias.length);
+}
+
+function parseTelegramDailyTorahParticipation(text, students = [], options = {}) {
+  if (!hasTelegramDailyTorahParticipationIntent(text)) return [];
+  const normalizedText = normalizeStudentLookupText(text);
+  const targetStudents = students.filter(isBnaTorahParticipationStudent);
+  const rowsByStudentId = new Map();
+  const date = dateStringFromTelegramParticipationText(text, options);
+
+  if (hasDefaultFullParticipation(text)) {
+    for (const student of targetStudents) {
+      rowsByStudentId.set(Number(student.id), {
+        student,
+        date,
+        percent: 100,
+        attendance_status: 'present',
+        source: 'default_full_participation',
+        default_rule_applied: true,
+        segment: 'default present/full credit',
+      });
+    }
+  }
+
+  const mentions = findTelegramParticipationMentions(normalizedText, targetStudents);
+  for (let index = 0; index < mentions.length; index += 1) {
+    const mention = mentions[index];
+    const next = mentions[index + 1];
+    const start = Math.max(0, mention.index - 35);
+    const end = next ? next.index : Math.min(normalizedText.length, mention.index + 140);
+    const segment = normalizedText.slice(start, end).trim();
+    const percent = participationScoreFromSegment(segment);
+    const attendanceStatus = participationAttendanceFromSegment(segment, percent);
+    if (percent === null && !attendanceStatus) continue;
+    rowsByStudentId.set(Number(mention.student.id), {
+      student: mention.student,
+      date,
+      percent: percent === null ? 100 : percent,
+      attendance_status: attendanceStatus || 'present',
+      source: 'named_mention',
+      default_rule_applied: false,
+      segment,
+    });
+  }
+
+  return [...rowsByStudentId.values()]
+    .sort((a, b) => String(a.student.name || '').localeCompare(String(b.student.name || '')));
+}
+
 function isLikelyStudentAccountabilityUnit(text, eventType, student) {
   return isLikelyTelegramStudentAccountabilityUnit(text, eventType, student);
   if (student) return true;
@@ -4665,6 +4823,145 @@ async function captureTelegramNoteToCrm(config, text, chatId, messageId) {
   }
 }
 
+async function existingTelegramParticipationEvent(config, row, messageId) {
+  const key = `telegram-daily-torah:${messageId}:${row.student.id}:${row.date}`;
+  try {
+    const result = await appRequest(
+      config,
+      'GET',
+      `/api/bna/accountability?event_type=learning_note&student_id=${encodeURIComponent(row.student.id)}&limit=100`
+    );
+    return (result?.events || []).find((event) =>
+      event?.metadata?.telegram_daily_torah_participation_key === key ||
+      (
+        String(event?.source || '') === 'telegram' &&
+        String(event?.source_message_id || '') === String(messageId) &&
+        Number(event?.student_id || 0) === Number(row.student.id) &&
+        String(event?.metadata?.kind || '') === 'telegram_daily_torah_participation'
+      )
+    ) || null;
+  } catch (error) {
+    log(`Telegram participation idempotency readback skipped for student ${row.student.id}: ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
+async function captureTelegramDailyTorahParticipation(config, text, chatId, messageId, students = []) {
+  const rows = parseTelegramDailyTorahParticipation(text, students);
+  if (!rows.length) {
+    return {
+      participationRows: [],
+      torahLearningEntriesCreated: 0,
+      participationAccountabilityEventsCreated: 0,
+    };
+  }
+
+  let summary = null;
+  try {
+    summary = await appRequest(config, 'GET', `/api/bna/torah-learning?date=${encodeURIComponent(rows[0].date)}`);
+  } catch (error) {
+    log(`Torah summary lookup skipped before Telegram participation capture: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const summaryByStudentId = new Map((summary?.students || []).map((student) => [Number(student.id), student]));
+  const savedRows = [];
+  let torahLearningEntriesCreated = 0;
+  let participationAccountabilityEventsCreated = 0;
+
+  for (const row of rows) {
+    const summaryStudent = summaryByStudentId.get(Number(row.student.id)) || {};
+    const goal = summaryStudent.goal || {};
+    const goalMinutes = Number(goal.goal_minutes || 10);
+    const goalType = String(goal.goal_type || 'INSIDE').toUpperCase();
+    const creditedMinutes = Math.max(0, Math.min(goalMinutes, goalMinutes * (Number(row.percent) / 100)));
+    const insideEngagedMinutes = goalType === 'INSIDE' ? creditedMinutes : 0;
+    const key = `telegram-daily-torah:${messageId}:${row.student.id}:${row.date}`;
+    const note = [
+      `Telegram daily Torah participation ${row.date}: ${row.percent}% for ${row.student.name}.`,
+      row.attendance_status ? `Attendance: ${row.attendance_status}.` : '',
+      row.default_rule_applied ? 'Default present/full-credit rule applied.' : 'Named operator mention applied.',
+      `Source message: ${messageId}.`,
+    ].filter(Boolean).join(' ');
+
+    const saved = await appRequest(config, 'POST', '/api/bna/torah-learning/entries', {
+      student_id: row.student.id,
+      date: row.date,
+      goal_minutes: goalMinutes,
+      goal_type: goalType,
+      engaged_listening_minutes: creditedMinutes,
+      inside_engaged_minutes: insideEngagedMinutes,
+      listening_without_following_minutes: 0,
+      note,
+    });
+    torahLearningEntriesCreated += 1;
+
+    let accountabilityEvent = await existingTelegramParticipationEvent(config, row, messageId);
+    if (!accountabilityEvent) {
+      const created = await appRequest(config, 'POST', '/api/bna/accountability', {
+        event_type: 'learning_note',
+        student_id: row.student.id,
+        student_name: row.student.name,
+        title: `Torah participation update for ${row.student.name}`,
+        notes: note,
+        topic: 'Torah daily participation',
+        goal_target_value: goalMinutes,
+        goal_actual_value: creditedMinutes,
+        goal_unit: 'minutes',
+        progress_percent: row.percent,
+        attendance_status: row.attendance_status || null,
+        engagement_level: row.percent >= 100 ? 'high' : row.percent >= 50 ? 'medium' : 'low',
+        follow_up_required: false,
+        metadata: {
+          parser: 'telegram-daily-torah-participation-v1',
+          kind: 'telegram_daily_torah_participation',
+          telegram_daily_torah_participation_key: key,
+          torah_entry_id: saved?.saved?.entry?.id || null,
+          source_chat_id: String(chatId || ''),
+          source_message_id: String(messageId || ''),
+          source_date: row.date,
+          default_rule_applied: Boolean(row.default_rule_applied),
+          repo_raw_redacted: true,
+        },
+        source: 'telegram',
+        source_message_id: String(messageId || ''),
+        occurred_at: `${row.date}T10:00:00+03:00`,
+      });
+      accountabilityEvent = created?.event || created;
+      participationAccountabilityEventsCreated += 1;
+    }
+
+    savedRows.push({
+      student_id: row.student.id,
+      student_name: row.student.name,
+      date: row.date,
+      percent: row.percent,
+      attendance_status: row.attendance_status,
+      torah_entry_id: saved?.saved?.entry?.id || null,
+      accountability_event_id: accountabilityEvent?.id || null,
+      default_rule_applied: Boolean(row.default_rule_applied),
+    });
+  }
+
+  appendAgentTaskLedger({
+    event: 'telegram_daily_torah_participation_captured',
+    source: 'telegram',
+    chat_id: chatId,
+    message_id: messageId,
+    title: 'Captured Telegram daily Torah participation',
+    stage: 'done',
+    category: 'student_operations',
+    assigned_to: 'Codex',
+    notes: `Captured ${savedRows.length} row-level Torah participation update(s).`,
+    row_count: savedRows.length,
+    date: savedRows[0]?.date || null,
+  });
+
+  return {
+    participationRows: savedRows,
+    torahLearningEntriesCreated,
+    participationAccountabilityEventsCreated,
+  };
+}
+
 async function captureRambleToApp(config, text, chatId, messageId) {
   if (isScopedProjectBot(config)) {
     return captureScopedProjectToApp(config, text, chatId, messageId);
@@ -4728,11 +5025,16 @@ async function captureRambleToApp(config, text, chatId, messageId) {
     log(`Student lookup skipped: ${error instanceof Error ? error.message : String(error)}`);
   }
 
+  const participationCapture = await captureTelegramDailyTorahParticipation(config, text, chatId, messageId, students);
   let eventsCreated = 0;
   const studentMatchDecisions = [];
   const rambleUnits = splitRambleIntoUnits(text);
   const accountabilityUnits = new Set();
   for (const unit of rambleUnits) {
+    if (participationCapture.participationRows.length && hasTelegramDailyTorahParticipationIntent(unit || text)) {
+      accountabilityUnits.add(unit);
+      continue;
+    }
     const eventType = detectAccountabilityType(unit);
     if (!eventType) continue;
 
@@ -4824,7 +5126,9 @@ async function captureRambleToApp(config, text, chatId, messageId) {
     parsedItemCounts: taskResult?.parsed?.ramble_protocol?.item_counts || null,
     agentJobs: taskResult?.agent_jobs || (taskResult?.agent_job ? [taskResult.agent_job] : []),
     agentJobsCreated: Number(taskResult?.agent_jobs?.length || (taskResult?.agent_job ? 1 : 0)),
-    eventsCreated,
+    eventsCreated: eventsCreated + Number(participationCapture.participationAccountabilityEventsCreated || 0),
+    torahLearningEntriesCreated: participationCapture.torahLearningEntriesCreated,
+    participationRows: participationCapture.participationRows,
     studentMatchDecisions,
     paymentIntakeCreated,
     contactLeadsCreated: contactCapture.contactLeadsCreated,
@@ -5248,6 +5552,9 @@ function captureSummaryText(captureSummary = {}) {
   if (captureSummary.eventsCreated) {
     lines.push(`Filed in Students: ${captureSummary.eventsCreated} accountability item(s).`);
   }
+  if (captureSummary.torahLearningEntriesCreated) {
+    lines.push(`Filed in Torah progress: ${captureSummary.torahLearningEntriesCreated} participation row(s).`);
+  }
 
   if (captureSummary.paymentIntakeCreated) {
     lines.push(`Filed in Accounting: ${captureSummary.paymentIntakeCreated} payment intake item(s).`);
@@ -5300,6 +5607,7 @@ function hasStructuredCapture(captureSummary = {}) {
   return Boolean(
     Number(captureSummary.tasksCreated || 0) ||
     Number(captureSummary.eventsCreated || 0) ||
+    Number(captureSummary.torahLearningEntriesCreated || 0) ||
     Number(captureSummary.paymentIntakeCreated || 0) ||
     Number(captureSummary.contactLeadsCreated || 0) ||
     Number(captureSummary.contactLeadsUpdated || 0) ||

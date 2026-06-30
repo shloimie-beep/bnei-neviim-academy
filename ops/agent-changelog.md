@@ -27393,3 +27393,36 @@ Verification:
   bodies false, 0 privacy findings.
 - `npm run content:card-topic-audit`: 29 recordings, 29 generated titles, 10
   explicit parser-backlog items, 0 routing gaps, 0 topic-classification gaps.
+
+## 2026-06-30 - Deploy closeout and Telegram Torah participation parser repair
+
+- Stored the redacted deploy/grade/Telegram follow-up as
+  `raw-input/RAW-20260630-002-deploy-grade-telegram-followup.md` and promoted
+  the durable deploy-closeout plus Torah participation default rules into
+  `MEMORY.md`.
+- Added a Telegram daily Torah participation parser/persistence path in
+  `scripts/telegram-kimi-bridge.mjs`. It recognizes explicit half/full/zero,
+  late/present/absent language, applies the present/100% default only when the
+  operator says so, excludes duplicate/external/non-BNA rows, and writes
+  row-level Torah learning plus accountability records from Telegram intake.
+- Added `tests/telegram-daily-participation-parser.test.js` to cover the
+  2026-06-29 correction pattern and the no-fanout behavior when no explicit
+  default phrase is present.
+- Deployed the current parser build to Railway production service
+  `skillful-motivation`; deployment
+  `9f6987ac-44ae-4bb9-b308-849d552f8c2a` reached `SUCCESS`.
+- Post-deploy live smoke passed:
+  `ops/live-smokes/2026-06-30T06-22-23-969Z-live-app-smoke.md`.
+- Post-deploy Telegram status readback passed: configured hosted polling worker,
+  bridge runtime healthy/running, bot username `bneineviimacademy_bot`, Codex
+  enabled.
+
+Verification:
+
+- `node --check scripts/telegram-kimi-bridge.mjs`: passed.
+- `node --test tests/telegram-daily-participation-parser.test.js tests/telegram-media-routing.test.js`: 13/13 passed.
+- `npm run secrets:audit`: 5410 tracked paths, 0 tracked secret-risk files.
+- `npm run railway:redeploy`: uploaded current local build to production.
+- `npm run railway:doctor`: deployment
+  `9f6987ac-44ae-4bb9-b308-849d552f8c2a` `SUCCESS`.
+- `npm run app:smoke`: passed.
