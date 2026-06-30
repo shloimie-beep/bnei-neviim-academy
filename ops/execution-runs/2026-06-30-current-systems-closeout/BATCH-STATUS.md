@@ -8,4 +8,4 @@
 | content | REQ-20260630-204 | Done | None |
 | class_intake | REQ-20260630-205 | Done | Future unsafe writes require exact approval |
 | telegram | REQ-20260630-206 | Done | None |
-| closeout | REQ-20260630-208 | Done | Final records PR/merge |
+| closeout | REQ-20260630-208 | Done | None |

@@ -24,6 +24,8 @@ Resend live sender/webhook configuration and any real test email send.
 | Railway deployment | `6257a4af-bb62-4fd4-b1b5-aff1ec057f40` |
 | Production app | https://bneineviimacademy.org |
 | Records branch | `codex/current-systems-closeout-records-20260630` |
+| Records PR | https://github.com/shloimie-beep/bnei-neviim-academy/pull/57 |
+| Records merge commit | `668072eb85399754f3ce27af228f66912b6d161c` |
 
 ## Requirement status
 

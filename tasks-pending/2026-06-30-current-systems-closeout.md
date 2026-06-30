@@ -48,13 +48,13 @@ raw packet is preserved as `RAW-20260630-005`.
 
 | ID | Files/routes/components | Verification | Commit/PR/deploy |
 |---|---|---|---|
-| REQ-20260630-201 | `raw-input/RAW-20260630-005-*`, this register, `ops/system-audits/2026-06-30-current-systems-closeout.md`, `ops/execution-runs/2026-06-30-current-systems-closeout/*` | Raw fingerprint recorded; JSON/JSONL validation in final closeout | Records branch `codex/current-systems-closeout-records-20260630` |
+| REQ-20260630-201 | `raw-input/RAW-20260630-005-*`, this register, `ops/system-audits/2026-06-30-current-systems-closeout.md`, `ops/execution-runs/2026-06-30-current-systems-closeout/*` | Raw fingerprint recorded; JSON/JSONL validation in final closeout | Records PR #57 merged |
 | REQ-20260630-202 | `server.js`, `public/operations.html`, Resend/content helpers/tests | PR #56 merged; Railway deployment `6257a4af-bb62-4fd4-b1b5-aff1ec057f40` reached `SUCCESS`; app smoke passed | PR #56, merge `98cfc4649e4bc52009a1aac9ee4616c1f5eeb272` |
 | REQ-20260630-203 | Resend routes/helpers, Operations Email/CRM/communications UI/tests | Email/Resend UX smoke passed with `external_send_performed=false`; CRM contacts smoke returned 1591 leads and 112 communications; communications/security watchdogs passed | PR #56 deployed; external live Resend/send blocker remains |
 | REQ-20260630-204 | `src/lib/bna/content-card-view-model.js`, `scripts/audit-content-card-topic-filter.cjs`, content tests | Content audit passed; live readback showed Torah 25, Class Notes 25, raw private markers false | PR #56 deployed and live-readback committed |
 | REQ-20260630-205 | `scripts/smoke-class-upload-trace-live.mjs`, class/Drive evidence | Issue #41 closed; job #78 readback `transcribed` / `04 Parsed`; no transcript body in report | Current records branch adds live trace proof |
 | REQ-20260630-206 | `scripts/telegram-kimi-bridge.mjs`, Telegram parser tests, ledger/changelog | Prior parser tests 13/13 and runtime healthy/running readback recorded | Existing deployed Telegram parser repair |
-| REQ-20260630-207 | GitHub PR state and append-only records | PR #52 and PR #55 closed as superseded; PR #56 merged | Records branch from `origin/master` after merge |
+| REQ-20260630-207 | GitHub PR state and append-only records | PR #52 and PR #55 closed as superseded; PR #56 merged | Records PR #57 merged |
 | REQ-20260630-208 | Register, report, execution run, ledger/changelog | Final validation commands recorded after file write | Records PR/merge for closeout docs |
 
 ## Decisions and blockers
