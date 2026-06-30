@@ -1,0 +1,553 @@
+{
+  "run_id": "2026-06-30-current-systems-closeout",
+  "title": "Current Systems Closeout Before UI Correction",
+  "updated_at": "2026-06-30T12:35:00.000Z",
+  "git_refs": {
+    "branch": "codex/current-systems-closeout-records-20260630",
+    "pr_number": "records-pr-pending",
+    "pr_branch": "codex/current-systems-closeout-records-20260630",
+    "expected_remote_head": "98cfc4649e4bc52009a1aac9ee4616c1f5eeb272"
+  },
+  "sources": [
+    {
+      "source_id": "RAW-20260630-005",
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "captured_at": "2026-06-30T10:25:00+03:00",
+      "content_fingerprint": "sha256:39b4eb10a15f733b179e8e42f6bb187ff31552aa11d7308ab5f8e84fe6b2110f",
+      "privacy_classification": "internal_goal_closeout_packet_no_secret_values",
+      "workspace": "bna",
+      "project": "current_systems_closeout",
+      "source_type": "codex_chat_attachment"
+    }
+  ],
+  "source_statements": [
+    {
+      "statement_id": "SRC-20260630-005-001",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Create the raw intake, dated requirement register, and single closeout report before returning to UI correction.",
+      "requirement_id": "REQ-20260630-201",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-002",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Reconcile Git, PR, worktree, deploy, and Railway truth for the current in-flight systems.",
+      "requirement_id": "REQ-20260630-202",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-003",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Audit One Time email/contact setup and leave precise Resend inbound/outbound blockers.",
+      "requirement_id": "REQ-20260630-203",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-004",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Diagnose and repair Content Library taxonomy and Torah filtering behavior.",
+      "requirement_id": "REQ-20260630-204",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-005",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Audit class upload and Drive intake parsing, questions, grades, and progress routing.",
+      "requirement_id": "REQ-20260630-205",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-006",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Audit Telegram runtime and parser behavior without sending messages.",
+      "requirement_id": "REQ-20260630-206",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-007",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Reconcile dirty worktree, superseded PRs, deploy path, and evidence.",
+      "requirement_id": "REQ-20260630-207",
+      "classification": "requirement"
+    },
+    {
+      "statement_id": "SRC-20260630-005-008",
+      "source_id": "RAW-20260630-005",
+      "source_statement": "Run verification, write evidence, and leave terminal statuses or blockers.",
+      "requirement_id": "REQ-20260630-208",
+      "classification": "requirement"
+    }
+  ],
+  "canonical_tasks": [
+    {
+      "id": "TASK-20260630-005",
+      "canonical_key": "current-systems-closeout-before-ui-correction",
+      "title": "Execute current systems closeout before UI correction",
+      "owner": "Codex",
+      "workspace_key": "bna",
+      "project_key": "current_systems_closeout",
+      "source_id": "RAW-20260630-005",
+      "status": "completed_with_external_resend_blocker",
+      "visible_lane": "Tasks"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "REQ-20260630-201",
+      "title": "Register raw packet and closeout records",
+      "area": "intake",
+      "status": "done",
+      "expected_result": "The raw packet, register, report, execution run, ledger, changelog, and memory note exist with linked IDs.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-001"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "current_systems_closeout",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P0",
+      "batch_id": "intake",
+      "depends_on": [],
+      "implementation_status": "Raw intake, requirement register, closeout report, and execution run are recorded.",
+      "can_continue_without_operator": true,
+      "next_action": "None; terminal evidence recorded.",
+      "acceptance_criteria": [
+        "Raw source is preserved with fingerprint.",
+        "Dated register and closeout report exist.",
+        "Execution run and append-only records are updated."
+      ],
+      "evidence": [
+        "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+        "raw-input/RAW-20260630-005-current-systems-closeout.md",
+        "tasks-pending/2026-06-30-current-systems-closeout.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/execution-runs/2026-06-30-current-systems-closeout/requirements.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md",
+        "memory/2026-06-30.md"
+      ],
+      "verification": [
+        "Raw fingerprint recorded.",
+        "JSON/JSONL validation included in final closeout."
+      ],
+      "implementation_files": [
+        "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+        "raw-input/RAW-20260630-005-current-systems-closeout.md",
+        "tasks-pending/2026-06-30-current-systems-closeout.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/execution-runs/2026-06-30-current-systems-closeout/requirements.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md",
+        "memory/2026-06-30.md"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-202",
+      "title": "Reconcile Git, PR, Railway, and deployment truth",
+      "area": "release",
+      "status": "done",
+      "expected_result": "The combined release branch is merged, deployed, and smoke-tested against the correct Railway target.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-002"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "production_release",
+      "owner": "Codex",
+      "category": "deployment_readiness",
+      "priority": "P0",
+      "batch_id": "release",
+      "depends_on": [
+        "REQ-20260630-201"
+      ],
+      "implementation_status": "PR #56 merged and Railway production deployment succeeded.",
+      "can_continue_without_operator": true,
+      "next_action": "None; release and deploy truth recorded.",
+      "acceptance_criteria": [
+        "Clean combined branch from master preserves PR #52 and PR #55 behavior.",
+        "Railway target guard points at BNA production.",
+        "Production deploy and live app smoke pass."
+      ],
+      "evidence": [
+        "ops/live-smokes/2026-06-30T12-13-06-243Z-live-app-smoke.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md"
+      ],
+      "deployment_evidence": [
+        "Railway deployment 6257a4af-bb62-4fd4-b1b5-aff1ec057f40 reached SUCCESS",
+        "ops/live-smokes/2026-06-30T12-13-06-243Z-live-app-smoke.md"
+      ],
+      "verification": [
+        "PR #56 readback: MERGED at 2026-06-30T12:20:38Z.",
+        "Railway doctor target guard passed for skillful-motivation production.",
+        "Live app smoke passed after deployment."
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/integrations/resend-client.js",
+        "src/lib/integrations/resend-inbound-crm.js",
+        "src/lib/bna/content-card-view-model.js",
+        "scripts/audit-content-card-topic-filter.cjs",
+        "tests/resend-client.test.js",
+        "tests/resend-inbound-crm.test.js",
+        "tests/resend-inbound-webhook.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/assistant-portal-communications-contract.test.js",
+        "tests/one-time-communications-workspace.test.js",
+        "tests/content-card-view-model.test.js",
+        "tests/operations-content-library-taxonomy.test.js"
+      ],
+      "implementation_commit": "8664e2d1",
+      "pushed_commit": "8664e2d1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/56",
+      "deployment_required": true,
+      "deployment_id": "6257a4af-bb62-4fd4-b1b5-aff1ec057f40",
+      "deployed_commit": "8664e2d1",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-30T12-13-06-243Z-live-app-smoke.md"
+      ],
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-203",
+      "title": "Audit One Time email/contact setup and Resend blockers",
+      "area": "communications",
+      "status": "blocked",
+      "expected_result": "One Time communications surfaces are verified in no-send mode and live Resend completion is blocked on exact external setup/approval.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-003"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class",
+      "owner": "Codex plus external Resend/account owner",
+      "category": "email",
+      "priority": "P0",
+      "batch_id": "communications",
+      "depends_on": [
+        "REQ-20260630-202"
+      ],
+      "implementation_status": "Local bridge, UX, no-send smokes, and contact readbacks are done; live Resend sender/webhook/send is externally blocked.",
+      "can_continue_without_operator": false,
+      "next_action": "External owner must configure/confirm Resend sender and webhook, then approve signed inbound replay and any real send smoke recipient.",
+      "acceptance_criteria": [
+        "First-party communications bridge deployed.",
+        "Operations Email and CRM contacts surfaces pass no-send/scoped smokes.",
+        "Raw provider bodies stay hidden.",
+        "External send/webhook blocker is precise."
+      ],
+      "evidence": [
+        "ops/live-smokes/2026-06-30T12-28-31-153Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-29-08-404Z-one-time-crm-contacts-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-13-04-134Z-communications-screening-live-smoke.md",
+        "ops/watchdog-audits/2026-06-30T12-07-communications-alerts.md",
+        "ops/watchdog-audits/2026-06-30T12-07-watchdog-security-routes.md"
+      ],
+      "deployment_evidence": [
+        "Railway deployment 6257a4af-bb62-4fd4-b1b5-aff1ec057f40 reached SUCCESS",
+        "ops/live-smokes/2026-06-30T12-28-31-153Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-29-08-404Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "verification": [
+        "Email/Resend UX smoke passed at 1024px and 390px with external_send_performed=false.",
+        "CRM contacts smoke returned 1591 scoped leads and 112 scoped communications.",
+        "Communications screening and security watchdogs passed."
+      ],
+      "implementation_files": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/integrations/resend-client.js",
+        "src/lib/integrations/resend-inbound-crm.js",
+        "tests/resend-client.test.js",
+        "tests/resend-inbound-crm.test.js",
+        "tests/resend-inbound-webhook.test.js",
+        "tests/communications-screening-import-ui.test.js",
+        "tests/assistant-portal-communications-contract.test.js",
+        "tests/one-time-communications-workspace.test.js"
+      ],
+      "implementation_commit": "723924ea",
+      "pushed_commit": "8664e2d1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/56",
+      "deployment_required": true,
+      "deployment_id": "6257a4af-bb62-4fd4-b1b5-aff1ec057f40",
+      "deployed_commit": "8664e2d1",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-30T12-28-31-153Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-29-08-404Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "blocker": "Resend live sender/webhook/test-send path requires external configuration and explicit safe recipient approval.",
+      "blocker_owner": "Shloimie / Resend account owner",
+      "blocker_next_action": "Configure RESEND_FROM_EMAIL, RESEND_WEBHOOK_SECRET, and Resend email.received webhook to https://bneineviimacademy.org/api/resend/inbound; approve signed inbound replay/readback and provide safe recipient before npm run email:smoke.",
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-204",
+      "title": "Repair Content Library taxonomy and Torah/Class Notes filters",
+      "area": "content",
+      "status": "done",
+      "expected_result": "Content cards render with normalized topic buckets and Torah/Class Notes filters work without exposing raw private bodies.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-004"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "content_library",
+      "owner": "Codex",
+      "category": "implementation",
+      "priority": "P0",
+      "batch_id": "content",
+      "depends_on": [
+        "REQ-20260630-202"
+      ],
+      "implementation_status": "Content taxonomy and multibucket topic filtering are deployed and live-readback verified.",
+      "can_continue_without_operator": true,
+      "next_action": "None; deployed and verified.",
+      "acceptance_criteria": [
+        "Generated class recordings receive normalized topic buckets.",
+        "Torah and Class Notes filters return expected live counts.",
+        "Raw private transcript/body markers are absent from UI readback."
+      ],
+      "evidence": [
+        "ops/class-drive-intake/2026-06-30-content-topic-routing-closeout/CONTENT-CARD-TOPIC-FILTER-AUDIT.md",
+        "ops/class-drive-intake/2026-06-30-content-topic-routing-closeout/index.md",
+        "ops/live-smokes/2026-06-30T12-18-15-254Z-content-topic-filter-live-readback.md",
+        "ops/watchdog-audits/2026-06-30T12-07-content-routing.md"
+      ],
+      "deployment_evidence": [
+        "Railway deployment 6257a4af-bb62-4fd4-b1b5-aff1ec057f40 reached SUCCESS",
+        "ops/live-smokes/2026-06-30T12-18-15-254Z-content-topic-filter-live-readback.md"
+      ],
+      "verification": [
+        "content:card-topic-audit passed for 29 recordings with raw bodies false, generated titles 29, routing gaps 0, topic classification gaps 0.",
+        "Live readback: All topics 65, Torah 25, Class Notes 25, raw_private_body_markers_found=false."
+      ],
+      "implementation_files": [
+        "src/lib/bna/content-card-view-model.js",
+        "scripts/audit-content-card-topic-filter.cjs",
+        "tests/content-card-view-model.test.js",
+        "tests/operations-content-library-taxonomy.test.js"
+      ],
+      "implementation_commit": "b18c00be",
+      "pushed_commit": "8664e2d1",
+      "pull_request": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/56",
+      "deployment_required": true,
+      "deployment_id": "6257a4af-bb62-4fd4-b1b5-aff1ec057f40",
+      "deployed_commit": "8664e2d1",
+      "live_smoke": [
+        "ops/live-smokes/2026-06-30T12-18-15-254Z-content-topic-filter-live-readback.md"
+      ],
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-205",
+      "title": "Audit class upload and Drive intake parsing",
+      "area": "class_intake",
+      "status": "done",
+      "expected_result": "The current class/Drive intake state is reconciled, Issue #41 is closed, and live upload trace proves processed state without transcript export.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-005"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "class_drive_intake",
+      "owner": "Codex",
+      "category": "run_control",
+      "priority": "P1",
+      "batch_id": "class_intake",
+      "depends_on": [
+        "REQ-20260630-201"
+      ],
+      "implementation_status": "Done for current closeout; future broad/raw/Drive/class writes still require exact approval.",
+      "can_continue_without_operator": true,
+      "next_action": "None for Issue #41. Future unsafe writes require exact approval.",
+      "acceptance_criteria": [
+        "Current class/Drive intake truth audited.",
+        "Issue #41 final state reconciled.",
+        "Live upload trace proves processed state without exporting transcript body."
+      ],
+      "evidence": [
+        "ops/live-smokes/2026-06-30T12-23-32-198Z-class-upload-trace-live-smoke.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "verification": [
+        "Issue #41 closed at 2026-06-30T05:42:55Z.",
+        "Issue #18 remains open as read-only historical evidence.",
+        "Final Issue #41 apply/readback/idempotency recorded 7 personal question rows, 6 class-scoped review rows, 25 private task/research review rows, 0 score/progress/grading rows, 0 fanout.",
+        "Class upload trace smoke verified job #78 as transcribed / Drive stage 04 Parsed with no transcript body in report."
+      ],
+      "implementation_files": [
+        "scripts/smoke-class-upload-trace-live.mjs",
+        "ops/live-smokes/2026-06-30T12-23-32-198Z-class-upload-trace-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-23-32-198Z-class-upload-trace-live-smoke.json"
+      ],
+      "deployment_required": false,
+      "live_required": true,
+      "live_smoke": [
+        "ops/live-smokes/2026-06-30T12-23-32-198Z-class-upload-trace-live-smoke.md"
+      ],
+      "blocker": "Future raw/class/Drive/write backfills require exact approval under DEC-20260626-101.",
+      "blocker_owner": "Shloimie",
+      "blocker_next_action": "Provide exact approval ID and scope before any future unsafe write.",
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-206",
+      "title": "Audit Telegram runtime and parser health",
+      "area": "telegram",
+      "status": "done",
+      "expected_result": "Telegram parser/runtime evidence is reconciled and no unauthorized outbound messages are sent.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-006"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "telegram_ops",
+      "owner": "Codex",
+      "category": "implementation",
+      "priority": "P1",
+      "batch_id": "telegram",
+      "depends_on": [
+        "REQ-20260630-201"
+      ],
+      "implementation_status": "Telegram parser repair evidence is recorded; this closeout performed no broad real sends.",
+      "can_continue_without_operator": true,
+      "next_action": "None for this closeout.",
+      "acceptance_criteria": [
+        "Telegram bridge/parser status reconciled.",
+        "Parser repair evidence recorded.",
+        "No unauthorized outbound messages sent."
+      ],
+      "evidence": [
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "verification": [
+        "Prior parser verification passed: node --check scripts/telegram-kimi-bridge.mjs.",
+        "Prior parser tests passed: node --test tests/telegram-daily-participation-parser.test.js tests/telegram-media-routing.test.js, 13/13.",
+        "Railway production deploy and post-deploy status readback recorded as healthy/running."
+      ],
+      "implementation_files": [
+        "scripts/telegram-kimi-bridge.mjs",
+        "tests/telegram-daily-participation-parser.test.js",
+        "tests/telegram-media-routing.test.js",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-207",
+      "title": "Reconcile dirty worktree, superseded PRs, and evidence",
+      "area": "release_management",
+      "status": "done",
+      "expected_result": "The release is isolated from the primary dirty workspace, superseded PRs are closed, and final records are based on merged master.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-007"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "release_management",
+      "owner": "Codex",
+      "category": "reconciliation",
+      "priority": "P0",
+      "batch_id": "release",
+      "depends_on": [
+        "REQ-20260630-202"
+      ],
+      "implementation_status": "Primary dirty worktree was avoided; PR #52/#55 closed as superseded; records branch created after PR #56 merge.",
+      "can_continue_without_operator": true,
+      "next_action": "None; records branch commit/PR finalizes documentation.",
+      "acceptance_criteria": [
+        "Release work isolated from primary dirty workspace.",
+        "Superseded PRs closed.",
+        "Merged production code matches deployed behavior."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "verification": [
+        "PR #56 readback: MERGED.",
+        "PR #52 and PR #55 closed as superseded by PR #56.",
+        "Records branch based on origin/master after merge commit 98cfc464."
+      ],
+      "implementation_files": [
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "tasks-pending/2026-06-30-current-systems-closeout.md",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "deployment_required": false,
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    },
+    {
+      "id": "REQ-20260630-208",
+      "title": "Run verification and leave terminal statuses/blockers",
+      "area": "closeout",
+      "status": "done",
+      "expected_result": "Verification, deploy/live-smoke evidence, ledger/changelog, and exact blockers are recorded.",
+      "source_id": "RAW-20260630-005",
+      "source_statement_ids": [
+        "SRC-20260630-005-008"
+      ],
+      "source_path": "raw-input/RAW-20260630-005-current-systems-closeout-source.txt",
+      "workspace_key": "bna",
+      "project_key": "current_systems_closeout",
+      "owner": "Codex",
+      "category": "evidence",
+      "priority": "P0",
+      "batch_id": "closeout",
+      "depends_on": [
+        "REQ-20260630-201",
+        "REQ-20260630-202",
+        "REQ-20260630-204",
+        "REQ-20260630-205",
+        "REQ-20260630-206",
+        "REQ-20260630-207"
+      ],
+      "implementation_status": "Done with external blockers listed.",
+      "can_continue_without_operator": true,
+      "next_action": "None locally; Resend/send decisions are external.",
+      "acceptance_criteria": [
+        "Tests, watchdogs, deploys, and live smokes recorded.",
+        "Every requirement has a terminal status.",
+        "Blocked items name owner and exact next action."
+      ],
+      "evidence": [
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/execution-runs/2026-06-30-current-systems-closeout/requirements.json",
+        "ops/live-smokes/2026-06-30T12-13-06-243Z-live-app-smoke.md",
+        "ops/live-smokes/2026-06-30T12-28-31-153Z-email-resend-ux-live-smoke.md",
+        "ops/live-smokes/2026-06-30T12-29-08-404Z-one-time-crm-contacts-ux-live-smoke.md"
+      ],
+      "verification": [
+        "Focused node checks/tests, watchdogs, secrets audit, git diff check, deploy doctor, app smokes, content readback, class upload trace, email/CRM smokes recorded.",
+        "Final records-branch validation passed with 7 done and 1 blocked requirement; next unblocked executable batch: none."
+      ],
+      "implementation_files": [
+        "tasks-pending/2026-06-30-current-systems-closeout.md",
+        "ops/system-audits/2026-06-30-current-systems-closeout.md",
+        "ops/execution-runs/2026-06-30-current-systems-closeout/requirements.json",
+        "ops/agent-changelog.md",
+        "ops/agent-task-ledger.jsonl"
+      ],
+      "deployment_required": false,
+      "blocker": "DEC-20260630-201 and EMAIL-SMOKE-20260630-201 remain external; they do not block local closeout records.",
+      "blocker_owner": "Shloimie / Resend account owner",
+      "blocker_next_action": "Complete Resend setup and provide explicit send/replay approvals when ready.",
+      "updated_at": "2026-06-30T12:35:00.000Z"
+    }
+  ]
+}
