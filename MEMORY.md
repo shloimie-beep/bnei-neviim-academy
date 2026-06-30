@@ -320,6 +320,16 @@
   `/service-providers`, `/parent/login`, `/student/login`, `/provider`, and
   `/operations-login.html` should stay aligned with that model unless Shloimie
   changes the site model.
+- As of 2026-06-30, app/server-visible closeouts should run `npm run
+  railway:redeploy`, `npm run railway:doctor`, and the relevant `npm run
+  app:smoke*` command(s). If Railway target/auth/config blocks deployment,
+  record the exact blocker and next safe command instead of claiming done.
+- As of 2026-06-30, BNA daily Torah participation grading defaults to
+  present/100% for active BNA school students when no explicit operator,
+  recording, or Telegram override exists. Explicit latest corrections win:
+  50%/half, 0%, late, absent, or present should be reflected in Torah learning
+  progress and accountability rows. Do not update duplicate/external/non-BNA
+  student rows from this default.
 - Operations should not mount the public `bna-bot-widget.js` launcher. The
   private Operations helper entry belongs in the topbar/mobile header and opens
   the scoped Operations helper drawer. Super Admin platform navigation includes
