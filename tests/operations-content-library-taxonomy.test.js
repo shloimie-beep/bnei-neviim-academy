@@ -48,3 +48,14 @@ test('Content Library taxonomy helpers classify topic and source from job data',
   assert.doesNotMatch(operationsHtml, /addContentSearchValue\(parts,\s*job\.transcript_text/);
   assert.doesNotMatch(operationsHtml, /String\(job\.transcript_text \|\| ''\)\.slice\(0,\s*16000\)/);
 });
+
+test('Content Library fallback topic inference does not recurse through card model', () => {
+  const start = operationsHtml.indexOf('function inferredContentTopics');
+  const end = operationsHtml.indexOf('function contentSourceKey', start);
+  assert.ok(start > 0 && end > start, 'inferredContentTopics body should be found');
+  const body = operationsHtml.slice(start, end);
+
+  assert.match(body, /contentFallbackTopicKey\(job\)/);
+  assert.doesNotMatch(body, /contentTopicKeys\(/);
+  assert.doesNotMatch(body, /contentCardModel\(/);
+});

@@ -330,6 +330,11 @@
   50%/half, 0%, late, absent, or present should be reflected in Torah learning
   progress and accountability rows. Do not update duplicate/external/non-BNA
   student rows from this default.
+- When Shloimie tells Codex to run a previously supplied safe command, Codex
+  should run it and report exact results instead of repeating the instruction.
+  Stop only for a real safety, permission, credential, money, send/publish, or
+  destructive-action blocker; if the exact shell form is blocked by local
+  tooling, use an equivalent safe command and record the reason.
 - Operations should not mount the public `bna-bot-widget.js` launcher. The
   private Operations helper entry belongs in the topbar/mobile header and opens
   the scoped Operations helper drawer. Super Admin platform navigation includes

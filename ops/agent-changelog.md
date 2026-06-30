@@ -27426,3 +27426,35 @@ Verification:
 - `npm run railway:doctor`: deployment
   `9f6987ac-44ae-4bb9-b308-849d552f8c2a` `SUCCESS`.
 - `npm run app:smoke`: passed.
+
+## 2026-06-30 - Operations Content library visibility repair
+
+- Ran the requested PR #53 closeout command path. PR #53 was marked ready and
+  merged on GitHub with merge commit `4cb574f5`.
+- Reproduced the live Operations Content bug: `/api/bna/content-jobs` returned
+  jobs, but the Content Library rendered zero cards.
+- Root cause was a frontend recursion loop:
+  `contentParsedSections()` -> `inferredContentTopics()` ->
+  `contentTopicKeys()` -> `contentCardModel()` -> `contentParsedSections()`.
+- Updated `inferredContentTopics()` to use `contentFallbackTopicKey(job)`
+  directly, so fallback topic labels no longer re-enter the card model.
+- Added focused regression coverage to keep fallback topic inference out of the
+  card-model/topic-key recursion path.
+- Stored repo-safe raw intake
+  `raw-input/RAW-20260630-003-content-library-filter-visibility-followup.md`
+  and promoted the safe-command execution preference into `MEMORY.md`.
+
+Verification:
+
+- `node --test tests/operations-content-library-taxonomy.test.js tests/content-card-view-model.test.js tests/operations-content-research-section.test.js tests/operations-module-scoping.test.js`: 23/23 passed.
+- `npm run content:card-topic-audit`: 29 recordings, raw bodies false, 29
+  generated titles, 0 routing gaps, 0 topic classification gaps.
+- `npm run secrets:audit`: 5412 tracked paths, 0 tracked secret-risk files.
+- `npm run railway:redeploy`: uploaded the Content UI fix to production.
+- `npm run railway:doctor`: deployment
+  `110dc155-f95f-42cc-b79c-84cad663e8bd` `SUCCESS`.
+- `npm run app:smoke`: passed with report
+  `ops/live-smokes/2026-06-30T06-52-28-375Z-live-app-smoke.md`.
+- Targeted live browser readback: Content Library rendered 70 cards; Topic
+  filter options included Torah, Content/Marketing, Operations, One Time, and
+  Other; selecting Torah filtered to 1 card with no empty state.
