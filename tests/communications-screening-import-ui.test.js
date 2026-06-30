@@ -63,3 +63,14 @@ test('Operations communications view exposes top news, readable cards, WAPI stat
   assert.match(operations, /Bot Screening/);
   assert.match(operations, /Pipeline Stage/);
 });
+
+test('Operations communications view merges first-party bna_communications rows', () => {
+  assert.match(operations, /getCommunications\(filters = \{\}\)/);
+  assert.match(operations, /return this\.request\('GET', '\/communications'/);
+  assert.match(operations, /function normalizeUnifiedCommunicationRecord\(row = \{\}\)/);
+  assert.match(operations, /source_table: 'bna_communications'/);
+  assert.match(operations, /source_record_type: 'bna_communications'/);
+  assert.match(operations, /function mergeContactAndUnifiedCommunications/);
+  assert.match(operations, /api\.getCommunications\(\{ \.\.\.workspaceDataFilters, limit: 200 \}\)/);
+  assert.match(operations, /contactCommunications = mergeContactAndUnifiedCommunications\(contactCommunications, unifiedCommunicationsRes\?\.communications \|\| \[\]\)/);
+});

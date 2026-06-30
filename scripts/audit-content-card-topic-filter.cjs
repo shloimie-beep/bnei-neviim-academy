@@ -37,9 +37,15 @@ function main() {
     `Needs parse: ${audit.summary.needs_parse}`,
     `Needs routing: ${audit.summary.needs_routing}`,
     `Needs topic classification: ${audit.summary.needs_topic_classification}`,
+    `Torah topic count: ${audit.summary.torah_topic_count}`,
+    `Class Notes topic count: ${audit.summary.class_notes_topic_count}`,
     `JSON: ${path.relative(process.cwd(), jsonPath)}`,
     `Markdown: ${path.relative(process.cwd(), mdPath)}`,
   ].join('\n'));
+  if (audit.failed_topic_checks && audit.failed_topic_checks.length) {
+    console.error(`Topic checks failed: ${audit.failed_topic_checks.join('; ')}`);
+    process.exitCode = 1;
+  }
 }
 
 main();
