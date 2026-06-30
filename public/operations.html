@@ -32288,9 +32288,10 @@
         }
 
         function inferredContentTopics(job = {}) {
-            return contentTopicKeys(job)
-                .filter(key => key !== 'uncategorized')
-                .map(key => `${contentTopicLabelForKey(key)} material`);
+            const fallback = contentFallbackTopicKey(job);
+            return fallback && fallback !== 'other' && fallback !== 'uncategorized'
+                ? [`${contentTopicLabelForKey(fallback)} material`]
+                : [];
         }
 
         function contentSourceKey(job = {}) {
