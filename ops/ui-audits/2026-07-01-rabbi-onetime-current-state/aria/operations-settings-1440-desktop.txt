@@ -1,0 +1,90 @@
+- complementary "BNA Operations navigation":
+  - text: One Time Mishnah Class Workspace dashboard
+  - group:
+    - text: Workspace Directory
+    - strong: One Time Mishnah Class
+    - text: Service Provider / Provider Workspace Admin Switch
+  - navigation:
+    - button "Dashboard DB"
+    - button "Watchdog WG"
+    - button "Program PG"
+    - button "Agents AG"
+    - button "Members MB"
+    - button "Community CO"
+    - button "Studio ST"
+    - button "Content CT"
+    - button "Live LC"
+    - button "Schedule SC"
+    - button "Communications CM"
+    - button "Tasks TS"
+    - button "Automations AU"
+    - button "Integrations IN"
+    - button "Reporting RP"
+    - button "Settings SE"
+  - button "Settings"
+  - button "Help"
+  - link "Logout":
+    - /url: /operations-login.html
+- main:
+  - text: One Time Mishnah Class / Settings / Workspace Settings
+  - strong: Workspace Settings
+  - button "Need decision 0":
+    - text: Need decision
+    - strong: "0"
+  - button "Codex Queue 0":
+    - text: Codex Queue
+    - strong: "0"
+  - button "Student accountability 0":
+    - text: Student accountability
+    - strong: "0"
+  - button "Alerts 0":
+    - text: Alerts
+    - strong: "0"
+  - text: One Time Mishnah Class / Provider Workspace Admin
+  - button "Ask / Search"
+  - text: Wed 1 Jul
+  - button "Save Settings"
+  - navigation "Settings filters":
+    - text: Settings
+    - strong: Workspace
+    - tablist "Settings views":
+      - tab "Account 3"
+      - tab "Workspace 12" [selected]
+      - tab "Users & Roles 0"
+      - tab "Communications 3"
+      - tab "Learning 0"
+      - tab "Calendar & Classroom 4"
+      - tab "Bots & AI 90"
+      - tab "Provider Index 8"
+      - tab "Billing & Payments 0"
+      - tab "Integrations 13"
+      - tab "Advanced 8"
+  - text: Configuration
+  - heading "Workspace Settings" [level=2]
+  - paragraph: Routine configuration belongs in the app. Controls without safe persistence are disabled and labeled instead of hidden behind Codex work.
+  - region "Settings category controls":
+    - text: Settings Category
+    - strong: Workspace
+    - paragraph: Open one focused setting group at a time. Disabled controls stay visible when backend persistence is not ready.
+    - button "Save"
+    - button "Test Connection setup"
+    - button "Reset setup"
+    - button "Overview"
+    - button "Workspace Settings 11"
+    - button "Branding 1"
+  - strong: Current workspace
+  - paragraph: Rabbi Elie Scheller task manager, comments, Torah class prep, and Mishnah class planning.
+  - text: Persisted One Time Mishnah Class
+  - strong: Workspace type
+  - paragraph: Platform, school, and provider workspaces remain separate contexts.
+  - text: Persisted service_provider
+- dialog "Shloimie's BNA Helper":
+  - text: Shloimie's BNA Helper Provider Workspace Admin / Settings
+  - button "Close Shloimie's BNA Helper": x
+  - region "Helper scope":
+    - strong: admin / rabbi_sheller_provider
+    - text: Scoped to this workspace and current page context. 0 tools standard
+    - button "Teach helper"
+  - text: Ready for scoped Operations actions. Confirmation is required before email sends, social scheduling, or other sensitive changes.
+  - textbox "Ask Shloimie's BNA Helper to open a task, mark done, report a problem, draft an email, check the queue, or prepare an action."
+  - button "Send"

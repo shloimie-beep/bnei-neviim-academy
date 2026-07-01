@@ -27892,3 +27892,35 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Guardrails held: no GHL/LeadConnector runtime, no external CRM write, no
   DNS/provider mutation, no email send, no live Stripe payment, no bulk
   campaign, no hard delete, and no secret exposure.
+
+## 2026-07-01 - Rabbi / One Time Visual Audit + Resend Smoke
+
+- Registered `RAW-20260701-004` and
+  `tasks-pending/2026-07-01-run-rabbi-onetime-visual-audit-resend-smoke.md`.
+- Ran `01-current-state-visual-audit` against
+  `https://bneineviimacademy.org` without implementing UI fixes. Evidence:
+  `ops/ui-audits/2026-07-01-rabbi-onetime-current-state/report.md`.
+- Captured 75 screenshots across 15 Rabbi / One Time routes and required
+  1440, 1024, 768, 430, and 390 viewports. Operations screenshots were
+  client-side redacted before capture to avoid committing raw private contact,
+  student, or parent details.
+- Automated audit produced 107 VQ findings. Highest repeated findings are
+  missing route-level headings (`VQ-IA-006`) and unlabeled fields
+  (`VQ-A11Y-006`) on Operations surfaces.
+- Ran Resend focused checks and smoke packet. Evidence:
+  `ops/provider-config-readbacks/2026-07-01-resend-smoke-readback.md`.
+- Focused Resend tests passed 16/16. Dry-run action-registry email smoke
+  passed with no send. A command-scoped guarded Resend test send from
+  `OneTimeOneTime Mishnah <info@onetimeonetime.com>` to an official redacted
+  Resend test recipient succeeded; provider message readback returned
+  `delivered`.
+- Railway target readback:
+  `ops/deploy-readbacks/2026-07-01-railway-target-readback.md`. Default target
+  remains blocked because project/service are unset; explicit
+  `skillful-motivation` project/service probe passed.
+- Remaining blockers: persist One Time Resend sender config, install
+  `RESEND_WEBHOOK_SECRET`, and persist Railway target env before deploy/live
+  smoke.
+- Guardrails held: no Rabbi UI implementation, no Stripe, no DNS mutation, no
+  GHL/LeadConnector runtime, no bulk campaign, no hard delete, no production
+  CRM/contact mutation, and no secret exposure.

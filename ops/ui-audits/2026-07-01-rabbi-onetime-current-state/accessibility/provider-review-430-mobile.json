@@ -1,0 +1,12 @@
+{
+  "route": "/provider.html?review=one-time",
+  "viewport": "430-mobile",
+  "checks": {
+    "horizontal_overflow": false,
+    "unlabeled_button_count": 0,
+    "inputs_without_labels": 36,
+    "has_h1": true,
+    "browser_content_untrusted": true
+  },
+  "note": "Automated heuristics supplement, not replace, visual inspection and axe/manual accessibility review."
+}

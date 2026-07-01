@@ -1,0 +1,130 @@
+{
+  "report_id": "2026-07-01-resend-smoke-readback",
+  "raw_id": "RAW-20260701-004",
+  "packet_id": "PKT-20260701-109",
+  "requirement_ids": [
+    "REQ-20260701-405",
+    "REQ-20260701-406"
+  ],
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "generated_at": "2026-07-01T12:25:00.000Z",
+  "provider": "resend",
+  "guardrails": {
+    "bulk_campaign_sent": false,
+    "stripe_run": false,
+    "dns_mutated": false,
+    "ghl_runtime_added": false,
+    "secrets_exposed": false,
+    "production_crm_contact_mutation": false
+  },
+  "operator_evidence": {
+    "domain_dns_status_from_screenshot": "operator reported verified DKIM, sending records, receiving MX, and domain verification",
+    "domain": "onetimeonetime.com"
+  },
+  "local_rabbi_profile_readiness_before_command_overrides": {
+    "resend_api_key_configured": true,
+    "resend_api_key_fingerprint": "sha256:425f2ccf2704",
+    "domain": null,
+    "from_email": null,
+    "from_name": null,
+    "reply_to": null,
+    "webhook_secret_configured": false,
+    "send_allowed": false,
+    "blocker": "RESEND_FROM or RESEND_FROM_EMAIL is not configured. Drafts are allowed; production send is blocked."
+  },
+  "live_app_readiness": {
+    "base_url": "https://bneineviimacademy.org",
+    "health_endpoint_status": 200,
+    "configured": true,
+    "connected": true,
+    "sender_configured": true,
+    "domain_configured": true,
+    "domain_verified": false,
+    "send_allowed": false,
+    "send_blocked": true,
+    "blocker": "Resend API key works, but bneineviimacademy.org was not found in this Resend account. Drafts are allowed; production send is blocked.",
+    "interpretation": "Live app is still checking the BNA domain while the connected Resend account lists the One Time domain as verified."
+  },
+  "domain_readback": {
+    "endpoint_status": 200,
+    "domains_count": 1,
+    "domains": [
+      {
+        "name": "onetimeonetime.com",
+        "status": "verified"
+      }
+    ]
+  },
+  "inbound_webhook": {
+    "route": "/api/resend/inbound",
+    "unsigned_probe_status": 503,
+    "unsigned_probe_result": "safe refusal",
+    "blocker": "RESEND_WEBHOOK_SECRET is not configured; signed Resend webhooks are blocked until the signing secret is installed.",
+    "events_endpoint_status": 200,
+    "events_raw_payload_hidden": true,
+    "events_count": 0
+  },
+  "tests": {
+    "node_check_server": "pass",
+    "node_check_resend_client": "pass",
+    "node_check_resend_inbound_crm": "pass",
+    "node_test_resend_suite": {
+      "status": "pass",
+      "passed": 16,
+      "failed": 0
+    }
+  },
+  "dry_run_smoke": {
+    "command": "npm run email:smoke -- --base=https://bneineviimacademy.org --identity=one_time --workspace=rabbi_sheller_provider --project=one_time_mishnah_class --to=delivered+onetime-smoke-20260701@resend.dev --subject=\"One Time Resend dry-run smoke 2026-07-01\" --body=\"Dry-run smoke for One Time Resend readiness.\"",
+    "status": "pass",
+    "mode": "action_registry_dry_run",
+    "recipient": "d***@resend.dev",
+    "executed": false,
+    "external_send_performed": false,
+    "message": "Approval required before this action executes."
+  },
+  "guarded_send_smoke": {
+    "command": "npm run email:smoke -- --adapter=resend-client --identity=one_time --workspace=rabbi_sheller_provider --project=one_time_mishnah_class --to=delivered+onetime-smoke-20260701@resend.dev --send --subject=\"One Time Resend smoke 2026-07-01\" --body=\"Controlled One Time Resend smoke. This verifies sender and provider readiness only; no campaign send occurred.\"",
+    "status": "pass",
+    "mode": "resend_client_guarded_send",
+    "command_scoped_sender_env": {
+      "RESEND_RABBI_DOMAIN": "onetimeonetime.com",
+      "RESEND_RABBI_FROM_EMAIL": "info@onetimeonetime.com",
+      "RESEND_RABBI_FROM_NAME": "OneTimeOneTime Mishnah",
+      "RESEND_RABBI_REPLY_TO": "info@onetimeonetime.com"
+    },
+    "recipient": "d***@resend.dev",
+    "external_send_performed": true,
+    "provider_message_id": "513b89c4-6bc5-4dbd-b271-f1291249211d",
+    "readiness": {
+      "connected": true,
+      "domain": "onetimeonetime.com",
+      "from_email": "info@onetimeonetime.com",
+      "domain_verified": true,
+      "send_allowed": true,
+      "domain_status": "verified"
+    }
+  },
+  "provider_message_readback": {
+    "status": "pass",
+    "provider_message_id": "513b89c4-6bc5-4dbd-b271-f1291249211d",
+    "provider_status": "delivered",
+    "from": "OneTimeOneTime Mishnah <info@onetimeonetime.com>",
+    "to_count": 1,
+    "subject_present": true
+  },
+  "remaining_blockers": [
+    {
+      "owner": "Shloimie / deploy config owner",
+      "blocker": "Persist the One Time Resend sender config in the app/Railway environment or keyholder aliases: RESEND_RABBI_DOMAIN=onetimeonetime.com, RESEND_RABBI_FROM_EMAIL=info@onetimeonetime.com, RESEND_RABBI_FROM_NAME=OneTimeOneTime Mishnah, RESEND_RABBI_REPLY_TO=info@onetimeonetime.com.",
+      "next_action": "Install the One Time Resend config as environment/keyholder values, then rerun live health so the app checks onetimeonetime.com instead of bneineviimacademy.org."
+    },
+    {
+      "owner": "Shloimie / Resend dashboard owner",
+      "blocker": "RESEND_WEBHOOK_SECRET is not configured in the app, so signed email.received webhook processing refuses safely.",
+      "next_action": "Create or read the Resend webhook signing secret for https://bneineviimacademy.org/api/resend/inbound and store it as RESEND_WEBHOOK_SECRET without exposing the value."
+    }
+  ],
+  "next_real_class_email_action": "After app/Railway One Time sender config and RESEND_WEBHOOK_SECRET are installed/read back, generate a recipient-list/copy/preview/test packet for the first One Time class invitation email. Do not send a real class campaign from this smoke packet."
+}
