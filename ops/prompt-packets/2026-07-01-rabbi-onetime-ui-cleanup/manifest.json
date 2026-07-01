@@ -1,0 +1,184 @@
+{
+  "manifest_version": "ramble-protocol-v3",
+  "parent_raw_id": "RAW-20260701-003",
+  "created_at": "2026-07-01T00:00:00.000Z",
+  "title": "Rabbi Sheller / One Time UI Cleanup Packet DAG",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "brand_correction": {
+    "one_time": "black + yellow",
+    "bna": "cream + navy + teal/cyan",
+    "design_reference_package": "ops/design-references/2026-07-01-brand-kit-correction/"
+  },
+  "pipeline_correction": {
+    "one_time": "separate provider-specific classroom/content/community pipeline",
+    "shared_layer": [
+      "platform primitives",
+      "UI patterns",
+      "route/action contracts",
+      "workspace-scope enforcement",
+      "visual quality standards",
+      "helper/action contracts",
+      "reusable components"
+    ],
+    "separated_layer": [
+      "classroom records",
+      "content records",
+      "videos",
+      "questions",
+      "student responses",
+      "contacts",
+      "communications",
+      "payments/access"
+    ]
+  },
+  "packets": [
+    {
+      "id": "PKT-20260701-111",
+      "file": "00-control-tower.md",
+      "role": "CONTROL_TOWER",
+      "stage": "STAGE_1_SPEC_COMPILER",
+      "status": "ready_for_generation",
+      "depends_on": []
+    },
+    {
+      "id": "PKT-20260701-112",
+      "file": "01-current-state-visual-audit.md",
+      "role": "VISUAL_AUDITOR",
+      "stage": "STAGE_1_SPEC_COMPILER",
+      "status": "ready_for_generation",
+      "depends_on": [
+        "PKT-20260701-111"
+      ]
+    },
+    {
+      "id": "PKT-20260701-113",
+      "file": "02-brand-kit-and-design-reference-alignment.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112"
+      ]
+    },
+    {
+      "id": "PKT-20260701-114",
+      "file": "03-ia-nav-filter-cleanup.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112"
+      ]
+    },
+    {
+      "id": "PKT-20260701-115",
+      "file": "04-crm-pipeline-contact-detail.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112"
+      ]
+    },
+    {
+      "id": "PKT-20260701-116",
+      "file": "05-community-classes-questions-provider-pipeline.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112"
+      ]
+    },
+    {
+      "id": "PKT-20260701-117",
+      "file": "06-content-library-provider-pipeline.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112"
+      ]
+    },
+    {
+      "id": "PKT-20260701-118",
+      "file": "07-communications-ui-readiness.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112",
+        "PKT-20260701-109"
+      ]
+    },
+    {
+      "id": "PKT-20260701-119",
+      "file": "08-payments-access-status-ui.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112",
+        "PKT-20260701-110"
+      ]
+    },
+    {
+      "id": "PKT-20260701-109",
+      "file": "../2026-07-01-provider-config-readback/09-resend-send-enabled-smoke.md",
+      "role": "PROVIDER_SETUP_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "ready_for_generation",
+      "depends_on": []
+    },
+    {
+      "id": "PKT-20260701-110",
+      "file": "../2026-07-01-provider-config-readback/10-stripe-sandbox-smoke.md",
+      "role": "PROVIDER_SETUP_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "ready_for_generation",
+      "depends_on": []
+    },
+    {
+      "id": "PKT-20260701-120",
+      "file": "11-workspace-scope-contamination-fix.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-112"
+      ]
+    },
+    {
+      "id": "PKT-20260701-121",
+      "file": "12-mobile-polish.md",
+      "role": "IMPLEMENTATION_PACKET",
+      "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-113",
+        "PKT-20260701-114",
+        "PKT-20260701-115",
+        "PKT-20260701-116",
+        "PKT-20260701-117",
+        "PKT-20260701-118",
+        "PKT-20260701-119",
+        "PKT-20260701-120"
+      ]
+    },
+    {
+      "id": "PKT-20260701-122",
+      "file": "13-verifier-deploy-closeout.md",
+      "role": "VERIFIER_PACKET",
+      "stage": "STAGE_4_INDEPENDENT_VERIFICATION",
+      "status": "not_started",
+      "depends_on": [
+        "PKT-20260701-121"
+      ]
+    }
+  ],
+  "external_write_performed": false,
+  "ui_implementation_performed": false,
+  "next_packet": "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md"
+}
+

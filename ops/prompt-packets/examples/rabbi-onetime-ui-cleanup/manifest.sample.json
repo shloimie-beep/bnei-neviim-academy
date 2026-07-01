@@ -1,0 +1,28 @@
+{
+  "manifest_version": "packet-dag.v1",
+  "parent_raw_id": "RAW-SAMPLE",
+  "title": "Rabbi / One Time UI Cleanup Packet DAG Sample",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "no_ghl_runtime": true,
+  "external_provider_policy": "provider setup separated from UI cleanup",
+  "packets": [
+    {
+      "packet_name": "00-control-tower",
+      "packet_role": "CONTROL_TOWER",
+      "status": "generated",
+      "depends_on": ["raw capture"],
+      "produces": ["router classification", "product-quality expansion", "packet DAG", "next packet list"]
+    },
+    {
+      "packet_name": "01-current-state-visual-audit",
+      "packet_role": "VISUAL_AUDITOR",
+      "status": "ready_for_generation",
+      "depends_on": ["00-control-tower"],
+      "produces": ["screenshots", "VQ findings", "surface map", "implementation packet proposals"]
+    }
+  ],
+  "implementation_allowed": false,
+  "implementation_blocker": "Current-state visual audit and Definition of Ready have not passed yet.",
+  "next_packet": "Generate Rabbi Sheller / One Time 01-current-state-visual-audit packet."
+}

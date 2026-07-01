@@ -1,0 +1,27 @@
+{
+  "brand_key": "one_time",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "authoritative_for": [
+    "Rabbi / One Time public pages",
+    "Rabbi / One Time provider/admin view",
+    "One Time member/student/parent portal surfaces"
+  ],
+  "palette_name": "rabbi_onetime_black_yellow",
+  "colors": {
+    "black": "#080910",
+    "charcoal": "#15171d",
+    "yellow": "#ede518",
+    "white": "#ffffff",
+    "muted": "#8f97a8"
+  },
+  "not_authoritative_for": [
+    "BNA Academy public site",
+    "BNA Academy classroom/content/video pipeline",
+    "global BNA Operations shell unless scoped to One Time"
+  ],
+  "forbidden_palette_sources": [
+    "bna_cream_navy_teal_cyan"
+  ]
+}
+

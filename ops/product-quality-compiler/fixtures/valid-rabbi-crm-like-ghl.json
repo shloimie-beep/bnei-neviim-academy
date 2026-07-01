@@ -1,0 +1,332 @@
+{
+  "schema_version": "pqc.v1",
+  "packet_id": "PKT-20260630-601",
+  "parent_raw_id": "RAW-20260630-013",
+  "source_statement_ids": ["SRC-CASE-001"],
+  "stage": "STAGE_2_CODEX_PROMPT_GENERATION",
+  "packet_role": "IMPLEMENTATION_PACKET",
+  "title": "First-party Rabbi CRM pattern packet",
+  "created_at": "2026-06-30T00:00:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": ["RABBI_PROVIDER_ADMIN"],
+  "operator_intent_summary": "Compile the GHL-like CRM request into first-party BNA CRM requirements without adding external CRM runtime.",
+  "raw_source": "Make Rabbi's CRM like GHL. It looks sloppy.",
+  "operator_quotes": ["Make Rabbi's CRM like GHL.", "It looks sloppy."],
+  "decisions_captured": [
+    {
+      "id": "DEC-20260630-NO-GHL-FIRST-PARTY-CRM",
+      "decision": "BNA / One Time remains first-party CRM/community. GHL-like means pattern inspiration only.",
+      "status": "decided"
+    }
+  ],
+  "out_of_scope": [
+    "No GHL runtime, LeadConnector, GHL env vars, GHL API tools, or external CRM writes.",
+    "No email sends, Stripe charges, DNS changes, WhatsApp sends, Telegram sends, Drive writes, Zoom writes, Vimeo writes, or access grants.",
+    "No implementation outside the scoped Rabbi provider admin CRM routes."
+  ],
+  "affected_routes": ["/operations?workspace=rabbi_sheller_provider&view=crm"],
+  "affected_files": ["public/operations.html", "ops/action-registry.json", "ops/route-registry.json"],
+  "current_state": {
+    "inspection_targets": ["Operations One Time CRM route", "action registry", "route registry", "desktop and mobile screenshots"],
+    "known_blockers": ["External CRM runtime is not approved and is not required."]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": ["GHL-like", "CRM", "pipeline", "sloppy"],
+    "expanded_phrases": {
+      "GHL-like": "Use first-party BNA CRM patterns: list/detail, pipeline, lifecycle stage, activity timeline, communication history, notes, tasks, source/status, and clean detail drawer. Do not add GHL runtime.",
+      "CRM": "Contacts, parents, students, and leads need list/search/filter, lifecycle stage, last activity, source, linked communications, notes, tasks, and class/payment/access status where relevant.",
+      "pipeline": "Business stage board where cards show contact, stage, last activity, source, owner, and next action, with detail opening without losing context.",
+      "sloppy": "Translate subjective defects into VQ findings for IA, layout, actions, data display, responsive behavior, and credibility."
+    },
+    "first_party_pattern_interpretation": "GHL-like means first-party BNA CRM UX patterns only: list/detail, pipeline board, activity timeline, notes/tasks, and scoped quick actions."
+  },
+  "requirements": [
+    {
+      "id": "REQ-20260630-611",
+      "statement": "Compile Rabbi CRM into first-party list/detail and pipeline requirements scoped to One Time.",
+      "expected_result": "A Codex-ready CRM packet names routes, data fields, action states, state matrix, screenshots, registry expectations, and no-GHL policy.",
+      "acceptance_criteria": [
+        "CRM expansion includes list/detail, lifecycle stage, pipeline board, activity timeline, notes, tasks, communications, class/access/payment linkage, and scoped data rules.",
+        "GHL-like is explicitly interpreted as first-party BNA pattern inspiration with no external CRM runtime."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": [
+      "Affected CRM route is named.",
+      "Workspace, project, and view class are named.",
+      "Before screenshots or exact screenshot blockers are required.",
+      "State matrix and action states are complete before code implementation."
+    ]
+  },
+  "state_matrix": {
+    "loading": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM while contacts fetch.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "Loading contacts and pipeline.",
+      "expected_primary_action": "None until loaded.",
+      "expected_secondary_actions": ["Retry if fetch fails"],
+      "forbidden_content": ["raw JSON", "GHL runtime"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Main region exposes CRM heading and loading status.",
+      "accessibility_expectation": "Loading state is announced and does not trap focus.",
+      "test_smoke_assertion": "CRM loading status appears before populated data.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM with no contacts.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "No contacts in this stage yet.",
+      "expected_primary_action": "Add or import a test-prefixed contact if the execution packet allows test data.",
+      "expected_secondary_actions": ["Review import readiness"],
+      "forbidden_content": ["raw provider payload", "unrelated workspace data"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Empty state message is inside the CRM main region.",
+      "accessibility_expectation": "Primary action has name, role, value, and visible focus.",
+      "test_smoke_assertion": "Empty CRM state distinguishes true empty from loading.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "populated": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "1440",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Load CRM with scoped contacts.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "Pipeline cards show contact name, stage, last activity, source, owner, and next action.",
+      "expected_primary_action": "Open selected contact detail.",
+      "expected_secondary_actions": ["Filter by stage", "Search contacts"],
+      "forbidden_content": ["BNA school global records", "super-admin diagnostics"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Pipeline columns and contact list have navigable labels.",
+      "accessibility_expectation": "Cards have keyboard path to detail drawer.",
+      "test_smoke_assertion": "Selected contact opens detail without losing list context.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "filtered_empty": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Apply filters that match no contacts.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "No contacts match these filters.",
+      "expected_primary_action": "Clear filters.",
+      "expected_secondary_actions": ["Adjust stage", "Adjust source"],
+      "forbidden_content": ["filters in global nav"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Filtered-empty result count is announced.",
+      "accessibility_expectation": "Clear filters button is keyboard reachable.",
+      "test_smoke_assertion": "Clear filters returns populated or empty state.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "error": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "1024",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Simulate CRM API failure.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "CRM data could not load.",
+      "expected_primary_action": "Retry.",
+      "expected_secondary_actions": ["Open support drawer"],
+      "forbidden_content": ["stack trace", "raw SQL error"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Error is associated with CRM region.",
+      "accessibility_expectation": "Error text is readable and not color-only.",
+      "test_smoke_assertion": "CRM API failure renders actionable error state.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "blocked_setup": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open a provider-dependent CRM feature without provider setup.",
+      "expected_visible_title": "Setup required",
+      "expected_visible_message": "This action is blocked until the named setup is complete.",
+      "expected_primary_action": "Open setup blocker details.",
+      "expected_secondary_actions": ["Continue with preview"],
+      "forbidden_content": ["DNS internals in normal workflow", "GHL API instructions"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Blocked status is conveyed in text.",
+      "accessibility_expectation": "Blocked card names owner, reason, and next action.",
+      "test_smoke_assertion": "Blocked action cannot perform external writes.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "preview_only": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "768",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open an import or stage-change preview.",
+      "expected_visible_title": "Preview only",
+      "expected_visible_message": "No production write occurred.",
+      "expected_primary_action": "Review preview.",
+      "expected_secondary_actions": ["Cancel"],
+      "forbidden_content": ["silent write", "external CRM sync"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Preview status is prominent.",
+      "accessibility_expectation": "Preview label is not color-only.",
+      "test_smoke_assertion": "Preview action returns no-write readback.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "success_readback": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "430",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Complete an approved local CRM action.",
+      "expected_visible_title": "CRM",
+      "expected_visible_message": "Action completed with visible readback.",
+      "expected_primary_action": "Open updated record.",
+      "expected_secondary_actions": ["View audit"],
+      "forbidden_content": ["raw audit payload"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Success message is announced.",
+      "accessibility_expectation": "Readback appears near the action result.",
+      "test_smoke_assertion": "Success readback includes updated record state.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "permission_denied": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "430",
+      "auth_role": "wrong_scope_user",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Open CRM with wrong scope.",
+      "expected_visible_title": "Access denied",
+      "expected_visible_message": "You do not have access to this workspace.",
+      "expected_primary_action": "Return to allowed workspace.",
+      "expected_secondary_actions": ["Sign out"],
+      "forbidden_content": ["contact names", "private communications"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Access denial has a heading.",
+      "accessibility_expectation": "Focus moves to denial message.",
+      "test_smoke_assertion": "Wrong-scope user sees no CRM records.",
+      "requirement_id": "REQ-20260630-611"
+    },
+    "mobile_drawer_or_detail_state": {
+      "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+      "viewport": "390",
+      "auth_role": "RABBI_PROVIDER_ADMIN",
+      "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class",
+      "how_to_enter_state": "Select a contact card on mobile.",
+      "expected_visible_title": "Contact detail",
+      "expected_visible_message": "Selected contact details are visible with a back action.",
+      "expected_primary_action": "Back to contacts.",
+      "expected_secondary_actions": ["Open communications", "Open notes"],
+      "forbidden_content": ["trapped drawer", "hidden close control"],
+      "screenshot_required": true,
+      "aria_semantic_expectation": "Detail drawer has label and close/back control.",
+      "accessibility_expectation": "Touch targets are at least mobile baseline and focus is not trapped.",
+      "test_smoke_assertion": "Mobile detail state opens and closes without horizontal overflow.",
+      "requirement_id": "REQ-20260630-611"
+    }
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=crm", "viewport": 1440, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-611"},
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=crm", "viewport": 1024, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-611"},
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=crm", "viewport": 768, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-611"},
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=crm", "viewport": 430, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-611"},
+      {"route": "/operations?workspace=rabbi_sheller_provider&view=crm", "viewport": 390, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-611"}
+    ],
+    "findings": [
+      {
+        "finding_id": "VQF-20260630-601",
+        "route": "/operations?workspace=rabbi_sheller_provider&view=crm",
+        "viewport": "390",
+        "screenshot_before": "ops/ui-audits/example/before-crm-390.png",
+        "screenshot_after_or_blocker": "ops/ui-audits/example/after-crm-390.png",
+        "defect_codes": ["VQ-CRM-002", "VQ-LAYOUT-010", "VQ-RESP-003"],
+        "severity": "P1",
+        "user_impact": "Rabbi cannot scan contacts, stage, last activity, and next action efficiently on mobile.",
+        "expected_fix": "Use list/detail CRM pattern with mobile selected-detail state and clear back action.",
+        "requirement_id": "REQ-20260630-611"
+      }
+    ]
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.2 A/AA plus BNA mobile touch and reflow requirements.",
+    "required_checks": ["contrast", "focus visible", "keyboard path", "name role value", "target size", "mobile reflow"]
+  },
+  "action_states": [
+    {
+      "label": "Open contact detail",
+      "selector_or_action_key": "ACTION-ONETIME-CRM-CONTACT-OPEN",
+      "action_state": "WORKS_NOW",
+      "owner": "Codex implementation packet",
+      "external_write": false,
+      "handler_or_blocker": "Open first-party contact detail drawer.",
+      "registry_required": true
+    },
+    {
+      "label": "Sync to GHL",
+      "selector_or_action_key": "ACTION-GHL-SYNC",
+      "action_state": "DISABLED_NOT_IN_SCOPE",
+      "owner": "Not allowed",
+      "external_write": false,
+      "handler_or_blocker": "Forbidden by no-GHL first-party CRM decision.",
+      "registry_required": true
+    }
+  ],
+  "data_requirements": ["contact name", "lifecycle stage", "last activity", "source", "owner", "next action", "communications summary", "class/access/payment status"],
+  "security_privacy": {
+    "browser_content_untrusted": true,
+    "no_ghl_runtime": true,
+    "scope_rules": ["Rabbi provider admin sees only rabbi_sheller_provider / one_time_mishnah_class data."],
+    "forbidden_content": ["raw JSON", "raw provider payloads", "raw transcript bodies", "unrelated workspace data", "GHL runtime instructions"]
+  },
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {
+      "batch_id": "BATCH-CRM-SPEC",
+      "scope": "One Time CRM product-quality packet generation only",
+      "instructions": ["Generate exact first-party CRM list/detail, pipeline, action, data, state, screenshot, and registry requirements."]
+    }
+  ],
+  "tests": [
+    {"command_or_check": "npm run pqc:validate", "expected_result": "Compiled packet passes Product Quality Compiler validation."},
+    {"command_or_check": "npm run watchdog:protocol-drift", "expected_result": "No unexpanded GHL-like or CRM drift remains."}
+  ],
+  "evidence": {
+    "expected_paths": ["ops/product-quality-compiler/validation/latest-product-quality-validation.md", "ops/watchdog-audits/2026-06-30-product-quality-drift.md"]
+  },
+  "app_visible": true,
+  "deployment_gate": "LIVE_SMOKE_REQUIRED_BEFORE_DONE",
+  "definition_of_done": {
+    "required": true,
+    "criteria": [
+      "Required screenshots exist for all viewports or exact blockers are recorded.",
+      "Action and route registry expectations are satisfied.",
+      "No GHL runtime or external provider write was added.",
+      "App-visible work has deploy and live-smoke proof before Done."
+    ]
+  },
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260630-013-product-quality-compiler-validator-drift-watchdog.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-06-30-rabbi-crm/03-crm-packet.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": ["read repo", "capture screenshots", "run validator", "run watchdog"],
+    "skipped_actions_policy": "External provider writes, sends, payments, access grants, DNS, and GHL runtime are skipped unless a future approved packet explicitly authorizes them.",
+    "blocker_decisions": ["DEC-20260630-NO-GHL-FIRST-PARTY-CRM"],
+    "evidence_paths": ["ops/ui-audits/example/report.md"],
+    "final_status_path": "tasks-pending/2026-06-30-product-quality-compiler-validator-drift-watchdog.md",
+    "next_packet_path": "ops/prompt-packets/2026-06-30-rabbi-crm/04-verifier-closeout-packet.md"
+  },
+  "next_packet": {
+    "type": "VERIFIER_PACKET",
+    "description": "Verify CRM packet screenshots, state matrix, registry, and no-GHL policy.",
+    "path": "ops/prompt-packets/2026-06-30-rabbi-crm/04-verifier-closeout-packet.md"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "brand_key": "bna",
+  "authoritative_for": [
+    "BNA Academy",
+    "BNA school operations",
+    "BNA public/academy surfaces unless a provider-specific brand overrides them"
+  ],
+  "palette_name": "bna_cream_navy_teal_cyan",
+  "colors": {
+    "cream": "#f7f2de",
+    "navy": "#101827",
+    "navy_2": "#172238",
+    "teal": "#147d7a",
+    "cyan": "#19b7c5",
+    "white": "#ffffff",
+    "muted": "#5d6778"
+  },
+  "not_authoritative_for": [
+    "Rabbi / One Time brand-specific surfaces"
+  ],
+  "forbidden_palette_sources": [
+    "rabbi_onetime_black_yellow"
+  ]
+}
+

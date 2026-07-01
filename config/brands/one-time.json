@@ -1,50 +1,26 @@
 {
   "key": "one_time",
-  "name": "One Time Mishnah Class",
   "public_name": "OneTimeOneTime Mishnah",
+  "name": "OneTimeOneTime Mishnah",
   "short_name": "OneTimeOneTime",
   "workspace_key": "rabbi_sheller_provider",
   "project_key": "one_time_mishnah_class",
   "audience": "partner_mishnah_program",
   "workspace_profile": "service_provider",
+  "brand_family": "rabbi_onetime",
+  "authoritative_palette": "rabbi_onetime_black_yellow",
   "primary_color": "#080910",
   "accent_color": "#ede518",
   "palette": {
     "black": "#080910",
-    "charcoal": "#10131a",
-    "navy": "#081323",
-    "navy_2": "#102634",
-    "teal": "#08779c",
-    "cyan": "#0b9fc9",
+    "charcoal": "#15171d",
     "yellow": "#ede518",
-    "cream": "#faf9f4",
     "white": "#ffffff",
-    "muted": "#aeb9c6"
+    "muted": "#8f97a8"
   },
-  "assets": {
-    "logo": "/images/one-time/brand/onetimelogo.webp",
-    "legacy_logo": "/images/one-time/onetimelogo.webp",
-    "hero_portrait": "/images/one-time/brand/onetime-hero-vertical.webp",
-    "legacy_hero_portrait": "/images/one-time/onetime-hero-vertical.webp",
-    "social_og": "/images/one-time/social/one-time-og-20260622.jpg",
-    "press_logos": [
-      "/images/one-time/press/torahanytime-logo.png",
-      "/images/one-time/press/twentyfour-six-logo.png",
-      "/images/one-time/press/loop-logo.png",
-      "/images/one-time/press/mishpacha.webp"
-    ],
-    "teaching_stills": [
-      "/images/one-time/teaching/promo-stage-still-01.webp",
-      "/images/one-time/teaching/promo-stage-still-02.webp",
-      "/images/one-time/teaching/promo-stage-still-03.webp"
-    ]
-  },
-  "seo": {
-    "title": "OneTimeOneTime Mishnah - Worldwide Live Mishnah Learning",
-    "description": "A shared review build for Rabbi Elie Scheller's OneTimeOneTime Mishnah learning experience: live shiur, video library, parent portal, student portal, classroom, and no-send email previews.",
-    "review_indexing": "noindex,nofollow"
-  },
+  "forbidden_palette_sources": [
+    "bna_cream_navy_teal_cyan"
+  ],
   "secrets_included": false,
-  "external_write_performed": false,
-  "review_only": true
+  "external_write_performed": false
 }

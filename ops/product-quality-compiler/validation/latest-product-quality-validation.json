@@ -1,0 +1,661 @@
+{
+  "generated_at": "2026-07-01T09:56:06.667Z",
+  "mode": "fixtures",
+  "files_scanned": [
+    "ops/product-quality-compiler/fixtures/invalid-app-visible-no-deploy-gate.json",
+    "ops/product-quality-compiler/fixtures/invalid-ghl-like-without-no-ghl.json",
+    "ops/product-quality-compiler/fixtures/invalid-no-out-of-scope.json",
+    "ops/product-quality-compiler/fixtures/invalid-no-state-matrix.json",
+    "ops/product-quality-compiler/fixtures/invalid-no-view-class.json",
+    "ops/product-quality-compiler/fixtures/invalid-ui-no-screenshots.json",
+    "ops/product-quality-compiler/fixtures/invalid-vague-clean-only.json",
+    "ops/product-quality-compiler/fixtures/valid-clean-ui-visual-audit.json",
+    "ops/product-quality-compiler/fixtures/valid-community-section.json",
+    "ops/product-quality-compiler/fixtures/valid-control-tower-super-ramble.json",
+    "ops/product-quality-compiler/fixtures/valid-rabbi-crm-like-ghl.json",
+    "ops/product-quality-compiler/fixtures/valid-v3-browser-prompt-injection.json",
+    "ops/product-quality-compiler/fixtures/valid-v3-router-dag-just-finish-it.json"
+  ],
+  "total": 13,
+  "passed": 13,
+  "failed": 0,
+  "results": [
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-app-visible-no-deploy-gate.json",
+      "expected_failure_codes": [
+        "PQC_APP_VISIBLE_NO_DEPLOY_GATE"
+      ],
+      "error_codes": [
+        "PQC_MISSING_STATE_MATRIX",
+        "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+        "PQC_APP_VISIBLE_NO_DEPLOY_GATE"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        },
+        {
+          "code": "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+          "message": "External provider or write language must be separate, out-of-scope, sandbox-only, or approval-gated.",
+          "path": "$.external_provider_policy"
+        },
+        {
+          "code": "PQC_APP_VISIBLE_NO_DEPLOY_GATE",
+          "message": "App-visible packets cannot use NOT_REQUIRED_DOC_ONLY deployment gate.",
+          "path": "$.deployment_gate"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-ghl-like-without-no-ghl.json",
+      "expected_failure_codes": [
+        "PQC_GHL_WITHOUT_NO_GHL"
+      ],
+      "error_codes": [
+        "PQC_MISSING_STATE_MATRIX",
+        "PQC_MISSING_SCREENSHOTS",
+        "PQC_GHL_WITHOUT_NO_GHL",
+        "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 1440",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 1024",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 768",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 430",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 390",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_GHL_WITHOUT_NO_GHL",
+          "message": "GHL-like language requires security_privacy.no_ghl_runtime true.",
+          "path": "$.security_privacy.no_ghl_runtime"
+        },
+        {
+          "code": "PQC_GHL_WITHOUT_NO_GHL",
+          "message": "GHL-like language requires first_party_pattern_interpretation.",
+          "path": "$.product_quality_expansion.first_party_pattern_interpretation"
+        },
+        {
+          "code": "PQC_GHL_WITHOUT_NO_GHL",
+          "message": "GHL-like language cannot approve an external provider write in the same packet.",
+          "path": "$.external_provider_policy"
+        },
+        {
+          "code": "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+          "message": "External provider or write language must be separate, out-of-scope, sandbox-only, or approval-gated.",
+          "path": "$.external_provider_policy"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-no-out-of-scope.json",
+      "expected_failure_codes": [
+        "PQC_MISSING_OUT_OF_SCOPE"
+      ],
+      "error_codes": [
+        "PQC_MISSING_OUT_OF_SCOPE",
+        "PQC_MISSING_STATE_MATRIX"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_OUT_OF_SCOPE",
+          "message": "Every UI/product packet needs explicit out-of-scope items.",
+          "path": "$.out_of_scope"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-no-state-matrix.json",
+      "expected_failure_codes": [
+        "PQC_MISSING_STATE_MATRIX"
+      ],
+      "error_codes": [
+        "PQC_MISSING_STATE_MATRIX",
+        "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        },
+        {
+          "code": "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+          "message": "External provider or write language must be separate, out-of-scope, sandbox-only, or approval-gated.",
+          "path": "$.external_provider_policy"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-no-view-class.json",
+      "expected_failure_codes": [
+        "PQC_MISSING_VIEW_CLASS"
+      ],
+      "error_codes": [
+        "PQC_MISSING_VIEW_CLASS",
+        "PQC_MISSING_STATE_MATRIX",
+        "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_VIEW_CLASS",
+          "message": "Every UI/product packet needs at least one view class.",
+          "path": "$.view_classes"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        },
+        {
+          "code": "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+          "message": "External provider or write language must be separate, out-of-scope, sandbox-only, or approval-gated.",
+          "path": "$.external_provider_policy"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-ui-no-screenshots.json",
+      "expected_failure_codes": [
+        "PQC_MISSING_SCREENSHOTS"
+      ],
+      "error_codes": [
+        "PQC_MISSING_STATE_MATRIX",
+        "PQC_MISSING_SCREENSHOTS",
+        "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 1440",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 1024",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 768",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 430",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 390",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+          "message": "External provider or write language must be separate, out-of-scope, sandbox-only, or approval-gated.",
+          "path": "$.external_provider_policy"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/invalid-vague-clean-only.json",
+      "expected_failure_codes": [
+        "PQC_VAGUE_UNEXPANDED"
+      ],
+      "error_codes": [
+        "PQC_MISSING_STATE_MATRIX",
+        "PQC_MISSING_SCREENSHOTS",
+        "PQC_VAGUE_UNEXPANDED",
+        "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI"
+      ],
+      "passed": true,
+      "errors": [
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: loading",
+          "path": "$.state_matrix.loading"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: empty",
+          "path": "$.state_matrix.empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: populated",
+          "path": "$.state_matrix.populated"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: filtered_empty",
+          "path": "$.state_matrix.filtered_empty"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: error",
+          "path": "$.state_matrix.error"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: blocked_setup",
+          "path": "$.state_matrix.blocked_setup"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: preview_only",
+          "path": "$.state_matrix.preview_only"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: success_readback",
+          "path": "$.state_matrix.success_readback"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: permission_denied",
+          "path": "$.state_matrix.permission_denied"
+        },
+        {
+          "code": "PQC_MISSING_STATE_MATRIX",
+          "message": "Missing state_matrix entry: mobile_drawer_or_detail_state",
+          "path": "$.state_matrix.mobile_drawer_or_detail_state"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 1440",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 1024",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 768",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 430",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_MISSING_SCREENSHOTS",
+          "message": "Missing required screenshot viewport: 390",
+          "path": "$.visual_quality.screenshot_requirements"
+        },
+        {
+          "code": "PQC_VAGUE_UNEXPANDED",
+          "message": "Vague phrase \"clean\" appears in executable fields without a matching product_quality_expansion entry.",
+          "path": "$.product_quality_expansion.expanded_phrases"
+        },
+        {
+          "code": "PQC_EXTERNAL_PROVIDER_MIXED_INTO_UI",
+          "message": "External provider or write language must be separate, out-of-scope, sandbox-only, or approval-gated.",
+          "path": "$.external_provider_policy"
+        }
+      ],
+      "missing_expected_failure_codes": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/valid-clean-ui-visual-audit.json",
+      "expected_failure_codes": [],
+      "error_codes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/valid-community-section.json",
+      "expected_failure_codes": [],
+      "error_codes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/valid-control-tower-super-ramble.json",
+      "expected_failure_codes": [],
+      "error_codes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/valid-rabbi-crm-like-ghl.json",
+      "expected_failure_codes": [],
+      "error_codes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/valid-v3-browser-prompt-injection.json",
+      "expected_failure_codes": [],
+      "error_codes": [],
+      "passed": true,
+      "errors": []
+    },
+    {
+      "file": "ops/product-quality-compiler/fixtures/valid-v3-router-dag-just-finish-it.json",
+      "expected_failure_codes": [],
+      "error_codes": [],
+      "passed": true,
+      "errors": []
+    }
+  ]
+}
