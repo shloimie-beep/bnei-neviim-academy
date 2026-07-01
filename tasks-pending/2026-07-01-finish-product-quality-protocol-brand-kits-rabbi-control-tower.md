@@ -9,7 +9,7 @@
 | Raw path | raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md |
 | Scope | Finish protocol/tooling state, correct brand/pipeline memory/config, create provider smoke packets, create Rabbi / One Time control tower and visual audit packets, validate, and prepare commit/push/PR/deploy status. |
 | Explicit non-scope | Rabbi UI implementation, screen redesign, GHL runtime, DNS mutation, live Stripe payments, bulk campaign send, hard deletes, secret exposure. |
-| Current status | validated_pending_pr |
+| Current status | merged_deploy_blocked |
 
 ## Source Coverage Matrix
 
@@ -44,8 +44,8 @@
 | REQ-20260701-109 | Convert Stripe from generic blocker to sandbox smoke/readback packet. | `10-stripe-sandbox-smoke.md` exists with test-mode-only, no-real-card, reversible readback instructions. | `ops/prompt-packets/2026-07-01-provider-config-readback/10-stripe-sandbox-smoke.md`. | done |
 | REQ-20260701-110 | Generate Rabbi/One Time 00-control-tower. | Packet exists with corrected brand/pipeline, DAG, child packets, scope, exclusions, and next packet. | `ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/00-control-tower.md`. | done |
 | REQ-20260701-111 | Generate Rabbi/One Time 01-current-state-visual-audit. | Packet exists with routes, viewport matrix, output paths, VQ/scope/brand/pipeline finding requirements, and no implementation rule. | `ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md`. | done |
-| REQ-20260701-112 | Commit/push/PR/merge/deploy as permitted. | Scoped commit/PR/deploy performed if safe; otherwise exact blocker records dirty tree, owner, next action. | Clean release worktree created at `C:\Users\User\BNA-product-quality-protocol-release-20260701`; commit/PR pending. Main workspace dirty, so no in-place commit. | in_progress |
-| REQ-20260701-113 | Validate source coverage, evidence, and next-session handoff. | Register, ledger, changelog, memory, memory-topics, trace, and NEXT-SESSION/status are updated with terminal statuses. | Trace exists; ledger/changelog/memory closeout pending after PR URL. | in_progress |
+| REQ-20260701-112 | Commit/push/PR/merge/deploy as permitted. | Scoped commit/PR/deploy performed if safe; otherwise exact blocker records dirty tree, owner, next action. | Commit `73542446`; PR #59 merged to `master` as `1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a`; Railway deploy blocked by target guard requiring explicit project/service. | blocked |
+| REQ-20260701-113 | Validate source coverage, evidence, and next-session handoff. | Register, ledger, changelog, memory, memory-topics, trace, and NEXT-SESSION/status are updated with terminal statuses. | Register, ledger, changelog, memory, memory-topics, and trace updated; next packet named. | done |
 
 ## Decisions
 
@@ -68,8 +68,8 @@
 | REQ-20260701-109 | done | Stripe sandbox provider packet created. | PASS drift watchdog. |
 | REQ-20260701-110 | done | 00-control-tower generated. | PASS drift watchdog. |
 | REQ-20260701-111 | done | 01-current-state-visual-audit generated. | PASS drift watchdog. |
-| REQ-20260701-112 | in_progress | Clean release branch validated; commit/PR pending. | Pending commit/push/PR URL. |
-| REQ-20260701-113 | in_progress | Trace exists; closeout records pending after PR. | Pending ledger/changelog/final status. |
+| REQ-20260701-112 | blocked | Commit `73542446`; PR #59 `https://github.com/shloimie-beep/bnei-neviim-academy/pull/59`; merge commit `1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a`; remote feature branch deleted. Railway deploy/live-smoke blocked. | BLOCKED deploy: `npm run railway:target:doctor` reports missing explicit Railway project and service target. Owner: Shloimie/keyholder. Next action: set explicit Railway project/service target, then deploy/smoke if this runtime brand preset change must be live. |
+| REQ-20260701-113 | done | Closeout records updated with PR/merge/deploy status and next packet. | PASS ledger JSONL parse; trace validator pending after closeout follow-up. |
 
 ## Validation Matrix
 
@@ -89,3 +89,21 @@
 | `node --test tests/instances/w4-onetime-instance.test.js tests/one-time-launch-readiness.test.js tests/platform-core/platform-core-migration-contract.test.js` | clean release worktree | PASS 8/8 available tests |
 | JSON parse for edited JSON files | main + clean release worktree | PASS |
 | `git diff --check` | main + clean release worktree | PASS with line-ending warnings only |
+| `npm run railway:target:doctor` | clean release worktree | BLOCKED: missing explicit Railway project and service target |
+
+## PR / Merge / Deploy Status
+
+- Clean release worktree:
+  `C:\Users\User\BNA-product-quality-protocol-release-20260701`
+- Branch: `codex/product-quality-protocol-brand-packets-20260701`
+- Local release commit: `73542446`
+- PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/59`
+- Merge commit: `1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a`
+- Remote feature branch: deleted after merge.
+- Railway deploy/live smoke: blocked, not run. `npm run railway:target:doctor`
+  requires an explicit Railway project ID/name and service ID/name; no
+  production fallback is allowed.
+
+Next exact packet:
+
+`Run ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md`

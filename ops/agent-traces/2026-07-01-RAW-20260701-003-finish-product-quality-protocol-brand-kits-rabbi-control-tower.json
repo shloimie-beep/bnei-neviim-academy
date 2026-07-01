@@ -80,7 +80,20 @@
   ],
   "repo_surface_map_path": "docs/REPO-SURFACE-MAP.md",
   "validation_results": [
-    "PENDING final validation sweep"
+    "PASS node --check scripts/validate-product-quality-packets.mjs",
+    "PASS node --check scripts/watchdog-product-quality-drift.mjs",
+    "PASS node --check ops/product-quality-compiler/evals/run-product-quality-compiler-evals.mjs",
+    "PASS node --check scripts/validate-agent-traces.mjs",
+    "PASS npm run pqc:all",
+    "PASS npm run bna:run:status",
+    "PASS npm run bna:run:validate",
+    "PASS npm run bna:run:source-coverage",
+    "PASS npm run bna:run:stale-evidence",
+    "PASS npm run secrets:audit",
+    "PASS focused One Time/brand tests",
+    "PASS JSON/JSONL validation",
+    "PASS git diff --check with line-ending warnings only",
+    "BLOCKED npm run railway:target:doctor: missing explicit Railway project and service target"
   ],
   "tool_actions_taken": [
     "read source-of-truth files",
@@ -145,7 +158,7 @@
     "DEC-20260701-ONETIME-SEPARATE-PROVIDER-PIPELINE"
   ],
   "blockers": [
-    "Commit/push/PR/deploy pending final validation and dirty-worktree isolation decision."
+    "Railway deploy/live smoke blocked by target guard: explicit project and service target missing."
   ],
   "implementation_files_changed": [
     "AGENTS.md",
@@ -172,17 +185,27 @@
     "raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
     "tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md"
   ],
-  "commits": [],
-  "PR": null,
+  "commits": [
+    "73542446",
+    "1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a"
+  ],
+  "PR": {
+    "number": 59,
+    "url": "https://github.com/shloimie-beep/bnei-neviim-academy/pull/59",
+    "state": "MERGED",
+    "merged_at": "2026-07-01T09:57:29Z",
+    "merge_commit": "1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a"
+  },
   "deployment": {
-    "required": false,
-    "status": "not_required_for_docs_and_packets; brand config runtime visibility pending PR/merge/deploy decision"
+    "required": true,
+    "status": "blocked_by_railway_target_guard",
+    "blocker": "Railway target requires explicit project ID/name and service ID/name; no production fallback is allowed."
   },
   "live_smoke": {
-    "required": false,
-    "status": "not_run_no_app_visible_UI_implementation"
+    "required": true,
+    "status": "not_run_deployment_blocked"
   },
-  "final_status": "in_progress_validation",
+  "final_status": "merged_deploy_blocked",
   "next_packet": "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md",
   "evidence_paths": [
     "raw-input/RAW-20260701-003-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md",
@@ -194,7 +217,7 @@
     "ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md",
     "ops/product-quality-compiler/validation/latest-product-quality-validation.md",
     "ops/product-quality-compiler/evals/latest-eval-report.md",
-    "ops/watchdog-audits/2026-07-01-product-quality-drift.md"
+    "ops/watchdog-audits/2026-07-01-product-quality-drift.md",
+    "https://github.com/shloimie-beep/bnei-neviim-academy/pull/59"
   ]
 }
-
