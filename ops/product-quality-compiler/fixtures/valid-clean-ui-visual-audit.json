@@ -1,0 +1,104 @@
+{
+  "schema_version": "pqc.v1",
+  "packet_id": "PKT-20260630-603",
+  "parent_raw_id": "RAW-20260630-013",
+  "source_statement_ids": ["SRC-CASE-003"],
+  "stage": "STAGE_1_SPEC_COMPILER",
+  "packet_role": "VISUAL_AUDITOR",
+  "title": "Rabbi operations visual audit packet",
+  "created_at": "2026-06-30T00:00:00+03:00",
+  "workspace_key": "rabbi_sheller_provider",
+  "project_key": "one_time_mishnah_class",
+  "view_classes": ["RABBI_PROVIDER_ADMIN"],
+  "operator_intent_summary": "Compile a visual cleanup request into exact routes, defect codes, screenshots, state matrix, accessibility, and done criteria.",
+  "raw_source": "Make it look nice.",
+  "operator_quotes": ["Make it look nice."],
+  "decisions_captured": [],
+  "out_of_scope": [
+    "No product UI implementation in the visual-audit packet.",
+    "No external provider writes, sends, payments, DNS, access grants, or GHL runtime."
+  ],
+  "affected_routes": ["/operations?workspace=rabbi_sheller_provider"],
+  "affected_files": ["ops/visual-quality-rubric.md", "docs/VISUAL-QUALITY-HARNESS.md"],
+  "current_state": {
+    "inspection_targets": ["Operations One Time overview route", "CRM route", "Community route", "mobile 390 screenshot"],
+    "known_blockers": ["Specific implementation route list must be finalized before Codex product-code edits."]
+  },
+  "product_quality_expansion": {
+    "trigger_phrases": ["nice", "clean"],
+    "expanded_phrases": {
+      "nice": "Professional visual quality is expressed as typography, layout, IA, action, data, responsive, accessibility, and credibility VQ findings with screenshots.",
+      "clean": "Aligned layout, readable typography, consistent spacing, simple IA, no redundant nav/filters, no internal clutter, clear next action, consistent states, mobile proof."
+    },
+    "first_party_pattern_interpretation": "Visual audit produces exact BNA UI requirements and evidence; it does not redesign unrelated modules."
+  },
+  "requirements": [
+    {
+      "id": "REQ-20260630-613",
+      "statement": "Create a visual audit packet that maps subjective visual quality language to VQ findings, routes, viewports, state matrix, accessibility checks, and evidence paths.",
+      "expected_result": "Codex receives a route-specific visual audit packet and does not implement product code until Definition of Ready passes.",
+      "acceptance_criteria": [
+        "Every visual finding has a VQ code, severity, user impact, expected fix, screenshot before, and screenshot after or exact blocker.",
+        "Mobile screenshots at 430 and 390 are required for Rabbi-facing cleanup."
+      ]
+    }
+  ],
+  "definition_of_ready": {
+    "required": true,
+    "criteria": ["Exact routes are named or blocked.", "Screenshots are required at 1440, 1024, 768, 430, and 390.", "VQ codes are assigned before implementation."]
+  },
+  "state_matrix": {
+    "loading": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Load route.", "expected_visible_title": "Operations", "expected_visible_message": "Loading workspace.", "expected_primary_action": "None until loaded.", "expected_secondary_actions": ["Retry"], "forbidden_content": ["raw JSON"], "screenshot_required": true, "aria_semantic_expectation": "Loading status is exposed.", "accessibility_expectation": "Status is announced.", "test_smoke_assertion": "Loading state is visually distinct.", "requirement_id": "REQ-20260630-613"},
+    "empty": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open empty module.", "expected_visible_title": "Operations", "expected_visible_message": "No records are available for this view.", "expected_primary_action": "Open the safe next action for the module.", "expected_secondary_actions": ["Open support drawer"], "forbidden_content": ["placeholder pretending to work"], "screenshot_required": true, "aria_semantic_expectation": "Empty state has heading and description.", "accessibility_expectation": "Text contrast passes baseline.", "test_smoke_assertion": "Empty is not confused with loading.", "requirement_id": "REQ-20260630-613"},
+    "populated": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "1440", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open route with records.", "expected_visible_title": "Operations", "expected_visible_message": "Records are grouped by module with clear next action.", "expected_primary_action": "Open selected record.", "expected_secondary_actions": ["Filter", "Search"], "forbidden_content": ["super-admin support machinery in normal Rabbi flow"], "screenshot_required": true, "aria_semantic_expectation": "Main sections have headings.", "accessibility_expectation": "Keyboard path reaches primary action.", "test_smoke_assertion": "Route has no horizontal overflow.", "requirement_id": "REQ-20260630-613"},
+    "filtered_empty": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Apply filter with no matches.", "expected_visible_title": "Operations", "expected_visible_message": "No records match these filters.", "expected_primary_action": "Clear filters.", "expected_secondary_actions": ["Adjust filters"], "forbidden_content": ["filter rail in global navigation"], "screenshot_required": true, "aria_semantic_expectation": "Filter state is announced.", "accessibility_expectation": "Clear filters is focusable.", "test_smoke_assertion": "Clear filters changes state.", "requirement_id": "REQ-20260630-613"},
+    "error": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "1024", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Simulate API error.", "expected_visible_title": "Operations", "expected_visible_message": "This view could not load.", "expected_primary_action": "Retry.", "expected_secondary_actions": ["Open support drawer"], "forbidden_content": ["stack trace"], "screenshot_required": true, "aria_semantic_expectation": "Error message is linked to region.", "accessibility_expectation": "Error is not color-only.", "test_smoke_assertion": "Error state is actionable.", "requirement_id": "REQ-20260630-613"},
+    "blocked_setup": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open blocked setup card.", "expected_visible_title": "Setup required", "expected_visible_message": "Owner, reason, and next action are visible.", "expected_primary_action": "Open setup details.", "expected_secondary_actions": ["Continue in preview"], "forbidden_content": ["provider DNS noise in normal view"], "screenshot_required": true, "aria_semantic_expectation": "Blocked status is text.", "accessibility_expectation": "Recommended next action has label.", "test_smoke_assertion": "Blocked state performs no external write.", "requirement_id": "REQ-20260630-613"},
+    "preview_only": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "768", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Run no-write preview.", "expected_visible_title": "Preview only", "expected_visible_message": "No production write occurred.", "expected_primary_action": "Review preview.", "expected_secondary_actions": ["Cancel"], "forbidden_content": ["silent send", "silent payment"], "screenshot_required": true, "aria_semantic_expectation": "Preview label is prominent.", "accessibility_expectation": "Preview status is not color-only.", "test_smoke_assertion": "Preview readback says no write occurred.", "requirement_id": "REQ-20260630-613"},
+    "success_readback": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "430", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Complete local approved action.", "expected_visible_title": "Operations", "expected_visible_message": "Action completed with readback.", "expected_primary_action": "Open updated item.", "expected_secondary_actions": ["View audit"], "forbidden_content": ["raw provider payload"], "screenshot_required": true, "aria_semantic_expectation": "Success is announced.", "accessibility_expectation": "Success message is close to action.", "test_smoke_assertion": "Readback includes updated state.", "requirement_id": "REQ-20260630-613"},
+    "permission_denied": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "430", "auth_role": "wrong_scope_user", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open with wrong role.", "expected_visible_title": "Access denied", "expected_visible_message": "You do not have access to this workspace.", "expected_primary_action": "Return to allowed workspace.", "expected_secondary_actions": ["Sign out"], "forbidden_content": ["private records"], "screenshot_required": true, "aria_semantic_expectation": "Access denial has heading.", "accessibility_expectation": "Focus reaches message.", "test_smoke_assertion": "Wrong-scope user sees no private data.", "requirement_id": "REQ-20260630-613"},
+    "mobile_drawer_or_detail_state": {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": "390", "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "how_to_enter_state": "Open mobile detail.", "expected_visible_title": "Detail", "expected_visible_message": "Selected detail has a visible back action.", "expected_primary_action": "Back.", "expected_secondary_actions": ["Open related tab"], "forbidden_content": ["trapped drawer"], "screenshot_required": true, "aria_semantic_expectation": "Detail has heading and close path.", "accessibility_expectation": "Touch targets are not crowded.", "test_smoke_assertion": "Mobile detail opens and closes.", "requirement_id": "REQ-20260630-613"}
+  },
+  "visual_quality": {
+    "screenshot_requirements": [
+      {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": 1440, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-613"},
+      {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": 1024, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-613"},
+      {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": 768, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-613"},
+      {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": 430, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-613"},
+      {"route": "/operations?workspace=rabbi_sheller_provider", "viewport": 390, "auth_role": "RABBI_PROVIDER_ADMIN", "workspace_project": "rabbi_sheller_provider / one_time_mishnah_class", "required": true, "requirement_id": "REQ-20260630-613"}
+    ],
+    "findings": [
+      {"finding_id": "VQF-20260630-603", "route": "/operations?workspace=rabbi_sheller_provider", "viewport": "390", "screenshot_before": "ops/ui-audits/example/before-visual-390.png", "screenshot_after_or_blocker": "ops/ui-audits/example/after-visual-390.png", "defect_codes": ["VQ-TYPE-003", "VQ-LAYOUT-002", "VQ-IA-002", "VQ-ACTION-003", "VQ-RESP-001"], "severity": "P1", "user_impact": "Operator cannot trust or scan the route quickly.", "expected_fix": "Resolve typography, spacing, information architecture, action state, and mobile overflow findings with after screenshots.", "requirement_id": "REQ-20260630-613"}
+    ]
+  },
+  "accessibility": {"baseline": "WCAG 2.2 A/AA plus mobile touch and reflow requirements.", "required_checks": ["contrast", "non-text contrast", "focus visible", "keyboard path", "name role value", "target size", "mobile reflow"]},
+  "action_states": [
+    {"label": "Capture before screenshots", "selector_or_action_key": "PQC-VISUAL-CAPTURE-BEFORE", "action_state": "WORKS_NOW", "owner": "Codex visual auditor", "external_write": false, "handler_or_blocker": "Use local/browser screenshot harness.", "registry_required": false}
+  ],
+  "data_requirements": ["route", "viewport", "auth role", "workspace/project", "defect code", "severity", "expected fix", "before evidence", "after evidence"],
+  "security_privacy": {"browser_content_untrusted": true, "no_ghl_runtime": true, "scope_rules": ["Screenshots must avoid committing raw private student/parent/contact details."], "forbidden_content": ["raw JSON", "raw transcripts", "secrets", "unrelated workspace data"]},
+  "external_provider_policy": "EXPLICITLY_OUT_OF_SCOPE",
+  "implementation_batches": [
+    {"batch_id": "BATCH-VISUAL-AUDIT", "scope": "Visual audit only", "instructions": ["Capture route and viewport matrix, assign VQ findings, and stop before product-code edits if Definition of Ready fails."]}
+  ],
+  "tests": [
+    {"command_or_check": "npm run pqc:validate", "expected_result": "Visual audit packet validates."},
+    {"command_or_check": "npm run watchdog:protocol-drift", "expected_result": "No visual cleanup claim lacks screenshot/mobile proof requirements."}
+  ],
+  "evidence": {"expected_paths": ["ops/ui-audits/YYYY-MM-DD-rabbi-visual/report.md", "ops/product-quality-compiler/validation/latest-product-quality-validation.md"]},
+  "app_visible": false,
+  "deployment_gate": "LOCAL_ONLY_ALLOWED",
+  "definition_of_done": {"required": true, "criteria": ["Before screenshots or blockers are recorded.", "Findings use VQ codes.", "No product code is changed by visual-audit packet.", "Next implementation packet or blocker is named."]},
+  "trace": {
+    "raw_input_path": "raw-input/RAW-20260630-013-product-quality-compiler-validator-drift-watchdog.md",
+    "compiled_packet_path": "ops/prompt-packets/2026-06-30-rabbi-visual/01-current-state-visual-audit.product-quality.json",
+    "validator_result_path": "ops/product-quality-compiler/validation/latest-product-quality-validation.json",
+    "tool_actions_expected": ["read route registry", "capture screenshots", "write audit report"],
+    "skipped_actions_policy": "Skip implementation and external writes during audit-only packet.",
+    "blocker_decisions": [],
+    "evidence_paths": ["ops/ui-audits/YYYY-MM-DD-rabbi-visual/report.md"],
+    "final_status_path": "tasks-pending/2026-06-30-product-quality-compiler-validator-drift-watchdog.md",
+    "next_packet_path": "ops/prompt-packets/2026-06-30-rabbi-visual/02-implementation-packet.md"
+  },
+  "next_packet": {"type": "IMPLEMENTATION_PACKET", "description": "Generate a scoped UI implementation packet from resolved visual findings.", "path": "ops/prompt-packets/2026-06-30-rabbi-visual/02-implementation-packet.md"}
+}

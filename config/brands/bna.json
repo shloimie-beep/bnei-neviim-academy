@@ -1,0 +1,28 @@
+{
+  "key": "bna",
+  "public_name": "Bnei Nevi'im Academy",
+  "name": "Bnei Nevi'im Academy",
+  "short_name": "BNA",
+  "audience": "school_operations",
+  "workspace_profile": "bna",
+  "brand_family": "bna_academy",
+  "authoritative_palette": "bna_cream_navy_teal_cyan",
+  "primary_color": "#101827",
+  "accent_color": "#147d7a",
+  "highlight_color": "#19b7c5",
+  "surface_color": "#f7f2de",
+  "palette": {
+    "cream": "#f7f2de",
+    "navy": "#101827",
+    "navy_2": "#172238",
+    "teal": "#147d7a",
+    "cyan": "#19b7c5",
+    "white": "#ffffff",
+    "muted": "#5d6778"
+  },
+  "forbidden_palette_sources": [
+    "rabbi_onetime_black_yellow"
+  ],
+  "secrets_included": false,
+  "external_write_performed": false
+}

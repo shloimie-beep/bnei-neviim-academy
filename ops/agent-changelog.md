@@ -6,31 +6,77 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
-## 2026-06-24T18:58:00+03:00 - Final release PR merged, deployed, and live-verified
+## 2026-06-28T15:49:00+03:00 - One Time launch workflow safe-mode deployed closeout
 
-Merged final integration PR #16 to `master`, verified Railway auto-deployed the
-same merge SHA, and ran the post-deploy smoke matrix.
+Completed `RAW-20260628-005` / `REQ-20260628-013` through
+`REQ-20260628-023` for the Rabbi Sheller / OneTimeOneTime launch workflow
+packet.
 
-Evidence:
-- PR #16 merge commit: `c14507ab121daa221689ba285c203605bf2d64bf`
-- Railway deployment: `e26fec62-1a08-43a8-abb9-1b030b0ea786`
-- Live summary:
-  `ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md`
+What changed:
+- Preserved raw intake, created the dated requirement register, and made the
+  active execution run terminal.
+- Built privacy-safe Downloads inventory and redacted One Time contact
+  import/dedupe/no-send tagging proof.
+- Added One Time email workflow preview and protected trial signup preview
+  routes.
+- Updated One Time launch policy/copy to no-card 30-day trial and later
+  Stripe-only conversion.
+- Added DNS handoff, overlap audit, updated route registry, and targeted local
+  plus live safe-mode smokes.
+- Deployed Railway `51367168-0156-4099-aa53-0b8be7654124`.
 
 Verification:
-- PASS `npm run railway:doctor`
-- PASS live app, public/privacy, student auth, operator setup, provider
-  classroom, class upload trace, payment/access, One Time shared-review, and
-  negative route smokes.
+- PASS live app, public privacy, Operations workspace taxonomy, Rabbi landing,
+  and One Time safe-mode smokes.
+- PASS live One Time safe-mode smoke verified 8 draft-only emails,
+  `info@onetimeonetime.com`, disabled sends, no-card trial preview, no checkout,
+  no charge, no external write, and blocked Stripe live-charge action.
+- PASS security watchdog, communications watchdog, secrets audit, and final
+  execution-run validation.
 
 Guardrails:
-- No production database migration, class backfill, Stripe charge/refund/
-  subscription, access grant, Vimeo upload/publication, email/WhatsApp/
-  Telegram/social send, DNS change, credential copy/rotation, secret exposure,
-  external CRM/GHL runtime, or external connector write was performed.
-- Class backfill remains blocked because current evidence has
-  `safe_to_apply=false`, zero approved candidate jobs, and no row-level write
-  plan.
+- No live email, DNS mutation, Replit/domain cutover, Stripe checkout/charge,
+  live billing, Green Invoice path, GHL runtime, raw contact data commit, or
+  secret exposure was performed.
+- Future external actions remain gated by `DEC-20260628-001`.
+
+## 2026-06-28T15:31:00+03:00 - One Time launch workflow safe-mode local proof
+
+Executed `RAW-20260628-005` / `TASK-20260628-005` in safe/test mode.
+
+What changed:
+- Created the active execution run and requirement register for
+  `REQ-20260628-013` through `REQ-20260628-023`.
+- Added a privacy-safe Downloads spreadsheet inventory and redacted One Time
+  contact import/dedupe/tagging dry run.
+- Added draft-only One Time email workflow preview support for
+  `OneTimeOneTime Mishnah <info@onetimeonetime.com>`.
+- Updated One Time Stripe/trial policy to 30-day no-card trial, later
+  Stripe-only conversion, no grace access, no automatic tax, no Connect, and no
+  live charge.
+- Added signup/trial/referral and payment/access/class-link preview smokes.
+- Added DNS handoff and overlap audit evidence without mutating DNS or writing
+  raw contact data.
+
+Verification:
+- PASS contact inventory and import smokes: 1,520 contacts after dedupe, all
+  `no_send`, required tag contract present, DB write false, external write
+  false.
+- PASS email workflow smoke: 8 drafts, sender `info@onetimeonetime.com`, no
+  bulk/test send.
+- PASS Stripe/trial smokes: no card at signup, no checkout at signup, no grace
+  access, no automatic tax, no Connect, no live charge.
+- PASS focused One Time/parser/auth tests 30/30 plus final touched subset 10/10.
+- PASS security watchdog, communications watchdog, secrets audit, and execution
+  run validation.
+
+Remaining:
+- `REQ-20260628-014` and `REQ-20260628-015` are done.
+- `REQ-20260628-013` and `REQ-20260628-016` through `REQ-20260628-023` remain
+  `needs_verification` until the current app bundle is deployed and live-smoked.
+- `DEC-20260628-001` still blocks live email, DNS mutation, Replit/domain
+  cutover, live Stripe billing/checkout/charge, Green Invoice, GHL runtime,
+  raw contact-data commits, and secrets exposure.
 
 ## 2026-06-19T11:30:00+03:00 - Approved Release Closeout Checkpoint
 
@@ -24535,30 +24581,6 @@ send, DNS/Railway propagation, WAPI outbound use, Buffer publish/schedule,
 billing, Zoom, Vimeo, GHL, external connector, or external-account write was
 performed.
 
-## 2026-06-24T08:02:00+03:00 - Integration Navigation Owner-Review Candidate Verified
-
-Created the credential-free owner-review release-candidate packet for the
-combined integration branch and draft PR #14. The branch now has automatic route
-inventory, canonical sitemap, navigation graph, orphan/duplicate review,
-applied/not-applied matrix, One Time and role-flow diagrams, role-flow QA,
-UX-backlog reconciliation, known gaps, and an owner-review script.
-
-Local verification passed without external credentials, production readback,
-deployment, live sends, publish/upload/charge, DNS changes, or secret exposure:
-`npm run owner-review:role-flows`, `npm run owner-review:routes`,
-`npm run watchdog:links`, `npm run watchdog:actions`,
-`npm run watchdog:security`, the focused owner-review/navigation suite 70/70,
-full `npm test` 1213/1213, and `npm run secrets:audit` over 4219 tracked paths.
-The remaining blockers are intentionally limited to merge/deploy/live
-production verification, live credential integrations, and full historical
-click-map rerun scope beyond the credential-free local harness.
-
-Attempted to add `.github/workflows/owner-review.yml` for an independent
-credential-free CI gate, but GitHub rejected the workflow commit because the
-current OAuth app lacks `workflow` scope. The blocker is recorded in the
-owner-review packet; the pushed branch keeps the local credential-free gates as
-release-candidate evidence until workflow permission is granted.
-
 ## 2026-06-19T13:45:00+03:00 - One Time Master Recovery Batch 6 Product Readiness
 
 Completed the local implementation slice for `REQ-20260619-306` and set the
@@ -24845,1919 +24867,2091 @@ send/domain mutation, secret propagation, or external-account write was
 performed. Authenticated live/local Operations smoke remains gated by operator
 credentials and release approval.
 
-## 2026-06-21T14:43:30+03:00 - One Time Master Completion Batch 7 WhatsApp UX Live Closeout
+## 2026-06-20T20:48:00+03:00 - One Time Local Beta Hardening Run Registered
 
-Completed `REQ-20260621-503` for Batch 7 on PR #5 after the WhatsApp UX
-implementation had already been committed and pushed at
-`b3f5a1e2135a35e001c4eeaeeb4c392d19100d0f`.
+Registered the new local-only hardening run
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/` with
+`REQ-20260619-406` through `REQ-20260619-424`, preserved raw prompt
+`RAW-20260620-001`, marked the prior parallel run inactive, and created the
+required current-version and active-queue reconciliation artifacts.
 
-Deployed the safe app-visible bundle to Railway production deployment
-`3265d380-9a93-488d-844f-f523367aa4e2` and verified it with the standard live
-app smoke plus a focused WhatsApp UX live smoke. The focused smoke now checks
-the API/readback contract and rendered Operations WhatsApp UX at desktop and
-mobile widths.
+Hardened `scripts/task-queue-reconciler.mjs` so no-live dry-runs use durable
+repo evidence before suggesting a duplicate app-wide UI brand-shell backfill;
+the follow-up dry-run reports zero actions and records the repo-evidence note.
 
-Verification passed: focused communications tests 30/30, Operations runtime
-smoke 10/10, `npm run ops:audit -- smoke-login`, `npm run bna:run:validate`,
-Railway doctor, standard live app smoke
-`ops/live-smokes/2026-06-21T11-33-08-112Z-live-app-smoke.md`, and focused
-WhatsApp UX live smoke
-`ops/live-smokes/2026-06-21T11-47-26-966Z-whatsapp-ux-live-smoke.md`.
+Verification passed: active run validation, JSON parse, queue audit no-live
+baseline, `node --check scripts/task-queue-reconciler.mjs`, focused
+`tests/task-queue-reconciler.test.js` 7/7, and no-live task reconciler dry-run
+with `Actions: 0`.
 
-Guardrails: no WhatsApp send, broadcast, email send, GHL/GoHighLevel,
-LeadConnector, external CRM write, billing, DNS, Zoom, Vimeo, Buffer publish,
-or raw provider payload exposure was performed.
+Guardrails: no deploy, DNS, Railway mutation, production database mutation,
+live task mutation, live email, live payment, provider mutation, push, PR, or
+external-account write was performed. Full local test, browser acceptance, and
+synthetic One Time pilot remain open.
 
-Next: continue automatically with Batch 8 / `REQ-20260621-504` Email and
-Resend UX, without live sends.
+## 2026-06-20T20:52:35+03:00 - One Time Local Beta Role And Product Contracts
 
-## 2026-06-21T15:07:30+03:00 - One Time Master Completion Batch 8 Email/Resend UX Live Closeout
+Completed the local doc/config/test slice for `REQ-20260619-408` and
+`REQ-20260619-409`.
 
-Completed `REQ-20260621-504` and closed the first-party communications parent
-`REQ-20260619-305` for PR #5.
+Added explicit One Time instance contracts for visible human roles, portal
+scope, prompt hierarchy, configurable `$67` primary offer, future 20-student
+cohort, 3 scholarship seats, class-ingestion flow, and provider-directory
+consent/privacy guardrails in `src/platform/instances/one-time.js`.
 
-Implemented and deployed Email/Resend UX guards: Operations Email and
-Communications Settings now separate provider API readiness, sender identity,
-domain readiness, recipient/workspace scope, DNS tasks, webhook-event
-readback, and the exact `SEND_RESEND_EMAIL` gate. Resend webhook processing now
-uses raw-body Svix verification, stores safe first-party event summaries, and
-hides raw payloads by default. The sender/domain Decision is recorded at
-`ops/one-time-mishnah/resend-sender-domain-decision.md`.
+Created required product/integration artifacts:
+`docs/product/one-time-pilot-product-model.md`,
+`docs/product/one-time-roles-and-portals.md`,
+`docs/product/one-time-class-course-ingestion.md`,
+`docs/product/provider-directory-and-consent.md`, and
+`docs/integrations/STRIPE.md`. Added honest not-run-yet placeholders for
+`PLAYWRIGHT.md` and `SYNTHETIC-E2E.md` under the active execution run.
 
-Implemented app-visible code at `fdd39bf327356675f8006bcc4ce04425061ef57e`,
-then pushed Resend API-key propagation evidence and closeout tests at
-`847649198dfaf9f12fd69db958c3f927b460ecd8`. Deployed final commit
-`847649198dfaf9f12fd69db958c3f927b460ecd8` to Railway deployment
-`3ec03a01-2141-401f-988f-a734176a778c`.
+Verification passed: `node --check src/platform/instances/one-time.js`,
+focused One Time local beta product contract tests 5/5, existing W4 instance
+and One Time role/auth tests 12/12, active run validation, run JSON parse, and
+`git diff --check` with line-ending warnings only.
 
-Verification passed: focused Email/Resend/provider-env tests 19/19,
-redacted Resend API-key dry-run/apply reports, `npm run bna:run:validate`,
-tracked secret audit, Railway deploy poll, standard live app smoke
-`ops/live-smokes/2026-06-21T12-12-08-310Z-live-app-smoke.md`, and focused
-Email/Resend UX live smoke
-`ops/live-smokes/2026-06-21T12-10-31-966Z-email-resend-ux-live-smoke.md`.
-Final live readback confirmed `RESEND_API_KEY` configured, one Resend domain
-readable, sender/domain/send readiness still blocked, and no send controls
-enabled.
+Guardrails: no deploy, live browser smoke, Railway mutation, production
+database mutation, DNS/domain action, live Stripe action, live email, live Zoom
+or Vimeo mutation, provider mutation, push, PR, or external-account write was
+performed.
 
-Guardrails: no live email send, DNS verification/mutation, provider write,
-bulk campaign, raw private email-body storage, billing, Zoom, Vimeo, Buffer
-publish, or external-account write was performed.
+## 2026-06-20T20:56:39+03:00 - One Time Local Beta Stripe Mock Flow
 
-Next: continue automatically with Batch 9/10 / `REQ-20260619-306` product,
-schedule, booking, portals, and billing/access foundations without live
-charges or external writes.
+Completed `REQ-20260619-416` for the local-only One Time beta hardening run.
+Added a no-write Stripe local beta mock module for `$67` checkout previews,
+mock payment events, paid enrollment, idempotent duplicate handling,
+failed/expired/canceled no-grant behavior, and refund-review state. Extended
+One Time integration readiness so Stripe appears beside Vimeo, Zoom, and
+Resend with live charge/product/price/checkout/refund actions blocked.
 
-## 2026-06-21T15:57:16+03:00 - One Time Master Completion Batch 12 Zoom/Attendance Live Closeout
+Verification passed: `node --check
+src/platform/integrations/stripe-local-beta.js`, `node --check
+src/platform/integrations/readiness.js`, and `node --test
+tests/one-time-stripe-local-beta.test.js
+tests/integrations/w4-onetime-readiness.test.js` with 6/6 passing.
+Post-closeout verification also passed the nearby One Time focused suite
+23/23, active run validation with `done: 4`, `in_progress: 3`,
+`not_started: 12`, run JSON plus ledger JSONL parse with 1278 lines, and
+`git diff --check` with line-ending warnings only.
 
-Closed `REQ-20260619-307` for PR #5. The Zoom meeting and attendance
-foundation is deployed and live-verified while keeping all real Zoom writes
+Guardrails: no live Stripe checkout, product, price, payment link,
+subscription, charge, refund, payout, webhook endpoint mutation, deploy,
+Railway mutation, production database mutation, DNS/domain action, live email,
+provider mutation, push, PR, or external-account write was performed.
+
+## 2026-06-20T21:01:02+03:00 - One Time Class Course Ingestion Preview
+
+Completed `REQ-20260619-412` for the local-only One Time beta hardening run.
+Added a preview-only natural-language class/course ingestion builder that turns
+One Time class commands into local course, module, lesson, class-session,
+video-reference, worksheet/resource, parent/student role-update, decision,
+task, and review-item drafts while preserving raw/source provenance and
+idempotent draft IDs.
+
+Verification passed: `node --check
+src/platform/ingestion/one-time-class-course-builder.js` and `node --test
+tests/one-time-class-course-ingestion.test.js` with 3/3 passing.
+Post-closeout verification also passed the focused One Time local beta suite
+14/14, active run validation with `done: 5`, `in_progress: 2`,
+`not_started: 12`, run JSON plus ledger JSONL parse with 1279 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no database write, Google Classroom write, video upload, external
+publish, parent/student send, live integration mutation, deploy, Railway
+mutation, production database mutation, DNS/domain action, push, PR, or
+external-account write was performed.
+
+## 2026-06-20T21:04:16+03:00 - One Time Provider Consent Controls
+
+Completed `REQ-20260619-415` for the local-only One Time beta hardening run.
+Added a preview-only provider directory consent/privacy review that allows only
+provider-supplied public profile fields when required consent is present, blocks
+private student/parent data and prohibited commercial uses, keeps referrals
+adult-reviewed, and suppresses advertising/analytics monetization under the
+paid privacy plan.
+
+Verification passed: `node --check
+src/platform/domain/provider-directory-consent.js`, `node --check
+src/platform/domain/index.js`, and `node --test
+tests/one-time-provider-directory-consent.test.js` with 3/3 passing.
+Post-closeout verification also passed the focused provider/One Time suite
+29/29, active run validation with `done: 6`, `in_progress: 1`,
+`not_started: 12`, run JSON plus ledger JSONL parse with 1280 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no database write, public listing publish, provider message,
+referral send, advertising activation, analytics export, billing action,
+deploy, Railway mutation, production database mutation, DNS/domain action,
+push, PR, or external-account write was performed.
+
+## 2026-06-20T21:07:07+03:00 - One Time Resend Local Outbox
+
+Completed `REQ-20260619-417` for the local-only One Time beta hardening run.
+Added a preview-only Resend local outbox for One Time/Rabbi emails with
+transactional and marketing templates, suppression handling, service and
+marketing consent gates, unsubscribe placeholders, readiness/domain blockers,
+idempotent draft IDs, and explicit no-send/no-external-write proof.
+
+Verification passed: `node --check
+src/platform/integrations/resend-local-outbox.js` and `node --test
+tests/one-time-resend-local-outbox.test.js` with 3/3 passing.
+Post-closeout verification also passed the focused One Time integration suite
+14/14, active run validation with `done: 7`, `in_progress: 1`,
+`not_started: 11`, run JSON plus ledger JSONL parse with 1281 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no live Resend API call, email send, fallback send, DNS/domain
+mutation, unsubscribe mutation, database write, deploy, Railway mutation,
+production database mutation, push, PR, or external-account write was
+performed.
+
+## 2026-06-20T21:13:50+03:00 - One Time Media Pipeline Preview
+
+Completed `REQ-20260619-413` for the local-only One Time beta hardening run.
+Added a preview-only media pipeline for Zoom recordings, Vimeo assets, and
+approved drop-folder videos. It produces One Time class-session handoff,
+attendance/minutes preview, Zoom correction drafts, scoped video references,
+member-library drafts, worksheet/material handoff, privacy-review routing, and
+Vimeo/Zoom readiness cards while keeping all live media/provider writes
 blocked.
 
-The implementation at `7685133a6e675db6883135eb775ae4cae6b44ad2` adds
-Server-to-Server OAuth token/cache scaffolding, secure meeting and registrant
-request builders, report-reader request builders, webhook signature/replay/
-idempotency planning, attendance reconciliation that rejects dashboard clicks
-as attendance, internal Zoom foundation schema, route-registry coverage, and
-Operations Live Classes readiness copy.
-
-Deployed commit `7685133a6e675db6883135eb775ae4cae6b44ad2` to Railway
-deployment `b2d02f20-64a8-4183-9dba-3587d0449ef7`.
-
-Verification passed: Zoom/product/portal focused tests 25/25,
-`npm run bna:run:validate`, tracked secret audit, `git diff --check` with
-line-ending warnings only, Railway doctor/deploy poll, standard live app smoke
-`ops/live-smokes/2026-06-21T12-55-46-834Z-live-app-smoke.md`, and focused
-Zoom/attendance live smoke
-`ops/live-smokes/2026-06-21T12-56-08-966Z-one-time-zoom-attendance-live-smoke.md`.
-
-Guardrails: no Zoom meeting, registrant, webhook attendance write, attendance
-correction, recording read, transcript read, summary read, external send,
-portal publish, participant invite, host-start URL exposure, billing, DNS,
-Vimeo upload, email/WhatsApp send, Buffer publish, GHL runtime, or external
-account write was performed.
-
-Next: register the latest One Time revenue-launch/parser follow-up prompt,
-split `REQ-20260619-306` into child requirements, and continue with the first
-unblocked child batch.
-
-## 2026-06-21T16:05:00+03:00 - One Time Revenue Launch / Parser V2 Follow-Up Registered
-
-Preserved the new prompt as `RAW-20260621-002` and registered its durable
-decisions plus Batch 9 child requirements in the active execution run.
-
-Parent `REQ-20260619-306` is now an open umbrella requirement and must not be
-marked complete until child requirements `REQ-20260621-901` through
-`REQ-20260621-910` reach terminal statuses. The first executable child is
-`REQ-20260621-901` source-envelope and mixed-context parser v2.
-
-Recorded the product/revenue decisions in
-`ops/one-time-mishnah/revenue-launch-parser-followup-decisions.md` and
-`MEMORY.md`, including the no-standalone-SaaS scope, admin-first boundary,
-first-party CRM direction, no-GHL runtime, warm-lead trial defaults, referral
-credit model, cancellation/refund intent, and legal wording Decision
-`DEC-20260621-901`.
-
-Verification passed: active run validation, `npm run bna:run:next` selecting
-`REQ-20260621-901`, and JSON parse checks for the run and decision packet.
-
-Guardrails: no app runtime change, no deploy, no production data mutation, no
-live charge, no invoice credit, no bulk email send, no external CRM/GHL write,
-no DNS/account mutation, and no private spreadsheet/export committed.
-
-## 2026-06-21T16:22:25+03:00 - One Time Master Completion Batch 9A Source-Envelope Parser Live Closeout
-
-Closed `REQ-20260621-901` for PR #5. Source-envelope and mixed-context parser
-v2 is deployed and live-verified while keeping the live parser smoke dry-run
-only.
-
-The implementation at `efe1d86d194cef483f5d6d9d418a769e20800989` adds
-`source-envelope-v2` classification, required envelope metadata, supported
-context types, filename/title default routing, local segment override records,
-canonical parser item `metadata.source_context`, W3 parser exposure, and live
-intake parse-route filename/title handoff.
-
-Deployed commit `efe1d86d194cef483f5d6d9d418a769e20800989` to Railway
-deployment `c1623618-a00c-46d0-8be9-5a8e4102b376`.
-
-Verification passed: syntax checks for server/parser/smoke files, focused
-W3/source-envelope tests 13/13, parser/ramble/media-routing regressions 38/38,
-tracked secret audit, Railway doctor/deploy poll, standard live app smoke
-`ops/live-smokes/2026-06-21T13-21-50-721Z-live-app-smoke.md`, and focused
-source-envelope parser live smoke
-`ops/live-smokes/2026-06-21T13-22-11-379Z-source-envelope-parser-live-smoke.md`.
-
-Known unrelated caveat: `tests/one-time-intake-api-readback.test.js` still has
-a HEAD owner-name fixture mismatch where the auth helper returns
-`Rabbi Ellie Scheller` and the test expects `Rabbi Elie Scheller`.
-
-Guardrails: no parse-run apply, task filing, external send, billing, Zoom,
-Vimeo upload, Buffer publish, DNS mutation, CRM/GHL write, or external-account
-write was performed. The focused live parse used a synthetic dry-run fixture.
-
-Next: continue automatically with Batch 9B / `REQ-20260621-902` today's
-class-upload trace.
-
-## 2026-06-21T16:38:00+03:00 - One Time Master Completion Batch 9B Class-Upload Trace Blocked
-
-Closed `REQ-20260621-902` as terminal blocked on PR #5 with live proof. The
-latest class-upload candidate is live content job `#78` / `Drive Class Sunday
-balak`, source type `google_drive`, project `bna`, drive stage `02 Ingesting`,
-with source provenance but no transcript and no parse run.
-
-Dry-run reprocess verified the existing Drive audio would be transcribed and
-patched back onto job `#78`. The actual reprocess began chunked transcription
-but stopped before saving transcript text or creating a parse run because the
-hosted transcription credential returned `401 invalid_credential`.
-
-The content job was patched to `blocked` with sanitized Batch 9B notes. No
-secret-like credential material remains in the live note according to focused
-smoke `ops/live-smokes/2026-06-21T13-37-45-376Z-class-upload-trace-live-smoke.md`.
-
-Verification passed: syntax checks for the bridge and focused smoke script,
-dry-run readback, sanitized blocker patch, standard live smoke
-`ops/live-smokes/2026-06-21T13-37-11-961Z-live-app-smoke.md`, and focused
-class-upload trace smoke. The actual reprocess remains blocked until the
-hosted transcription credential is fixed or rotated.
-
-Guardrails: no transcript body was committed or written to reports; no parse
-apply, task filing, external send, billing, Zoom, Vimeo, Buffer, DNS, CRM/GHL,
-WhatsApp, email, or external-account write was performed.
-
-Next: continue automatically with Batch 9C / `REQ-20260621-903` Downloads
-spreadsheet inventory while 9B waits on the credential blocker.
-
-## 2026-06-21T16:50:00+03:00 - One Time Master Completion Batch 9C Downloads Spreadsheet Inventory
-
-Closed `REQ-20260621-903` for PR #5. Downloads spreadsheet inventory is
-complete with redacted metadata and schema signals only.
-
-The repeatable inventory command scanned 203 spreadsheet-like files under
-Downloads and identified 56 import candidates. It produced
-`ops/one-time-mishnah/downloads-spreadsheet-inventory.json` and
-`ops/one-time-mishnah/downloads-spreadsheet-inventory.md`.
-
-Key classifications: 1 One Time Rabbi Scheller follower workbook, 5 email
-audience exports, 29 historical CRM/pipeline exports, 21 contact-list
-candidates, 48 external lead lists, 13 communications exports, 2 accounting
-exports, 2 import-map references, and 78 unknown spreadsheets needing review.
-
-Highest-priority next import source: `Rabbi Scheller Followers.xlsx`. Email
-audience exports require subscribed/unsubscribed/cleaned reconciliation before
-any send. Historical GHL/opportunity exports are first-party BNA Operations
-migration candidates only; no GHL runtime was added.
-
-Verification passed: inventory script syntax, inventory command, package
-command, privacy regression test, inventory JSON parse, generated-output
-privacy scan, tracked secret audit, and Batch 9C diff check.
-
-Guardrails: no spreadsheet rows, email addresses, phone numbers, names, raw
-headers, formulas, private exports, production import, GHL runtime, external
-send, billing, deploy, or external-account write was performed.
-
-Next: continue automatically with Batch 9D / `REQ-20260621-904` CRM import and
-deduplication using inventory IDs/hashes instead of raw spreadsheet dumps.
-
-## 2026-06-21T16:58:52+03:00 - One Time Master Completion Batch 9D CRM Import And Deduplication
-
-Closed `REQ-20260621-904` for PR #5. The first-party contact import preview
-now scopes duplicate lookup and dedupe keys to the resolved One Time
-workspace/project, attaches metadata-only source inventory references, strips
-raw source rows from responses, keeps warm leads no-send until approval, and
-blocks commit/import until explicit operator approval.
-
-Implementation commit `aedb04aade8d518427b9f4df011c8b5a9d07f306` was pushed
-and deployed to Railway deployment
-`4919c095-6301-4806-a712-0d64b4d01850`.
-
-Verification passed: `node --check server.js`, focused smoke syntax, 21/21
-communications/import/inventory/workspace tests plus 29/29 readiness/UI
-regression tests after the final PR-head commit, tracked secret audit, diff
-check, Railway doctor/poll, standard live smoke
-`ops/live-smokes/2026-06-21T14-03-28-563Z-live-app-smoke.md`, and focused CRM
-import/dedupe live smoke
-`ops/live-smokes/2026-06-21T14-03-47-316Z-one-time-crm-import-dedupe-live-smoke.md`.
-
-Guardrails: focused live smoke submitted synthetic `.invalid` rows only; no raw
-spreadsheet rows, private exports, contact import write, local write, external
-CRM write, GHL/LeadConnector runtime/write, email send, WhatsApp send, billing
-write, DNS mutation, or external-account write was performed. The readiness
-route is read-only and Operations Apply Import remains disabled.
-
-Next: continue automatically with Batch 9E / `REQ-20260621-905` CRM Contacts
-UX.
-
-## 2026-06-21T17:25:39+03:00 - One Time Master Completion Batch 9E CRM Contacts UX
-
-Closed `REQ-20260621-905` for PR #5. Operations Contacts for the One Time /
-Rabbi workspace now exposes a scoped CRM Contacts tab that organizes parent
-leads, product-interest leads, and member/access rows with visible record
-status, source/status, no-send state, dedupe/review state, local communication
-linkage, next action, and guarded direct actions.
-
-Parent-lead loading now passes the selected workspace/project filters from
-Operations, and `/api/bna/parent-leads` honors requested workspace/project
-scope with project-key readback. This prevents an unscoped admin viewing One
-Time from loading BNA school leads into the One Time CRM Contacts UX.
-
-Implementation commit `b2371cdc5a58fabb70ba1e764ead9dbe3d0eb7e8` was pushed,
-then the branch advanced to final PR head
-`35db6c0e876243e61e7bce2f94db787a44626f06`, which was deployed from a clean
-detached worktree to Railway deployment
-`bf53e21c-a793-4af8-8630-a0e855d857c7`.
-
-Verification passed: focused 15/15 Contacts/scoping/One Time communications
-tests, server and focused-smoke syntax checks, tracked secret audit, diff
-check, action watchdog, Railway doctor, standard live smoke
-`ops/live-smokes/2026-06-21T14-25-34-360Z-live-app-smoke.md`, and focused CRM
-Contacts UX live smoke
-`ops/live-smokes/2026-06-21T14-25-06-483Z-one-time-crm-contacts-ux-live-smoke.md`.
-Focused live smoke verified 88 scoped One Time parent leads and 94 scoped
-contact communications without recording raw contact bodies or private notes.
-
-Guardrails: no email send, WhatsApp send, payment write, external CRM write,
-GHL/GoHighLevel/LeadConnector runtime, DNS mutation, billing write, bulk
-campaign, or external-account write was performed. Private BNA goals,
-check-ins, admin notes, and school-only student data remain absent from One
-Time Contacts.
-
-Known unrelated QA caveat: full `npm test` still fails stale assertions in
-agent-control, developer-tester ticket capture, and UI-01 Operations topbar
-tests. Batch 9E focused tests and live release gate passed.
-
-Next: continue automatically with Batch 9F / `REQ-20260621-906` warm-lead
-trial and referral configuration.
-
-## 2026-06-21T17:55:00+03:00 - One Time Master Completion Batch 9F Trial Referral Configuration
-
-Closed `REQ-20260621-906` for PR #5. The One Time product system now exposes a
-test/local warm-lead launch promotion with a 30-day trial, `$67` monthly
-renewal, card-required rule, one-intro-trial-per-household rule,
-policy-version acceptance storage, referral-after-first-paid-cycle model, and
-single legal wording Decision. Stripe local-beta readback stays preview-only
-and Operations renders a Trial / Referral Configuration panel.
-
-Implementation commit `32708bfa5aa1d673a44ed5765178081ad57dc3de` was pushed,
-then evidence commit `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4` was deployed
-from a clean detached worktree to Railway deployment
-`9805ff41-bb99-4083-95e1-cf0328c26877`.
-
-Verification passed: focused 13/13 trial/referral tests, 25/25 adjacent
-product/Operations tests, 16/16 integration guardrail tests, syntax checks,
-tracked secret audit, action watchdog, Railway doctor, standard live smoke
-`ops/live-smokes/2026-06-21T14-49-22-050Z-live-app-smoke.md`, and focused
-trial/referral live smoke
-`ops/live-smokes/2026-06-21T14-49-47-812Z-one-time-trial-referral-live-smoke.md`.
-
-Guardrails: no checkout session, live charge, payment link, subscription,
-invoice credit, email send, WhatsApp send, access grant, external CRM write,
-GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
-
-Next: continue automatically with Batch 9G / `REQ-20260621-907`
-payment-to-access and class-link flow.
-
-## 2026-06-21T17:53:00+03:00 - One Time Master Completion Batch 9F Trial/Referral Configuration
-
-Closed `REQ-20260621-906` for PR #5. The One Time product system now exposes the warm-lead 30-day intro trial, `$67` renewal default, card-required and one-intro-trial-per-household rules, policy-version acceptance storage, referral-after-first-paid-cycle model, legal wording Decision, Stripe local-beta no-write guardrails, and Operations Trial / Referral Configuration panel.
-
-The app-visible implementation commit `32708bfa5aa1d673a44ed5765178081ad57dc3de` was pushed, deployed from a clean detached worktree to Railway deployment `12249b2b-f11c-44b0-b9fa-ba75c511c633`, and verified by standard live smoke `ops/live-smokes/2026-06-21T14-50-14-514Z-live-app-smoke.md` plus focused trial/referral live smoke `ops/live-smokes/2026-06-21T14-50-38-537Z-one-time-trial-referral-live-smoke.md`. Local evidence had already been pushed in `4edeef1fdbcf8dcc904ff578cb0ddccd2b62e1a4`; this closeout correction records the latest current deployment/smoke pair.
-
-Verification passed: focused One Time product/Stripe tests, workspace scoping tests, server and smoke-script syntax checks, action watchdog, execution-run validation, tracked secret audit, diff check, Railway doctor, standard live smoke, and focused trial/referral live smoke.
-
-Guardrails: no checkout session, live charge, payment link, subscription, invoice, invoice credit, access grant, email send, WhatsApp send, external CRM write, GHL/LeadConnector runtime, DNS mutation, or secret exposure was performed.
-
-Next: continue automatically with Batch 9G / `REQ-20260621-907` payment-to-access and class-link flow.
-
-## 2026-06-21T18:13:00+03:00 - One Time Master Completion Batch 9G Payment/Access/Class Links
-
-Closed `REQ-20260621-907` for PR #5. The One Time product system now exposes
-test-mode payment-to-access readiness, approved-local-test-event access gating,
-and relationship-scoped class-link readiness without creating checkout
-sessions, live charges, payment links, subscriptions, access grants, sends,
-external CRM writes, Zoom meetings, raw member Zoom URLs, or Zoom host/start
-URLs. Operations renders the Payment / Access / Class Links panel, and the
-member portal renders a protected Join Class blocker instead of `session.zoom_url`.
-
-Implementation commit `62715fd68ad0956d92134560af303ba9d5fc7720` was pushed.
-The safe bundle was deployed from clean detached worktree commit
-`53c66d204604ac94801a33bfa4c29306bdedb83b`. Manual deployment first reached
-`a0b6dcb5-a593-41f9-9743-bcc717d41730`; final active Railway deployment
-`ec7724a3-76b9-4858-85e2-370af327759a` is `SUCCESS` and was verified by
-standard live smoke
-`ops/live-smokes/2026-06-21T15-10-55-665Z-live-app-smoke.md` plus focused
-payment/access/class-link live smoke
-`ops/live-smokes/2026-06-21T15-11-14-543Z-one-time-payment-access-class-links-live-smoke.md`.
-
-Verification passed: syntax checks, focused 48/48 and 45/45 test suites,
-route/action registry JSON parse, action watchdog, execution-run validation,
-tracked secret audit, diff check, Railway doctor, standard live smoke, and
-focused 9G live smoke.
-
-Guardrails: no checkout session, live charge, payment link, subscription,
-invoice, access grant, email send, WhatsApp send, external CRM write,
-GHL/LeadConnector runtime, Zoom meeting, Zoom registrant, raw member Zoom URL,
-host/start URL, DNS mutation, or secret exposure was performed.
-
-Next: continue automatically with Batch 9H / `REQ-20260621-908` authenticated
-questions and support-ticket bot.
-
-## 2026-06-21T18:39:23+03:00 - One Time Master Completion Batch 9H Authenticated Support
-
-Closed `REQ-20260621-908` for PR #5. One Time member support now requires a
-member session, stores scoped requester/workspace/project context, persists
-`OT-SUP-######` ticket numbers, returns only the authenticated member's own
-sanitized tickets, hides source context/internal notes, and returns only
-project-visible staff replies. Private member questions now enter the
-first-party question review queue with member scoping and no forum/feed/send or
-external-write behavior. The member portal exposes guarded Private Questions
-and Support panels, and the Rabbi Telegram bridge keeps scoped support tickets
-ticket-only instead of unlocking an unrestricted Mishnah study bot.
-
-Core support implementation commit `98b293d9b8957ec4567d8ede45f3e0d05bb1178b`
-and final deployed PR head `b71b14c5252ca2145b738e11fe4ab547bb412c3a` were
-pushed. The final app-visible bundle was deployed from a clean detached
-worktree to Railway deployment `977430a7-fa56-480d-9289-5abbd6536658` and
-verified by standard live smoke
-`ops/live-smokes/2026-06-21T15-38-11-038Z-live-app-smoke.md` plus focused
-authenticated-support live smoke
-`ops/live-smokes/2026-06-21T15-38-32-390Z-one-time-authenticated-support-live-smoke.md`.
-
-Verification passed: syntax checks, focused 19/19 member/support/community
-tests, 59/59 broader portal/action/classroom tests, action and security
-watchdogs, execution-run validation, tracked secret audit, diff check, Railway
-doctor, standard live smoke, and focused 9H live smoke.
-
-Guardrails: no email send, WhatsApp send, SMS send, Telegram send, public
-forum post, member-feed publish, checkout/payment write, access grant, external
-CRM write, GHL/LeadConnector runtime, Google/Zoom write, DNS mutation, or
-secret exposure was performed.
-
-Next: continue automatically with Batch 9I / `REQ-20260621-909` test identities
-and mock data.
-
-## 2026-06-21T18:53:30+03:00 - One Time Master Completion Batch 9I Test Identities
-
-Closed `REQ-20260621-909` for PR #5. Added a read-only One Time test identity
-and mock data preview with deterministic `TEST-` parent, student, provider,
-staff, and BNA control identities using `example.test` contact values and
-`REQ-20260621-909` cleanup keys. Mock scenarios cover CRM dedupe/no-send,
-payment/access review, protected class links, private questions, and ticket-only
-support. The preview includes a 12-case negative authorization matrix for
-cross-workspace and own-record denials.
-
-Implementation/pushed/deployed commit
-`f741fa91a909db89a79a33b6de5193c6c481732c` was deployed from a clean detached
-worktree to Railway deployment `5751098c-2095-4d24-97db-712aba136915`.
-Standard smoke passed at
-`ops/live-smokes/2026-06-21T15-52-36-326Z-live-app-smoke.md`; focused
-test-identity smoke passed at
-`ops/live-smokes/2026-06-21T15-53-01-681Z-one-time-test-identities-live-smoke.md`.
-
-Verification passed: syntax checks, 49/49 focused tests,
-`npm run platform:synthetic-e2e`, action/security watchdogs, execution-run
-validation, tracked secret audit, diff check, Railway doctor, standard live
-smoke, and focused 9I live smoke.
-
-Guardrails: no real private exports, raw private rows, production record
-creation, email/WhatsApp/SMS/Telegram send, payment/billing write, access
-grant, Zoom/Vimeo/Google mutation, DNS mutation, external CRM write,
-GHL/LeadConnector runtime, or secret exposure occurred.
-
-Next: continue automatically with Batch 9J / `REQ-20260621-910` Agent Mode
-end-to-end acceptance.
-
-## 2026-06-21T19:07:00+03:00 - One Time Master Completion Batch 9J Agent Mode Acceptance
-
-Closed `REQ-20260621-910` for PR #5. Added a read-only Agent Mode acceptance
-artifact and admin route covering source-envelope parsing, CRM import/dedupe,
-trial/referral, payment/access/class links, authenticated support/questions,
-and TEST beta data.
-
-Commit `6c45c4a4f5be60ae8b5dcceee66087f3d54430ae` was pushed and deployed from
-a clean detached worktree. Railway deployment
-`b006acf0-41d5-458c-b661-2b673d8de1f7` reached `SUCCESS`; Railway doctor
-passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-05-41-875Z-live-app-smoke.md`; focused Agent
-Mode acceptance smoke passed at
-`ops/live-smokes/2026-06-21T16-06-05-717Z-one-time-agent-mode-acceptance-live-smoke.md`.
-
-Operations now shows active Agent Mode status/evidence controls and keeps the
-live-run control disabled with an explicit authorization blocker. No real Agent
-Mode external write run, live charge, send, external CRM/GHL write, Zoom/Vimeo/
-Google/DNS mutation, production private-data export, or secret exposure was
+Verification passed: `node --check
+src/platform/integrations/media-local-pipeline.js`, `node --test
+tests/one-time-media-local-pipeline.test.js` with 4/4 passing, and the focused
+media/integration suite
+`tests/one-time-media-local-pipeline.test.js
+tests/one-time-zoom-attendance-automation.test.js
+tests/provider-integrations-secret-storage.test.js
+tests/integrations/w4-onetime-readiness.test.js` with 17/17 passing.
+Post-closeout verification also passed active run validation with `done: 8`,
+`in_progress: 1`, `not_started: 10`, run JSON plus ledger JSONL parse with
+1282 lines, and `git diff --check` with line-ending warnings only.
+
+Guardrails: no video upload, Vimeo publication mutation, Zoom meeting create,
+Zoom webhook acceptance, attendance write, Drive permission write, Drive file
+copy, member-library publish, parent/student notification send, deploy,
+Railway mutation, production database mutation, DNS/domain action, push, PR,
+or external-account write was performed.
+
+## 2026-06-20T21:21:33+03:00 - One Time Queue And Operations IA Visibility
+
+Completed `REQ-20260619-407` for the local-only One Time beta hardening run.
+Closed the remaining queue/Operations IA visibility gap: the no-live
+reconciler keeps durable repo evidence from becoming duplicate tasks,
+Operations task rendering separates Decisions, Pending/Blocked, Tasks, Codex
+Queue, Calendar, and Done / Activity, and the old `/api/bna/pending-briefs`
+route now returns a redacted compatibility payload instead of exposing
+`tasks-pending/*.md` as operator-facing briefs.
+
+Verification passed: `node --check server.js` and `node --test
+tests/operations-task-queue-visibility.test.js tests/task-decision-census.test.js
+tests/one-time-external-user-portal.test.js` with 40/40 passing. Local
+Playwright smoke rendered `/operations?view=tasks` on desktop `1366x900` and
+mobile `390x844`, saved screenshots and a JSON report under the active run
+evidence folder, and confirmed no Planned/Pending/Implementation Brief labels
+or `tasks-pending/*.md` paths were visible. A local API check of
+`/api/bna/pending-briefs` returned `briefs: 0`, `source_dir:
+internal_handoffs_redacted`, and canonical Queue Health routing.
+Post-closeout verification also passed active run validation with `done: 9`,
+`not_started: 10`, run JSON plus ledger JSONL parse with 1283 lines, and
+`git diff --check` with line-ending warnings only.
+
+Guardrails: no deploy, live database mutation, production database mutation,
+DNS/domain action, external send, provider mutation, push, PR, external-account
+write, visible `tasks-pending` operator lane, or browser-smoke session-write
+login path was used.
+
+## 2026-06-20T21:34:47+03:00 - One Time UI Responsive Acceptance
+
+Completed `REQ-20260619-410` for the local-only One Time beta hardening run.
+Ran local desktop/mobile Playwright acceptance across public home, One Time
+offer, Rabbi preview, parent, student, provider, and Operations task surfaces.
+Fixed the Rabbi mobile overflow regression in `public/rabbi.html` by
+constraining hero/banner widths and mobile text/action wrapping.
+
+Verification passed: local Playwright UI acceptance 14/14 route/viewport
+checks, mobile `/rabbi` overflow probe after the fix with document/body width
+390px on a 390px viewport, `npm run watchdog:ui --
+--base-url=http://127.0.0.1:8080` with zero findings, `node --check
+server.js`, and the focused UI/portal suite
+`tests/operations-task-queue-visibility.test.js
+tests/one-time-focused-landing.test.js
+tests/parent-student-polish-contract.test.js
+tests/provider-index-mvp.test.js tests/operations-pwa-login.test.js` with
+26/26 passing. Post-closeout validation passed with `done: 10`,
+`not_started: 9`, and work still remaining.
+
+Guardrails: no deploy, Railway mutation, production database mutation,
+DNS/domain action, live email, live payment, provider mutation, push, PR,
+external-account write, or Operations session-write login path was used. The
+temporary local browser-proof server was stopped after verification.
+
+## 2026-06-20T21:38:49+03:00 - One Time Announcements-First Community
+
+Completed `REQ-20260619-411` for the local-only One Time beta hardening run.
+Added a preview-only announcements-first community contract for One Time:
+announcements, reminders, and approved links are the primary community surface;
+participant replies are muted in the feed, routed to Rabbi/admin private
+review, and never returned as raw private text; student-to-student private chat
+stays disabled.
+
+Verification passed: `node --check
+src/platform/community/announcements-first.js`, `node --check
+src/platform/instances/one-time.js`, and the focused community/classroom suite
+`tests/one-time-announcements-first-community.test.js
+tests/one-time-community-moderation-workflow.test.js
+tests/one-time-classroom-calendar-community-bot.test.js
+tests/one-time-local-beta-product-contract.test.js` with 24/24 passing.
+Post-closeout validation passed with `done: 11`, `not_started: 8`, and work
+still remaining.
+
+Guardrails: no open forum, member thread creation, student-to-student private
+chat, raw private reply preview, member-visible reply publication, portal
+notification, email, Telegram, WhatsApp, Buffer/social post, database publish
+write, deploy, Railway mutation, production database mutation, push, PR, or
+external-account write was performed.
+
+## 2026-06-20T21:43:47+03:00 - One Time Progress Rewards Snapshot
+
+Completed `REQ-20260619-414` for the local-only One Time beta hardening run.
+Added a local One Time progress/rewards model with seed/test data for
+attendance minutes, course progress, milestones, parent-safe achievements, and
+neutral reward-review eligibility. The snapshot exposes student, parent,
+provider, and public readback views with student-only, linked-student, workspace
+student, and aggregate-only privacy boundaries.
+
+Verification passed: `node --check
+src/platform/progress/one-time-progress.js`, `node --check
+src/platform/instances/one-time.js`, and the focused progress/reward suite
+`tests/one-time-progress-rewards-local-beta.test.js
+tests/one-time-gamification-badge-audit.test.js
+tests/parent-progress-privacy.test.js tests/platform-core/platform-core-services.test.js
+tests/ws11-community-model-contract.test.js` with 25/25 passing. One Time
+instance/product regression coverage also passed 10/10. Post-closeout
+validation passed with `done: 12`, `not_started: 7`, and work still remaining.
+
+Guardrails: no attendance write, progress write, reward award, badge award,
+parent/student notification, prize, coupon, credit, payment credit, public
+individual leaderboard, private admin note readback, guardian contact readback,
+deploy, Railway mutation, production database mutation, push, PR, or
+external-account write was performed.
+
+## 2026-06-20T21:47:45+03:00 - One Time Startup Seed Reset
+
+Completed `REQ-20260619-418` for the local-only One Time beta hardening run.
+Added a dedicated local One Time beta CLI and package scripts for dry-run
+`plan`, `seed`, `smoke`, and `reset` workflows. The workflow reports
+dependency status, synthetic local auth guidance, production-like environment
+detection, and explicit no-production/no-external-write guardrails. Writable
+mode is limited to `.runtime/one-time-local-beta` manifests and only runs when
+`--write` is explicitly passed.
+
+Verification passed: `node --check scripts/one-time-local-beta.mjs`, `node
+--test tests/one-time-local-beta-startup-reset.test.js
+tests/one-time-local-beta-product-contract.test.js
+tests/one-time-progress-rewards-local-beta.test.js` with 15/15 passing, plus
+`npm run onetime:local:plan`, `npm run onetime:local:seed`, `npm run
+onetime:local:smoke`, and `npm run onetime:local:reset` in dry-run mode.
+Post-closeout validation passed with `done: 13`, `not_started: 6`, and work
+still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email, live payment, Zoom/Vimeo mutation, Telegram send, WhatsApp send,
+Buffer/social post, push, PR, external-account write, or hidden credential
+dependency was introduced.
+
+## 2026-06-20T21:53:05+03:00 - One Time Reliability Security Registry Audit
+
+Completed `REQ-20260619-419` for the local-only One Time beta hardening run.
+Registered the One Time public, member-login, regional alias, interest-intake,
+and API routes with explicit access, privacy, and no-external-write
+expectations. Added a local hardening audit that checks route/action registry
+coverage, required package watchdog scripts, migration safety, local beta file
+secret scans, no active GHL runtime, and local preview/performance guardrails.
+
+Verification passed: `node --check scripts/one-time-local-hardening-audit.mjs`,
+`node --test tests/one-time-local-hardening-audit.test.js
+tests/operations-task-queue-visibility.test.js
+tests/one-time-local-beta-startup-reset.test.js` with 12/12 passing, `npm run
+onetime:local:audit` with all 14 checks true, and `node
+scripts/one-time-local-hardening-audit.mjs --json --write-report`, which wrote
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/evidence/req419-local-hardening-audit.json`.
+Post-closeout validation passed with `done: 14`, `not_started: 5`, and work
+still remaining.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, provider mutation, push, PR, external-account
+write, active GHL runtime, secret commit, checkout creation, or access grant was
 performed.
 
-The product/schedule/portal launch parent is closed for credential-free work.
-Hosted transcription remains isolated in `REQ-20260621-902`.
+## 2026-06-20T21:59:19+03:00 - One Time Full Local Test Watchdog Gates
 
-## 2026-06-21T19:27:20+03:00 - One Time Master Completion Batch 14 Transcript Privacy
+Completed `REQ-20260619-420` for the local-only One Time beta hardening run.
+Full local automated gates passed: syntax checks for `server.js`,
+`scripts/one-time-local-beta.mjs`, and
+`scripts/one-time-local-hardening-audit.mjs`; full `npm test` passed 988/988;
+tracked secret audit passed across 3360 paths with 0 findings; One Time local
+audit passed all 14 checks; One Time local smoke passed all 8 checks with
+`write_performed: false`.
 
-Closed `REQ-20260619-309` for PR #5. Added transcript privacy release policy,
-storage fields on `bna_class_sessions`, member-safe redaction, an admin
-readiness route, Operations readiness panel copy, focused tests, and a read-only
-live smoke.
+The watchdog bundle initially surfaced stale provenance hygiene findings. Codex
+repaired them with
+`tasks-pending/2026-06-20-website-ramble-correction-audit.md`,
+`raw-input/RAW-20260618-002-operations-ui-audit-harness-redacted-pointer.md`,
+and `raw-input/RAW-20260617-020-telegram-row-redacted-pointer.md` without
+copying private raw message bodies into the repo. Final `npm run watchdog:all`
+passed with severity `ok` and zero findings across goal audit, links, actions,
+route security, raw-intake drift, content routing, and communications alerts.
+Browser-backed UI watchdog and visual baseline watchdog also passed with zero
+findings. Post-closeout validation passed with `done: 15`, `not_started: 4`,
+and work still remaining.
 
-Commit `b89c17c0ec34a9ba871289afbec7b065c3a0d78f` was pushed and deployed from
-a clean detached worktree. Railway deployment
-`7feae8ec-f34f-4e33-9e2d-9dcb479b1f14` reached `SUCCESS`; Railway doctor
-passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-25-45-794Z-live-app-smoke.md`; focused
-transcript privacy smoke passed at
-`ops/live-smokes/2026-06-21T16-26-14-021Z-one-time-transcript-privacy-live-smoke.md`.
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, provider mutation, push, PR, external-account
+write, or private raw body copy was performed. A temporary local server was
+started on port 8080 for local watchdog/browser proof only.
 
-The policy blocks guessed speaker labels, voice guesses, LLM guesses, and name
-mentions from becoming student records; student-private and parent-visible
-segments require enrollment/registrant context, accepted match method,
-confidence threshold, and review. No transcript content write, raw transcript
-body exposure, public helper corpus mutation, send, charge, Zoom/Vimeo/Google/
-DNS mutation, external CRM/GHL write, or secret exposure occurred.
+## 2026-06-20T22:06:01+03:00 - One Time Browser Acceptance
 
-## 2026-06-21T19:40:00+03:00 - One Time Master Completion Batch 15 Gamification
+Completed `REQ-20260619-421` for the local-only One Time beta hardening run.
+Playwright browser acceptance now lives in
+`scripts/one-time-browser-acceptance.mjs` and passed 8 local journeys with
+screenshots and JSON proof: desktop/mobile One Time offer, Israel and UK
+aliases, interest form submission, member-login safe entry, Rabbi preview, and
+public calendar privacy.
 
-Closed `REQ-20260619-310` for PR #5. Updated the server-side badge pipeline so
-automatic badge awards use the shared per-badge event evaluator and stable
-idempotency keys instead of broad event-type/points matching. Rabbi-awarded
-badges now require the audited admin/Rabbi award route with student scope,
-source evidence, and a human reason; manual badge reversal requires a reversal
-reason and writes a badge audit event.
+The browser run found and fixed a route mismatch: `/one-time/member-login` was
+registered as a member-login alias but served the public offer page. `server.js`
+now serves that alias through `public/rabbi-member.html`, and
+`tests/one-time-local-hardening-audit.test.js` includes a regression check.
+Verification passed: `node --check server.js`, focused route/privacy tests
+10/10, `node --check scripts/one-time-browser-acceptance.mjs`, and
+`node scripts/one-time-browser-acceptance.mjs` with `success: true` and
+`result_count: 8`. Post-closeout validation passed with `done: 16`,
+`not_started: 3`, and work still remaining.
 
-Final app commit `68e62775a0f0414427e6b5e6a592022c78d84742` was pushed and
-deployed from a clean detached worktree. Docs/status closeout commit
-`93c07e05f0e640c4da1fc9bb86e78a85f1f56a0c` was pushed afterward. Railway
-deployment `b6f0a4de-2857-4de0-9053-be0c74c7ab74` reached `SUCCESS`; Railway
-doctor passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-44-28-806Z-live-app-smoke.md`; focused
-gamification smoke passed at
-`ops/live-smokes/2026-06-21T16-44-00-049Z-one-time-gamification-live-smoke.md`.
-An intermediate standard smoke failed with scoped One Time credentials before
-the final full-Ops-credential rerun passed:
-`ops/live-smokes/2026-06-21T16-44-00-563Z-live-app-smoke.md`.
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, provider mutation, push, PR, or external-account
+write was performed. The interest form created only local first-party review
+lead data and returned no checkout, no send, no access grant, and no external
+write.
 
-No public individual leaderboard, negative points, prize/coupon/credit, access
-grant, external notification, send, charge, Zoom/Vimeo/Google/DNS mutation,
-external CRM/GHL write, or secret exposure was performed.
+## 2026-06-20T22:10:33+03:00 - One Time Synthetic Pilot
 
-## 2026-06-21T20:01:00+03:00 - One Time Master Completion Batch 16 Community Smoke Rerun
+Completed `REQ-20260619-422` for the local-only One Time beta hardening run.
+Added `scripts/one-time-synthetic-pilot.mjs`, `npm run onetime:local:pilot`,
+and `tests/one-time-synthetic-pilot.test.js`. The synthetic pilot composes the
+existing local contracts into one end-to-end scenario covering signup and
+enrollment, class ingestion, attendance, media library handoff, announcements,
+progress, rewards, Resend email mocks, Stripe payment mocks, and admin
+closeout.
 
-Recorded an additional post-closeout live-smoke confirmation for Batch 16 /
-`REQ-20260619-311` after the pushed community closeout. Railway doctor still
-reported deployment `44220c69-fdb0-4796-96fc-80d39771e244` as `SUCCESS`.
+Verification passed: `node --check scripts/one-time-synthetic-pilot.mjs`,
+focused synthetic/local One Time suites 27/27, `npm run onetime:local:pilot`
+with 10/10 stages covered, no missing stages, and no write violations, and
+`node scripts/one-time-synthetic-pilot.mjs --json --write-report`, which wrote
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/evidence/req422-synthetic-pilot.json`.
+Post-closeout validation passed with `done: 17`, `not_started: 2`, and work
+still remaining.
 
-Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-59-12-598Z-live-app-smoke.md`; focused community
-live smoke passed at
-`ops/live-smokes/2026-06-21T17-00-43-936Z-one-time-community-live-smoke.md`.
-The focused smoke remained read-only and performed no community thread/message
-write, approval, parent-visible message, public post, staff note,
-notification, delete purge, unrestricted student direct messaging, send,
-charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret
-exposure.
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, Zoom/Vimeo mutation, Drive permission write,
+member-library publish, access grant write, push, PR, or external-account write
+was performed. The temporary local server used for browser proof was stopped.
 
-## 2026-06-21T20:10:00+03:00 - One Time Master Completion Batch 17 Study Assistant Readiness
+## 2026-06-20T22:13:09+03:00 - One Time Release Gate Documentation
 
-Closed `REQ-20260619-312` for PR #5. Shipped the disabled-feature One Time
-Sefaria/study-assistant readiness foundation with approved source-version
-metadata, scoped retrieval previews, authorization-before-retrieval policy, and
-Operations readiness panel copy.
+Completed `REQ-20260619-423` for the local-only One Time beta hardening run.
+Added `docs/releases/2026-06-20-one-time-local-beta-release-gate.md` and
+`ops/execution-runs/2026-06-19-onetime-local-beta-hardening/RELEASE-GATE.md`,
+and updated `DEPLOYMENT.md`. The gate documents current branch/head, local
+verification evidence, candidate release notes, commit/push/PR/deploy
+readiness, required operator decisions, and external release blockers.
 
-Commit `7efc8ce3cd3b03c08b1d573d341efed212124785` was pushed and deployed from
-a clean detached worktree. Railway deployment
-`9657afe5-958c-4cfb-bb6c-6afec77bcd05` reached `SUCCESS`; Railway doctor
-passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`; focused study
-assistant smoke passed at
-`ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
+Verification passed by file inspection and run validation. The release gate
+records that no staging, commit, push, PR, Railway deploy, Railway doctor, live
+smoke, production database mutation, DNS change, live email, live payment,
+provider mutation, member-library publish, access grant, or external-account
+write was performed. Post-closeout validation passed with `done: 18`,
+`not_started: 1`, and work still remaining.
 
-The first focused smoke failed on a local scanner false positive for the policy
-key `apply_authorization_before_retrieval`; the scanner now checks secret-like
-string values, the focused test covers the regression, and the rerun passed.
+## 2026-06-20T22:21:00+03:00 - One Time Final Local Closeout
 
-No Sefaria/API ingestion, arbitrary version ingestion, source corpus mutation,
-answer generation, portal publish, chat session creation, raw source text
-retrieval, raw transcript retrieval, cross-student retrieval, send, charge,
-Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+Completed `REQ-20260619-424` for the local-only One Time beta hardening run.
+All 19 requirements now have terminal `done` status and evidence, the execution
+run is marked locally inactive, and `FINAL-AUDIT.md`, `STATUS.md`,
+`EVIDENCE.md`, `TEST-RESULTS.md`, `NEXT-SESSION.md`, `RELEASE-GATE.md`, and
+`DEPLOYMENT.md` record the closed local state.
+
+Final gates passed: syntax checks for 5 core files, focused product route test
+7/7, full `npm test` 990/990, tracked secret audit with 3360 paths and 0
+findings, full watchdog bundle with zero findings, One Time local audit 14/14,
+synthetic pilot 10/10 with no write violations, and execution run validation
+with `done: 19` and `Work remains: no`.
+
+Guardrails: no deploy, Railway mutation, DNS change, production database write,
+live email send, live payment, Zoom/Vimeo/Drive provider mutation,
+member-library publish, access grant write, git stage, commit, push, PR, or
+external-account write was performed. Future release actions require explicit
+operator approval.
+## 2026-06-22T15:05:02+03:00 - GitHub Issue 7 Queued Canonical Source
+
+Registered GitHub issue #7 as `RAW-20260622-001` with canonical parent
+`PARENT-20260622-001` and queue-registration requirement
+`REQ-20260622-001`. The raw issue body and copy-ready kickoff comment are
+preserved at
+`raw-input/RAW-20260622-001-github-issue-7-canonical-agent-execution-system.md`,
+and the internal queued-source handoff is
+`tasks-pending/2026-06-22-github-issue-7-canonical-agent-execution-queued.md`.
+
+Updated the existing active run metadata only:
+`ops/execution-runs/2026-06-21-one-time-master-completion/requirements.json`,
+`SOURCE.md`, and `NEXT-SESSION.md`. `latest.json` was not changed, no new
+active execution run was created, no visible Tasks were fanned out, and PR #5
+was not staged, pushed, merged, rebased, reset, deployed, or otherwise
+disturbed.
+
+Verification passed: `npm run bna:run:validate`,
+`npm run bna:run:source-coverage` with 0 unmapped executable statements, and
+`npm run bna:run:next`, which still reports Batch 4 /
+`REQ-20260619-303` as the next active work.
+
+GitHub acknowledgement posted to issue #7 as comment `4768106423`.
+
+## 2026-06-23T09:36:51+03:00 - Drive Class Intake Parser Investigation
+
+Registered `RAW-20260623-001` and diagnosed the Drive class intake failure.
+Recent Drive recordings are visible and have live content jobs, but jobs 75-79
+are blocked or stalled before transcript generation because Railway's live
+OpenAI transcription key returns HTTP 401 `invalid_api_key`. Local diagnostics
+pass through the keyholder source, so the local key path is healthy while the
+live Railway web/worker envs need rotation before reprocessing.
+
+Locally repaired the mixed-recording content-job parse path in `server.js` so
+canonical intake filing is preserved while scoring-aware progress rows are also
+persisted through the existing mixed-recording parser/persistence flow. Added a
+regression check in `tests/telegram-media-routing.test.js`.
+
+Verification passed: `node --check server.js`, focused intake/media tests
+16/16, `npm run watchdog:content`, and parent/final-register contract tests
+30/30. Production deploy, Railway key rotation, live smoke, and reprocessing
+jobs 75-79 were not performed because they require explicit operator approval.
+
+## 2026-06-23T12:31:10+03:00 - Drive Class Intake Production Recovery
+
+Completed production recovery for `REQ-20260623-003` after operator approval.
+Updated Railway web and academy worker `OPENAI_API_KEY` from the working
+keyholder source without printing or committing secret values. Deployed the
+parser repair to Railway web deployment
+`88b20edb-272a-4880-a5da-c622564b74ab` and redeployed the academy worker as
+`80315718-7104-4bdd-a027-c563b6bd0703`.
+
+Reprocessed Drive content jobs 75-79. All five now have non-empty transcripts
+and `drive_stage` `04 Parsed`; jobs 78 and 79 produced Torah daily/progress
+rows through the new progress parser path. Job 77 initially failed with OpenAI
+`input_too_large`, then succeeded after retrying with a lower transcription
+chunk threshold.
+
+Verification passed: Railway doctor, live app smoke
+`ops/live-smokes/2026-06-23T08-23-12-705Z-live-app-smoke.md`, OpenAI
+diagnostics with Railway fingerprint `f74957cf4b14`, live content-job readback,
+post-reprocess Drive audit, and `npm run watchdog:content`.
+
+Older jobs 64-74 were dry-run audited only. Jobs 64 and 73 showed one possible
+Torah daily row each; jobs 65-68 timed out under the 5-minute dry-run window.
+No older backfill was applied because the current force-parse path would
+duplicate already-filed class notes/tasks/accountability rows. Remaining work:
+add a guarded progress-only backfill path, retry large older jobs safely, then
+apply only high-confidence progress rows.
+
+## 2026-06-23T13:05:00+03:00 - Operator Laptop Bootstrap Package Prompt Registered
+
+Registered `RAW-20260623-002` for Shloimie's requested one-click laptop setup
+package. Inspected the existing secure Operator Setup flow, local setup docs,
+importer, live smoke, and older PowerShell laptop installer builder, then
+created the implementation handoff/prompt at
+`tasks-pending/2026-06-23-operator-laptop-bootstrap-package.md`.
+
+The prompt asks Codex to build a current Windows laptop installer/wrapper that
+clones or updates the GitHub repo, installs required tooling, runs `npm
+install`, prepares launch/doctor/smoke helpers, and adds explicit GitHub sync
+helpers without silently committing or pushing work.
+
+Guardrails recorded: no email was sent, no package was generated, no secrets
+were printed/copied, no active execution-run pointer changed, and secret-bearing
+delivery remains gated by encrypted one-time Operator Setup plus explicit
+approval. Email delivery is blocked until the exact recipient and final sender,
+recipient, subject, body, and attachment/link are approved.
+
+## 2026-06-23T15:20:00+03:00 - Operator Laptop Bootstrap Safe Package Sent
+
+After Shloimie confirmed `SDRATLER@gmail.com` and approved sending, built the
+current safe no-secret BNA operator laptop installer package:
+`install-packages/BNA-Operator-Laptop-Safe-20260623-151349.zip`.
+
+Added:
+- `scripts/build-operator-laptop-installer.ps1`
+- `scripts/Sync-BNA.ps1`
+- `tests/operator-laptop-installer.test.js`
+- `npm run operator:laptop:package`
+- updated local install docs
+
+The package clones or updates the GitHub repo, installs dependencies, imports a
+blank safe bootstrap env template, creates Start/Doctor/Smoke/Sync launchers,
+and keeps Telegram polling plus the agent fleet off by default.
+
+Verification passed: focused test 4/4, package build, ZIP inspection, safe
+bootstrap `includes_secret_values=false`, tracked secret audit with 3,386 paths
+and 0 findings, and PowerShell parse for the builder, sync helper, extracted
+installer, and extracted sync helper.
+
+Sent the ZIP to `SDRATLER@gmail.com` through Gmail. Gmail message ID:
+`19ef46765f76b97f`.
+
+Guardrails: no `.env.local`, `.env`, `.secrets`, DB URL, Railway token, API
+key, cookie, generated smoke log, or secret-bearing file was included; no
+encrypted secret export or passphrase was created or sent; no deploy, Railway
+mutation, production DB mutation, Telegram/agent start, git stage, commit, push,
+PR, DNS, billing, or external-account mutation was performed.
+
+Follow-up Drive delivery completed after Shloimie asked to download from Drive:
+the same safe ZIP was uploaded to `BNA V2 / Operator Setup Packages`, shared
+with `SDRATLER@gmail.com`, and the Drive link was emailed as Gmail message
+`19ef4b152d98adbc`. Drive file:
+`https://drive.google.com/file/d/1qTR-bfus2O7kDnn0QleQdRji_msmw2w0/view?usp=drivesdk`.
+
+Follow-up instructions email sent to `SDRATLER@gmail.com` as Gmail message
+`19ef4cb3cc1df162`. It explained the encrypted Operator Setup secret import
+flow and included no secrets, passphrase, `.env.local`, `.secrets`, API keys,
+database URLs, Railway tokens, or raw credential values.
+
+## 2026-06-23T17:25:00+03:00 - Operations Login Fallback Wired Locally For Portal Screens
+
+Registered `RAW-20260623-004` / `REQ-20260623-009` after Shloimie asked to
+use the same website username/password from any portal on the laptop.
+
+Implemented a local Operations login fallback in `server.js`: valid Operations
+identities entered on provider, student, parent password, or parent access-code
+login endpoints now receive an Operations session plus a redirect payload. The
+fallback does not issue provider, student, or parent sessions. Updated
+`public/provider.html`, `public/student.html`, `public/parent.html`, and
+`public/parent-login.html` to follow that redirect.
+
+Verification passed: `node --check server.js`; focused portal/auth tests 44/44
+covering the new fallback, provider auth, parent/student portal contracts,
+student auth policy, and public route privacy.
+
+Blocked before done/live: `npm run smoke:local -- --skip-tests` cannot run
+because `.env.local` is missing `DATABASE_URL`; no deploy, live smoke, git
+stage, commit, push, package rebuild, or external send was performed.
+
+## 2026-06-23T17:43:00+03:00 - Operations Login Fallback Deployed And Live-Smoked
+
+Shloimie clarified that the failing login was from the Provider Portal on the
+other laptop. To avoid deploying the desktop's broad dirty worktree, copied the
+running Railway app bundle from production, patched only the portal Operations
+login fallback into that live-bundle copy, verified it, and deployed it.
+
+Railway production deployment `a60bb082-94a7-4cbd-84a7-898b1b46ec7b` reached
+`SUCCESS`; `npm run railway:doctor` passed. Live container readback confirmed
+`maybeHandleOpsPortalFallback` and the prior `progressOnlyMixedRecordingParse`
+parser fix are both present.
+
+Live Provider Portal smoke passed for username label `shloimie` using Railway
+env credentials without printing password values: status `200`,
+`portal_redirect: true`, `redirect_to: /operations`, Operations cookie set,
+and provider cookie not set. Proof:
+`ops/live-smokes/2026-06-23T17-43-portal-ops-login-fallback-live-smoke.md`.
+
+Guardrails: no raw password or secret was printed, no provider/student/parent
+session was issued for Operations fallback, no GitHub push/PR was made, and no
+database migration or external message send was performed.
+
+## 2026-06-23T18:31:46+03:00 - Issue 7 Telegram + Website Assistant Addendum Registered
+
+Registered `RAW-20260623-005` / `REQ-20260623-010` as an addendum to existing
+GitHub issue #7 parent `PARENT-20260622-001`. The addendum extends the
+ramble-to-agent goal into one universal natural-language control plane where
+Telegram and the website assistant share identity/workspace resolution,
+conversation state, intake, action planning, permissions, previews, approvals,
+audit, file/media intake, reminders, tickets, and durable Agent Work.
+
+The register now covers service-provider self-service/onboarding through
+Service Provider Studio, parent linked-child chart/layout control, student
+scope where enabled, super-admin campaigns/automations, BNA/family, One Time,
+Vimeo/upload-folder class intake, and cross-channel QA. It explicitly forbids
+duplicate Telegram architectures, website-bot action systems, action
+registries, intake pipelines, agent queues, provider onboarding systems, and
+execution runs.
+
+Evidence:
+`raw-input/RAW-20260623-005-telegram-website-control-plane-addendum.md`,
+`tasks-pending/2026-06-23-telegram-website-control-plane-addendum.md`, and the
+active run source/handoff updates. GitHub issue #7 comment `4780321517` was
+read; issue #7 is open; PR #5 is now merged. Full implementation remains
+sequenced behind the open local active run unless explicitly paused; the next
+safe overlapping batch is `REQ-20260619-303`.
+
+Verification passed: `npm run bna:run:validate`,
+`npm run bna:run:source-coverage`, `npm run bna:run:next`, requirements JSON
+parse, and ledger JSONL parse. `REQ-20260623-010` is Done; `REQ-20260623-011`
+through `REQ-20260623-026` remain pending implementation.
+
+## 2026-06-23T18:55:00+03:00 - Rabbi Scheller Workspace Parity Audit Local Foundation
+
+Registered the Rabbi Scheller provider workspace parity audit as
+`RAW-20260623-006` with requirements `REQ-20260623-027` through
+`REQ-20260623-037` after detecting that `RAW-20260623-005` and
+`REQ-20260623-010` were already used by another June 23 register.
+
+Produced local audit artifacts for Git/deploy truth, route/navigation
+inventory, unified-login findings, role/permission matrix, tenant isolation,
+BNA/provider parity, API-usage readiness, future provider-bot scope, remaining
+Decisions, and exact workspace links:
+`ops/audits/2026-06-23-rabbi-scheller-workspace-parity-audit.md` and
+`ops/audits/2026-06-23-rabbi-scheller-route-map.json`.
+
+Implemented a local API-usage readiness foundation in
+`src/lib/bna/provider-api-usage.js` with tests in
+`tests/provider-api-usage-readiness.test.js`, including a safe
+`createProviderApiUsageRecorder()` interface future bot code can call without
+persisting prompts or secrets. Added a feature-flagged Provider Portal API
+Usage empty-state preview in `public/provider.html` and contract coverage in
+`tests/rabbi-scheller-auth-navigation-contract.test.js`. Registered the
+visible preview nav as `ACTION-PROVIDER-API-USAGE-PREVIEW-NAV` in
+`ops/action-registry.json`. Added provider portal `section=` query-state so
+`/provider?api_usage_preview=1&section=api_usage` deep-links directly into the
+preview, refresh preserves it, click navigation updates the URL, and browser
+back returns to Overview. Added
+`scripts/build-rabbi-scheller-route-map.mjs` and
+`tests/rabbi-scheller-route-map-contract.test.js`; the generated route map
+records 689 Express route patterns, 70 page/alias routes, and 619 API/webhook
+routes.
+
+Repaired a provider-parity permission gap in `server.js`: provider-scoped
+Operations identities for Rabbi/owner/manager no longer receive
+`platform_suite` in `allowedViews`. Super Admin still keeps platform-suite
+compatibility, and the normal Operations nav remains hidden from regular
+navigation as before.
+
+Verification passed: focused provider/auth/RBAC/privacy/API-usage/route suite
+59/59, route-map generation, `node --check` for `server.js`, the new script, and module,
+local Provider Portal API Usage Playwright smoke at 390x844, 768x1024, and
+1440x900 with screenshots in
+`ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-api-usage-local/`,
+including direct deep-link, refresh, active-state, URL-update, and back checks,
+action registry JSON parse and registry contract coverage,
+`npm run bna:run:status`, and `npm run bna:run:next`. No push, commit, merge,
+deploy, live smoke, external send, production data mutation, credential
+change, DNS, billing, Stripe, Zoom, Vimeo, or Resend change was performed.
+
+Remaining state: PARTIAL / local-only for this pass. `DEC-20260623-006`
+blocks clean push/deploy/live-smoke; `Q-20260623-027` asks for the Rabbi
+production owner identity; `Q-20260623-028` asks for Shloimie's exact role in
+Rabbi Scheller's workspace. The current branch still has no upstream and is
+behind `origin/master`, where service-provider-studio and workspace-user work
+are already merged.
+
+## 2026-06-23T18:47:00+03:00 - Super Admin One Time Rabbi View Deployed
+
+Registered Shloimie's Super Admin request as `RAW-20260623-007` with
+requirements `REQ-20260623-038` and `REQ-20260623-039`, after correcting the
+initial draft IDs away from already-used June 23 IDs.
+
+Implemented a live Operations shortcut for Super Admin: `View One Time as
+Rabbi` switches to
+`/operations?workspace=rabbi_sheller_provider&view=service_providers&section=schedule`
+so Shloimie can see the One Time Mishnah Class workspace/schedule view while
+retaining Super Admin audit authority. No provider/student/parent credential or
+impersonated session is created. `Back to Super Admin` returns to the global
+dashboard.
+
+Hid `Platform Suite` from the normal Operations nav/module toolbar through
+`HIDDEN_NAV_VIEW_IDS` while keeping the legacy route/mount path available for
+compatibility.
+
+Verification passed: local focused Operations shell tests 37/37, deploy-bundle
+UI/PWA tests 21/21, Railway deployment
+`dd09456c-ba4e-4dc8-a15e-bffc5034c9db` `SUCCESS`, `npm run railway:doctor`,
+live static marker readback, live Super Admin auth smoke, and live Playwright
+click smoke. The browser smoke clicked `View One Time as Rabbi`, landed on the
+One Time workspace schedule URL, showed `Back to Super Admin`, showed `7:00
+Class`, and found zero visible Platform Suite nav buttons/tabs.
+
+Guardrails: no password or secret was printed, no provider/student/parent
+session was issued, no database migration or production data mutation was
+performed, no external message was sent, and the deploy used a temporary copy
+of the running Railway bundle with only `public/operations.html` and the
+focused test added.
+
+## 2026-06-23T18:46:06+03:00 - Active Run Batch 4 Control-Plane Scope Local Verification
+
+Implemented the safe overlapping foundation for `REQ-20260619-303` and issue
+#7 addendum requirements `REQ-20260623-011` / `REQ-20260623-024`.
+
+Added `src/platform/assistant/control-plane.js` with a shared policy shape for
+Telegram, website assistant, Operations helper, provider portal assistant,
+parent portal assistant, student portal assistant where enabled, and future
+approved channels. The policy normalizes roles and action categories, enforces
+workspace/project scope, linked-child parent scope, student own-record scope,
+preview and approval flags, and the rule that typed actions are required
+instead of browser-click substitution.
+
+Added coverage in `tests/universal-control-plane-scope-policy.test.js` and
+anchored the policy in
+`docs/architecture/workspace-community-provider-role-map.md`. Also aligned the
+Operations `done_activity` lane and the current Task/Decision census contract
+to the repo convention `Done / Activity`.
+
+Verification passed: focused control-plane test 6/6, focused One Time/RBAC
+suites 18/18 and 62/62, task/census label tests 24/24, and full `npm test`
+1028/1028.
+
+This local-only state was later superseded by the deploy/live-smoke closeout
+below. At the time of this entry, no live send, publish, charge, DNS/account
+change, production data mutation, external connector write, deploy, push,
+commit, PR, or live smoke had been performed.
+
+## 2026-06-23T19:02:22+03:00 - Active Run Batch 4 Deployed And Live-Smoked
+
+Closed active `REQ-20260619-303` with a clean branch deployment instead of
+deploying the dirty integration worktree.
+
+Created clean worktree
+`C:/Users/User/Documents/Codex/2026-06-23/one-time-batch4-control-plane` from
+`origin/master`, applied only the Batch 4 scope-policy and `Done / Activity`
+label/contract changes, and committed `bcb0e153` on
+`codex/one-time-batch4-control-plane-20260623`. Pushed the branch and opened
+draft PR #13: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/13`.
+
+Clean branch verification passed: `npm test` 1069/1069. The web app was
+deployed to Railway production service `skillful-motivation` as deployment
+`641ac75e-d6d7-4379-a27c-4f7a4d9d3dbf`; Railway doctor passed after deploy.
+
+Live proof:
+
+- standard live smoke:
+  `ops/live-smokes/2026-06-23T15-59-34-390Z-live-app-smoke.md`
+- focused Batch 4 live smoke:
+  `ops/live-smokes/2026-06-23T16-00-48-379Z-batch4-control-plane-live-smoke.md`
+- clean-branch Operations workspace taxonomy live smoke:
+  `ops/live-smokes/2026-06-23T16-01-39-450Z-operations-workspace-taxonomy-live-smoke.md`
+
+Prior failed attempts were resolved in-batch: the clean worktree initially
+lacked `.secrets/railway-token.txt`, and the deploy script failed at
+temporary-bundle `railway link`; the final deployment used the same clean
+bundle with direct `railway up --project ... --service ... --environment ...`.
+The main-worktree taxonomy smoke also failed on an older local `Family
+Directory` HTML expectation, while the clean-branch smoke passed.
+
+Guardrails: no live send, publish, charge, DNS/account change, provider
+onboarding write, external connector write, or production data mutation was
+performed. Railway token use stayed in-process and was not copied or printed.
+
+Next active run batch: `REQ-20260621-502` visible action registry and
+dead-button coverage. Broader issue #7 control-plane requirements remain
+pending beyond this deployed scope-policy foundation.
+
+## 2026-06-23T19:28:22+03:00 - Rabbi Scheller Portal-Agnostic Auth Foundation Local Repair
+
+Continued `RAW-20260623-006` / `REQ-20260623-028` and related Rabbi Scheller
+workspace parity work without push/deploy/live-smoke authorization.
+
+Implemented a shared server-side portal login destination resolver in
+`server.js` for current password credential systems: Operations, provider,
+parent, and student. The generic `/api/bna/auth/login` endpoint now accepts
+username/login username/identity/email input, resolves allowed destinations,
+returns a safe `chooser_required` response when credentials match multiple
+legitimate portals, and issues only the selected single destination's
+server-backed session when exactly one destination is available. Safe return
+targets are route-appropriate and same-origin only.
+
+Wrong-portal password logins now use the shared resolver before returning
+invalid credentials: provider, student, and parent password entries can redirect
+to the actually authorized portal or return a chooser without creating the
+wrong portal session. Provider, student, and parent password login pages now
+render those server-resolved chooser destinations. Generic `/api/bna/auth/logout`
+now clears Operations, active-workspace, provider, parent, and student cookies.
+
+Added `tests/portal-agnostic-auth-contract.test.js` and updated existing auth
+contract test slices. Verification passed locally: `node --check server.js`,
+auth contract suite 13/13, focused Rabbi/provider suite 65/65, route-map
+generation still writes 689 routes, and the local Provider Portal API Usage
+smoke still passes at 390x844, 768x1024, and 1440x900.
+
+Git/deploy state remains unchanged for this pass: local-only, uncommitted,
+unpushed, not deployed, and not live-verified. `DEC-20260623-006` still blocks
+push/deploy/live-smoke closure.
+
+## 2026-06-23T19:37:07+03:00 - Rabbi Scheller Portal Login Chooser Local Browser Proof
+
+Extended the Rabbi Scheller portal-agnostic login work with local browser
+evidence. The parent password login field now accepts either email or username,
+so provider, student, or Operations credentials are not blocked by browser email
+validation before the server-side destination resolver can respond.
+
+Added `scripts/smoke-portal-agnostic-login-chooser-local.mjs`. It serves the
+static provider, student, and parent login pages locally and mocks only the
+`chooser_required` responses. It does not use real credentials, database state,
+external accounts, sends, billing, or production writes.
+
+The smoke passed for provider, student, and parent password login pages at
+390x844, 768x1024, and 1440x900. It verifies chooser visibility,
+Operations/Provider/Parent/Student destination links from server-provided
+`redirect_to` values, no external destination links, masked password fields, and
+no horizontal overflow. Evidence:
+`ops/playwright-smokes/2026-06-23-portal-agnostic-login-chooser-local/report.md`.
+
+Verification also passed: auth contract suite 13/13 and focused Rabbi/provider
+suite 65/65. This remains local-only and not deployed/live-verified.
+
+## 2026-06-23T19:45:00+03:00 - One Time Action Coverage Gate Deployed
+
+Completed active-run Batch 5 / `REQ-20260621-502` for visible action registry
+and dead-button coverage.
+
+Added a generated One Time action coverage gate that uses the existing
+`ops/action-registry.json` as the canonical registry. The generated report now
+preserves the legacy One Time product-control matrix and adds registry-backed
+Operations controls with source-token checks, gate-token checks, and explicit
+approval-safety checks for external/app-visible write actions.
+
+Annotated high-value Operations controls with canonical `data-action-id`
+values for helper open, One Time workspace view, automation helper, member
+library smoke/package/preview/approve/publish/rollback, Drive brief preview,
+live Zoom dry-run/send, and parent setup actions. External writes remain
+preview, confirmation, or approval gated; no live send, publish, charge, DNS
+write, real Zoom/Vimeo action, account grant, or production data mutation was
 performed.
 
-## 2026-06-21T19:56:00+03:00 - One Time Master Completion Batch 16 Community
+Clean branch and deployment:
 
-Closed `REQ-20260619-311` for PR #5. Completed One Time community moderation
-readiness as a no-write, private-safe workflow: private questions remain
-body-free and private-first, report/flag flow is implemented, parent-visible
-and staff-only states are separate, audit/deletion history is modeled, and
-private-to-public promotion uses a linked-version anonymized preview while
-public promotion writes remain disabled.
+- Branch: `codex/one-time-batch4-control-plane-20260623`
+- Commit: `e22bd90db50190a26c9a4536b8ec7ae6cb4dd0b1`
+- Draft PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/13`
+- Railway deployment: `c93a9311-4eb0-4982-8c14-b5f7a9cd5c8e`
 
-App implementation commit `be7e46ae9fefd2ea9f31c403c114b008ec7fc899` was
-pushed and deployed from a clean detached worktree. Railway deployment
-`44220c69-fdb0-4796-96fc-80d39771e244` reached `SUCCESS`; Railway doctor
-passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T16-54-31-139Z-live-app-smoke.md`; focused
-community smoke passed at
-`ops/live-smokes/2026-06-21T16-55-06-536Z-one-time-community-live-smoke.md`.
+Verification passed:
 
-No community thread/message write, approval, parent-visible message, public
-post, staff note, notification, delete purge, unrestricted student direct
-messaging, send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL
-write, or secret exposure was performed.
+- main `node --test tests/watchdog-action-registry.test.js` 4/4
+- clean focused action tests 9/9
+- clean related action/UI pack 69/69
+- clean browser smokes for Agent Control, One Time Operations UI, and Service
+  Provider Studio
+- clean `npm test` 1071/1071
+- `npm run watchdog:actions`
+- Railway doctor after deployment
+- focused Batch 5 live smoke
+  `ops/live-smokes/2026-06-23T16-37-19-965Z-batch5-action-coverage-live-smoke.md`
+- standard live smoke
+  `ops/live-smokes/2026-06-23T16-39-27-702Z-live-app-smoke.md`
+- clean-branch Operations workspace taxonomy live smoke
+  `ops/live-smokes/2026-06-23T16-39-50-955Z-operations-workspace-taxonomy-live-smoke.md`
 
-## 2026-06-21T20:10:00+03:00 - One Time Master Completion Batch 17 Sefaria And Study Assistant Readiness
+The next active run batch is `REQ-20260619-304` Operations UI/design-system
+correction.
 
-Closed `REQ-20260619-312` for PR #5. Completed the disabled-feature One Time
-Sefaria/study-assistant foundation: approved source-version metadata is
-required, retrieval previews are metadata-only, authorization runs before
-retrieval, future assistant capabilities are enumerated as gated, and
-unrestricted AI chat, arbitrary version ingestion, Sefaria/API ingestion,
-source corpus mutation, portal publishing, raw transcript/source retrieval,
-cross-student retrieval, and answer generation remain disabled.
+## 2026-06-23T19:46:00+03:00 - Rabbi Scheller Portal Chooser Action Registry Coverage
 
-App implementation commit `7efc8ce3cd3b03c08b1d573d341efed212124785` was
-pushed and deployed from a clean detached worktree. Railway deployment
-`9657afe5-958c-4cfb-bb6c-6afec77bcd05` reached `SUCCESS`; Railway doctor
-passed. Standard live smoke passed at
-`ops/live-smokes/2026-06-21T17-07-20-392Z-live-app-smoke.md`; focused
-study-assistant smoke passed at
-`ops/live-smokes/2026-06-21T17-08-29-970Z-one-time-study-assistant-live-smoke.md`.
+Registered the server-resolved portal login chooser destination links as
+`ACTION-PORTAL-LOGIN-CHOOSER-DESTINATION` and added the action id to the
+provider, student, and parent password-login chooser links. This keeps the
+new multi-destination login UI covered by the same visible-action registry
+rules as the rest of the app.
 
-No Sefaria/API ingestion, arbitrary version ingestion, source corpus mutation,
-answer generation, portal publish, chat session, raw source text retrieval, raw
-transcript retrieval, cross-student retrieval, send, charge,
-Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+Regenerated the derived One Time action coverage artifact after the root
+registry changed. Verification passed locally: focused Rabbi/provider suite
+70/70, watchdog action registry 4/4, route-map generation at 689 routes, portal
+chooser local browser smoke, and Provider Portal API Usage local browser smoke.
+
+Git/deploy state is unchanged for this Rabbi pass: local-only, uncommitted,
+unpushed, not deployed, and not live-verified. `DEC-20260623-006` still blocks
+push/deploy/live-smoke closure.
+
+## 2026-06-23T19:55:00+03:00 - Rabbi Scheller Provider Navigation Local Browser Proof
+
+Registered generated Provider Portal section buttons as
+`ACTION-PROVIDER-SECTION-NAVIGATION` and added a local browser smoke for the
+Rabbi Scheller Provider Portal navigation graph.
+
+The smoke walks every supported provider section by both nav click and direct
+`section=` URL at 390x844, 768x1024, and 1440x900. It verifies one active nav,
+one visible section, browser back from Settings to API Usage, refresh on
+Settings, no Platform Suite/Team/Admin/Accounting/credential/deployment
+navigation labels, no failed requests, no console/page errors, and no
+horizontal overflow.
+
+Evidence:
+`ops/playwright-smokes/2026-06-23-rabbi-scheller-provider-navigation-local/report.md`.
+Verification passed locally: focused Rabbi/provider suite 71/71, watchdog
+action registry 4/4, Provider Portal navigation smoke, Provider Portal API
+Usage smoke, portal chooser smoke, route-map generation at 689 routes, BNA run
+status, and BNA run next.
+
+Git/deploy state remains unchanged for this Rabbi pass: local-only,
+uncommitted, unpushed, not deployed, and not live-verified.
+`DEC-20260623-006` still blocks push/deploy/live-smoke closure.
+
+## 2026-06-24T07:32:35+03:00 - Integration Navigation REQ-20260624-007 Assistant Visibility
+
+Closed `REQ-20260624-007` on draft PR #14 commit
+`d853b9205626e6ea50bd3b639b7718b1f374040d`. The shared website assistant now
+has visible scoped entry points on the owner-review surfaces without adding a
+second assistant architecture: parent/student/provider topbars open the shared
+widget, One Time member home/library/classroom/participant pages load the same
+helper/widget with `one_time_member` scope, and Operations remains on the
+existing BNA Helper drawer.
+
+Credential-free verification passed: focused assistant/portal/One Time/provider
+contracts 66/66, `npm run owner-review:routes`, regenerated universal parity
+and One Time action coverage, `node --check server.js`,
+`node --check public/js/bna-bot-widget.js`, One Time local browser smoke,
+`npm test` 1208/1208, secret audit, and link/action/security watchdogs with 0
+findings. No production readback, database mutation, deploy, live smoke,
+external send, publish, upload, charge, DNS, OAuth/account-owner action, or
+secret request was performed.
+
+## 2026-06-24T07:10:46+03:00 - Owner-Review REQ-005 One Time Journey
+
+Closed `RAW-20260624-001` / `REQ-20260624-005` on draft PR #14. Commit
+`3375c9fe33e3eb7efe6e0333067265e6d3429756` canonicalizes the One Time
+member journey across public landing, member home, library, classroom/live
+class, questions/support, account/logout, and return-to-site surfaces.
+
+The local flow is now `/one-time` -> `/rabbi-member` -> `/member-library` ->
+`/one-time-classroom` -> `/rabbi-member#support` -> `/rabbi-member?logout=1`
+-> `/`. Legacy `/one-time/member-login`, `/member`, and `/member-portal`
+routes redirect to `/rabbi-member`, and `/member.html` is classified as a
+legacy static code entry with safe member-home return links.
+
+Verification passed on the PR branch: local no-DB desktop/mobile Playwright
+smoke, focused One Time/route inventory contracts 23/23, full `npm test`
+1207/1207, `npm run owner-review:routes` with 689 routes, 34 HTML pages, and
+0 orphan-review rows, `npm run secrets:audit`, and link/action/security
+watchdogs with 0 findings. No production readback, database mutation, deploy,
+live smoke, external send, publish, upload, charge, DNS, OAuth/account-owner
+action, or secret request was performed.
+
+## 2026-06-24T07:19:42+03:00 - Owner-Review REQ-006 Information Architecture
+
+Closed `RAW-20260624-001` / `REQ-20260624-006` on draft PR #14. Commit
+`ca49a1404ab619dc37319ad2f6108049e9c2f347` repairs the integrated
+information architecture for owner review.
+
+The shared public navigation now exposes direct School, Families, Provider
+Directory, One Time, Blog, FAQ, Portal Login, and Register entries, while
+Operations stays out of the primary consumer navigation. Parent, student, and
+provider portal topbars now include stable home/help or return paths without
+changing authentication or session behavior.
+
+Verification passed on the PR branch: focused IA/privacy contracts 27/27,
+universal action parity regeneration and gate 5/5, full `npm test` 1207/1207,
+`npm run owner-review:routes` with 689 routes, 34 HTML pages, and 0
+orphan-review rows, `npm run secrets:audit`, and link/action/security
+watchdogs with 0 findings. No production readback, database mutation, deploy,
+live smoke, external send, publish, upload, charge, DNS, OAuth/account-owner
+action, or secret request was performed.
+
+## 2026-06-24T06:56:00+03:00 - Integration Navigation Repair
+
+Closed `RAW-20260624-001` / `REQ-20260624-004` on draft PR #14 commit
+`e4378c31c7d70f7d3c2c8505d3907ff29d7e2a5f`.
+
+The owner-review route inventory no longer leaves customer-facing navigation
+findings unexplained: the shared public nav exposes One Time, provider join
+links use canonical `/providers/join?onboard=provider`, One Time member/library/
+classroom/participant pages include consistent member/library/classroom/support/
+return paths, the parent handbook is linked from the parent public page, and the
+inventory generator classifies aliases/internal route variants instead of
+counting them as duplicate customer-facing pages.
+
+Verification passed on the integration worktree: `npm run owner-review:routes`
+reported 689 routes, 34 HTML pages, 0 orphan-review rows, and 0 duplicate
+implementation groups; the focused route/provider/public suite passed 36/36;
+full `npm test` passed 1203/1203; `npm run secrets:audit`,
+`npm run watchdog:links`, `npm run watchdog:actions`, and
+`npm run watchdog:security` all passed with 0 findings. Deployment and live
+production smoke remain intentionally blocked for this credential-free pass.
+
+## 2026-06-24T03:40:00+03:00 - Owner-Review Route Inventory Baseline
+
+Closed `REQ-20260624-003` for the credential-free Integration, Navigation, and
+Owner-Review Closeout pass. PR #14 branch
+`codex/integration-navigation-owner-review-20260624` now includes commit
+`094ca7c6634b3ade13d158e15b0716907c367d3a`, adding
+`npm run owner-review:routes`, the generated route inventory script, focused
+inventory regression test, and owner-review artifacts under
+`docs/owner-review/`.
+
+The generated baseline covers 689 route rows, 34 HTML pages, 753 server route
+declarations, 584 API routes, 71 linked destinations, 182 client edges, 9
+manifest edges, 13 service-worker edges, 92 forms without explicit actions, 0
+missing implementation rows, 44 customer-facing orphan-review rows, and 26
+duplicate implementation groups. Verification passed with
+`npm run owner-review:routes` and
+`node --test tests/owner-review-route-inventory.test.js`.
+
+No production readback, deployment, external credentials, production mutation,
+backfill, send, publish, upload, charge, DNS, OAuth/account-owner action, or
+secret request was performed. Navigation repair/classification continues under
+`REQ-20260624-004`.
+
+## 2026-06-24T00:19:08+03:00 - Addendum REQ-20260623-026 Final QA Closed
+
+Closed the Telegram plus website-assistant addendum final QA requirement on
+draft PR #13 commit `6560b8f0`. Created the required provider onboarding doc,
+Telegram system truth audit, action parity audit, cross-channel QA run, and
+ChatGPT return packet:
+
+- `docs/product/provider-telegram-onboarding.md`
+- `ops/audits/2026-06-24-telegram-system-truth.*`
+- `ops/audits/2026-06-24-telegram-action-parity.*`
+- `ops/qa-runs/2026-06-24-telegram-end-to-end.*`
+- `.runtime/telegram-audit/CHATGPT-RETURN-PACKET.*`
+
+Verification passed: final JSON artifacts parsed, clean control-center/data
+model/scope suite passed 18/18, clean focused assistant/action suite passed
+122/122, `npm run watchdog:actions` passed with 0 findings, Railway deployment
+`359bd3c5-8cdc-4b70-a2eb-535e03f8d62e` reached SUCCESS, standard live smoke
+passed at `ops/live-smokes/2026-06-23T21-16-19-796Z-live-app-smoke.md`, and
+focused live `/api/bna/assistant/control-center` readback returned status 200
+with 79/79 Telegram and website-ready actions and 0 blockers.
+
+No duplicate Telegram architecture, website-bot action system, action registry,
+intake pipeline, agent queue, provider onboarding system, or page builder was
+created. The only remaining active-run terminal blocker is
+`REQ-20260619-313` for separate One Time paid infrastructure, ownership, and
+DNS approval.
+
+## 2026-06-24T00:34:00+03:00 - Integration Navigation Owner-Review Closeout Registered
+
+Registered `RAW-20260624-001` from Shloimie's credential-free Integration,
+Navigation, and Owner-Review Closeout prompt. The packet is captured at
+`raw-input/RAW-20260624-001-integration-navigation-owner-review-closeout.md`
+with requirement register
+`tasks-pending/2026-06-24-integration-navigation-owner-review-closeout.md`.
+
+Parsed `REQ-20260624-001` through `REQ-20260624-011` for branch
+consolidation, full route/page inventory, canonical sitemap/navigation graph,
+One Time journey canonicalization, information architecture repair, website
+assistant visibility, credential-free role browser QA, UX backlog
+reconciliation, permanent release gates, and the owner-review packet.
+
+No production readback, production mutation, backfill, deploy, external send,
+publish, upload, charge, DNS, OAuth/account-owner action, or secret request is
+authorized for this pass.
+
+## 2026-06-24T03:27:00+03:00 - Integration PR #14 Opened And Locally Validated
+
+Closed `REQ-20260624-001` by creating clean branch
+`codex/integration-navigation-owner-review-20260624` from `origin/master`
+`a9528b2d9467174d76d4c25bfb028f9308f24b4f`, merging PR #12
+`428ee78682a201b233b2f3da71bf0205b48812ad` and PR #13
+`6560b8f02580e5f182a95df84ad8d5383403d887`, and opening draft PR #14:
+`https://github.com/shloimie-beep/bnei-neviim-academy/pull/14`.
+
+Release-candidate SHA is `fc4d88145276ff18465214c926cb90c4020b4be0`. PR #12
+and PR #13 were commented as superseded for owner-review purposes.
+
+`REQ-20260624-002` local credential-free validation passed: `npm ci`,
+`npm test` 1202/1202, `npm run secrets:audit`,
+`node --test tests/watchdog-action-registry.test.js` 5/5,
+`npm run watchdog:links` 0 findings, `npm run watchdog:actions` 0 findings,
+and `npm run watchdog:security` 0 findings. The initial full test failure was
+only stale generated action-parity hashes after branch integration and was
+fixed by regenerating the parity artifacts.
+
+Independent GitHub CI/status-check creation is blocked: GitHub rejected pushing
+`.github/workflows/credential-free-ci.yml` because the current OAuth app lacks
+`workflow` scope. No deployment or production/live action was performed.
+
+## 2026-06-23T23:20:20+03:00 - Addendum REQ-20260623-021 Automation Builder Deployed
+
+Implemented the universal assistant natural-language automation builder on
+draft PR #13, branch `codex/one-time-batch4-control-plane-20260623`, commit
+`6137985a`.
+
+Added `src/platform/assistant/automation-builder.js` with typed automation
+triggers, conditions, delays, actions, validation, readable previews, simple
+diagrams, sample-event dry-runs, shared draft/version/preview packaging, and
+approval-gated enable planning. Wired `draft_automation` through
+`src/lib/actions/registry.js`, `src/lib/actions/actions/operations.js`, and
+`src/platform/assistant/action-planner.js`. Aligned the detailed action
+registry with the campaign actions and new automation action; parity now
+reports 22 visible controls and 137 registry rows.
+
+Verification passed in main and clean PR worktrees: automation/planner/action
+registry suite 45/45, focused assistant/action suite 97/97, parity generators,
+and `npm run watchdog:actions` with 0 findings. Railway deployment
+`8006f53f-d12b-4a38-9233-26b9f217d26b` reached `SUCCESS`, and standard live
+smoke passed:
+`ops/live-smokes/2026-06-23T20-19-39-519Z-live-app-smoke.md`.
+
+No automation was enabled, no external send or connector call occurred, and no
+contact-list write, official data mutation, publish, charge, DNS mutation,
+OAuth action, browser-click substitution, hard delete, or secret exposure was
 performed.
 
-## 2026-06-21T20:29:00+03:00 - One Time Master Completion Batch 19 Final Verification And Release
-
-Closed `REQ-20260619-314` for PR #5. Stabilized final release-gate checks,
-restored explicit Operations topbar status chip labels, aligned stale tests and
-UI audit contracts with the current shell, updated the focused final live smoke
-to current provider-index copy, pushed commit
-`34c74f22145a4422777515b740b8e33eef3f539d`, deployed it to Railway deployment
-`96766f0d-ebce-4296-9002-9945b8f85858`, and verified production with standard
-and focused final live smokes.
-
-Verification passed: targeted release-gate suite 32/32, provider/final-register
-suite 18/18, full `npm test` 1017/1017, action/security watchdogs, execution
-run validation, tracked secret audit, diff check, Railway doctor `SUCCESS`,
-standard smoke `ops/live-smokes/2026-06-21T17-25-07-787Z-live-app-smoke.md`,
-and focused final smoke
-`ops/live-smokes/2026-06-21T17-27-45-386Z-final-register-surfaces-live-smoke.md`.
-
-PR #5 was not merged. No external send, WhatsApp send, email send, charge,
-refund, access grant, public publish, Google Classroom/Calendar/Drive write,
-Zoom meeting/registrant/attendance write, Vimeo upload/publish, DNS or Railway
-variable mutation, external CRM/GHL write, raw private export, or secret
-exposure was performed. `REQ-20260619-313` remains
-`needs_operator_decision` for separate paid infrastructure/DNS approval.
-
-## 2026-06-22T15:58:00+03:00 - One Time Phase 2 Shared Review Branding
-
-Updated `REQ-20260622-002` for PR #5. Preserved the full source prompt at
-`raw-input/RAW-20260622-002-full-source-prompt.md`, added the One Time brand
-kit/config and service-provider site config, polished the shared `/one-time`
-landing and review routes with traced OneTimeOneTime assets, kept child/crowd
-promo imagery out of the public review, expanded no-send email previews, and
-refreshed the operator review packet and screenshot index.
-
-Implementation commit `4d43160be025df23f953bff38f7b0f1aaf7c10ad` is pushed to
-`origin/codex/agent-control-center-20260619`. Local verification passed:
-focused Phase 2 suite 20/20, `node --check server.js`, local
-`ONE_TIME_REVIEW_ONLY_NO_DB=1` server, Playwright route smoke 18/18 across six
-review routes at 390x844, 768x1024, and 1440x900, full `npm test` 1043/1043,
-action/security watchdogs, tracked secret audit, and `git diff --check`.
-
-Shared live deployment remains blocked. No Railway project, service, database,
-variable, DNS record, restart, deployment, `skillful-motivation` relink, live
-email/WhatsApp send, charge, access grant, Zoom write, Vimeo upload, external
-CRM/GHL write, raw private export, or secret exposure was performed. The exact
-next action is operator approval/relink for the existing shared app Railway
-target, then redeploy commit
-`4d43160be025df23f953bff38f7b0f1aaf7c10ad` or later and run the focused live
-review smoke.
-
-## 2026-06-22T16:40:00+03:00 - One Time Phase 2 Shared Review Deployed
-
-Closed `REQ-20260622-002` for PR #5 as deployed and live-verified. The shared
-One Time brand/review experience is pushed on
-`origin/codex/agent-control-center-20260619`; final app commit
-`168bda1f18fb65864fdf4e75e242f9480c571325` was deployed to the existing shared
-Railway `skillful-motivation` service.
-
-Railway deployment `3671af2d-26e1-4e24-b918-52074d821ad7` reached `SUCCESS`.
-Standard live smoke passed at
-`ops/live-smokes/2026-06-22T13-37-19-377Z-live-app-smoke.md`; focused shared
-review live smoke passed at
-`ops/live-smokes/2026-06-22T13-36-16-426Z-one-time-shared-review-live-smoke.md`
-across landing, provider, parent, student, classroom, email, and Operations
-review routes at 390x844, 768x1024, and 1440x900.
-
-No Railway project/service/database provisioning, DNS change, PR merge, live
-email/WhatsApp send, charge, access grant, real Zoom meeting, Vimeo upload,
-external CRM/GHL write, raw private export, or secret exposure was performed.
-The next operator purpose is `One Time UI/workflow corrections and full Agent
-Mode visual QA`.
-
-## 2026-06-22T20:34:00+03:00 - One Time Assets, Funnel, Vimeo, Stripe/Email Readiness, View as Rabbi
-
-Updated `REQ-20260622-003` through `REQ-20260622-010` on isolated branch
-`codex/one-time-assets-vimeo-stripe-email-view-as-rabbi-20260622` from base
-`04d93788c48f729001f99c54a67f89ef42cfbe79`. Preserved the raw source,
-inventoried and deduplicated the downloaded One Time/Rabbi Scheller assets into
-`C:\Users\User\Documents\BNA-Assets\One-Time`, added tracked intake evidence,
-reworked `/one-time` into a simple worldwide Mishnayos funnel with public Vimeo
-hero `1158542993?h=daa31d3417`, embedded the member lesson Vimeo in the
-classroom, added a read-only campaign timer API, added public privacy/terms
-shells, and implemented signed platform-super-admin read-only View as Rabbi
-preview endpoints and banner UI.
-
-Verification: `node --check server.js` passed; focused tests
-`tests/one-time-focused-landing.test.js`,
-`tests/one-time-shared-review-branding.test.js`, and
-`tests/one-time-product-system.test.js` passed 15/15; full `npm test` passed
-1044/1044; action/security watchdogs passed; tracked secret audit passed; and
-`git diff --check` passed with Windows line-ending warnings only. Local
-`ONE_TIME_REVIEW_ONLY_NO_DB=1` readback passed for `/one-time`,
-`/api/one-time/campaign`, and `/api/one-time-review/classroom`. The execution
-run validator still fails only because this isolated branch differs from the
-active run's recorded PR branch and the stripped worktree lacks older historical
-live-smoke evidence files. No live email/WhatsApp
-send, charge, checkout, access grant, Zoom write, Vimeo upload, DNS/Railway
-mutation, external CRM/GHL write, raw private export, or secret exposure was
-performed. Remaining blockers are explicit operator decisions for campaign
-deadline, email sender/audience, Stripe live policy, new asset rights/consent,
-and deployment target approval.
-
-## 2026-06-23T09:43:00+03:00 - Universal Service Provider Studio Intake And Baseline
-
-Registered `RAW-20260623-001` from the attached Universal Service Provider
-Studio prompt, created the clean isolated worktree
-`C:\Users\User\Documents\Codex\2026-06-23\service-provider-studio`, initialized
-the active execution run `2026-06-23-service-provider-studio`, and verified the
-actual default branch is `origin/master` with PR #5 already merged into master.
-
-Completed the canonical implementation audit before product-code edits. The
-baseline is recorded in
-`docs/product/service-provider-studio-baseline-2026-06-23.md` and confirms the
-Studio should reuse the live Operations shell, provider workspace scoping,
-Content jobs/prompts/bundles, One Time service-provider model, Remotion scripts,
-route/action registries, and existing local Playwright smoke patterns. No live
-send, publish, charge, access grant, external provider write, Railway/DNS
-mutation, or secret exposure was performed.
-
-## 2026-06-23T10:20:00+03:00 - Universal Service Provider Studio Local Implementation Verified
-
-Implemented the Universal Service Provider Studio in the isolated feature
-worktree. The local slice adds the additive Studio migration/domain helpers,
-scoped Studio APIs, Operations Studio module before Content, source
-sanitization and raw-source privacy, layered prompt compiler, correction
-preview/apply workflow, storyboard editor, deterministic mock render jobs,
-usage metering, no-publish Content handoff, One Time pilot fixture,
-documentation, route/action registry coverage, and browser smoke evidence.
-
-Verification passed locally: `node --check server.js`,
-`node --check src\lib\bna\service-provider-studio.js`, focused
-Studio/navigation tests 20/20, full `npm test` 1060/1060,
-`npm run studio:smoke` 1/1, tracked secret audit with 0 findings,
-`git diff --check`, `npm run watchdog:audit`,
-`npm run watchdog:actions`, `npm run watchdog:security`, and
-`npm run bna:run:validate`.
-
-No live vendor generation, external send, public publish, charge, access grant,
-Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation, external CRM/GHL write,
-raw private source readback, or secret exposure was performed. Terminal Done
-for app-visible Studio requirements remains pending clean default-branch
-integration plus deploy/live-smoke proof.
-
-## 2026-06-23T10:28:00+03:00 - Universal Service Provider Studio Clean Integration Verified
-
-Created a clean integration worktree from updated `origin/master` at
-`4d412797`, merged `codex/service-provider-studio-20260623` without conflicts,
-installed dependencies from the lockfile, and reran the required gates in the
-integration tree.
-
-Integration verification passed: `node --check server.js`,
-`node --check src\lib\bna\service-provider-studio.js`,
-`npm run studio:smoke` 1/1, full `npm test` 1063/1063,
-`npm run bna:run:validate`, tracked secret audit with 0 findings,
-`git diff --check`, `npm run watchdog:audit`, `npm run watchdog:actions`, and
-`npm run watchdog:security`. The next step is pushing the verified integration
-HEAD to `origin/master`, then recording deploy/live-smoke proof before
-terminal Done.
-
-## 2026-06-23T10:36:00+03:00 - Universal Service Provider Studio Done, Default Pushed, Live Verified
-
-Closed `RAW-20260623-001` / `TASK-20260623-001` / `REQ-20260623-001` through
-`REQ-20260623-015`. The verified integration HEAD was pushed to the actual
-default branch, advancing `origin/master` to
-`2d49578e26e15499615de8df5c003da0232b2423`.
-
-Post-push proof passed through the standard live app smoke
-`ops/live-smokes/2026-06-23T07-32-08-023Z-live-app-smoke.md` and the read-only
-Studio live smoke
-`ops/live-smokes/2026-06-23T07-33-52-389Z-service-provider-studio-live-smoke.md`.
-The Studio API initially returned 404/500 during deploy catch-up, then returned
-200 with `success: true`; `/operations?view=studio` and `/api/bna/studio/usage`
-also passed. `npm run railway:doctor` could not read Railway metadata because
-the isolated worktree had no `RAILWAY_TOKEN`, but live endpoint verification
-passed.
-
-Durable memory was updated to keep Studio as a separate service-provider module
-before Content. No live vendor generation, external send, public publish,
-charge, access grant, Vimeo upload, Google/Buffer/Zoom/DNS/Railway mutation,
-external CRM/GHL write, raw private source readback, or secret exposure was
-performed.
-
-## 2026-06-24T09:08:00+03:00 - PR #14 Public Visual Reality Audit Batch Verified
-
-Registered `RAW-20260624-002` from the full-system reality audit addendum and
-created the requirement register
-`tasks-pending/2026-06-24-full-system-reality-audit-and-unblocked-implementation-pass.md`.
-The credential-free PR #14 public visual batch fixes the homepage
-header-to-hero gap, adds semantic `aria-pressed` state for homepage filter
-chips, strengthens active/focus filter styles, and adds
-`npm run owner-review:visual` with computed desktop/tablet/mobile assertions.
-
-Verification passed locally: `npm run owner-review:visual`,
-`node --test tests\owner-review-role-flow-contract.test.js`,
-`npm run owner-review:role-flows`, `npm run owner-review:routes`,
-`npm run watchdog:links`, `npm run watchdog:actions`,
-`npm run watchdog:security`, full `npm test` 1214/1214, and
-`npm run secrets:audit` with 4254 tracked paths and 0 findings.
-
-No external credentials, private production readback, production database
-mutation, backfill, deploy, email or Telegram send, publish, upload, charge,
-DNS mutation, OAuth, or secret exposure was performed. Production remains stale
-until PR #14 is merged/deployed and live-smoked.
-
-## 2026-06-24T09:00:00+03:00 - PR #14 Auth Navigation Harness Strengthened
-
-Extended the credential-free owner-review role-flow smoke so it now asserts
-expected assistant surfaces, rejects forbidden cross-role fixture leakage, and
-clicks the Operations workspace switcher into the One Time Mishnah Class
-provider workspace (`rabbi_sheller_provider`) on desktop and mobile.
-
-Verification passed locally: `npm run owner-review:role-flows`,
-`node --test tests\owner-review-role-flow-contract.test.js` 6/6, full
-`npm test` 1214/1214, and `npm run secrets:audit` with 4271 tracked paths and 0
-findings. The generated `docs/owner-review/ROLE-FLOW-QA.md` report now shows
-the workspace switch proof for both super-admin viewports.
-
-## 2026-06-24T09:10:00+03:00 - PR #14 Website Assistant Runtime Audit Added
-
-Added `npm run owner-review:assistant-runtime` and the report
-`docs/owner-review/ASSISTANT-RUNTIME-AUDIT.md`. The audit verifies the shared
-website assistant source contract, confirms the public anonymous context
-endpoint in the local no-DB server, and records the explicit expected blocker
-for database-backed assistant history in no-DB mode.
-
-Verification passed locally: `node --check
-scripts\smoke-owner-review-assistant-runtime.mjs`, `npm run
-owner-review:assistant-runtime`, `node --test
-tests\owner-review-role-flow-contract.test.js` 7/7, full `npm test`
-1215/1215, `npm run secrets:audit` with 4271 tracked paths and 0 findings, and
-`git diff --check`. No external credentials, private production readback,
-production database mutation, backfill, deploy, email or Telegram send,
-publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
-Persisted assistant chat/message E2E remains blocked until a local/test
-database is provided or production readback is approved.
-
-## 2026-06-24T09:20:00+03:00 - PR #14 External Readiness Audit Added
-
-Added `npm run owner-review:external-readiness` and the report
-`docs/owner-review/EXTERNAL-READINESS-AUDIT.md`. The audit verifies local
-no-write readiness for class/Drive intake, Stripe no-charge preview behavior,
-and Vimeo/manual video-hosting previews using the existing first-party
-contracts rather than creating a second integration path.
-
-Verification passed locally: `node --check
-scripts\smoke-owner-review-external-readiness.mjs`, `npm run
-owner-review:external-readiness`, `node --test
-tests\owner-review-role-flow-contract.test.js` 8/8, full `npm test`
-1216/1216, `npm run secrets:audit` with 4275 tracked paths and 0 findings, and
-`git diff --check`. No external credentials, private production readback,
-production database mutation, backfill, deploy, email or Telegram send,
-publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
-Real class/Drive readback, transcription, Stripe sandbox/live API proof, and
-Vimeo API/upload/playback proof remain approval/credential gated.
-
-## 2026-06-24T09:25:00+03:00 - PR #14 Full-System Reality Final Report Added
-
-Added `docs/owner-review/FULL-SYSTEM-REALITY-FINAL-REPORT.md` with the exact
-24 sections requested by `RAW-20260624-002`, using explicit status vocabulary
-and ending with overall state `PUSHED`. The report names PR #14 head
-`10a2386ea6271de59829115dd16fc9b3c5f49883`, base `a9528b2d...`, clean draft
-merge state, no attached checks, and all remaining external/operator blockers.
-
-Verification passed locally: `node --test
-tests\owner-review-role-flow-contract.test.js` 9/9, full `npm test`
-1217/1217, `npm run secrets:audit` with 4279 tracked paths and 0 findings, and
-`git diff --check`. No external credentials, private production readback,
-production database mutation, backfill, deploy, email or Telegram send,
-publish, upload, charge, DNS mutation, OAuth, or secret exposure was performed.
-## 2026-06-24T09:50:00+03:00 - Rabbi Scheller Workspace Parity Local Verified In Isolated Branch
-
-Continued `RAW-20260623-006` after Shloimie chose Option A and warned that
-another agent was working. Collision check found the shared checkout dirty and
-other worktrees active, so the Rabbi bundle is isolated in
-`C:\Users\User\Documents\Codex\2026-06-24\rabbi-scheller-parity` on branch
-`codex/rabbi-scheller-parity-20260624` from `origin/master` at `a9528b2d`.
-
-Local implementation and audit evidence now covers unified portal login
-resolver/chooser behavior, provider-scoped allowed-view hardening, Operations
-provider navigation/back/deep-link behavior, tenant-scoped task detail child
-links, feature-flagged honest Provider API Usage preview, provider API-usage
-instrumentation foundation, route inventory, action registry coverage, durable
-future provider-bot requirement, and provider/BNA parity documentation.
-
-Verification passed locally: `node --check server.js`, `node --check
-src/lib/bna/provider-api-usage.js`, action-registry JSON parse, regenerated
-route map with 738 Express routes, focused suite 74/74, and four Playwright
-local smokes: Provider API Usage, Provider navigation, Operations navigation,
-and portal-agnostic login chooser at 390x844, 768x1024, and 1440x900.
-
-No external send, charge, access grant, credential rotation, DNS write, Stripe,
-Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI, or production-data mutation
-was performed. Push/deploy/live smoke is authorized next from the isolated
-branch only.
-
-## 2026-06-24T10:06:00+03:00 - Rabbi Scheller Workspace Parity Pushed, Deployed, Live Smoked
-
-Pushed Rabbi Scheller workspace parity branch
-`codex/rabbi-scheller-parity-20260624` to GitHub and opened draft PR #15.
-Implementation commit:
-`8f8b0b458a95d146777808dbdf1f760618632615`.
-
-Railway doctor passed before deploy on existing production deployment
-`359bd3c5-8cdc-4b70-a2eb-535e03f8d62e`. The standard `npm run
-railway:redeploy` script failed only at its `railway link` step with
-`Unauthorized`, while token-based status access was valid. Codex used the
-script-created deploy bundle and ran `railway up` with explicit
-`--project bd5b6d78-5e83-4e83-89b2-cd5f52ed7889 --service
-skillful-motivation --environment production`, avoiding any mutation of the
-local Railway link. Railway deployment
-`5e37d2a0-7e81-4339-a721-c4286e8ecaa8` reached `SUCCESS`.
-
-Live verification passed: standard app smoke
-`ops/live-smokes/2026-06-24T07-01-44-515Z-live-app-smoke.md` and Rabbi
-workspace live smoke
-`ops/live-smokes/2026-06-24T07-05-37-232Z-rabbi-scheller-workspace-live-smoke.md`.
-The Rabbi smoke verified health, deployed provider API Usage preview markers,
-Operations login chooser bundle markers, Operations login/session, deployed
-Operations Rabbi workspace API Usage markers, and scoped task API readback for
-`project_key=one_time_mishnah_class`.
-
-No external send, charge, access grant, credential rotation, DNS write, Stripe,
-Zoom, Vimeo, email, Google, Buffer, WhatsApp/WAPI account mutation, provider
-account change, or production data mutation was performed. Remaining state is
-partial only because PR #15 is not merged and Rabbi owner/Shloimie role choices
-remain open.
-## 2026-06-23T16:58:00+03:00 - One Time Homepage Funnel Copy Refined
-
-Confirmed the existing One Time funnel instructions under
-`raw-input/RAW-20260622-003-one-time-assets-funnel-vimeo-email-stripe-view-as-rabbi.md`
-and refined `/one-time` so the homepage reads as a basic signup funnel rather
-than an implementation report. The page now leads with the Mishnayos mission,
-public Vimeo hero, 30-day-free CTA, program preview using approved teaching
-stills, proof/logo strip, three-step flow, Rabbi portrait section, classroom
-preview, FAQ, and final interest form.
-
-Removed public-facing private asset-library, video-ID, launch-approval,
-server-backed timer, raw external page/CAPTCHA, and no-charge/no-send debug
-phrasing. The rights blockers remain in
-`ops/one-time-mishnah/asset-intake/2026-06-22/RIGHTS-BLOCKERS.md`, not on the
-homepage. Focused One Time tests passed 15/15, `git diff --check` passed with
-Windows line-ending warnings only, and local Playwright static smoke confirmed
-no body overflow plus loaded teaching images at mobile and desktop widths.
-
-## 2026-06-23T17:10:00+03:00 - One Time Review Front-End Brand Pass
-
-Applied the OneTimeOneTime brand kit across the shared review front-end
-surfaces: provider/Rabbi workspace, read-only View as Rabbi mode, parent
-portal, student portal, classroom, and email review. The shared
-`public/css/one-time-shared-review.css` now maps the exact One Time palette
-onto review-mode portal variables and styles top bars, cards, sidebars,
-buttons, inputs, progress bars, pills, the classroom shell, and the Rabbi
-read-only banner without changing normal BNA portal mode.
-
-Polished review-mode copy for the provider/Rabbi, parent, student, classroom,
-and email-review screens while preserving TEST-only scoping, no-send/no-write
-guardrails, and the student `No bot / no BNA goals` marker. Added shared CSS
-contract assertions. Verification passed: focused One Time suite 15/15,
-portal/brand-shell review suite 49/49, and local Playwright smoke against the
-`ONE_TIME_REVIEW_ONLY_NO_DB=1` server at mobile and desktop widths across
-landing, provider, parent, student, classroom, and email review routes.
-
-## 2026-06-23T17:34:00+03:00 - One Time Rabbi Workspace Scope and Badges
-
-Captured the new operator ramble as
-`raw-input/RAW-20260623-002-one-time-rabbi-workspace-student-scope-badges.md`
-and implemented the local review slice. Rabbi Eli Scheller's provider review
-now behaves like a scoped One Time workspace: desktop sidebar, mobile hamburger
-drawer, workspace identity, `ELISHELLER` owner login display, users, CRM,
-content, automations, badge awarding, communications, live class, library,
-payments, integrations, settings, support, and links into the parent, student,
-classroom, email review, and landing surfaces.
-
-Added explicit One Time-vs-school student portal boundaries in review data,
-provider Settings, and the student review page: One Time includes Mishnayos
-class/library, worksheets, private Rabbi questions, badges, achievements, and
-rewards; BNA school accountability goals, checkoffs, consequences, device
-controls, bot/accountability goals, and unrelated household/student records are
-excluded. Added One Time badge awarding and badge automation cards with a
-guardrail that badges do not write to school accountability ledgers.
-
-Verification passed: focused One Time/portal suite 20/20, review-only server
-and external portal suite 37/37, and local Playwright smoke at desktop/mobile
-against `http://127.0.0.1:19731` covering the new provider sidebar/hamburger,
-Users/CRM/Content/Automations/Badges/Settings sections, `Thoughtful Question`
-badge, `ELISHELLER`, and student `No bot / no BNA goals` boundary.
-
-## 2026-06-24T05:51:00+03:00 - One Time Rabbi Workspace QA Closeout
-
-Closed out the local QA/handoff pass for Rabbi Eli Scheller's One Time
-workspace. No functional UI changes were added in this pass; this was a
-verification and coordination closeout so other agents can see the Rabbi
-workspace, badges, and One Time student boundary are already implemented
-locally and should not be duplicated.
-
-Verification passed again: focused One Time/portal suite 20/20, review-only
-server and external portal suite 37/37, `node --check server.js`,
-`git diff --check` with Windows line-ending warnings only, and local Playwright
-smoke against `http://127.0.0.1:19731` at `1440x900` and `390x844`. The smoke
-confirmed provider desktop nav, provider mobile hamburger drawer, Badges and
-Rewards with `Thoughtful Question`, `ELISHELLER`, student One Time-only
-boundary text, `No bot / no BNA goals`, BNA school-accountability exclusion,
-Mishnayos content, and no horizontal overflow. The in-app browser was restored
-to `student.html?review=one-time#reviewClass` and read back the One Time-only
-boundary with no horizontal overflow.
-
-Guardrails remain unchanged: no WhatsApp/email/SMS send, no password emitted,
-no charge or checkout session, no access grant, no Zoom/Vimeo/external CRM
-write, no deployment, no super-admin cross-account access for Rabbi Eli, and
-no BNA school accountability goal rendering or writing inside One Time review
-mode. Live deployment and actual WhatsApp credential handoff remain blocked
-until explicit operator approval of the exact recipient and full message body.
-
-## 2026-06-24T15:45:00+03:00 - Clean-Slate Control Tower Integration Base Started
-
-Registered `RAW-20260624-003` from the Control Tower Reconciliation goal packet
-after detecting that PR #14 already owns `RAW-20260624-002` and
-`REQ-20260624-012` through `REQ-20260624-027`. The clean control register uses
-non-colliding IDs `REQ-20260624-028` through `REQ-20260624-034`.
-
-Completed the first control-tower requirements: repository/worktree/PR/Railway
-census, preservation of the local Rabbi/One Time closeout as branch
-`codex/preserve-rabbi-closeout-20260624` at `487a660b`, and clean integration
-branch reconciliation from `origin/master` through PR #14, PR #15, and the
-preservation branch. Current integration HEAD is `161f8623`. Evidence is in
-`ops/worktree-reconciliation/2026-06-24-clean-slate-control-tower.md`,
-`ops/worktree-reconciliation/2026-06-24-rabbi-closeout-preservation.md`, and
-`ops/parallel-closeout/2026-06-24-clean-slate-system-closeout/control/PR-RECONCILIATION.md`.
-
-Verification passed for the merged base: PR #14 focused gate 72/72 after
-generated action coverage refresh, PR #15 Rabbi/auth/provider suite 33/33 plus
-four browser smokes, preservation One Time suite 57/57, Rabbi suite 33/33,
-One Time canonical journey smoke, `npm run secrets:audit`, JSON/JSONL parse,
-and `git diff --check`. No deployment, production database mutation, class
-backfill, Stripe/Vimeo write, real send, DNS change, credential change, or
-other external write was performed.
-
-## 2026-06-24T16:45:00+03:00 - Clean-Slate Control Tower Base Closed
-
-Completed `RAW-20260624-003` / `TASK-20260624-001` through terminal statuses.
-The canonical control branch `codex/clean-slate-integration-20260624` now
-contains `origin/master`, PR #14 including PR #12/#13 history, PR #15, the
-preserved Rabbi/One Time local closeout branch, the canonical execution run,
-queue/Decision reconciliation, and seven lane handoff folders.
-
-Pushed control commit `f34cdd05f0d9a4e2883b242ef8a50b67d90d5bb0` and opened
-draft PR #16:
-`https://github.com/shloimie-beep/bnei-neviim-academy/pull/16`. Validation
-passed: `npm run bna:run:status`, `npm run bna:run:validate`,
-`npm run bna:run:blockers`, `npm run bna:run:next`, `npm run secrets:audit`,
-`git diff --check`, and staged JSON/JSONL parse. No deployment, production DB
-mutation, class backfill, Stripe/Vimeo external write, real send, DNS change,
-credential rotation, or production account change was performed. Parallel
-lanes are safe to start from the pushed control branch.
-
-## 2026-06-24T16:51:19+03:00 - Final Release Preflight Blocked
-
-Registered `RAW-20260624-005` and `REQ-20260624-019` through
-`REQ-20260624-031` for the final integration, release, deployment,
-live-verification, and guarded class-recovery goal.
-
-Ran Step 1 preflight. `git fetch --all --prune` succeeded. The required
-`CONTROL.json` exists on clean-slate branch
-`origin/codex/clean-slate-integration-20260624` at
-`68f0b02fa1fe8928a8b4dd52704ec7e92c0fcba5`, and the clean-slate execution run
-validates with no remaining work.
-
-Pushed lane evidence is not complete enough to integrate:
-
-- `public-ui`: terminal branch-local result, `safe_to_merge: true`
-- `portal-auth-nav`: terminal branch-local result, `safe_to_merge: true`
-- `assistant-ramble-usage`: terminal branch-local result with external blockers,
-  `safe_to_merge: true`
-- `stripe-sandbox`: terminal branch-local result with external setup blockers,
-  `safe_to_merge: true`
-- `class-drive-intake`: branch-local `RESULT.json` still says `not_started`
-- `vimeo-media`: branch-local `RESULT.json` still says `not_started`; the
-  current Vimeo worktree is also dirty and diverged from the pushed branch
-- `operator-walkthrough`: pushed branch is missing lane `RESULT.json`
-
-No integration merge, PR merge, deployment, live smoke, production DB mutation,
-class backfill, external write, send, charge, DNS change, or secret exposure was
-performed. Final release remains blocked until the missing lane handoffs are
-terminal and pushed.
-
-## 2026-06-24T17:17:00+03:00 - Final Release Preflight Passed
-
-Re-ran `REQ-20260624-019` from the clean-slate integration worktree after the
-missing lane closeouts were pushed. All seven expected lane branches now have
-terminal branch-local RESULT evidence:
-
-- `public-ui`: `c9ba17da`, status `pushed`
-- `portal-auth-nav`: `e2aa72e5`, status `done`, `safe_to_merge: true`
-- `class-drive-intake`: `b4958dc0`, status `complete_no_backfill_apply`,
-  `safe_to_merge: true`
-- `assistant-ramble-usage`: `adf4e6d8`, status
-  `complete_with_external_blockers`, `safe_to_merge: true`
-- `stripe-sandbox`: `6c161c50`, status
-  `completed_with_external_setup_blocker`, `safe_to_merge: true`
-- `vimeo-media`: `f6975ab8`, status `complete_with_external_test_blockers`,
-  `safe_to_merge: true`
-- `operator-walkthrough`: `768a2ae0`, status
-  `complete_with_external_setup_blockers`, `safe_to_merge: true`
-
-Initialized the active final-release execution run at
-`ops/execution-runs/2026-06-24-final-release-integration` and moved
-`latest.json` to that run. The closed clean-slate control run remains preserved
-but is no longer the active run. Class backfill is explicitly blocked under
-current Prompt 04 evidence: `safe_to_apply=false`, zero approved candidate jobs,
-and no row-level write plan. No integration merge, PR merge, deployment, live
-smoke, production database mutation, class backfill, external write, send,
-charge, DNS change, credential change, or secret exposure was performed.
-
-## 2026-06-24T17:26:00+03:00 - Final Release Base Sync Done
-
-Completed `REQ-20260624-020`. After `git fetch --all --prune`, the release
-branch `codex/clean-slate-integration-20260624` is at `0643db66` and
-`origin/master` is `a9528b2d`. The merge-base is `a9528b2d`, and
-`git rev-list --left-right --count HEAD...origin/master` returned `89 0`, so
-`origin/master` has no commits missing from the release branch. No master merge
-was required and no history rewrite was performed.
-
-`REQ-20260624-021` is now the active batch for lane integration with checkpoint
-commits. No integration merge, PR merge, deployment, live smoke, production DB
-mutation, class backfill, external write, send, charge, DNS change, credential
-change, or secret exposure was performed in this base-sync step.
-
-## 2026-06-24T17:51:00+03:00 - Final Release Lane Integration Done
-
-Completed `REQ-20260624-021` and `REQ-20260624-022`. Seven lane branches were
-integrated in the user-packet order with pushed checkpoint commits:
-
-- public UI: `d71fa58a`
-- portal/auth/nav: `b412ee17`
-- class/Drive intake: `b604e967`
-- assistant/ramble/usage: `4547a696`
-- Stripe sandbox: `9377862b`
-- Vimeo media: `f721d435`
-- operator walkthrough: `7e7cae25`
-
-Wrote lane integration evidence to
-`ops/parallel-closeout/2026-06-24-final-release-integration/LANE-INTEGRATION-MATRIX.md`
-and PR/local history disposition evidence to
-`ops/parallel-closeout/2026-06-24-final-release-integration/SUPERSESSION-MATRIX.md`.
-
-Final PR #16 now supersedes separate PR #14/#15 merges if this branch proceeds.
-Shared patches were reviewed and remain assigned to `REQ-20260624-023` for
-server/UI authorization wiring. No deployment, live smoke, production DB
-mutation, class backfill, Stripe write, Vimeo write, send, charge, DNS change,
-credential change, or secret exposure was performed.
-
-## 2026-06-24T17:58:00+03:00 - Final Release Shared Route/UI Wiring Verified
-
-Completed local release-candidate wiring for `REQ-20260624-023`. The final
-branch now includes protected owner setup readiness, Operations owner setup
-actions, Stripe safe billing status/preview plus approval-gated checkout
-creation and webhook preview, assistant provider-usage metadata without prompt
-body storage, and mixed-recording progress-only persistence. Route and action
-registries cover the new surfaces.
-
-Verification passed: `node --check server.js`, `node --check
-public/js/integration-setup.js`, focused class/assistant/Stripe/setup suites
-68/68, `npm run watchdog:actions`, `npm run watchdog:security`, `npm run
-bna:run:validate`, `git diff --check`, `npm run secrets:audit`, Stripe sandbox
-smoke `live_key_blocked` with no external write/no real funds, and Vimeo
-private smoke preview-only with no public publish. No deploy, live smoke,
-production DB mutation, class backfill, Stripe charge, Vimeo upload/publication,
-real send, DNS change, credential change, or secret exposure was performed.
-`REQ-20260624-024` is now the active migration/database readiness batch.
-
-## 2026-06-24T18:09:00+03:00 - Final Release Migration Readiness Documented
-
-Completed `REQ-20260624-024` as a readiness review with no production database
-apply. Active migration candidates were inventoried, `migrate-railway.sql` was
-explicitly excluded because it contains legacy `DROP TABLE` markers, and the
-backup, target inventory, dry-run, apply, rollback, post-apply readback, tenant
-isolation, privacy, and no-secret gates are documented in
-`ops/execution-runs/2026-06-24-final-release-integration/MIGRATION-READINESS.md`.
-
-No production database read, write, schema apply, class backfill, deploy, live
-smoke, send, charge, upload, publish, DNS change, credential change, or secret
-exposure was performed. `REQ-20260624-025` is now the active local release-gate
-batch.
-
-## 2026-06-24T18:28:00+03:00 - Final Release Local Release Gate Passed
-
-Completed `REQ-20260624-025` on pushed release-code SHA
-`03454ea4a9152946d21452141ed427277705fab1`. The dry-run production closeout
-gate passed with `head_pushed=true`, `dirty_total=0`, no blockers, no
-production mutation, no deploy, and no live verification. Full `npm test`
-passed 1301/1301 on the pushed SHA.
-
-Additional gate evidence passed: owner-review route inventory, role-flow smoke,
-public visual audit using `release-local`, assistant-runtime audit,
-external-readiness audit, execution-run validate/source-coverage/stale-evidence,
-link/action/security/content/communications watchdogs, raw-intake watchdog
-`ok=true` with two historical medium fallback findings, secret audit,
-`git diff --check`, Stripe sandbox smoke `live_key_blocked` with no real funds,
-and Vimeo private smoke preview-only with no upload or public publication.
-
-No PR merge, deployment, live smoke, production database mutation, class
-backfill, Stripe charge, Vimeo upload/publication, real send, DNS change,
-credential change, or secret exposure was performed. `REQ-20260624-026` is now
-active for PR #16 mergeability, release policy, and rollback-plan review.
-
-## 2026-06-24T18:58:00+03:00 - Final Release Merge, Deploy, and Live Verification Done
-
-Completed `REQ-20260624-026`, `REQ-20260624-027`, and `REQ-20260624-029`.
-PR #16 was marked ready and merged to `master` at
-`c14507ab121daa221689ba285c203605bf2d64bf`. Railway auto-deployed the same SHA
-to production deployment `e26fec62-1a08-43a8-abb9-1b030b0ea786` on the
-`skillful-motivation` project/service.
-
-Live verification passed: Railway service status, Railway doctor, standard app
-smoke, public privacy smoke, student-auth failure smoke, operator setup,
-provider classroom settings, class upload trace, payment/access/class-link
-guardrails, One Time shared review across mobile/tablet/desktop, negative
-routes, and syntax checks for the patched live-smoke scripts. Summary evidence
-is recorded in
-`ops/execution-runs/2026-06-24-final-release-integration/LIVE-VERIFY.md`.
-
-No production database migration, class backfill, Stripe charge/refund/
-subscription, access grant, Vimeo upload/public publication, email/WhatsApp/
-Telegram/social send, DNS change, credential copy/rotation, secret exposure,
-external CRM/GHL runtime, or external connector write was performed. Class
-backfill remains blocked under `REQ-20260624-028`.
-
-## 2026-06-24T19:05:00+03:00 - Final Release Canonical Closeout and Cleanup Done
-
-Completed `REQ-20260624-030` and `REQ-20260624-031`. Canonical release records,
-`TASKS.md`, this changelog, the ledger, run files, deployment proof, live-smoke
-proof, and true remaining blockers were updated and pushed in checkpoint
-`d4253fd683e60e403f256cb2a2c30acf821f32e4`.
-
-Cleanup pruned six clean owned lane worktrees and their safe merged local/remote
-refs, plus the merged final integration PR branch. The shared Vimeo checkout
-`C:\Users\User\BNA v2.0` was not touched because its same-named local branch
-head was not an ancestor of `origin/master`. Cleanup proof is recorded in
-`ops/execution-runs/2026-06-24-final-release-integration/CLEANUP.md`.
-
-The final-release run now has terminal statuses: `REQ-20260624-019` through
-`REQ-20260624-027`, `REQ-20260624-029`, `REQ-20260624-030`, and
-`REQ-20260624-031` are Done; `REQ-20260624-028` is Blocked by unsafe class
-backfill evidence.
-
-## 2026-06-24T20:41:31+03:00 - Clean Slate Acceptance Registered
-
-Registered `RAW-20260624-007` and created the clean-slate acceptance run
-`ops/execution-runs/2026-06-24-clean-slate-acceptance/`. Verified release truth
-against Git/GitHub/Railway/live evidence, linked `REQ-20260624-028` to GitHub
-issue #18 as blocked read-only class-intake reconciliation, fixed the live
-task/Decision census workspace query, applied only three safe reversible One
-Time scope reclassifications, proved synthetic ramble intake idempotency
-without production queue pollution, and wrote owner/preservation/handoff
-evidence under `ops/acceptance/2026-06-24-clean-slate/`.
-
-Final validation, PR creation/merge, and post-merge state reporting remain
-under `REQ-20260624-039`. No class backfill, production migration, send,
-charge, upload, DNS write, credential copy/rotation, or manual docs-only
-Railway deployment was performed.
-
-## 2026-06-24T21:05:00+03:00 - Clean Slate Acceptance PR Merged And Live Verified
-
-Completed `REQ-20260624-039`. PR #19 merged to `master` at
-`7a5bfa06e45353fc8fb4869ec2ed1d79bdec1772`. Railway automatically deployed
-that SHA in deployment `f8362b06-06b5-41f2-b4eb-102f67a91b85`; no manual
-Railway deploy command was run. Post-merge verification passed `npm run
-railway:doctor`, `npm run app:smoke`, `npm run app:smoke:public-privacy`, and
-direct `/api/health` readback.
-
-The clean-slate acceptance run now has 8 Done requirements and one blocked
-safety requirement, `REQ-20260624-028`. Next unblocked executable batch is
-none. The next real work is a separate read-only class-intake reconciliation
-from GitHub issue #18.
-
-## 2026-06-24T22:40:00+03:00 - Issue #18 Read-Only Class Intake Verdict Posted
-
-Completed `REQ-20260624-028` for GitHub issue #18. The read-only class/Drive
-intake reconciliation evidence was regenerated under
-`ops/class-drive-intake/2026-06-24-issue-18/` with sanitized labels/hashes for
-Drive names, job titles, parsed names, student names, and question text.
-
-Terminal verdict: `NOT SAFE TO APPLY - reasons listed`. The dry-run has
-`safe_to_apply=false`, no approved candidate jobs, no row-level change plan, and
-expected row counts `{}`. The census inspected 150 rows: 75 content jobs and 75
-Drive orphans, with 1 missing canonical write and no student ambiguity/review
-rows.
-
-Verification passed: focused class-intake tests 17/17, execution-run
-validate/source-coverage/stale-evidence, secret audit with 4636 tracked paths
-and 0 findings, `git diff --check`, and privacy scans for raw names,
-transcripts, questions, and title leaks. Draft PR #21 is open and terminal
-evidence was posted to GitHub issue #18 at comment `4792923047`.
-
-No `APPLY_GUARDED_CLASS_BACKFILL`, production DB mutation, Drive write,
-transcription call, worker restart, send, charge, credential change, deploy, or
-live mutation was performed. Next sequenced work is GitHub issue #20.
-
-## 2026-06-24T22:55:00+03:00 - Issue #20 Parent Run Baseline Registered
-
-Registered `RAW-20260624-009` from GitHub issue #20 and created the parent
-execution run `ops/execution-runs/2026-06-24-issue-20-parent-run/` on branch
-`codex/issue-20-parent-run-20260624`, based on the terminal Issue #18 branch.
-The raw source, dated requirement register, source mapping, active-run pointer,
-baseline readback, parent coordination rules, and child lane manifest are now
-recorded.
-
-Issue #18 terminal evidence was rechecked through PR #21 and issue comment
-`4792923047`; direct live health for `https://bneineviimacademy.org/api/health`
-returned HTTP 200 with the database connected. `npm run railway:doctor` found a
-local Railway CLI targeting mismatch to `one-time-production`, which is carried
-as the final deploy/live closeout blocker for `REQ-20260624-048`.
-
-`REQ-20260624-040` is done. The next executable batch is `REQ-20260624-041`,
-the global visual-quality system and watchdog. No child implementation lane,
-Tier 3 action, class backfill, production mutation, deploy, send, charge, DNS
-change, credential change, external write, or live mutation was performed.
-
-Checkpoint commit `3e0902f651302ae594e5462f3a88913b40406d8c` was pushed to
-`origin/codex/issue-20-parent-run-20260624`. Validation passed for
-`npm run bna:run:validate`, `npm run bna:run:source-coverage`, `npm run
-bna:run:stale-evidence`, JSON/JSONL parsing, `git diff --check`, and `npm run
-bna:run:next`.
-
-## 2026-06-24T23:20:00+03:00 - Issue #20 Visual Quality Locally Verified
-
-Completed local implementation and verification for `REQ-20260624-041`. The
-permanent `watchdog:visual` command now supports `--start-local` browser
-auditing and writes screenshot-backed matrix evidence across public,
-Operations, provider, parent/support, student/support, One Time, classroom, and
-email/support review surfaces at 390x844, 768x1024, and 1440x900.
-
-Fixed the public desktop nav clipping by shortening the provider CTA to
-`Advertise for free` and giving the public brand lockup stable width. Fixed One
-Time review-mode topbar/button tap targets and the One Time public landing
-consent checkbox size.
-
-Verification passed: `node --check scripts/watchdog-visual-baseline.mjs`,
-`node --check public/js/bna-site-nav.js`, `npm run watchdog:visual:local` with
-0 findings, `npm run owner-review:visual`, focused visual/UI tests 22/22,
-`npm run watchdog:ui`, and `npm run watchdog:visual`.
-
-`REQ-20260624-041` is blocked from Done only because the changes are
-app-visible and require deploy/live proof. The deploy/live gate remains under
-`REQ-20260624-048` with the Railway targeting blocker already recorded. No
-deploy, production mutation, external write, send, charge, DNS change,
-credential change, class backfill, Drive write, or secret exposure was
-performed.
-
-## 2026-06-24T23:30:00+03:00 - Issue #20 Agent Browser Harness Done
-
-Completed `REQ-20260624-042` for the Issue #20 parent run. Added a secure
-local Codex/Playwright profile harness with named profiles, non-repo root
-enforcement, lifecycle commands, Windows ACL hardening/readback,
-credential-free smoke support, focused tests, and operator documentation that
-distinguishes local browser profiles from ChatGPT Agent cookies and connectors.
-
-The six named profile directories were initialized outside the repo under
-`C:\Users\User\AppData\Local\BNA\agent-browser-profiles`. No credentials,
-cookies, screenshots, private authenticated page content, connector tokens, or
-account exports were copied into tracked files.
-
-Verification passed: `node --check scripts\agent-browser-profile.mjs`,
-`node --test tests\agent-browser-profile-harness.test.js` 3/3,
-`npm run agent:browser:list -- --json`, `npm run agent:browser:health -- --json`
-before and after initialization, a temporary external-root `one_time_review`
-smoke against the live review URL with no screenshot/private data, and default
-profile initialization with ACL/metadata readback.
-
-Post-closeout validation also passed for execution-run validate/source
-coverage/stale-evidence, JSON/JSONL parsing, secret audit with 4709 tracked
-paths and 0 findings, diff check, and next-batch selection for
-`REQ-20260624-043`.
-
-No deploy, production mutation, external write, send, charge, DNS change,
-credential change, class backfill, Drive write, public publishing, or secret
-exposure was performed. Next Issue #20 batch is `REQ-20260624-043`.
-
-## 2026-06-24T23:50:00+03:00 - Issue #20 Helper Destination QA Locally Verified
-
-Completed local implementation and verification for `REQ-20260624-043`. Added
-a registry-backed helper destination resolver, wired helper
-`open_operations_view` through it, registered
-`ACTION-HELPER-OPEN-OPERATIONS-VIEW`, and added a reusable
-`watchdog:helper-destinations` matrix report.
-
-The resolver returns same-origin route paths or safe fallbacks with route key,
-required role, access classification, actor scope, helper action key or typed
-action ID, reason, and checks for route/action registration, role, workspace,
-typed-action permission, and browser-click-substitution policy. The matrix
-passed 10/10 owner, parent, student, provider, public, wrong-role,
-wrong-workspace, missing-route, and external-URL cases.
-
-Verification passed: resolver/tool-registry/watchdog script syntax checks,
-resolver tests 5/5, helper+resolver tests 15/15, action-registry
-Telegram/UI/bot tests 33/33, control-plane scope-policy tests 10/10,
-`npm run watchdog:actions` with 0 findings, and
-`npm run watchdog:helper-destinations` with 10/10 matrix cases.
-
-`REQ-20260624-043` remains blocked from Done only because this is
-server-visible helper behavior and requires deploy/live proof under
-`REQ-20260624-048`. No deploy, production mutation, external write, browser
-profile screenshot, private page capture, send, charge, DNS change, credential
-change, class backfill, Drive write, public publishing, or secret exposure was
-performed. Next Issue #20 batch is `REQ-20260624-044`.
-
-## 2026-06-25T00:05:00+03:00 - Issue #20 Agent Result Bridge Locally Verified
-
-Completed local implementation and verification for `REQ-20260624-044`. Added
-the durable agent result packet normalizer, typed `record_agent_result` action,
-admin result API route, Operations activity evidence/GitHub link rendering, and
-approval-gated same-thread GitHub status preview/post support.
-
-The result action normalizes raw/source IDs, task/job/requirement IDs, run and
-Git state, tests, deployment state, evidence, blockers, summary, machine
-payload, GitHub metadata, timestamp, and a stable idempotency key. Execution
-records scoped job events, task activity, internal comments, and proof links
-without external writes or owner-text overwrite. GitHub status posting remains
-blocked behind explicit environment and approval-phrase gates; no status
-comment was posted.
-
-Verification passed: syntax checks for changed modules and tests, action
-registry result tests 35/35, agent-control API readback 2/2, Operations
-activity queue UI 3/3, focused GitHub intake/status preview 1/1,
-`npm run watchdog:actions` with 0 findings, static marker checks, and
-`ops/action-registry.json` parse. Post-closeout validation also passed for
-execution-run validate/source coverage/stale evidence, JSON/JSONL parsing,
-secret audit with 4720 tracked paths and 0 findings, diff check, and
-next-batch selection for `REQ-20260624-045`.
-
-`REQ-20260624-044` remains blocked from Done only because this is
-server-visible/API/UI behavior and requires deploy/live proof under
-`REQ-20260624-048`. No GitHub status comment, deploy, production mutation,
-external write, send, charge, DNS change, credential change, class backfill,
-Drive write, browser private capture, public publishing, or secret exposure was
-performed. Next Issue #20 batch is `REQ-20260624-045`.
-
-## 2026-06-25T00:25:00+03:00 - Issue #20 Agent Fleet Hardening Done
-
-Completed local implementation and verification for `REQ-20260624-045`.
-Hardened the existing agent fleet in place with explicit permission tiers,
-redacted supervisor output, deploy/Tier 3 permission gates, Windows launcher
-start/stop/restart/status/open-log controls, bounded hidden startup retries,
-current-login startup metadata, parent coordination audit, and a synthetic
-no-write background proof.
-
-The synthetic proof exercised trusted GitHub intake preview, agent claim and
-worktree preview, `record_agent_result` dry-run, Operations activity link
-preview, same-thread GitHub status preview, and parent closeout guardrails. It
-reported synthetic ID `51db2f8fb2ce22e1`, parent coordination 0 findings, and
-`external_write_performed=false`.
-
-Verification passed: changed-module syntax checks, PowerShell parse checks,
-focused fleet tests 6/6, broader fleet/watchdog/workspace tests 25/25,
-agent-control/activity UI tests 5/5, package/lane JSON parse, launcher status
-readbacks, `npm run watchdog:agent-fleet -- --json`, and post-closeout run
-validation/source coverage/stale-evidence/secret/diff gates with
-`npm run bna:run:next` selecting `REQ-20260624-046`.
-
-No second agent fleet, deploy, production mutation, external write, GitHub
-status comment, send, charge, DNS change, credential/account change, class
-backfill, Drive write, browser private capture, public publishing, or secret
-exposure was performed. Next Issue #20 batch is `REQ-20260624-046`.
-
-## 2026-06-25T00:40:00+03:00 - Issue #20 Queue Hygiene Locally Verified
-
-Completed local implementation and verification for `REQ-20260624-046`.
-Operations task queues now separate machine-owned Codex/agent work from
-human/external waiting, and the default owner task experience is Active Now,
-Needs Your Decision, Waiting Externally, Recently Completed, and Full History /
-Search.
-
-The server-side `/api/bna/tasks` status-bucket filter now exposes
-`codex_queue` and classifies `agent_job`, machine-owned rows, and active agent
-lifecycle states into that lane. The Operations UI keeps Codex / Agent Work as
-an operational lane while the owner defaults stay focused on current human
-decisions, external blockers, recent completion, and searchable history.
-
-Verification passed: changed-file syntax checks, focused Operations
-activity/queue/census/reconciler/workspace tests 23/23, `npm run
-watchdog:actions` with 0 findings, and no-live/no-write queue census contract
-readback. Post-closeout run validation/source coverage/stale evidence,
-JSON/JSONL parsing, secret audit, diff check, and next-batch selection also
-passed. No hard-delete, deploy, production mutation, external write, send,
-charge, DNS change, credential/account change, class backfill, Drive write,
-browser private capture, public publishing, or secret exposure was performed.
-
-`REQ-20260624-046` remains blocked from Done only because the queue API/UI
-changes require deploy/live proof under `REQ-20260624-048`. Next Issue #20
-batch is `REQ-20260624-047`.
-
-## 2026-06-25T00:55:00+03:00 - Issue #20 Owner Walkthrough Locally Verified
-
-Completed local implementation and verification for `REQ-20260624-047`. Added
-the credential-safe public page `/issue-20-owner-walkthrough.html`, linked it
-from the Owner Setup Center, registered the route, and created
-`ops/execution-runs/2026-06-24-issue-20-parent-run/OWNER-WALKTHROUGH.md`.
-
-The walkthrough covers current origin master and Issue #20 branch truth, live
-health, the Railway deployed-SHA proof blocker, active goal/lanes, agent fleet
-and watchdog controls, persistent browser profiles versus ChatGPT Agent,
-role-scoped links and helper/bot QA, the GitHub result bridge, Decisions/queue
-hygiene, next ramble submission, and stop/restart/release gates. Every setup
-card includes exact page, step, expected result, validation command, and
-recovery action.
-
-Verification passed: page/test syntax checks, focused owner/setup/link/route
-tests 8/8 with desktop/mobile layout checks, `npm run watchdog:actions` with 0
-findings, route registry JSON parse, live health readback, and remote master
-SHA readback. No deploy, production mutation, external write, GitHub status
-comment, send, charge, DNS change, credential/account change, class backfill,
-Drive write, browser private capture, public publishing, or secret exposure was
-performed.
-
-`REQ-20260624-047` remains blocked from Done only because the new public page
-and setup-center link require deploy/live proof under `REQ-20260624-048`. Next
-Issue #20 batch is `REQ-20260624-048`.
-
-## 2026-06-25T01:00:00+03:00 - Issue #20 Final Release Blocked
-
-Closed the current Issue #20 execution pass by marking `REQ-20260624-048` as
-blocked on the existing Railway targeting / deploy-live proof gate. All
-implementation batches now have terminal local statuses: Batches B and E are
-Done; Batches A, C, D, F, and G are locally verified and blocked only by
-deploy/live proof; Batch Z is blocked because Railway targeting cannot find
-the expected service and no alternate live-smoke path is approved.
-
-Recorded `FINAL-RELEASE-BLOCKER.md` with the exact blocker, current local
-truth, required next action, and guardrails. `npm run bna:run:next` reports no
-unblocked executable batch. No deploy, merge, production mutation, external
-write, GitHub status comment, send, charge, DNS change, credential/account
-change, class backfill, Drive write, browser private capture, public
-publishing, or secret exposure was performed.
-
-## 2026-06-25T07:45:00+03:00 - Issue #20 Release Merged, Deployed, Live-Verified, And Closed
-
-Closed the Issue #20 parent run (`REQ-20260624-040` through
-`REQ-20260624-048`) after merging, deploying, and live-verifying the release.
-PR #21 was merged first as read-only Issue #18 evidence; its verdict remains
-`NOT SAFE TO APPLY` and no class backfill was applied.
-
-Issue #20 PR #22 merged to `master` at
-`378cc562a7dd4ffc8f2cc81a7341502df42d0295`. The canonical BNA Railway target
-was verified as project/service `skillful-motivation` in `production` with
-custom domain `bneineviimacademy.org`, and GitHub `master` auto-deployed the
-merge as Railway deployment `4e4f38c5-73f3-49a4-b399-2dcc647bb7fa`.
-
-Verification passed: `npm run railway:doctor`, `npm run app:smoke`,
-`npm run app:smoke:public-privacy`, owner-review public visual, helper
-destination watchdog, agent-browser health/smoke, agent-fleet readiness, and
-the Issue #20 live verifier covering public viewports, owner walkthrough,
-Owner Setup Center, role routes, authenticated Operations queue/UI readback,
-helper button, and agent fleet status.
-
-The stale Railway blocker is resolved by canonical target discovery and
-fail-closed Railway deploy/doctor script hardening. All Issue #20 requirements
-are terminal Done, the run is closed in `run.json`, and `TASKS.md` no longer
-shows Issue #20 as active work. No deploy was sent to `one-time-production`.
-No production data mutation, class backfill, external send, charge, DNS
-change, credential/account change, Drive write, Buffer publish, browser
-private screenshot, public publishing, or secret exposure was performed.
-
-## 2026-06-25T17:45:00+03:00 - Issue #24 Registered As Active Goal Mode Run
-
-Registered GitHub issue #24 as `RAW-20260625-024` /
-`PARENT-20260625-024` with active execution run
-`ops/execution-runs/2026-06-25-issue-24-agent-review-hub/` on branch
-`codex/issue-24-agent-review-hub-20260625`.
-
-Created coordinated lanes for newest Drive recording read-only trace, secure
-Agent Review Hub/review sessions, helper backend/action audit, Agent Mode
-prompt pack/result drop-off, navigation IA cleanup, and integration/deploy/live
-closeout. Posted kickoff baseline to GitHub issue #24 as comment `4800529673`.
-
-Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
-production student-data mutation, Drive move/write, paid retranscription,
-worker retry, deploy, send, charge, DNS change, credential/account change,
-Buffer publish, public publishing, or secret exposure was performed.
-
-## 2026-06-25T18:05:00+03:00 - Issue #24 Newest Drive Recording Trace Completed
-
-Completed `REQ-20260625-025` as a read-only trace deliverable. Added a
-sanitized newest-recording trace builder and script, then ran production
-read-only Drive/DB evidence to
-`ops/class-drive-intake/2026-06-25-issue-24-newest-recording/`.
-
-The trace selected newest Drive recording `drive_file:9f6f75a5d602` and matched
-`content_job:83`. Verdict is `PARTIAL`, not processed: source, queue,
-transcript, parser, class-session, canonical/read-model stages are confirmed;
-student-name/progress/question/profile/accountability proposal stages remain
-unknown because no parsed student names/progress/questions were found.
-
-Verification passed: syntax checks for the new lib/script, focused trace tests
-4/4, production read-only trace run, and sanitized evidence check showing no
-transcript body or `transcript_text` field. Guardrails retained: Issue #18
-remains `NOT SAFE TO APPLY`; no class backfill, production student-data
-mutation, Drive write, paid retranscription, worker retry, deploy, send,
-charge, DNS change, credential/account change, public publishing, or secret
+## 2026-06-23T23:32:58+03:00 - Addendum REQ-20260623-022 Ticketing Contract Deployed
+
+Implemented the universal assistant natural-language ticketing and
+problem-resolution contract on draft PR #13, branch
+`codex/one-time-batch4-control-plane-20260623`, commit `75c91c72`.
+
+Added `src/platform/assistant/problem-resolution.js` with problem
+classification, source envelope capture, route/object/device/file context,
+privacy flags, dedupe keys, safe-help suggestions, Agent Work package planning,
+and evidence/user-confirmation closure gating. Existing ticket actions now
+include the shared `problem_resolution` payload through
+`src/lib/actions/actions/operations.js`, with registry metadata refreshed in
+`src/lib/actions/registry.js` and `ops/action-registry/actions.json`.
+
+Verification passed in main and clean PR worktrees: problem/planner/action
+registry suite 45/45, focused assistant/action suite 103/103, parity
+generators, and `npm run watchdog:actions` with 0 findings. Railway deployment
+`7cc4fbe0-2d98-4496-b44f-f38e3a4c87e0` reached `SUCCESS`, and standard live
+smoke passed:
+`ops/live-smokes/2026-06-23T20-31-58-654Z-live-app-smoke.md`.
+
+No duplicate ticketing system, personal Pending card, Codex task execution,
+external send, connector call, official data mutation, publish, charge, DNS
+mutation, OAuth action, browser-click substitution, hard delete, or secret
 exposure was performed.
 
-## 2026-06-25T18:35:00+03:00 - Issue #24 Local Hub, Helper, Prompt, and Navigation Lanes Implemented
+## 2026-06-23T23:45:25+03:00 - Addendum REQ-20260623-023 Reminders Contract Deployed
 
-Moved `REQ-20260625-026` through `REQ-20260625-029` to
-`needs_verification` with local implementation evidence. Added the secure Agent
-Review Hub/session APIs and pages with one-time exchange URLs, HttpOnly session
-cookies, review banner, Exit, prompt links, typed result submission, and
-readback. Added 11 mobile-copyable Agent Mode prompt files. Expanded helper
-destination metadata and added the Issue #24 helper audit/evaluation pack.
-Cleaned Operations task IA labels and added the navigation IA duplicate
-watchdog.
+Implemented the universal assistant reminder/notification contract on draft PR
+#13, branch `codex/one-time-batch4-control-plane-20260623`, commit
+`1acdb699`.
 
-Verification passed locally: Agent Review Hub tests 6/6, helper destination
-tests 6/6, helper audit tests 4/4, Issue #24 helper audit 280/280 static
-resolver evaluations, navigation/Operations/One Time tests 42/42, navigation
-watchdog with zero findings, syntax checks for changed server/helper/audit/nav
-scripts, and `npm run bna:run:status`. These lanes are not Done yet because
-app/server-visible acceptance still requires browser checks, full watchdogs,
-push/merge/deploy, and live smokes. Guardrails retained: Issue #18 remains
-`NOT SAFE TO APPLY`; no class backfill, production student-data mutation, Drive
-write, paid retranscription, worker retry, deploy, send, charge, DNS change,
-credential/account change, public publishing, or secret exposure was performed.
+Added `src/platform/assistant/reminder-notifications.js` with shared reminder
+plans, notification payloads, delivery-outbox rows, actor/audience/workspace
+scope, timezone, recurrence, time/event/threshold/class/payment triggers,
+consent blockers, quiet hours, dedupe keys, retry metadata, and pause/cancel
+state-transition previews. Wired `schedule_assistant_reminder` through
+`src/lib/actions/registry.js`, `src/lib/actions/actions/operations.js`, and
+`src/platform/assistant/action-planner.js`.
 
-## 2026-06-25T19:10:00+03:00 - Issue #24 Local Browser Smoke and Watchdog Checkpoint Passed
+Verification passed in main and clean PR worktrees: reminder/planner/action
+registry suite 45/45, focused assistant/action suite 109/109, parity
+generators with 22 visible controls and 138 registry rows, and
+`npm run watchdog:actions` with 0 findings. Railway deployment
+`a811771e-60e1-43f9-902c-70b0865d78ed` reached `SUCCESS`, and standard live
+smoke passed:
+`ops/live-smokes/2026-06-23T20-44-13-808Z-live-app-smoke.md`.
 
-Ran the local Agent Review Hub browser/API smoke and fixed two smoke-discovered
-hub/session defects: JSON `Content-Type` headers were being overwritten in page
-API helpers, and review-session exchange now happens server-side with an
-HttpOnly cookie plus clean redirect.
+No reminder was delivered, no external send or connector call occurred, and no
+live schedule activation, official data mutation, publish, charge, DNS
+mutation, OAuth action, browser-click substitution, hard delete, or secret
+exposure was performed.
 
-Local verification passed for owner login, owner-only hub protection, 9 review
-contexts, 11 mobile-copyable prompt links, newest-recording status `PARTIAL /
-content_job:83`, clean short-lived scoped session URL, banner, Exit, no
-all-access URL, and typed result readback `AGR-b9a823fc37acd01b`.
+## 2026-06-23T23:53:13+03:00 - Addendum REQ-20260623-024 Scope Policy Deployed
 
-Focused tests passed 62/62. Watchdogs passed for actions, helper destinations,
-security routes, content routing, communications alerts, navigation IA, secrets,
-and source coverage. Raw-intake drift watchdog returned `ok true` with two
-medium pre-existing June 17/18 fallback-pointer findings, recorded as separate
-historical cleanup and not Issue #24 intake loss.
+Hardened the shared assistant role/workspace policy on draft PR #13, branch
+`codex/one-time-batch4-control-plane-20260623`, commit `dd905201`.
 
-App/server-visible lanes remain open until full test, push/merge/deploy, and
-live-smoke evidence exists. Guardrails retained: Issue #18 remains `NOT SAFE TO
-APPLY`; no class backfill, production student-data mutation, Drive write, paid
-retranscription, worker retry, deploy, send, charge, DNS change,
-credential/account change, public publishing, or secret exposure was performed.
+`src/platform/assistant/control-plane.js` now derives interaction risk from
+target/source context and rejects guessed identifiers, private group-chat
+actions, private group-chat content, and unreviewed private forwarded content
+before typed action execution. Regression coverage in
+`tests/universal-control-plane-scope-policy.test.js` now covers family/BNA
+isolation, One Time/provider isolation, cross-provider rejection, parent
+linked-child scope, student own-record scope, guessed IDs, group chats, and
+private forwarded content.
 
-## 2026-06-25T19:30:00+03:00 - Issue #24 Full Local Validation Passed
+Verification passed in main and clean PR worktrees: scope-policy suite 10/10,
+focused assistant/action suite 119/119, and `npm run watchdog:actions` with 0
+findings. Railway deployment `6620b95b-0771-4e38-9fb9-1e6c4921e2bd` reached
+`SUCCESS`, and standard live smoke passed:
+`ops/live-smokes/2026-06-23T20-53-13-014Z-live-app-smoke.md`.
 
-Full local validation passed for Issue #24: `npm test` 1345/1345,
-`npm run bna:run:validate`, stale-evidence detection, source coverage, action
-registry coverage/parity, and visual watchdog against the local server all
-passed.
+No data exposure, permission bypass, external send, connector call, official
+data mutation, publish, charge, DNS mutation, OAuth action, browser-click
+substitution, hard delete, or secret exposure was performed.
 
-Fixed full-suite regressions discovered during validation: Agent Review pages
-now load the shared in-app select enhancer, stale tests and the task-decision
-census canonical label now use `Codex Queue`, and action coverage/parity
-artifacts were regenerated after adding Agent Review action rows.
+## 2026-06-24T00:09:26+03:00 - Addendum REQ-20260623-025 Control Center Deployed
 
-Visual evidence was added for the Agent Review Hub: the broad visual watchdog
-returned zero findings and a 390px hub screenshot shows all 9 context cards,
-the result form, and 11 prompt links without visible horizontal overflow. A
-separate scripted 390px session screenshot attempt timed out after the hub
-capture, so post-deploy live session/mobile smoke remains open.
+Added the Operations Assistant Control Center readback on draft PR #13. An
+accidental broad-copy commit `44dfd772` was immediately reverted by
+`0adef747`; the corrected scoped implementation is commit `296a276a`.
 
-Posted the local-validation checkpoint to Issue #24 as comment `4801879834`.
+`src/platform/assistant/control-center.js` builds a Super Admin-only read-only
+snapshot over shared assistant conversations, action plans/runs, previews,
+approvals, drafts/versions, reminders, notifications, onboarding, delivery
+outbox, dead letters, registry coverage, blockers, and management prompts.
+`server.js` exposes `/api/bna/assistant/control-center`, and
+`public/operations.html` displays the snapshot inside the existing Universal
+Assistant panel.
 
-App/server-visible lanes remain open until push/merge/deploy and live-smoke
-evidence exists. Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no
-class backfill, production student-data mutation, Drive write, paid
-retranscription, worker retry, deploy, send, charge, DNS change,
-credential/account change, public publishing, or secret exposure was performed.
+Verification passed in main and clean PR worktrees: control-center/data-model/
+scope suite 18/18, focused assistant/action suite 122/122, and
+`npm run watchdog:actions` with 0 findings. Railway deployment
+`02944240-4c1b-477b-a57f-5f6140e80400` reached `SUCCESS`, standard live smoke
+passed at `ops/live-smokes/2026-06-23T21-07-46-763Z-live-app-smoke.md`, and a
+focused live endpoint readback returned status 200 with no-write guards.
 
-## 2026-06-25T20:15:00+03:00 - Issue #24 Live Verified And Owner Agent Audit Ready
+No action execution, queue mutation, raw body/payload exposure, external send,
+connector call, official data mutation, publish, charge, DNS mutation, OAuth
+action, browser-click substitution, hard delete, or secret exposure was
+performed.
 
-Completed GitHub Issue #24 through terminal Done statuses for `REQ-20260625-024` through `REQ-20260625-030`. PRs #25-#30 merged to master, final app-visible deployed commit `9b000c1baa7c12e0e5d8d585ee88b1ef55fc7942` reached SUCCESS on Railway deployment `24c1d191-3f50-4d0a-9da8-687ba2f1a434`, and live smokes passed for the Agent Review Hub, Operations helper, standard app, public privacy routes, and class upload trace.
+## 2026-06-23T22:43:00+03:00 - Issue #7 REQ-018 Parent Assistant Self-Service Deployed
 
-Live proof: Agent Review Hub at https://bneineviimacademy.org/operations/agent-review, live typed review-result readback `AGR-96dfac2f8c31163c`, final Review Hub smoke `ops/live-smokes/2026-06-25T17-02-11-828Z-issue24-agent-review-hub-live-smoke.md`, helper smoke `ops/live-smokes/2026-06-25T17-02-43-383Z-operations-helper-live-smoke.md`, app smoke `ops/live-smokes/2026-06-25T17-02-44-841Z-live-app-smoke.md`, privacy smoke `ops/live-smokes/2026-06-25T17-03-52-476Z-public-route-privacy-smoke.md`, and class trace smoke `ops/live-smokes/2026-06-25T17-03-41-428Z-class-upload-trace-live-smoke.md`.
+Closed `RAW-20260623-005` / `REQ-20260623-018` on the existing issue #7
+control-plane run and draft PR #13.
 
-Guardrails retained: newest recording verdict is `PARTIAL / content_job:83`, not fully processed; Issue #18 remains `NOT SAFE TO APPLY`; no class backfill, Drive write, paid retranscription, worker retry, external send, charge, DNS change, credential/account change, Buffer publish, public publishing, or secret exposure was performed.
-
-Final Issue #24 evidence comment: https://github.com/shloimie-beep/bnei-neviim-academy/issues/24#issuecomment-4802269945
-
-## 2026-06-26T11:15:00+03:00 - Issue #24 Agent Review Drop-Off Repair Live Verified
-
-Completed the linked June 26 Issue #24 repair run
-`2026-06-26-agent-review-dropoff-repair` through terminal Done statuses for
-`REQ-20260626-001` through `REQ-20260626-008`. PR #32 repaired the Agent
-Review dashboard/drop-off/login/helper behavior, and PR #33 extended the
-hybrid Agent Mode prompt/drop-off workflow to visible owner Tasks and
-Decisions.
-
-Live proof: deployed master SHA `d072466511af64cf4f413be7c42f79c18a00848e`
-to Railway build `d734fc78-2c71-411b-80f4-61c88fe0ba55`; Railway doctor
-reported `SUCCESS`; live health returned ok/database connected; standard live
-app smoke passed; Task/Decision Agent Mode smoke passed with owner task `#1734`
-PASS result `AGR-e571d939e011d301`, Decision `#1735` BLOCKED result
-`AGR-19cfa47542407167`, and repair task `#1736`.
-
-Tracked evidence:
-`ops/execution-runs/2026-06-26-agent-review-dropoff-repair/CLOSEOUT.md`,
-`ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-app-smoke-pr33.md`,
-and
-`ops/execution-runs/2026-06-26-agent-review-dropoff-repair/evidence/live-agent-mode-task-dropoff-smoke.md`.
-Guardrails retained: newest recording trace is `PARTIAL`, Issue #18 remains
-`NOT SAFE TO APPLY`, and no class backfill, Drive write, paid retranscription,
-worker retry, student-data mutation, external send/publish/charge, DNS change,
-credential/account change, or secret exposure was performed.
-
-## 2026-06-26T12:05:00+03:00 - Agent Review Drop-Off And Public Helper Guardrails Live Verified
-
-Completed `RAW-20260626-003` / `REQ-20260626-109` through
-`REQ-20260626-115`.
-
-Changed:
-
-- Hardened Agent Mode prompt generation so success requires self-save and a
-  final answer beginning `SAVED AGR-...`; the only manual payload recovery path
-  is `DROP-OFF FAILED`.
-- Updated the drop-off page to label manual JSON paste as
-  `Emergency paste JSON and save`.
-- Added public/non-admin Tier-3 unsafe-action refusal handling to both public
-  assistant paths, with no normal task, Codex queue item, deployment request,
-  support ticket, or external write.
-- Added strict prompt/public-helper tests and a live public unsafe-action smoke
-  script.
-- Neutralized live task `#1738` as archived history; audit comment `#12439`
-  records that no Codex/deploy work was authorized, and agent job `#346` is
-  completed.
+What changed:
+- Added `src/platform/assistant/parent-self-service.js`, a shared parent
+  assistant contract for linked-child-scoped context, chart layout previews,
+  layout version patches, allowed update review plans, official correction
+  review plans, scoped tickets, and scoped reminders.
+- Added `tests/assistant-parent-self-service-contract.test.js`.
+- Reused the shared control-plane policy and draft/versioning contracts instead
+  of creating a separate parent assistant, chart builder, action registry, or
+  intake path.
+- Protected official attendance/scores, billing state, private admin/provider
+  notes, and other-child records from parent natural-language changes.
 
 Verification:
-
-- `npm test` passed 1363/1363.
-- `npm run watchdog:actions`, `npm run watchdog:links`, and
-  `npm run watchdog:security` each passed with 0 findings.
-- `npm run secrets:audit` passed across 4892 tracked paths.
-- PR #36 merged to master `469486b9928ceb16cbea97bd7b6815a15504a2a3`.
-- Railway deployment `b7b1b5b6-ede8-42a9-9a3a-c1b22684cdee` reached
+- PASS parent self-service suite 6/6.
+- PASS focused assistant/control-plane suite 47/47 in both main and clean PR
+  worktrees.
+- Pushed PR #13 commit `c77501e1`.
+- Railway deployment `c8abec9b-5f50-481d-8d5c-7c39714ffa3a` reached
   `SUCCESS`.
-- Live app smoke passed.
-- Live Agent Mode Task/Decision drop-off smoke passed.
-- Live public helper unsafe-action smoke passed 18/18 endpoint/probe checks.
-- Live Agent Review Hub and deployed `operations-super-admin` prompt readback
-  passed.
-- Exact owner pilot saved/read back `AGR-3785159b6650d1fa` with idempotency
-  `operations-super-admin:first-agent-pilot`; repeat save returned the same AGR.
+- PASS standard live smoke
+  `ops/live-smokes/2026-06-23T19-37-26-570Z-live-app-smoke.md`.
 
-Guardrails retained: Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
-Drive write, external send/publish/charge, DNS change, credential/account
-change, or secret exposure was performed.
+No external send, official record mutation, billing action, DNS mutation,
+connector write, browser-click substitution, hard delete, or secret exposure
+was performed.
 
-## 2026-06-26T12:45:00+03:00 - Issue #24 Owner Helper Guardrail Follow-Up Live Verified
+## 2026-06-23T22:55:00+03:00 - Issue #7 REQ-019 Chart Dashboard Contract Deployed
 
-Completed `RAW-20260626-004` / `REQ-20260626-116` through
-`REQ-20260626-120` as the canonical owner follow-up to Issue #24.
+Closed `RAW-20260623-005` / `REQ-20260623-019` on the existing issue #7
+control-plane run and draft PR #13.
 
-Changed:
-
-- Broadened the public/non-admin unsafe-action refusal matcher to cover
-  admin-access, integration, billing, and production-write requests in addition
-  to deploy, DNS, backfill, credentials, sends, publishes, and private data.
-- Removed generic executable Task creation from non-superadmin Rabbi/staff/admin
-  helper permissions while preserving scoped provider record actions and
-  super-admin typed/audited Task paths.
-- Added a required-pilots live smoke that saves/readbacks the three owner-named
-  Agent Review results before broad parallel audits can resume.
+What changed:
+- Added `src/platform/assistant/chart-dashboard-config.js`, the canonical
+  natural-language chart/dashboard configuration contract.
+- Refactored `src/platform/assistant/parent-self-service.js` so parent chart
+  layouts emit the shared chart/dashboard config payload.
+- Updated shared control-plane permissions so service-provider roles can use
+  the provider class overview dashboard template through the same
+  `dashboard_layout` category.
+- Added `tests/assistant-chart-dashboard-config-contract.test.js`.
 
 Verification:
-
-- `npm test` passed 1365/1365.
-- `npm run watchdog:actions` and `npm run watchdog:security` each passed with
-  0 findings.
-- `npm run secrets:audit` passed across 4906 tracked paths.
-- PR #38 merged to master `ad3b5c3160cbd344bab807768205a2d116314d93`.
-- Railway deployment `07dd8ba5-293f-4380-a081-1102af1a8d9e` reached
+- PASS chart/parent/control-plane suite 20/20.
+- PASS focused assistant suite 59/59 in both main and clean PR worktrees.
+- Pushed PR #13 commit `f68e9d3d`.
+- Railway deployment `5196fc2f-1e56-4a6f-a1ff-e44649831540` reached
   `SUCCESS`.
-- Live app smoke passed:
-  `ops/live-smokes/2026-06-26T09-29-51-686Z-live-app-smoke.md`.
-- Expanded public helper unsafe-action smoke passed 32/32 endpoint/probe
-  refusals:
-  `ops/live-smokes/2026-06-26T09-28-41-497Z-public-helper-unsafe-action-live.md`.
-- Required pilot smoke saved/read back:
-  `AGR-a41cb14c36a6e714` (`operations-super-admin`),
-  `AGR-2d5ccbd80a818f1c` (`public-login-setup`), and
-  `AGR-5d6456b6c9516ab2` (`cross-role-wrong-permission`).
+- PASS standard live smoke
+  `ops/live-smokes/2026-06-23T19-51-57-448Z-live-app-smoke.md`.
 
-Guardrails retained: task `#1738` remains archived/history with no active agent
-jobs returned; Issue #18 remains `NOT SAFE TO APPLY`; no class backfill,
-unauthorized production data mutation, Drive/Vimeo write, external
-send/publish/charge/refund, DNS change, credential/account secret change, or
-secret exposure was performed.
+No duplicate chart builder, external send, official attendance/score write,
+publish, charge, DNS mutation, connector write, browser-click substitution,
+hard delete, or secret exposure was performed.
 
-## 2026-06-26T13:05:00+03:00 - Rabbi Scheller / One Time UI Truth Pass
+## 2026-06-23T23:06:00+03:00 - Issue #7 REQ-020 Campaign Control Contracts Deployed
 
-Verified the older Rabbi Scheller workspace/auth/navigation sequence and
-classified the remaining local worktrees.
+Closed `RAW-20260623-005` / `REQ-20260623-020` on the existing issue #7
+control-plane run and draft PR #13.
 
-Findings:
-
-- PR #15 is merged; commits `8f8b0b4` and `1ab57eac` are reachable from current
-  `origin/master`.
-- The `service-provider-studio-integration` preservation commit `487a660b` is
-  reachable from current `origin/master`.
-- Issue #20 is closed; PR #22 and PR #23 are merged, and the issue closeout
-  records Railway deployment `4667ac5e-7695-4802-9b3d-5b6e12d07a64` for
-  deployed commit `b8fb9e6dceb1b4c995108e3510cb3c2f9867a17b`.
-- The only remaining Rabbi/One Time UI material found was newer local-only
-  2026-06-26 contract work, separate from the old PR #15 / Issue #20 sequence.
-
-Changed:
-
-- Preserved the missing One Time / Rabbi UI contract modules and scoped
-  Operations CSS on a clean current-master branch.
-- Added
-  `ops/worktree-reconciliation/2026-06-26-rabbi-ui-truth-pass.md` with the
-  old-sequence verdict and local-only worktree classification.
+What changed:
+- Added `src/platform/assistant/campaign-control.js` for segment previews,
+  campaign drafts, drip sequence drafts, versioned message previews, and send
+  safety gates.
+- Added typed registry actions `preview_campaign_segment`,
+  `draft_email_campaign`, and `draft_drip_sequence`.
+- Wired those actions through the shared action runner and natural-language
+  planner.
+- Updated parity artifacts and kept the action watchdog green.
+- Added `tests/assistant-campaign-control-contract.test.js`.
 
 Verification:
+- PASS campaign/planner/action-registry suite 52/52.
+- PASS focused assistant/action suite 97/97 in both main and clean PR
+  worktrees.
+- PASS `npm run watchdog:actions` with 0 findings.
+- Pushed PR #13 commit `8a7c1c66`.
+- Railway deployment `b796a1b9-8de7-43ea-90fb-0f9a87a9304b` reached
+  `SUCCESS`.
+- PASS standard live smoke
+  `ops/live-smokes/2026-06-23T20-05-05-992Z-live-app-smoke.md`.
 
-- Focused contract preservation tests passed 29/29:
-  `node --test tests/one-time-action-state-contract.test.js tests/one-time-content-command-center.test.js tests/one-time-operations-brand-css.test.js tests/one-time-rabbi-dashboard-ia.test.js tests/one-time-task-view-model.test.js`.
-- One Time action coverage regenerated successfully for 40 controls.
-- Shared review/action-registry tests passed 10/10.
-- Full `npm test` passed 1392/1392 after installing this clean worktree's
-  dependencies from `package-lock.json`.
-- `npm run watchdog:actions` passed with 0 findings.
-- `npm run secrets:audit` passed with 4906 tracked paths checked and 0
-  findings.
+No external send, campaign execution, live schedule enablement, contact-list
+write, suppression write, connector call, DNS mutation, billing action,
+browser-click substitution, hard delete, or secret exposure was performed.
 
-## 2026-06-26T13:45:00+03:00 - One Time Rabbi UI Prompt F Integration
+## 2026-06-23T21:54:00+03:00 - Universal Assistant Planner Deployed
 
-Identified the operator-supplied Prompt F / final-integration packet as the
-newer local-only Rabbi/One Time UI sequence, separate from the older merged PR
-#15 / Issue #20 sequence.
+Closed `REQ-20260623-014` for the Telegram plus website-assistant addendum on
+the existing issue #7 execution run and draft PR #13. Added the shared
+registry-constrained planner/runner contract in
+`src/platform/assistant/action-planner.js` plus
+`tests/assistant-action-planner-contract.test.js`.
 
-Changed:
+The planner schema is generated from the existing action registry and
+permission engine for the current actor/workspace, rejects unknown or denied
+requested action IDs, returns missing required inputs as focused questions, and
+executes only through the canonical `runAction` runner. Parent technical
+complaints stay support-ticket scoped; super-admin technical implementation
+requests can become approval-gated Codex Agent Work.
 
-- Integrated the parallel One Time/Rabbi contract modules, scoped Operations
-  CSS, local QA harness, and handoff docs on a clean current-master branch.
-- Added One Time route/scope markers and button-state metadata across
-  Operations, public One Time, provider, parent, student, classroom, and email
-  review routes.
-- Adapted the final local route smoke to the current
-  `/api/one-time-review/*` endpoints instead of stale local QA endpoint
-  assumptions.
-- Regenerated One Time action coverage and universal action parity artifacts.
+Verification passed in both main and clean PR worktrees: planner contract suite
+6/6 and focused planner/scope/action-registry suite 47/47. Commit `12a586f0`
+was pushed to PR #13. Railway deployment
+`d61bbb67-c6bd-409a-89a1-c0e9c63e11e6` reached SUCCESS, and the standard live
+smoke passed:
+`ops/live-smokes/2026-06-23T18-53-31-401Z-live-app-smoke.md`.
 
-Verification:
+No duplicate Telegram architecture, website-bot action system, action
+registry, intake pipeline, agent queue, provider onboarding system,
+browser-click substitution, external send, publish, charge, DNS mutation,
+OAuth action, connector call, hard delete, or secret exposure was introduced.
 
-- Contract tests passed 29/29.
-- Final route/shared/registry focused tests passed 12/12.
-- `npm run watchdog:actions`, `npm run watchdog:security`,
-  `npm run watchdog:links`, `npm run watchdog:navigation-ia`, and
-  `npm run watchdog:content` passed.
-- `npm run secrets:audit` passed with 4917 tracked paths checked and 0
-  findings.
-- `npm test` passed 1393/1393.
+## 2026-06-23T22:08:00+03:00 - Universal Assistant Draft Versioning Deployed
 
-Remaining:
+Closed `REQ-20260623-015` for the Telegram plus website-assistant addendum on
+the existing issue #7 execution run and draft PR #13. Added
+`src/platform/assistant/draft-versioning.js` and
+`tests/assistant-draft-versioning-contract.test.js`.
 
-- App-visible work is PR-ready, but not production-complete until PR merge,
-  deployment, and live smoke verification.
+The contract reuses the shared assistant schema for drafts, draft versions,
+templates, and previews. It covers emails, SMS/WhatsApp/Telegram copy,
+announcements, landing-page copy, website sections, chart layouts, worksheets,
+course outlines, onboarding scripts, automations, and support macros. Versions
+carry object identity, parent version, actor/editor, channel, audience,
+prompt/instruction, content/config, change summary, approval state, active
+state, scheduled/use state, rollback relationship, and created time.
 
-## 2026-06-26T13:02:00+03:00 - One Time Rabbi UI Prompt F Live Closeout
+Verification passed in both main and clean PR worktrees: draft/versioning suite
+8/8 and focused assistant/action suite 60/60. Commit `bc4c6348` was pushed to
+PR #13. Railway deployment
+`be818786-b5ab-416a-bbb3-0818c79cfc76` reached SUCCESS, and the standard live
+smoke passed on rerun:
+`ops/live-smokes/2026-06-23T19-05-47-613Z-live-app-smoke.md`.
 
-Completed the Prompt F / final-integration sequence through PR, merge, Railway
-deployment, and live smoke verification.
+No duplicate versioning system, external send, publish, charge, DNS mutation,
+OAuth action, connector call, browser-click substitution, hard delete, or
+secret exposure was introduced.
 
-Changed:
+## 2026-06-23T22:17:00+03:00 - Universal Assistant File/Media Intake Deployed
 
-- Marked PR #40 ready and merged it to `master`.
-- Verified Railway deployment
-  `8394199e-7b61-40b7-8bc5-08b6b0087493` reached `SUCCESS` for merge commit
-  `460b1b44970c85e3e58f4eb15330bf2ce99cf091`.
-- Narrowed the Rabbi workspace live smoke so explicit boundary denial copy
-  such as "No cross-account super-admin access" does not falsely fail while
-  actual super-admin module labels remain forbidden.
+Closed `REQ-20260623-016` for the Telegram plus website-assistant addendum on
+the existing issue #7 execution run and draft PR #13. Added
+`src/platform/assistant/file-media-intake.js` and
+`tests/assistant-file-media-intake-contract.test.js`.
 
-Verification:
+The contract reuses the existing canonical source-envelope foundation in
+`src/platform/ingestion/intake-source.js`. Telegram forwards/uploads and
+website assistant uploads now share source envelope, content fingerprint,
+idempotency, type/size/virus-scan checks, privacy classification,
+transcript/OCR metadata, workspace/object resolution, preview metadata,
+planned outcomes, retry/resume evidence, and adapter-only routing. Ambiguous
+student/person matches require human review before auto-parse.
 
-- `npm run railway:doctor` passed for production service
-  `skillful-motivation`.
-- `npm run app:smoke` passed:
-  `ops/live-smokes/2026-06-26T09-58-11-313Z-live-app-smoke.md`.
-- `npm run app:smoke:rabbi-onetime-landing` passed:
-  `ops/live-smokes/2026-06-26T09-58-30-275Z-rabbi-onetime-landing-smoke.md`.
-- `npm run app:smoke:one-time-shared-review` passed:
-  `ops/live-smokes/2026-06-26T09-59-09-482Z-one-time-shared-review-live-smoke.md`.
-- `node scripts/smoke-rabbi-scheller-workspace-live.mjs` passed:
-  `ops/live-smokes/2026-06-26T10-01-04-149Z-rabbi-scheller-workspace-live-smoke.md`.
+Verification passed: file/media intake suite 8/8, main focused
+intake/media/assistant suite 42/42, and clean PR focused suite 41/41. Commit
+`be1383a2` was pushed to PR #13. Railway deployment
+`6a3c0cfe-44bb-4154-8f1c-00bcf6f9a169` reached SUCCESS, and standard live
+smoke passed:
+`ops/live-smokes/2026-06-23T19-14-56-082Z-live-app-smoke.md`.
 
-Remaining: none for the Rabbi Scheller / One Time UI sequence.
+No duplicate intake pipeline, external send, publish, charge, DNS mutation,
+OAuth action, connector call, browser-click substitution, hard delete, or
+secret exposure was introduced.
 
-## 2026-06-26T13:42:00+03:00 - Service Provider Scopes and First-Party CRM Package Merge
+## 2026-06-23T22:27:00+03:00 - Provider Studio Onboarding Contract Deployed
 
-Merged the Downloads service-provider role/scope implementation package into a
-clean current-master worktree.
+Closed `REQ-20260623-017` for the Telegram plus website-assistant addendum on
+the existing issue #7 execution run and draft PR #13. Added
+`src/platform/assistant/provider-onboarding-studio.js` and
+`tests/assistant-provider-onboarding-studio-contract.test.js`, plus a small
+file/media intake classifier update so provider hero/photos/gallery uploads
+route to Studio asset review.
 
-Changed:
+The contract makes Service Provider Studio the canonical creation/editing
+system for provider onboarding. Providers can start in Telegram and continue
+the same session in the website assistant; the Studio package produces
+profile/listing, website, brand asset, course/community, communications,
+preview, and launch-gate draft structures using the shared draft/versioning
+and file/media contracts. Legacy provider form capture is adapter-only, not a
+separate forum or page builder.
 
-- Added service-provider entitlement, first-party CRM contact, and assistant
-  scope-policy modules with package tests.
-- Added the service-provider scopes/CRM migration in PostgreSQL-safe form and
-  wired it into startup migrations.
-- Added scoped Operations APIs for account-scope summary, first-party CRM
-  contacts/timelines, and assistant scope planning.
-- Added provider portal APIs/UI for free-vs-Plus sections, inquiry inbox,
-  draft-only inquiry responses, calendar readback, portal upgrade states, and
-  assistant scope planning.
-- Updated Operations/provider UI surfaces, action registry, route registry,
-  generated action coverage, durable memory, and product documentation.
+Verification passed in both main and clean PR worktrees: provider onboarding
+suite 6/6 and focused provider/onboarding/provider-directory suite 59/59.
+Commit `a1186d5c` was pushed to PR #13. Railway deployment
+`24301b82-8b71-45e4-b0a9-aa3d2f236cad` reached SUCCESS, and standard live
+smoke passed:
+`ops/live-smokes/2026-06-23T19-25-10-625Z-live-app-smoke.md`.
 
-Verification:
+No duplicate provider onboarding system, page builder, intake pipeline,
+external send, publish, charge, DNS mutation, OAuth action, connector call,
+browser-click substitution, hard delete, or secret exposure was introduced.
 
-- `npm test` passed 1414/1414.
-- Package-focused and route-focused tests passed:
-  `tests/account-scope-entitlements.test.js`,
-  `tests/crm-contact-model.test.js`,
-  `tests/assistant-scope-policy.test.js`,
-  `tests/service-provider-scope-routes.test.js`, and
-  `tests/watchdog-action-registry.test.js`.
-- `npm run watchdog:actions` passed with 0 findings:
-  `ops/watchdog-audits/2026-06-26T10-41-watchdog-action-audit.md`.
-- `npm run watchdog:security` passed with 0 findings:
-  `ops/watchdog-audits/2026-06-26T10-41-watchdog-security-routes.md`.
-- `npm run secrets:audit` passed with 4944 tracked paths checked and 0
-  findings.
+## 2026-06-23T21:27:00+03:00 - Shared Assistant Data Model Deployed
 
-PR:
+Closed `RAW-20260623-005` / `REQ-20260623-012` for the issue #7 Telegram plus
+website-assistant control-plane addendum. The shared assistant model now has
+one canonical `assistant_*` schema for channels, identities, conversations,
+messages, context objects, action plans/runs, previews, approvals,
+drafts/versions, templates, saved views, reminders, notifications, onboarding
+sessions, delivery outbox, and dead letters.
 
-- Draft PR #43: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/43`.
+Changes landed on PR #13 commits `ee2fe192` and `7d351b6f`, with private
+read-only production readiness at
+`/api/bna/assistant/control-plane/readiness` and route-registry coverage. Railway
+deployment `04756fab-bd9c-4f6b-869a-39668f64c419` reached `SUCCESS`.
 
-Remaining:
+Verification passed: clean assistant/control-plane focused suite 49/49, main
+focused suite 13/13, standard live app smoke
+`ops/live-smokes/2026-06-23T18-25-13-013Z-live-app-smoke.md`, and assistant
+readiness live smoke
+`ops/live-smokes/2026-06-23T18-26-39-444Z-assistant-control-plane-readiness-live-smoke.md`
+with 18/18 tables and 17/17 indexes present.
 
-- App-visible work is draft-PR-ready, but not production-complete until PR
-  merge, deployment, and live Operations/provider smoke verification.
+Guardrail: the readiness smoke was authenticated and read-only; it returned no
+assistant rows, secret values, external-send/publish/charge/DNS/OAuth/connector
+action, or row payloads.
+
+## 2026-06-23T21:42:00+03:00 - Universal Action Parity Gate Deployed
+
+Closed `RAW-20260623-005` / `REQ-20260623-013` for the issue #7 Telegram plus
+website-assistant control-plane addendum. The new
+`scripts/generate-universal-action-parity.mjs` report uses the existing root
+action registry, detailed typed action registry, and visible UI hooks as the
+single parity source for UI buttons, Telegram requests, website assistant
+requests, Operations helper requests, automation actions, and Agent Work
+handoffs.
+
+PR #13 commit `19a85636` adds
+`ops/action-registry/universal-action-parity.json` and `.md`, refreshes the One
+Time action coverage artifacts, and adds the watchdog regression gate. Clean
+branch report counts: 133 registry rows, 22 visible controls, 22/22 classified,
+0 missing contracts, 0 missing handlers, 0 missing tests, and 0 risky actions
+without approval.
+
+Verification passed: clean `tests/watchdog-action-registry.test.js` 5/5,
+clean `tests/action-registry-telegram-ui-bot.test.js` 33/33,
+`npm run watchdog:actions` with 0 findings, Railway deployment
+`e4b035db-e309-4402-b19c-4a26774aab8d` SUCCESS, and standard live smoke
+`ops/live-smokes/2026-06-23T18-41-53-481Z-live-app-smoke.md`.
+
+Guardrail: no duplicate action registry, browser-click substitution, external
+send, publish, charge, DNS mutation, OAuth action, connector call, hard delete,
+or secret exposure was performed.
+
+## 2026-06-23T20:50:00+03:00 - Active Run Batch 17 Study Assistant Readiness Deployed
+
+Closed active run Batch 17 / `REQ-20260619-312`. No new code change was needed
+because the clean PR #13 deployment already contained the Sefaria and scoped
+study-assistant readiness foundation.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+study-assistant/privacy/portal/community suite passed 47/47. Live smoke passed:
+
+- One Time Study Assistant:
+  `ops/live-smokes/2026-06-23T17-48-36-925Z-one-time-study-assistant-live-smoke.md`
+
+The smoke was read-only and confirmed 10 source-version metadata records, 0
+assistant-ready sources, disabled feature flag, protected readiness API, and
+Operations panel guardrails. No Sefaria/API ingestion, source corpus mutation,
+portal publishing, answer generation, chat session creation, arbitrary version
+ingestion, arbitrary translation merge, raw transcript retrieval, raw source
+body return, cross-student retrieval, external send, charge,
+Zoom/Vimeo/Google/DNS mutation, external CRM/GHL write, or secret exposure was
+performed.
+
+The next active run requirement selected by `npm run bna:run:next` should be
+`REQ-20260619-314` final verification and release. `REQ-20260619-313` remains
+needs-operator-decision for separate One Time paid infrastructure, ownership,
+and DNS.
+
+## 2026-06-23T20:58:00+03:00 - Active Run Batch 19 Final Verification Closed
+
+Closed active run Batch 19 / `REQ-20260619-314`. The clean worktree
+`codex/one-time-batch4-control-plane-20260623` is at
+`2291d03a47ab0d9ec39b78561bc8e41361d959db`, and the remote branch resolves to
+the same commit. Railway deployment
+`e9949680-4330-454c-9b1c-b61dce2d475b` remains `SUCCESS`.
+
+Verification passed:
+
+- full clean-worktree `npm test` 1071/1071;
+- `npm run secrets:audit` with 4100 tracked paths checked and 0 tracked
+  secret-risk files;
+- `npm run watchdog:actions` with severity `ok` and 0 findings;
+- Railway doctor;
+- standard live app smoke
+  `ops/live-smokes/2026-06-23T17-55-00-705Z-live-app-smoke.md`;
+- final-register surfaces smoke
+  `ops/live-smokes/2026-06-23T17-55-27-727Z-final-register-surfaces-live-smoke.md`;
+- Operations workspace taxonomy smoke
+  `ops/live-smokes/2026-06-23T17-55-27-745Z-operations-workspace-taxonomy-live-smoke.md`.
+
+No live external send, billing charge, DNS mutation, real Zoom meeting
+creation, real Vimeo upload/publication, hard delete, live badge award/reversal
+write, prize/credit issuance, access grant, public leaderboard exposure,
+unreviewed community publication, unrestricted student messaging, transcript
+publication, vector corpus mutation, Sefaria/API ingestion, answer generation,
+separate One Time infrastructure provisioning, PR merge, external CRM/GHL
+write, or secret exposure was performed.
+
+All active-run requirements are now terminal. `REQ-20260619-313` remains a
+needs-operator-decision terminal item for separate paid infrastructure,
+ownership, and DNS. Next agent work should continue `RAW-20260623-005` /
+`REQ-20260623-010` Telegram plus website-assistant control-plane addendum on
+the shared systems without duplicate registries or pipelines.
+
+## 2026-06-23T21:05:00+03:00 - Issue #7 Addendum Requirements Appended
+
+Appended `REQ-20260623-010` through `REQ-20260623-026` from the Telegram plus
+website-assistant control-plane addendum into the existing execution run
+`ops/execution-runs/2026-06-21-one-time-master-completion/` after the One Time
+master-completion batches reached terminal status.
+
+This preserves the user instruction to avoid a second execution run and to
+avoid duplicate Telegram, website-bot, action-registry, intake, agent-queue, or
+provider-onboarding systems. `REQ-20260623-010` is closed as registration done.
+The next unblocked executable batch is `REQ-20260623-011`, the shared assistant
+control-plane contract.
+
+## 2026-06-23T21:12:00+03:00 - Issue #7 Shared Assistant Contract
+
+Closed `REQ-20260623-011` locally. Added
+`docs/architecture/telegram-control-plane.md` and extended
+`src/platform/assistant/control-plane.js` with the exported shared contract:
+shared control-plane layers, adapter-only responsibilities, forbidden duplicate
+systems, Service Provider Studio as the provider creation/editing system, typed
+actions required, and browser-click substitution disallowed.
+
+Verification passed:
+
+- `node --check src/platform/assistant/control-plane.js`
+- `node --test tests/universal-control-plane-scope-policy.test.js` 8/8
+
+No deploy/live smoke was required for this architecture/local-contract batch.
+
+## 2026-06-23T20:25:00+03:00 - Active Run Batch 12 Zoom Attendance Deployed
+
+Closed active run Batch 12 / `REQ-20260619-307`. No new code change was
+needed because the clean PR #13 deployment already contained the Zoom
+attendance/session automation foundation.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+Zoom/product/portal suite passed 53/53. The production Zoom Attendance live
+smoke passed:
+
+- One Time Zoom Attendance:
+  `ops/live-smokes/2026-06-23T17-23-08-813Z-one-time-zoom-attendance-live-smoke.md`
+
+The live smoke confirmed Zoom status and preview endpoints, blocked meeting
+creation, token-cache/workflow/webhook readiness, and Operations readiness at
+1440px and 390px. No Zoom meeting, registrant, webhook attendance write,
+attendance correction, recording read, transcript read, summary read, external
+send, portal publish, participant invite, host start URL exposure, or raw Zoom
+join URL exposure was performed.
+
+The next active run requirement selected by the execution pointer is
+`REQ-20260619-308` Vimeo, member-library, recording, transcript, and
+publication pipeline.
+
+## 2026-06-23T20:30:00+03:00 - Active Run Batch 11/13 Vimeo Member Library Deployed
+
+Closed active run Batch 11/13 / `REQ-20260619-308`. No new code change was
+needed because the clean PR #13 deployment already contained the manual Vimeo,
+member-library, recording, transcript, and publication pipeline foundation.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+recording/Vimeo/member-library suite passed 30/30. The production Vimeo Member
+Library live smoke passed:
+
+- One Time Vimeo Member Library:
+  `ops/live-smokes/2026-06-23T17-28-42-169Z-one-time-vimeo-member-library-live-smoke.md`
+
+The live smoke created temporary internal One Time class/library records,
+attached an approved asset, previewed/approved/published a smoke-scoped member
+library item, rolled it back, ran the member-library smoke endpoint, archived
+the temporary class, and checked Operations/member-library UI at 1440px and
+390px. Automated Vimeo upload stayed disabled.
+
+No Vimeo upload, provider publish/unpublish/delete, email, WhatsApp, payment,
+Zoom meeting, participant invite, real member access grant, external portal
+write, DNS change, or duplicate connector/action system was created.
+
+The next active run requirement selected by the execution pointer is
+`REQ-20260619-309` transcript privacy and knowledge scoping.
+
+## 2026-06-23T20:35:00+03:00 - Active Run Batch 14 Transcript Privacy Deployed
+
+Closed active run Batch 14 / `REQ-20260619-309`. No new code change was
+needed because the clean PR #13 deployment already contained the transcript
+privacy and knowledge-scope foundation.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+transcript privacy suite passed 54/54. The production Transcript Privacy live
+smoke passed:
+
+- One Time Transcript Privacy:
+  `ops/live-smokes/2026-06-23T17-33-56-257Z-one-time-transcript-privacy-live-smoke.md`
+
+The smoke was read-only and body-free. It checked the protected readiness API
+for 14 classes and 14 segments, verified project/workspace scope, verified raw
+public RAG/cross-student/guessed-speaker gates are disabled, and confirmed the
+Operations readiness panel marker and guardrail text.
+
+No transcript content write, student record write, public-helper corpus write,
+portal data write, raw transcript body, staff-private note, cross-student
+private segment, send, charge, Zoom/Vimeo/Google/DNS mutation, external CRM/GHL
+write, or secret exposure was performed.
+
+The next active run requirement selected by the execution pointer is
+`REQ-20260619-310` server-side gamification and badge auditing.
+
+## 2026-06-23T20:40:00+03:00 - Active Run Batch 15 Gamification Deployed
+
+Closed active run Batch 15 / `REQ-20260619-310`. No new code change was
+needed because the clean PR #13 deployment already contained the gamification
+and badge audit foundation.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+gamification/badge suite passed 57/57. The production Gamification live smoke
+passed:
+
+- One Time Gamification:
+  `ops/live-smokes/2026-06-23T17-38-46-447Z-one-time-gamification-live-smoke.md`
+
+The smoke was read-only. It checked the badge readiness API, confirmed 11
+automatic badges and 6 Rabbi-awarded badges, verified no-write award/reversal
+gates and no public individual leaderboard, and confirmed the Operations badge
+panel marker and guardrails.
+
+No gamification event creation, badge award, badge reversal, notification,
+access grant, prize/credit change, public individual leaderboard,
+negative-point action, external CRM/GHL write, send, charge,
+Zoom/Vimeo/Google/DNS mutation, or secret exposure was performed.
+
+The next active run requirement selected by the execution pointer is
+`REQ-20260619-311` community and moderation workflow.
+
+## 2026-06-23T20:45:00+03:00 - Active Run Batch 16 Community Deployed
+
+Closed active run Batch 16 / `REQ-20260619-311`. No new code change was
+needed because the clean PR #13 deployment already contained the
+community/moderation foundation.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+community/moderation suite passed 53/53. The production Community live smoke
+passed:
+
+- One Time Community:
+  `ops/live-smokes/2026-06-23T17-43-01-034Z-one-time-community-live-smoke.md`
+
+The smoke was read-only. It checked the community moderation readiness API,
+confirmed raw private message text is not returned, verified no-write
+publication/private-messaging gates, checked the six-step private-to-public
+workflow, and confirmed the Operations community panel marker and guardrails.
+
+No thread creation, message creation, approval, public post, parent-visible
+message, staff note, notification, delete/purge action, unrestricted
+student-to-student messaging, unreviewed publication, public promotion write,
+external notification, send, charge, Zoom/Vimeo/Google/DNS mutation, external
+CRM/GHL write, or secret exposure was performed.
+
+The next active run requirement selected by the execution pointer is
+`REQ-20260619-312` Sefaria and scoped study assistant readiness.
+
+## 2026-06-23T20:30:00+03:00 - Rabbi Scheller Operations Navigation Local Proof
+
+Tightened the Rabbi Scheller Operations workspace navigation path. Direct
+Operations links such as
+`/operations?workspace=rabbi_sheller_provider&view=dashboard` now initialize
+`taskProjectFilter` to `one_time_mishnah_class`, so dashboard/task fetches do
+not start from an all-project filter. The client-side service-provider nav
+profile no longer includes `platform_suite`, and Operations route changes push
+history entries after initial deep-link normalization so browser Back reloads
+the previous Operations deep link.
+
+Added `scripts/smoke-rabbi-scheller-operations-navigation-local.mjs`, a
+fixture-backed local Playwright smoke for the Operations Rabbi workspace. It
+covers Dashboard, Tasks, Members, Program/Schedule, Communications, API Usage,
+Settings, toolbar navigation, browser Back/deep-link reload, scoped
+task/workspace/project requests, no BNA-scoped requests, no super-admin nav
+labels, no failed requests, no console/page errors, and no horizontal overflow
+at 390x844, 768x1024, and 1440x900.
+
+Evidence:
+`ops/playwright-smokes/2026-06-23-rabbi-scheller-operations-navigation-local/report.md`.
+Verification passed locally: focused Rabbi/provider suite 79/79, targeted
+Operations/Rabbi contract pack 13/13, Operations Rabbi workspace smoke,
+Provider Portal navigation smoke, Provider Portal API Usage smoke, portal
+chooser smoke, and regenerated One Time action coverage.
+
+Git/deploy state remains unchanged for this Rabbi pass: local-only,
+uncommitted, unpushed, not deployed, and not live-verified.
+`DEC-20260623-006` still blocks push/deploy/live-smoke closure.
+
+## 2026-06-23T20:20:00+03:00 - Active Run Batch 7 Communications Deployed
+
+Closed active run Batch 7 / `REQ-20260619-305` plus child requirements
+`REQ-20260621-503` and `REQ-20260621-504`. No new code change was needed for
+this batch because the clean PR #13 deployment already contained the
+first-party communications workspace, WAPI/Whapi no-send UI, Resend
+domain/status readback, webhook event storage, and sender/domain send gate.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+communications suite passed 36/36. Live smokes passed:
+
+- WhatsApp UX:
+  `ops/live-smokes/2026-06-23T17-09-51-981Z-whatsapp-ux-live-smoke.md`
+- Email/Resend UX:
+  `ops/live-smokes/2026-06-23T17-09-52-093Z-email-resend-ux-live-smoke.md`
+- Communications screening:
+  `ops/live-smokes/2026-06-23T17-10-27-503Z-communications-screening-live-smoke.md`
+
+No WhatsApp message, email, external CRM write, DNS mutation, account change,
+billing action, real WAPI outbound action, or Resend production send was
+performed. `DEC-20260619-301` remains the blocker for real sender/domain/Resend
+production readiness, but the no-send communications UX requirement is done.
+
+The next active run requirement selected by `npm run bna:run:next` is
+`REQ-20260619-306` Product, scheduling, booking, portals, and billing
+foundations.
+
+## 2026-06-23T20:28:00+03:00 - Active Run Batch 9 Product Foundations Deployed
+
+Closed active run Batch 9 / `REQ-20260619-306`. No new code change was needed
+because the clean PR #13 deployment already contained the One Time product,
+schedule, booking, portal, and billing/access readiness foundations.
+
+Verified clean branch commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` on
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b`. Focused local
+product/portal/billing suite passed 20/20. Live smokes passed:
+
+- One Time Product Booking:
+  `ops/live-smokes/2026-06-23T17-16-03-089Z-one-time-product-booking-live-smoke.md`
+- One Time Payment Access/Class Links:
+  `ops/live-smokes/2026-06-23T17-16-03-292Z-one-time-payment-access-class-links-live-smoke.md`
+- One Time Shared Review:
+  `ops/live-smokes/2026-06-23T17-16-03-566Z-one-time-shared-review-live-smoke.md`
+
+The product booking smoke created only internal One Time class-event and
+appointment-intent records. No live payment, checkout, payment link, charge,
+invoice, subscription, access grant, email, WhatsApp, external CRM write, DNS
+mutation, real Zoom meeting/registrant/join-link mutation, upload, or external
+calendar write was performed.
+
+The next active run requirement selected by `npm run bna:run:next` is
+`REQ-20260619-307` Zoom meeting and attendance foundation.
+
+## 2026-06-23T20:05:00+03:00 - Active Run Batch 6 Operations UI Deployed
+
+Completed active run Batch 6 / `REQ-20260619-304` on clean branch
+`codex/one-time-batch4-control-plane-20260623` and draft PR #13. The deployed
+commit `2291d03a47ab0d9ec39b78561bc8e41361d959db` polishes the One Time
+Operations UI/design audit: the topbar status chips render in one scrollable
+row, the page uses one module sidebar and one current-module top filter rail,
+mobile filters scroll horizontally, automation permissions render as readable
+rules instead of raw JSON, and identity merge reviews render structured detail
+cards instead of raw JSON blocks.
+
+Railway deployment `e9949680-4330-454c-9b1c-b61dce2d475b` reached SUCCESS.
+Verification passed on the clean worktree: One Time UI design delta audit,
+focused UI contract tests 16/16, One Time Operations UI smoke 1/1, related
+action/UI pack 59/59, `npm run watchdog:actions`, full `npm test` 1071/1071,
+standard live smoke, Operations workspace taxonomy live smoke, and focused
+Batch 6 Operations UI live smoke
+`ops/live-smokes/2026-06-23T17-01-12-970Z-batch6-operations-ui-live-smoke.md`.
+
+The next active run requirement selected by `npm run bna:run:next` is
+`REQ-20260619-305` first-party communications parent requirement, covering
+WhatsApp UX and Email/Resend UX child requirements.
+
+## 2026-06-23T20:12:00+03:00 - Rabbi Scheller Task Isolation Contract Repair
+
+Tightened the Operations task detail response for provider-scoped logins. The
+route already checked access to the requested parent task, but linked child
+tasks were loaded by `parent_task_id` only. The linked-task query now joins the
+child task project and filters child rows by the authenticated scoped project.
+
+Added `tests/rabbi-scheller-tenant-isolation-contract.test.js` to assert that
+task search applies the server-side project scope before broad text matching
+and that task detail linked children are scoped for provider logins.
+
+Verification passed locally: `node --check server.js`, the tenant/Operations
+task contract pack 6/6, focused Rabbi/provider suite 77/77, Provider Portal
+navigation smoke, Provider Portal API Usage smoke, portal chooser smoke, and
+regenerated action coverage.
+
+Git/deploy state remains unchanged for this Rabbi pass: local-only,
+uncommitted, unpushed, not deployed, and not live-verified.
+`DEC-20260623-006` still blocks push/deploy/live-smoke closure.
+## 2026-06-24T07:41:00+03:00 - Clean-Slate Control Tower Registered
+
+Registered `RAW-20260624-002` and `REQ-20260624-012` through
+`REQ-20260624-018` for the clean-slate control tower reconciliation goal. The
+active goal is to reconcile `origin/master`, PR #14, PR #15, local Rabbi
+closeout work, stale execution-run metadata, and task/Decision state into one
+canonical integration base before parallel lanes start.
+
+Created raw/register breadcrumbs:
+
+- `raw-input/RAW-20260624-002-clean-slate-control-tower.md`
+- `tasks-pending/2026-06-24-clean-slate-control-tower-reconciliation.md`
+
+No product code, deployment, production DB mutation, class backfill, external
+write, send, or DNS change was performed. Next work is the repository and
+worktree census.
+
+
+## 2026-06-24T16:52:53+03:00 - Operator Env Secret Export Blocked
+
+Registered `RAW-20260624-006` / `REQ-20260624-032` for Shloimie's request to
+email a laptop-download link containing the full env setup. Existing Operator
+Setup code was inspected and confirms that secret-bearing exports require the
+exact phrase `APPROVE_OPERATOR_ENV_SECRET_EXPORT`, a 20+ character passphrase,
+encryption, Super Admin access, and one-time download.
+
+No env file, secret package, plaintext key, passphrase, email, Drive upload, or
+download link was created. The task is blocked until the passphrase is supplied
+through the approved flow or another separate secure channel.
+
+## 2026-06-24T17:08:00+03:00 - Parent Trip Reminder Contact Roster Registered
+
+Registered `RAW-20260624-007` / `REQ-20260624-033` through
+`REQ-20260624-035` for Shloimie's parent contact roster and trip reminder
+request. The work is contact-roster/readback plus communication preview only:
+current parent phones/emails should be shown for correction, Amitai's family
+WhatsApp reminder preference should be Hebrew where safely supported, and the
+Thursday, 2026-06-25 reminder copy should be drafted.
+
+No email, WhatsApp, broadcast, WAPI send, contact correction, external CRM
+write, deployment, or production schema/code change was performed during
+registration. Sending remains blocked by `DEC-20260624-004` until Shloimie
+reviews the roster and explicitly approves final recipients/copy.
+
+## 2026-06-24T17:15:00+03:00 - Parent Trip Reminder Roster Read Back
+
+Completed read-only roster extraction for `REQ-20260624-033` and Amitai
+language readback for `REQ-20260624-034`. The current BNA parent/student roster
+was queried from first-party tables and shown in Codex chat only; no private
+contact export file was created. Amitai matched one active student row with
+Hebrew form/language tags already present, so the Hebrew WhatsApp reminder
+preference is recorded as already satisfied plus durable memory.
+
+No email, WhatsApp, broadcast, WAPI send, contact correction, external CRM
+write, deployment, production DB mutation, or tracked contact export was
+performed. `REQ-20260624-035` remains `Needs operator decision` for corrected
+contacts and final send approval.
+
+## 2026-06-24T21:45:00+03:00 - Parent Trip Reminder Sent
+
+Completed `REQ-20260624-035` and `REQ-20260624-036` after Shloimie supplied
+corrected parent contact details and approved the reminder send. Live
+first-party BNA records now store Eitan Chaim's mother Ayala Galambo phone
+ending 1232 and father Shalom Galambo phone ending 7660; Amitai's mother phone
+ending 2874 and Hebrew reminder tags/preferences were confirmed.
+
+The Thursday, 2026-06-25 trip reminder was sent and logged through BNA
+communication records: 10 WhatsApp messages sent, 0 failed; 6 emails sent, 0
+failed. Hebrew copy was used for Hebrew-tagged families. No tracked contact
+export with full phone numbers was created.
+
+## 2026-06-24T22:20:00+03:00 - Parent Trip Hebrew Resend Repair
+
+Completed `REQ-20260624-037` and `REQ-20260624-038` after Shloimie reported
+that the Hebrew reminder rendered as question marks. Live readback confirmed
+the original Hebrew WhatsApp/email bodies had been corrupted before provider
+send. Corrected Hebrew was resent through a UTF-8-safe path: 4 WhatsApps sent,
+0 failed; 3 emails sent, 0 failed. Verification showed the corrected logs
+contain real Hebrew and no question-mark corruption.
+
+Also identified the unclear recipient numbers from first-party BNA records:
+phone ending 2140 is Ahuva Dratler in the Menachem/Dratler records; phone
+ending 6627 is Shmuel, Huda's second parent. Local code now includes an
+outbound text safety guard for WAPI/email repeated-question-mark corruption
+plus a focused test. The guard is not deployed yet because the current worktree
+contains unrelated active changes and should go out through a clean release
+path.
+
+## 2026-06-25T13:12:00+03:00 - Parent Return Delay Update Sent
+
+Completed `RAW-20260625-001` / `REQ-20260625-001`. Sent the moshav return-delay
+update to the same deduped parent WhatsApp/email roster from the trip reminder,
+using Hebrew for Hebrew-tagged families. Live communication verification:
+10 WhatsApp messages sent, 0 failed; 6 emails sent, 0 failed.
+
+Hebrew rows were read back from live logs and confirmed to contain real Hebrew
+with no repeated-question-mark corruption. No tracked contact export with full
+phone numbers was created.
+
+## 2026-06-25T13:47:00+03:00 - Intake Files And Audio Task Parsing Verified
+
+Completed `RAW-20260625-002`, `RAW-20260625-003`, and `REQ-20260625-002`
+through `REQ-20260625-005`. Registered the two Downloads intake files, mapped
+them to current GitHub truth, and avoided reopening already-closed release work:
+issue #18 remains terminal `NOT SAFE TO APPLY`, and issue #20 is closed with
+merged PRs plus live verification.
+
+Updated the main ramble protocol so voice/audio/video task recordings must be
+transcribed or preserved as transcript, split into canonical lanes, and worked
+with evidence instead of being misrouted into Content/social drafts. Added a
+parser regression covering a voice/audio ramble with UI work, Telegram bot
+update work, and an operator-owned configuration Decision.
+
+Verification passed: `node --check scripts/telegram-kimi-bridge.mjs`,
+`node --check server.js`, and focused parser/Telegram/Operations tests 49/49.
+Telegram API metadata check resolved the academy token to
+`bneineviimacademy_bot`, found two allowed chat ID aliases, no webhook, zero
+pending updates, and no last API error. No credentials were changed, no bridge
+process was started, no external send or production mutation was performed.
+
+## 2026-06-25T15:38:00+03:00 - Drive Transcript Sync OAuth Loader Hardened
+
+Processed `RAW-20260625-004` for the content job #83 Drive transcript library
+sync failure. The failure means the background job reached Drive sync and then
+crashed on Google OAuth client loading before transcript library work could run.
+
+Locally repaired `scripts/sync-drive-content-library.mjs` so it honors
+Railway/local `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` before falling back
+to `.secrets/google-oauth-client.json`, supports inline
+`GOOGLE_OAUTH_CLIENT_JSON`, uses the merged runtime env for auth/config, and
+reports config failures without echoing secret JSON. Added
+`tests/sync-drive-content-library-auth.test.mjs` with synthetic coverage for
+the invalid-file-plus-valid-env failure mode. Also hardened
+`scripts/telegram-kimi-bridge.mjs` so bridge-triggered Drive actions use direct
+env credentials before parsing the OAuth client file.
+
+Verification passed: `node --check scripts/sync-drive-content-library.mjs`,
+auth regression 6/6, `node --check scripts/telegram-kimi-bridge.mjs`, focused
+Telegram/audio/auth tests 44/44, `npm run bna:run:validate`, and
+`git diff --check` with line-ending warnings only. No secrets were printed, no
+Drive writes were attempted, and no deploy was performed. Production content
+job #83 remains blocked until this patch is deployed cleanly and Railway has
+valid Google OAuth refresh-token and Drive pipeline configuration.
+
+## 2026-06-26T11:26:05+03:00 - ChatGPT Ramble Drop-off And Helper Control Plane Applied
+
+Processed `RAW-20260626-901` / `REQ-20260626-901` after Shloimie confirmed the
+ChatGPT package was downloaded. Added the repo-visible ChatGPT ramble drop-off
+queue under `ops/chatgpt-ramble-dropoff/incoming/`, packet creation/pickup
+helpers, npm scripts, and a guarded agent-fleet supervisor pickup step that
+claims one repo-visible packet before normal app task claiming.
+
+Applied the generated helper control-plane bundle under
+`src/lib/bna/helper/control-plane/`, added the route-registry-backed
+destination resolver needed by the generated route-control module, restored the
+missing class-drive intake reconciliation helper uncovered by full-suite
+verification, and refreshed the generated One Time/universal action parity
+artifacts.
+
+Verification passed: new script/module syntax checks, drop-off packet test,
+helper control-plane tests, supervisor dry-run pickup, real packet pickup,
+two-week class intake audit test, watchdog action registry test, and full
+`npm test` 1156/1156. No deploy, external writes, sends, credential changes,
+DNS changes, charges, or live access grants were performed.
+
+## 2026-06-26T11:32:22+03:00 - Two-Week Class Intake Audit Package Applied
+
+Processed `RAW-20260626-002` after Shloimie asked Codex to check the downloaded
+two-week class intake audit package. Both Downloads ZIPs matched the supplied
+SHA-256
+`04233bb90be1b06f31b5cf2835e28b728d3db869325b20c191e7f583a963a4eb`.
+
+Applied the additive read-only audit package, added the expected
+`src/lib/bna/class-drive-intake-reconcile.js` helper, and tightened the
+student-question matrix so repeated parser echoes are deduped. Ran the
+sanitized read-only DB/Drive audit for 2026-06-12 through 2026-06-26. Artifacts
+were written under
+`ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/`.
+
+Corrected final verdict: `PARTIAL`. The audit found 18 Drive recordings, 29
+content jobs, 13 deduped student-question rows, 24 GitHub transcript export
+gaps, and 10 dry-run repair candidates. Blockers are one scoped content job
+without confirmed structured output, six student-question rows needing
+student-match review, and the transcript export gap. `safe_to_apply_class_backfill`
+remains false.
+
+Verification passed: package/download hash check, `npm run bna:run:status`,
+`npm run bna:run:next`, syntax checks for the helper/audit library/CLI,
+`node --test tests/two-week-class-intake-audit.test.js` 7/7, adjacent
+parser/privacy suite 17/17, and the read-only audit script. No class backfill,
+production mutation, Drive write/move, paid retranscription, send, transcript
+body export, deploy, DNS change, charge, or credential change was performed.
+
+Remaining decision: `DEC-20260626-101` must choose tracked transcript export,
+local-only private export, or a redacted exporter before
+`npm run content:export-transcripts` runs, because the existing exporter writes
+full transcript bodies into tracked `content-memory/transcripts` and deletes
+stale transcript files.
+
+## 2026-06-26T13:20:00+03:00 - Transcript Drive Digest Rebuild Ready For Owner Approval
+
+Processed `RAW-20260626-004` / `REQ-20260626-116` through
+`REQ-20260626-126` from Shloimie's goal-mode packet. Created the active
+execution run
+`ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild` and preserved
+the raw packet in repo fallback raw input.
+
+Implemented the selected policy: raw transcript bodies stay in private
+Drive/app storage, while GitHub receives structured, privacy-safe digest
+memory. Added `docs/content-transcript-digest-policy.md`, updated
+`content-memory/README.md`, added `npm run content:export-digests`, and made
+the legacy `npm run content:export-transcripts` refuse default raw-body export.
+Stale deletion now requires explicit `--delete-stale`.
+
+Generated sanitized digest memory for 29 recordings under
+`content-memory/transcript-digests/`, plus
+`TRANSCRIPT-GAPS.md/json`, `REPAIR-CANDIDATES.md/json`, and
+`DRIVE-TRANSCRIPT-LIBRARY-DRY-RUN.md/json` under the two-week class intake
+audit folder. No raw transcript bodies, raw Drive IDs, production writes, Drive
+writes, worker retries, paid retranscription, sends, backfill, credential
+changes, DNS changes, charges, or deployment were performed.
+
+Verification passed: syntax checks for the digest library/export scripts,
+`node --test tests/transcript-digest-export.test.js` 8/8,
+`node --test tests/two-week-class-intake-audit.test.js` 7/7,
+`npm run content:export-digests -- --privacy-scan` with 29 recordings and 0
+findings, `npm run bna:run:validate`, and `npm run bna:run:next` showing no
+unblocked executable batch.
+
+Remaining decision: `DEC-20260626-101` / `REQ-20260626-126` gates raw
+transcript-body export, Drive doc writes, production reparse/canonical writes,
+worker retry, paid retranscription, class backfill, or any production mutation
+until Shloimie approves an exact next action.
+
+## 2026-06-26T13:27:48+03:00 - Duplicate Transcript Drive Digest Packet Verified
+
+Processed `RAW-20260626-005` as a duplicate of `RAW-20260626-004`. The latest
+Codex attachment SHA-256 matched the already preserved raw source exactly:
+`6DD3C36DB7A7CE1942375312E6FB1BE6D56112C59028E6C4F1AE0F837FAB604B`.
+
+No new implementation register was created. The existing transcript/Drive
+digest rebuild register, execution run, digest artifacts, and completion audit
+remain canonical. No raw transcript-body export, Drive write, production
+mutation, stale deletion, worker retry, paid retranscription, class backfill,
+send, deployment, credential, DNS, charge, or source-file move was performed.
+
+Remaining decision: `DEC-20260626-101` still gates any unsafe/raw/external
+write path.
+
+Refreshed verification passed: digest privacy scan reported 29 recordings with
+raw bodies off and 0 findings, focused digest/two-week audit tests passed
+15/15, execution-run validation passed with no unblocked executable batch,
+secret scan found 0 tracked secret-risk files, JSON/JSONL parsed, and
+`git diff --check` reported line-ending warnings only.
 
 ## 2026-06-26T13:21:00+03:00 - Issue 41 Drive Transcript Library Addendum Verified
 
@@ -26770,20 +26964,12 @@ Read-only Drive verification confirmed `01 Transcript Library` exists under
 since `2026-06-25T00:00:00Z`, includes jobs #65-#70, and does not include job
 #83. `npm run content:sync-drive-library -- --dry-run --no-ai` planned #83 as
 create and #65-#70 as updates while performing 0 creates, 0 updates, and 0 AI
-calls. No Drive write, production mutation, class backfill, raw export, paid
-retranscription, AI call, send, charge, credential/account/DNS change, or deploy
-was performed.
+calls.
 
-Evidence:
-
-- `raw-input/RAW-20260626-006-issue-41-drive-transcript-library-addendum.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-TRANSCRIPT-LIBRARY-READONLY-AUDIT.json`
-- `tasks-pending/2026-06-26-transcript-drive-digest-rebuild.md`
-
-Remaining: owner approval was required before any non-dry-run Drive sync beyond
-read-only verification. `DEC-20260626-101` stayed open for unsafe/raw/external
-write paths.
+No raw transcript-body export, Drive write/move/delete, production mutation,
+stale deletion, worker retry, paid retranscription, class backfill, send,
+deployment, credential, DNS, or charge action was performed. `DEC-20260626-101`
+still gates any non-dry-run Drive sync or other unsafe/raw/external write path.
 
 ## 2026-06-26T13:40:00+03:00 - Approved Job 83 Drive Transcript Sync Completed
 
@@ -26801,718 +26987,904 @@ Recorded sanitized proof under
 and `.json`. The tracked repo stores only hashed Drive pointers, not the raw
 Drive doc ID, raw Drive link, or transcript body.
 
-Post-sync verification:
-
-- Read-only library listing: `01 Transcript Library` now has 47 docs and #83
-  exists.
-- `npm run content:export-digests -- --privacy-scan`: 29 recordings,
-  `raw_transcript_bodies_included=false`, 0 findings.
-- `npm run content:drive-intake-audit`: read-only audit refreshed with final
-  status `PARTIAL`.
-- `node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js`:
-  15/15 passed.
-- `npm run bna:run:validate`: 12 done, 1 needs operator decision, validation
-  passed.
-- `npm run bna:run:next`: no unblocked executable batch.
-- `npm run secrets:audit`: 0 tracked secret-risk files found.
-
-Remaining: `DEC-20260626-101` remains open for any future raw export, further
-Drive write beyond #83, production repair/reparse/canonical write, worker retry,
-paid retranscription, class backfill, broad Drive sync, or other
-unsafe/external write path.
-
-## 2026-06-26T15:05:00+03:00 - Issue 41 Content Card Topic Filter Repair Local PR Ready
-
-Processed `RAW-20260626-008` from PR #45 comment `4809202212` and linked it
-into the active transcript/Drive digest rebuild run as `REQ-20260626-129`
-through `REQ-20260626-133`.
-
-Implemented the local Operations Content repair batch:
-
-- Added a shared digest-card view model and `npm run content:card-topic-audit`.
-- Audited all 29 privacy-safe digest recordings.
-- Decorated `/api/bna/content-jobs` rows with repo-safe `digest_card` metadata.
-- Updated Content cards to show clean generated title, summary, main points,
-  categories, parse status, digest status, routing status, topic status, and
-  next action.
-- Updated the top topic filter to count and match normalized multi-topic digest/
-  classification categories instead of raw transcript-body topic inference.
-- Added focused tests.
-
-Evidence:
-
-- `raw-input/RAW-20260626-008-pr45-content-card-topic-filter-addendum.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.json`
-- `src/lib/bna/content-card-view-model.js`
-- `tests/content-card-view-model.test.js`
-- `tests/operations-content-library-taxonomy.test.js`
-
-Verification:
-
-- `npm run content:card-topic-audit`: 29 recordings, 29 generated clean titles,
-  10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic classification`, raw
-  transcript bodies false.
-- `node --test tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
-  8/8 passed.
-- `node --check server.js`: passed.
-- `node --check scripts/audit-content-card-topic-filter.cjs`: passed.
-- `npm run bna:run:validate`: 14 done, 3 blocked, 1 needs operator decision,
-  validation passed.
-
-Guardrails held: no Drive write, no production DB mutation, no class backfill,
-no paid retranscription, no AI call, no raw transcript export, no stale
-deletion, no send/publish/charge/access grant, no credential/account/DNS change,
-and Issue #41 was not marked done.
-
-Remaining: `REQ-20260626-131`, `REQ-20260626-132`, and `REQ-20260626-133` are
-blocked only on PR review/merge plus deployment/live-smoke proof before
-app-visible Done status. `DEC-20260626-101` remains open for any future unsafe/
-raw/external write path beyond the completed #83 sync.
-## 2026-06-26T14:15:00+03:00 - Service Provider Scopes and First-Party CRM Live Closeout
-
-Completed the service-provider role/scope package through merge, deployment,
-debugging, and live verification.
-
-Changed:
-
-- Marked PR #43 ready and merged it to `master`.
-- Verified Railway production target before deployment; the first deploy command
-  was blocked because the local Railway link pointed at the One Time project,
-  then reran the doctor with explicit BNA production target values.
-- Confirmed Railway deployment
-  `112ef3b5-0ce7-45e3-9c55-368f783ccd1d` reached `SUCCESS` for merge commit
-  `5bea5891853d7e22eff2ce8f72aeac33a151ec1f`.
-- Added final live-smoke evidence for the new service-provider scope APIs,
-  provider bundle surfaces, Operations/Rabbi workspace, public privacy, and
-  Operations helper/workspace taxonomy.
-
-Verification:
-
-- Clean-head local checks passed before merge: syntax checks, package/route
-  tests 24/24, `npm test` 1414/1414, watchdog action/security checks, and
-  `npm run secrets:audit` with 4957 tracked paths checked and 0 findings.
-- `npm run railway:doctor` passed for BNA production service
-  `skillful-motivation`.
-- `npm run app:smoke` passed:
-  `ops/live-smokes/2026-06-26T11-07-20-392Z-live-app-smoke.md`.
-- `npm run app:smoke:rabbi-onetime-landing` passed:
-  `ops/live-smokes/2026-06-26T11-07-17-297Z-rabbi-onetime-landing-smoke.md`.
-- `npm run app:smoke:one-time-shared-review` passed:
-  `ops/live-smokes/2026-06-26T11-07-17-573Z-one-time-shared-review-live-smoke.md`.
-- `node scripts/smoke-rabbi-scheller-workspace-live.mjs` passed:
-  `ops/live-smokes/2026-06-26T11-08-48-617Z-rabbi-scheller-workspace-live-smoke.md`.
-- Targeted service-provider scopes live smoke passed:
-  `ops/live-smokes/2026-06-26T11-12-12-747Z-service-provider-scopes-live-smoke.md`.
-- `npm run app:smoke:public-privacy` passed:
-  `ops/live-smokes/2026-06-26T11-13-01-422Z-public-route-privacy-smoke.md`.
-- `npm run app:smoke:operations-workspace-taxonomy` passed:
-  `ops/live-smokes/2026-06-26T11-13-18-505Z-operations-workspace-taxonomy-live-smoke.md`.
-- `npm run app:smoke:operations-helper` passed:
-  `ops/live-smokes/2026-06-26T11-13-18-510Z-operations-helper-live-smoke.md`.
-
-Remaining: none.
-
-## 2026-06-28T09:34:20+03:00 - Issue 41 Drive Backlog Parser Repair Plan
-
-Processed `RAW-20260628-002` as a goal-mode continuation for Issue #41 and
-extended the active transcript/Drive digest rebuild run as `REQ-20260628-134`
-through `REQ-20260628-140`.
-
-Completed the safe local/read-only parser-backlog repair batch:
-
-- Resolved PR #45's merge conflict against current `master` while preserving
-  both Issue #41 and service-provider closeout evidence.
-- Patched the digest exporter so current audit source refs stay redacted and
-  class-recording transcript digests remain private-review-required by default.
-- Patched digest parse-gap generation so `UNKNOWN` audit stages remain visible
-  as blockers instead of looking complete.
-- Reran the fresh read-only Drive/class/content audit.
-- Reran the privacy-safe digest export and content-card topic audit.
-- Recorded the exact redacted parser/question/score repair plan.
-
-Current status:
-
-- Fresh audit: 18 Drive recordings, 29 content jobs, 0 Drive orphans, 13
-  student-question rows, final verdict `PARTIAL`.
-- Content cards: 29 generated titles, 10 `Needs parse`, 0 `Needs digest`, 0
-  `Needs routing`, 0 `Needs topic classification`.
-- Parser repair candidates: jobs #71, #59, #58, #57, #56, #31, #30, #26, #25,
-  and #21.
-- Student questions: 13 rows total, 7 matched, 6 need human student-match
-  review.
-- Scores/progress: 0 row-level apply rows; not safe to update kids' scores or
-  progress yet.
-
-Evidence:
-
-- `raw-input/RAW-20260628-002-drive-backlog-parser-repair-goal.md`
-- `memory/2026-06-28.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CONTENT-CARD-TOPIC-FILTER-AUDIT.md`
-- `content-memory/transcript-digests/`
-
-Verification:
-
-- `npm run content:drive-intake-audit`: 18 Drive recordings, 29 content jobs,
-  13 student-question rows, final status `PARTIAL`.
-- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw
-  transcript bodies false, 0 findings.
-- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles,
-  10 `Needs parse`, 0 routing/topic-classification gaps.
-- `node --test tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
-  25/25 passed.
-
-Guardrails held: no Drive write, no production DB mutation, no class backfill,
-no paid retranscription, no AI call, no raw transcript-body export, no stale
-deletion, no send/publish/charge/access grant, and no credential/account/DNS
-change.
-
-Remaining: PR #45 is mergeable but still needs merge, deployment, and live
-Operations content smoke before app-visible Done. `DEC-20260626-101` remains
-open for any production parser/question/score apply, broad Drive sync, raw
-export, AI call, class backfill, or other unsafe write path.
-
-## 2026-06-28T09:58:00+03:00 - Issue 41 Content Cards Live Closeout
-
-Completed the safe app-visible content-card/topic-filter repair batch for
-Issue #41 without closing the issue or performing production student-data
-writes.
-
-- Merged PR #45 for the card/topic-filter repair:
-  `185f944613faca469c15df3d9ef6fefa3afd1850`.
-- Found live readback initially returned 0 digest cards because the deploy
-  bundle omitted `content-memory/transcript-digests`.
-- Merged follow-up PR #46 to include transcript digests in the Railway deploy
-  bundle: `c0b29982c1219a5cac0bdcb875b94cff3a3a22db`.
-- Deployed Railway `fd93be96-8bec-4c06-b42f-c53d177eab40` to
-  `skillful-motivation` / production.
-- Live readback passed: `/api/bna/content-jobs?project_key=all` returned 81
-  jobs, 29 digest cards, all 10 `Needs parse` jobs, job #83 clean title, and
-  `raw_body_in_digest_cards=false`.
-- Posted Issue #41 status comment without marking the issue done:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4825192594`.
-
-Evidence:
-
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/LIVE-CONTENT-CARD-READBACK.json`
-- `ops/live-smokes/2026-06-28T06-55-47-874Z-live-app-smoke.md`
-- `ops/live-smokes/2026-06-28T06-55-45-402Z-content-research-scope-live-smoke.md`
-- `ops/live-smokes/2026-06-28T06-55-57-015Z-operations-workspace-taxonomy-live-smoke.md`
-
-Verification:
-
-- `node --test tests/content-card-view-model.test.js tests/transcript-digest-export.test.js`:
-  16/16 passed.
-- `npm run app:smoke`: passed.
-- Content research live smoke: passed.
-- Operations workspace taxonomy live smoke: passed.
-- Railway doctor: deployment `fd93be96-8bec-4c06-b42f-c53d177eab40`
-  `SUCCESS`.
-
-Remaining: student question, task, score, and progress production writes remain
-blocked by `DEC-20260626-101`. The current dry-run plan has 13 question rows,
-6 needing human student-match review, and 0 safe score/progress apply rows.
-No Drive write, production DB mutation, class backfill, raw transcript export,
-AI call, send/publish, charge/access grant, credential/account/DNS change, or
-broad Drive sync was performed in this closeout.
-
-## 2026-06-28T10:10:00+03:00 - Issue 41 Student Apply Approval Packet
-
-Refreshed the Issue #41 student question/score repair evidence after the
-content-card work was live. The previous plan still referenced stale PR #45
-merge work; it now points to the current live status and the real remaining
-blocker.
-
-- Recorded that #83 Drive sync is complete, the transcript library is at 47
-  docs, privacy-safe digest export covers 29 recordings, and live content-card
-  readback returns 29 digest cards with no raw transcript text.
-- Added an owner decision packet for student question/task/score/progress
-  application.
-- Verdict remains `not_approved_not_safe_to_apply`: 10 jobs need parser/reparse
-  review, 13 student-question rows exist, 6 question rows need human
-  student-match review, and score/progress has 0 safe row-level apply rows.
-- The only documented optional next step is a no-write dry-run planner approval;
-  no production apply command is currently safe.
-
-Evidence:
-
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/DRIVE-BACKLOG-QUESTION-SCORE-REPAIR-PLAN.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/STUDENT-QUESTION-SCORE-APPROVAL-PACKET.json`
-
-Guardrails held: no Drive write, no production DB mutation, no class backfill,
-no raw transcript export, no AI call, no paid retranscription, no send/publish,
-no charge/access grant, no credential/account/DNS change, and no broad Drive
-sync.
-
-## 2026-06-28T12:32:00+03:00 - Issue 41 Class Question Broadcast Dry Run
-
-Captured `RAW-20260628-003` and implemented the owner rule that unmatched or
-ambiguous question candidates should be class questions for every active
-student, not personal questions assigned to an uncertain student.
-
-- Updated the guarded class-drive intake dry-run planner to route unmatched
-  question candidates as `class_question_broadcast` rows.
-- Covered `class_notes.student_questions`, `class_notes.questions`, and
-  question-shaped `class_notes.discussions`.
-- Refreshed the 21-83 dry-run evidence with no production mutation.
-- Dry-run summary: 917 future `bna_accountability_events` writes, 912
-  class-question broadcast inserts, 5 matched student-question inserts, 2
-  existing rows skipped, and 0 blocking ambiguities.
-- Recorded ChatGPT/repo transcript access readiness: 29 repo-safe digest
-  recordings are available without raw bodies; raw transcripts remain private
-  in Drive/app storage.
-
-Evidence:
-
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-DRY-RUN.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/BACKFILL-RECOMMENDATION.json`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CLASS-QUESTION-BROADCAST-DRY-RUN.md`
-- `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/CHATGPT-TRANSCRIPT-ACCESS-READINESS.md`
-
-Verification:
-
-- `node --test tests/class-drive-intake-reconcile.test.js`: 16/16 passed.
-- `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: dry-run evidence written; no production mutation.
-
-Remaining: production application is still blocked by `DEC-20260626-101`; the
-current apply lane refuses mutation by design. No Drive write, production DB
-mutation, class backfill, raw transcript export, AI call, paid retranscription,
-send/publish, charge/access grant, credential/account/DNS change, broad Drive
-sync, or `--apply` was performed.
-
-## 2026-06-28T14:45:00+03:00 - Issue 41 PR #49 Catch-up Package
-
-Captured `RAW-20260628-004` from the attached goal-mode packet and added
-`REQ-20260628-144` through `REQ-20260628-151` to the active transcript/Drive
-digest rebuild run.
-
-- Added repo-safe catch-up report builders to
-  `src/lib/bna/class-drive-intake-reconcile.js`.
-- Wired `scripts/class-drive-intake-reconcile.cjs` to emit no-write catch-up
-  evidence from digest/card/question dry-run artifacts.
-- Generated `BACKLOG-CATCHUP-CENSUS`: 29 digest recordings, 10 focus jobs, 29
-  repo-safe digests, 29 private transcript refs, 10 `Needs parse` jobs, 13
-  question candidates, 34 task/action candidates, 29 ready research/content
-  cards, and 0 score/progress row-level changes.
-- Generated `SCORE-PROGRESS-CATCHUP-PLAN`: 29 no-op jobs and 0 safe
-  score/progress rows.
-- Generated `TASK-ACTION-CATCHUP-PLAN`: 34 internal no-write candidate rows
-  and 0 human-visible production task candidates.
-- Generated `RESEARCH-CONTENT-CATCHUP-PLAN`: 29 ready sanitized content cards
-  and 0 card repairs needed.
-- Generated `APPLY-LANE-DESIGN`: owner gate, exact command shape, snapshot,
-  rollback, row-level evidence, dedupe keys, small batches, dry-run default,
-  and refusal conditions documented; production apply remains disabled.
-
-Verification:
-
-- `node --test tests/class-drive-intake-reconcile.test.js`: 20/20 passed.
-- `node scripts/class-drive-intake-reconcile.cjs backfill --write --jobs 21-83 --out-dir ops/class-drive-intake/2026-06-26-two-week-class-intake-audit`: repo evidence refreshed, no production mutation.
-- `npm run content:export-digests -- --privacy-scan`: passed, 29 recordings,
-  raw bodies false, 0 privacy findings.
-- `npm run content:card-topic-audit`: passed, 29 recordings, 29 generated
-  titles, 10 `Needs parse`, 0 `Needs routing`, 0 `Needs topic
-  classification`.
-- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
-  passed, 46/46.
-- `npm run bna:run:validate`, `npm run bna:run:next`,
-  `npm run bna:run:status`, and `npm run secrets:audit`: passed.
-- JSON/JSONL parse passed: 2200 payloads, BOM-tolerant.
-- Added-line privacy scan passed: no raw Drive URLs/IDs, secret literals, or
-  raw transcript bodies.
-- `git diff --check`: passed with Windows CRLF warnings only.
-- Commit `2a86311f87d3a6d8ffa20fbd7397d25d16a33442` pushed to PR #49.
-- PR comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826029011`
-- Issue #41 comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826029041`
-
-Remaining: Issue #41 remains open. `DEC-20260626-101` still blocks any
-production parser/question/task/score/progress write, further Drive write
-beyond #83, raw transcript export, broad sync, class backfill, paid
-retranscription, worker retry, or other unsafe/external mutation. No `--apply`,
-production DB
-mutation, student portal write, score/progress write, production task write,
-Drive write, broad Drive sync, class backfill, raw transcript export, AI call,
-paid retranscription, send/publish/charge/access grant, or credential/account/
-DNS change was performed.
-
-## 2026-06-28T15:45:00+03:00 - Issue 41 Private Reparse Dry-run
-
-Captured `RAW-20260628-005`, the owner approval for a no-write private
-reparse/canonical-write dry-run for exactly jobs `21, 25, 26, 30, 31, 56, 57,
-58, 59, 71`.
-
-- Added `private-reparse` mode to `scripts/class-drive-intake-reconcile.cjs`.
-- The command refuses any job ID outside the exact approved list and forces
-  broad Drive listing off for this mode.
-- The DB snapshot path reads exact approved job IDs only.
-- Added deterministic private transcript dry-run extraction for sanitized
-  student-name mentions, question routing, task candidates, and
-  score/progress rows or no-op reasons.
-- Generated
-  `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/PRIVATE-REPARSE-CANONICAL-WRITE-DRY-RUN.md`.
-
-Dry-run summary:
-
-- Approved jobs: 10.
-- Inspected jobs: 10.
-- Missing jobs: 0.
-- Private transcript sources read: 10.
-- Student-name mentions: 261.
-- Question candidates: 1,285.
-- Personal question candidates: 36.
-- Class-question broadcast candidates: 1,249.
-- Existing skip candidates: 0.
-- Blocked-review candidates: 0.
-- Row-level dry-run rows: 10,149.
-- Internal task candidate rows: 119.
-- Score/progress rows: 1.
-- Score/progress no-op rows: 55.
-
-Verification:
-
-- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
-- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
-- `node --test tests/class-drive-intake-reconcile.test.js`: 23/23 passed.
-- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js`:
-  49/49 passed.
-- Private reparse evidence privacy scan: passed; no raw Drive URLs/IDs, no
-  raw transcript body fields, and no secret literals.
-- Source coverage refresh passed with 14 mapped statements and 0 missing
-  evidence.
-- `npm run bna:run:validate`, `npm run bna:run:next`, and
-  `npm run bna:run:status`: passed.
-- `npm run secrets:audit`: passed, 5,352 tracked paths and 0 secret-risk files.
-- JSON/JSONL parse passed: 2,203 payloads, BOM-tolerant.
-- Added-line privacy scan passed: 337,059 added/new lines, no raw Drive
-  URLs/IDs, secret literals, or raw transcript bodies.
-- `git diff --check`: passed with Windows CRLF warnings only.
-
-Closeout:
-
-- Commit `34e29b60` pushed to PR #49.
-- PR #49 remains draft.
-- PR comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826132567`.
-- Issue #41 comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826133334`.
-- `REQ-20260628-156` is Done for this no-write dry-run closeout.
-
-Remaining: production apply remains blocked by `DEC-20260626-101`. No
-`--apply`, production mutation, student portal write, score/progress write,
-production task write, class backfill, Drive create/update/delete/move, raw
-transcript export, AI call, paid retranscription, send/publish/charge/access
-grant, or credential/account/DNS change was performed.
-
-## 2026-06-28T16:45:00+03:00 - Issue 41 Production Apply Preflight
-
-Captured `RAW-20260628-006`, the goal-mode packet approving implementation of
-the guarded production apply lane and final no-write preflight for exactly jobs
-`21, 25, 26, 30, 31, 56, 57, 58, 59, 71`. This packet did not approve
-production mutation.
-
-- Confirmed PR #49 is open, draft, clean, and mergeable.
-- Confirmed Issue #41 is open.
-- Confirmed remote private-reparse evidence is readable and non-empty on the
-  PR branch: markdown `1,454,766` bytes and JSON `11,207,578` bytes.
-- Added `production-apply-preflight` to the class-drive reconciliation CLI. It
-  refuses any job IDs outside the exact approved list and requires snapshot
-  path, rollback path, and explicit approved action list.
-- Added guarded `production-apply --apply` refusal behavior; it still refuses
-  until a final owner approval is recorded after preflight.
-- Generated `PRODUCTION-APPLY-PREFLIGHT.md/json`,
-  `PRODUCTION-APPLY-SNAPSHOT-PLAN.md`, `PRODUCTION-APPLY-ROLLBACK-PLAN.md`,
-  `PRODUCTION-APPLY-BATCH-PLAN.md`, and
-  `PRODUCTION-APPLY-READBACK-PLAN.md`.
-
-Preflight summary:
-
-- Controls passed: true.
-- Blocking refusal checks: 0.
-- Production apply command may be run now: false.
-- Personal-question rows: 36.
-- Class-question broadcast candidates: 1,249.
-- Class-question broadcast row-level rows: 9,992.
-- Score/progress rows: 1.
-- Progress event rows deferred: 1.
-- Production task rows: 0.
-- Internal task candidates not applied: 119.
-
-Verification so far:
-
-- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
-- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
-- `node --test tests/class-drive-intake-reconcile.test.js`: 26/26 passed.
-- `node scripts/class-drive-intake-reconcile.cjs production-apply-preflight --write ...`: passed and performed no writes.
-- `node scripts/class-drive-intake-reconcile.cjs source-coverage --write --skip-drive ...`: passed with 15 mapped statements and 0 missing evidence.
-
-Closeout:
-
-- Commit `f48a9094` pushed to PR #49.
-- PR #49 remains draft.
-- PR comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826235797`.
-- Issue #41 comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826236603`.
-- `REQ-20260628-157` is Done for this no-write preflight closeout.
-
-Remaining: actual production apply remains blocked by `DEC-20260626-101`. No
-`--apply`, production mutation, student portal write, score/progress write,
-production task write, class backfill, Drive write, raw transcript export, AI
-call, paid retranscription, send/publish/charge/access grant, or
-credential/account/DNS change was performed.
-
-## 2026-06-28T18:30:00+03:00 - Rabbi Drive Folder Structure Batch
-
-Captured `RAW-20260628-007`, the goal-mode packet approving targeted Drive
-folder create/reuse under exact One Time parent folder
-`04 Content and Media Intake`.
-
-- Ran `node scripts/audit-one-time-rabbi-drive-folders.mjs --write` with local
-  Google OAuth paths.
-- Confirmed the parent folder is the documented `04 Content and Media Intake`.
-- Created 3 folders: `04.05 Upload Here - Slideshows and Source Materials`,
-  `04.20 Source Material Review`, and `04.99 Needs Shloimie Decision`.
-- Reused 4 folders, including the existing `04.00 Upload Here - Rabbi Video
-  Drops` as the canonical videos/audio upload lane.
-- Found two `.pptx` files in the parent listing and classified them as
-  source material / slideshow references, excluded from transcription and
-  index-only until review.
-- Updated folder maps, workflow docs, setup-script alias reuse, backend map
-  helpers, Operations super-admin folder cards, Rabbi-facing upload links, and
-  focused tests.
-
-Evidence:
-
-- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-structure-audit.md`
-- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-folder-creation-log.md`
-- `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-ui-drive-links-audit.md`
-
-Verification so far:
-
-- `node --check server.js`: passed.
-- `node --check` changed helper/scripts: passed.
-- `node --test tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js tests/one-time-external-user-portal.test.js tests/instances/one-time-shared-review-data.test.js`: 55/55 passed.
-- `npm run bna:run:validate`, `npm run bna:run:next`, and
-  `npm run bna:run:status`: passed.
-- `npm run secrets:audit`: passed, 5,362 tracked paths and 0 tracked
-  secret-risk files.
-- JSON/JSONL parse passed for changed structured files.
-- Added-line privacy scan passed: no new secret literals, raw transcript
-  bodies, or raw Drive file/doc URLs; intentional Drive folder URLs are
-  allowed for this batch.
-- `git diff --check`: passed with Windows CRLF warnings only.
-
-Local server smoke blocker: `node server.js` requires `DATABASE_URL` in this
-worktree. No credentials were copied into the repo/worktree.
-
-Remaining: commit, push, PR #49 comment, and Issue #41 comment. Issue #41
-remains open and production apply remains blocked by `DEC-20260626-101`.
-
-## 2026-06-28T20:55:00+03:00 - Rabbi Drop-Off Email Notifier
-
-Captured `RAW-20260628-008` and made the Rabbi Scheller / One Time intake
-workflow operational around the two Rabbi-facing Drive folders.
-
-- Renamed the video/audio folder in Drive to
-  `04.00 Upload Here - Videos and Audio for Transcription`.
-- Confirmed the source-material folder remains
-  `04.05 Upload Here - Slideshows and Source Materials`.
-- Added `scripts/notify-one-time-drive-dropoffs.mjs`, local runner scripts,
-  and package scripts for dry-run, send, and baseline modes.
-- Registered local Windows scheduled task `BNA One Time Drive Dropoff Email`
-  to scan the two upload folders every 5 minutes and email the operator when
-  new files appear.
-- Added notifier helper/test coverage for direct original-file download links,
-  PowerPoint-vs-Google-Slides duplicate suppression, and explicit send mode.
-- Added repo-safe evidence at
-  `ops/one-time-mishnah/drive-ingestion-audit/2026-06-28-rabbi-dropoff-notifier.md`.
-
-Verification:
-
-- `node --check src/lib/bna/one-time-drive-dropoff-notifier.js`: passed.
-- `node --check scripts/notify-one-time-drive-dropoffs.mjs`: passed.
-- `node --check scripts/audit-one-time-rabbi-drive-folders.mjs`: passed.
-- `node --test tests/one-time-drive-dropoff-notifier.test.js tests/one-time-drive-intake-folder-map.test.js tests/one-time-content-media-intake-workflow.test.js`: 18/18 passed.
-- `npm run bna:run:validate`: passed with remaining operator decisions only.
-- `npm run bna:run:next`: passed; no unblocked executable batch.
-- `npm run bna:run:status`: passed.
-- `npm run secrets:audit`: passed, 5,372 tracked paths and 0 tracked secret-risk files.
-- JSON parse passed for 6 changed JSON files.
-- Added-line privacy scan passed with 0 findings.
-- `git diff --check`: passed with Windows CRLF warnings only.
-- Task Scheduler readback: task enabled, ready, last result `0`, every 5 minutes.
-- Commit `65ae09b5` pushed to PR #49.
-- PR #49 comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/49#issuecomment-4826920837`.
-- Issue #41 comment:
-  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4826921670`.
-- Issue #41 remains open and production apply remains blocked by
-  `DEC-20260626-101`.
-
-Guardrails honored: no production apply, no `--apply`, no production DB
-mutation, no student portal/question/score/task write, no class backfill, no
-raw transcript export, no AI call, no paid retranscription, no Drive file
-move/delete, no public publish/social/newsletter send, no access grant, and no
-credential/account/DNS change. The only send performed was the requested
-operator Gmail setup-test/notification path.
-
-## 2026-06-30 - Issue #41 final guarded apply completed
-
-- Captured final owner approval as
-  `raw-input/RAW-20260630-001-final-issue41-owner-apply-approval.md`.
-- Replaced the old general-class-question fanout path with class-scoped
-  `bna_one_time_question_reviews` rows.
-- Added `scripts/class-drive-intake-apply-approved.cjs` with exact approval ID,
-  count, privacy, fanout, readback, and idempotency gates.
-- Generated final owner decision, question/score approval, task/research
-  approval, parser repair, score no-op, dry-run, apply, readback, and
-  idempotency evidence under
+Reran the read-only class intake audit and privacy-safe digest export. The
+audit remains `PARTIAL` with 18 Drive recordings, 29 content jobs, and 13
+student-question rows; digest export remains raw-body-free with 29 recordings
+and 0 privacy findings.
+
+Still blocked by `DEC-20260626-101`: raw transcript export, any further Drive
+write beyond #83, production repair/reparse/canonical writes, worker retry,
+paid retranscription, class backfill, stale deletion, sends, charges/access
+grants, credential/account/DNS changes, or broad Drive sync.
+
+## 2026-06-28T00:00:00+03:00 - Rabbi Scheller Account UI Audit
+
+Captured `RAW-20260628-001` and completed `REQ-20260628-001` as a local,
+fixture-backed front-end audit of Rabbi Scheller's provider account and
+Operations workspace.
+
+Verification passed:
+
+- `node scripts/smoke-rabbi-scheller-provider-navigation-local.mjs`
+- `node scripts/smoke-rabbi-scheller-operations-navigation-local.mjs`
+- `node scripts/smoke-rabbi-scheller-provider-api-usage-local.mjs`
+- `node scripts/smoke-portal-agnostic-login-chooser-local.mjs`
+- focused Rabbi/auth/tenant/action tests 35/35
+- `npm run watchdog:actions` with 0 findings
+- JSONL ledger and action-registry parse checks
+
+Evidence is recorded in
+`tasks-pending/2026-06-28-rabbi-scheller-account-ui-audit.md`.
+
+Verdict: local navigation and action coverage are sound, but the live Rabbi
+owner handoff is not complete. Remaining blockers are split Rabbi owner
+credentials, final Shloimie role, mobile helper overlay polish, clean
+push/deploy/live-smoke authorization, and live account data/setup proof.
+
+## 2026-06-28T09:54:00+03:00 - Rabbi Workspace Login And UI Fix Local Verification
+
+Captured `RAW-20260628-002` and locally implemented the Rabbi workspace login/UI
+fix for `REQ-20260628-002` through `REQ-20260628-004`.
+
+Changed the One Time role model so Shloimie is `one_time_admin` / Workspace
+Admin while Rabbi Elie Scheller remains Workspace Owner. Added the
+`ONE_TIME_ADMIN_*` / `SHLOIMIE_ONE_TIME_*` env path, preserved legacy manager
+compatibility, returned server-side scoped Operations redirects from login, and
+made the login page follow that redirect. Polished the Rabbi-facing provider nav
+columns, reduced the mobile helper launcher footprint, hid the closed
+Operations helper panel from hit testing/visibility, and refreshed action
+coverage/parity artifacts.
+
+Verification passed: syntax checks for `server.js`, `one-time-role-model.js`,
+and `one-time-drive-brief.js`; focused auth/portal/action tests 76/76; four
+local Playwright smokes for provider navigation, Operations navigation, API
+Usage, and portal chooser; One Time Operations UI smoke; `npm run
+watchdog:actions` with 0 findings; action coverage/parity generation; and
+ledger JSONL parse.
+
+At this point, live completion remained blocked by `DEC-20260623-006` and
+secure secret placement: the supplied password was not committed or written
+into tracked files, Railway secrets were not changed, and no deploy/live smoke
+had been run. The later launch-readiness entry below records the deployment and
+remaining scoped-secret blocker.
+
+## 2026-06-28T12:33:00+03:00 - Rabbi / One Time Launch Readiness Deployed
+
+Captured `RAW-20260628-003` and completed the app-visible cleanup for
+`REQ-20260628-006` and `REQ-20260628-007`; deployed/smoked `REQ-20260628-008`
+except for the real scoped credential proof, which remains blocked by secure
+secret placement under `REQ-20260628-005`.
+
+Changed the Rabbi / One Time Operations experience to read like a focused
+provider CRM/program workspace: Program / Launch, Members / CRM, Materials,
+Messages, Workflows, Setup, Usage, and Workspace Settings. Cleaned related
+participant/program sub-tabs to Members, Email Leads, Parent Contacts, Support
+Messages, Membership, Tiers, Class Schedule, Materials, and Payments / Access.
+Kept Shloimie modeled as `one_time_admin` / Workspace Admin and Rabbi Elie
+Scheller as Workspace Owner.
+
+Verification passed: syntax checks; focused Rabbi/One Time/auth/action tests
+77/77; taxonomy regression tests 20/20; four local browser smokes; action
+coverage/parity generation; `npm run watchdog:actions`; Railway deployment
+`98bc339f-e0f6-4145-9732-682d945dff44` with `SUCCESS`; `npm run app:smoke`;
+`npm run app:smoke:rabbi-onetime-landing`; and `npm run
+app:smoke:operations-workspace-taxonomy`.
+
+Live reports:
+
+- `ops/live-smokes/2026-06-28T09-30-27-741Z-live-app-smoke.md`
+- `ops/live-smokes/2026-06-28T09-30-25-963Z-rabbi-onetime-landing-smoke.md`
+- `ops/live-smokes/2026-06-28T09-32-34-481Z-operations-workspace-taxonomy-live-smoke.md`
+
+Remaining blocker: real scoped Shloimie/Rabbi live login cannot be claimed
+until `ONE_TIME_ADMIN_*` or `SHLOIMIE_ONE_TIME_*` and separate
+`ONE_TIME_OWNER_*` secrets are installed through the secure keyholder/Railway
+path. The supplied password was not committed or written into tracked files.
+
+## 2026-06-28T14:08:38+03:00 - Shloimie One Time Scoped Login Live Verified
+
+Configured Shloimie's One Time workspace-admin variables in Railway production
+using the secure variable path without printing secret values. Patched the
+Operations auth collision where the same visible username could exist as both
+the legacy platform admin and the scoped One Time workspace admin by storing a
+role-qualified session key while keeping the visible username unchanged.
+
+Deployed Railway bundle `836221d0-c75e-4499-b634-8fd4a80469c3`, which reached
+`SUCCESS`. Verification passed:
+
+- `node --check server.js`
+- focused auth/navigation tests 61/61
+- `npm run railway:doctor`
+- `npm run app:smoke`
+- `npm run app:smoke:rabbi-onetime-landing`
+- `npm run app:smoke:operations-workspace-taxonomy`
+- live scoped Shloimie login smoke:
+  `ops/live-smokes/2026-06-28T11-07-52.801Z-shloimie-one-time-scoped-login-smoke.md`
+
+The live scoped smoke proved login as `one_time_admin`, workspace
+`rabbi_sheller_provider`, project `one_time_mishnah_class`, redirect to the
+scoped Operations dashboard, settings access, workspace directory read, and task
+API read. The supplied password remains redacted from tracked files and
+evidence. Separate Rabbi owner credentials are still not configured because no
+separate owner password was supplied.
+
+## 2026-06-28T15:02:00+03:00 - Shloimie Same Login Agency / One Time Admin Live Verified
+
+Captured `RAW-20260628-004` and completed `REQ-20260628-009` through
+`REQ-20260628-012`.
+
+Patched Operations login role selection so Shloimie's same visible username can
+act as platform `super_admin` by default and scoped `one_time_admin` when the
+safe return path targets Rabbi Scheller's One Time workspace. The login page
+now submits sanitized `returnTo`, checks existing sessions through
+`/api/bna/me`, and follows the server-provided `redirect_to`.
+
+Updated Railway production variables for the platform Operations and One Time
+admin login paths using the secure variable path without printing secret
+values. Deployed Railway bundle `451b4ab9-dc24-4512-8252-bf2f5aa77927`, which
+reached `SUCCESS`.
+
+Verification passed:
+
+- `node --check server.js`
+- focused auth/navigation/UI tests 75/75
+- `npm run app:smoke`
+- `npm run app:smoke:rabbi-onetime-landing`
+- `npm run app:smoke:operations-workspace-taxonomy`
+- direct same-login live smoke:
+  `ops/live-smokes/2026-06-28T12-01-35-891Z-shloimie-same-login-agency-onetime-smoke.md`
+- Playwright scoped login stability smoke:
+  `ops/live-smokes/2026-06-28T12-02-20-248Z-shloimie-scoped-login-browser-stability-smoke.md`
+
+The live proof shows default login as `super_admin`, Rabbi workspace return
+path login as `one_time_admin`, final scoped URL
+`/operations?workspace=rabbi_sheller_provider&view=dashboard`, stable browser
+landing with no login bounce, and project scope `one_time_mishnah_class`.
+## 2026-06-28 - Issue #41 Parser/Question/Score/Task Backlog Safe Closeout
+
+- Registered `RAW-20260628-006` and reactivated the existing transcript run
+  `ops/execution-runs/2026-06-26-transcript-drive-digest-rebuild` without
+  creating a duplicate run.
+- Added no-write local tooling for the missing packet commands:
+  `scripts/class-drive-intake-reconcile.cjs`,
+  `scripts/content-card-topic-audit.cjs`,
+  `src/lib/bna/content-card-view-model.js`, and
+  `tests/content-card-view-model.test.js`.
+- Refreshed read-only Issue #41 evidence: 18 Drive recordings, 29 content
+  jobs, 29 repo-safe digest recordings, 10 needs-parse cards, 13
+  student-question rows, 7 matched, 6 still blocked, 0 score/progress apply
+  rows, and 25 no-write task/research-card candidates with 0 ready to apply.
+- Created `PARSER-REPAIR-RESULTS`, `STUDENT-QUESTION-MATCH-REVIEW`,
+  `STUDENT-SCORE-PROGRESS-PLAN`, `TASK-RESEARCH-CARD-APPLY-PLAN`,
+  `CONTENT-CARD-TOPIC-FILTER-AUDIT`, and local content-card readback evidence
+  under `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/`.
+- Verification passed: focused tests 21/21, digest privacy scan 0 findings,
+  run validate/source/stale checks, secrets audit, targeted generated-evidence
+  privacy scan, and `git diff --check` with line-ending warnings only.
+- Posted Issue #41 status comment
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4827203453`.
+- Production reparse/canonical write, student-question apply, score/progress
+  apply, task/research-card creation, raw export, further Drive writes, worker
+  retry, paid retranscription, backfill, broad Drive sync, and `--apply`
+  remain blocked by `DEC-20260626-101`.
+
+## 2026-06-29 - Issue #41 General Class Question Decision Packet
+
+- Captured `RAW-20260629-001`, where Shloimie decided the six ambiguous
+  question refs should be filed as general class questions rather than mapped
+  to specific students.
+- Added `scripts/class-drive-intake-owner-decision-packet.cjs` and generated
+  owner-decision and approval evidence under
   `ops/class-drive-intake/2026-06-26-two-week-class-intake-audit/`.
-- Ran the approved production apply. Readback found 7 matched personal
-  question rows, 6 class-scoped general question-review rows, 25 private
-  task/research review rows, 0 score/progress rows, and 0 class-question fanout
-  rows.
-- Refreshed privacy-safe digest/card evidence: 29 recordings, raw bodies false,
-  0 privacy findings.
+- Updated `STUDENT-QUESTION-MATCH-REVIEW.md/json`: 13 total rows, 7
+  student-specific matched rows, 6 approved general class question rows, and 0
+  student-match rows blocked.
+- Generated
+  `PRODUCTION-STUDENT-QUESTION-SCORE-APPLY-APPROVAL-PACKET.md/json` and
+  `TASK-RESEARCH-CARD-APPROVAL-PACKET.md/json`.
+- Verification: script syntax passed, packet generation passed, and no
+  production writes were performed. Score/progress remains a no-op with 0 safe
+  rows. Actual production writes still require an exact guarded apply command
+  and readback.
+- Posted Issue #41 owner-decision update:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4828729816`.
 
-Verification:
+## 2026-06-29 - Issue #41 Owner Decision Flow Hardening
 
-- `node --check src/lib/bna/class-drive-intake-reconcile.js`: passed.
-- `node --check scripts/class-drive-intake-reconcile.cjs`: passed.
-- `node --check scripts/class-drive-intake-apply-approved.cjs`: passed.
-- `node --test tests/class-drive-intake-apply-approved.test.js tests/class-drive-intake-reconcile.test.js`: passed.
-- `node --test tests/class-drive-intake-reconcile.test.js tests/transcript-digest-export.test.js tests/two-week-class-intake-audit.test.js tests/content-card-view-model.test.js tests/operations-content-library-taxonomy.test.js tests/class-drive-intake-apply-approved.test.js`: 55/55 passed.
-- `npm run content:export-digests -- --privacy-scan`: 29 recordings, raw
-  bodies false, 0 privacy findings.
-- `npm run content:card-topic-audit`: 29 recordings, 29 generated titles, 10
-  explicit parser-backlog items, 0 routing gaps, 0 topic-classification gaps.
+- Hardened `scripts/class-drive-intake-owner-decision-packet.cjs` so it fails
+  if any approved class-question ref is missing, strips accidental raw question
+  text from packet outputs, supports explicit output directory selection, and
+  refuses `--apply`.
+- Added `tests/class-drive-intake-owner-decision-packet.test.js`.
+- Verification passed: owner-decision test 3/3, focused Issue #41 suite 24/24,
+  `npm run content:card-topic-audit`, run validate/source/stale/blocker
+  checks, targeted privacy scan, secrets audit, and `git diff --check` with
+  LF/CRLF warnings only.
 
-## 2026-06-30 - Deploy closeout and Telegram Torah participation parser repair
+## 2026-06-29 - Issue #41 Drive Attendance / Progress Visibility
 
-- Stored the redacted deploy/grade/Telegram follow-up as
-  `raw-input/RAW-20260630-002-deploy-grade-telegram-followup.md` and promoted
-  the durable deploy-closeout plus Torah participation default rules into
-  `MEMORY.md`.
-- Added a Telegram daily Torah participation parser/persistence path in
-  `scripts/telegram-kimi-bridge.mjs`. It recognizes explicit half/full/zero,
-  late/present/absent language, applies the present/100% default only when the
-  operator says so, excludes duplicate/external/non-BNA rows, and writes
-  row-level Torah learning plus accountability records from Telegram intake.
-- Added `tests/telegram-daily-participation-parser.test.js` to cover the
-  2026-06-29 correction pattern and the no-fanout behavior when no explicit
-  default phrase is present.
-- Deployed the current parser build to Railway production service
-  `skillful-motivation`; deployment
-  `9f6987ac-44ae-4bb9-b308-849d552f8c2a` reached `SUCCESS`.
-- Post-deploy live smoke passed:
-  `ops/live-smokes/2026-06-30T06-22-23-969Z-live-app-smoke.md`.
-- Post-deploy Telegram status readback passed: configured hosted polling worker,
-  bridge runtime healthy/running, bot username `bneineviimacademy_bot`, Codex
-  enabled.
+- Captured `RAW-20260629-003`, where Shloimie asked whether Drive folder drops
+  and Telegram bot updates are parsing grades/scores, attendance, and progress,
+  and asked to show last updated date, attendance record, and overall progress
+  for students.
+- Added read-only student status aggregates to `GET /api/bna/students` for
+  latest accountability update, attendance counts/percent/status/date, and
+  latest progress percent/date.
+- Updated Operations student list/profile rendering to show last updated,
+  attendance record/status, latest progress note/percent, and trip/Torah
+  progress without raw transcript or Telegram private bodies.
+- Tightened `src/lib/bna/intake-parser.js` so class-recording section notes
+  route attendance/progress/assignment/class-note items to explicit lanes
+  instead of falling back to generic Tasks.
+- Created `DRIVE-ATTENDANCE-SCORE-PROGRESS-STATUS.md/json`.
+- Verification passed: `node --check server.js`, focused parser/Operations/
+  Telegram tests 22/22, local `GET /operations.html` HTTP 200 with the new
+  learning-status marker, Drive intake audit, digest privacy scan, content-card
+  audit, and the no-write class-drive planner. No production score,
+  attendance, progress, Drive, or raw transcript write was performed.
+- Created clean branch `codex/issue-41-attendance-progress-visibility-20260629`
+  from `origin/master`, committed `e20c1706`, pushed it, and opened draft PR
+  #50: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/50`.
+- Clean branch verification passed: `node --check server.js`, focused tests
+  21/21, `git diff --check`, `npm run secrets:audit`, `npm ci`, and local
+  static `GET /operations.html` smoke with dummy non-secret startup env.
+- Posted Issue #41 attendance/progress status:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4829959028`.
+- Posted Issue #41 PR #50 follow-up:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4830072040`.
+- Remaining blocker: production score/attendance/progress apply still has 0
+  safe rows and no exact apply command.
 
-Verification:
+## 2026-06-29 - Issue #41 PR #50 live readback verified
 
-- `node --check scripts/telegram-kimi-bridge.mjs`: passed.
-- `node --test tests/telegram-daily-participation-parser.test.js tests/telegram-media-routing.test.js`: 13/13 passed.
-- `npm run secrets:audit`: 5410 tracked paths, 0 tracked secret-risk files.
-- `npm run railway:redeploy`: uploaded current local build to production.
-- `npm run railway:doctor`: deployment
-  `9f6987ac-44ae-4bb9-b308-849d552f8c2a` `SUCCESS`.
-- `npm run app:smoke`: passed.
+- Marked PR #50 ready, merged it, and verified Railway auto-deployed merge
+  commit `e3dad48257daea7fdf760aa9fccb1ad42f98ce9e` to
+  `skillful-motivation` production deployment
+  `ebe7e05c-273f-4819-a1d2-7bdf78bec506` with status `SUCCESS`.
+- Live `/operations.html` readback returned HTTP 200 and included
+  `data-student-learning-status`, `latest_progress_percent`, and `Attendance
+  Record`; read-only Operations workspace taxonomy smoke passed.
+- Credentialed read-only `/api/bna/students` readback returned 8 active rows:
+  6 with attendance percentages, 6 with latest progress percentages, 5 with
+  average goal progress above 0, and latest learning/accountability update
+  `2026-06-28T10:17:37.178Z`.
+- Created `PR-50-MERGE-LIVE-READBACK.md/json` and prepared the Issue #41 live
+  readback comment. No production score/attendance/progress apply, Drive write,
+  raw transcript export, class backfill, broad Drive sync, paid retranscription,
+  worker restart, send/publish, charge, DNS, credential, or account mutation was
+  performed.
+- Posted Issue #41 live-readback comment:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/issues/41#issuecomment-4830196521`.
 
-## 2026-06-30 - Operations Content library visibility repair
+## 2026-06-29 - Rabbi OneTime Communications / CRM / Email / WAPI import packet
 
-- Ran the requested PR #53 closeout command path. PR #53 was marked ready and
-  merged on GitHub with merge commit `4cb574f5`.
-- Reproduced the live Operations Content bug: `/api/bna/content-jobs` returned
-  jobs, but the Content Library rendered zero cards.
-- Root cause was a frontend recursion loop:
-  `contentParsedSections()` -> `inferredContentTopics()` ->
-  `contentTopicKeys()` -> `contentCardModel()` -> `contentParsedSections()`.
-- Updated `inferredContentTopics()` to use `contentFallbackTopicKey(job)`
-  directly, so fallback topic labels no longer re-enter the card model.
-- Added focused regression coverage to keep fallback topic inference out of the
-  card-model/topic-key recursion path.
-- Stored repo-safe raw intake
-  `raw-input/RAW-20260630-003-content-library-filter-visibility-followup.md`
-  and promoted the safe-command execution preference into `MEMORY.md`.
+- Captured `RAW-20260629-004`, created active execution run
+  `ops/execution-runs/2026-06-29-rabbi-onetime-comms-crm-email-import`, and
+  registered `REQ-20260629-101` through `REQ-20260629-108`.
+- Reworked the local Operations Communications overview so channel tabs render
+  in the top rail, duplicate channel cards are removed, import notes move to
+  Import History, Email/WhatsApp/no-send readiness is explicit, and New Message
+  is not a giant primary action in the Rabbi workspace.
+- Added scoped WAPI phonebook reporting: Operations now passes workspace/project
+  filters, the report can run for `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, and scoped reports exclude unscoped account-wide
+  WAPI directory rows.
+- Re-inventoried Downloads and applied the guarded first-party no-send One Time
+  contact import after safe dry-run. Redacted readback confirmed 1520 scoped
+  One Time batch rows, all `no_send`, `external_write_performed=false`, and 0
+  matching BNA project rows.
+- Verification passed: focused tests 20/20, syntax checks, Downloads inventory,
+  CRM import/UX smokes, Email readiness smoke, scoped WhatsApp/WAPI smoke,
+  communications live smoke for the currently deployed app, communications and
+  security watchdogs, secrets audit, safe fixture browser smoke at
+  360/390/430/768/1024/1440, and `npm run bna:run:validate`.
+- Remaining blocker: app-visible/server-visible rows
+  `REQ-20260629-102`, `REQ-20260629-103`, `REQ-20260629-106`,
+  `REQ-20260629-107`, and `REQ-20260629-108` are locally verified but not Done
+  until an isolated release branch is deployed and live-smoked.
 
-Verification:
+## 2026-06-29 - OneTimeOneTime Resend outbound identity no-send proof
 
-- `node --test tests/operations-content-library-taxonomy.test.js tests/content-card-view-model.test.js tests/operations-content-research-section.test.js tests/operations-module-scoping.test.js`: 23/23 passed.
-- `npm run content:card-topic-audit`: 29 recordings, raw bodies false, 29
-  generated titles, 0 routing gaps, 0 topic classification gaps.
-- `npm run secrets:audit`: 5412 tracked paths, 0 tracked secret-risk files.
-- `npm run railway:redeploy`: uploaded the Content UI fix to production.
-- `npm run railway:doctor`: deployment
-  `110dc155-f95f-42cc-b79c-84cad663e8bd` `SUCCESS`.
-- `npm run app:smoke`: passed with report
-  `ops/live-smokes/2026-06-30T06-52-28-375Z-live-app-smoke.md`.
-- Targeted live browser readback: Content Library rendered 70 cards; Topic
-  filter options included Torah, Content/Marketing, Operations, One Time, and
-  Other; selecting Torah filtered to 1 card with no empty state.
+- Registered the `RAW-20260629-005` Resend inbound CRM continuation in the
+  existing Rabbi OneTime active run and completed `REQ-20260629-110` locally.
+- Added Rabbi-profile Resend identity support so the config can resolve
+  `onetimeonetime.com`, `info@onetimeonetime.com`, display name
+  `OneTimeOneTime Mishnah`, and reply-to `info@onetimeonetime.com` without
+  falling back to the BNA sender.
+- Updated `.env.example`, `docs/integrations/RESEND.md`, server reply-to
+  propagation, the email no-send smoke, and focused tests.
+- Verification passed: syntax checks, `node --test tests/resend-client.test.js
+  tests/one-time-launch-readiness.test.js` 11/11, and
+  `npm run app:smoke:email-resend-ux` with 8 drafts, `bulk_send_enabled=false`,
+  `test_send_enabled=false`, and `email_send_performed=false`.
+- Remaining blocker: `REQ-20260629-110` is server-visible and needs clean
+  deploy/live no-send smoke before final Done. Next unblocked local batch is
+  `REQ-20260629-111`/`REQ-20260629-112` for verified inbound webhook and
+  received-email fetch/dedupe.
 
-## 2026-06-30 - Combined closeout branch preserves PR #52 Resend bridge
+## 2026-06-29 - OneTimeOneTime Resend inbound CRM and Operations visibility local proof
 
-- While stacking the current systems closeout release branch, preserved the
-  PR #52 Operations bridge so first-party `bna_communications` rows are merged
-  into Operations Communications cards alongside existing communication
-  sources.
-- The stacked branch includes signed Resend inbound webhook route coverage,
-  Received Email fetch/dedupe support, One Time routing, first-party CRM
-  storage, and Operations card visibility tests from PR #52.
-- Final live Resend completion still depends on the external
-  `RESEND_FROM_EMAIL` / `RESEND_WEBHOOK_SECRET` / Resend `email.received`
-  webhook setup and an approved signed inbound replay/readback.
-- Guardrails preserved: no email/test email, WhatsApp, SMS, Telegram, Buffer,
-  campaign, DNS, payment, access, external CRM/GHL write, secret exposure, or
-  raw received-email body commit was performed by this stacking step.
+- Completed local implementation for `REQ-20260629-111` through
+  `REQ-20260629-114`: signed `/api/resend/inbound` route aliases, Resend
+  Received Email API fetch, retry dedupe, OneTime recipient routing, first-party
+  CRM contact/message storage, and Operations Communications visibility.
+- Updated Operations so it fetches `/api/bna/communications`, normalizes
+  `bna_communications` rows, and merges them into the existing no-send
+  Communications card lanes beside contact communications.
+- Verification passed: syntax checks, focused inbound/UI bridge tests 28/28,
+  existing no-send Resend smoke, and recorded run evidence. No email,
+  WhatsApp, SMS, Telegram, Buffer, campaign, DNS, payment, access grant,
+  external CRM/GHL runtime, or raw private email/contact evidence action was
+  performed.
+- Remaining blocker: `REQ-20260629-110` through `REQ-20260629-116` need an
+  isolated release branch/deploy, Railway/Resend env verification without
+  exposing values, signed live inbound replay or approved test message, and
+  redacted live Operations CRM readback before final Done.
 
-## 2026-06-30 - Current systems closeout merged, deployed, and recorded
+## 2026-06-29 - OneTimeOneTime Resend inbound CRM local implementation
 
-- Created the canonical current-systems closeout register and audit for
-  `RAW-20260630-005`:
-  `tasks-pending/2026-06-30-current-systems-closeout.md` and
+- Implemented the local Resend inbound path for `RAW-20260629-005`: public
+  `POST /api/resend/inbound`, raw-body Svix verification, invalid-signature
+  rejection, safe ignored non-`email.received` handling, Received Email API
+  fetch helper, pre/post fetch dedupe, OneTime recipient routing, first-party
+  contact match/create, and `bna_communications` CRM storage with safe header
+  metadata.
+- Added the public signed route to `ops/route-registry.json`, refreshed
+  `.env.example`, rewrote `docs/integrations/RESEND.md`, and added
+  `docs/operator-walkthroughs/integrations/resend-email.md` with the exact
+  webhook URL and no-secret Railway variable names.
+- Verification passed: `node --check server.js`,
+  `node --check src/lib/integrations/resend-client.js`,
+  `node --check src/lib/integrations/resend-inbound-crm.js`, focused Resend
+  tests 23/23, `npm run app:smoke:email-resend-ux`,
+  `npm run one-time:smoke:resend-vimeo-stripe`, `npm run watchdog:security`,
+  `npm run watchdog:communications`, `npm run secrets:audit`, and
+  `npm run bna:run:validate`.
+- Remaining blockers: `REQ-20260629-111` through `REQ-20260629-116` are
+  terminal Blocked, not Done, until a clean deploy, value-free Railway env
+  proof, Resend `email.received` webhook setup, and approved live inbound
+  replay/test prove scoped Operations CRM visibility. No email send, DNS,
+  Zoho, public routing, account mutation, or secret exposure occurred.
+
+## 2026-06-29 - One Time Drive intake email notification diagnosis
+
+- Completed `REQ-20260629-117` / `TASK-20260629-006` for `RAW-20260629-006`.
+  Read-only Drive inspection found the Rabbi PowerPoint metadata in One Time
+  `04 Content and Media Intake`, while the configured BNA raw media intake
+  folder and mapped One Time video/audio drop folder were empty.
+- Root cause: this upload path is not wired as an email-triggering event. The
+  active Drive auto-watch monitors BNA `01 Raw Intake`, the One Time map does
+  not cover PowerPoint/slides source-material uploads, and the current
+  content-job notification creates an in-app `rabbi_content_added` record with
+  `no_send: true` rather than sending email.
+- Evidence recorded in
+  `ops/drive-audits/2026-06-29-onetime-drive-intake-notification-diagnosis.md`
+  and the active Rabbi/One Time execution run. `npm run bna:run:validate`
+  passed after the audit row was added.
+- No email or test email was sent; no Drive, DNS, account, payment, access,
+  credential, external CRM/GHL, or raw private file-content mutation occurred.
+
+## 2026-06-29 - OneTimeOneTime Resend inbound clean release PR
+
+- Created clean release worktree `C:\Users\User\BNA-resend-inbound-release`
+  from `origin/master`, branch
+  `codex/onetime-resend-inbound-crm-release-20260629`.
+- Applied only the Resend-specific sender identity, inbound webhook, Received
+  Email API, CRM routing/storage, route registry, docs, env placeholder, and
+  focused test changes; committed
+  `1997751c2a28a466d90d9d35bd74717c3bb17d29`.
+- Pushed the branch and opened draft PR #52:
+  `https://github.com/shloimie-beep/bnei-neviim-academy/pull/52`.
+- Clean-branch verification passed: syntax checks, focused Resend suite 24/24,
+  route security watchdog finding_count=0, and secrets audit with 5329 tracked
+  paths checked.
+- Deployment remains blocked: `npm run railway:doctor` refused the clean
+  worktree because no explicit service is selected and the BNA guard rejects
+  the linked `one-time-production` target for this command. No live email,
+  DNS, Zoho, public routing, account, or external CRM mutation occurred.
+
+## 2026-06-29 - OneTimeOneTime Resend PR #52 Operations visibility update
+
+- Updated PR #52 to current head
+  `e28cb72da1106cb8f6705bcde883bfd8acfcf1f0`.
+- Added Operations visibility for first-party `bna_communications` rows, so
+  Resend inbound CRM messages can merge into the existing Communications cards
+  after deploy.
+- Added `tests/resend-inbound-webhook.test.js` and expanded the focused
+  release suite to cover raw-body verified `/api/resend/inbound` and
+  `/api/bna/resend/inbound` route aliases plus the Operations merge bridge.
+- Verification passed on the clean release branch: focused
+  Resend/inbound/UI tests 34/34, `npm run watchdog:security`,
+  `npm run watchdog:communications`, and `npm run secrets:audit` with 5335
+  tracked paths and 0 tracked secret-risk files.
+- Deployment/live Done remains blocked on explicit Railway service target,
+  value-free Resend/Railway env proof, configured or replayed signed
+  `email.received` webhook, and redacted live Operations CRM readback. No
+  email, WhatsApp, SMS, Telegram, Buffer, campaign, payment, DNS, access
+  grant, external CRM/GHL write, secret exposure, or raw private received-email
+  body commit was performed.
+
+## 2026-06-29 - OneTimeOneTime Resend PR #52 live deployment partial
+
+- Verified Railway web service `skillful-motivation` / production deployment
+  `8db826da-cf2f-4e8-bb6d-eee1bf62e28b` reached `SUCCESS`.
+- Live smokes passed with platform Operations auth:
+  `ops/live-smokes/2026-06-29T15-33-20-837Z-email-resend-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-29T15-33-20-706Z-communications-screening-live-smoke.md`,
+  and `ops/live-smokes/2026-06-29T15-33-20-845Z-whatsapp-ux-live-smoke.md`.
+- Live Operations HTML contains PR #52 `bna_communications` merge markers.
+- Live Resend status proves the OneTimeOneTime sender identity
+  `OneTimeOneTime Mishnah <info@onetimeonetime.com>` and reply-to
+  `info@onetimeonetime.com` for `rabbi_sheller_provider` /
+  `one_time_mishnah_class`.
+- Remaining blocker: live status reports `resend_webhook_configured=false`,
+  required env names `RESEND_FROM_EMAIL` and `RESEND_WEBHOOK_SECRET`, and
+  unsigned `/api/resend/inbound` returns the safe setup blocker
+  `RESEND_WEBHOOK_SECRET is not configured`. Signed webhook verification,
+  received-email fetch, and CRM row readback remain blocked. No outbound send
+  or external mutation was performed.
+
+## 2026-06-29 - Combined One Time Communications + Resend release deployed
+
+- Pushed combined release branch
+  `codex/rabbi-onetime-comms-scope-release-20260629` to commit `784b3f4a`
+  and deployed it to Railway production deployment
+  `5b527404-bdf1-4df4-9b1d-7abf6536dafb`.
+- The combined deployment supersedes the earlier PR #52-only deployment for
+  live Operations proof, because it includes both the Communications UI shell
+  fixes and the Resend inbound CRM/Operations visibility bridge.
+- Live smokes passed:
+  `ops/live-smokes/2026-06-29T15-38-06-388Z-email-resend-ux-live-smoke.md`,
+  `ops/live-smokes/2026-06-29T15-38-06-396Z-whatsapp-ux-live-smoke.md`, and
+  `ops/live-smokes/2026-06-29T15-39-02-233Z-communications-screening-live-smoke.md`.
+- Live One Time status proves the desired sender identity
+  `OneTimeOneTime Mishnah <info@onetimeonetime.com>` with reply-to
+  `info@onetimeonetime.com`, while also proving the remaining blocker:
+  `email_provider=gmail`, `resend_configured=false`,
+  `resend_webhook_configured=false`, and missing `RESEND_FROM_EMAIL` /
+  `RESEND_WEBHOOK_SECRET`.
+- Updated the active run so `REQ-20260629-102`, `REQ-20260629-103`,
+  `REQ-20260629-106`, `REQ-20260629-107`, and `REQ-20260629-108` are Done.
+  `REQ-20260629-110` through `REQ-20260629-116` remain blocked on Resend/Railway
+  env setup, signed inbound replay, and redacted CRM readback.
+- No email, WhatsApp, SMS, Telegram, Buffer, campaign, payment, DNS, access
+  grant, external CRM/GHL write, secret exposure, or raw private contact/email
+  body commit was performed.
+
+## 2026-06-29 - OneTimeOneTime Resend blocker validation cleanup
+
+- Fixed the active execution-run validation issue on `REQ-20260629-108` by
+  classifying it as deployment/readiness closeout and listing the actual
+  implementation files whose release it verified.
+- Refreshed the Resend requirement register so it reflects the current live
+  state: deployment/live no-send smokes have passed, while final receiving is
+  blocked only on `RESEND_FROM_EMAIL`, `RESEND_WEBHOOK_SECRET`, Resend webhook
+  setup, signed replay, and CRM readback.
+- Performed a value-free keyholder check. Local Resend API key files exist by
+  name, but no `RESEND_WEBHOOK_SECRET` file/key name was found; the archived
+  One Time Resend env source did not contain the missing Resend env key names.
+- `npm run bna:run:status`, `npm run bna:run:next`, and
+  `npm run bna:run:blockers` validate with `10 done`, `7 blocked`, and no
+  unblocked executable batch. No secrets were printed or copied.
+
+## 2026-06-30 - Deploy closeout and Torah participation update
+
+- Reran `npm run railway:redeploy` with explicit Railway project/environment/
+  service target `skillful-motivation` / `production`; Railway deployment
+  `26f6b426-f1dd-4498-8835-99c8f22e6df2` reached `SUCCESS`.
+- Ran `npm run railway:doctor` and two live `npm run app:smoke` checks. The
+  post-grade smoke passed and wrote
+  `ops/live-smokes/2026-06-30T06-09-48-752Z-live-app-smoke.md`.
+- Stored the durable deploy-closeout and Torah participation defaults in
+  `MEMORY.md` and repo-safe raw pointer
+  `raw-input/RAW-20260630-002-deploy-grade-telegram-followup.md`.
+- Inserted private raw intake `RAW-20260630-002` in the live database and
+  applied the 2026-06-29 Torah participation update for the active BNA roster:
+  5 Torah learning entries and 5 matching accountability events.
+- Readback confirmed the correction marker has no duplicate accountability
+  rows and excluded duplicate/external student rows.
+- Live Telegram status reports the academy bridge healthy/running, but recent
+  DB readback showed no June 29 Telegram raw-intake rows and one June 28
+  Telegram learning note did not expand into row-level progress. The next safe
+  repair is the Telegram multi-student participation parser/persistence path.
+
+## 2026-06-30 - One Time Contacts and Communications email-readiness cleanup
+
+- Registered the operator contacts/email UI request as `RAW-20260630-003` and
+  `TASK-20260630-003` after correcting an ID collision with the existing
+  deploy/grade follow-up raw record.
+- Added the private aggregate endpoint `/api/bna/one-time/contact-readiness`
+  and route-registry coverage. The endpoint is readiness/counts only: no names,
+  emails, phones, raw rows, sends, DNS writes, or external CRM writes.
+- Reworked the Rabbi/provider Operations taxonomy so the module reads
+  `Contacts` and `Communications`. Contacts now segments One Time records into
+  All Contacts, Warm Leads, Active Members, Parents, Students, Email Audience,
+  Needs Review, Suppressed/No-send, and Activity.
+- Moved Communications screening/readiness/import diagnostics behind a
+  collapsed details panel, replaced the templates/settings not-configured block
+  with a Settings shortcut, and registered that shortcut in the action registry.
+- Refreshed One Time action coverage and universal action parity artifacts.
+- Verification passed locally:
+  `node --check server.js`;
+  focused `node --test` sweep with 74/74 passing;
+  `node --test tests/one-time-operations-ui-smoke.test.js`;
+  `npm run watchdog:actions`;
+  `npm run watchdog:security`;
+  `npm run app:smoke:one-time-crm-contacts-ux`;
+  `npm run app:smoke:email-resend-ux`.
+- No email/test email, WhatsApp, SMS, Telegram, Buffer, campaign, DNS,
+  payment/access, external CRM/GHL, or raw private contact export action was
+  performed. App-visible requirements remain local-verified but blocked on a
+  clean deploy target and live authenticated smokes.
+
+## 2026-06-30 - One Time PowerPoint intake preservation and email fix
+
+- Added scoped One Time presentation intake for PowerPoint and Google Slides:
+  `server.js` now exposes `/api/bna/one-time/presentation-intake`, preserves
+  the original Drive file reference, stores open/download URLs, and dedupes by
+  Drive file so watcher loops do not repeatedly email.
+- Added the shared intake helper
+  `src/lib/bna/one-time-presentation-intake.js`, the Operations presentation
+  open/download links, route/action registry rows, and focused tests in
+  `tests/one-time-presentation-intake.test.js`.
+- Updated the Telegram bridge to watch the One Time presentation/source
+  folders and to run Drive auto-watch before Telegram polling, so a temporary
+  Telegram `getUpdates` conflict does not block Drive presentation pickup.
+- Configured production `ONETIME_POWERPOINT_NOTIFY_EMAIL` from the existing
+  local Shloimie email value without printing it, then redeployed the current
+  local bundle to Railway deployment `0abed79d-cfca-4081-b4ac-eb0ba3eef751`.
+- Verification passed: syntax checks, focused tests, action/security
+  watchdogs, Railway doctor, live anonymous route rejection, authenticated
+  Operations HTML presentation-link smoke, and live readback.
+- Restarted the academy bridge; it picked up a Rabbi PowerPoint and sent
+  Telegram confirmation message `1496`.
+- Re-triggered the five real presentation jobs that were blocked before the
+  env var was live: jobs `86`, `87`, `88`, `89`, and `90` now have
+  `presentation_email_notification.sent=true`, open URLs, download URLs, and
+  Gmail provider readback.
+
+## 2026-06-30 - One Time Drive dropoff email-only notifier
+
+- Registered owner decision `DEC-20260630-001`: the One Time/Rabbi Drive
+  dropoff notifier is Drive -> email only; Telegram alerts and Telegram polling
+  are out of scope unless they block the email watcher.
+- Added `src/lib/bna/one-time-drive-dropoff-email.js`,
+  `scripts/one-time-drive-dropoff-email-watch.mjs`, and
+  `/api/bna/one-time/drive-dropoff-intake` for the two approved Drive folders:
+  video/audio drops and slideshows/source materials. The watcher does not
+  import the Telegram bridge and does not call `getUpdates`.
+- Added idempotent email state on content jobs, open/download links for
+  original Drive files, scoped One Time route access, and Operations
+  source-material support for `Open presentation` / `Download presentation`.
+- Added and registered `scripts/register-one-time-drive-dropoff-notifier.ps1`
+  as Windows Scheduled Task `BNA One Time Drive Dropoff Email`, every 5
+  minutes. Recipient value is stored only in ignored runtime config and was not
+  printed in proof.
+- Verified locally: focused tests 13/13, syntax checks, scheduler `-WhatIf`,
+  watcher dry run over the two folders with 0 files and 0 emails, action/security
+  watchdogs, run validator, secrets audit, and `git diff --check`.
+- Deployed Railway deployment `581bc439-8b9f-418b-a7c3-9af93662df2a`;
+  Railway doctor reached `SUCCESS`. Live smoke passed at
+  `ops/live-smokes/2026-06-30T07-00-17-647Z-one-time-drive-dropoff-email-live-smoke.md`
+  with anonymous rejection, scoped invalid-folder rejection before write/email,
+  and Operations Open/Download presentation controls present.
+
+## 2026-06-30 - Current systems closeout before UI correction
+
+- Registered the closeout packet as `RAW-20260630-005`,
+  `TASK-20260630-005`, and requirements `REQ-20260630-201` through
+  `REQ-20260630-208`, with the canonical report at
   `ops/system-audits/2026-06-30-current-systems-closeout.md`.
-- Created execution run
-  `ops/execution-runs/2026-06-30-current-systems-closeout` and pointed
-  `ops/execution-runs/latest.json` at it so the active run reflects the current
-  goal instead of the older transcript-drive digest run.
-- Merged release PR #56 into `master` with merge commit `98cfc464` and
-  deployed Railway production service `skillful-motivation` with deployment
-  `6257a4af-bb62-4fd4-b1b5-aff1ec057f40`.
-- Closed PR #52 and PR #55 as superseded by PR #56.
-- Verified production with app, content research, operations helper,
-  communications screening, content topic filter, class upload trace,
-  Email/Resend no-send, and One Time CRM contacts live smokes.
-- Left Resend live inbound/outbound completion blocked on external
-  `RESEND_FROM_EMAIL`, `RESEND_WEBHOOK_SECRET`, webhook subscription, signed
-  inbound replay, and explicit real-send recipient approval.
+- Verified the active execution run in the primary checkout: 18 done, 7 blocked,
+  no unblocked executable batch, `npm run bna:run:validate` passed, secrets
+  audit passed, and `git diff --check` passed with line-ending warnings only.
+- Reconciled GitHub state: PR #52 remains open draft/dirty but has deployed
+  communications/Resend evidence; PR #53 and PR #54 are merged; the content
+  library follow-up raw source exists on fetched `origin/master`.
+- Diagnosed the remaining Content Library Torah filter issue after PR #54:
+  recursion was fixed, but digest cards lacked broad topic buckets. Built clean
+  release branch `codex/content-topic-multibucket-20260630`, committed
+  `22d049a5`, pushed it, and opened draft PR #55.
+- PR #55 adds multibucket digest-card topics for Torah, Class Notes, Education,
+  Operations, and One Time; the content audit now fails if Torah/Class Notes
+  collapse back to one-or-less cards.
+- Verification passed on the clean PR #55 branch: syntax checks, focused content
+  tests 11/11, content card topic audit, transcript gap audit, recording
+  classify dry run, content watchdog, secrets audit, and `git diff --check`.
+  Evidence was written under
+  `ops/class-drive-intake/2026-06-30-content-topic-routing-closeout/` and
+  `ops/watchdog-audits/2026-06-30T11-56-content-routing.md`.
+- Primary closeout checks also passed for the focused 80/80 test sweep,
+  content drive intake audit, content watchdog, communications watchdog,
+  content research scope smoke, email Resend UX smoke, One Time CRM contacts
+  UX smoke, Telegram bridge syntax, and focused Telegram tests 12/12.
+- Did not deploy PR #55 because production source-of-truth is skewed: PR #52 is
+  open/unmerged while related behavior has already been deployed. Deploying the
+  `origin/master`-based content branch could regress live communications state.
+- Remaining safe blockers are explicit: configure/prove Resend live
+  sender/webhook setup, reconcile PR #52/source-of-truth before PR #55 deploy,
+  approve any production class/raw/Drive writes with row-level apply evidence,
+  repair the live Operations helper Decisions-lane smoke, and add/map the
+  missing `app:smoke:class-upload-trace` script.
 
-Verification:
+## 2026-06-30 - Operations IA UI cleanup local verification
 
-- Focused node checks and tests on the release branch passed, including 45/45
-  Resend, communications, and content tests.
-- `npm run content:card-topic-audit -- --out-dir ops/class-drive-intake/2026-06-30-content-topic-routing-closeout`: passed.
-- `npm run watchdog:security`, `npm run watchdog:communications`, and
-  `npm run watchdog:content`: passed.
-- `npm run app:smoke`: passed after deployment.
-- `npm run app:smoke:email-resend-ux`: passed with
-  `external_send_performed=false`.
-- `npm run app:smoke:one-time-crm-contacts-ux`: passed with 1591 scoped leads
-  and 112 scoped communications.
-- `npm run app:smoke:class-upload-trace`: passed for job #78, with no transcript
-  body written to the report.
-- `npm run bna:run:validate`: passed for
-  `ops/execution-runs/2026-06-30-current-systems-closeout` with 7 done and 1
-  blocked requirement.
-- `npm run bna:run:next`: passed; no unblocked executable batch remains.
-- `npm run bna:run:blockers`: passed; only `REQ-20260630-203` remains blocked
-  on Resend/account-owner action.
+- Registered `RAW-20260630-006` and requirements `REQ-20260630-301` through
+  `REQ-20260630-309` for the Operations / One Time information-architecture
+  cleanup before coding.
+- Updated `public/operations.html` so the shell uses sidebar primary modules,
+  selected-module subnav, current-view filter rows, simplified topbar/mobile
+  header, one bottom-right helper launcher, cleaner task-card actions, filtered
+  communication-only task logs, sanitized/deduped communication cards, and
+  collapsed Settings > Advanced Danger Zone.
+- Added `scripts/watchdog-navigation-ia.mjs`, wired `npm run
+  watchdog:navigation-ia`, updated shell/navigation tests, updated the One Time
+  Operations Playwright smoke, and aligned the helper action registry selector.
+- Verification passed locally: `node --check server.js`, `node --check
+  scripts/watchdog-navigation-ia.mjs`, focused operations tests, One Time
+  Operations Playwright smoke, navigation IA watchdog, local responsive
+  Operations IA smoke with 21 screenshots, UI watchdog, action watchdog,
+  secrets audit, active run status/next, and `git diff --check` with line-ending
+  warnings only.
+- Evidence: `ops/ui-audits/2026-06-30-operations-ia-redesign.md`,
+  `ops/ui-audits/2026-06-30-operations-ia-redesign.json`,
+  `ops/watchdog-audits/2026-06-30T12-19-57-203Z-navigation-ia-watchdog.md`,
+  and `ops/playwright-smokes/2026-06-30-operations-ia-local/report.md`.
+- Not deployed: app-visible requirements remain blocked on `DEC-20260630-301`
+  because no clean release branch/worktree, commit, push, Railway deploy,
+  Railway doctor, or live smoke was performed for this UI batch.
+
+## 2026-06-30 - Operations IA UI cleanup full-suite reconciliation
+
+- Reconciled stale UI/action-registry tests after the IA shell changes and
+  regenerated `ops/action-registry/one-time-action-coverage.json` plus
+  `ops/action-registry/universal-action-parity.json`.
+- Full local verification now passes: `npm test` 1218/1218,
+  `node --test tests/watchdog-action-registry.test.js` 5/5, focused stale
+  contract reconciliation 67/67, `npm run watchdog:navigation-ia`,
+  `npm run watchdog:ui`, `npm run watchdog:actions`, `npm run secrets:audit`,
+  `npm run bna:run:status`, `npm run bna:run:next`, local Operations IA
+  Playwright smoke, and `git diff --check` with line-ending warnings only.
+- Latest evidence:
+  `ops/watchdog-audits/2026-06-30T12-38-58-074Z-navigation-ia-watchdog.md`,
+  `ops/watchdog-audits/2026-06-30T12-39-watchdog-ui-smoke.md`,
+  `ops/watchdog-audits/2026-06-30T12-39-watchdog-action-audit.md`, and
+  `ops/playwright-smokes/2026-06-30-operations-ia-local/report.md`.
+- Release status is unchanged: blocked on `DEC-20260630-301` until a clean
+  release target is committed, pushed, deployed, Railway doctor passes, and
+  live Operations smoke proof is recorded.
+
+## 2026-06-30 - One Time PowerPoint current-folder email and phone link fix
+
+- Registered `RAW-20260630-007` and requirements `REQ-20260630-401` through
+  `REQ-20260630-403` after the operator reported the expected PowerPoint email
+  still had not arrived and the system link did not open on the phone.
+- Sent a corrected email for content job #90 through the approved email action
+  to the configured recipient, with the recipient masked in logs.
+- Fixed the email-only watcher to cover the current office `04 Content and
+  Media Intake` folder for PowerPoint/Google Slides files only. A real watcher
+  run saw five existing presentation jobs and skipped all five as duplicate
+  already-sent jobs, so no duplicate automatic email blast was sent.
+- Updated uploaded `.pptx` open-link generation in
+  `src/lib/bna/one-time-presentation-intake.js` and
+  `src/lib/bna/one-time-drive-dropoff-email.js` so phones receive Drive
+  file-view links, while original-file Drive download links are preserved.
+  Native Google Slides still open in Slides and export as pptx.
+- Deployed Railway `e06dfbb1-4a0f-40e3-a2af-a85131cb43fc`; Railway doctor
+  reached `SUCCESS`. Live readback for content job #90 confirmed
+  `open_is_drive_file_view=true`, `open_is_docs_editor=false`, and
+  `download_is_original_file=true`.
+- Verification passed: `node --test tests/one-time-presentation-intake.test.js`
+  6/6, `node --test tests/one-time-drive-dropoff-email-watch.test.js` 9/9,
+  `node --check server.js`, and
+  `node --check scripts/one-time-drive-dropoff-email-watch.mjs`.
+
+## 2026-06-30 - Product Quality Compiler protocol hardening
+
+- Registered `RAW-20260630-009` and requirements `REQ-20260630-501` through
+  `REQ-20260630-507` for protocol-only hardening of vague product-quality
+  rambles.
+- Added `docs/PRODUCT-QUALITY-COMPILER.md` with trigger phrases, required
+  compiler output, Million-Dollar App Quality Standard, phrase expansion
+  dictionary, role/view scope compiler, IA rules, screenshot-first UI loop,
+  automatic batch compiler, no-GHL interpretation, test-data rule,
+  sloppy-system replacement rule, late Email/Stripe provider-packet rule, and
+  Rabbi / One Time examples.
+- Added `docs/SUPER-RAMBLE-PACKET-SPLITTING.md`,
+  `ops/prompt-packets/README.md`, and `ops/visual-quality-rubric.md`.
+- Updated `AGENTS.md`, `docs/BNA-RAMBLE-TO-DONE.md`, `GOAL-MODE.md`,
+  `QUALITY-GOALS.md`, `tasks-pending/_template-ramble-intake.md`, and
+  `tasks-pending/_template-goal-mode-correction-output.md` so vague quality
+  language compiles into exact specs, broad rambles split into staged packets,
+  and UI cleanup requires visual defect/screenshot evidence.
+- Recorded `DEC-20260630-NO-GHL-FIRST-PARTY-CRM`: GHL-like means first-party
+  CRM/product pattern inspiration only; no GHL/LeadConnector runtime, env vars,
+  API tools, workflows, or external CRM writes were added.
+- Verification passed: `npm run bna:run:status`, `npm run bna:run:validate`,
+  `npm run bna:run:source-coverage`, `npm run bna:run:stale-evidence`,
+  focused protocol tests 6/6, `npm run secrets:audit`, structured JSON/JSONL
+  validation, and `git diff --check` with line-ending warnings only.
+- Deployment was not required because this task changed documentation/protocol
+  templates only and did not change runtime tooling or app-visible behavior.
+
+## 2026-06-30 - Telegram One Time phonebook CRM import
+
+- Registered `RAW-20260630-010` for the three Telegram-uploaded contact
+  spreadsheets and linked live Telegram task `#1834`, ticket `#1324`, and
+  agent job `#371`.
+- Updated the One Time contact import mapper to recognize Google Contacts /
+  phonebook-style headers such as email value and phone value columns, while
+  keeping generic `contacts-*.xlsx` files review-only unless an explicit
+  One Time override flag is used.
+- Imported batch `telegram-one-time-phonebook-2026-06-30` into the first-party
+  Rabbi Scheller / One Time CRM scope
+  `rabbi_sheller_provider` / `one_time_mishnah_class`.
+- Redacted results: 3 files, 980 rows considered, 972 deduped CRM rows, 5
+  duplicates merged/skipped, 3 skipped rows, 972 `no_send` rows, 0 BNA project
+  rows.
+- Evidence:
+  `ops/imports/2026-06-30-telegram-one-time-phonebook-import-applied.md` and
+  `ops/imports/2026-06-30-telegram-one-time-phonebook-readback.md`.
+- Verification passed: syntax checks for the mapper and CLI, focused
+  `tests/one-time-launch-readiness.test.js` 6/6, redacted DB readback, and live
+  task/job/ticket closeout.
+- Sent a redacted Telegram completion report back to the source chat as message
+  `1520`.
+- Guardrails held: no email, WhatsApp, SMS, Telegram campaign, Buffer, payment,
+  access, DNS, GHL/LeadConnector, or external CRM write; no raw private contact
+  values were committed.
+
+## 2026-06-30 - Telegram spreadsheet upload routing repair
+
+- Registered `RAW-20260630-011` / `TASK-20260630-011` after the
+  operator reported that a Telegram `.xlsx` contact upload was incorrectly
+  sent to transcription/content handling and showed an OpenAI provider-key
+  error.
+- Updated `scripts/telegram-kimi-bridge.mjs` so spreadsheet documents use a
+  `spreadsheet-document` path before publish/content/transcription routing.
+  Spreadsheet replies now say no transcription, Content job, or Buffer/social
+  draft was created.
+- Sanitized Telegram transcription/provider errors so user-facing replies do
+  not echo raw provider JSON or key-like text.
+- Archived the three misrouted spreadsheet Content rows `93`, `96`, and `98`.
+  Redacted readback confirmed all three are archived, still have `0`
+  transcript characters, and have no parse JSON.
+- Evidence:
+  `ops/imports/2026-06-30-telegram-spreadsheet-routing-repair.md`.
+- Verification passed: Telegram bridge syntax check, focused Telegram routing
+  tests 22/22 plus post-cleanup routing test 13/13, secrets audit, and targeted
+  privacy scan.
+- Sent and edited a redacted Telegram operator status reply as message `1523`.
+- Hosted worker release remains blocked in this workspace: the current branch
+  has a large mixed dirty worktree with unrelated app-visible changes, so no
+  Railway worker deploy/restart was run here. Next release must carry the
+  Telegram spreadsheet-routing patch from a clean release target and then smoke
+  `academy-telegram-worker`.
+- Remaining provider note: real audio/video transcription still needs the
+  OpenAI provider key repaired.
+
+## 2026-06-30 - Telegram One Time extra phonebook import
+
+- Registered and completed `RAW-20260630-012` / `TASK-20260630-012` after the
+  operator dropped one additional Telegram contact spreadsheet and asked to
+  import it with duplicate cleanup.
+- Live DB readback identified the new upload as Content job `99`, Telegram
+  message `1521`, `contacts-6.xlsx`. Because the active hosted/other Telegram
+  worker handled the upload, the workbook was recovered from Telegram and saved
+  locally without recording Telegram file metadata values, token values, or
+  contact rows.
+- Ran a redacted dry run, then applied the guarded first-party import into the
+  existing batch `telegram-one-time-phonebook-2026-06-30`.
+- Import result: 55 rows considered, 51 valid contacts, 4 skipped rows, 51
+  inserted first-party CRM rows, 0 updated rows, 0 external writes, and 0
+  sends/publishes.
+- Redacted CRM readback now shows 1023 active batch rows, all in
+  `one_time_mishnah_class` / `rabbi_sheller_provider`, all `no_send`, all
+  `one-time-no-send-until-approved`, and 0 rows outside One Time.
+- Duplicate readback across active One Time project leads found 0 duplicate
+  normalized phone groups and 0 duplicate normalized email groups.
+- Archived misrouted spreadsheet Content jobs `94`, `95`, `97`, and `99`;
+  each had 0 transcript chars and no parse JSON.
+- Evidence:
+  `ops/imports/2026-06-30-telegram-one-time-phonebook-extra-contacts-6-readback.md`.
+- Sent a redacted Telegram operator status reply as message `1525`.
+- Guardrails held: no raw contact values committed, no campaign/contact send,
+  no GHL/LeadConnector/external CRM write, and no provider key value printed.
+
+## 2026-06-30 - Product Quality Compiler validator and drift watchdog
+
+- Registered `RAW-20260630-013` and
+  `tasks-pending/2026-06-30-product-quality-compiler-validator-drift-watchdog.md`
+  for the protocol/tooling enforcement packet.
+- Added `ops/product-quality-compiler.schema.json` and
+  `scripts/validate-product-quality-packets.mjs` to enforce Product Quality
+  Compiler packets with required fields, enums, ID/code patterns, DoR/DoD,
+  state matrix, screenshots, action states, no-GHL policy, provider separation,
+  deployment gates, browser-security, vague-phrase expansion, and trace fields.
+- Added valid/invalid fixtures and deterministic evals under
+  `ops/product-quality-compiler/`, plus reports under
+  `ops/product-quality-compiler/validation/` and
+  `ops/product-quality-compiler/evals/`.
+- Added `scripts/watchdog-product-quality-drift.mjs` and
+  `scripts/validate-agent-traces.mjs`.
+- Added `docs/UI-STATE-MATRIX.md`, `docs/VISUAL-QUALITY-HARNESS.md`,
+  `docs/UI-PATTERN-REFERENCE.md`, `docs/BROWSER-AGENT-SECURITY.md`, and
+  `docs/AGENT-TRACE-OBSERVABILITY.md`.
+- Updated AGENTS, ramble protocol, Product Quality Compiler, Super-Ramble
+  Packet Splitter, Goal Mode, Quality Goals, Agentic Memory, prompt-packet
+  README, templates, package scripts, and visual quality rubric accessibility
+  baseline.
+- Verification passed: Product Quality Compiler scripts and fixtures/evals,
+  protocol drift watchdog, trace validator, BNA run validators, source
+  coverage, stale evidence, secrets audit, JSON/JSONL parsing, and
+  `git diff --check` with line-ending warnings only.
+- Guardrails held: no Rabbi CRM UI implementation, no broad UI redesign, no
+  email/Stripe/DNS/payment/access/provider write, no Drive/Zoom/Vimeo/WhatsApp/
+  Telegram external write, and no GHL/LeadConnector runtime.
+
+## 2026-07-01 - Ramble Protocol v3 Product Quality Operating System
+
+- Registered `RAW-20260701-001` and
+  `tasks-pending/2026-07-01-ramble-protocol-v3-product-quality-operating-system.md`
+  for the router/compiler/DAG/audit-first protocol hardening packet.
+- Added `docs/RAMBLE-ROUTER.md`,
+  `docs/PRODUCT-QUALITY-OPERATING-SYSTEM.md`, `docs/PACKET-DAG.md`,
+  `docs/CONTEXT-BUDGET-AND-PACKET-SPLITTING.md`, and
+  `docs/REPO-SURFACE-MAP.md`.
+- Extended the Product Quality Compiler schema, validator, eval runner, drift
+  watchdog, trace validator, UI pattern reference, visual harness, browser
+  security, trace docs, prompt-packet README, AGENTS, ramble protocol, and
+  templates for v3 router/DAG/context/audit-first requirements.
+- Added v3 fixtures/eval cases for `Just finish it` and browser prompt
+  injection, plus packet templates for control tower, current-state visual
+  audit, implementation, verifier closeout, and provider setup.
+- Added Rabbi Sheller / One Time sample packets showing that the next UI work
+  starts with `00-control-tower` and `01-current-state-visual-audit`, with no
+  implementation until audit evidence and Definition of Ready pass.
+- Verification passed: Product Quality Compiler validation, fixtures, evals
+  8/8, invalid fixture checks 7/7, protocol drift watchdog with 0 findings,
+  trace validator, BNA run validators, source coverage, stale evidence, secrets
+  audit, JSON/JSONL parsing, and `git diff --check`.
+- Deployment/live smoke was not required because this packet changed docs,
+  templates, fixtures, and local validation tooling only; no app-visible or
+  server-visible runtime behavior changed.
+- Guardrails held: no Rabbi UI implementation, no email send, no Stripe or
+  payment run, no DNS/provider mutation, no Drive/Zoom/Vimeo/WhatsApp/Telegram
+  external write, no access grant, no external CRM write, and no
+  GHL/LeadConnector runtime.
+
+## 2026-07-01 - Huda Torah Progress Correction
+
+- Registered `RAW-20260701-002` for the operator correction to set only Huda
+  Weber's cumulative Torah/trip progress to 34%.
+- Applied a scoped production DB transaction against Huda Weber's
+  `bna_torah_learning_entries` cumulative snapshots.
+- Readback after recalculation: Huda 34%, Hillel 34%, Menachem Mendel 27%,
+  Eitan Chaim 32%, Amitai 38%, overall 33%.
+- Guardrails held: no other student percentage was directly modified, no raw
+  private transcript/message body or secrets were recorded, and no sends,
+  payments, access grants, DNS, credentials, or external provider writes were
+  performed.
+
+## 2026-07-01 - Product Quality Protocol Closeout, Brand Kits, Rabbi Control Tower
+
+- Registered `RAW-20260701-003` and
+  `tasks-pending/2026-07-01-finish-product-quality-protocol-brand-kits-rabbi-control-tower.md`.
+- Reconciled Product Quality Protocol v3 enforcement and validated the
+  standalone release branch from a clean `origin/master` worktree.
+- Corrected brand source of truth: Rabbi / One Time is black + yellow, while
+  BNA is cream + navy + teal/cyan.
+- Corrected provider pipeline source of truth with
+  `DEC-20260701-ONETIME-SEPARATE-PROVIDER-PIPELINE`.
+- Added memory-topic lookup/contradiction rules and design-reference capture
+  rules.
+- Created Resend and Stripe provider smoke/readback packets with safe test-only
+  policy and no bulk send/live payment permission.
+- Created Rabbi / One Time `00-control-tower` and
+  `01-current-state-visual-audit` packets. No Rabbi UI implementation occurred.
+- Verification passed: `npm run pqc:all`, BNA run validators, source coverage,
+  stale-evidence check, secrets audit, focused One Time/brand tests, JSON parse,
+  trace validation, protocol drift watchdog, and `git diff --check`.
+- Guardrails held: no GHL/LeadConnector runtime, no external CRM write, no
+  DNS/provider mutation, no email send, no live Stripe payment, no bulk
+  campaign, no hard delete, and no secret exposure.
