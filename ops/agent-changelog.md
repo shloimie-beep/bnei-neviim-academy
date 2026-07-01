@@ -27885,6 +27885,10 @@ landing with no login bounce, and project scope `one_time_mishnah_class`.
 - Verification passed: `npm run pqc:all`, BNA run validators, source coverage,
   stale-evidence check, secrets audit, focused One Time/brand tests, JSON parse,
   trace validation, protocol drift watchdog, and `git diff --check`.
+- PR #59 merged to `master` with merge commit
+  `1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a`.
+- Railway deploy/live smoke was blocked by `npm run railway:target:doctor`
+  because the release worktree has no explicit Railway project/service target.
 - Guardrails held: no GHL/LeadConnector runtime, no external CRM write, no
   DNS/provider mutation, no email send, no live Stripe payment, no bulk
   campaign, no hard delete, and no secret exposure.

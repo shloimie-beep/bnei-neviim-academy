@@ -18,7 +18,13 @@ Guardrails:
 - no hard delete;
 - no secret exposure.
 
-Current status: validation in progress.
+Current status: merged, deploy blocked by Railway target guard.
+
+PR: `https://github.com/shloimie-beep/bnei-neviim-academy/pull/59`
+
+Merge commit: `1fd7ddcc514cc7e0e3f98b7787c7b177d38f376a`
+
+Deployment/live smoke: not run. `npm run railway:target:doctor` requires an
+explicit Railway project and service target; no production fallback is allowed.
 
 Next packet: `ops/prompt-packets/2026-07-01-rabbi-onetime-ui-cleanup/01-current-state-visual-audit.md`.
-
